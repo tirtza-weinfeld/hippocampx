@@ -1,0 +1,28 @@
+@import "tailwindcss";
+
+@variant dark (&:where(.dark, .dark *));
+
+
+@import "./theme.css";
+
+
+@layer base {
+  @import "./components/main.css";  
+  @import "./base/main.css";
+}
+
+
+
+/* body {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+
+} */
+
+/* 
+@layer base {
+  * {
+    @apply border-border;
+  }
+} */
+

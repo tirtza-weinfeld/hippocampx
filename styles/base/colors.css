@@ -1,0 +1,62 @@
+:root {
+  --background: var(--color-gray-50); 
+  --foreground: var(--color-gray-900); 
+
+  --muted: var(--color-gray-200); 
+  --muted-foreground: var(--color-gray-700); 
+
+  --card: var(--color-white); 
+  --card-foreground: var(--color-gray-900); 
+
+  --popover: var(--color-white); 
+  --popover-foreground: var(--color-gray-900); 
+  --border: var(--color-gray-300); 
+  --input: var(--color-gray-100); 
+
+  --primary: var(--color-blue-600); 
+  --primary-foreground: var(--color-white); 
+  --secondary: var(--color-green-500); 
+  --secondary-foreground: var(--color-white); 
+
+  --accent: var(--color-teal-600); 
+  --accent-foreground: var(--color-white); 
+  --destructive: var(--color-red-500); 
+  --destructive-foreground: var(--color-white); 
+
+  --ring: var(--color-blue-400); 
+  --radius: 0.5rem; 
+}
+
+.dark {
+  --background: var(--color-gray-900); 
+  --foreground: var(--color-gray-50); 
+
+  --muted: var(--color-gray-700); 
+  --muted-foreground: var(--color-gray-300); 
+
+  --card: var(--color-gray-800); 
+  --card-foreground: var(--color-gray-50); 
+
+  --popover: var(--color-gray-800); 
+  --popover-foreground: var(--color-gray-50);
+
+  --border: var(--color-gray-700); 
+  --input: var(--color-gray-800); 
+
+  --primary: var(--color-blue-400); 
+  --primary-foreground: var(--color-gray-900); 
+  --secondary: var(--color-green-400); 
+  --secondary-foreground: var(--color-gray-900); 
+
+  --accent: var(--color-teal-800); 
+  --accent-foreground: var(--color-gray-900); 
+
+  --destructive: var(--color-red-400);
+  --destructive-foreground: var(--color-gray-900);
+
+  --ring: var(--color-blue-800);
+
+  
+}
+
+
