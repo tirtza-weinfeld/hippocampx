@@ -21,6 +21,27 @@ export default function Games() {
                 <div className="flex-1 bg-teal-700 rounded-md p-4 m-4">3</div>
                 <div className="flex-1 bg-teal-600 rounded-md p-4 m-4">4</div>
             </div>
+            <div className="w-full h-full flex flex-row">
+
+                <div className="flex-1 bg-teal-900 rounded-md p-4 m-4">1</div>
+                <div className="flex-1 bg-teal-800 rounded-md p-4 m-4">2</div>
+                <div className="flex-1 bg-teal-700 rounded-md p-4 m-4">3</div>
+                <div className="flex-1 bg-teal-600 rounded-md p-4 m-4">4</div>
+            </div>
+            <div className="w-full h-full flex flex-row">
+
+                <div className="flex-1 bg-teal-900 rounded-md p-4 m-4">1</div>
+                <div className="flex-1 bg-teal-800 rounded-md p-4 m-4">2</div>
+                <div className="flex-1 bg-teal-700 rounded-md p-4 m-4">3</div>
+                <div className="flex-1 bg-teal-600 rounded-md p-4 m-4">4</div>
+            </div>
+            <div className="w-full h-full flex flex-row h-screen">
+
+                <div className="flex-1 bg-teal-900 rounded-md p-4 m-4">1</div>
+                <div className="flex-1 bg-teal-800 rounded-md p-4 m-4">2</div>
+                <div className="flex-1 bg-teal-700 rounded-md p-4 m-4">3</div>
+                <div className="flex-1 bg-teal-600 rounded-md p-4 m-4">4</div>
+            </div>
         </div>
     );
 }

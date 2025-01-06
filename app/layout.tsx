@@ -31,14 +31,14 @@ export default async function RootLayout({
 
   return (
     <html lang="en" suppressHydrationWarning >
-      <body className={`${geistSans.variable} ${geistMono.variable} `}>
+      <body className={`${geistSans.variable} ${geistMono.variable} ` }>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
         >
-          <SidebarProvider defaultOpen={defaultOpen} >
+          <SidebarProvider defaultOpen={defaultOpen}  >
 
             <AppSidebar
               side="left"
@@ -46,13 +46,15 @@ export default async function RootLayout({
               collapsible="icon"
             />
 
-            <SidebarInset>
+            <SidebarInset >
 
               <div className="flex flex-col min-h-screen">
-
+        
                 <AppHeader />
+                <div className="mt-12  h-full w-full">
+                  {children}
+                </div>
 
-                {children}
               </div>
               <AppFooter />
 

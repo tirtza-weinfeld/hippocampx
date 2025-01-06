@@ -7,8 +7,8 @@ export default function AppFooter() {
     ];
 
     return (
-        <footer className="flex flex-row gap-4 h-12 mt-12 text-center place-content-center border-t 
-        border-gray-200 dark:border-gray-800 h-12 p-1
+        <footer className="flex flex-row gap-4 h-12  place-content-center place-items-center border-t 
+        border-sidebar-border/50
         ">
             
             {links.map((link) => (
@@ -18,9 +18,9 @@ export default function AppFooter() {
                         href={link.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-foreground/40 hover:text-accent/80 transition-colors duration-200"
+                        className="text-foreground/40 hover:text-accent/80 transition-colors duration-200 "
                     >
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 ">
                             {link.icon}
                             {link.name}
                         </div>
