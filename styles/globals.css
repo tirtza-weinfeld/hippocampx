@@ -13,6 +13,61 @@
 
 
 
+@keyframes teacher-pulse {
+  0% {
+
+    display: block;
+    opacity: 1;
+    background-color: var(--color);
+  }
+  100% {
+    display: hidden;
+    opacity: 0;
+    background-color: transparent;
+  }
+}
+
+.animate-teacher-correct {
+  --color: var(--color-green-200);
+  animation: teacher-pulse 3s ease-in-out 1;
+}
+
+.animate-teacher-incorrect {
+  --color: var(--color-red-200);
+  animation: teacher-pulse 3s ease-in-out 1;
+}
+
+
+@keyframes fade-correct {
+  0% {
+    background-color: var(--color-green-200); 
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+@keyframes fade-incorrect {
+  0% {
+    background-color: var(--color-red-200);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+
+
+.animate-correct {
+  animation: fade-correct 2s ease-in-out;
+}
+
+.animate-incorrect {
+  animation: fade-incorrect 2s ease-in-out;
+}
+
+
+
 /* body {
   background-color: var(--color-background);
   color: var(--color-foreground);
@@ -25,4 +80,5 @@
     @apply border-border;
   }
 } */
+
 

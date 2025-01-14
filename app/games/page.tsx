@@ -1,47 +1,39 @@
 import React from "react";
 import { Metadata } from "next";
+import { PairGame } from "@/components/games/pair-game/pair-game.component";
+import { fetchAlgorithmPairs } from "@/lib/db/query";
+
 
 export const metadata: Metadata = {
     title: 'Games',
 };
 
 export default function Games() {
+
+    const algorithmsAverageCasePromise = fetchAlgorithmPairs("average");
+    const algorithmsWorstCasePromise = fetchAlgorithmPairs("worst");
+
+    const games = [
+        {
+            title: "Average Case Time Complexity",
+            keyTitle: "Algorithm",
+            valueTitle: "Time Complexity",
+            dataPromise: algorithmsAverageCasePromise
+        },
+        {
+            title: "Worst Case Time Complexity",
+            keyTitle: "Algorithm",
+            valueTitle: "Time Complexity",
+            dataPromise: algorithmsWorstCasePromise
+        }
+    ]
     return (
-        <div className="flex flex-col items-center justify-center h-full w-full">
-
-            <h2 className="text-2xl font-bold p-4 m-4 text-accent   
-            hover:text-secondary hover:animate-pulse transition-all hover:translate-y-5 hover:translate-x-5 hover:scale-150 duration-1000 cursor-pointer">
-                GAMES
-
-            </h2>
-            <div className="w-full h-full flex flex-row">
-
-                <div className="flex-1 bg-teal-900 rounded-md p-4 m-4">1</div>
-                <div className="flex-1 bg-teal-800 rounded-md p-4 m-4">2</div>
-                <div className="flex-1 bg-teal-700 rounded-md p-4 m-4">3</div>
-                <div className="flex-1 bg-teal-600 rounded-md p-4 m-4">4</div>
-            </div>
-            <div className="w-full h-full flex flex-row">
-
-                <div className="flex-1 bg-teal-900 rounded-md p-4 m-4">1</div>
-                <div className="flex-1 bg-teal-800 rounded-md p-4 m-4">2</div>
-                <div className="flex-1 bg-teal-700 rounded-md p-4 m-4">3</div>
-                <div className="flex-1 bg-teal-600 rounded-md p-4 m-4">4</div>
-            </div>
-            <div className="w-full h-full flex flex-row">
-
-                <div className="flex-1 bg-teal-900 rounded-md p-4 m-4">1</div>
-                <div className="flex-1 bg-teal-800 rounded-md p-4 m-4">2</div>
-                <div className="flex-1 bg-teal-700 rounded-md p-4 m-4">3</div>
-                <div className="flex-1 bg-teal-600 rounded-md p-4 m-4">4</div>
-            </div>
-            <div className="w-full h-full flex flex-row h-screen">
-
-                <div className="flex-1 bg-teal-900 rounded-md p-4 m-4">1</div>
-                <div className="flex-1 bg-teal-800 rounded-md p-4 m-4">2</div>
-                <div className="flex-1 bg-teal-700 rounded-md p-4 m-4">3</div>
-                <div className="flex-1 bg-teal-600 rounded-md p-4 m-4">4</div>
-            </div>
-        </div>
+        <div className=" @container/games w-full h-full  p-4 m-auto ">
+               <div className="@sm:grid @sm:grid-cols-2 @sm:gap-4">
+                {games.map((game,index)=>(
+                    <PairGame key={index} {...game} />
+                ))}
+               </div>
+        </div>   
     );
 }
