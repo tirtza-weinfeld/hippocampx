@@ -45,9 +45,9 @@ export default function FlashcardsList({
     function focusCardMaximizeButton(cardId: string) {
         const map = getMap();
         const node = map.get(cardId);
-        const mButton = node?.querySelector('#maximize-button')
-        mButton.setAttribute('tabindex', '0')
-        mButton.focus()
+        const mButton = node?.querySelector('#maximize-button') as HTMLElement
+        mButton?.setAttribute('tabindex', '0')
+        mButton?.focus()
 
     }
 
@@ -79,7 +79,7 @@ export default function FlashcardsList({
                         ref={(node) => {
                             const map = getMap();
 
-                            map.set(card.id, node);
+                            map.set(card.id, node as HTMLElement);
 
                             if (focusedCardID !== null
                                 && card.id === focusedCardID) {
@@ -95,7 +95,7 @@ export default function FlashcardsList({
 
                                 node?.scrollIntoView({ behavior: 'instant', block: 'center' })
                                 node?.focus()
-                                setFocusedCardID(null)
+                                setFocusedCardID(undefined)
                             }
                             return () => {
                                 map.delete(card.id);

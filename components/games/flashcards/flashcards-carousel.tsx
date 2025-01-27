@@ -1,7 +1,7 @@
 "use client"
 
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { Term } from "@/lib/db/schema";
 import { ChevronLeftIcon, ChevronRightIcon, MinimizeIcon } from "lucide-react";
 import FlashcardControl from "./flashcard-control";
