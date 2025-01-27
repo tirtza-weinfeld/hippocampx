@@ -10,14 +10,17 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     // ppr: true,
-    mdxRs: true,
+    // mdxRs: true,
 
   },
 };
 
 
 const withMDX = createMDX({
-
-})
+  options: {
+    // remarkPlugins: [['remark-gfm'],['remark-toc']],
+    // rehypePlugins: [['rehype-slug'], ['rehype-autolink-headings']],
+  },
+});
 
 export default withMDX(nextConfig);

@@ -11,7 +11,7 @@ export function PairGameButton({ children, className, selected, status, ...props
     return <button {...props}
 
         className={`
-        
+        text-white
         text-sm
         w-full
         transition-all
@@ -23,15 +23,15 @@ export function PairGameButton({ children, className, selected, status, ...props
         text-start
         cursor-pointer
         disabled:pointer-events-none
-        disabled:opacity-50
+        disabled:opacity-80
         rounded-lg py-1 m-1 px-2
          ${selected ? "bg-accent/50 text-accent-foreground shadow-lg" : ""}
          ${status === null ? "" : status === "correct" ? "animate-correct" : "animate-incorrect"}
          ${className}
+
          
          `}
     >{children}
 
     </button>
-}
-
+        }

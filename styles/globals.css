@@ -29,12 +29,12 @@
 
 .animate-teacher-correct {
   --color: var(--color-green-200);
-  animation: teacher-pulse 3s ease-in-out 1;
+  animation: teacher-pulse 1s ease-in-out 1;
 }
 
 .animate-teacher-incorrect {
   --color: var(--color-red-200);
-  animation: teacher-pulse 3s ease-in-out 1;
+  animation: teacher-pulse 1s ease-in-out 1;
 }
 
 
@@ -59,11 +59,11 @@
 
 
 .animate-correct {
-  animation: fade-correct 2s ease-in-out;
+  animation: fade-correct 500ms ease-in-out;
 }
 
 .animate-incorrect {
-  animation: fade-incorrect 2s ease-in-out;
+  animation: fade-incorrect 500ms ease-in-out;
 }
 
 

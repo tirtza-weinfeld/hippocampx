@@ -1,7 +1,7 @@
 import type { MDXComponents } from 'mdx/types';
 import React, { ComponentPropsWithoutRef } from 'react';
 import Link from 'next/link';
-
+import { LinkIcon } from 'lucide-react';
 type HeadingProps = ComponentPropsWithoutRef<'h1'>;
 type ParagraphProps = ComponentPropsWithoutRef<'p'>;
 type ListProps = ComponentPropsWithoutRef<'ul'>;
@@ -9,24 +9,36 @@ type ListItemProps = ComponentPropsWithoutRef<'li'>;
 type AnchorProps = ComponentPropsWithoutRef<'a'>;
 type BlockquoteProps = ComponentPropsWithoutRef<'blockquote'>;
 
+
 const components: MDXComponents = {
-  h1: (props: HeadingProps) => (
-    <h1
-      className=" 
+  h1: (props: HeadingProps) => {
+
+    return (
+      <h1
+        className=" 
       text-accent/90 font-extrabold mt-10 mb-4 text-2xl sm:text-[3.5rem] gradient-fade 
-        animate-fade-in [&_span]:block"
-      {...props}
-    />
-  ),
-  h2: (props: HeadingProps) => (
-    <h2
-      className="text-secondary/50 font-bold mt-8 mb-3 text-3xl sm:[text-lte=400px]:text-xl"
-      {...props}
-    />
-  ),
+        animate-fade-in [&_span]:block
+     
+        "
+
+        {...props}
+      />
+    )
+  },
+  h2: (props: HeadingProps) => {
+    // console.log(props)
+    return (
+      <h2
+        className={`text-secondary/50 font-bold mt-8 mb-3 text-3xl sm:[text-lte=400px]:text-xl    `}
+        {...props}
+      />
+    )
+  },
   h3: (props: HeadingProps) => (
     <h3
-      className="text-foreground/80 font-semibold mt-6 mb-2 text-2xl sm:[text-lte=400px]:text-lg"
+      className="text-accent/80 font-semibold mt-4 mb-2 text-2xl sm:[text-lte=400px]:text-lg
+
+      "
       {...props}
     />
   ),
@@ -71,6 +83,22 @@ const components: MDXComponents = {
           {children}
         </Link>
       );
+    } if (href?.startsWith('#')) {
+      if (children) { 
+     
+        if ( !children?.props?.className?.includes('icon icon-link')) {
+          // console.log('children', children)
+        }
+      }
+      return (
+        <a href={href} className={baseClass} {...props}>
+
+          {children }
+          {children?.props?.className?.includes('icon icon-link') && <LinkIcon className='w-4 h-4' />}
+
+
+        </a>
+      );
     }
     return (
       <a
@@ -100,6 +128,30 @@ const components: MDXComponents = {
       {children}
     </code>
   ),
+
+  table: (props: ComponentPropsWithoutRef<'table'>) => {
+    // console.log(props.children)
+    // const data = props.children
+    // console.log(JSON.stringify(data))
+    return (
+      <table {...props} className=' bg-foreground/10 rounded-lg p-4 m-4 
+    [&>thead]:text-accent
+    [&>thead>tr>th]:p-2
+       [&>thead>tr>th]:bg-accent/10
+
+ text-center
+    [&>tbody>tr>td]:nth-1:bg-accent/10
+    [&>tbody>tr>td]:nth-1:text-accent
+    [&>tbody>tr>td]:border-b-2
+    [&>tbody>tr>td]:border-accent/40
+    [&>tbody>tr]:hover:bg-accent/10
+    [&>tbody>tr>td]:p-2
+
+    '>
+
+      </table>
+    )
+  },
 };
 
 export function useMDXComponents(): MDXComponents {

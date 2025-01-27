@@ -91,7 +91,10 @@ export default function ShuffledList({ data, keys, values, title, keyTitle, valu
 
 
     return (
-        <div>
+        <div className="  transition-all duration-500 transition-discrete  
+         starting:translate-y-100 starting:opacity-0 starting:scale-0 h-full w-full
+         flex flex-col
+         ">
             <div className="flex flex-row ">
                 <h2 className="text-2xl w-fit h-fit
             hover:bg-gradient-to-r/oklch hover:from-teal-400 hover:to-primary
@@ -101,16 +104,19 @@ export default function ShuffledList({ data, keys, values, title, keyTitle, valu
              bg-clip-text 
             text-transparent 
             transition-all duration-1000  ease-in-out
-            p-4">
+            p-4 
+            
+            
+          ">
                    {title}
                 </h2>
 
             </div>
 
-            <div className="flex flex-row gap-4">
+            <div className="flex flex-row gap-4   h-full w-full overflow-scroll">
 
-                <div className="grid grid-flow-row gap-2   ">
-                    <div className=" font-bold text-accent ">{keyTitle}</div>
+                <div className="grid grid-flow-row gap-2  ">
+                    <div className=" font-bold text-accent   ">{keyTitle}</div>
                     {shuffledKeys.map((id) => (
                      
 
@@ -153,7 +159,8 @@ export default function ShuffledList({ data, keys, values, title, keyTitle, valu
             transition-all duration-1000  ease-in-out
          place-self-center place-content-center
             px-4 py-1  opacity-70 w-40 mt-4
-            
+             
+                        
             ">
                 {isPending ? "Resetting..." : "New Game"}
             </button>
