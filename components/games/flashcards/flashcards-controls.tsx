@@ -101,7 +101,7 @@ export default function FlashcardsControls({ showAll, textDelta, setTextDelta,
                     <SelectGroup >
                         <SelectItem
                             className="h-12 p-1 "
-                            value={null}
+                            value={"all"}
 
                         >
                             <div >
