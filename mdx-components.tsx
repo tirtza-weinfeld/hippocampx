@@ -1,7 +1,7 @@
 import type { MDXComponents } from 'mdx/types';
 import React, { ComponentPropsWithoutRef } from 'react';
 import Link from 'next/link';
-import { LinkIcon } from 'lucide-react';
+// import { LinkIcon } from 'lucide-react';
 type HeadingProps = ComponentPropsWithoutRef<'h1'>;
 type ParagraphProps = ComponentPropsWithoutRef<'p'>;
 type ListProps = ComponentPropsWithoutRef<'ul'>;
@@ -86,15 +86,15 @@ const components: MDXComponents = {
     } if (href?.startsWith('#')) {
       if (children) { 
      
-        if ( !children?.props?.className?.includes('icon icon-link')) {
+        // if ( !children?.props?.className?.includes('icon icon-link')) {
           // console.log('children', children)
-        }
+        // }
       }
       return (
         <a href={href} className={baseClass} {...props}>
 
           {children }
-          {children?.props?.className?.includes('icon icon-link') && <LinkIcon className='w-4 h-4' />}
+          {/* {children?.props?.className?.includes('icon icon-link') && <LinkIcon className='w-4 h-4' />} */}
 
 
         </a>
