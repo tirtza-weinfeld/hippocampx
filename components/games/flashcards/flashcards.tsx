@@ -67,7 +67,7 @@ export default function Flashcards({ termsPromise, categoriesPromise }: {
                 '--text-delta': `${textDelta}rem`,
             } as React.CSSProperties}
             className=" w-full h-full 
-            
+            @container
             relative     p-6 bg-foreground/5 rounded-md 
      
      

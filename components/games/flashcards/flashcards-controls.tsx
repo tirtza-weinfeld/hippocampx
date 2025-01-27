@@ -22,7 +22,7 @@ export default function FlashcardsControls({ showAll, textDelta, setTextDelta,
     }) {
     return (
 
-        <div className=" h-12  absolute top-0 right-0   flex flex-row-reverse gap-1 w-full m-5 overflow-scroll 
+        <div className="  h-12  top-1 right-1  absolute  flex flex-row-reverse gap-1 @xs:w-[calc(100vw/2-10rem)]  @xl:w-[calc(100vw-5rem)]
 
         *:h-10
         *:m-1
