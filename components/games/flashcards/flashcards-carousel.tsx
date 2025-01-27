@@ -164,19 +164,19 @@ export default function FlashcardsCarousel({ terms, selectedCardId, onListView, 
                         || definitionsState[terms[selectedCardIndex!].id] ?
 
 
-                        <div className=" max-w-2xl grid gap-4 place-self-center text-wrap [&>*]:text-wrap  ">
+                        <div className=" max-w-2xl flex flex-col justify-center gap-4 place-self-center text-[calc(1.5rem+var(--text-delta))]  overflow-scroll  h-full ">
 
-                            <h3 className="font-extrabold text-accent  text-[calc(2.25rem+var(--text-delta))] my-4 ">
+                            <h3 className="font-extrabold text-accent   ">
                                 {terms[selectedCardIndex!].term}
                             </h3>
 
-                            <div className="text-[calc(1.5rem+var(--text-delta))]">
+                            <div className="">
                                 {terms[selectedCardIndex!].definition}</div>
 
 
 
                         </div> :
-                        <h3 className="font-extrabold text-accent   text-[calc(2.5rem+var(--text-delta))]
+                        <h3 className="font-extrabold text-accent text-[calc(2.25rem+var(--text-delta))]  
                              place-self-center ">
                             {terms[selectedCardIndex!].term}</h3>
                 }
