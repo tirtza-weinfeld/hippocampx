@@ -1,9 +1,8 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { HomeIcon, ArrowLeftCircleIcon, ArrowRightCircleIcon } from "lucide-react"
+import { ArrowLeft, ArrowRight } from "lucide-react"
 import { motion } from "framer-motion"
 
 // Define the story pages
@@ -70,7 +69,7 @@ const STORY_PAGES = [
         {[...Array(6)].map((_, i) => (
           <motion.div
             key={`note-${i}`}
-            className="absolute text-2xl text-primary dark:text-amber-400"
+            className="absolute text-2xl text-amber-600 dark:text-amber-400"
             initial={{
               x: 50 + Math.random() * 200,
               y: 100 + Math.random() * 80,
@@ -1526,7 +1525,7 @@ export default function StoryPage() {
   }
 
   return (
-    <main className="min-h-screen py-8 bg-gradient-to-b from-amber-50 to-orange-50 text-slate-800 dark:from-amber-950 dark:to-orange-950 dark:text-amber-100">
+    <main className="min-h-screen py-8 ">
       {/* Animated background elements */}
       <div className="fixed inset-0 pointer-events-none -z-10">
         <div className="absolute inset-0 dark:bg-gradient-to-br dark:from-amber-800/20 dark:via-gray-900 dark:to-red-800/20 animate-gradient"></div>
@@ -1542,17 +1541,15 @@ export default function StoryPage() {
 
       <div className="container mx-auto px-4 z-10 relative">
         <div className="flex justify-between items-center mb-8">
-          <Link href="/">
-            <Button variant="ghost" className="text-primary hover:text-primary/80 dark:text-amber-400">
-              <HomeIcon className="mr-2 h-4 w-4" /> Home
-            </Button>
-          </Link>
+
 
           <motion.div initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.3 }}>
             <Button
               variant="outline"
               onClick={toggleAutoPlay}
-              className="border-primary text-primary dark:border-amber-600 dark:text-amber-400"
+              className=" border-amber-600 dark:text-amber-400 text-amber-600 hover:bg-amber-600 hover:text-white transition-all duration-300
+              rounded-full cursor-pointer
+              "
             >
               {isAutoPlaying ? "Pause Story" : "Auto-Play Story"}
             </Button>
@@ -1641,7 +1638,7 @@ export default function StoryPage() {
               className={`rounded-full w-16 h-16 shadow-xl bg-gradient-to-br from-amber-400 to-red-500 text-white dark:from-amber-500 dark:to-red-600 dark:text-gray-900 ${currentPageIndex === 0 ? "opacity-50 cursor-not-allowed" : "ember-glow hover:shadow-amber-500/30 hover:shadow-xl"}`}
               aria-label="Previous page"
             >
-              <ArrowLeftCircleIcon className="h-8 w-8" />
+              <ArrowLeft className="h-8 w-8" />
               <span className="sr-only">Previous</span>
             </Button>
           </motion.div>
@@ -1652,7 +1649,7 @@ export default function StoryPage() {
             animate={{ scale: [1, 1.05, 1] }}
             transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
           >
-            <span className="font-bold text-amber-600 dark:text-amber-400">
+            <span className="font-bold text-amber-600 dark:text-amber-400 ">
               {currentPageIndex + 1} / {STORY_PAGES.length}
             </span>
           </motion.div>
@@ -1672,7 +1669,7 @@ export default function StoryPage() {
               className={`rounded-full w-16 h-16 shadow-xl bg-gradient-to-br from-amber-400 to-orange-500 text-white dark:from-amber-500 dark:to-orange-600 dark:text-gray-900 ${currentPageIndex === STORY_PAGES.length - 1 ? "opacity-50 cursor-not-allowed" : "ember-glow hover:shadow-amber-500/30 hover:shadow-xl"}`}
               aria-label="Next page"
             >
-              <ArrowRightCircleIcon className="h-8 w-8" />
+              <ArrowRight className="h-8 w-8" />
               <span className="sr-only">Next</span>
             </Button>
           </motion.div>

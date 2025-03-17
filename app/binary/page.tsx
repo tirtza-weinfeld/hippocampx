@@ -1,25 +1,107 @@
 "use client"
 
-import { useState, useEffect } from "react"
+// Add missing imports
+import { useState, useEffect, useTransition, Suspense, lazy } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import BinaryIntroduction from "@/components/binary/binary-introduction"
-import BinaryConverter from "@/components/binary/binary-converter"
-import BinaryGame from "@/components/binary/binary-game"
-import BinaryExplanation from "@/components/binary/binary-explanation"
-import BinaryMascot from "@/components/binary/binary-mascot"
-import BinaryFunFacts from "@/components/binary/binary-fun-facts"
-import BinaryPractice from "@/components/binary/binary-practice"
 import { MobileNavDrawer } from "@/components/binary/mobile-nav-drawer"
 import { useSwipeable } from "@/hooks/use-swipeable"
 import { Menu } from "lucide-react"
 import { FunButton } from "@/components/binary/fun-button"
 import { motion, AnimatePresence } from "framer-motion"
+import BinaryMascot from "@/components/binary/binary-mascot"
+import { useCallback } from "react" // Add missing import
+// Lazy load components to improve initial load time
+const BinaryIntroduction = lazy(() => import("@/components/binary/binary-introduction"))
+const BinaryConverter = lazy(() => import("@/components/binary/binary-converter"))
+const BinaryExplanation = lazy(() => import("@/components/binary/binary-explanation"))
+const BinaryPractice = lazy(() => import("@/components/binary/binary-practice"))
+const BinaryFunFacts = lazy(() => import("@/components/binary/binary-fun-facts"))
+const BinaryGame = lazy(() => import("@/components/binary/binary-game"))
 
+// Loading fallbacks for each component
+const IntroductionFallback = () => (
+  <div
+    className="w-full h-[500px] flex items-center justify-center bg-white/70 dark:bg-slate-900/70 rounded-2xl animate-pulse"
+    aria-label="Loading introduction content"
+    role="status"
+  >
+    <div className="flex flex-col items-center">
+      <BinaryMascot emotion="thinking" size="md" />
+      <p className="mt-4 text-slate-600 dark:text-slate-400">Loading introduction...</p>
+    </div>
+  </div>
+)
+
+const ConverterFallback = () => (
+  <div
+    className="w-full h-[500px] flex items-center justify-center bg-white/70 dark:bg-slate-900/70 rounded-2xl animate-pulse"
+    aria-label="Loading converter content"
+    role="status"
+  >
+    <div className="flex flex-col items-center">
+      <BinaryMascot emotion="thinking" size="md" />
+      <p className="mt-4 text-slate-600 dark:text-slate-400">Loading converter...</p>
+    </div>
+  </div>
+)
+
+const ExplanationFallback = () => (
+  <div
+    className="w-full h-[500px] flex items-center justify-center bg-white/70 dark:bg-slate-900/70 rounded-2xl animate-pulse"
+    aria-label="Loading explanation content"
+    role="status"
+  >
+    <div className="flex flex-col items-center">
+      <BinaryMascot emotion="thinking" size="md" />
+      <p className="mt-4 text-slate-600 dark:text-slate-400">Loading explanation...</p>
+    </div>
+  </div>
+)
+
+const PracticeFallback = () => (
+  <div
+    className="w-full h-[500px] flex items-center justify-center bg-white/70 dark:bg-slate-900/70 rounded-2xl animate-pulse"
+    aria-label="Loading practice exercises"
+    role="status"
+  >
+    <div className="flex flex-col items-center">
+      <BinaryMascot emotion="thinking" size="md" />
+      <p className="mt-4 text-slate-600 dark:text-slate-400">Loading practice exercises...</p>
+    </div>
+  </div>
+)
+
+const FunFactsFallback = () => (
+  <div
+    className="w-full h-[500px] flex items-center justify-center bg-white/70 dark:bg-slate-900/70 rounded-2xl animate-pulse"
+    aria-label="Loading fun facts content"
+    role="status"
+  >
+    <div className="flex flex-col items-center">
+      <BinaryMascot emotion="thinking" size="md" />
+      <p className="mt-4 text-slate-600 dark:text-slate-400">Loading fun facts...</p>
+    </div>
+  </div>
+)
+
+const GameFallback = () => (
+  <div
+    className="w-full h-[500px] flex items-center justify-center bg-white/70 dark:bg-slate-900/70 rounded-2xl animate-pulse"
+    aria-label="Loading game content"
+    role="status"
+  >
+    <div className="flex flex-col items-center">
+      <BinaryMascot emotion="thinking" size="md" />
+      <p className="mt-4 text-slate-600 dark:text-slate-400">Loading game...</p>
+    </div>
+  </div>
+)
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState("learn")
   const [isMobile, setIsMobile] = useState(false)
   const [navOpen, setNavOpen] = useState(false)
+  const [isPending, startTransition] = useTransition()
 
   // Check if device is mobile
   useEffect(() => {
@@ -38,19 +120,29 @@ export default function Home() {
       const tabs = ["learn", "convert", "explain", "practice", "fun", "play"]
       const currentIndex = tabs.indexOf(activeTab)
       if (currentIndex < tabs.length - 1) {
-        setActiveTab(tabs[currentIndex + 1])
+        handleTabChange(tabs[currentIndex + 1])
       }
     },
     onSwipedRight: () => {
       const tabs = ["learn", "convert", "explain", "practice", "fun", "play"]
       const currentIndex = tabs.indexOf(activeTab)
       if (currentIndex > 0) {
-        setActiveTab(tabs[currentIndex - 1])
+        handleTabChange(tabs[currentIndex - 1])
       }
     },
     preventDefaultTouchmoveEvent: true,
     trackMouse: false,
   })
+
+  // Use transition for tab changes to keep UI responsive
+  const handleTabChange = useCallback(
+    (tab: string) => {
+      startTransition(() => {
+        setActiveTab(tab)
+      })
+    },
+    [startTransition],
+  )
 
   return (
     <main
@@ -75,12 +167,12 @@ export default function Home() {
         isOpen={navOpen}
         onClose={() => setNavOpen(false)}
         activeTab={activeTab}
-        setActiveTab={setActiveTab}
+        setActiveTab={handleTabChange}
       />
 
       <div className="container px-4 py-12 mx-auto max-w-6xl">
         <header className="text-center mb-12 relative">
-          <div className="absolute top-7 -left-2 md:left-10 lg:left-45 transform -translate-y-1/2 hidden md:block">
+          <div className="absolute top-7 -left-2 md:left-50 lg:left-20 transform -translate-y-1/2 hidden md:block">
             <BinaryMascot emotion="happy" size="md" />
           </div>
 
@@ -108,10 +200,10 @@ export default function Home() {
         </header>
 
         <div className="relative z-10 backdrop-blur-sm bg-white/70 dark:bg-slate-900/70 rounded-2xl shadow-xl border border-white/20 dark:border-slate-800/50 p-4 md:p-8">
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full ">
-            <TabsList className="hidden md:flex w-full flex-wrap md:flex-nowrap mb-8 p-1.5 bg-blue-100/50 dark:bg-slate-800/50  h-13 gap-1 
-
-            rounded-xl backdrop-blur-sm overflow-hidden relative">
+          <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
+            <TabsList className="hidden md:flex w-full flex-wrap md:flex-nowrap mb-8 p-1.5 bg-blue-100/50 dark:bg-slate-800/50 rounded-xl backdrop-blur-sm overflow-hidden relative
+            h-13
+            ">
               {/* Animated background for active tab */}
               <motion.div
                 className="absolute h-[calc(100%-0.75rem)] top-1.5 rounded-lg bg-gradient-to-r from-violet-500 to-blue-500 shadow-md z-0 pointer-events-none"
@@ -155,9 +247,12 @@ export default function Home() {
                 >
                   <TabsTrigger
                     value={tab.value}
-                    className="w-full h-12 cursor-pointer md:h-14 text-base md:text-lg font-medium rounded-lg relative z-10 transition-colors duration-300 hover:bg-blue-50/50 dark:hover:bg-blue-900/20 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:bg-transparent data-[state=active]:shadow-none"
+                    className={`w-full cursor-pointer h-12 md:h-14 text-base md:text-lg font-medium 
+                      rounded-lg relative z-10 transition-colors duration-300 hover:bg-blue-50/50 dark:hover:bg-blue-900/20 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:bg-transparent data-[state=active]:shadow-none ${isPending ? "opacity-70" : ""}`}
                     onClick={() => {
                       if (activeTab !== tab.value) {
+                        handleTabChange(tab.value)
+
                         // Add subtle scale animation on click
                         const element = document.querySelector(`[data-value="${tab.value}"]`)
                         if (element) {
@@ -169,7 +264,12 @@ export default function Home() {
                       }
                     }}
                     data-value={tab.value}
-             
+                    style={{
+                      // Override any default background styles
+                      background: tab.value === activeTab ? "transparent" : undefined,
+                    }}
+                    disabled={isPending}
+                    aria-label={`Switch to ${tab.label} tab`} // Add aria-label for accessibility
                   >
                     <motion.span
                       className="relative z-20 block"
@@ -203,27 +303,50 @@ export default function Home() {
               ))}
             </TabsList>
 
-            <AnimatePresence mode="wait">
+            <AnimatePresence mode="sync">
               {["learn", "convert", "explain", "practice", "fun", "play"].map((tabValue) => (
-                <TabsContent key={tabValue} value={tabValue} className="mt-4 ">
+                <TabsContent key={tabValue} value={tabValue} className="mt-4">
                   <motion.div
-                    
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
+                    exit={{ opacity: 0, y: -10, transition: { duration: 0.15 } }} // Faster exit
                     transition={{
                       type: "spring",
                       stiffness: 300,
                       damping: 30,
-                      duration: 0.4,
+                      duration: 0.3, // Faster entry
                     }}
                   >
-                    {tabValue === "learn" && <BinaryIntroduction />}
-                    {tabValue === "convert" && <BinaryConverter />}
-                    {tabValue === "explain" && <BinaryExplanation />}
-                    {tabValue === "practice" && <BinaryPractice />}
-                    {tabValue === "fun" && <BinaryFunFacts />}
-                    {tabValue === "play" && <BinaryGame />}
+                    {tabValue === "learn" && (
+                      <Suspense fallback={<IntroductionFallback />}>
+                        <BinaryIntroduction />
+                      </Suspense>
+                    )}
+                    {tabValue === "convert" && (
+                      <Suspense fallback={<ConverterFallback />}>
+                        <BinaryConverter />
+                      </Suspense>
+                    )}
+                    {tabValue === "explain" && (
+                      <Suspense fallback={<ExplanationFallback />}>
+                        <BinaryExplanation />
+                      </Suspense>
+                    )}
+                    {tabValue === "practice" && (
+                      <Suspense fallback={<PracticeFallback />}>
+                        <BinaryPractice />
+                      </Suspense>
+                    )}
+                    {tabValue === "fun" && (
+                      <Suspense fallback={<FunFactsFallback />}>
+                        <BinaryFunFacts />
+                      </Suspense>
+                    )}
+                    {tabValue === "play" && (
+                      <Suspense fallback={<GameFallback />}>
+                        <BinaryGame />
+                      </Suspense>
+                    )}
                   </motion.div>
                 </TabsContent>
               ))}
@@ -231,9 +354,7 @@ export default function Home() {
           </Tabs>
         </div>
 
-        {/* <footer className="mt-12 text-center text-sm text-slate-500 dark:text-slate-400">
-          <p>© {new Date().getFullYear()} Binary Buddies - Making binary fun for everyone!</p>
-        </footer> */}
+   
       </div>
 
       {/* Background decorative elements */}
