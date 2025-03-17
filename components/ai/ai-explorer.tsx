@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Brain, Image, MessageSquare, Music, Sparkles, Zap, Lightbulb, Cpu, Globe } from "lucide-react"
+import { Brain, Image as ImageIcon, MessageSquare, Music, Sparkles, Zap, Lightbulb, Cpu, Globe } from "lucide-react"
 import { motion } from "framer-motion"
 import SwipeContainer from "./swipe-container"
 
@@ -22,9 +22,9 @@ export default function AIExplorer() {
       id: "image",
       title: "Image Recognition",
       description: "AI can see and understand pictures!",
-      icon: <Image className="h-8 w-8 text-green-500" />,
+      icon: <ImageIcon className="h-8 w-8 text-green-500" />,
       explanation:
-        "AI can look at pictures and tell you what's in them! It learns by looking at millions of pictures that humans have labeled. After seeing enough cats, it can recognize a cat in a new picture it's never seen before.",
+        "AI can look at pictures and tell you what&apos;s in them! It learns by looking at millions of pictures that humans have labeled. After seeing enough cats, it can recognize a cat in a new picture it&apos;s never seen before.",
     },
     {
       id: "music",

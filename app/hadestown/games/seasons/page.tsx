@@ -85,19 +85,28 @@ const SEASONS = [
   },
 ]
 
-// Create a flat array of all items with their correct season
-const ALL_ITEMS = SEASONS.flatMap((season) =>
-  season.items.map((item) => ({
-    ...item,
-    seasonId: season.id,
-    seasonName: season.name,
-  })),
-)
+type Item = {
+  id: string;
+  name: string;
+  emoji: string;
+  seasonId: string;
+  seasonName: string;
+};
+
+// // Create a flat array of all items with their correct season
+// const ALL_ITEMS = SEASONS.flatMap((season) =>
+//   season.items.map((item) => ({
+//     ...item,
+//     seasonId: season.id,
+//     seasonName: season.name,
+//   })),
+// )
+
 
 export default function SeasonsGamePage() {
   const [currentLevel, setCurrentLevel] = useState(1)
-  const [availableItems, setAvailableItems] = useState<typeof ALL_ITEMS>([])
-  const [seasonItems, setSeasonItems] = useState<Record<string, typeof ALL_ITEMS>>({
+  const [availableItems, setAvailableItems] = useState<Item[]>([])
+  const [seasonItems, setSeasonItems] = useState<Record<string, Item[]>>({
     spring: [],
     summer: [],
     fall: [],
@@ -107,11 +116,11 @@ export default function SeasonsGamePage() {
   const [isChecking, setIsChecking] = useState(false)
   const [gameComplete, setGameComplete] = useState(false)
   const [showInstructions, setShowInstructions] = useState(true)
-  const [draggedItem, setDraggedItem] = useState<((typeof ALL_ITEMS)[0] & { source: string }) | null>(null)
+  const [draggedItem, setDraggedItem] = useState<Item & { source: string } | null>(null)
   const [persephone, setPersephone] = useState<"above" | "below">("above")
   const [persephonePosition, setPersephonePosition] = useState({ x: 0, y: 0 })
   // Add a new state for the selected item
-  const [selectedItem, setSelectedItem] = useState<{ item: (typeof ALL_ITEMS)[0]; source: string } | null>(null)
+  const [selectedItem, setSelectedItem] = useState<{ item: Item; source: string } | null>(null)
 
   // Initialize game
   useEffect(() => {
@@ -162,7 +171,7 @@ export default function SeasonsGamePage() {
   }
 
   // Handle drag start for desktop
-  const handleDragStart = (item: (typeof ALL_ITEMS)[0], source = "available") => {
+  const handleDragStart = (item: Item, source = "available") => {
     setDraggedItem({ ...item, source })
   }
 
@@ -244,7 +253,7 @@ export default function SeasonsGamePage() {
   // Remove these handlers:
 
   // Add these new handlers instead:
-  const handleItemSelect = (item: (typeof ALL_ITEMS)[0], source: string) => {
+  const handleItemSelect = (item: Item, source: string) => {
     if (isChecking) return
 
     // If already selected, deselect it
@@ -301,16 +310,16 @@ export default function SeasonsGamePage() {
     setSelectedItem(null)
   }
 
-  const moveItemBack = (item: (typeof ALL_ITEMS)[0], seasonId: string) => {
-    // Remove from season
-    setSeasonItems((prev) => ({
-      ...prev,
-      [seasonId]: prev[seasonId].filter((i) => i.id !== item.id),
-    }))
+  // const moveItemBack = (item: (typeof ALL_ITEMS)[0], seasonId: string) => {
+  //   // Remove from season
+  //   setSeasonItems((prev) => ({
+  //     ...prev,
+  //     [seasonId]: prev[seasonId].filter((i) => i.id !== item.id),
+  //   }))
 
-    // Add back to available items
-    setAvailableItems((prev) => [...prev, item])
-  }
+  //   // Add back to available items
+  //   setAvailableItems((prev) => [...prev, item])
+  // }
 
   const checkAnswers = () => {
     setIsChecking(true)
@@ -328,7 +337,7 @@ export default function SeasonsGamePage() {
     })
 
     // Calculate score as a percentage
-    const levelScore = Math.round((correctPlacements / totalPlacements) * 100)
+    // const levelScore = Math.round((correctPlacements / totalPlacements) * 100)
 
     // If perfect score, add to total score and show celebration
     if (correctPlacements === totalPlacements && totalPlacements > 0) {

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef, useEffect, useCallback } from "react"
 import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { ArrowLeftIcon, ArrowRightIcon, MusicIcon, CheckIcon, RefreshCwIcon, HelpCircleIcon } from "lucide-react"
@@ -65,17 +65,17 @@ export default function LyricChallengePage() {
 
   const currentLyric = LYRICS[currentIndex]
 
+  const resetChallenge = useCallback(() => {
+    setUserInputs(Array(currentLyric.missing.length).fill(""))
+    setIsChecked(false)
+    setShowHint(false)
+  }, [currentLyric.missing.length])
+
   useEffect(() => {
     resetChallenge()
     // Initialize input refs array
     inputRefs.current = inputRefs.current.slice(0, currentLyric.missing.length)
-  }, [currentLyric]) //Fixed dependency
-
-  const resetChallenge = () => {
-    setUserInputs(Array(currentLyric.missing.length).fill(""))
-    setIsChecked(false)
-    setShowHint(false)
-  }
+  }, [currentLyric, resetChallenge])
 
   const handleInputChange = (index: number, value: string) => {
     const newInputs = [...userInputs]

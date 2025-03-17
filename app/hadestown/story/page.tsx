@@ -1483,7 +1483,6 @@ const STORY_PAGES = [
 
 export default function StoryPage() {
   const [currentPageIndex, setCurrentPageIndex] = useState(0)
-  const [showNav, setShowNav] = useState(false)
   const [isAutoPlaying, setIsAutoPlaying] = useState(false)
   const timerRef = useRef<NodeJS.Timeout | null>(null)
 

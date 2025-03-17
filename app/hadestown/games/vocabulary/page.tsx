@@ -713,7 +713,7 @@ function VocabularyQuiz() {
                 </motion.div>
                 <h2 className="text-2xl font-bold text-amber-600 dark:text-amber-400 mb-4">Congratulations!</h2>
                 <p className="text-gray-700 dark:text-gray-200 mb-6">
-                  You've completed all the vocabulary words! Your knowledge of Hadestown vocabulary is impressive!
+                  You&apos;ve completed all the vocabulary words! Your knowledge of Hadestown vocabulary is impressive!
                 </p>
                 <motion.button
                   whileHover={{ scale: 1.05 }}
@@ -740,9 +740,7 @@ function WordMatchingGame() {
   const [selectedMatch, setSelectedMatch] = useState<string | null>(null)
   const [matchedPairs, setMatchedPairs] = useState<{ [key: string]: string }>({})
   const [attempts, setAttempts] = useState(0)
-  const [gameComplete, setGameComplete] = useState(false)
   const [showCelebration, setShowCelebration] = useState(false)
-  const [draggedItem, setDraggedItem] = useState<{ type: "word" | "definition"; value: string } | null>(null)
 
   // Initialize the game
   useEffect(() => {
@@ -762,9 +760,7 @@ function WordMatchingGame() {
     setSelectedMatch(null)
     setMatchedPairs({})
     setAttempts(0)
-    setGameComplete(false)
     setShowCelebration(false)
-    setDraggedItem(null)
   }
 
   // Check for matches when selections change
@@ -795,8 +791,7 @@ function WordMatchingGame() {
   // Check if game is complete
   useEffect(() => {
     if (Object.keys(matchedPairs).length === MATCHING_PAIRS.length * 2) {
-      setGameComplete(true)
-      setTimeout(() => setShowCelebration(true), 1000)
+      setShowCelebration(true)
     }
   }, [matchedPairs])
 
@@ -811,8 +806,6 @@ function WordMatchingGame() {
     if (e.currentTarget.classList) {
       e.currentTarget.classList.add("opacity-50", "scale-105", "shadow-lg")
     }
-
-    setDraggedItem({ type, value })
   }
 
   // Handle drag end
@@ -821,8 +814,6 @@ function WordMatchingGame() {
     if (e.currentTarget.classList) {
       e.currentTarget.classList.remove("opacity-50", "scale-105", "shadow-lg")
     }
-
-    setDraggedItem(null)
   }
 
   // Handle drag over
@@ -940,14 +931,11 @@ function WordMatchingGame() {
           <h3 className="text-lg font-medium text-amber-600 dark:text-amber-400 mb-3">Words</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
             {words.map((word, index) => (
-              <motion.div
+              <div
                 key={`word-${index}`}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.05 }}
                 className="h-[70px] relative"
               >
-                <motion.div
+                <div
                   className={`absolute inset-0 p-3 rounded-xl text-center transition-all duration-200 flex items-center justify-center shadow-sm ${
                     matchedPairs[word]
                       ? "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 shadow-md"
@@ -962,12 +950,10 @@ function WordMatchingGame() {
                   onDragLeave={(e) => handleDragLeave(e)}
                   onDrop={(e) => handleDrop(e, "word", word)}
                   onClick={() => handleItemClick("word", word)}
-                  whileHover={!matchedPairs[word] ? { scale: 1.05 } : {}}
-                  whileTap={!matchedPairs[word] ? { scale: 0.98 } : {}}
                 >
                   <span className="text-center font-medium">{word}</span>
-                </motion.div>
-              </motion.div>
+                </div>
+              </div>
             ))}
           </div>
         </div>
@@ -977,14 +963,11 @@ function WordMatchingGame() {
           <h3 className="text-lg font-medium text-amber-600 dark:text-amber-400 mb-3">Definitions</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {definitions.map((definition, index) => (
-              <motion.div
+              <div
                 key={`def-${index}`}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: (index + words.length) * 0.05 }}
                 className="h-[70px] relative"
               >
-                <motion.div
+                <div
                   className={`absolute inset-0 p-3 rounded-xl text-center transition-all duration-200 flex items-center justify-center shadow-sm ${
                     matchedPairs[definition]
                       ? "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 shadow-md"
@@ -998,13 +981,23 @@ function WordMatchingGame() {
                   onDragOver={(e) => handleDragOver(e)}
                   onDragLeave={(e) => handleDragLeave(e)}
                   onDrop={(e) => handleDrop(e, "definition", definition)}
-                  onClick={() => handleItemClick("definition", definition)}
-                  whileHover={!matchedPairs[definition] ? { scale: 1.05 } : {}}
-                  whileTap={!matchedPairs[definition] ? { scale: 0.98 } : {}}
                 >
-                  <span className="text-center text-sm">{definition}</span>
-                </motion.div>
-              </motion.div>
+                  <motion.div
+                    className={`absolute inset-0 p-3 rounded-xl text-center transition-all duration-200 flex items-center justify-center shadow-sm ${
+                      matchedPairs[definition]
+                        ? "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 shadow-md"
+                        : selectedMatch === definition
+                          ? "bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-300 shadow-md"
+                          : "bg-white dark:bg-gray-900/50 text-gray-800 dark:text-gray-200 hover:bg-amber-50 dark:hover:bg-amber-900/30"
+                    }`}
+                    whileHover={!matchedPairs[definition] ? { scale: 1.05 } : {}}
+                    whileTap={!matchedPairs[definition] ? { scale: 0.98 } : {}}
+                    onClick={() => handleItemClick("definition", definition)}
+                  >
+                    <span className="text-center text-sm">{definition}</span>
+                  </motion.div>
+                </div>
+              </div>
             ))}
           </div>
         </div>
@@ -1556,7 +1549,7 @@ function WordCategoriesGame() {
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Button
                 variant="outline"
-                className="border-amber-500 text-amber-600 hover:bg-amber-50 dark:border-amber-600 dark:text-amber-400 dark:hover:bg-amber-900/30 px-6 py-2 h-auto rounded-xl"
+                className="border-amber-500 text-amber-600 hover:bg-amber-50 dark:border-amber-600 dark:text-amber-400 px-6 py-2 h-auto rounded-xl"
                 onClick={() => resetGame()}
               >
                 <RefreshCwIcon className="mr-2 h-4 w-4" /> Reset Game
@@ -1626,7 +1619,7 @@ function WordCategoriesGame() {
                 </motion.div>
                 <h2 className="text-2xl font-bold text-amber-600 dark:text-amber-400 mb-4">Perfect Categorization!</h2>
                 <p className="text-gray-700 dark:text-gray-200 mb-6">
-                  You've correctly sorted all the words into their categories! Your knowledge of Hadestown vocabulary is
+                  You&apos;ve correctly sorted all the words into their categories! Your knowledge of Hadestown vocabulary is
                   impressive!
                 </p>
                 <motion.button

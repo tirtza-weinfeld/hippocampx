@@ -123,7 +123,7 @@ export default function AIQuiz() {
     <div className="space-y-6">
       <div>
         <h2 className="text-3xl font-bold gradient-text gradient-orange-red mb-4">Test Your AI Knowledge!</h2>
-        <p className="text-lg dark:text-gray-300">Take this fun quiz to see how much you've learned about AI and ML!</p>
+        <p className="text-lg dark:text-gray-300">Take this fun quiz to see how much you&apos;ve learned about AI and ML!</p>
       </div>
 
       {!quizCompleted ? (
@@ -286,7 +286,7 @@ export default function AIQuiz() {
                 What to Learn Next
               </h4>
               <p className="dark:text-gray-300">
-                There's so much more to discover about AI! You could learn about how AI is used in medicine, how
+                There&apos;s so much more to discover about AI! You could learn about how AI is used in medicine, how
                 self-driving cars work, or even try creating your own simple AI projects!
               </p>
             </div>
@@ -311,7 +311,7 @@ export default function AIQuiz() {
             Fun AI Facts
           </h3>
           <ul className="list-disc list-inside space-y-2 dark:text-gray-300">
-            <li>The term "Artificial Intelligence" was first used in 1956!</li>
+            <li>The term &quot;Artificial Intelligence&quot; was first used in 1956!</li>
             <li>AI can help scientists discover new medicines and treatments.</li>
             <li>Self-driving cars use AI to understand the road and make decisions.</li>
             <li>AI can create art, music, and even write stories!</li>
@@ -329,7 +329,7 @@ export default function AIQuiz() {
             way, and understanding how it works will give you a head start.
           </p>
           <p className="dark:text-gray-300">
-            Learning about AI now is like learning to read and write - it's a basic skill that will help you in many
+            Learning about AI now is like learning to read and write - it&apos;s a basic skill that will help you in many
             different areas of life!
           </p>
         </div>

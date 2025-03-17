@@ -241,7 +241,7 @@ export default function BinaryGame() {
         }
       }, 3000)
     },
-    [currentQuestion, questionNumber, generateQuestion, streak, difficulty, score, totalQuestions, timePerQuestion],
+    [currentQuestion, questionNumber, generateQuestion, streak, difficulty, score, totalQuestions, timePerQuestion, timeLeft],
   )
 
   // Handle keyboard navigation
@@ -959,7 +959,7 @@ export default function BinaryGame() {
                     </motion.div>
                   )}
                   {isCorrect ? (
-                    <span className="text-emerald-700 dark:text-emerald-300">Awesome! That's correct! 🎯</span>
+                    <span className="text-emerald-700 dark:text-emerald-300">Awesome! That&apos;s correct! 🎯</span>
                   ) : (
                     <span className="text-rose-700 dark:text-rose-300">
                       Not quite! The correct answer is{" "}

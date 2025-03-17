@@ -45,7 +45,6 @@ export default function FillInTheBlanksGame() {
   const [score, setScore] = useState(0)
   const [completedSentences, setCompletedSentences] = useState<Set<number>>(new Set())
   const [showCelebration, setShowCelebration] = useState(false)
-  const [draggedOption, setDraggedOption] = useState<string | null>(null)
   const [isDropTargetActive, setIsDropTargetActive] = useState(false)
 
   const currentSentence = FILL_BLANKS_SENTENCES[currentIndex]
@@ -91,8 +90,6 @@ export default function FillInTheBlanksGame() {
     if (e.currentTarget.classList) {
       e.currentTarget.classList.add("opacity-70", "scale-105", "shadow-lg", "z-50")
     }
-
-    setDraggedOption(option)
   }
 
   // Handle drag end
@@ -101,8 +98,6 @@ export default function FillInTheBlanksGame() {
     if (e.currentTarget.classList) {
       e.currentTarget.classList.remove("opacity-70", "scale-105", "shadow-lg", "z-50")
     }
-
-    setDraggedOption(null)
   }
 
   // Handle drag over for the blank
@@ -216,36 +211,40 @@ export default function FillInTheBlanksGame() {
 
             <div className="grid grid-cols-2 gap-4 mb-8">
               {currentSentence.options.map((option, index) => (
-                <motion.button
+                <div
                   key={index}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className={`p-4 rounded-xl text-center cursor-pointer transition-colors shadow-sm text-lg ${
-                    selectedAnswer === option
-                      ? "bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-300 shadow-md"
-                      : "bg-white dark:bg-gray-900/50 text-gray-800 dark:text-gray-200 hover:bg-amber-50 dark:hover:bg-amber-900/30"
-                  } ${
-                    isCorrect !== null && option === currentSentence.answer
-                      ? "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 shadow-md"
-                      : isCorrect !== null && selectedAnswer === option && option !== currentSentence.answer
-                        ? "bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 shadow-md"
-                        : ""
-                  }`}
-                  onClick={() => {
-                    if (isCorrect === null) {
-                      setSelectedAnswer(option)
-                    }
-                  }}
-                  disabled={isCorrect !== null}
                   draggable={isCorrect === null}
                   onDragStart={(e) => handleDragStart(e, option)}
                   onDragEnd={handleDragEnd}
                 >
-                  {option}
-                </motion.button>
+                  <motion.button
+                    key={index}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className={`p-4 rounded-xl text-center cursor-pointer transition-colors shadow-sm text-lg ${
+                      selectedAnswer === option
+                        ? "bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-300 shadow-md"
+                        : "bg-white dark:bg-gray-900/50 text-gray-800 dark:text-gray-200 hover:bg-amber-50 dark:hover:bg-amber-900/30"
+                    } ${
+                      isCorrect !== null && option === currentSentence.answer
+                        ? "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 shadow-md"
+                        : isCorrect !== null && selectedAnswer === option && option !== currentSentence.answer
+                          ? "bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 shadow-md"
+                          : ""
+                    }`}
+                    onClick={() => {
+                      if (isCorrect === null) {
+                        setSelectedAnswer(option)
+                      }
+                    }}
+                    disabled={isCorrect !== null}
+                  >
+                    {option}
+                  </motion.button>
+                </div>
               ))}
             </div>
 

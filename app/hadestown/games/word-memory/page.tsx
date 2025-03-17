@@ -2,11 +2,11 @@
 
 import type React from "react"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 // Import the new CardFlip component
 import { Card, CardFlip } from "@/components/hadestown/card"
-import { RefreshCwIcon, TimerIcon, TrophyIcon, BookOpenIcon, CheckIcon } from "lucide-react"
+import { RefreshCwIcon, TimerIcon, TrophyIcon, BookOpenIcon } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import confetti from "canvas-confetti"
 
@@ -323,30 +323,8 @@ export default function WordMemoryGame() {
   const [gameStarted, setGameStarted] = useState<boolean>(false)
   const [difficulty, setDifficulty] = useState<"easy" | "medium" | "hard">("medium")
   const [showInstructions, setShowInstructions] = useState<boolean>(true)
-
-  // Initialize game
-  useEffect(() => {
-    initializeGame()
-  }, [difficulty])
-
-  // Update the timer logic to exclude it from Easy mode
-  // In the Timer effect, modify the condition to not start timer in Easy mode
-  useEffect(() => {
-    let interval: NodeJS.Timeout | null = null
-
-    if (gameStarted && !gameComplete && difficulty !== "easy") {
-      interval = setInterval(() => {
-        setTimer((prev) => prev + 1)
-      }, 1000)
-    }
-
-    return () => {
-      if (interval) clearInterval(interval)
-    }
-  }, [gameStarted, gameComplete, difficulty])
-
   // Initialize game cards
-  const initializeGame = () => {
+  const initializeGame = useCallback(() => {  
     // Reset game state
     setFlippedCards([])
     setMatchedPairs(0)
@@ -387,7 +365,29 @@ export default function WordMemoryGame() {
 
     // Shuffle cards
     setCards(newCards.sort(() => Math.random() - 0.5))
-  }
+  }, [difficulty])
+  // Initialize game
+  useEffect(() => {
+    initializeGame()
+  }, [difficulty, initializeGame])
+
+  // Update the timer logic to exclude it from Easy mode
+  // In the Timer effect, modify the condition to not start timer in Easy mode
+  useEffect(() => {
+    let interval: NodeJS.Timeout | null = null
+
+    if (gameStarted && !gameComplete && difficulty !== "easy") {
+      interval = setInterval(() => {
+        setTimer((prev) => prev + 1)
+      }, 1000)
+    }
+
+    return () => {
+      if (interval) clearInterval(interval)
+    }
+  }, [gameStarted, gameComplete, difficulty])
+
+
 
   // Handle card click
   const handleCardClick = (id: number) => {
@@ -467,38 +467,38 @@ export default function WordMemoryGame() {
   }
 
   // Improve the drag and drop functionality
-  const handleDragStart = (e: React.DragEvent, id: number) => {
-    if (flippedCards.length >= 2) return
+  // const handleDragStart = (e: React.DragEvent, id: number) => {
+  //   if (flippedCards.length >= 2) return
 
-    const card = cards.find((c) => c.id === id)
-    if (card?.matched) return
+  //   const card = cards.find((c) => c.id === id)
+  //   if (card?.matched) return
 
-    e.dataTransfer.setData("text/plain", id.toString())
+  //   e.dataTransfer.setData("text/plain", id.toString())
 
-    // Add visual feedback
-    if (e.currentTarget.classList) {
-      e.currentTarget.classList.add("opacity-70", "scale-105", "shadow-lg", "z-50")
-    }
-  }
+  //   // Add visual feedback
+  //   if (e.currentTarget.classList) {
+  //     e.currentTarget.classList.add("opacity-70", "scale-105", "shadow-lg", "z-50")
+  //   }
+  // }
 
-  const handleDrop = (e: React.DragEvent, targetId: number) => {
-    e.preventDefault()
-    e.currentTarget.classList.remove("ring-2", "ring-amber-500", "bg-amber-50/30", "dark:bg-amber-900/30")
+  // const handleDrop = (e: React.DragEvent, targetId: number) => {
+  //   e.preventDefault()
+  //   e.currentTarget.classList.remove("ring-2", "ring-amber-500", "bg-amber-50/30", "dark:bg-amber-900/30")
 
-    if (flippedCards.length >= 2) return
+  //   if (flippedCards.length >= 2) return
 
-    const targetCard = cards.find((c) => c.id === targetId)
-    if (targetCard?.matched || targetCard?.flipped) return
+  //   const targetCard = cards.find((c) => c.id === targetId)
+  //   if (targetCard?.matched || targetCard?.flipped) return
 
-    const draggedId = Number.parseInt(e.dataTransfer.getData("text/plain"))
-    const draggedCard = cards.find((c) => c.id === draggedId)
+  //   const draggedId = Number.parseInt(e.dataTransfer.getData("text/plain"))
+  //   const draggedCard = cards.find((c) => c.id === draggedId)
 
-    if (draggedCard && !draggedCard.matched && draggedCard.id !== targetId) {
-      // Handle as if both cards were clicked
-      handleCardClick(draggedId)
-      handleCardClick(targetId)
-    }
-  }
+  //   if (draggedCard && !draggedCard.matched && draggedCard.id !== targetId) {
+  //     // Handle as if both cards were clicked
+  //     handleCardClick(draggedId)
+  //     handleCardClick(targetId)
+  //   }
+  // }
 
   return (
     <main className="min-h-screen py-8">
@@ -606,7 +606,7 @@ export default function WordMemoryGame() {
         {/* Add a button to reopen instructions */}
         <div className="flex justify-center mb-6">
           <Button
-          size="lg"
+            size="lg"
             onClick={initializeGame}
             className="
                

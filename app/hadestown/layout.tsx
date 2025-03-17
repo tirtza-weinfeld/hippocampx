@@ -1,7 +1,6 @@
 import type React from "react"
 import type { Metadata } from "next"
-import Link from "next/link"
-import { HomeIcon } from "lucide-react"
+
 import { cn } from "@/lib/utils"
 
 

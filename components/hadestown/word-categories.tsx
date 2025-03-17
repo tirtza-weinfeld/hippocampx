@@ -56,7 +56,7 @@ export function WordCategories() {
 
       {/* Words grid */}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-        {CATEGORIES[selectedCategory].words.map((word, index) => (
+        {CATEGORIES[selectedCategory].words.map((word) => (
           <motion.div
             key={word}
             whileHover={{ scale: 1.05 }}

@@ -85,6 +85,34 @@ const FunButton = forwardRef<HTMLButtonElement, FunButtonProps>(
             />
           )}
         </button>
+        {bubbles && (
+          <div className="absolute inset-0 pointer-events-none overflow-hidden">
+            {[...Array(5)].map((_, i) => (
+              <motion.div
+                key={i}
+                className="absolute w-2 h-2 rounded-full bg-white/30"
+                initial={{ 
+                  x: "50%", 
+                  y: "50%", 
+                  opacity: 0,
+                  scale: 0 
+                }}
+                animate={{ 
+                  x: `${Math.random() * 100}%`, 
+                  y: `${Math.random() * 100}%`, 
+                  opacity: [0, 1, 0],
+                  scale: [0, 1, 0]
+                }}
+                transition={{
+                  duration: 1 + Math.random(),
+                  delay: i * 0.2,
+                  repeat: Number.POSITIVE_INFINITY,
+                  repeatDelay: Math.random() * 2
+                }}
+              />
+            ))}
+          </div>
+        )}
       </motion.div>
     )
   },
@@ -93,4 +121,3 @@ const FunButton = forwardRef<HTMLButtonElement, FunButtonProps>(
 FunButton.displayName = "FunButton"
 
 export { FunButton, buttonVariants }
-

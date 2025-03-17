@@ -55,7 +55,7 @@ export function DraggableItem({
     if (onDragStart) onDragStart(id)
   }
 
-  const handleDragEnd = (e: React.DragEvent) => {
+  const handleDragEnd = () => {
     setIsDragging(false)
     if (onDragEnd) onDragEnd()
   }
@@ -93,7 +93,6 @@ interface DropTargetProps {
 }
 
 export function DropTarget({
-  id,
   children,
   onDrop,
   className,

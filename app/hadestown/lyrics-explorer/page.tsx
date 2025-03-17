@@ -297,7 +297,7 @@ export default function LyricsExplorerPage() {
     setCurrentSongIndex((prev) => (prev - 1 + SONGS.length) % SONGS.length)
   }
 
-  const stiffness = 400
+  // const stiffness = 400
 
   return (
     <main className="min-h-screen py-8 bg-gradient-to-b from-background to-background/90 text-foreground dark:from-gray-950 dark:to-amber-950/80">
@@ -482,7 +482,7 @@ function SongLyrics({ song }: { song: (typeof SONGS)[number] }) {
   }
 
   // Process lyrics to make vocabulary words clickable
-  const processLyrics = (verse: string, vocabWords: any[]) => {
+  const processLyrics = (verse: string, vocabWords: { word: string, definition: string, partOfSpeech: string, example: string }[]) => {
     if (vocabWords.length === 0) {
       return <span>{verse}</span>
     }
