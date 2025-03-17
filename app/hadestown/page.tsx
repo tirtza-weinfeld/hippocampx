@@ -216,7 +216,7 @@ function GameCard({
           >
             {/* Add glow effect behind icon */}
             <div className="absolute inset-0 bg-gradient-to-br from-amber-500/20 to-amber-500/10 dark:from-amber-500/20 dark:to-amber-600/10 rounded-full blur-md"></div>
-            {React.cloneElement(icon as React.ReactElement, {
+            {React.cloneElement(icon as React.ReactElement<{className: string}>, {
               className: "h-12 w-12 text-amber-600 dark:text-amber-400 relative",
             })}
           </motion.div>

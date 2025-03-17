@@ -61,7 +61,7 @@ export function DraggableItem({
   }
 
   return (
-    <motion.div
+    <div
       ref={itemRef}
       className={cn(
         "draggable-item",
@@ -74,11 +74,14 @@ export function DraggableItem({
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
       onClick={disabled ? undefined : onClick}
-      whileHover={disabled ? {} : { scale: 1.05 }}
-      whileTap={disabled ? {} : { scale: 0.95 }}
     >
-      {children}
-    </motion.div>
+      <motion.div
+        whileHover={disabled ? {} : { scale: 1.05 }}
+        whileTap={disabled ? {} : { scale: 0.95 }}
+      >
+        {children}
+      </motion.div>
+    </div>
   )
 }
 

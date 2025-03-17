@@ -172,7 +172,7 @@ function CharacterCard({
           transition={{ duration: 3, repeat: Number.POSITIVE_INFINITY, repeatType: "reverse" }}
         >
           <div className="w-20 h-20 rounded-full flex items-center justify-center bg-white/20 shadow-inner">
-            {React.cloneElement(character.icon as React.ReactElement, {
+            {React.cloneElement(character.icon as React.ReactElement<{className: string}>, {
               className: "h-10 w-10 text-white",
             })}
           </div>
@@ -270,8 +270,9 @@ function CharacterModal({
 
               <div className="pt-8 pb-6 px-6 flex flex-col items-center justify-center">
                 <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-2 bg-white/20 shadow-inner backdrop-blur-sm border border-white/30">
-                  {React.cloneElement(character.icon as React.ReactElement, {
+                  {React.cloneElement(character.icon, {
                     className: "h-8 w-8 text-white",
+                    "aria-hidden": true
                   })}
                 </div>
                 <h2 id={`${character.name}-title`} className="text-xl font-bold text-white mb-1">
