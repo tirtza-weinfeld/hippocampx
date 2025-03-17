@@ -6,12 +6,12 @@ import { SunIcon, MoonIcon } from "lucide-react";
 import { Button } from "../ui/button";
 
 export function ThemeToggle() {
+    
     const { theme, setTheme } = useTheme();
     return (
 
             <Button variant="ghost" onClick={() => {
                 setTheme(theme === 'dark' ? 'light' : 'dark');
-                console.log(theme);
 
             }}
                 className="  place-items-center p-2 rounded-md hover:scale-101 transition-all duration-300 cursor-pointer  hover:bg-accent"

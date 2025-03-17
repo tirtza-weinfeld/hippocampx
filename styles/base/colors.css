@@ -1,14 +1,12 @@
 :root {
-
   --background: var(--color-gray-100); 
-  --foreground: var(--color-green-600);
+  --foreground: var(--color-teal-900);
   
   --muted: var(--color-gray-400); 
   --muted-foreground: var(--color-gray-700); 
 
-
-  --card: var(--color-gray-100); 
-  --card-foreground: var(--color-gray-800); 
+  --card: --alpha(var(--color-teal-500) / 10%); 
+  /* --card-foreground: var(--color-teal-700);  */
 
   --popover: var(--color-gray-100); 
   --popover-foreground: var(--color-gray-900); 
@@ -16,7 +14,7 @@
   --border: var(--color-gray-200); 
   --input: var(--color-gray-100); 
 
-  --primary: var(--color-blue-600); 
+  --primary: var(--color-teal-600); 
   --primary-foreground: var(--color-white); 
 
   --secondary: var(--color-gray-300);
@@ -27,9 +25,39 @@
   --destructive: var(--color-red-500); 
   --destructive-foreground: var(--color-white); 
 
-  --ring: var(--color-blue-400); 
+  --ring: var(--color-emerald-400); 
   --radius: 0.5rem; 
 
+  /* 🔹 New Interactive States */
+  --primary-hover: var(--color-teal-500);
+  --primary-focus: var(--color-teal-700);
+  --primary-disabled: var(--color-teal-300);
+
+  --secondary-hover: var(--color-gray-400);
+  --secondary-focus: var(--color-gray-500);
+  --secondary-disabled: var(--color-gray-200);
+
+  --accent-hover: var(--color-teal-500);
+  --accent-focus: var(--color-teal-700);
+  --accent-disabled: var(--color-teal-300);
+
+  /* 🔹 Gradients */
+  --background-gradient: linear-gradient(var(--background), var(--muted));
+
+  /* 🔹 Text Selection & Focus */
+  --color-selection: var(--primary);
+  --color-selection-background: var(--primary-foreground);
+  --color-focus-ring: var(--ring);
+
+  /* 🔹 Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 4px 8px rgba(0, 0, 0, 0.15);
+
+  /* 🔹 Scrollbars & Overlays */
+  --color-scrollbar: var(--muted);
+  --color-scrollbar-thumb: var(--border);
+  --color-overlay: rgba(0, 0, 0, 0.5);
 }
 
 .dark {
@@ -39,7 +67,8 @@
   --muted: var(--color-gray-700); 
   --muted-foreground: var(--color-gray-300); 
 
-  --card: var(--color-gray-800); 
+  /* --card: var(--color-teal-950);  */
+  --card: --alpha(var(--color-teal-900) / 20%); 
   --card-foreground: var(--color-gray-50); 
 
   --popover: var(--color-gray-800); 
@@ -48,27 +77,48 @@
   --border: var(--color-gray-700); 
   --input: var(--color-gray-800); 
 
-  --primary: var(--color-blue-400); 
+  --primary: var(--color-teal-300); 
   --primary-foreground: var(--color-gray-900); 
-  /* --secondary: var(--color-green-400); 
-  --secondary-foreground: var(--color-gray-900);  */
 
   --secondary: var(--color-gray-700); /* Matches dark mode aesthetic */
   --secondary-foreground: var(--color-gray-50); /* Readable contrast */
 
-  --accent: var(--color-teal-800); 
-  --accent-foreground: var(--color-gray-900); 
+  --accent: var(--color-teal-300); 
+  --accent-foreground: var(--color-teal-900); 
 
   --destructive: var(--color-red-400);
   --destructive-foreground: var(--color-gray-900);
 
-  --ring: var(--color-blue-800);
+  --ring: var(--color-emerald-800);
 
+  /* 🔹 Interactive States */
+  --primary-hover: var(--color-teal-500);
+  --primary-focus: var(--color-teal-700);
+  --primary-disabled: var(--color-teal-300);
 
-  
+  --secondary-hover: var(--color-gray-600);
+  --secondary-focus: var(--color-gray-500);
+  --secondary-disabled: var(--color-gray-800);
 
+  --accent-hover: var(--color-teal-700);
+  --accent-focus: var(--color-teal-900);
+  --accent-disabled: var(--color-teal-600);
 
-  
+  /* 🔹 Gradients */
+  --background-gradient: linear-gradient(var(--background), var(--muted));
+
+  /* 🔹 Text Selection & Focus */
+  --color-selection: var(--primary);
+  --color-selection-background: var(--primary-foreground);
+  --color-focus-ring: var(--ring);
+
+  /* 🔹 Shadows */
+  --shadow-sm: 0 1px 2px rgba(255, 255, 255, 0.05);
+  --shadow-md: 0 2px 4px rgba(255, 255, 255, 0.1);
+  --shadow-lg: 0 4px 8px rgba(255, 255, 255, 0.15);
+
+  /* 🔹 Scrollbars & Overlays */
+  --color-scrollbar: var(--muted);
+  --color-scrollbar-thumb: var(--border);
+  --color-overlay: rgba(255, 255, 255, 0.1);
 }
-
-

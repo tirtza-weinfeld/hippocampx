@@ -93,3 +93,18 @@ export const fetchFlashcards = cache(async (categoryName?: string): Promise<Term
             categoriesMap[categoryName]) : undefined) as Term[];
 });
 
+
+
+// export const getTerms = cache(async (categoryName?: string): Promise<Term[]> => {
+//     const categoriesMap = await getCategoriesMap();
+//     return await db.select().from(terms)
+//         .where(categoryName ? eq(terms.categoryId,
+//             categoriesMap[categoryName]) : undefined) as Term[];
+// });
+
+
+export const getTerms = cache(async (categoryName?: string): Promise<Term[]> => {
+    const category = categoryName ? (await getTermsCategoriesMap())[categoryName] : undefined;
+    return await db.select().from(terms)
+        .where(category ? eq(terms.categoryId, category) : undefined) as Term[];
+});

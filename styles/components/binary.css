@@ -1,0 +1,73 @@
+@import "tailwindcss";
+
+/* Theme tokens: colors, spacing, and container settings */
+@theme {
+  /* Colors (using oklch) */
+  --border: oklch(0.97 0 0);
+  --input: oklch(0.97 0 0);
+  --ring: oklch(0.6 0.2 210);
+  --background: oklch(0.99 0 0);
+  --foreground: oklch(0.1 0 0);
+  --primary: oklch(0.84 0.18 117.33);
+  --primary-foreground: oklch(0.92 0.19 114.08);
+  --secondary: oklch(0.75 0.15 200);
+  --secondary-foreground: oklch(0.9 0.1 200);
+  --destructive: oklch(0.65 0.2 10);
+  --destructive-foreground: oklch(0.9 0.1 10);
+  --muted: oklch(0.8 0 0);
+  --muted-foreground: oklch(0.95 0 0);
+  --accent: oklch(0.7 0.2 180);
+  --accent-foreground: oklch(0.95 0 0);
+  --card: oklch(0.99 0 0);
+  --card-foreground: oklch(0.1 0 0);
+  --popover: oklch(0.99 0 0);
+  --popover-foreground: oklch(0.1 0 0);
+
+  /* Container (for your layout utility) */
+  --container-padding: 2rem;
+  --container-2xl: 1400px;
+
+  /* Border radius */
+  --radius: 0.5rem;
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+}
+
+/* Keyframes for custom animations */
+@theme {
+  @keyframes accordion-down {
+    from { height: 0; }
+    to { height: var(--radix-accordion-content-height); }
+  }
+  @keyframes accordion-up {
+    from { height: var(--radix-accordion-content-height); }
+    to { height: 0; }
+  }
+  @keyframes bounce-slow {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+  }
+  @keyframes fade-in {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+  @keyframes slide-up {
+    0% { transform: translateY(20px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+  }
+}
+
+/* Animation tokens */
+@theme {
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+  --animate-bounce-slow: bounce-slow 3s ease-in-out infinite;
+  --animate-fade-in: fade-in 1s ease-out;
+  --animate-slide-up: slide-up 0.5s ease-out;
+}
+
+/* Backdrop blur token */
+@theme {
+  --backdrop-blur-xs: 2px;
+}

@@ -1,11 +1,11 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "@/styles/globals.css";
 import { ThemeProvider } from "@/components/theme/theme-provider";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/layout/app-sidebar";
-import { AppHeader } from "@/components/layout/app-header";
 import AppFooter from "@/components/layout/app-footer";
 import { cookies } from "next/headers";
+import { CustomTheme } from "@/components/theme/custom-theme";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,36 +31,39 @@ export default async function RootLayout({
 
   return (
     <html lang="en" suppressHydrationWarning >
-      <body className={`${geistSans.variable} ${geistMono.variable} ` }>
+      <body className={`${geistSans.variable} ${geistMono.variable} @container`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
         >
-          <SidebarProvider defaultOpen={defaultOpen}  >
+          <CustomTheme>
+            <SidebarProvider defaultOpen={defaultOpen}  >
+              <SidebarTrigger className="md:hidden absolute top-3 left-2  z-50 bg-sidebar rounded p-2" />
+              <AppSidebar
+                side="left"
+                variant="inset"
+                collapsible="icon"
+              />
 
-            <AppSidebar
-              side="left"
-              variant="inset"
-              collapsible="icon"
-            />
+              <SidebarInset >
 
-            <SidebarInset >
+                <div className="flex flex-col min-h-screen">
 
-              <div className="flex flex-col min-h-screen">
-        
-                <AppHeader />
-                <div className="mt-12  h-full w-full">
-                  {children}
+                  {/* <AppHeader /> */}
+                  {/* <div className="mt-12  h-full w-full"> */}
+                  <div className="  h-full w-full">
+                    {children}
+                  </div>
+
                 </div>
+                <AppFooter />
 
-              </div>
-              <AppFooter />
+              </SidebarInset>
 
-            </SidebarInset>
-
-          </SidebarProvider>
+            </SidebarProvider>
+          </CustomTheme>
         </ThemeProvider>
       </body>
     </html>

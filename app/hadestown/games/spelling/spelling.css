@@ -1,0 +1,60 @@
+/* Additional custom styles for the Spelling Challenge game */
+.railroad-pattern {
+  background-image: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 10px,
+    rgba(245, 158, 11, 0.15) 10px,
+    rgba(245, 158, 11, 0.15) 12px
+  );
+  background-size: 100px 100%;
+}
+
+.dark .railroad-pattern {
+  background-image: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 10px,
+    rgba(245, 158, 11, 0.25) 10px,
+    rgba(245, 158, 11, 0.25) 12px
+  );
+}
+
+/* Character-specific styles */
+.border-orpheus {
+  border-color: rgba(251, 191, 36, 0.8);
+}
+.border-eurydice {
+  border-color: rgba(239, 68, 68, 0.8);
+}
+.border-hermes {
+  border-color: rgba(59, 130, 246, 0.8);
+}
+.border-persephone {
+  border-color: rgba(34, 197, 94, 0.8);
+}
+.border-hades {
+  border-color: rgba(107, 114, 128, 0.8);
+}
+
+/* Accessible focus styles */
+button:focus-visible,
+div[tabindex="0"]:focus-visible {
+  outline: 3px solid rgba(251, 191, 36, 0.6);
+  outline-offset: 2px;
+}
+
+.dark button:focus-visible,
+.dark div[tabindex="0"]:focus-visible {
+  outline: 3px solid rgba(251, 191, 36, 0.7);
+  outline-offset: 2px;
+}
+
+/* Make touch targets bigger on mobile */
+@media (max-width: 640px) {
+  .touch-target {
+    min-height: 48px;
+    min-width: 48px;
+  }
+}
+

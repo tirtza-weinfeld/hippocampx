@@ -1,7 +1,8 @@
-import type { MDXComponents } from 'mdx/types';
-import React, { ComponentPropsWithoutRef } from 'react';
 import Link from 'next/link';
-// import { LinkIcon } from 'lucide-react';
+import React, { ComponentPropsWithoutRef } from 'react';
+// import { Link } from 'next-view-transitions';
+import { highlight } from 'sugar-high';
+// import CodeBlock from '@/components/notes/CodeBlock';
 type HeadingProps = ComponentPropsWithoutRef<'h1'>;
 type ParagraphProps = ComponentPropsWithoutRef<'p'>;
 type ListProps = ComponentPropsWithoutRef<'ul'>;
@@ -9,94 +10,46 @@ type ListItemProps = ComponentPropsWithoutRef<'li'>;
 type AnchorProps = ComponentPropsWithoutRef<'a'>;
 type BlockquoteProps = ComponentPropsWithoutRef<'blockquote'>;
 
-
-const components: MDXComponents = {
-  h1: (props: HeadingProps) => {
-
-    return (
-      <h1
-        className=" 
-      text-accent/90 font-extrabold mt-10 mb-4 text-2xl sm:text-[3.5rem] gradient-fade 
-        animate-fade-in [&_span]:block
-     
-        "
-
-        {...props}
-      />
-    )
-  },
-  h2: (props: HeadingProps) => {
-    // console.log(props)
-    return (
-      <h2
-        className={`text-secondary/50 font-bold mt-8 mb-3 text-3xl sm:[text-lte=400px]:text-xl    `}
-        {...props}
-      />
-    )
-  },
+const components = {
+  h1: (props: HeadingProps) => (
+    <h1 className="font-medium pt-12 mb-0 fade-in" {...props} />
+  ),
+  h2: (props: HeadingProps) => (
+    <h2 className="text-primary font-medium mt-8 mb-3" {...props} />
+  ),
   h3: (props: HeadingProps) => (
-    <h3
-      className="text-accent/80 font-semibold mt-4 mb-2 text-2xl sm:[text-lte=400px]:text-lg
-
-      "
-      {...props}
-    />
+    <h3 className="text-primary font-medium mt-8 mb-3" {...props} />
   ),
-  h4: (props: HeadingProps) => (
-    <h4
-      className="text-foreground/70 font-medium mt-5 mb-1 text-lg sm:[text-lte=400px]:text-base"
-      {...props}
-    />
-  ),
+  h4: (props: HeadingProps) => <h4 className="font-medium" {...props} />,
   p: (props: ParagraphProps) => (
-    <p
-      className="text-foreground/80 leading-relaxed mt-4 sm:[container-type=inline-size]:leading-loose"
-      {...props}
-    />
+    <p className="text-primary leading-snug" {...props} />
   ),
   ol: (props: ListProps) => (
-    <ol
-      className="list-decimal pl-5 space-y-3 text-primary/60 font-light sm:[container-type=inline-size]:space-y-2"
-      {...props}
-    />
+    <ol className="text-primary list-decimal pl-5 space-y-2" {...props} />
   ),
   ul: (props: ListProps) => (
-    <ul
-      className="list-disc pl-5 space-y-2 text-primary/60 font-light sm:[container-type=inline-size]:space-y-1"
-      {...props}
-    />
+    <ul className="text-primary list-disc pl-5 space-y-1" {...props} />
   ),
-  li: (props: ListItemProps) => (
-    <li className="pl-2 relative before:content-['•'] before:absolute before:-left-4 before:text-accent" {...props} />
-  ),
+  li: (props: ListItemProps) => <li className="pl-1" {...props} />,
   em: (props: ComponentPropsWithoutRef<'em'>) => (
-    <em className="font-semibold italic text-primary/70" {...props} />
+    <em className="font-medium" {...props} />
   ),
   strong: (props: ComponentPropsWithoutRef<'strong'>) => (
-    <strong className="font-bold text-accent/90" {...props} />
+    <strong className="font-medium" {...props} />
   ),
   a: ({ href, children, ...props }: AnchorProps) => {
-    const baseClass = 'underline text-blue-500 hover:text-blue-700 transition-colors';
+    const className = 'text-accent hover:text-accent/80';
     if (href?.startsWith('/')) {
       return (
-        <Link href={href} className={`${baseClass} focus-visible:ring`} {...props}>
+        <Link href={href} className={className} {...props}>
           {children}
         </Link>
       );
-    } if (href?.startsWith('#')) {
-      if (children) { 
-     
-        // if ( !children?.props?.className?.includes('icon icon-link')) {
-          // console.log('children', children)
-        // }
-      }
+    }
+    if (href?.startsWith('#')) {
       return (
-        <a href={href} className={baseClass} {...props}>
-
-          {children }
-          {/* {children?.props?.className?.includes('icon icon-link') && <LinkIcon className='w-4 h-4' />} */}
-
-
+        <a href={href} className={className} {...props}>
+          {children}
         </a>
       );
     }
@@ -105,55 +58,68 @@ const components: MDXComponents = {
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        className={`${baseClass} focus-visible:ring`}
+        className={className}
         {...props}
       >
         {children}
       </a>
     );
   },
+
+  // pre: (props: any) => {
+  //   console.log('props2', props);
+  //   return <pre {...props} />;
+  // },
+  code: ({children,meta,...props}:React.ComponentPropsWithoutRef<'code'> & {meta:any}) => {
+    // code: ({ children, ...props }: {children:any,props:any}) => {
+
+    // console.log('meta', meta);
+    // console.log('props1', props,meta);
+    // console.log('props1', meta);
+    const codeHTML = highlight(children as string);
+    return <code
+
+
+      dangerouslySetInnerHTML={{ __html: codeHTML }} {...props} />;
+  },
+  table: ({ data }: { data: { headers: string[]; rows: string[][] } }) =>{
+    console.log('data', data);
+    return(
+    <table className="bg-red-800">
+      <thead>
+        <tr className="bg-green-800">
+          {data?.headers?.map((header, index) => (
+            <th key={index}>{header}</th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {data?.rows?.map((row, index) => (
+          <tr key={index}>
+            {row?.map((cell, cellIndex) => (
+              <td key={cellIndex}>{cell}</td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+    )
+  },
   blockquote: (props: BlockquoteProps) => (
     <blockquote
-      className="relative text-lg font-light border-l-4 border-accent/30 pl-5 text-foreground/70 gradient-border 
-      animate-slide-in sm:[container-type=inline-size]:border-none sm:[container-query=lte=500px]:text-sm"
+      className="ml-[0.075em] border-l-3 border-accent/80 pl-4 text-secondary
+      bg-purple-800
+      scale-180
+      "
       {...props}
     />
   ),
-  code: ({ children, ...props }: ComponentPropsWithoutRef<'code'>) => (
-    <code
-      className="font-mono bg-foreground/10 px-2 py-1 rounded text-sm text-primary/70 gradient-code
-        sm:[container-type=inline-size]:text-xs"
-      {...props}
-    >
-      {children}
-    </code>
-  ),
-
-  table: (props: ComponentPropsWithoutRef<'table'>) => {
-    // console.log(props.children)
-    // const data = props.children
-    // console.log(JSON.stringify(data))
-    return (
-      <table {...props} className=' bg-foreground/10 rounded-lg p-4 m-4 
-    [&>thead]:text-accent
-    [&>thead>tr>th]:p-2
-       [&>thead>tr>th]:bg-accent/10
-
- text-center
-    [&>tbody>tr>td]:nth-1:bg-accent/10
-    [&>tbody>tr>td]:nth-1:text-accent
-    [&>tbody>tr>td]:border-b-2
-    [&>tbody>tr>td]:border-accent/40
-    [&>tbody>tr]:hover:bg-accent/10
-    [&>tbody>tr>td]:p-2
-
-    '>
-
-      </table>
-    )
-  },
 };
 
-export function useMDXComponents(): MDXComponents {
-  return { ...components };
+declare global {
+  type MDXProvidedComponents = typeof components;
+}
+
+export function useMDXComponents(): MDXProvidedComponents {
+  return components;
 }
