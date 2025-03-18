@@ -1,7 +1,7 @@
 "use client"
 
 import React from "react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { MusicIcon, BookIcon, PencilIcon, FlowerIcon, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -72,6 +72,27 @@ export function CharacterGuides() {
   // Handle modal open/close
   const openModal = (index: number) => setSelectedCharacter(index)
   const closeModal = () => setSelectedCharacter(null)
+
+  // Fix the useEffect for scroll observer
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("active")
+          }
+        })
+      },
+      { threshold: 0.1 },
+    )
+
+    const elements = document.querySelectorAll(".scroll-reveal")
+    elements.forEach((el) => observer.observe(el))
+
+    return () => {
+      elements.forEach((el) => observer.unobserve(el))
+    }
+  }, [])
 
   return (
     <div className="py-16 relative overflow-hidden rounded-2xl shadow-lg border border-primary/20 dark:border-amber-700/30">
@@ -244,8 +265,8 @@ function CharacterModal({
       />
 
       {/* Modal Content */}
-      <div className="fixed inset-0 z-[1001] flex items-center justify-center pointer-events-none p-4 overflow-y-auto">
-        <div className="my-auto mt-16 mb-8 w-full max-w-md">
+      <div className="fixed inset-0 z-[1001] flex items-center justify-center pointer-events-none  @xs:p-4 p-2 overflow-y-auto">
+        <div className="my-auto w-full max-w-md mx-auto">
           <motion.div
             role="dialog"
             aria-modal="true"
@@ -254,7 +275,7 @@ function CharacterModal({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="rounded-xl shadow-xl w-full max-w-md pointer-events-auto overflow-hidden bg-white dark:bg-gray-800 text-foreground dark:text-amber-100 border border-primary/10 dark:border-amber-700/20 backdrop-blur-sm"
+            className="rounded-xl shadow-xl w-full pointer-events-auto overflow-hidden bg-white dark:bg-gray-800 text-foreground dark:text-amber-100 border border-primary/10 dark:border-amber-700/20 backdrop-blur-sm"
           >
             {/* Header with gradient background */}
             <div className={`relative overflow-hidden rounded-t-xl ${gradientClass}`}>
@@ -268,11 +289,10 @@ function CharacterModal({
                 <X className="h-4 w-4" />
               </Button>
 
-              <div className="pt-8 pb-6 px-6 flex flex-col items-center justify-center">
+              <div className="pt-6 sm:pt-8 pb-4 sm:pb-6 px-4 sm:px-6 flex flex-col items-center justify-center">
                 <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-2 bg-white/20 shadow-inner backdrop-blur-sm border border-white/30">
-                  {React.cloneElement(character.icon, {
+                  {React.cloneElement(character.icon as React.ReactElement<{className: string}>, {
                     className: "h-8 w-8 text-white",
-                    "aria-hidden": true
                   })}
                 </div>
                 <h2 id={`${character.name}-title`} className="text-xl font-bold text-white mb-1">
@@ -283,7 +303,7 @@ function CharacterModal({
             </div>
 
             {/* Content */}
-            <div className="p-6 max-h-[calc(100vh-16rem)] overflow-y-auto custom-scrollbar">
+            <div className="p-4 sm:p-6 max-h-[60vh] sm:max-h-[calc(100vh-16rem)] overflow-y-auto custom-scrollbar">
               <div className="mb-6">
                 <h3 className={`text-lg font-semibold mb-3 flex items-center text-primary dark:text-amber-400`}>
                   <span
@@ -310,7 +330,7 @@ function CharacterModal({
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: index * 0.1 }}
-                      className="flex items-start gap-3 p-3 rounded-lg bg-gradient-to-br from-white/50 to-white/30 dark:from-gray-700/50 dark:to-gray-800/30 border border-primary/20 dark:border-amber-700/30 shadow-sm"
+                      className="flex items-start gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg bg-gradient-to-br from-white/50 to-white/30 dark:from-gray-700/50 dark:to-gray-800/30 border border-primary/20 dark:border-amber-700/30 shadow-sm text-sm sm:text-base"
                     >
                       <span
                         className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs mt-0.5 ${accentBgClass} ${accentTextClass}`}
@@ -325,7 +345,7 @@ function CharacterModal({
             </div>
 
             {/* Footer */}
-            <div className="p-4 flex justify-end border-t border-primary/20 dark:border-amber-700/30">
+            <div className="p-3 sm:p-4 flex justify-end border-t border-primary/20 dark:border-amber-700/30">
               <Button
                 onClick={onClose}
                 className="bg-gradient-to-r from-amber-500 to-amber-600 text-white hover:from-amber-600 hover:to-amber-700 dark:from-amber-600 dark:to-amber-700 dark:text-gray-900 dark:hover:from-amber-500 dark:hover:to-amber-600 shadow-md hover:shadow-lg transition-all duration-300"

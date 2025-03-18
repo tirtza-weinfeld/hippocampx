@@ -10,6 +10,7 @@ import { FunButton } from "@/components/binary/fun-button"
 import { motion, AnimatePresence } from "framer-motion"
 import BinaryMascot from "@/components/binary/binary-mascot"
 import { useCallback } from "react" // Add missing import
+
 // Lazy load components to improve initial load time
 const BinaryIntroduction = lazy(() => import("@/components/binary/binary-introduction"))
 const BinaryConverter = lazy(() => import("@/components/binary/binary-converter"))
@@ -103,10 +104,24 @@ export default function Home() {
   const [navOpen, setNavOpen] = useState(false)
   const [isPending, startTransition] = useTransition()
 
-  // Check if device is mobile
+  // Add startTransition to handleTabChange
+  const handleTabChange = useCallback(
+    (tab: string) => {
+      startTransition(() => {
+        setActiveTab(tab)
+      })
+    },
+    [startTransition],
+  )
+
+
+
+  // Fix the useEffect for mobile detection
   useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768)
+      startTransition(() => {
+        setIsMobile(window.innerWidth < 768)
+      })
     }
 
     checkMobile()
@@ -133,16 +148,6 @@ export default function Home() {
     preventDefaultTouchmoveEvent: true,
     trackMouse: false,
   })
-
-  // Use transition for tab changes to keep UI responsive
-  const handleTabChange = useCallback(
-    (tab: string) => {
-      startTransition(() => {
-        setActiveTab(tab)
-      })
-    },
-    [startTransition],
-  )
 
   return (
     <main
@@ -172,7 +177,7 @@ export default function Home() {
 
       <div className="container px-4 py-12 mx-auto max-w-6xl">
         <header className="text-center mb-12 relative">
-          <div className="absolute top-7 -left-2 md:left-50 lg:left-20 transform -translate-y-1/2 hidden md:block">
+          <div className="absolute top-7 -left-2 md:left-10 lg:left-45 transform -translate-y-1/2 hidden md:block">
             <BinaryMascot emotion="happy" size="md" />
           </div>
 
@@ -201,9 +206,7 @@ export default function Home() {
 
         <div className="relative z-10 backdrop-blur-sm bg-white/70 dark:bg-slate-900/70 rounded-2xl shadow-xl border border-white/20 dark:border-slate-800/50 p-4 md:p-8">
           <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-            <TabsList className="hidden md:flex w-full flex-wrap md:flex-nowrap mb-8 p-1.5 bg-blue-100/50 dark:bg-slate-800/50 rounded-xl backdrop-blur-sm overflow-hidden relative
-            h-13
-            ">
+            <TabsList className="h-13 hidden md:flex w-full flex-wrap md:flex-nowrap mb-8 p-1.5 bg-blue-100/50 dark:bg-slate-800/50 rounded-xl backdrop-blur-sm overflow-hidden relative">
               {/* Animated background for active tab */}
               <motion.div
                 className="absolute h-[calc(100%-0.75rem)] top-1.5 rounded-lg bg-gradient-to-r from-violet-500 to-blue-500 shadow-md z-0 pointer-events-none"
@@ -247,8 +250,7 @@ export default function Home() {
                 >
                   <TabsTrigger
                     value={tab.value}
-                    className={`w-full cursor-pointer h-12 md:h-14 text-base md:text-lg font-medium 
-                      rounded-lg relative z-10 transition-colors duration-300 hover:bg-blue-50/50 dark:hover:bg-blue-900/20 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:bg-transparent data-[state=active]:shadow-none ${isPending ? "opacity-70" : ""}`}
+                    className={`w-full h-12 md:h-14 text-base md:text-lg font-medium rounded-lg relative z-10 transition-colors duration-300 hover:bg-blue-50/50 dark:hover:bg-blue-900/20 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:bg-transparent data-[state=active]:shadow-none ${isPending ? "opacity-70" : ""}`}
                     onClick={() => {
                       if (activeTab !== tab.value) {
                         handleTabChange(tab.value)
@@ -266,7 +268,7 @@ export default function Home() {
                     data-value={tab.value}
                     style={{
                       // Override any default background styles
-                      background: tab.value === activeTab ? "transparent" : undefined,
+                      background: tab.value === activeTab ? "transparent" : undefined
                     }}
                     disabled={isPending}
                     aria-label={`Switch to ${tab.label} tab`} // Add aria-label for accessibility
@@ -303,7 +305,7 @@ export default function Home() {
               ))}
             </TabsList>
 
-            <AnimatePresence mode="sync">
+            <AnimatePresence mode="wait">
               {["learn", "convert", "explain", "practice", "fun", "play"].map((tabValue) => (
                 <TabsContent key={tabValue} value={tabValue} className="mt-4">
                   <motion.div
@@ -354,7 +356,7 @@ export default function Home() {
           </Tabs>
         </div>
 
-   
+     
       </div>
 
       {/* Background decorative elements */}

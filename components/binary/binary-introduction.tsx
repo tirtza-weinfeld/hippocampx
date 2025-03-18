@@ -1,16 +1,36 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useTransition, useOptimistic, useCallback } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { motion, AnimatePresence } from "framer-motion"
 import { ChevronRight, ChevronLeft } from "lucide-react"
-import BinaryMascot, { type MascotEmotion } from "@/components/binary/binary-mascot"
+import BinaryMascot, { type MascotEmotion } from "./binary-mascot"
 import confetti from "canvas-confetti"
-import { FunButton } from "@/components/binary/fun-button"
+import { FunButton } from "./fun-button"
+
+interface LessonState {
+  step: number
+  showCelebration: boolean
+  mascotEmotion: MascotEmotion
+}
 
 export default function BinaryIntroduction() {
-  const [step, setStep] = useState(0)
-  const [showCelebration, setShowCelebration] = useState(false)
+  // Base state
+  const [state, setState] = useState<LessonState>({
+    step: 0,
+    showCelebration: false,
+    mascotEmotion: "happy",
+  })
+
+  // Optimistic state for immediate UI updates
+  const [optimisticState, addOptimisticState] = useOptimistic(state, (current, newState: Partial<LessonState>) => ({
+    ...current,
+    ...newState,
+  }))
+
+  // Use transition for smoother navigation
+  const [isPending, startTransition] = useTransition()
+
   const [lessons] = useState([
     {
       title: "Meet Bitsy!",
@@ -231,7 +251,7 @@ export default function BinaryIntroduction() {
               >
                 1
               </motion.div>
-              <span>=</span>
+              <span>+</span>
               <motion.div
                 className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 dark:from-blue-500 dark:to-blue-700 text-white flex items-center justify-center font-bold shadow-md"
                 animate={{ scale: [1, 1.3, 1] }}
@@ -344,66 +364,146 @@ export default function BinaryIntroduction() {
     },
   ])
 
-  // Play sound effect when changing steps
+  // Show celebration at the end
   useEffect(() => {
-    // Show celebration at the end
-    if (step === lessons.length - 1) {
+    if (optimisticState.step === lessons.length - 1 && !optimisticState.showCelebration) {
       setTimeout(() => {
-        setShowCelebration(true)
-        confetti({
-          particleCount: 100,
-          spread: 70,
-          origin: { y: 0.6 },
+        // Wrap optimistic updates in startTransition
+        startTransition(() => {
+          // Optimistically update UI
+          addOptimisticState({
+            showCelebration: true,
+            mascotEmotion: "celebrating",
+          })
+
+          // Trigger confetti
+          confetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { y: 0.6 },
+          })
+
+          // Update actual state
+          setState((prev) => ({
+            ...prev,
+            showCelebration: true,
+            mascotEmotion: "celebrating",
+          }))
         })
       }, 1000)
-    } else {
-      setShowCelebration(false)
     }
-  }, [step, lessons.length])
+  }, [optimisticState.step, optimisticState.showCelebration, lessons.length, addOptimisticState, startTransition])
 
-  // Add this after the existing useEffect
+  const navigateToNext = useCallback(() => {
+    if (optimisticState.step < lessons.length - 1) {
+      // Wrap optimistic updates in startTransition
+      startTransition(() => {
+        // Optimistically update UI
+        addOptimisticState({
+          step: optimisticState.step + 1,
+          mascotEmotion: lessons[optimisticState.step + 1].mascot as MascotEmotion,
+        })
+      })
+
+      // Use transition for the actual state update
+      startTransition(() => {
+        setState((prev) => ({
+          ...prev,
+          step: prev.step + 1,
+          mascotEmotion: lessons[prev.step + 1].mascot as MascotEmotion,
+        }))
+      })
+    }
+  }, [optimisticState.step, lessons, addOptimisticState, startTransition])
+
+  const navigateToPrevious = useCallback(() => {
+    if (optimisticState.step > 0) {
+      // Wrap optimistic updates in startTransition
+      startTransition(() => {
+        // Optimistically update UI
+        addOptimisticState({
+          step: optimisticState.step - 1,
+          mascotEmotion: lessons[optimisticState.step - 1].mascot as MascotEmotion,
+        })
+      })
+
+      // Use transition for the actual state update
+      startTransition(() => {
+        setState((prev) => ({
+          ...prev,
+          step: prev.step - 1,
+          mascotEmotion: lessons[prev.step - 1].mascot as MascotEmotion,
+        }))
+      })
+    }
+  }, [optimisticState.step, lessons, addOptimisticState, startTransition])
+
+  const navigateToStep = useCallback(
+    (step: number) => {
+      if (step >= 0 && step < lessons.length) {
+        // Wrap optimistic updates in startTransition
+        startTransition(() => {
+          // Optimistically update UI
+          addOptimisticState({
+            step: step,
+            mascotEmotion: lessons[step].mascot as MascotEmotion,
+          })
+        })
+
+        // Use transition for the actual state update
+        startTransition(() => {
+          setState((prev) => ({
+            ...prev,
+            step: step,
+            mascotEmotion: lessons[step].mascot as MascotEmotion,
+          }))
+        })
+      }
+    },
+    [lessons, addOptimisticState, startTransition],
+  )
+
+  // Add keyboard navigation
   useEffect(() => {
     // Add keyboard navigation
     const handleKeyDown = (e: KeyboardEvent) => {
       // Left arrow key for previous
-      if (e.key === "ArrowLeft" && step > 0) {
-        setStep((prev) => prev - 1)
+      if (e.key === "ArrowLeft" && optimisticState.step > 0) {
+        navigateToPrevious()
       }
       // Right arrow key for next
-      else if (e.key === "ArrowRight" && step < lessons.length - 1) {
-        setStep((prev) => prev + 1)
+      else if (e.key === "ArrowRight" && optimisticState.step < lessons.length - 1) {
+        navigateToNext()
       }
       // Number keys 1-6 (or however many lessons)
       else if (/^[1-9]$/.test(e.key)) {
         const numKey = Number.parseInt(e.key)
         if (numKey <= lessons.length) {
-          setStep(numKey - 1)
+          navigateToStep(numKey - 1)
         }
       }
     }
 
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [step, lessons.length])
+  }, [optimisticState.step, lessons.length, navigateToNext, navigateToPrevious, navigateToStep])
 
-  const currentLesson = lessons[step]
+  const currentLesson = lessons[optimisticState.step]
 
   return (
     <Card className="w-full overflow-hidden border-0 shadow-xl bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm rounded-2xl">
       <CardContent className="pt-6 pb-6">
-        {/* Removed duplicate sound control button */}
-
         <AnimatePresence mode="wait">
           <motion.div
-            key={step}
+            key={optimisticState.step}
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
+            exit={{ opacity: 0, x: -20, transition: { duration: 0.2 } }} // Faster exit
             transition={{ duration: 0.3 }}
             className="flex flex-col items-center"
           >
             <div className="flex items-center mb-4">
-              <BinaryMascot emotion={currentLesson.mascot as MascotEmotion} size="sm" />
+              <BinaryMascot emotion={optimisticState.mascotEmotion} size="sm" />
               <h2 className="text-2xl md:text-3xl font-bold text-center ml-2 bg-clip-text text-transparent bg-gradient-to-r from-violet-600 to-blue-500">
                 {currentLesson.title}
               </h2>
@@ -420,7 +520,7 @@ export default function BinaryIntroduction() {
 
             {currentLesson.visual}
 
-            {showCelebration && (
+            {optimisticState.showCelebration && (
               <motion.div
                 className="absolute inset-0 pointer-events-none"
                 initial={{ opacity: 0 }}
@@ -457,73 +557,70 @@ export default function BinaryIntroduction() {
               </motion.div>
             )}
 
-            <div className="relative w-full mt-8 px-4 h-16">
-              {/* Fixed position buttons */}
-              <div className="absolute left-4 bottom-0">
+            <div className="relative w-full mt-8 px-4 sm:h-16 flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-0">
+              {/* Fixed position buttons - improved for mobile */}
+              <div className="w-full sm:w-auto sm:absolute sm:left-4 sm:bottom-0">
                 <motion.div
-                  whileHover={{ scale: step === 0 ? 1 : 1.08, y: step === 0 ? 0 : -5 }}
-                  whileTap={{ scale: step === 0 ? 1 : 0.92 }}
+                  whileHover={{ scale: optimisticState.step === 0 ? 1 : 1.08, y: optimisticState.step === 0 ? 0 : -5 }}
+                  whileTap={{ scale: optimisticState.step === 0 ? 1 : 0.92 }}
                   animate={{ rotate: [0, -1, 1, 0] }}
                   transition={{ rotate: { repeat: Number.POSITIVE_INFINITY, duration: 2 } }}
                 >
                   <FunButton
-                    variant={step === 0 ? "ghost" : "default"}
-                    onClick={() => {
-                      setStep((prev) => Math.max(0, prev - 1))
-                    }}
-                    disabled={step === 0}
+                    variant={optimisticState.step === 0 ? "ghost" : "default"}
+                    onClick={navigateToPrevious}
+                    disabled={optimisticState.step === 0 || isPending}
                     icon={<ChevronLeft className="mr-1 h-5 w-5" />}
                     iconPosition="left"
-                    className={`flex items-center px-6 py-4 text-lg`}
-                    bubbles={step !== 0}
+                    className={`flex items-center px-4 sm:px-6 py-3 sm:py-4 text-base sm:text-lg w-full sm:w-auto ${isPending ? "opacity-70" : ""}`}
+                    bubbles={optimisticState.step !== 0}
                     size="lg"
                     aria-label="Go to previous lesson"
                   >
-                    <span className={step === 0 ? "opacity-50" : ""}>Previous</span>
+                    <span className={optimisticState.step === 0 ? "opacity-50" : ""}>Previous</span>
                   </FunButton>
                 </motion.div>
               </div>
 
-              {/* Pagination indicators in the center */}
-              <div className="absolute left-1/2 transform -translate-x-1/2 bottom-0 flex space-x-2">
+              {/* Pagination indicators in the center - improved for mobile */}
+              <div className="flex space-x-2 order-first sm:order-none sm:absolute sm:left-1/2 sm:transform sm:-translate-x-1/2 sm:bottom-0">
                 {lessons.map((_, i) => (
                   <motion.button
                     key={i}
                     className={`h-3 w-3 rounded-full ${
-                      i === step
+                      i === optimisticState.step
                         ? "bg-gradient-to-r from-violet-400 to-blue-400 shadow-[0_0_5px_rgba(99,102,241,0.5)]"
                         : "bg-gray-300 dark:bg-gray-700"
                     }`}
-                    animate={i === step ? { scale: [1, 1.5, 1], y: [0, -2, 0] } : {}}
+                    animate={i === optimisticState.step ? { scale: [1, 1.5, 1], y: [0, -2, 0] } : {}}
                     transition={{ repeat: Number.POSITIVE_INFINITY, duration: 2 }}
-                    onClick={() => setStep(i)}
+                    onClick={() => navigateToStep(i)}
+                    disabled={isPending}
                     aria-label={`Go to lesson ${i + 1}`}
-                    aria-current={i === step ? "step" : undefined}
+                    aria-current={i === optimisticState.step ? "step" : undefined}
                   />
                 ))}
               </div>
 
-              {/* Next button fixed at right */}
-              <div className="absolute right-4 bottom-0">
+              {/* Next button fixed at right - improved for mobile */}
+              <div className="w-full sm:w-auto sm:absolute sm:right-4 sm:bottom-0">
                 <motion.div
                   whileHover={{
-                    scale: step === lessons.length - 1 ? 1 : 1.08,
-                    y: step === lessons.length - 1 ? 0 : -5,
+                    scale: optimisticState.step === lessons.length - 1 ? 1 : 1.08,
+                    y: optimisticState.step === lessons.length - 1 ? 0 : -5,
                   }}
-                  whileTap={{ scale: step === lessons.length - 1 ? 1 : 0.92 }}
+                  whileTap={{ scale: optimisticState.step === lessons.length - 1 ? 1 : 0.92 }}
                   animate={{ rotate: [0, 1, -1, 0] }}
                   transition={{ rotate: { repeat: Number.POSITIVE_INFINITY, duration: 2 } }}
                 >
                   <FunButton
-                    variant={step === lessons.length - 1 ? "ghost" : "default"}
-                    onClick={() => {
-                      setStep((prev) => Math.min(lessons.length - 1, prev + 1))
-                    }}
-                    disabled={step === lessons.length - 1}
+                    variant={optimisticState.step === lessons.length - 1 ? "ghost" : "default"}
+                    onClick={navigateToNext}
+                    disabled={optimisticState.step === lessons.length - 1 || isPending}
                     icon={<ChevronRight className="ml-1 h-5 w-5 relative z-10" />}
                     iconPosition="right"
-                    className={`flex items-center px-6 py-4 text-lg`}
-                    bubbles={step !== lessons.length - 1}
+                    className={`flex items-center px-4 sm:px-6 py-3 sm:py-4 text-base sm:text-lg w-full sm:w-auto ${isPending ? "opacity-70" : ""}`}
+                    bubbles={optimisticState.step !== lessons.length - 1}
                     size="lg"
                     aria-label="Go to next lesson"
                   >

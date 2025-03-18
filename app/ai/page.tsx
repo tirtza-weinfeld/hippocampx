@@ -71,10 +71,15 @@ export default function Home() {
 
         <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
           {/* Desktop Navigation */}
-          <TabsList className="hidden md:grid w-full grid-cols-5 mb-6 sticky top-4 z-50 shadow-lg bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-xl p-1">
-            <TabsTrigger
+          <TabsList className="hidden md:grid w-full grid-cols-5 mb-6 sticky top-4 z-50 shadow-lg bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-xl p-1 h-13
+          [&>*]:h-11
+          [&>*]:rounded-full
+          [&>*]:cursor-pointer
+          ">
+            <TabsTrigger 
               value="what-is-ai"
-              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-purple-500 data-[state=active]:text-white transition-all duration-300"
+              className=" data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-purple-500 
+              data-[state=active]:text-white transition-all duration-300"
               aria-label="What is AI section"
             >
               What is AI?
