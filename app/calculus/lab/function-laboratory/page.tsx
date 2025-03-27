@@ -464,7 +464,7 @@ export default function FunctionLaboratoryPage() {
             </div>
 
             <div className="flex justify-center mt-4">
-              <Link href="/games/function-transformer">
+              <Link href="/calculus/games/function-transformer">
                 <Button className="bg-gradient-to-r from-indigo-600 to-violet-600 text-white">
                   Try Function Transformer Game <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>

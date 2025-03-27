@@ -468,7 +468,7 @@ export default function LimitApproachPage() {
             </div>
 
             <div className="flex justify-center mt-4">
-              <Link href="/games/limit-explorer">
+              <Link href="/calculus/games/limit-explorer">
                 <Button className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white">
                   Try Limit Explorer Game <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>

@@ -557,7 +557,7 @@ export default function AreaBuilderPage() {
               </div>
 
               <div className="flex justify-center mt-4">
-                <Link href="/games/area-builder">
+                <Link href="/calculus/games/area-builder">
                   <Button className="bg-gradient-to-r from-green-600 to-emerald-600 text-white">
                     Try Area Builder Game <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>

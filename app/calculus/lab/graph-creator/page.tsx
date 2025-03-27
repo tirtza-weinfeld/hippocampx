@@ -876,7 +876,7 @@ export default function GraphCreatorPage() {
             </div>
 
             <div className="flex justify-center mt-4">
-              <Link href="/games/graph-creator">
+              <Link href="/calculus/games/graph-creator">
                 <Button className="bg-gradient-to-r from-amber-600 to-orange-600 text-white">
                   Try Graph Creator Game <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
