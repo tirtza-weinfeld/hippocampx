@@ -68,29 +68,29 @@ export function HotelGame() {
   }
 
   return (
-    <div className="rounded-2xl overflow-hidden bg-white dark:bg-neutral-800 shadow-lg border border-neutral-200 dark:border-neutral-700 relative">
+    <div className="rounded-2xl overflow-hidden bg-white dark:bg-gray-800 shadow-lg border border-gray-200 dark:border-gray-700 relative">
       {showTutorial && (
         <div className="absolute inset-0 z-10 bg-black/70 flex items-center justify-center p-4 modal-backdrop">
           <motion.div
-            className="bg-white dark:bg-neutral-800 p-6 rounded-xl max-w-md shadow-xl"
+            className="bg-white dark:bg-gray-800 p-6 rounded-xl max-w-md shadow-xl"
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.3 }}
             onClick={(e) => e.stopPropagation()}
           >
             <h3 className="text-xl font-bold mb-4 gradient-text gradient-fun">How Hilbert&apos;s Infinity Hotel Works</h3>
-            <p className="mb-3 text-neutral-800 dark:text-neutral-200">
+            <p className="mb-3 text-gray-800 dark:text-gray-200">
               Imagine a hotel with <strong>infinite</strong> rooms, numbered 1, 2, 3, and so on forever.
             </p>
-            <p className="mb-3 text-neutral-800 dark:text-neutral-200">
+            <p className="mb-3 text-gray-800 dark:text-gray-200">
               In this thought experiment, every room already has a guest. But here&apos;s the amazing part: we can still fit
               more guests!
             </p>
-            <p className="mb-3 text-neutral-800 dark:text-neutral-200">
+            <p className="mb-3 text-gray-800 dark:text-gray-200">
               When new guests arrive, we can ask each existing guest to move to a different room according to a specific
               rule. This frees up exactly the number of rooms we need.
             </p>
-            <p className="mb-3 text-neutral-800 dark:text-neutral-200">
+            <p className="mb-3 text-gray-800 dark:text-gray-200">
               This demonstrates a key property of infinity: adding a finite number to infinity gives you the same
               infinity!
             </p>
@@ -149,7 +149,7 @@ export function HotelGame() {
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-fun-purple via-fun-pink to-fun-orange text-center sm:text-left">
               Hilbert&apos;s Infinity Hotel
             </h2>
-            <p className="text-base sm:text-lg text-neutral-600 dark:text-neutral-300 mt-1 text-center sm:text-left">
+            <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300 mt-1 text-center sm:text-left">
               A magical hotel with infinite rooms to teach us about countable infinity!
             </p>
           </div>
@@ -476,7 +476,7 @@ export function HotelGame() {
 
           <div className="flex justify-center mt-8">
             <motion.button
-              className="px-6 py-3 rounded-full bg-gradient-to-r from-neutral-200 to-neutral-300 dark:from-neutral-700 dark:to-neutral-600 text-neutral-800 dark:text-white font-bold shadow-md"
+              className="px-6 py-3 rounded-full bg-gradient-to-r from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600 text-gray-800 dark:text-white font-bold shadow-md"
               onClick={handleReset}
               disabled={isAnimating}
               whileHover={{ scale: 1.05 }}

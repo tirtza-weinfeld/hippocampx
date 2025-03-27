@@ -35,7 +35,7 @@ function NumberTypesExplainer({ onClose }: { onClose: () => void }) {
         </h3>
         <motion.button
           onClick={onClose}
-          className="bg-neutral-200 dark:bg-neutral-700 rounded-full p-2"
+          className="bg-gray-200 dark:bg-gray-700 rounded-full p-2"
           whileHover={{ scale: 1.1, rotate: 10 }}
           whileTap={{ scale: 0.9 }}
         >
@@ -673,7 +673,7 @@ export function InfinityComparison() {
   ]
 
   return (
-    <div className="rounded-3xl overflow-hidden bg-white dark:bg-neutral-800 shadow-lg border border-neutral-200 dark:border-neutral-700">
+    <div className="rounded-3xl overflow-hidden bg-white dark:bg-gray-800 shadow-lg border border-gray-200 dark:border-gray-700">
       <div className="p-4 sm:p-6 md:p-8">
         <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
           <div className="relative flex justify-center sm:justify-start">
@@ -709,7 +709,7 @@ export function InfinityComparison() {
                 Comparing Infinities
               </span>
             </h2>
-            <p className="text-base sm:text-lg text-neutral-600 dark:text-neutral-300 mt-1 text-center sm:text-left">
+            <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300 mt-1 text-center sm:text-left">
               Let&apos;s see how some infinities are bigger than others!
             </p>
           </div>
@@ -916,7 +916,9 @@ export function InfinityComparison() {
 
       <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-indigo-950">
         <motion.button
-          className="w-full px-4 py-2 bg-gradient-to-r from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600 text-gray-800 dark:text-white rounded-full shadow-md flex items-center justify-center"
+          className="w-full px-4 py-2 bg-gradient-to-r
+           from-blue-200 to-indigo-300 dark:from-rose-700
+            dark:to-indigo-600 text-gray-800 dark:text-white rounded-full shadow-md flex items-center justify-center"
           onClick={handleReset}
           disabled={isAnimating}
           whileHover={{ scale: 1.02 }}

@@ -13,7 +13,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <div  className="@container">
+    <div className="@container binary ">
 
       {children}
 

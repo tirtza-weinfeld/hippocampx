@@ -83,7 +83,7 @@
   --secondary: var(--color-gray-700); /* Matches dark mode aesthetic */
   --secondary-foreground: var(--color-gray-50); /* Readable contrast */
 
-  --accent: var(--color-teal-300); 
+  --accent: var(--color-teal-600); 
   --accent-foreground: var(--color-teal-900); 
 
   --destructive: var(--color-red-400);

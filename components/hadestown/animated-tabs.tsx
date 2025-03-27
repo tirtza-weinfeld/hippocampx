@@ -26,22 +26,20 @@ export function useTabs() {
 
 // Main Tabs container
 interface TabsProps {
-  defaultValue: string
+  selectedTab: string
   onValueChange?: (value: string) => void
   children: React.ReactNode
   className?: string
   id?: string
 }
 
-export function AnimatedTabs({ defaultValue, onValueChange, children, className, id = "tabs" }: TabsProps) {
-  const [selectedTab, setSelectedTab] = useState<string>(defaultValue)
+export function AnimatedTabs({ selectedTab, onValueChange, children, className, id = "tabs" }: TabsProps) {
   const [tabsIds, setTabsIds] = useState<string[]>([])
   const [tabsLabels, setTabsLabels] = useState<Record<string, string>>({})
 
   // Handle external value changes
   const handleTabChange = useCallback(
     (value: string) => {
-      setSelectedTab(value)
       if (onValueChange) {
         onValueChange(value)
       }
@@ -121,7 +119,7 @@ export function AnimatedTabsList({ children, className, variant = "default" }: T
   }
 
   return (
-    <div className="relative mb-2 p-1 rounded-lg">
+    <div className="relative mb-2 p-1 rounded-lg ">
       <div
         className="absolute inset-0 bg-gradient-to-r from-amber-400 via-red-500 to-amber-600 rounded-lg opacity-30 dark:opacity-50"
         style={{ filter: "blur(8px)" }}
@@ -131,7 +129,7 @@ export function AnimatedTabsList({ children, className, variant = "default" }: T
         ref={listRef}
         role="tablist"
         className={cn(
-          "relative grid grid-flow-col auto-cols-fr text-center overflow-hidden w-full",
+          "relative [&>*]:hover:bg-amber-100/50 [&>*]:hover:text-amber-700 grid grid-flow-col auto-cols-fr text-center overflow-hidden w-full [&>*]:cursor-pointer",
           variantClasses[variant],
           className,
         )}
@@ -198,7 +196,8 @@ export function AnimatedTab({ id, children, className, disabled = false, icon }:
       {isSelected && (
         <motion.div
           layoutId="tab-indicator"
-          className="absolute inset-0 bg-gradient-to-r from-amber-500 to-red-500 dark:from-amber-600 dark:to-amber-700 rounded-md"
+          className="absolute inset-0 bg-gradient-to-r from-amber-500 to-red-500 
+          dark:from-amber-600 dark:to-amber-700 rounded-md"
           initial={false}
           transition={{ type: "spring", bounce: 0.15, duration: 0.5 }}
           style={{ zIndex: -1 }}

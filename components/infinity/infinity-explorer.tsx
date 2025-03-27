@@ -48,13 +48,13 @@ export function InfinityExplorer() {
       color: "bg-fun-pink",
       darkColor: "dark:bg-fun-pink/80",
     },
-    { id: "aleph", label: "Aleph", icon: VariableIcon, color: "bg-primary-500", darkColor: "dark:bg-primary-500/80" },
+    { id: "aleph", label: "Aleph", icon: VariableIcon, color: "bg-fun-orange", darkColor: "dark:bg-fun-orange/80" },
     {
       id: "absolute",
       label: "Absolute",
       icon: ZapIcon,
-      color: "bg-secondary-500",
-      darkColor: "dark:bg-secondary-500/80",
+      color: "bg-fun-yellow",
+      darkColor: "dark:bg-fun-yellow/80",
     },
   ]
 
@@ -85,7 +85,7 @@ export function InfinityExplorer() {
     <div className="space-y-6">
       {/* Desktop Navigation */}
       <div className="hidden md:block">
-        <nav className="bg-white dark:bg-neutral-800 rounded-3xl shadow-md p-2">
+        <nav className="bg-white dark:bg-gray-800 rounded-3xl shadow-md p-2">
           <div className="flex flex-wrap justify-center gap-2">
             {tabs.map((tab) => {
               const Icon = tab.icon
@@ -93,10 +93,13 @@ export function InfinityExplorer() {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id as Tab)}
-                  className={`relative px-4 py-2 rounded-full text-sm font-bold transition-all flex items-center ${
+                  className={`relative px-4 py-2 rounded-full text-sm font-bold transition-all flex items-center
+                    hover:bg-gray-100 dark:hover:bg-gray-700
+                    ${
                     activeTab === tab.id
-                      ? "text-white"
-                      : "text-neutral-600 dark:text-neutral-300 hover:text-primary-500 dark:hover:text-primary-300"
+                      ? "text-white "
+                      : "text-gray-600 dark:text-gray-300 hover:text-primary-500 dark:hover:text-primary-300"
+
                   }`}
                   aria-current={activeTab === tab.id ? "page" : undefined}
                 >
@@ -121,11 +124,11 @@ export function InfinityExplorer() {
 
       {/* Mobile Navigation */}
       <div className="md:hidden">
-        <div className="bg-white dark:bg-neutral-800 rounded-3xl shadow-md">
+        <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-md">
           <div className="flex justify-between items-center p-3">
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="p-2 text-neutral-600 dark:text-neutral-300 bg-neutral-100 dark:bg-neutral-700 rounded-full"
+              className="p-2 text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-full"
               aria-expanded={isMobileMenuOpen}
               aria-label="Toggle navigation menu"
             >
@@ -176,7 +179,7 @@ export function InfinityExplorer() {
                         className={`relative px-3 py-3 rounded-full text-sm font-bold transition-all flex items-center ${
                           activeTab === tab.id
                             ? "text-white"
-                            : "text-neutral-600 dark:text-neutral-300 bg-neutral-100 dark:bg-neutral-700"
+                            : "text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-700"
                         }`}
                         whileHover={{ scale: 1.03 }}
                         whileTap={{ scale: 0.97 }}

@@ -330,7 +330,9 @@ function CharacterModal({
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: index * 0.1 }}
-                      className="flex items-start gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg bg-gradient-to-br from-white/50 to-white/30 dark:from-gray-700/50 dark:to-gray-800/30 border border-primary/20 dark:border-amber-700/30 shadow-sm text-sm sm:text-base"
+                      className="flex items-start gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg bg-gradient-to-br 
+                      from-white/50 to-white/30 dark:from-gray-700/50 dark:to-gray-800/30
+                       border border-primary/20 dark:border-amber-700/30 shadow-sm text-sm sm:text-base"
                     >
                       <span
                         className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs mt-0.5 ${accentBgClass} ${accentTextClass}`}

@@ -1,0 +1,8 @@
+
+.ai {
+  --accent: var(--color-red-300);
+}
+
+.dark .ai {
+  --accent: var(--color-blue-800);
+}

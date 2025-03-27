@@ -146,7 +146,7 @@ export default function VocabularyGamesPage() {
   const [showGuide, setShowGuide] = useState(false)
 
   return (
-    <main className="min-h-screen py-8 bg-gradient-to-b from-amber-50/30 to-amber-100/20 dark:from-gray-900 dark:to-amber-950/30 text-foreground">
+    <main className="@container min-h-screen py-8 bg-gradient-to-b from-amber-50/30 to-amber-100/20 dark:from-gray-900 dark:to-amber-950/30 text-foreground">
       {/* Animated background elements */}
       <div className="fixed inset-0 pointer-events-none -z-10">
         <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 via-white/0 to-amber-500/5 dark:from-amber-500/10 dark:via-gray-900/0 dark:to-amber-500/10 animate-gradient-shift"></div>

@@ -3,8 +3,7 @@
 import { useState, useEffect, useRef, startTransition } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { motion, AnimatePresence } from "framer-motion"
-import BinaryMascot from "./binary-mascot"
-import { Lightbulb, RefreshCw,  ChevronLeft, ChevronRight, ArrowRight, ArrowDown } from "lucide-react"
+import { ArrowRight, ArrowDown, Lightbulb, RefreshCw, ChevronLeft, ChevronRight, Binary } from "lucide-react"
 // Replace the "Show Steps" buttons with FunButton components
 import { FunButton } from "./fun-button"
 import { Slider } from "@/components/ui/slider"
@@ -31,14 +30,13 @@ export default function BinaryExplanation() {
   }
   // State for the conversion values
   const [decimalValue, setDecimalValue] = useState(13)
-    const [binaryValue] = useState("1101")
+  const [binaryValue, setBinaryValue] = useState("1101")
 
   // State for showing steps
   const [showDecimalSteps, setShowDecimalSteps] = useState(false)
   const [showBinarySteps, setShowBinarySteps] = useState(false)
 
   // State for the walkthrough
-    const [, setCurrentStep] = useState(0)
   const [activeTab, setActiveTab] = useState("decimal-to-binary")
 
   // State for animation control
@@ -51,19 +49,18 @@ export default function BinaryExplanation() {
   const [customBinary, setCustomBinary] = useState("")
   const [binaryBits, setBinaryBits] = useState([0, 0, 0, 0, 0, 0, 0, 0])
 
-  // State for step-by-step navigation
-  const [manualStep, setManualStep] = useState<number | null>(null)
-  const [isStepMode, setIsStepMode] = useState(false)
-
   // Simplify the step-by-step navigation and make it more intuitive
-  const [currentStepIndex, setCurrentStepIndex] = useState(0)
   const [isStepByStep, setIsStepByStep] = useState(false)
   const [runningAnimation, setRunningAnimation] = useState(false)
+
+  // Replace the single currentStepIndex with separate step indices for each conversion type
+  const [decimalToBinaryStepIndex, setDecimalToBinaryStepIndex] = useState(0)
+  const [binaryToDecimalStepIndex, setBinaryToDecimalStepIndex] = useState(0)
 
   // Ref to store animation timeouts
   const animationTimeoutsRef = useRef<NodeJS.Timeout[]>([])
 
-  // Reset animation state when tab changes
+  // Reset step indices when tab changes
   useEffect(() => {
     // Clear any running animation timeouts
     animationTimeoutsRef.current.forEach((timeout) => clearTimeout(timeout))
@@ -74,10 +71,8 @@ export default function BinaryExplanation() {
     setHighlightedStep(null)
     setShowDecimalSteps(false)
     setShowBinarySteps(false)
-    setCurrentStep(0)
-    setManualStep(null)
-    setIsStepMode(false)
-    setRunningAnimation(false)
+    setDecimalToBinaryStepIndex(0)
+    setBinaryToDecimalStepIndex(0)
   }, [activeTab])
 
   // Update custom binary when bits change
@@ -161,9 +156,32 @@ export default function BinaryExplanation() {
     })
   }
 
+  // Update the startConversionAnimation function
+  // const   startConversionAnimation = () => {
+  //   // Clear any existing timeouts
+  //   animationTimeoutsRef.current.forEach((timeout) => clearTimeout(timeout))
+  //   animationTimeoutsRef.current = []
 
+  //   // Wrap all state updates in startTransition
+  //   startTransition(() => {
+  //     // Reset animation state
+  //     setHighlightedBit(null)
+  //     setHighlightedStep(null)
+  //     setDecimalToBinaryStepIndex(0)
+  //     setBinaryToDecimalStepIndex(0)
+  //     setRunningAnimation(false)
+  //     setIsStepByStep(true)
 
-  // Update the goToNextStep function to stop animation if it's running
+  //     // Show the steps
+  //     if (activeTab === "binary-to-decimal") {
+  //       setShowBinarySteps(true)
+  //     } else {
+  //       setShowDecimalSteps(true)
+  //     }
+  //   })
+  // }
+
+  // Update the goToNextStep function to use the appropriate step index
   const goToNextStep = () => {
     const steps = activeTab === "binary-to-decimal" ? binaryToDecimalSteps.steps : decimalToBinarySteps.steps
 
@@ -179,18 +197,24 @@ export default function BinaryExplanation() {
         setRunningAnimation(false)
       }
 
-      if (currentStepIndex < steps.length - 1) {
-        const nextIndex = currentStepIndex + 1
-        setCurrentStepIndex(nextIndex)
-        setHighlightedStep(nextIndex)
-        if (activeTab === "binary-to-decimal") {
+      if (activeTab === "binary-to-decimal") {
+        if (binaryToDecimalStepIndex < steps.length - 1) {
+          const nextIndex = binaryToDecimalStepIndex + 1
+          setBinaryToDecimalStepIndex(nextIndex)
+          setHighlightedStep(nextIndex)
           setHighlightedBit(nextIndex)
+        }
+      } else {
+        if (decimalToBinaryStepIndex < steps.length - 1) {
+          const nextIndex = decimalToBinaryStepIndex + 1
+          setDecimalToBinaryStepIndex(nextIndex)
+          setHighlightedStep(nextIndex)
         }
       }
     })
   }
 
-  // Update the goToPrevStep function to stop animation if it's running
+  // Update the goToPrevStep function to use the appropriate step index
   const goToPrevStep = () => {
     // Wrap state updates in startTransition
     startTransition(() => {
@@ -204,50 +228,34 @@ export default function BinaryExplanation() {
         setRunningAnimation(false)
       }
 
-      if (currentStepIndex > 0) {
-        const prevIndex = currentStepIndex - 1
-        setCurrentStepIndex(prevIndex)
-        setHighlightedStep(prevIndex)
-        if (activeTab === "binary-to-decimal") {
+      if (activeTab === "binary-to-decimal") {
+        if (binaryToDecimalStepIndex > 0) {
+          const prevIndex = binaryToDecimalStepIndex - 1
+          setBinaryToDecimalStepIndex(prevIndex)
+          setHighlightedStep(prevIndex)
           setHighlightedBit(prevIndex)
+        }
+      } else {
+        if (decimalToBinaryStepIndex > 0) {
+          const prevIndex = decimalToBinaryStepIndex - 1
+          setDecimalToBinaryStepIndex(prevIndex)
+          setHighlightedStep(prevIndex)
         }
       }
     })
   }
 
-  // Function to handle step navigation
-  // const goToNextStep = () => {
-  //   if (activeTab === "decimal-to-binary") {
-  //     const maxSteps = decimalToBinarySteps.steps.length
-  //     setManualStep((prev) => (prev === null || prev >= maxSteps - 1 ? 0 : prev + 1))
-  //   } else {
-  //     const maxSteps = binaryToDecimalSteps.steps.length
-  //     setManualStep((prev) => (prev === null || prev >= maxSteps - 1 ? 0 : prev + 1))
-  //   }
-  //   setIsStepMode(true)
-  // }
-
-  // const goToPrevStep = () => {
-  //   if (activeTab === "decimal-to-binary") {
-  //     const maxSteps = decimalToBinarySteps.steps.length
-  //     setManualStep((prev) => (prev === null || prev <= 0 ? maxSteps - 1 : prev - 1))
-  //   } else {
-  //     const maxSteps = binaryToDecimalSteps.steps.length
-  //     setManualStep((prev) => (prev === null || prev <= 0 ? maxSteps - 1 : prev - 1))
-  //   }
-  //   setIsStepMode(true)
-  // }
-
   return (
-    <Card className="w-full  border-0 shadow-xl bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm rounded-2xl overflow-hidden">
-      <CardContent className="pt-6 ">
+    <Card className="w-full border-0 shadow-xl bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm rounded-2xl overflow-hidden">
+      <CardContent className="pt-6">
         <div className="flex flex-col items-center">
           <div className="flex items-center mb-6">
             <motion.div
               animate={{ rotate: [0, 10, -10, 0] }}
               transition={{ repeat: Number.POSITIVE_INFINITY, duration: 3 }}
+              className="bg-gradient-to-r from-violet-500 to-blue-500 p-2 rounded-full text-white"
             >
-              <BinaryMascot emotion={"excited"} size="sm" />
+              <Binary className="h-6 w-6" />
             </motion.div>
             <h2 className="text-2xl md:text-3xl font-bold text-center ml-2 bg-clip-text text-transparent bg-gradient-to-r from-violet-600 to-blue-500">
               Binary Number Magic! ✨
@@ -354,7 +362,7 @@ export default function BinaryExplanation() {
                             whileHover={{ x: 5 }}
                             transition={{ type: "spring" }}
                             className={cn(
-                              (manualStep === 0 || manualStep === 1) && isStepMode
+                              (isStepByStep)
                                 ? "bg-blue-100/50 dark:bg-blue-900/30 p-2 rounded-lg font-medium"
                                 : "",
                             )}
@@ -365,7 +373,7 @@ export default function BinaryExplanation() {
                             whileHover={{ x: 5 }}
                             transition={{ type: "spring" }}
                             className={cn(
-                              (manualStep === 1 || manualStep === 2) && isStepMode
+                              (isStepByStep)
                                 ? "bg-blue-100/50 dark:bg-blue-900/30 p-2 rounded-lg font-medium"
                                 : "",
                             )}
@@ -376,7 +384,7 @@ export default function BinaryExplanation() {
                             whileHover={{ x: 5 }}
                             transition={{ type: "spring" }}
                             className={cn(
-                              (manualStep === 2 || manualStep === 3) && isStepMode
+                              (isStepByStep)
                                 ? "bg-blue-100/50 dark:bg-blue-900/30 p-2 rounded-lg font-medium"
                                 : "",
                             )}
@@ -387,7 +395,7 @@ export default function BinaryExplanation() {
                             whileHover={{ x: 5 }}
                             transition={{ type: "spring" }}
                             className={cn(
-                              manualStep !== null && manualStep > 3 && isStepMode
+                              isStepByStep
                                 ? "bg-blue-100/50 dark:bg-blue-900/30 p-2 rounded-lg font-medium"
                                 : "",
                             )}
@@ -407,7 +415,7 @@ export default function BinaryExplanation() {
                       transition={{ duration: 20, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
                       className="text-3xl font-mono font-bold text-blue-900 dark:text-blue-300 whitespace-pre-wrap"
                     >
-                      {"10101010\n01010101\n11001100\n00110011"}
+                      {"10101010 01010101 11001100 00110011"}
                     </motion.div>
                   </div>
                 </Card>
@@ -420,7 +428,7 @@ export default function BinaryExplanation() {
 
                     <div className="flex flex-col md:flex-row items-center justify-center gap-4 mb-6">
                       <motion.div
-                        className="text-3xl font-mono font-bold bg-gradient-to-br from-blue-500 to-violet-500 text-white px-6 py-3 rounded-xl shadow-md w-32 sm:w-auto text-center min-h-[64px] flex items-center justify-center"
+                        className="text-3xl font-mono font-bold bg-gradient-to-br from-blue-500 to-violet-500 text-white px-6 py-3 rounded-full shadow-md w-32 sm:w-auto text-center min-h-[64px] flex items-center justify-center"
                         whileHover={{ scale: 1.05 }}
                         animate={animateConversion ? { scale: [1, 1.2, 1], y: [0, -10, 0] } : {}}
                         transition={{ duration: 0.5 }}
@@ -445,7 +453,7 @@ export default function BinaryExplanation() {
                       </motion.div>
 
                       <motion.div
-                        className="text-3xl font-mono font-bold bg-gradient-to-br from-green-500 to-teal-500 text-white px-6 py-3 rounded-xl shadow-md w-32 sm:w-auto text-center min-h-[64px] flex items-center justify-center"
+                        className="text-3xl font-mono font-bold bg-gradient-to-br from-green-500 to-teal-500 text-white px-6 py-3 rounded-full shadow-md w-32 sm:w-auto text-center min-h-[64px] flex items-center justify-center"
                         whileHover={{ scale: 1.05 }}
                         animate={animateConversion ? { scale: [1, 1.2, 1], y: [0, -10, 0] } : {}}
                         transition={{ duration: 0.5, delay: 0.5 }}
@@ -472,47 +480,6 @@ export default function BinaryExplanation() {
                       >
                         {showDecimalSteps ? "Hide Steps" : "Show Steps"}
                       </FunButton>
-
-                      {showDecimalSteps && (
-                        <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-2 w-full">
-                          {/* <FunButton
-                            onClick={startConversionAnimation}
-                            variant="default"
-                            bubbles={true}
-                            icon={
-                              runningAnimation ? <Pause className="h-4 w-4 mr-2" /> : <Play className="h-4 w-4 mr-2" />
-                            }
-                            iconPosition="left"
-                            className="min-w-[120px] sm:min-w-[140px] w-full sm:w-auto"
-                          >
-                            {runningAnimation ? "Stop" : "Play"}
-                          </FunButton> */}
-
-                          <div className="flex justify-center gap-2 mt-2 sm:mt-0 w-full sm:w-auto">
-                            <FunButton
-                              onClick={goToPrevStep}
-                              variant="outline"
-                              disabled={currentStepIndex === 0}
-                              className="rounded-full w-20 h-12 p-0 flex items-center justify-center cursor-pointer"
-                              bubbles={false}
-                              size="icon"
-                            >
-                              <ChevronLeft className="h-6 w-6" />
-                            </FunButton>
-
-                            <FunButton
-                              onClick={goToNextStep}
-                              variant="outline"
-                              disabled={currentStepIndex >= decimalToBinarySteps.steps.length - 1}
-                              className="rounded-full w-20 h-12 p-0 flex items-center justify-center cursor-pointer"
-                              bubbles={false}
-                              size="icon"
-                            >
-                              <ChevronRight className="h-6 w-6" />
-                            </FunButton>
-                          </div>
-                        </div>
-                      )}
                     </div>
 
                     <AnimatePresence>
@@ -525,6 +492,116 @@ export default function BinaryExplanation() {
                           className="overflow-hidden"
                         >
                           <div className="bg-white dark:bg-slate-800 rounded-xl p-4 shadow-inner min-h-[300px]">
+                            {/* Completely redesigned step navigation */}
+                            <div className="flex justify-center mb-6">
+                              <div className="bg-gradient-to-r from-violet-100 to-blue-100 dark:from-violet-900/30 dark:to-blue-900/30 rounded-full p-1 flex items-center shadow-md">
+                                <motion.button
+                                  onClick={goToPrevStep}
+                                  disabled={decimalToBinaryStepIndex === 0}
+                                  className={`relative rounded-full p-3 ${
+                                    decimalToBinaryStepIndex === 0
+                                      ? "opacity-50 cursor-not-allowed"
+                                      : "bg-white dark:bg-slate-800 shadow-md hover:shadow-lg"
+                                  }`}
+                                  whileHover={decimalToBinaryStepIndex === 0 ? {} : { scale: 1.1 }}
+                                  whileTap={decimalToBinaryStepIndex === 0 ? {} : { scale: 0.9 }}
+                                  aria-label="Previous step"
+                                >
+                                  <ChevronLeft
+                                    className={`h-6 w-6 ${decimalToBinaryStepIndex === 0 ? "text-gray-400" : "text-blue-500"}`}
+                                  />
+
+                                  {/* Add bubbles for fun effect */}
+                                  {decimalToBinaryStepIndex > 0 && (
+                                    <motion.div
+                                      className="absolute -top-1 -right-1 w-3 h-3 bg-blue-400 rounded-full"
+                                      animate={{
+                                        y: [0, -10],
+                                        opacity: [1, 0],
+                                        scale: [0.8, 1.2],
+                                      }}
+                                      transition={{
+                                        duration: 1,
+                                        repeat: Number.POSITIVE_INFINITY,
+                                        repeatType: "loop",
+                                      }}
+                                    />
+                                  )}
+                                </motion.button>
+
+                                <div className="px-4 mx-2">
+                                  <div className="flex items-center">
+                                    <motion.div
+                                      className="w-12 h-12 bg-gradient-to-r from-violet-500 to-blue-500 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-md"
+                                      animate={{
+                                        scale: [1, 1.1, 1],
+                                        rotate: [0, 5, -5, 0],
+                                      }}
+                                      transition={{
+                                        duration: 3,
+                                        repeat: Number.POSITIVE_INFINITY,
+                                        repeatType: "loop",
+                                      }}
+                                    >
+                                      {decimalToBinaryStepIndex + 1}
+                                    </motion.div>
+                                    <div className="ml-3">
+                                      <div className="text-sm font-medium text-blue-600 dark:text-blue-400">Step</div>
+                                      <div className="text-xs text-blue-500 dark:text-blue-300">
+                                        of {decimalToBinarySteps.steps.length}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <motion.button
+                                  onClick={goToNextStep}
+                                  disabled={decimalToBinaryStepIndex >= decimalToBinarySteps.steps.length - 1}
+                                  className={`relative rounded-full p-3 ${
+                                    decimalToBinaryStepIndex >= decimalToBinarySteps.steps.length - 1
+                                      ? "opacity-50 cursor-not-allowed"
+                                      : "bg-white dark:bg-slate-800 shadow-md hover:shadow-lg"
+                                  }`}
+                                  whileHover={
+                                    decimalToBinaryStepIndex >= decimalToBinarySteps.steps.length - 1
+                                      ? {}
+                                      : { scale: 1.1 }
+                                  }
+                                  whileTap={
+                                    decimalToBinaryStepIndex >= decimalToBinarySteps.steps.length - 1
+                                      ? {}
+                                      : { scale: 0.9 }
+                                  }
+                                  aria-label="Next step"
+                                >
+                                  <ChevronRight
+                                    className={`h-6 w-6 ${
+                                      decimalToBinaryStepIndex >= decimalToBinarySteps.steps.length - 1
+                                        ? "text-gray-400"
+                                        : "text-blue-500"
+                                    }`}
+                                  />
+
+                                  {/* Add bubbles for fun effect */}
+                                  {decimalToBinaryStepIndex < decimalToBinarySteps.steps.length - 1 && (
+                                    <motion.div
+                                      className="absolute -top-1 -right-1 w-3 h-3 bg-blue-400 rounded-full"
+                                      animate={{
+                                        y: [0, -10],
+                                        opacity: [1, 0],
+                                        scale: [0.8, 1.2],
+                                      }}
+                                      transition={{
+                                        duration: 1,
+                                        repeat: Number.POSITIVE_INFINITY,
+                                        repeatType: "loop",
+                                      }}
+                                    />
+                                  )}
+                                </motion.button>
+                              </div>
+                            </div>
+
                             <div className="grid grid-cols-3 gap-2 font-mono text-center font-bold mb-2 text-sm">
                               <div className="bg-blue-100 dark:bg-blue-900/30 p-2 rounded">Division</div>
                               <div className="bg-blue-100 dark:bg-blue-900/30 p-2 rounded">Quotient</div>
@@ -579,14 +656,14 @@ export default function BinaryExplanation() {
 
                               <div className="flex flex-col items-center">
                                 <div className="flex space-x-1 mb-2">
-                                  {decimalToBinarySteps.steps.map((step, index, array) => {
+                                  {decimalToBinarySteps.steps.map((   _, index, array) => {
                                     // Reverse the array to display remainders from bottom to top
                                     const reverseIndex = array.length - 1 - index
                                     return (
                                       <motion.div
                                         key={reverseIndex}
                                         className={cn(
-                                          "w-10 h-10 rounded-lg flex items-center justify-center shadow-sm",
+                                          "w-10 h-10 rounded-full flex items-center justify-center shadow-sm",
                                           highlightedStep !== null &&
                                             array.length - 1 - highlightedStep === reverseIndex
                                             ? "bg-blue-300 dark:bg-blue-700"
@@ -629,31 +706,33 @@ export default function BinaryExplanation() {
                       <div className="mt-4 mb-6 bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl shadow-md">
                         <h4 className="font-bold mb-2 flex items-center">
                           <Lightbulb className="h-4 w-4 mr-2 text-yellow-500" />
-                          Step {currentStepIndex + 1} Explanation:
+                          Step {decimalToBinaryStepIndex + 1} Explanation:
                         </h4>
                         <p>
-                          {currentStepIndex === 0 ? (
+                          {decimalToBinaryStepIndex === 0 ? (
                             <>
                               We start by dividing <strong>{decimalValue}</strong> by 2. The result is{" "}
                               <strong>{Math.floor(decimalValue / 2)}</strong> with a remainder of{" "}
                               <strong>{decimalValue % 2}</strong>. This remainder (<strong>{decimalValue % 2}</strong>)
                               is our first binary digit.
                             </>
-                          ) : currentStepIndex < decimalToBinarySteps.steps.length - 1 ? (
+                          ) : decimalToBinaryStepIndex < decimalToBinarySteps.steps.length - 1 ? (
                             <>
-                              Now we divide <strong>{decimalToBinarySteps.steps[currentStepIndex].value}</strong> by 2.
-                              The result is <strong>{decimalToBinarySteps.steps[currentStepIndex].division}</strong>{" "}
+                              Now we divide{" "}
+                              <strong>{decimalToBinarySteps.steps[decimalToBinaryStepIndex].value}</strong> by 2. The
+                              result is <strong>{decimalToBinarySteps.steps[decimalToBinaryStepIndex].division}</strong>{" "}
                               with a remainder of{" "}
-                              <strong>{decimalToBinarySteps.steps[currentStepIndex].remainder}</strong>. This remainder
-                              is our next binary digit.
+                              <strong>{decimalToBinarySteps.steps[decimalToBinaryStepIndex].remainder}</strong>. This
+                              remainder is our next binary digit.
                             </>
                           ) : (
                             <>
-                              Finally, we divide <strong>{decimalToBinarySteps.steps[currentStepIndex].value}</strong>{" "}
-                              by 2. The result is{" "}
-                              <strong>{decimalToBinarySteps.steps[currentStepIndex].division}</strong> with a remainder
-                              of <strong>{decimalToBinarySteps.steps[currentStepIndex].remainder}</strong>. This is our
-                              last binary digit.
+                              Finally, we divide{" "}
+                              <strong>{decimalToBinarySteps.steps[decimalToBinaryStepIndex].value}</strong> by 2. The
+                              result is <strong>{decimalToBinarySteps.steps[decimalToBinaryStepIndex].division}</strong>{" "}
+                              with a remainder of{" "}
+                              <strong>{decimalToBinarySteps.steps[decimalToBinaryStepIndex].remainder}</strong>. This is
+                              our last binary digit.
                             </>
                           )}
                         </p>
@@ -672,7 +751,7 @@ export default function BinaryExplanation() {
                         <motion.button
                           key={value}
                           onClick={() => startTransition(() => setDecimalValue(value))}
-                          className={`px-4 py-2 rounded-lg font-medium ${
+                          className={`px-4 py-2 rounded-full font-medium ${
                             decimalValue === value
                               ? "bg-gradient-to-r from-blue-500 to-violet-500 text-white"
                               : "bg-white dark:bg-slate-800"
@@ -689,10 +768,15 @@ export default function BinaryExplanation() {
                     <div className="mt-6 bg-white/80 dark:bg-slate-800/80 p-4 rounded-xl shadow-inner">
                       <h4 className="font-bold mb-3 text-center">Or Try the Slider:</h4>
                       <Slider
-                        defaultValue={[decimalValue]}
+                        value={[decimalValue]}
                         max={255}
                         step={1}
-                        onValueChange={(value) => setDecimalValue(value[0])}
+                        onValueChange={(value) =>
+                          startTransition(() => {
+                            setDecimalValue(value[0])
+                            setBinaryValue(value[0].toString(2))
+                          })
+                        }
                         className="mb-4"
                       />
                       <div className="flex justify-between items-center">
@@ -723,7 +807,7 @@ export default function BinaryExplanation() {
                             <motion.button
                               key={index}
                               onClick={() => toggleBit(index)}
-                              className={`w-9 h-9 sm:w-12 sm:h-12 rounded-lg flex items-center justify-center text-base sm:text-xl font-mono font-bold shadow-md ${
+                              className={`w-9 h-9 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-base sm:text-xl font-mono font-bold shadow-md ${
                                 bit === 1
                                   ? `bg-gradient-to-br ${COLORS.binary.bit.one} text-white`
                                   : COLORS.binary.bit.zero + " text-slate-500"
@@ -750,7 +834,7 @@ export default function BinaryExplanation() {
                       <div className="flex flex-col sm:flex-row items-center gap-6 bg-slate-50/50 dark:bg-slate-800/50 p-6 rounded-xl w-full max-w-md mx-auto">
                         <div className="text-center flex-1">
                           <div className="text-sm mb-2 font-medium">Binary</div>
-                          <div className="text-xl font-mono font-bold bg-gradient-to-br from-blue-500 to-violet-500 text-white px-4 py-3 rounded-lg shadow-md">
+                          <div className="text-xl font-mono font-bold bg-gradient-to-br from-blue-500 to-violet-500 text-white px-4 py-3 rounded-full shadow-md">
                             {customBinary || "00000000"}
                           </div>
                         </div>
@@ -773,7 +857,7 @@ export default function BinaryExplanation() {
 
                         <div className="text-center flex-1">
                           <div className="text-sm mb-2 font-medium">Decimal</div>
-                          <div className="text-xl font-mono font-bold bg-gradient-to-br from-green-500 to-teal-500 text-white px-4 py-3 rounded-lg shadow-md">
+                          <div className="text-xl font-mono font-bold bg-gradient-to-br from-green-500 to-teal-500 text-white px-4 py-3 rounded-full shadow-md">
                             {customDecimal}
                           </div>
                         </div>
@@ -857,7 +941,7 @@ export default function BinaryExplanation() {
                       transition={{ duration: 20, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
                       className="text-3xl font-mono font-bold text-green-900 dark:text-green-300 whitespace-pre-wrap"
                     >
-                      {"01010101\n10101010\n00110011\n11001100"}
+                      {"01010101 10101010 00110011 11001100"}
                     </motion.div>
                   </div>
                 </Card>
@@ -870,7 +954,7 @@ export default function BinaryExplanation() {
 
                     <div className="flex flex-col md:flex-row items-center justify-center gap-4 mb-6">
                       <motion.div
-                        className="text-3xl font-mono font-bold bg-gradient-to-br from-green-500 to-teal-500 text-white px-6 py-3 rounded-xl shadow-md w-32 sm:w-auto text-center min-h-[64px] flex items-center justify-center"
+                        className="text-3xl font-mono font-bold bg-gradient-to-br from-green-500 to-teal-500 text-white px-6 py-3 rounded-full shadow-md w-32 sm:w-auto text-center min-h-[64px] flex items-center justify-center"
                         whileHover={{ scale: 1.05 }}
                         animate={animateConversion ? { scale: [1, 1.2, 1], y: [0, -10, 0] } : {}}
                         transition={{ duration: 0.5 }}
@@ -895,7 +979,7 @@ export default function BinaryExplanation() {
                       </motion.div>
 
                       <motion.div
-                        className="text-3xl font-bold bg-gradient-to-br from-blue-500 to-violet-500 text-white px-6 py-3 rounded-xl shadow-md w-32 sm:w-auto text-center min-h-[64px] flex items-center justify-center"
+                        className="text-3xl font-bold bg-gradient-to-br from-blue-500 to-violet-500 text-white px-6 py-3 rounded-full shadow-md w-32 sm:w-auto text-center min-h-[64px] flex items-center justify-center"
                         whileHover={{ scale: 1.05 }}
                         animate={animateConversion ? { scale: [1, 1.2, 1], y: [0, -10, 0] } : {}}
                         transition={{ duration: 0.5, delay: 0.5 }}
@@ -922,47 +1006,6 @@ export default function BinaryExplanation() {
                       >
                         {showBinarySteps ? "Hide Steps" : "Show Steps"}
                       </FunButton>
-
-                      {showBinarySteps && (
-                        <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-2 w-full">
-                          {/* <FunButton
-                            onClick={startConversionAnimation}
-                            variant="default"
-                            bubbles={true}
-                            icon={
-                              runningAnimation ? <Pause className="h-4 w-4 mr-2" /> : <Play className="h-4 w-4 mr-2" />
-                            }
-                            iconPosition="left"
-                            className="min-w-[120px] sm:min-w-[140px] w-full sm:w-auto"
-                          >
-                            {runningAnimation ? "Stop" : "Play"}
-                          </FunButton> */}
-
-                          <div className="flex justify-center gap-2 mt-2 @sm:mt-0 w-full @sm:w-auto">
-                            <FunButton
-                              onClick={goToPrevStep}
-                              variant="outline"
-                              disabled={currentStepIndex === 0}
-                              className="rounded-full w-12 h-12  p-0 flex items-center justify-center"
-                              bubbles={false}
-                              size="icon"
-                            >
-                              <ChevronLeft className="h-6 w-6" />
-                            </FunButton>
-
-                            <FunButton
-                              onClick={goToNextStep}
-                              variant="outline"
-                              disabled={currentStepIndex >= binaryToDecimalSteps.steps.length - 1}
-                              className="rounded-full w-12 h-12 p-0 flex items-center justify-center"
-                              bubbles={false}
-                              size="icon"
-                            >
-                              <ChevronRight className="h-6 w-6" />
-                            </FunButton>
-                          </div>
-                        </div>
-                      )}
                     </div>
 
                     <AnimatePresence>
@@ -975,6 +1018,116 @@ export default function BinaryExplanation() {
                           className="overflow-hidden"
                         >
                           <div className="bg-white dark:bg-slate-800 rounded-xl p-4 shadow-inner min-h-[300px]">
+                            {/* Completely redesigned step navigation for binary-to-decimal */}
+                            <div className="flex justify-center mb-6">
+                              <div className="bg-gradient-to-r from-green-100 to-teal-100 dark:from-green-900/30 dark:to-teal-900/30 rounded-full p-1 flex items-center shadow-md">
+                                <motion.button
+                                  onClick={goToPrevStep}
+                                  disabled={binaryToDecimalStepIndex === 0}
+                                  className={`relative rounded-full p-3 ${
+                                    binaryToDecimalStepIndex === 0
+                                      ? "opacity-50 cursor-not-allowed"
+                                      : "bg-white dark:bg-slate-800 shadow-md hover:shadow-lg"
+                                  }`}
+                                  whileHover={binaryToDecimalStepIndex === 0 ? {} : { scale: 1.1 }}
+                                  whileTap={binaryToDecimalStepIndex === 0 ? {} : { scale: 0.9 }}
+                                  aria-label="Previous step"
+                                >
+                                  <ChevronLeft
+                                    className={`h-6 w-6 ${binaryToDecimalStepIndex === 0 ? "text-gray-400" : "text-green-500"}`}
+                                  />
+
+                                  {/* Add bubbles for fun effect */}
+                                  {binaryToDecimalStepIndex > 0 && (
+                                    <motion.div
+                                      className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full"
+                                      animate={{
+                                        y: [0, -10],
+                                        opacity: [1, 0],
+                                        scale: [0.8, 1.2],
+                                      }}
+                                      transition={{
+                                        duration: 1,
+                                        repeat: Number.POSITIVE_INFINITY,
+                                        repeatType: "loop",
+                                      }}
+                                    />
+                                  )}
+                                </motion.button>
+
+                                <div className="px-4 mx-2">
+                                  <div className="flex items-center">
+                                    <motion.div
+                                      className="w-12 h-12 bg-gradient-to-r from-green-500 to-teal-500 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-md"
+                                      animate={{
+                                        scale: [1, 1.1, 1],
+                                        rotate: [0, 5, -5, 0],
+                                      }}
+                                      transition={{
+                                        duration: 3,
+                                        repeat: Number.POSITIVE_INFINITY,
+                                        repeatType: "loop",
+                                      }}
+                                    >
+                                      {binaryToDecimalStepIndex + 1}
+                                    </motion.div>
+                                    <div className="ml-3">
+                                      <div className="text-sm font-medium text-green-600 dark:text-green-400">Step</div>
+                                      <div className="text-xs text-green-500 dark:text-green-300">
+                                        of {binaryToDecimalSteps.steps.length}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <motion.button
+                                  onClick={goToNextStep}
+                                  disabled={binaryToDecimalStepIndex >= binaryToDecimalSteps.steps.length - 1}
+                                  className={`relative rounded-full p-3 ${
+                                    binaryToDecimalStepIndex >= binaryToDecimalSteps.steps.length - 1
+                                      ? "opacity-50 cursor-not-allowed"
+                                      : "bg-white dark:bg-slate-800 shadow-md hover:shadow-lg"
+                                  }`}
+                                  whileHover={
+                                    binaryToDecimalStepIndex >= binaryToDecimalSteps.steps.length - 1
+                                      ? {}
+                                      : { scale: 1.1 }
+                                  }
+                                  whileTap={
+                                    binaryToDecimalStepIndex >= binaryToDecimalSteps.steps.length - 1
+                                      ? {}
+                                      : { scale: 0.9 }
+                                  }
+                                  aria-label="Next step"
+                                >
+                                  <ChevronRight
+                                    className={`h-6 w-6 ${
+                                      binaryToDecimalStepIndex >= binaryToDecimalSteps.steps.length - 1
+                                        ? "text-gray-400"
+                                        : "text-green-500"
+                                    }`}
+                                  />
+
+                                  {/* Add bubbles for fun effect */}
+                                  {binaryToDecimalStepIndex < binaryToDecimalSteps.steps.length - 1 && (
+                                    <motion.div
+                                      className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full"
+                                      animate={{
+                                        y: [0, -10],
+                                        opacity: [1, 0],
+                                        scale: [0.8, 1.2],
+                                      }}
+                                      transition={{
+                                        duration: 1,
+                                        repeat: Number.POSITIVE_INFINITY,
+                                        repeatType: "loop",
+                                      }}
+                                    />
+                                  )}
+                                </motion.button>
+                              </div>
+                            </div>
+
                             <div className="grid grid-cols-4 gap-2 font-mono text-center font-bold mb-2 text-sm">
                               <div className="bg-green-100 dark:bg-green-900/30 p-2 rounded">Bit</div>
                               <div className="bg-green-100 dark:bg-green-900/30 p-2 rounded">Position</div>
@@ -1052,7 +1205,7 @@ export default function BinaryExplanation() {
                                         className={cn(
                                           "inline-block mx-1",
                                           isStepByStep &&
-                                            currentStepIndex >=
+                                            binaryToDecimalStepIndex >=
                                               binaryToDecimalSteps.steps.findIndex(
                                                 (s) => s.position === step.position,
                                               ) &&
@@ -1080,23 +1233,23 @@ export default function BinaryExplanation() {
                       <div className="mt-4 mb-6 bg-green-50 dark:bg-green-900/20 p-4 rounded-xl shadow-md">
                         <h4 className="font-bold mb-2 flex items-center">
                           <Lightbulb className="h-4 w-4 mr-2 text-yellow-500" />
-                          Step {currentStepIndex + 1} Explanation:
+                          Step {binaryToDecimalStepIndex + 1} Explanation:
                         </h4>
                         <p>
-                          {binaryToDecimalSteps.steps[currentStepIndex].bit === 1 ? (
+                          {binaryToDecimalSteps.steps[binaryToDecimalStepIndex].bit === 1 ? (
                             <>
-                              The digit at position {binaryToDecimalSteps.steps[currentStepIndex].position} is{" "}
+                              The digit at position {binaryToDecimalSteps.steps[binaryToDecimalStepIndex].position} is{" "}
                               <strong>1</strong>. So we multiply 1 × 2
-                              <sup>{binaryToDecimalSteps.steps[currentStepIndex].position}</sup> ={" "}
-                              <strong>{binaryToDecimalSteps.steps[currentStepIndex].value}</strong>. This value will be
-                              added to our total.
+                              <sup>{binaryToDecimalSteps.steps[binaryToDecimalStepIndex].position}</sup> ={" "}
+                              <strong>{binaryToDecimalSteps.steps[binaryToDecimalStepIndex].value}</strong>. This value
+                              will be added to our total.
                             </>
                           ) : (
                             <>
-                              The digit at position {binaryToDecimalSteps.steps[currentStepIndex].position} is{" "}
+                              The digit at position {binaryToDecimalSteps.steps[binaryToDecimalStepIndex].position} is{" "}
                               <strong>0</strong>. So we multiply 0 × 2
-                              <sup>{binaryToDecimalSteps.steps[currentStepIndex].position}</sup> = <strong>0</strong>.
-                              This adds nothing to our total.
+                              <sup>{binaryToDecimalSteps.steps[binaryToDecimalStepIndex].position}</sup> ={" "}
+                              <strong>0</strong>. This adds nothing to our total.
                             </>
                           )}
                         </p>
@@ -1114,8 +1267,13 @@ export default function BinaryExplanation() {
                       {[7, 10, 13, 21, 42, 100].map((value) => (
                         <motion.button
                           key={value}
-                          onClick={() => setDecimalValue(value)}
-                          className={`px-4 py-2 rounded-lg font-medium ${
+                          onClick={() =>
+                            startTransition(() => {
+                              setDecimalValue(value)
+                              setBinaryValue(value.toString(2))
+                            })
+                          }
+                          className={`px-4 py-2 rounded-full font-medium ${
                             decimalValue === value
                               ? "bg-gradient-to-r from-blue-500 to-violet-500 text-white"
                               : "bg-white dark:bg-slate-800"
@@ -1132,16 +1290,21 @@ export default function BinaryExplanation() {
                     <div className="mt-6 bg-white/80 dark:bg-slate-800/80 p-4 rounded-xl shadow-inner">
                       <h4 className="font-bold mb-3 text-center">Or Try the Slider:</h4>
                       <Slider
-                        defaultValue={[decimalValue]}
+                        value={[decimalValue]}
                         max={255}
                         step={1}
-                        onValueChange={(value) => setDecimalValue(value[0])}
+                        onValueChange={(value) =>
+                          startTransition(() => {
+                            setDecimalValue(value[0])
+                            setBinaryValue(value[0].toString(2))
+                          })
+                        }
                         className="mb-4"
                       />
                       <div className="flex justify-between items-center">
                         <div className="text-sm text-slate-500">0</div>
-                        <div className="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-violet-600">
-                          {decimalValue}
+                        <div className="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-600 to-teal-600">
+                          {decimalValue} → {decimalValue.toString(2)}
                         </div>
                         <div className="text-sm text-slate-500">255</div>
                       </div>
@@ -1166,7 +1329,7 @@ export default function BinaryExplanation() {
                             <motion.button
                               key={index}
                               onClick={() => toggleBit(index)}
-                              className={`w-9 h-9 sm:w-12 sm:h-12 rounded-lg flex items-center justify-center text-base sm:text-xl font-mono font-bold shadow-md ${
+                              className={`w-9 h-9 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-base sm:text-xl font-mono font-bold shadow-md ${
                                 bit === 1
                                   ? `bg-gradient-to-br ${COLORS.binary.bit.one} text-white`
                                   : COLORS.binary.bit.zero + " text-slate-500"
@@ -1193,7 +1356,7 @@ export default function BinaryExplanation() {
                       <div className="flex flex-col sm:flex-row items-center gap-6 bg-slate-50/50 dark:bg-slate-800/50 p-6 rounded-xl w-full max-w-md mx-auto">
                         <div className="text-center flex-1">
                           <div className="text-sm mb-2 font-medium">Binary</div>
-                          <div className="text-xl font-mono font-bold bg-gradient-to-br from-blue-500 to-violet-500 text-white px-4 py-3 rounded-lg shadow-md">
+                          <div className="text-xl font-mono font-bold bg-gradient-to-br from-blue-500 to-violet-500 text-white px-4 py-3 rounded-full shadow-md">
                             {customBinary || "00000000"}
                           </div>
                         </div>
@@ -1216,7 +1379,7 @@ export default function BinaryExplanation() {
 
                         <div className="text-center flex-1">
                           <div className="text-sm mb-2 font-medium">Decimal</div>
-                          <div className="text-xl font-mono font-bold bg-gradient-to-br from-green-500 to-teal-500 text-white px-4 py-3 rounded-lg shadow-md">
+                          <div className="text-xl font-mono font-bold bg-gradient-to-br from-green-500 to-teal-500 text-white px-4 py-3 rounded-full shadow-md">
                             {customDecimal}
                           </div>
                         </div>

@@ -67,7 +67,7 @@ export function CountingGame() {
   }
 
   return (
-    <div className="rounded-2xl overflow-hidden bg-white dark:bg-neutral-800 shadow-lg border border-neutral-200 dark:border-neutral-700">
+    <div className="rounded-2xl overflow-hidden bg-white dark:bg-gray-800 shadow-lg border border-gray-200 dark:border-gray-700">
       <div className="p-4 sm:p-6 md:p-8">
         <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
           <div className="relative flex justify-center sm:justify-start">
@@ -108,7 +108,7 @@ export function CountingGame() {
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-fun-purple via-fun-pink to-fun-orange text-center sm:text-left">
               The Counting Game
             </h2>
-            <p className="text-base sm:text-lg text-neutral-600 dark:text-neutral-300 mt-1 text-center sm:text-left">
+            <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300 mt-1 text-center sm:text-left">
               Let&apos;s count towards infinity! (Spoiler: We&apos;ll never get there!)
             </p>
           </div>
@@ -231,7 +231,7 @@ export function CountingGame() {
                   </svg>
                   <span className="ml-1">Slower</span>
                 </motion.button>
-                <div className="text-lg font-medium min-w-[100px] text-center bg-white dark:bg-neutral-700 px-4 py-2 rounded-full shadow-inner">
+                <div className="text-lg font-medium min-w-[100px] text-center bg-white dark:bg-gray-700 px-4 py-2 rounded-full shadow-inner">
                   Speed: {speed}x
                 </div>
                 <motion.button
@@ -258,9 +258,9 @@ export function CountingGame() {
         </div>
       </div>
 
-      <div className="p-4 border-t border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900">
+      <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
         <motion.button
-          className="w-full px-4 py-3 rounded-full bg-gradient-to-r from-neutral-200 to-neutral-300 dark:from-neutral-700 dark:to-neutral-600 text-neutral-800 dark:text-white font-bold shadow-md"
+          className="w-full px-4 py-3 rounded-full bg-gradient-to-r from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600 text-gray-800 dark:text-white font-bold shadow-md"
           onClick={handleReset}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}

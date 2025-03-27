@@ -15,7 +15,7 @@ export default function HadestownLayout({
   children: React.ReactNode
 }) {
   return (
-      <div className={cn("min-h-screen bg-background font-sans antialiased", )}>
+      <div className={cn("min-h-screen bg-background font-sans antialiased hadestown", )}>
         {/* Decorative elements */}
         <div className="fixed pointer-events-none inset-0 z-[-1] opacity-10 dark:opacity-20">
           <div className="absolute top-0 left-0 w-full h-64 music-pattern-svg"></div>

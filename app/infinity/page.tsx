@@ -6,7 +6,7 @@ import { motion } from "framer-motion"
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 via-white to-purple-50 dark:from-indigo-950 dark:via-purple-950 dark:to-violet-950 transition-colors duration-300">
+    <div className="min-h-screen  transition-colors duration-300">
       <header className="max-w-5xl mx-auto px-4 sm:px-6 pt-6 relative">
    
         <div className="pt-16 pb-6 text-center">

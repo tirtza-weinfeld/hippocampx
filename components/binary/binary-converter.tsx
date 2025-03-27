@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, startTransition } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -23,53 +23,69 @@ export default function BinaryConverter() {
     if (mode === "binary-to-decimal") {
       // Validate binary input
       if (!/^[01]*$/.test(binary)) {
-        setError("Binary can only contain 0s and 1s!")
+        startTransition(() => {
+          setError("Binary can only contain 0s and 1s!")
+        })
         return
       }
 
       if (binary === "") {
-        setDecimal(0)
-        setError("")
+        startTransition(() => {
+          setDecimal(0)
+          setError("")
+        })
         return
       }
 
-      setError("")
-      setDecimal(Number.parseInt(binary, 2))
+      startTransition(() => {
+        setError("")
+        setDecimal(Number.parseInt(binary, 2))
 
-      // Show sparkles animation on successful conversion
-      if (binary.length > 0) {
-        setShowSparkles(true)
-        setTimeout(() => setShowSparkles(false), 1000)
-      }
+        // Show sparkles animation on successful conversion
+        if (binary.length > 0) {
+          setShowSparkles(true)
+          setTimeout(() => setShowSparkles(false), 1000)
+        }
+      })
     } else {
       // Validate decimal input
       if (isNaN(decimal) || decimal < 0 || decimal > 255) {
-        setError("Please enter a number between 0 and 255")
+        startTransition(() => {
+          setError("Please enter a number between 0 and 255")
+        })
         return
       }
 
-      setError("")
-      setBinary(decimal.toString(2))
+      startTransition(() => {
+        setError("")
+        setBinary(decimal.toString(2))
 
-      // Show sparkles animation on successful conversion
-      if (decimal > 0) {
-        setShowSparkles(true)
-        setTimeout(() => setShowSparkles(false), 1000)
-      }
+        // Show sparkles animation on successful conversion
+        if (decimal > 0) {
+          setShowSparkles(true)
+          setTimeout(() => setShowSparkles(false), 1000)
+        }
+      })
     }
   }, [binary, decimal, mode])
 
   const handleBinaryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setBinary(e.target.value)
+    startTransition(() => {
+      setBinary(e.target.value)
+    })
   }
 
   const handleDecimalChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setDecimal(Number.parseInt(e.target.value) || 0)
+    startTransition(() => {
+      setDecimal(Number.parseInt(e.target.value) || 0)
+    })
   }
 
   const toggleMode = () => {
-    setMode(mode === "binary-to-decimal" ? "decimal-to-binary" : "binary-to-decimal")
-    setError("")
+    startTransition(() => {
+      setMode(mode === "binary-to-decimal" ? "decimal-to-binary" : "binary-to-decimal")
+      setError("")
+    })
   }
 
   return (
@@ -90,12 +106,12 @@ export default function BinaryConverter() {
 
           {/* Add a fun toggle button for the mode switch */}
           <motion.div
-            className="flex items-center space-x-2 mb-8 bg-blue-50/70 dark:bg-slate-800/70 p-4 rounded-full shadow-md"
+            className="flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-2 mb-8 bg-blue-50/70 dark:bg-slate-800/70 p-4 rounded-full shadow-md"
             whileHover={{ scale: 1.03 }}
           >
             <Label
               htmlFor="conversion-mode"
-              className={`${mode === "decimal-to-binary" ? "font-bold text-lg" : "text-base"} px-3 transition-all duration-300`}
+              className={`${mode === "decimal-to-binary" ? "font-bold text-lg bg-gradient-to-r from-violet-500 to-blue-500 text-transparent bg-clip-text" : "text-base"} px-3 transition-all duration-300`}
             >
               Decimal to Binary
             </Label>
@@ -103,11 +119,16 @@ export default function BinaryConverter() {
               id="conversion-mode"
               checked={mode === "binary-to-decimal"}
               onCheckedChange={toggleMode}
-              className="data-[state=checked]:bg-gradient-to-r data-[state=checked]:from-violet-500 data-[state=checked]:to-blue-500 data-[state=unchecked]:bg-slate-200 dark:data-[state=unchecked]:bg-slate-700 h-8 w-14"
+              className="
+              data-[state=checked]:bg-gradient-to-r 
+              data-[state=checked]:from-violet-500 
+              data-[state=checked]:to-blue-500 data-[state=unchecked]:bg-slate-200 
+              dark:data-[state=unchecked]:bg-slate-700
+               h-8 w-14"
             />
             <Label
               htmlFor="conversion-mode"
-              className={`${mode === "binary-to-decimal" ? "font-bold text-lg" : "text-base"} px-3 transition-all duration-300`}
+              className={`${mode === "binary-to-decimal" ? "font-bold text-lg bg-gradient-to-r from-violet-500 to-blue-500 text-transparent bg-clip-text" : "text-base"} px-3 transition-all duration-300`}
             >
               Binary to Decimal
             </Label>
@@ -141,7 +162,7 @@ export default function BinaryConverter() {
                           id="binary-input"
                           value={binary}
                           onChange={handleBinaryChange}
-                          className="text-xl font-mono text-center h-16 border-3 border-blue-200 dark:border-blue-900 focus:border-blue-500 focus:ring-3 focus:ring-blue-500 focus:ring-opacity-50 rounded-xl shadow-sm transition-all duration-300"
+                          className="text-xl font-mono text-center h-14 sm:h-16 border-3 border-blue-200 dark:border-blue-900 focus:border-blue-500 focus:ring-3 focus:ring-blue-500 focus:ring-opacity-50 rounded-xl shadow-sm transition-all duration-300"
                           placeholder="Enter 0s and 1s"
                           maxLength={8}
                         />
@@ -254,7 +275,7 @@ export default function BinaryConverter() {
                           type="number"
                           value={decimal}
                           onChange={handleDecimalChange}
-                          className="text-xl text-center h-16 border-3 border-blue-200 dark:border-blue-900 focus:border-blue-500 focus:ring-3 focus:ring-blue-500 focus:ring-opacity-50 rounded-xl shadow-sm"
+                          className="text-xl text-center h-14 sm:h-16 border-3 border-blue-200 dark:border-blue-900 focus:border-blue-500 focus:ring-3 focus:ring-blue-500 focus:ring-opacity-50 rounded-xl shadow-sm"
                           min={0}
                           max={255}
                         />

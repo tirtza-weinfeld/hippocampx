@@ -16,7 +16,7 @@ export function LearnSection({ onExplore }: LearnSectionProps) {
   return (
     <div className="space-y-8">
       <motion.div
-        className="rounded-2xl overflow-hidden bg-white dark:bg-neutral-800 shadow-lg border border-neutral-200 dark:border-neutral-700"
+        className="rounded-2xl overflow-hidden bg-white dark:bg-gray-800 shadow-lg border border-gray-200 dark:border-gray-700"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
@@ -63,7 +63,7 @@ export function LearnSection({ onExplore }: LearnSectionProps) {
               <h2 className="text-2xl md:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-fun-purple via-fun-pink to-fun-orange text-center sm:text-left">
                 What is Infinity?
               </h2>
-              <p className="text-base sm:text-lg text-neutral-600 dark:text-neutral-300 mt-1 text-center sm:text-left">
+              <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300 mt-1 text-center sm:text-left">
                 Infinity is not just a really big number - it&apos;s endless!
               </p>
             </div>
@@ -204,7 +204,7 @@ export function LearnSection({ onExplore }: LearnSectionProps) {
                   {[1, 2, 3, "...", "∞"].map((num, i) => (
                     <motion.div
                       key={i}
-                      className="w-10 h-10 bg-white rounded-full flex items-center justify-center font-bold text-black shadow-md"
+                      className="w-10 h-10 bg-white dark:bg-gray-700 dark:text-white rounded-full flex items-center justify-center font-bold text-black shadow-md"
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
                       transition={{ delay: i * 0.1, duration: 0.3 }}
@@ -279,7 +279,10 @@ export function LearnSection({ onExplore }: LearnSectionProps) {
 
           <div className="flex justify-center mt-8">
             <motion.button
-              className="px-8 py-4 rounded-full bg-gradient-to-r from-fun-purple via-fun-pink to-fun-orange text-white text-xl font-bold shadow-lg border-4 border-white dark:border-neutral-800"
+              className="px-8 py-4 
+              rounded-full bg-gradient-to-r from-fun-purple via-fun-pink to-fun-orange
+               text-white text-xl font-bold shadow-lg border-4 border-white 
+               dark:border-gray-800"
               onClick={onExplore}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}

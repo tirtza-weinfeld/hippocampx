@@ -300,7 +300,9 @@ export default function LyricsExplorerPage() {
   // const stiffness = 400
 
   return (
-    <main className="min-h-screen py-8 bg-gradient-to-b from-background to-background/90 text-foreground dark:from-gray-950 dark:to-amber-950/80">
+    // <main className="min-h-screen py-8 bg-gradient-to-b from-background to-background/90
+    //  text-foreground dark:from-gray-950 dark:to-amber-950/80">
+    <main className="@container min-h-screen py-8  ">
       {/* Animated gradient background */}
       <div className="fixed inset-0 pointer-events-none -z-10">
         <div className="absolute inset-0 dark:bg-gradient-to-br dark:from-amber-800/30 dark:via-gray-900 dark:to-red-800/30 animate-gradient"></div>
@@ -372,14 +374,16 @@ export default function LyricsExplorerPage() {
 
         <div className="flex justify-center mb-8">
           <AnimatedTabs
-            defaultValue={currentSong.id}
-            className="w-full max-w-3xl"
+            selectedTab={currentSong.id}
             onValueChange={(value) => {
               const newIndex = SONGS.findIndex((song) => song.id === value)
               if (newIndex !== -1) {
                 setCurrentSongIndex(newIndex)
               }
             }}
+            className="w-full max-w-3xl h-12"
+     
+         
           >
             {/* Ensure the tabs are working properly in both light and dark themes */}
 
@@ -389,18 +393,23 @@ export default function LyricsExplorerPage() {
                 <AnimatedTab
                   key={song.id}
                   id={song.id}
-                  className="relative px-4 py-2 rounded-lg text-sm font-medium transition-all text-amber-800 dark:text-amber-300 data-[state=active]:bg-white data-[state=active]:text-amber-700 data-[state=active]:shadow-sm dark:data-[state=active]:bg-gray-900 dark:data-[state=active]:text-amber-400"
-                  icon={
-                    song.id === currentSong.id ? (
-                      <motion.span
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        transition={{ type: "spring", stiffness: 500, damping: 15 }}
-                      >
-                        <MusicIcon className="h-4 w-4" />
-                      </motion.span>
-                    ) : null
-                  }
+                  className="relative px-4 py-2 
+                  rounded-lg text-sm font-medium transition-all
+                   text-amber-800 dark:text-amber-300 data-[state=active]:bg-white
+                    data-[state=active]:text-amber-700 data-[state=active]:shadow-sm 
+                    dark:data-[state=active]:bg-gray-900 
+                    dark:data-[state=active]:text-amber-400"
+                  // icon={
+                  //   song.id === currentSong.id ? (
+                  //     <motion.span
+                  //       initial={{ scale: 0 }}
+                  //       animate={{ scale: 1 }}
+                  //       transition={{ type: "spring", stiffness: 500, damping: 15 }}
+                  //     >
+                  //       <MusicIcon className="h-4 w-4" />
+                  //     </motion.span>
+                  //   ) : null
+                  // }
                 >
                   {song.title}
                 </AnimatedTab>

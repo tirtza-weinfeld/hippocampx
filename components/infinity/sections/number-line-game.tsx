@@ -76,7 +76,7 @@ export function NumberLineGame() {
             📏
           </motion.div>
           <div>
-            <h2 className="text-2xl md:text-3xl font-bold gradient-text gradient-primary">The Infinite Number Line</h2>
+            <h2 className="text-2xl md:text-3xl font-bold gradient-text gradient-indigo">The Infinite Number Line</h2>
             <p className="text-gray-600 dark:text-gray-300">
               Explore how there are infinitely many numbers between any two points!
             </p>
@@ -85,7 +85,7 @@ export function NumberLineGame() {
 
         <div className="space-y-6">
           <motion.div
-            className="bg-gradient-to-r from-secondary-100 to-secondary-200 dark:from-secondary-900/50 dark:to-secondary-800/50 p-6 rounded-xl mb-4 min-h-[4rem]"
+            className="bg-gradient-to-r from-fuchsia-100 to-fuchsia-200 dark:from-fuchsia-900/50 dark:to-fuchsia-800/50 p-6 rounded-xl mb-4 min-h-[4rem]"
             whileHover={{ scale: 1.02 }}
             transition={{ type: "spring", stiffness: 400, damping: 10 }}
           >
@@ -98,7 +98,7 @@ export function NumberLineGame() {
           <div className="relative h-24 flex flex-col items-center justify-center">
             {/* Number line */}
             <motion.div
-              className="w-full h-2 bg-gradient-to-r from-primary-400 to-secondary-400 rounded-full relative"
+              className="w-full h-2 bg-gradient-to-r from-indigo-400 to-fuchsia-400 rounded-full relative"
               animate={isZooming ? { scale: 1.5, opacity: 0.5 } : { scale: 1, opacity: 1 }}
               transition={{ duration: 0.3 }}
             >
@@ -201,7 +201,7 @@ export function NumberLineGame() {
 
             <div className="flex flex-wrap justify-between w-full mt-8 gap-2">
               <motion.button
-                className="btn btn-primary"
+                className="btn btn-indigo"
                 onClick={handleZoomIn}
                 disabled={zoom >= 4 || isZooming}
                 whileHover={{ scale: 1.05 }}
@@ -211,7 +211,7 @@ export function NumberLineGame() {
               </motion.button>
 
               <motion.button
-                className="btn btn-secondary"
+                className="btn btn-fuchsia"
                 onClick={handleTogglePoints}
                 disabled={isZooming}
                 whileHover={{ scale: 1.05 }}
@@ -221,7 +221,7 @@ export function NumberLineGame() {
               </motion.button>
 
               <motion.button
-                className="btn btn-primary"
+                className="btn btn-indigo"
                 onClick={handleZoomOut}
                 disabled={zoom <= 1 || isZooming}
                 whileHover={{ scale: 1.05 }}
@@ -233,7 +233,7 @@ export function NumberLineGame() {
           </div>
 
           <motion.div
-            className="bg-gradient-to-r from-primary-100 to-primary-200 dark:from-primary-900/50 dark:to-primary-800/50 p-6 rounded-xl"
+            className="bg-gradient-to-r from-indigo-100 to-indigo-200 dark:from-indigo-900/50 dark:to-indigo-800/50 p-6 rounded-xl"
             whileHover={{ scale: 1.02 }}
             transition={{ type: "spring", stiffness: 400, damping: 10 }}
           >
