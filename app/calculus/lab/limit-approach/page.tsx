@@ -332,12 +332,12 @@ export default function LimitApproachPage() {
   ]
 
   return (
-    <div className="@container px-4 py-8 md:py-12">
+    <div className="@container px-4 py-8 @md:py-12">
       <TutorialPopup steps={tutorialSteps} gameName="limit-approach" />
 
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 text-transparent bg-clip-text">
+          <h1 className="text-3xl font-bold tracking-tighter @sm:text-4xl  @md:text-5xl bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 text-transparent bg-clip-text">
             Limit Approach
           </h1>
           <p className="mt-4 text-xl text-muted-foreground">
@@ -347,7 +347,7 @@ export default function LimitApproachPage() {
 
         <Card className="border-2 border-border bg-background/60 backdrop-blur-sm">
           <CardHeader>
-            <CardTitle className="flex justify-between items-center">
+            <CardTitle className="flex justify-between items-center @md:flex-row flex-col gap-2">
               <span>Interactive Limit Visualization</span>
               <Tabs
                 defaultValue={functionType}
@@ -370,13 +370,14 @@ export default function LimitApproachPage() {
                 ref={canvasRef}
                 width={600}
                 height={400}
-                className="border border-muted rounded-lg bg-white dark:bg-gray-900"
+                className="border border-muted rounded-lg bg-white dark:bg-gray-900  @xs:w-full @lg:w-auto"
               />
             </div>
 
+      
             <div className="space-y-4">
               <div className="space-y-2">
-                <div className="flex justify-between">
+                <div className="flex justify-between @md:flex-row flex-col gap-2">
                   <div className="text-sm font-medium">Approach x = {approachValue}</div>
                 </div>
                 <Slider
@@ -388,10 +389,10 @@ export default function LimitApproachPage() {
                 />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 @md:grid-cols-2 gap-4 ">
                 <div className="space-y-2">
                   <div className="text-sm font-medium">Approach Direction:</div>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 @md:flex-row flex-col gap-2  ">
                     <Button
                       variant={approachDirection === "left" ? "default" : "outline"}
                       onClick={() => setApproachDirection("left")}
@@ -433,7 +434,7 @@ export default function LimitApproachPage() {
               </div>
 
               <div className="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-100 dark:border-purple-800">
-                <div className="grid md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 @md:grid-cols-2 gap-4">
                   <div>
                     <h3 className="text-sm font-medium mb-2">Function:</h3>
                     <div className="text-lg font-medium">
@@ -447,7 +448,7 @@ export default function LimitApproachPage() {
                     </div>
                   </div>
                 </div>
-                <div className="mt-4 grid md:grid-cols-2 gap-4">
+                <div className="mt-4 grid grid-cols-1 @md:grid-cols-2 gap-4">
                   <div>
                     <h3 className="text-sm font-medium mb-2">Function Value at x = {approachValue}:</h3>
                     <div className="text-lg font-medium">{functionValue}</div>

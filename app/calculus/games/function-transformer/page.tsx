@@ -532,7 +532,9 @@ export default function FunctionTransformerPage() {
 
                 <div className="flex justify-center">
                   <div className="w-full max-w-lg bg-white dark:bg-gray-800 rounded-lg overflow-hidden border-2 border-muted">
-                    <canvas ref={canvasRef} width={500} height={300} className="w-full h-auto" />
+                    <canvas ref={canvasRef} width={500} height={300} className="
+                    @xs:w-full @lg:w-auto
+                    " />
                   </div>
                 </div>
 

@@ -405,7 +405,7 @@ export default function LimitExplorerGame() {
                 ref={canvasRef}
                 width={600}
                 height={400}
-                className="w-full h-auto border border-gray-200 rounded-md bg-white"
+                className="w-full h-auto border border-gray-200 rounded-md bg-white @xs:w-full @lg:w-auto"
               />
               {showConfetti && <Confetti />}
             </div>

@@ -673,7 +673,7 @@ export default function GraphCreatorPage() {
                     ref={canvasRef}
                     width={600}
                     height={400}
-                    className="border border-muted rounded-lg bg-white dark:bg-gray-900"
+                    className="border border-muted rounded-lg bg-white dark:bg-gray-900 @xs:w-full @lg:w-auto"
                   />
                 </div>
 

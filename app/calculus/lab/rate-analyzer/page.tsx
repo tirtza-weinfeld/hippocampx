@@ -407,12 +407,12 @@ export default function RateAnalyzerPage() {
   ]
 
   return (
-    <div className="@container px-4 py-8 md:py-12">
+    <div className="@container px-4 py-8 @md:py-12">
       <TutorialPopup steps={tutorialSteps} gameName="rate-analyzer" />
 
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl bg-gradient-to-r from-red-600 via-pink-600 to-rose-600 text-transparent bg-clip-text">
+          <h1 className="text-3xl font-bold tracking-tighter @sm:text-4xl @md:text-5xl bg-gradient-to-r from-red-600 via-pink-600 to-rose-600 text-transparent bg-clip-text">
             Rate Analyzer
           </h1>
           <p className="mt-4 text-xl text-muted-foreground">
@@ -422,7 +422,7 @@ export default function RateAnalyzerPage() {
 
         <Card className="border-2 border-border bg-background/60 backdrop-blur-sm">
           <CardHeader>
-            <CardTitle className="flex justify-between items-center">
+            <CardTitle className="flex justify-between items-center @md:flex-row flex-col gap-2">
               <span>Interactive Rate of Change Visualization</span>
               <Tabs
                 defaultValue={simulationType}
@@ -445,12 +445,12 @@ export default function RateAnalyzerPage() {
                 ref={canvasRef}
                 width={600}
                 height={400}
-                className="border border-muted rounded-lg bg-white dark:bg-gray-900"
+                className="border border-muted rounded-lg bg-white dark:bg-gray-900 @xs:w-full @lg:w-auto"
               />
             </div>
 
-            <div className="relative h-20 bg-muted rounded-lg overflow-hidden border-2 border-muted">
-              <div className="absolute inset-0 bg-gradient-to-r from-background to-background/50 opacity-20" />
+            <div className="relative h-20 bg-muted rounded-lg overflow-hidden border-2 border-muted ">
+              <div className="absolute inset-0 bg-gradient-to-r from-background to-background/50 opacity-20 " />
               <motion.div
                 className="absolute bottom-0 left-0 w-12 h-8"
                 style={{ x: useTransform(x, [0, 100], ["0%", "100%"]) }}
@@ -471,7 +471,7 @@ export default function RateAnalyzerPage() {
             </div>
 
             <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 @md:grid-cols-3 gap-4">
                 <div className="space-y-2">
                   <div className="flex justify-between">
                     <div className="text-sm font-medium">Initial Position: {initialPosition}</div>
@@ -534,8 +534,8 @@ export default function RateAnalyzerPage() {
                 </div>
               </div>
 
-              <div className="flex justify-between">
-                <div className="flex gap-2">
+              <div className="grid grid-cols-1 @md:grid-cols-2 gap-2">
+                <div className="grid grid-cols-1  gap-2 @md:grid-cols-2">
                   <Button
                     variant="outline"
                     onClick={() => setShowVelocity(!showVelocity)}
@@ -560,7 +560,7 @@ export default function RateAnalyzerPage() {
                   </Button>
                 </div>
 
-                <div className="flex gap-2">
+                <div className="grid grid-cols-1 @md:grid-cols-2 gap-2">
                   <Button
                     variant={isPlaying ? "outline" : "default"}
                     onClick={() => setIsPlaying(!isPlaying)}
@@ -607,7 +607,7 @@ export default function RateAnalyzerPage() {
             </div>
 
             <div className="flex justify-center mt-4">
-              <Link href="/games/rate-master">
+              <Link href="/calculus/games/rate-master">
                 <Button className="bg-gradient-to-r from-red-600 to-pink-600 text-white">
                   Try Rate Master Game <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
