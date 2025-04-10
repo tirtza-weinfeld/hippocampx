@@ -4,8 +4,7 @@ import { useState, useEffect, useRef, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Home, HelpCircle, RefreshCw, Play, Pause } from "lucide-react"
-import Link from "next/link"
+import { RefreshCw, Play, Pause } from "lucide-react"
 import { Confetti } from "@/components/calculus/confetti"
 import { TutorialPopup } from "@/components/calculus/tutorial-popup"
 // import { RewardBadge } from "@/components/calculus/reward-badge"
@@ -136,7 +135,6 @@ export default function RateMasterGame() {
   const [gameState, setGameState] = useState<"playing" | "success" | "failed">("playing")
   const [score, setScore] = useState(0)
   const [showConfetti, setShowConfetti] = useState(false)
-  const [showTutorial, setShowTutorial] = useState(true)
   const [maxVelocity, setMaxVelocity] = useState(0)
   const [targetPosition, setTargetPosition] = useState<number | null>(null)
   const [attempts, setAttempts] = useState(0)
@@ -437,24 +435,47 @@ export default function RateMasterGame() {
     resetSimulation()
   }, [currentScenarioIndex, resetSimulation])
 
+
+  const steps = [
+    {
+      title: "How to Play Rate Master",
+      content: "Welcome to Rate Master! In this game, you'll learn about rates of change and how they relate to position, velocity, and acceleration.",
+      emoji: "🎮"
+    },
+    {
+      title: "Game Objective",
+      content: "Observe how objects move or change over time, and predict their future positions or velocities.",
+      emoji: "🎯"
+    },
+    {
+      title: "How to Play",
+      content: "Click 'Start' to begin the simulation. Watch how the object moves and how its position and velocity change. Answer the question by entering your prediction. Click 'Check' to see if your answer is correct.",
+      emoji: "🎲"
+    },
+    {
+      title: "Understanding the Graph",
+      content: "The blue line shows position over time. The red line shows velocity over time. The horizontal axis represents time. The vertical axis represents position or velocity.",
+      emoji: "📊"
+    },
+    {
+      title: "Remember",
+      content: "Velocity is the rate of change of position, and acceleration is the rate of change of velocity!",
+      emoji: "💡"
+    }
+  ]
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex justify-between items-center mb-6">
-        <Link href="/calculus/games">
-          <Button variant="outline" size="sm">
-            <Home className="mr-2 h-4 w-4" /> Back to Games
-          </Button>
-        </Link>
+    <div className="@container mx-auto px-4 py-8">
+      <div className="flex justify-center gap-4 items-center mb-6">
+
         <h1 className="text-3xl font-bold text-center bg-gradient-to-r from-amber-500 to-orange-400 text-transparent bg-clip-text">
           Rate Master
         </h1>
-        <Button variant="outline" size="sm" onClick={() => setShowTutorial(true)}>
-          <HelpCircle className="mr-2 h-4 w-4" /> Help
-        </Button>
+
+        <TutorialPopup steps={steps} gameName="rate-master" className="bg-amber-500/10 text-amber-500 border-amber-600/20" />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="md:col-span-2">
+      <div className="grid grid-cols-1 @md:grid-cols-3 gap-6">
+        <div className="@md:col-span-2">
           <Card className="p-4 shadow-md">
             <div className="mb-4">
               <h2 className="text-xl font-semibold">{currentScenario.title}</h2>
@@ -463,13 +484,15 @@ export default function RateMasterGame() {
 
             <div className="relative">
               <canvas
-                ref={canvasRef}
                 width={600}
                 height={400}
+                ref={canvasRef}
                 className="w-full h-auto border border-gray-200 rounded-md bg-white @xs:w-full @lg:w-auto"
               />
 
-              
+
+
+
               {showConfetti && <Confetti />}
             </div>
 
@@ -496,7 +519,7 @@ export default function RateMasterGame() {
                 </Button>
               </div>
 
-              <div className="p-4 border border-gray-200 rounded-md bg-gray-50">
+              <div className="p-4 border border-gray-200 rounded-md">
                 <h3 className="text-lg font-medium mb-2">Question:</h3>
                 <p className="mb-4">{currentScenario.question}</p>
 
@@ -586,38 +609,7 @@ export default function RateMasterGame() {
         </div>
       </div>
 
-      {showTutorial && (
-        <TutorialPopup
-          gameName="rate-master"
-          steps={[
-            {
-              title: "How to Play Rate Master",
-              content: "Welcome to Rate Master! In this game, you'll learn about rates of change and how they relate to position, velocity, and acceleration.",
-              emoji: "🎮"
-            },
-            {
-              title: "Game Objective",
-              content: "Observe how objects move or change over time, and predict their future positions or velocities.",
-              emoji: "🎯"
-            },
-            {
-              title: "How to Play",
-              content: "Click 'Start' to begin the simulation. Watch how the object moves and how its position and velocity change. Answer the question by entering your prediction. Click 'Check' to see if your answer is correct.",
-              emoji: "🎲"
-            },
-            {
-              title: "Understanding the Graph",
-              content: "The blue line shows position over time. The red line shows velocity over time. The horizontal axis represents time. The vertical axis represents position or velocity.",
-              emoji: "📊"
-            },
-            {
-              title: "Remember",
-              content: "Velocity is the rate of change of position, and acceleration is the rate of change of velocity!",
-              emoji: "💡"
-            }
-          ]}
-        />
-      )}
+
 
       {/* {showReward && (
         <RewardBadge

@@ -341,9 +341,14 @@ export default function SlopeRacerPage() {
 
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl bg-gradient-to-r from-blue-600 via-sky-600 to-teal-600 text-transparent bg-clip-text">
-            Slope Racer
-          </h1>
+          <div className="flex justify-center gap-4 items-center">
+            <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl bg-gradient-to-r from-blue-600 via-sky-600 to-teal-600 text-transparent bg-clip-text">
+              Slope Racer
+            </h1>
+            <TutorialPopup steps={tutorialSteps} gameName="slope-racer"
+             className="bg-teal-500/10 text-teal-600 border-teal-600/20" />
+          </div>
+
           <p className="mt-4 text-xl text-muted-foreground">Race against time to find the slopes of tangent lines!</p>
         </div>
 
@@ -352,7 +357,6 @@ export default function SlopeRacerPage() {
             <div className="flex justify-between items-center">
               <CardTitle className="flex items-center gap-2">
                 <span>Game Progress</span>
-                <TutorialPopup steps={tutorialSteps} gameName="slope-racer" />
                 {gameState !== "ready" && (
                   <span className="ml-2 text-sm badge-fun bg-gradient-to-r from-blue-500 to-sky-400 text-white">
                     Level {level}/{maxLevel}
@@ -517,11 +521,10 @@ export default function SlopeRacerPage() {
                       </div>
                     ) : (
                       <motion.div
-                        className={`p-4 rounded-lg ${
-                          gameState === "correct"
+                        className={`p-4 rounded-lg ${gameState === "correct"
                             ? "bg-green-100 dark:bg-green-900/30 border border-green-300 dark:border-green-700"
                             : "bg-red-100 dark:bg-red-900/30 border border-red-300 dark:border-red-700"
-                        }`}
+                          }`}
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                       >

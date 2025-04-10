@@ -249,13 +249,16 @@ export default function SlopeExplorerPage() {
 
   return (
     <div className="@container px-4 py-8 md:py-12">
-      <TutorialPopup steps={tutorialSteps} gameName="slope-explorer" />
 
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl bg-gradient-to-r from-blue-600 via-sky-600 to-teal-600 text-transparent bg-clip-text">
-            Slope Explorer
-          </h1>
+          <div className="flex justify-center gap-4 items-center mb-6">
+            <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl bg-gradient-to-r from-blue-600 via-sky-600 to-teal-600 text-transparent bg-clip-text">
+              Slope Explorer
+            </h1>
+            <TutorialPopup steps={tutorialSteps} gameName="slope-explorer" className="bg-blue-500/10 text-blue-500 border-blue-600/20" />
+
+          </div>
           <p className="mt-4 text-xl text-muted-foreground">
             Visualize derivatives and tangent lines on interactive curves
           </p>

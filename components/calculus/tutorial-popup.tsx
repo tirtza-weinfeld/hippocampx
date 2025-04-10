@@ -42,9 +42,7 @@ type TutorialPopupProps = {
 
   // Check if we've shown this tutorial before
   useEffect(() => {
-    console.log("TutorialPopup useEffect", gameName)
     const hasSeenTutorial = localStorage.getItem(`tutorial-${gameName}`) === "seen"
-    console.log("TutorialPopup useEffect", hasSeenTutorial, hasShown, autoShowOnce)
 
 
     if (autoShowOnce && !hasSeenTutorial && !hasShown) {
@@ -89,7 +87,7 @@ type TutorialPopupProps = {
       <Button
         variant="outline"
         size="icon"
-        className={`rounded-full h-12 w-12 ${className}`}
+        className={`rounded-full h-12 w-12  bg-purple-500/10  text-purple-600  border-purple-600/20 ${className}`}
         onClick={openPopup}
       >
         <HelpCircle className="h-6 w-6" />

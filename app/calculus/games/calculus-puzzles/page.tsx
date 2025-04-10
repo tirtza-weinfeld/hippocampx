@@ -6,8 +6,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
 import { Progress } from "@/components/ui/progress"
-import { Home, HelpCircle, ArrowRight, Check, X } from "lucide-react"
-import Link from "next/link"
+import { ArrowRight, Check, X } from "lucide-react"
 import { Confetti } from "@/components/calculus/confetti"
 import { TutorialPopup } from "@/components/calculus/tutorial-popup"
 import Image from "next/image"
@@ -185,7 +184,6 @@ export default function CalculusPuzzlesGame() {
   const [score, setScore] = useState(0)
   const [progress, setProgress] = useState(0)
   const [showConfetti, setShowConfetti] = useState(false)
-  const [showTutorial, setShowTutorial] = useState(true)
   // const [showReward, setShowReward] = useState(false)
   const [completedPuzzles, setCompletedPuzzles] = useState<number[]>([])
 
@@ -303,20 +301,43 @@ export default function CalculusPuzzlesGame() {
     }
   }
 
+  const steps = [
+    {
+      title: "How to Play Calculus Puzzles",
+      content: "Welcome to Calculus Puzzles! Test your calculus knowledge with fun puzzles across different topics.",
+      emoji: "🎮"
+    },
+    {
+      title: "Game Objective",
+      content: "Solve puzzles correctly to earn points and complete all categories.",
+      emoji: "🎯"
+    },
+    {
+      title: "How to Play",
+      content: "Read each question carefully, select your answer, and click 'Check Answer' to see if you're right. Learn from the explanation provided and move on to the next puzzle.",
+      emoji: "📝"
+    },
+    {
+      title: "Categories",
+      content: "Derivatives - Problems about rates of change and slopes\nIntegrals - Problems about areas and accumulation\nLimits - Problems about approaching values\nApplications - Real-world problems using calculus",
+      emoji: "📚"
+    },
+    {
+      title: "Learning Tips",
+      content: "Don't worry if you get a puzzle wrong - the explanation will help you learn!",
+      emoji: "💡"
+    }
+  ]
+
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="flex justify-between items-center mb-6">
-        <Link href="/calculus/games">
-          <Button variant="outline" size="sm">
-            <Home className="mr-2 h-4 w-4" /> Back to Games
-          </Button>
-        </Link>
+      <div className="flex justify-center gap-4 items-center mb-6">
+
         <h1 className="text-3xl font-bold text-center bg-gradient-to-r from-pink-500 to-rose-400 text-transparent bg-clip-text">
           Calculus Puzzles
         </h1>
-        <Button variant="outline" size="sm" onClick={() => setShowTutorial(true)}>
-          <HelpCircle className="mr-2 h-4 w-4" /> Help
-        </Button>
+        <TutorialPopup steps={steps} gameName="calculus-puzzles" className="bg-pink-500/10 text-pink-500 border-pink-600/20" />
+
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -359,8 +380,7 @@ export default function CalculusPuzzlesGame() {
                   {currentPuzzle.options.map((option, index) => (
                     <div
                       key={index}
-                      className={`flex items-center space-x-2 p-3 rounded-md border-2 border-border transition-all ${
-                        isAnswered
+                      className={`flex items-center space-x-2 p-3 rounded-md border-2 border-border transition-all ${isAnswered
                           ? index === currentPuzzle.correctAnswer
                             ? "border-green-500 bg-green-50"
                             : selectedAnswer === index
@@ -369,7 +389,7 @@ export default function CalculusPuzzlesGame() {
                           : selectedAnswer === index
                             ? "border-blue-500"
                             : "border-gray-200"
-                      }`}
+                        }`}
                       onClick={() => handleAnswerSelect(index)}
                     >
                       <RadioGroupItem value={index.toString()} id={`option-${index}`} disabled={isAnswered} />
@@ -388,8 +408,8 @@ export default function CalculusPuzzlesGame() {
 
                 {isAnswered && (
                   <div
-                    className={`mt-6 p-4 rounded-md ${isCorrect ?  "bg-green-50 border border-green-200" : "bg-red-50 border border-red-200"}`}
-                  >   
+                    className={`mt-6 p-4 rounded-md ${isCorrect ? "bg-green-50 border border-green-200" : "bg-red-50 border border-red-200"}`}
+                  >
                     <p className={`font-medium ${isCorrect ? "text-green-700" : "text-red-700"}`}>
                       {isCorrect ? "Correct!" : "Not quite right."}
                     </p>
@@ -489,38 +509,7 @@ export default function CalculusPuzzlesGame() {
         </div>
       </div>
 
-      {showTutorial && (
-        <TutorialPopup
-          steps={[
-            {
-              title: "How to Play Calculus Puzzles",
-              content: "Welcome to Calculus Puzzles! Test your calculus knowledge with fun puzzles across different topics.",
-              emoji: "🎮"
-            },
-            {
-              title: "Game Objective",
-              content: "Solve puzzles correctly to earn points and complete all categories.",
-              emoji: "🎯"
-            },
-            {
-              title: "How to Play",
-              content: "Read each question carefully, select your answer, and click 'Check Answer' to see if you're right. Learn from the explanation provided and move on to the next puzzle.",
-              emoji: "📝"
-            },
-            {
-              title: "Categories",
-              content: "Derivatives - Problems about rates of change and slopes\nIntegrals - Problems about areas and accumulation\nLimits - Problems about approaching values\nApplications - Real-world problems using calculus",
-              emoji: "📚"
-            },
-            {
-              title: "Learning Tips",
-              content: "Don't worry if you get a puzzle wrong - the explanation will help you learn!",
-              emoji: "💡"
-            }
-          ]}
-          gameName="calculus-puzzles"
-        />
-      )}
+
 
       {/* {showReward && (
         <RewardBadge

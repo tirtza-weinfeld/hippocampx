@@ -722,7 +722,7 @@ export default function GraphCreatorPage() {
             <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl @md:text-5xl bg-gradient-to-r from-amber-600 via-orange-600 to-yellow-600 text-transparent bg-clip-text">
               Graph Creator Challenge
             </h1>
-            <TutorialPopup steps={tutorialSteps} gameName="graph-creator" className="bg-background/50" />
+            <TutorialPopup steps={tutorialSteps} gameName="graph-creator" className="bg-amber-500/10 text-amber-500 border-amber-600/20" />
           </div>
           <p className="mt-4 text-xl text-muted-foreground">
             Create mathematical functions to match the target graphs and master calculus concepts

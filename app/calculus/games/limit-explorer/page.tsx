@@ -4,8 +4,7 @@ import { useState, useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Slider } from "@/components/ui/slider"
-import { ArrowLeft, ArrowRight, Home, RefreshCw, HelpCircle, Download, Share } from "lucide-react"
-import Link from "next/link"
+import { ArrowLeft, ArrowRight, RefreshCw, Download, Share } from "lucide-react"
 import { Confetti } from "@/components/calculus/confetti"
 import { TutorialPopup } from "@/components/calculus/tutorial-popup"
 // import { RewardBadge } from "@/components/calculus/reward-badge"
@@ -88,7 +87,6 @@ export default function LimitExplorerGame() {
   const [gameState, setGameState] = useState<"playing" | "success" | "failed">("playing")
   const [score, setScore] = useState(0)
   const [showConfetti, setShowConfetti] = useState(false)
-  const [showTutorial, setShowTutorial] = useState(true)
   // const [showReward, setShowReward] = useState(false)
   const [attempts, setAttempts] = useState(0)
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -373,25 +371,55 @@ export default function LimitExplorerGame() {
       alert("Failed to share the game state. The content has been copied to your clipboard instead.")
     }
   }
-
+  const steps = [
+    {
+      title: "Welcome to Limit Explorer!",
+      content: "In this game, you'll learn about limits in calculus.",
+      emoji: "🎮"
+    },
+    {
+      title: "Game Objective",
+      content: "Move your character as close as possible to the limit point (red dashed line) without crossing it.",
+      emoji: "🎯"
+    },
+    {
+      title: "Controls",
+      content: "Use the buttons to move left or right, the slider for fine adjustments, and click 'Check Limit' when you're close enough.",
+      emoji: "🎛️"
+    },
+    {
+      title: "Tips",
+      content: "The closer you get without crossing, the higher your score. Some functions have limits, others don't. Watch how the function value changes as you approach the limit point.",
+      emoji: "💡"
+    },
+    {
+      title: "Current Level",
+      content: level.tutorial,
+      emoji: "📊"
+    }
+  ]
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex justify-between items-center mb-6">
-        <Link href="/calculus/games">
-          <Button variant="outline" size="sm">
-            <Home className="mr-2 h-4 w-4" /> Back to Games
-          </Button>
-        </Link>
-        <h1 className="text-3xl font-bold text-center bg-gradient-to-r from-purple-500 to-blue-400 text-transparent bg-clip-text">
-          Limit Explorer
-        </h1>
-        <Button variant="outline" size="sm" onClick={() => setShowTutorial(true)}>
-          <HelpCircle className="mr-2 h-4 w-4" /> Help
-        </Button>
+    <div className="@container mx-auto px-4 py-8">
+      <div className="flex justify-center items-center mb-6">
+
+        <div className="flex justify-center gap-4 items-center">
+          <h1 className="text-3xl font-bold text-center bg-gradient-to-r from-purple-500 to-blue-400 text-transparent bg-clip-text">
+            Limit Explorer
+          </h1>
+
+          <TutorialPopup
+            steps={steps}
+            gameName="limit-explorer"
+            className="bg-purple-500/10 text-purple-500 border-purple-600/20"
+          />
+        </div>
+
+
+
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="md:col-span-2">
+        <div className="@md:col-span-2">
           <Card className="p-4 shadow-md">
             <div className="mb-4">
               <h2 className="text-xl font-semibold">
@@ -405,13 +433,14 @@ export default function LimitExplorerGame() {
                 ref={canvasRef}
                 width={600}
                 height={400}
-                className="w-full h-auto border border-gray-200 rounded-md bg-white @xs:w-full @lg:w-auto"
+                className="w-full h-auto border border-purple-200 rounded-md bg-white
+                @xs:w-full @lg:w-auto"
               />
               {showConfetti && <Confetti />}
             </div>
 
             <div className="mt-4 space-y-4">
-              <div className="flex justify-between items-center">
+              <div className="grid grid-cols-2 gap-2 @md:grid-cols-4">
                 <Button variant="outline" onClick={() => moveCharacter("left", 0.5)} disabled={gameState !== "playing"}>
                   <ArrowLeft className="mr-1 h-4 w-4" /> Big Step Left
                 </Button>
@@ -507,7 +536,7 @@ export default function LimitExplorerGame() {
                   <Share className="h-4 w-4" />
                 </Button>
               </div>
-              <Button variant="outline" className="w-full" onClick={resetGame}>
+              <Button variant="outline" className="w-full mt-4" onClick={resetGame}>
                 <RefreshCw className="mr-2 h-4 w-4" /> Restart Game
               </Button>
             </div>
@@ -515,38 +544,6 @@ export default function LimitExplorerGame() {
         </div>
       </div>
 
-      {showTutorial && (
-        <TutorialPopup
-          steps={[
-            {
-              title: "Welcome to Limit Explorer!",
-              content: "In this game, you'll learn about limits in calculus.",
-              emoji: "🎮"
-            },
-            {
-              title: "Game Objective",
-              content: "Move your character as close as possible to the limit point (red dashed line) without crossing it.",
-              emoji: "🎯"
-            },
-            {
-              title: "Controls",
-              content: "Use the buttons to move left or right, the slider for fine adjustments, and click 'Check Limit' when you're close enough.",
-              emoji: "🎛️"
-            },
-            {
-              title: "Tips",
-              content: "The closer you get without crossing, the higher your score. Some functions have limits, others don't. Watch how the function value changes as you approach the limit point.",
-              emoji: "💡"
-            },
-            {
-              title: "Current Level",
-              content: level.tutorial,
-              emoji: "📊"
-            }
-          ]}
-          gameName="limit-explorer"
-        />
-      )}
 
       {/* {showReward && (
         <RewardBadge

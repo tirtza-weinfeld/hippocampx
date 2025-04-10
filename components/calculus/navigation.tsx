@@ -142,7 +142,9 @@ export function Navigation() {
                 aria-label={isOpen ? "Close navigation menu" : "Open navigation menu"}
                 aria-expanded={isOpen}
                 aria-controls="mobile-navigation"
-                className="absolute top-3 right-5 rounded-full text-foreground h-10 w-10 rounded-full bg-purple-500/10"
+                className="absolute top-3 right-5
+                 rounded-full text-foreground h-10 w-10 
+                 rounded-full bg-purple-500/10"
               >
             
                   <div className="flex h-full w-full items-center justify-center rounded-full bg-purple-500/20 text-lg font-bold text-purple-600">

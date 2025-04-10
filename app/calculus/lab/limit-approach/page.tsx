@@ -333,13 +333,15 @@ export default function LimitApproachPage() {
 
   return (
     <div className="@container px-4 py-8 @md:py-12">
-      <TutorialPopup steps={tutorialSteps} gameName="limit-approach" />
 
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold tracking-tighter @sm:text-4xl  @md:text-5xl bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 text-transparent bg-clip-text">
-            Limit Approach
-          </h1>
+          <div className="flex justify-center gap-4 items-center mb-6">
+            <h1 className="text-3xl font-bold tracking-tighter @sm:text-4xl  @md:text-5xl bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 text-transparent bg-clip-text">
+              Limit Approach
+            </h1>
+            <TutorialPopup steps={tutorialSteps} gameName="limit-approach" className="bg-purple-500/10 text-purple-500 border-purple-600/20" />
+          </div>
           <p className="mt-4 text-xl text-muted-foreground">
             See what happens as x approaches different values in interactive functions
           </p>
@@ -374,7 +376,7 @@ export default function LimitApproachPage() {
               />
             </div>
 
-      
+
             <div className="space-y-4">
               <div className="space-y-2">
                 <div className="flex justify-between @md:flex-row flex-col gap-2">
