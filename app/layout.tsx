@@ -40,7 +40,7 @@ export default async function RootLayout({
         >
           <CustomTheme>
             <SidebarProvider defaultOpen={defaultOpen}  >
-              <SidebarTrigger className="md:hidden absolute top-3 left-2 z-50 bg-sidebar rounded p-3 rounded-full " />
+              <SidebarTrigger className="md:hidden fixed top-3 left-2 z-50 bg-sidebar rounded p-3 rounded-full " />
               
               <AppSidebar
                 side="left"

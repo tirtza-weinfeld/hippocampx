@@ -1062,7 +1062,7 @@ export default function GraphCreatorGamePage() {
                   </div>
                 </CardContent>
                 <CardFooter>
-                  <Link href="/lab/graph-creator" className="w-full">
+                  <Link href="/calculus/lab/graph-creator" className="w-full">
                     <Button variant="outline" className="w-full">
                       Try Free Graph Creator <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
