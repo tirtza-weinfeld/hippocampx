@@ -310,13 +310,16 @@ export default function FunctionLaboratoryPage() {
 
   return (
     <div className="@container px-4 py-8 @md:py-12">
-      <TutorialPopup steps={tutorialSteps} gameName="function-laboratory" />
 
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl bg-gradient-to-r from-indigo-600 via-violet-600 to-purple-600 text-transparent bg-clip-text">
-            Function Laboratory
-          </h1>
+          <div className="flex justify-center gap-4 items-center mb-6">
+            <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl bg-gradient-to-r from-indigo-600 via-violet-600 to-purple-600 text-transparent bg-clip-text">
+              Function Laboratory
+            </h1>
+            <TutorialPopup steps={tutorialSteps} gameName="function-laboratory" className="bg-indigo-500/10 text-indigo-500 border-indigo-600/20" />
+
+          </div>
           <p className="mt-4 text-xl text-muted-foreground">
             Build, transform, and analyze functions to see calculus in action
           </p>
