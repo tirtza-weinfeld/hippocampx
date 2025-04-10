@@ -2,7 +2,7 @@ import type React from "react"
 import { Navigation } from "@/components/calculus/navigation"
 import { Mascot } from "@/components/calculus/mascot"
 import type { Metadata } from "next"
-// import { SparklesCore } from "@/components/calculus/ui/sparkles"
+import { SparklesCore } from "@/components/calculus/ui/sparkles"
 
 export const metadata: Metadata = {
   title: "CalKids - Calculus Adventures for Young Minds",
@@ -15,14 +15,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <div className=" @container calculus  bg-background @lg:px-20" >
-          <Navigation />
-          {children}
-          <Mascot
-            message="Welcome to CalKids! I'm Newton, your calculus guide. Let's explore the fascinating world of change and motion together!"
-            character="newton"
-          />
-      {/* <div className="relative flex min-h-screen flex-col">
+    <div className=" @container calculus min-h-screen bg-background">
+      <div className="relative flex min-h-screen flex-col">
         <div className="absolute inset-0 z-0">
           <div className="relative h-full w-full">
             <SparklesCore
@@ -44,7 +38,7 @@ export default function RootLayout({
             character="newton"
           />
         </div>
-      </div> */}
+      </div>
     </div>
   )
 }
