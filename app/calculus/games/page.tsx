@@ -2,7 +2,7 @@
 import Link from "next/link"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { TrendingUp, Layers, ActivityIcon, PlayCircle, ArrowDownUp, Brain, History } from "lucide-react"
+import { TrendingUp, Layers, ActivityIcon, PlayCircle, ArrowDownUp, Brain, History, LineChart } from "lucide-react"
 import { PageTransition } from "@/components/calculus/page-transition"
 
 export default function GamesPage() {
@@ -13,7 +13,7 @@ export default function GamesPage() {
       icon: <TrendingUp className="h-6 w-6" />,
       href: "/calculus/games/slope-racer",
       color: "from-blue-500 to-sky-400",
-      image: "/games/slope-racer.png",
+      image: "/calculus/games/slope-racer.png",
       // age: "Ages 10-14",
     },
     {
@@ -22,7 +22,7 @@ export default function GamesPage() {
       icon: <Layers className="h-6 w-6" />,
       href: "/calculus/games/area-builder",
       color: "from-green-500 to-emerald-400",
-      image: "/games/area-builder.png",
+      image: "/calculus/games/area-builder.png",
       // age: "Ages 9-12",
     },
     {
@@ -31,7 +31,7 @@ export default function GamesPage() {
       icon: <ActivityIcon className="h-6 w-6" />,
       href: "/calculus/games/function-transformer",
       color: "from-indigo-500 to-violet-400",
-      image: "/games/function-transformer.png",
+      image: "/calculus/games/function-transformer.png",
       // age: "Ages 8-12",
     },
     {
@@ -40,7 +40,7 @@ export default function GamesPage() {
       icon: <ArrowDownUp className="h-6 w-6" />,
       href: "/calculus/games/limit-explorer",
       color: "from-purple-500 to-blue-400",
-      image: "/games/limit-explorer.png",
+      image: "/calculus/games/limit-explorer.png",
       // age: "Ages 10-14",
     },
     {
@@ -49,7 +49,7 @@ export default function GamesPage() {
       icon: <Brain className="h-6 w-6" />,
       href: "/calculus/games/calculus-puzzles",
       color: "from-pink-500 to-rose-400",
-      image: "/games/calculus-puzzles.png",
+      image: "/calculus/games/calculus-puzzles.png",
       // age: "Ages 11-14",
     },
     {
@@ -58,9 +58,18 @@ export default function GamesPage() {
       icon: <PlayCircle className="h-6 w-6" />,
       href: "/calculus/games/rate-master",
       color: "from-amber-500 to-orange-400",
-      image: "/games/rate-master.png",
+      image: "/calculus/games/rate-master.png",
       // age: "Ages 9-13",
     },  
+    {
+      title: "Graph Creator",
+      description: "Create, visualize, and explore mathematical functions and their properties.",
+      icon: <LineChart className="h-6 w-6" />,
+      href: "/calculus/games/graph-creator",
+      color: "from-cyan-500 to-blue-400",
+      image: "/calculus/games/function-transformer.png", // Reusing an image temporarily
+      // age: "Ages 12-16",
+    },
     {
       title: "Calculus Legends",
       description: "Test your knowledge about the brilliant minds behind calculus in this fun trivia game.",
@@ -563,7 +572,130 @@ export default function GamesPage() {
                     </g>
                   </svg>
                 )}
+   {game.title === "Graph Creator" && (
+                  <svg viewBox="0 0 400 225" className="h-full w-full p-4">
+                    <defs>
+                      <linearGradient id="graphCreatorGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" className="stop-color-cyan-500 dark:stop-color-cyan-600" stopOpacity="0.8" />
+                        <stop
+                          offset="100%"
+                          className="stop-color-blue-500 dark:stop-color-blue-600"
+                          stopOpacity="0.9"
+                        />
+                      </linearGradient>
+                      <filter id="graphGlow" height="130%">
+                        <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur" />
+                        <feColorMatrix
+                          in="blur"
+                          mode="matrix"
+                          values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7"
+                          result="glow"
+                        />
+                        <feComposite in="SourceGraphic" in2="glow" operator="over" />
+                      </filter>
+                    </defs>
+                    <rect width="400" height="225" className="fill-cyan-500/90 dark:fill-cyan-700/90" />
 
+                    {/* Coordinate system */}
+                    <line x1="50" y1="112.5" x2="350" y2="112.5" className="stroke-white" strokeWidth="2" />
+                    <line x1="200" y1="30" x2="200" y2="195" className="stroke-white" strokeWidth="2" />
+
+                    {/* X-axis ticks */}
+                    <line x1="125" y1="108.5" x2="125" y2="116.5" className="stroke-white" strokeWidth="1.5" />
+                    <line x1="275" y1="108.5" x2="275" y2="116.5" className="stroke-white" strokeWidth="1.5" />
+                    <text
+                      x="125"
+                      y="130"
+                      fontFamily="sans-serif"
+                      fontSize="12"
+                      className="fill-white"
+                      textAnchor="middle"
+                    >
+                      -2
+                    </text>
+                    <text
+                      x="275"
+                      y="130"
+                      fontFamily="sans-serif"
+                      fontSize="12"
+                      className="fill-white"
+                      textAnchor="middle"
+                    >
+                      2
+                    </text>
+
+                    {/* Y-axis ticks */}
+                    <line x1="196" y1="60" x2="204" y2="60" className="stroke-white" strokeWidth="1.5" />
+                    <line x1="196" y1="165" x2="204" y2="165" className="stroke-white" strokeWidth="1.5" />
+                    <text x="185" y="65" fontFamily="sans-serif" fontSize="12" className="fill-white" textAnchor="end">
+                      2
+                    </text>
+                    <text x="185" y="170" fontFamily="sans-serif" fontSize="12" className="fill-white" textAnchor="end">
+                      -2
+                    </text>
+
+                    {/* Function graphs */}
+                    <path
+                      d="M 50,60 Q 125,165 200,112.5 Q 275,60 350,112.5"
+                      className="stroke-red-400"
+                      strokeWidth="3"
+                      fill="none"
+                      filter="url(#graphGlow)"
+                    />
+                    <path
+                      d="M 50,165 Q 125,60 200,112.5 Q 275,165 350,60"
+                      className="stroke-blue-400"
+                      strokeWidth="3"
+                      fill="none"
+                      filter="url(#graphGlow)"
+                    />
+                    <path
+                      d="M 50,112.5 L 350,60"
+                      className="stroke-green-400"
+                      strokeWidth="3"
+                      fill="none"
+                      filter="url(#graphGlow)"
+                    />
+
+                    {/* Function labels */}
+                    <g transform="translate(60, 50)">
+                      <circle cx="0" cy="0" r="8" className="fill-red-400" />
+                      <text x="15" y="5" fontFamily="sans-serif" fontSize="14" className="fill-white">
+                        f(x) = sin(x)
+                      </text>
+                    </g>
+                    <g transform="translate(60, 80)">
+                      <circle cx="0" cy="0" r="8" className="fill-blue-400" />
+                      <text x="15" y="5" fontFamily="sans-serif" fontSize="14" className="fill-white">
+                        g(x) = cos(x)
+                      </text>
+                    </g>
+                    <g transform="translate(60, 110)">
+                      <circle cx="0" cy="0" r="8" className="fill-green-400" />
+                      <text x="15" y="5" fontFamily="sans-serif" fontSize="14" className="fill-white">
+                        h(x) = -0.5x + 1
+                      </text>
+                    </g>
+
+                    {/* Interactive elements */}
+                    <circle cx="200" cy="112.5" r="6" className="fill-white" />
+                    <circle cx="275" cy="165" r="6" className="fill-white" />
+
+                    {/* Title */}
+                    <g transform="translate(200, 25)">
+                      <text
+                        x="0"
+                        y="0"
+                        fontFamily="sans-serif"
+                        fontSize="16"
+                        className="fill-white font-bold"
+                        textAnchor="middle"
+                      >
+                        Graph Creator
+                      </text>
+                    </g>
+                  </svg>
+                )}
                 {game.title === "Calculus Legends" && (
                   <svg viewBox="0 0 400 225" className="h-full w-full p-4">
                     <defs>

@@ -10,6 +10,7 @@ import {
   Gamepad2,
   Menu,
   ChevronRight,
+  ChartNoAxesCombinedIcon,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useIsMobile } from "@/hooks/use-mobile"
@@ -74,13 +75,19 @@ export function Navigation() {
 
   // Check if a path is active
   const isActive = (path: string) => {
-    if (path === "/") {
-      return pathname === "/"
+    if (path === "/calculus") {
+      return pathname === "/calculus"
     }
-    return pathname === path || pathname.startsWith(`${path}/`)
+    return pathname === path || pathname !== path && pathname.startsWith(`${path}/`)
   }
 
   const navItems = [
+    {
+      name: "Calculas Home",
+      href: "/calculus",
+      icon: <ChartNoAxesCombinedIcon className="h-5 w-5" />,
+      description: "Home",
+    },
 
     {
       name: "Learning Paths",
@@ -100,19 +107,14 @@ export function Navigation() {
       icon: <Gamepad2 className="h-5 w-5" />,
       description: "Learn through fun educational games",
     },
-    // {
-    //   name: "My Progress",
-    //   href: "/calculus/progress",
-    //   icon: <BarChart2 className="h-5 w-5" />,
-    //   description: "Track your learning achievements",
-    // },
+
   ]
 
   // Render a placeholder during SSR to prevent hydration mismatch
   if (!mounted) {
     return (
       <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-16 items-center justify-between">
+        <div className="@container flex h-16 items-center justify-between">
           <div className="w-32 h-10"></div>
           <div className="w-auto h-10"></div>
           <div className="w-24 h-10"></div>
@@ -127,23 +129,10 @@ export function Navigation() {
         className="sticky top-0 right-0 z-40 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
         role="banner"
       >
-        <div className="container flex h-16 items-center justify-between">
+        <div className="@container flex h-16 items-center justify-between">
           {/* Logo and mobile menu button */}
           <div className="flex items-center gap-4">
-            {/* {isMobile && (
-              <Button
-                ref={buttonRef}
-                variant="ghost"
-                size="icon"
-                onClick={toggleSidebar}
-                aria-label={isOpen ? "Close navigation menu" : "Open navigation menu"}
-                aria-expanded={isOpen}
-                aria-controls="mobile-navigation"
-                className="relative -ml-2 h-9 w-9 rounded-full text-muted-foreground"
-              >
-                {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-              </Button>
-            )} */}
+          
             {isMobile && (
               <Button
                 ref={buttonRef}
@@ -153,35 +142,17 @@ export function Navigation() {
                 aria-label={isOpen ? "Close navigation menu" : "Open navigation menu"}
                 aria-expanded={isOpen}
                 aria-controls="mobile-navigation"
-                className="absolute top-3 right-15 h-9 w-9 rounded-full text-foreground"
+                className="absolute top-3 right-5 rounded-full text-foreground h-10 w-10 rounded-full bg-purple-500/10"
               >
-                <span className="flex items-center gap-2 bg-gradient-to-r from-violet-200 to-indigo-400 
-                 dark:bg-gradient-to-r dark:from-violet-600 dark:to-indigo-600 
-                
-                rounded-full px-2 py-1">
-                <Menu className="h-5 w-5 " />
-
-                  <span className="text-lg font-bold pr-3">
-                  CalKids
-                  </span>
-                  {/* {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />} */}
-                  {/* <span className=" opacity-50 text-muted-foreground  animate-[wiggle_1s_ease-in-out_infinite]">
-                    {isOpen ? <ChevronLeft className="h-5 w-5" /> : <ChevronRight className="h-5 w-5" />}
-                  </span> */}
-                </span>
+            
+                  <div className="flex h-full w-full items-center justify-center rounded-full bg-purple-500/20 text-lg font-bold text-purple-600">
+                    ∫<Menu className="h-5 w-5 " />
+                  </div>
               </Button>
             )}
 
 
 
-            {/* <Link href="/calculus" className="flex items-center gap-2" aria-label="CalKids Home">
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 shadow-md">
-                <span className="text-lg font-bold text-white">C</span>
-              </div>
-              <span className="text-lg font-bold bg-gradient-to-r from-violet-600 to-indigo-600 bg-clip-text text-transparent">
-                CalKids
-              </span>
-            </Link> */}
           </div>
 
           {/* Desktop navigation */}
@@ -253,28 +224,7 @@ export function Navigation() {
               id="mobile-navigation"
             >
               {/* Sidebar header */}
-              <Link href="/calculus" className={`
-              sticky top-0 z-10 flex h-16 items-center gap-2 border-b border-border/40 bg-background/95
-               px-6 backdrop-blur supports-[backdrop-filter]:bg-background/60
-               
-               
-               `}>
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 shadow-md">
-                  <span className="text-lg font-bold text-white">C</span>
-                </div>
-                <span className="text-lg font-bold bg-gradient-to-r from-violet-600 to-indigo-600 bg-clip-text text-transparent">
-                  CalKids
-                </span>
-              </Link>
-
-              {/* <Link href="/calculus" className="flex items-center gap-2" aria-label="CalKids Home">
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 shadow-md">
-                  <span className="text-lg font-bold text-white">C</span>
-                </div>
-                <span className="text-lg font-bold bg-gradient-to-r from-violet-600 to-indigo-600 bg-clip-text text-transparent">
-                  CalKids
-                </span>
-              </Link>
+              
 
               {/* Navigation items */}
               <nav className="px-2 py-4" aria-label="Mobile navigation">

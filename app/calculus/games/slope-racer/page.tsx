@@ -325,7 +325,6 @@ export default function SlopeRacerPage() {
 
   return (
     <div className="container px-4 py-8 md:py-12">
-      <TutorialPopup steps={tutorialSteps} gameName="slope-racer" />
       <Confetti trigger={showConfetti} count={100} />
       {/* <RewardBadge
         title={gameState === "finished" ? "Slope Master!" : "Level Up!"}
@@ -353,6 +352,7 @@ export default function SlopeRacerPage() {
             <div className="flex justify-between items-center">
               <CardTitle className="flex items-center gap-2">
                 <span>Game Progress</span>
+                <TutorialPopup steps={tutorialSteps} gameName="slope-racer" />
                 {gameState !== "ready" && (
                   <span className="ml-2 text-sm badge-fun bg-gradient-to-r from-blue-500 to-sky-400 text-white">
                     Level {level}/{maxLevel}

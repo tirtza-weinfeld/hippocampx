@@ -119,7 +119,6 @@ export function RateComparisonGame() {
 
   return (
     <section className="py-6 relative">
-      <TutorialPopup steps={tutorialSteps} gameName="rate-race" />
       <Confetti trigger={showConfetti} count={100} />
       {/* <RewardBadge
         title={`${winner === "A" ? "Car A" : "Car B"} Wins!`}
@@ -133,7 +132,10 @@ export function RateComparisonGame() {
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
         <Card className="card-fun">
           <CardHeader>
-            <CardTitle>Rate Race: Compare Speeds</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <span>Rate Race: Compare Speeds</span>
+              <TutorialPopup steps={tutorialSteps} gameName="rate-race" />
+            </CardTitle>
           </CardHeader>
           <CardContent className="p-6">
             <div className="space-y-8">

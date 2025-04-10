@@ -132,7 +132,6 @@ export function AreaGame() {
 
   return (
     <section className="py-6 relative">
-      <TutorialPopup steps={tutorialSteps} gameName="area-game" />
       <Confetti trigger={showConfetti} count={100} />
       {/* <RewardBadge
         title="Area Master"
@@ -146,8 +145,11 @@ export function AreaGame() {
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
         <Card className="card-fun">
           <CardHeader>
+            <div className="flex justify-center gap-4 items-center mb-4">
+              <h2 className="text-2xl font-bold">Area Under the Curve Game</h2>
+              <TutorialPopup steps={tutorialSteps} gameName="area-game" className="bg-green-500 text-white" />
+            </div>
             <CardTitle className="flex items-center gap-2">
-              <span>Area Under the Curve Game</span>
               <div className="badge-fun bg-gradient-to-r from-green-500 to-emerald-400 text-white ml-auto">
                 Score: {score}
               </div>

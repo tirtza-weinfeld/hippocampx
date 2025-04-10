@@ -330,8 +330,8 @@ export default function AreaBuilderPage() {
   ]
 
   return (
-    <div className="container px-4 py-8 md:py-12">
-      <TutorialPopup steps={tutorialSteps} gameName="area-builder" />
+    <div className="@container px-4 py-8 @md:py-12">
+      {/* <TutorialPopup steps={tutorialSteps} gameName="area-builder" autoShowOnce={false} /> */}
       <Confetti trigger={showConfetti} count={100} />
       {/* <RewardBadge
         title={gameState === "finished" ? "Integration Master!" : "Level Up!"}
@@ -348,9 +348,14 @@ export default function AreaBuilderPage() {
 
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl bg-gradient-to-r from-green-600 to-emerald-600 text-transparent bg-clip-text">
-            Area Builder
-          </h1>
+          <div className="flex justify-center gap-4 items-center">
+            <h1 className="text-3xl font-bold tracking-tighter @sm:text-4xl @md:text-5xl bg-gradient-to-r from-green-600 to-emerald-600 text-transparent bg-clip-text">
+              Area Builder
+            </h1>
+            <TutorialPopup steps={tutorialSteps} gameName="area-builder" autoShowOnce={false} className="
+           bg-green-600 text-white" />
+          </div>
+
           <p className="mt-4 text-xl text-muted-foreground">Build rectangles to approximate the area under curves!</p>
         </div>
 

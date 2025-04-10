@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { ChevronLeft, ChevronRight, X, HelpCircle } from "lucide-react"
 import Image from "next/image"
+
 type Step = {
   title: string
   content: string
@@ -13,20 +14,38 @@ type Step = {
   emoji?: string
 }
 
+// Ensure each step has a title
+const validateSteps = (steps: Step[]): Step[] => {
+  return steps.map((step, index) => {
+    if (!step.title || step.title.trim() === "") {
+      return {
+        ...step,
+        title: `Step ${index + 1}`,
+      }
+    }
+    return step
+  })
+}
+
 type TutorialPopupProps = {
   steps: Step[]
   gameName: string
   autoShowOnce?: boolean
+  className?: string
 }
 
-export function TutorialPopup({ steps, gameName, autoShowOnce = true }: TutorialPopupProps) {
+  export function TutorialPopup({ steps, gameName, autoShowOnce = true,className=""}: TutorialPopupProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [currentStep, setCurrentStep] = useState(0)
   const [hasShown, setHasShown] = useState(false)
+  const validatedSteps = validateSteps(steps)
 
   // Check if we've shown this tutorial before
   useEffect(() => {
+    console.log("TutorialPopup useEffect", gameName)
     const hasSeenTutorial = localStorage.getItem(`tutorial-${gameName}`) === "seen"
+    console.log("TutorialPopup useEffect", hasSeenTutorial, hasShown, autoShowOnce)
+
 
     if (autoShowOnce && !hasSeenTutorial && !hasShown) {
       // Wait a moment before showing the tutorial
@@ -41,7 +60,7 @@ export function TutorialPopup({ steps, gameName, autoShowOnce = true }: Tutorial
   }, [autoShowOnce, gameName, hasShown])
 
   const nextStep = () => {
-    if (currentStep < steps.length - 1) {
+    if (currentStep < validatedSteps.length - 1) {
       setCurrentStep(currentStep + 1)
     } else {
       setIsOpen(false)
@@ -70,7 +89,7 @@ export function TutorialPopup({ steps, gameName, autoShowOnce = true }: Tutorial
       <Button
         variant="outline"
         size="icon"
-        className="fixed bottom-4 left-4 z-40 rounded-full h-12 w-12 bg-primary text-primary-foreground shadow-lg border-2 border-white dark:border-gray-800"
+        className={`rounded-full h-12 w-12 ${className}`}
         onClick={openPopup}
       >
         <HelpCircle className="h-6 w-6" />
@@ -115,8 +134,8 @@ export function TutorialPopup({ steps, gameName, autoShowOnce = true }: Tutorial
                 <div className="absolute top-0 left-0 right-0 h-1 bg-muted overflow-hidden">
                   <motion.div
                     className="h-full bg-primary"
-                    initial={{ width: `${(currentStep / steps.length) * 100}%` }}
-                    animate={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
+                    initial={{ width: `${(currentStep / validatedSteps.length) * 100}%` }}
+                    animate={{ width: `${((currentStep + 1) / validatedSteps.length) * 100}%` }}
                     transition={{ duration: 0.3 }}
                   />
                 </div>
@@ -132,21 +151,25 @@ export function TutorialPopup({ steps, gameName, autoShowOnce = true }: Tutorial
                       className="space-y-4"
                     >
                       <div className="flex items-center gap-2">
-                        {steps[currentStep].emoji && <span className="text-2xl">{steps[currentStep].emoji}</span>}
-                        <h2 className="text-xl font-bold">{steps[currentStep].title}</h2>
+                        {validatedSteps[currentStep].emoji && (
+                          <span className="text-2xl">{validatedSteps[currentStep].emoji}</span>
+                        )}
+                        <h2 className="text-xl font-bold">{validatedSteps[currentStep].title}</h2>
                       </div>
 
-                      {steps[currentStep].image && (
+                      {validatedSteps[currentStep].image && (
                         <div className="rounded-lg overflow-hidden border-2 border-muted">
                           <Image
-                            src={steps[currentStep].image || "/placeholder.svg"}
-                            alt={steps[currentStep].title}
+                            width={600}
+                            height={400}
+                            src={validatedSteps[currentStep].image || "/placeholder.svg"}
+                            alt={validatedSteps[currentStep].title}
                             className="w-full h-auto"
                           />
                         </div>
                       )}
 
-                      <p className="text-foreground/80">{steps[currentStep].content}</p>
+                      <p className="text-foreground/80">{validatedSteps[currentStep].content}</p>
                     </motion.div>
                   </AnimatePresence>
                 </div>
@@ -158,12 +181,12 @@ export function TutorialPopup({ steps, gameName, autoShowOnce = true }: Tutorial
                   </Button>
 
                   <span className="text-sm text-muted-foreground">
-                    Step {currentStep + 1} of {steps.length}
+                    Step {currentStep + 1} of {validatedSteps.length}
                   </span>
 
                   <Button onClick={nextStep} className="gap-1 bg-primary text-primary-foreground">
-                    {currentStep === steps.length - 1 ? "Finish" : "Next"}
-                    {currentStep < steps.length - 1 && <ChevronRight className="h-4 w-4" />}
+                    {currentStep === validatedSteps.length - 1 ? "Finish" : "Next"}
+                    {currentStep < validatedSteps.length - 1 && <ChevronRight className="h-4 w-4" />}
                   </Button>
                 </div>
               </Card>
@@ -174,4 +197,3 @@ export function TutorialPopup({ steps, gameName, autoShowOnce = true }: Tutorial
     </>
   )
 }
-

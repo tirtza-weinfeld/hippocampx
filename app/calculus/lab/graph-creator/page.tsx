@@ -15,27 +15,76 @@ import { Checkbox } from "@/components/ui/checkbox"
 
 import { downloadCanvasAsImage, shareCanvas } from "@/components/calculus/utility/share-utils"
 
-// Function parser and evaluator
+// Function parser and evaluator - MORE ROBUST VERSION
 function evaluateExpression(expression: string, x: number): number | undefined {
-  try {
-    // Replace common math functions with Math equivalents
-    const preparedExpression = expression
-      .replace(/sin\(/g, "Math.sin(")
-      .replace(/cos\(/g, "Math.cos(")
-      .replace(/tan\(/g, "Math.tan(")
-      .replace(/exp\(/g, "Math.exp(")
-      .replace(/log\(/g, "Math.log(")
-      .replace(/sqrt\(/g, "Math.sqrt(")
-      .replace(/abs\(/g, "Math.abs(")
-      .replace(/\^/g, "**")
-      .replace(/e/g, "Math.E")
-      .replace(/pi/g, "Math.PI")
+  if (!expression || expression.trim() === "") {
+    return undefined
+  }
 
-    // Create a function from the expression
-    const func = new Function("x", `return ${preparedExpression}`)
-    return func(x)
-  } catch {
-    console.error("Error rendering graph")
+  // Check for obviously incomplete expressions
+  if (
+    /[+\-*/^]$/.test(expression) ||
+    /\($/.test(expression) ||
+    /sin\($|cos\($|tan\($|log\($|sqrt\($|abs\($/.test(expression)
+  ) {
+    return undefined
+  }
+
+  try {
+    // Safe evaluation using Function constructor
+    // First, sanitize the expression
+    const sanitizedExpression = expression
+      .replace(/sin/g, "Math.sin")
+      .replace(/cos/g, "Math.cos")
+      .replace(/tan/g, "Math.tan")
+      .replace(/exp/g, "Math.exp")
+      .replace(/log/g, "Math.log")
+      .replace(/sqrt/g, "Math.sqrt")
+      .replace(/abs/g, "Math.abs")
+      .replace(/\^/g, "**")
+      .replace(/pi/g, "Math.PI")
+      .replace(/e(?![a-zA-Z])/g, "Math.E") // Replace e but not exp or other words starting with e
+
+    // Wrap in a try-catch before even creating the function
+    let func
+    try {
+      // Test if the expression is valid JavaScript syntax
+      // This will throw if there's a syntax error
+      new Function(`return ${sanitizedExpression};`)
+
+      // If we get here, the syntax is valid, so create the actual function
+      func = new Function(
+        "x",
+        `
+        try {
+          return ${sanitizedExpression};
+        } catch (e) {
+          return undefined;
+        }
+      `,
+      )
+    } catch (syntaxError) {
+      // Syntax error in the expression
+      console.log("Syntax error in expression:", syntaxError)
+      return undefined
+    }
+
+    // Now safely execute the function
+    try {
+      const result = func(x)
+
+      // Check if result is valid
+      if (result === undefined || result === null || isNaN(result) || !isFinite(result)) {
+        return undefined
+      }
+
+      return result
+    } catch (runtimeError) {
+      console.log("Runtime error evaluating expression:", runtimeError)
+      return undefined
+    }
+  } catch (error) {
+    console.log("Error in expression evaluation:", error)
     return undefined
   }
 }
@@ -61,6 +110,55 @@ function secondDerivative(expression: string, x: number, h = 0.0001): number | u
   return (yPlus - 2 * y + yMinus) / (h * h)
 }
 
+const tutorialSteps = [
+  {
+    title: "Welcome to the Function Graph Creator!",
+    target: ".function-graph-creator",
+    content:
+      "Welcome to the Function Graph Creator! This tool allows you to visualize mathematical functions and explore their properties.",
+  },
+  {
+    title: "Function Input",
+    target: ".function-input",
+    content: "Enter your mathematical functions here. You can add multiple functions to compare them.",
+  },
+  {
+    title: "Graph View",
+    target: ".graph-view",
+    content: "This is the graph view where your functions are plotted. Adjust the X and Y ranges to zoom in and out.",
+  },
+  {
+    title: "Table View",
+    target: ".table-view",
+    content: "Switch to the table view to see the numerical values of your functions at different points.",
+  },
+  {
+    title: "Derivative Checkboxes",
+    target: ".derivative-checkbox",
+    content: "Check these boxes to display the first and second derivatives of your functions.",
+  },
+  {
+    title: "Add Function Button",
+    target: ".add-function-button",
+    content: "Add more functions to the graph to compare and analyze them.",
+  },
+  {
+    title: "Reset View Button",
+    target: ".reset-view-button",
+    content: "Reset the graph view to the default X and Y ranges.",
+  },
+  {
+    title: "Download and Share",
+    target: ".download-share-buttons",
+    content: "Download the graph as an image or share it with others.",
+  },
+  {
+    title: "Function Syntax Guide",
+    target: ".function-syntax-guide",
+    content: "Refer to this guide for the correct syntax when entering your functions.",
+  },
+]
+
 export default function GraphCreatorPage() {
   const [expressions, setExpressions] = useState<string[]>(["x^2", "sin(x)"])
   const [expressionColors, setExpressionColors] = useState<string[]>(["#3B82F6", "#EC4899"])
@@ -74,6 +172,7 @@ export default function GraphCreatorPage() {
   const [tableXValues, setTableXValues] = useState<number[]>([-2, -1, 0, 1, 2])
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [expressionValid, setExpressionValid] = useState<boolean[]>([true, true])
+  const [errorMessages, setErrorMessages] = useState<string[]>(["", ""])
 
   // Available colors for expressions
   const colors = [
@@ -419,6 +518,7 @@ export default function GraphCreatorPage() {
     setShowDerivatives([...showDerivatives, false])
     setShowSecondDerivatives([...showSecondDerivatives, false])
     setExpressionValid([...expressionValid, true])
+    setErrorMessages([...errorMessages, ""])
   }
 
   // Remove an expression
@@ -444,6 +544,10 @@ export default function GraphCreatorPage() {
     const newExpressionValid = [...expressionValid]
     newExpressionValid.splice(index, 1)
     setExpressionValid(newExpressionValid)
+
+    const newErrorMessages = [...errorMessages]
+    newErrorMessages.splice(index, 1)
+    setErrorMessages(newErrorMessages)
   }
 
   // Update an expression
@@ -452,16 +556,85 @@ export default function GraphCreatorPage() {
     newExpressions[index] = value
     setExpressions(newExpressions)
 
-    // Check if expression is valid
+    // Check if expression is valid, but be more tolerant during typing
     try {
-      const result = evaluateExpression(value, 0)
+      // Empty expression is valid (just won't display)
+      if (!value.trim()) {
+        const newExpressionValid = [...expressionValid]
+        newExpressionValid[index] = true
+        setExpressionValid(newExpressionValid)
+
+        const newErrorMessages = [...errorMessages]
+        newErrorMessages[index] = ""
+        setErrorMessages(newErrorMessages)
+        return
+      }
+
+      // Don't validate incomplete expressions that might be in the middle of typing
+      // Common incomplete patterns that should be allowed during typing
+      const incompletePatterns = [
+        /sin\(?$/,
+        /cos\(?$/,
+        /tan\(?$/,
+        /log\(?$/,
+        /sqrt\(?$/,
+        /abs\(?$/,
+        /\($/,
+        /\^$/,
+        /\*$/,
+        /\+$/,
+        /-$/,
+        /\/$/,
+        /\*\*$/,
+      ]
+
+      if (incompletePatterns.some((pattern) => pattern.test(value))) {
+        // This looks like an incomplete expression, don't mark as invalid yet
+        return
+      }
+
+      // Test the expression at a few points
+      const testPoints = [-1, 0, 1]
+      let isValid = false
+      let errorMsg = ""
+
+      for (const point of testPoints) {
+        try {
+          const result = evaluateExpression(value, point)
+          if (result !== undefined) {
+            isValid = true
+            break
+          }
+        } catch (error) {
+          // Just store the error but don't immediately invalidate
+          errorMsg = error instanceof Error ? error.message : "Invalid expression"
+        }
+      }
+
       const newExpressionValid = [...expressionValid]
-      newExpressionValid[index] = result !== undefined
+      newExpressionValid[index] = isValid
       setExpressionValid(newExpressionValid)
-    } catch {
+
+      // Only show error message if the expression is clearly invalid
+      // and not just incomplete
+      const newErrorMessages = [...errorMessages]
+      newErrorMessages[index] = isValid ? "" : errorMsg || "Invalid expression. Please check your syntax."
+      setErrorMessages(newErrorMessages)
+    } catch (error) {
+      // Don't immediately mark as invalid during typing
+      // Only update error state if it's a complete expression
+      if (value.includes("(") && !value.includes(")")) {
+        // Likely incomplete parentheses, don't mark as invalid yet
+        return
+      }
+
       const newExpressionValid = [...expressionValid]
       newExpressionValid[index] = false
       setExpressionValid(newExpressionValid)
+
+      const newErrorMessages = [...errorMessages]
+      newErrorMessages[index] = error instanceof Error ? error.message : "Invalid expression"
+      setErrorMessages(newErrorMessages)
     }
   }
 
@@ -518,8 +691,8 @@ export default function GraphCreatorPage() {
   const handleDownload = () => {
     try {
       downloadCanvasAsImage(canvasRef.current, `graph-creator-${new Date().toISOString().slice(0, 10)}.png`)
-    } catch {
-      console.error("Error downloading graph")
+    } catch (error) {
+      console.error("Error downloading graph:", error)
       alert("Failed to download the graph. Please try again.")
     }
   }
@@ -534,58 +707,29 @@ export default function GraphCreatorPage() {
         text: `Check out this graph I created with CalKids! Functions: ${expressions.join(", ")} #CalKids #MathGraph`,
         filename: `graph-creator-${new Date().toISOString().slice(0, 10)}.png`,
       })
-    } catch {
-      console.error("Error sharing graph")
+    } catch (error) {
+      console.error("Error sharing graph:", error)
       alert("Failed to share the graph. The content has been copied to your clipboard instead.")
     }
   }
 
-  // Tutorial steps
-  const tutorialSteps = [
-    {
-      title: "Welcome to Graph Creator!",
-      content: "This interactive tool helps you create and analyze your own mathematical functions.",
-      emoji: "📊",
-    },
-    {
-      title: "Creating Functions",
-      content:
-        "Enter mathematical expressions using standard notation. You can use operators like +, -, *, /, ^ and functions like sin(), cos(), sqrt().",
-      emoji: "✏️",
-    },
-    {
-      title: "Derivatives",
-      content: "Toggle the derivative and second derivative options to visualize how the function changes.",
-      emoji: "📈",
-    },
-    {
-      title: "Multiple Functions",
-      content: "Add multiple functions to compare them on the same graph. Each function has its own color.",
-      emoji: "🎨",
-    },
-    {
-      title: "Table View",
-      content:
-        "Switch to table view to see the exact values of your functions and their derivatives at specific points.",
-      emoji: "🔢",
-    },
-  ]
-
   return (
-    <div className="@container px-4 py-8 md:py-12">
-      <TutorialPopup steps={tutorialSteps} gameName="graph-creator" />
+    <div className="@container px-4 py-8 @md:py-12">
 
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl bg-gradient-to-r from-amber-600 via-orange-600 to-yellow-600 text-transparent bg-clip-text">
-            Graph Creator
-          </h1>
+          <div className="flex justify-center gap-4 items-center">
+            <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl @md:text-5xl bg-gradient-to-r from-amber-600 via-orange-600 to-yellow-600 text-transparent bg-clip-text">
+              Graph Creator Challenge
+            </h1>
+            <TutorialPopup steps={tutorialSteps} gameName="graph-creator" className="bg-background/50" />
+          </div>
           <p className="mt-4 text-xl text-muted-foreground">
-            Create and analyze your own mathematical functions and their derivatives
+            Create mathematical functions to match the target graphs and master calculus concepts
           </p>
         </div>
 
-        <Card className="border-2 bg-background/60 backdrop-blur-sm">
+        <Card className="border-2 function-graph-creator bg-background/60 backdrop-blur-sm">
           <CardHeader>
             <CardTitle className="flex justify-between items-center">
               <span>Function Graph Creator</span>
@@ -617,8 +761,27 @@ export default function GraphCreatorPage() {
                         <Input
                           id={`function-${index}`}
                           value={expression}
-                          onChange={(e) => updateExpression(index, e.target.value)}
-                          className={!expressionValid[index] ? "border-red-500" : ""}
+                          onChange={(e) => {
+                            // Just update the expression state without any validation
+                            const newExpressions = [...expressions]
+                            newExpressions[index] = e.target.value
+                            setExpressions(newExpressions)
+
+                            // Clear any previous error for a better user experience while typing
+                            const newExpressionValid = [...expressionValid]
+                            newExpressionValid[index] = true
+                            setExpressionValid(newExpressionValid)
+
+                            const newErrorMessages = [...errorMessages]
+                            newErrorMessages[index] = ""
+                            setErrorMessages(newErrorMessages)
+                          }}
+                          // Add onBlur to validate only when the user is done typing
+                          onBlur={() => {
+                            // Only validate when the user leaves the input field
+                            setTimeout(() => updateExpression(index, expressions[index]), 100)
+                          }}
+                          className={`function-input ${!expressionValid[index] ? "border-red-500" : ""}`}
                         />
                       </div>
                       <div className="flex items-center gap-2">
@@ -626,6 +789,7 @@ export default function GraphCreatorPage() {
                           id={`derivative-${index}`}
                           checked={showDerivatives[index]}
                           onCheckedChange={() => toggleDerivative(index)}
+                          className="derivative-checkbox"
                         />
                         <Label htmlFor={`derivative-${index}`} className="text-sm">
                           f&apos;(x)
@@ -659,7 +823,12 @@ export default function GraphCreatorPage() {
                 </div>
               ))}
 
-              <Button variant="outline" onClick={addExpression} disabled={expressions.length >= 8} className="mt-2">
+              <Button
+                variant="outline"
+                onClick={addExpression}
+                disabled={expressions.length >= 8}
+                className="mt-2 add-function-button"
+              >
                 <Plus className="mr-2 h-4 w-4" />
                 Add Function
               </Button>
@@ -667,17 +836,16 @@ export default function GraphCreatorPage() {
 
             {/* Graph view */}
             {viewMode === "graph" && (
-              <div className="space-y-4">
+              <div className="space-y-4 graph-view">
+          
+                
                 <div className="flex justify-center">
-                  <canvas
-                    ref={canvasRef}
-                    width={600}
-                    height={400}
-                    className="border border-muted rounded-lg bg-white dark:bg-gray-900 @xs:w-full @lg:w-auto"
-                  />
+                  <div className="w-full max-w-lg bg-white dark:bg-gray-800 rounded-lg overflow-hidden border-2 border-muted">
+                    <canvas ref={canvasRef} width={600} height={400} className=" @xs:w-full @lg:w-auto" />
+                  </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 @md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <div className="flex justify-between">
                       <Label className="text-sm font-medium">
@@ -688,14 +856,20 @@ export default function GraphCreatorPage() {
                       <Input
                         type="number"
                         value={xMin}
-                        onChange={(e) => setXMin(Number.parseFloat(e.target.value))}
+                        onChange={(e) => {
+                          const val = Number.parseFloat(e.target.value)
+                          if (!isNaN(val)) setXMin(val)
+                        }}
                         className="w-20"
                       />
                       <span className="self-center">to</span>
                       <Input
                         type="number"
                         value={xMax}
-                        onChange={(e) => setXMax(Number.parseFloat(e.target.value))}
+                        onChange={(e) => {
+                          const val = Number.parseFloat(e.target.value)
+                          if (!isNaN(val)) setXMax(val)
+                        }}
                         className="w-20"
                       />
                     </div>
@@ -711,14 +885,20 @@ export default function GraphCreatorPage() {
                       <Input
                         type="number"
                         value={yMin}
-                        onChange={(e) => setYMin(Number.parseFloat(e.target.value))}
+                        onChange={(e) => {
+                          const val = Number.parseFloat(e.target.value)
+                          if (!isNaN(val)) setYMin(val)
+                        }}
                         className="w-20"
                       />
                       <span className="self-center">to</span>
                       <Input
                         type="number"
                         value={yMax}
-                        onChange={(e) => setYMax(Number.parseFloat(e.target.value))}
+                        onChange={(e) => {
+                          const val = Number.parseFloat(e.target.value)
+                          if (!isNaN(val)) setYMax(val)
+                        }}
                         className="w-20"
                       />
                     </div>
@@ -726,12 +906,12 @@ export default function GraphCreatorPage() {
                 </div>
 
                 <div className="flex justify-between">
-                  <Button variant="outline" onClick={resetView}>
+                  <Button variant="outline" onClick={resetView} className="reset-view-button">
                     <RefreshCw className="mr-2 h-4 w-4" />
                     Reset View
                   </Button>
 
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 download-share-buttons">
                     <Button variant="outline" size="icon" onClick={handleDownload}>
                       <Download className="h-4 w-4" />
                     </Button>
@@ -745,13 +925,13 @@ export default function GraphCreatorPage() {
 
             {/* Table view */}
             {viewMode === "table" && (
-              <div className="space-y-4">
+              <div className="space-y-4 table-view">
                 <div className="overflow-x-auto">
                   <table className="w-full border-collapse">
                     <thead>
                       <tr className="bg-muted">
                         <th className="border border-muted p-2 text-left">x</th>
-                        {expressions.map((expr, i) => (
+                        {expressions.map((_, i) => (
                           <React.Fragment key={i}>
                             <th className="border border-muted p-2 text-left" style={{ color: expressionColors[i] }}>
                               f{i + 1}(x)
@@ -829,9 +1009,9 @@ export default function GraphCreatorPage() {
               </div>
             )}
 
-            <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-100 dark:border-amber-800">
+            <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-100 dark:border-amber-800 function-syntax-guide">
               <h3 className="font-medium mb-2">Function Syntax Guide:</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+              <div className="grid grid-cols-1 @md:grid-cols-2 gap-4 text-sm">
                 <div>
                   <p className="font-medium">Basic Operations:</p>
                   <ul className="list-disc list-inside">
@@ -856,7 +1036,7 @@ export default function GraphCreatorPage() {
                   <p className="font-medium">Functions:</p>
                   <ul className="list-disc list-inside">
                     <li>
-                      Trigonometric: <code>sin(x)</code>, <code>cos(x)</code>, <code>tan(x)</code>
+                      Trigonometric: <code>sin(x)</code>, <code>cos(x)</code>
                     </li>
                     <li>
                       Exponential: <code>exp(x)</code> or <code>e^x</code>
@@ -876,11 +1056,18 @@ export default function GraphCreatorPage() {
             </div>
 
             <div className="flex justify-center mt-4">
-              <Link href="/calculus/games/graph-creator">
-                <Button className="bg-gradient-to-r from-amber-600 to-orange-600 text-white">
-                  Try Graph Creator Game <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </Link>
+              <div className="flex justify-center gap-4 mt-4 @md:flex-row flex flex-col">
+                <Link href="/calculus/lab/function-laboratory">
+                  <Button variant="outline">
+                    Try Function Laboratory <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
+                <Link href="/calculus/games/graph-creator">
+                  <Button className="bg-gradient-to-r from-amber-600 to-orange-600 text-white">
+                    Play Graph Creator Game <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -888,4 +1075,3 @@ export default function GraphCreatorPage() {
     </div>
   )
 }
-

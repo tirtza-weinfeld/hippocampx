@@ -216,7 +216,6 @@ export function FunctionExplorer() {
 
   return (
     <section className="py-6 relative">
-      <TutorialPopup steps={tutorialSteps} gameName="function-explorer" />
       <Confetti trigger={showConfetti} count={50} />
       {/* <RewardBadge
         title="Function Explorer"
@@ -230,7 +229,10 @@ export function FunctionExplorer() {
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
         <Card className="card-fun">
           <CardHeader>
-            <CardTitle>Function Explorer</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <span>Function Explorer</span>
+              <TutorialPopup steps={tutorialSteps} gameName="function-explorer" />
+            </CardTitle>
           </CardHeader>
           <CardContent className="p-6">
             <div className="space-y-8">

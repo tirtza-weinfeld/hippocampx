@@ -84,13 +84,12 @@ export function ApproachingGame() {
 
   return (
     <section className="py-6 relative">
-      <TutorialPopup steps={tutorialSteps} gameName="approaching-game" />
       <Confetti trigger={showConfetti} count={100} />
       {/* <RewardBadge
         title="Limit Master"
-        description="You've found the perfect limit! Getting as close as possible without crossing the boundary."
-        icon="medal"
-        color="indigo"
+        description={`You've discovered the limit as x approaches ${target}!`}
+        icon="trophy"
+        color="blue"
         show={showReward}
         onClose={() => setShowReward(false)}
       /> */}
@@ -98,11 +97,14 @@ export function ApproachingGame() {
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
         <Card className="card-fun">
           <CardHeader>
-            <CardTitle className="flex items-center">
-              <span>The Approaching Game</span>
-              <span className="ml-2 text-sm badge-fun bg-gradient-to-r from-purple-500 to-indigo-400 text-white">
-                lim x→a
-              </span>
+            <div className="flex justify-center gap-4 items-center mb-4">
+              <h2 className="text-2xl font-bold">Approaching Limits Game</h2>
+              <TutorialPopup steps={tutorialSteps} gameName="approaching-game" className="bg-blue-500 text-white" />
+            </div>
+            <CardTitle className="flex items-center gap-2">
+              <div className="badge-fun bg-gradient-to-r from-blue-500 to-indigo-400 text-white ml-auto">
+                Score: {attempts}
+              </div>
             </CardTitle>
           </CardHeader>
           <CardContent className="p-6">

@@ -131,15 +131,17 @@ export function InfiniteSeriesGame() {
 
   return (
     <section className="py-6 relative">
-      <TutorialPopup steps={tutorialSteps} gameName="infinite-series" />
       <Confetti trigger={showConfetti} count={100} />
     
 
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
         <Card className="card-fun">
           <CardHeader>
+            <div className="flex justify-center gap-4 items-center mb-4">
+              <h2 className="text-2xl font-bold">Infinite Series Explorer</h2>
+              <TutorialPopup steps={tutorialSteps} gameName="infinite-series" className="bg-pink-500 text-white" />
+            </div>
             <CardTitle className="flex items-center gap-2">
-              <span>Infinite Series Explorer</span>
               <Button size="sm" variant="outline" className="ml-auto rounded-full" onClick={toggleSeriesType}>
                 Switch to {seriesType === "geometric" ? "Harmonic" : "Geometric"} Series
               </Button>

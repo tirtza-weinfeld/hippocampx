@@ -329,14 +329,18 @@ export default function AreaBuilderPage() {
 
   return (
     <TooltipProvider>
-      <div className="@container px-4 py-8 md:py-12">
-        <TutorialPopup steps={tutorialSteps} gameName="area-builder" />
+      <div className="px-4 py-8 @md:py-12">
 
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl bg-gradient-to-r from-green-600 to-emerald-600 text-transparent bg-clip-text">
-              Area Builder
-            </h1>
+            <div className="flex justify-center gap-4 items-center">
+              <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl bg-gradient-to-r from-green-600 to-emerald-600 text-transparent bg-clip-text">
+                Area Builder
+              </h1>
+              <TutorialPopup steps={tutorialSteps} gameName="area-builder" autoShowOnce={false} className="
+            bg-green-600 text-white" />
+
+            </div>
             <p className="mt-4 text-xl text-muted-foreground">
               Discover the power of integrals by finding areas under curves
             </p>
@@ -372,7 +376,7 @@ export default function AreaBuilderPage() {
               </div>
 
               <div className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 @md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <div className="flex justify-between">
                       <div className="text-sm font-medium">Number of Rectangles: {rectangles}</div>
@@ -521,7 +525,7 @@ export default function AreaBuilderPage() {
                 </div>
 
                 <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-100 dark:border-green-800">
-                  <div className="grid md:grid-cols-2 gap-4">
+                  <div className="grid @md:grid-cols-2 gap-4">
                     <div>
                       <h3 className="text-sm font-medium mb-2">Function:</h3>
                       <div className="text-lg font-medium">
@@ -535,7 +539,7 @@ export default function AreaBuilderPage() {
                       </div>
                     </div>
                   </div>
-                  <div className="mt-4 grid md:grid-cols-2 gap-4">
+                  <div className="mt-4 grid @md:grid-cols-2 gap-4">
                     <div>
                       <h3 className="text-sm font-medium mb-2">Approximate Area:</h3>
                       <div className="text-lg font-medium text-green-600 dark:text-green-400">

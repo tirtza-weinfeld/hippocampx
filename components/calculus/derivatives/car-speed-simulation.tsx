@@ -114,7 +114,6 @@ export function CarSpeedSimulation() {
 
   return (
     <section className="py-6 relative">
-      <TutorialPopup steps={tutorialSteps} gameName="car-speed" />
       <Confetti trigger={showConfetti} count={100} />
       {/* <RewardBadge
         title="Speed Demon"
@@ -130,6 +129,7 @@ export function CarSpeedSimulation() {
           <CardHeader>
             <CardTitle className="flex items-center">
               <span>Car Speed Simulation</span>
+              <TutorialPopup steps={tutorialSteps} gameName="car-speed" />
               <span className="ml-2 text-sm badge-fun bg-gradient-to-r from-blue-500 to-sky-400 text-white">
                 dx/dt = v(t)
               </span>

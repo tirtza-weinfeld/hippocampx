@@ -17,27 +17,28 @@ export default function RootLayout({
   return (
     <div className=" @container calculus min-h-screen bg-background">
       <div className="relative flex min-h-screen flex-col">
-        <div className="fixed inset-0 -z-10">
-          <SparklesCore
-            id="tsparticlesfullpage"
-            background="transparent"
-            minSize={0.6}
-            maxSize={1.4}
-            particleDensity={15}
-            className="h-full w-full"
-            particleColor="#7C3AED"
+        <div className="absolute inset-0 z-0">
+          <div className="relative h-full w-full">
+            <SparklesCore
+              id="tsparticlesfullpage"
+              background="transparent"
+              minSize={0.6}
+              maxSize={1.4}
+              particleDensity={15}
+              className="h-full w-full"
+              particleColor="#7C3AED"
+            />
+          </div>
+        </div>
+        <div className="relative z-10">
+          <Navigation />
+          {children}
+          <Mascot
+            message="Welcome to CalKids! I'm Newton, your calculus guide. Let's explore the fascinating world of change and motion together!"
+            character="newton"
           />
         </div>
-        <Navigation />
-        {children}
-        <Mascot
-          message="Welcome to CalKids! I'm Newton, your calculus guide. Let's explore the fascinating world of change and motion together!"
-          character="newton"
-        />
       </div>
     </div>
-
-
   )
 }
-
