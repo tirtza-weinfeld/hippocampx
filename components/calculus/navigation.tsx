@@ -111,17 +111,17 @@ export function Navigation() {
   ]
 
   // Render a placeholder during SSR to prevent hydration mismatch
-  if (!mounted) {
-    return (
-      <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="@container flex h-16 items-center justify-between">
-          <div className="w-32 h-10"></div>
-          <div className="w-auto h-10"></div>
-          <div className="w-24 h-10"></div>
-        </div>
-      </header>
-    )
-  }
+  // if (!mounted) {
+  //   return (
+  //     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+  //       <div className="@container flex h-16 items-center justify-between">
+  //         <div className="w-32 h-10"></div>
+  //         <div className="w-auto h-10"></div>
+  //         <div className="w-24 h-10"></div>
+  //       </div>
+  //     </header>
+  //   )
+  // }
 
   return (
     <>
@@ -204,7 +204,7 @@ export function Navigation() {
           <>
             {/* Backdrop overlay */}
             <motion.div
-              className="fixed inset-0 z-40 bg-background/30 backdrop-blur-sm h-svh"
+              className="fixed inset-0 z-40 bg-background/30 backdrop-blur-sm h-svh overflow-y-auto"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -272,7 +272,6 @@ export function Navigation() {
                 </ul>
               </nav>
 
-              {/* User profile section */}
 
             </motion.div>
           </>
