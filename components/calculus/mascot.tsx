@@ -78,10 +78,10 @@ export function Mascot({
   ]
 
   const positionClasses = {
-    "bottom-right": "bottom-4 right-4",
-    "bottom-left": "bottom-4 left-4",
-    "top-right": "top-4 right-4",
-    "top-left": "top-4 left-4",
+    "bottom-right": "fixed bottom-4 right-4",
+    "bottom-left": "fixed bottom-4 left-4",
+    "top-right": "fixed top-4 right-4",
+    "top-left": "fixed top-4 left-4",
   }
 
   const characterImages = {
@@ -137,7 +137,7 @@ export function Mascot({
   if (!isVisible) return null
 
   return (
-    <div className={`fixed ${positionClasses[settings.position]} z-50`}>
+    <div className={`${positionClasses[settings.position]} z-50`}>
       <AnimatePresence>
         {isOpen && (
           <motion.div

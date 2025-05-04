@@ -11,7 +11,8 @@
 }
 
 .infinity {
-  --primary: oklch(97.31% 0.02 233.14);
+  /* --primary: oklch(97.31% 0.02 233.14); */
+  
   --secondary: oklch(95.5% 0.04 282.1);
   --accent: var(--color-pink-300);
   --neutral: oklch(97.31% 0.02 233.14);

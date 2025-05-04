@@ -245,7 +245,7 @@ const navigationItems: NavigationItem[] = [
 
 // Sidebar variants - fixed widths to prevent layout shift
 const sidebarVariants = cva(
-  "fixed inset-y-0 left-0 z-20 flex flex-col border-r border-sidebar-border  bg-background transition-all duration-300 rounded-xl ease-out",
+  "fixed inset-y-0 left-0 z-20 flex flex-col border-r bg-background transition-all duration-300 ease-out",
   {
     variants: {
       state: {
@@ -615,10 +615,7 @@ export function Sidebar({ children }: { children: React.ReactNode }) {
               variant="ghost"
               size="icon"
               onClick={isMobile ? toggleMobileSidebar : toggleSidebar}
-              className="fixed left-4 top-4 z-30 h-10 w-10 rounded-lg border bg-background shadow-lg hover:shadow-lg transition-shadow
-              border-none
-              bg-primary/10
-              "
+              className="fixed left-4 top-4 z-30 h-10 w-10 rounded-lg border bg-background shadow-md hover:shadow-lg transition-shadow"
               style={{
                 boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
               }}
@@ -634,7 +631,7 @@ export function Sidebar({ children }: { children: React.ReactNode }) {
             >
               <PanelLeft
                 className={cn(
-                  "h-5 w-5 text-primary transition-transform duration-200 ",
+                  "h-5 w-5 text-muted-foreground transition-transform duration-200",
                   (!isExpanded && !isMobile) || (isMobile && !isMobileOpen) ? "" : "rotate-180",
                 )}
               />
@@ -872,6 +869,7 @@ function NavItem({ item, isExpanded, pathname, onClick, isOpen, onOpenChange, re
                 onClick={() => onClick(child.href, item.href)}
                 data-href={child.href}
               >
+                <Icon className={cn("h-5 w-5", item.color)} />
                 {child.title}
               </Button>
             ))}

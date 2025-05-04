@@ -17,6 +17,7 @@ import {
 import { useIsMobile as useMobile } from "@/hooks/use-mobile"
 import { cn } from "@/lib/utils"
 import { VisuallyHidden } from "@/components/calculus/visually-hidden"
+import { SparklesCore } from "@/components/calculus/ui/sparkles"
 
 // Math symbols for decoration
 const mathSymbols = ["∫", "∑", "∂", "∞", "π", "√", "Δ", "∇", "lim", "dx"]
@@ -302,17 +303,31 @@ export function Navigation() {
 
       {/* Main navigation container - positioned fixed */}
       <div className="fixed inset-0 pointer-events-none z-50" aria-label="Navigation" role="navigation">
+        {/* Sparkles background */}
+        <div className="absolute inset-0 w-64 h-full">
+          <SparklesCore
+            id="nav-sparkles"
+            className="absolute inset-0"
+            background="transparent"
+            minSize={0.4}
+            maxSize={1}
+            particleColor="#7C3AED"
+            particleDensity={10}
+          />
+        </div>
+
         {/* Expanding FAB button */}
         <motion.button
           ref={fabRef}
           onClick={toggleNav}
           className={cn(
-            "absolute flex items-center justify-center rounded-full bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-lg pointer-events-auto",
+            "fixed flex items-center justify-center rounded-full bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-lg pointer-events-auto",
             isOpen ? "h-16 w-16" : "h-14 w-14",
           )}
           style={{
             right: fabPositionX,
             top: fabPositionY,
+            zIndex: 100,
           }}
           initial="closed"
           animate={isOpen ? "open" : "closed"}
@@ -452,8 +467,8 @@ export function Navigation() {
                   // Distribute items between 225° and 315° (bottom-left quadrant)
                   const adjustedAngle = 225 + (index * 90) / (navItems.length - 1)
                   const position = {
-                    x: getOrbitPosition(adjustedAngle, orbitRadius).x - 100, // Move 100px more to the left
-                    y: getOrbitPosition(adjustedAngle, orbitRadius).y + 100, // Move 100px more down
+                    x: getOrbitPosition(adjustedAngle, orbitRadius).x - 200, // Move 100px more to the left
+                    y: getOrbitPosition(adjustedAngle, orbitRadius).y + 150, // Move 100px more down
                   }
 
                   return (

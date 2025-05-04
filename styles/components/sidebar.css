@@ -1,4 +1,4 @@
-/* @theme inline{
+@theme inline{
   --color-sidebar: var(--sidebar-background);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-primary: var(--sidebar-primary);
@@ -36,7 +36,7 @@
   --sidebar-accent-foreground: var(
     --color-gray-50
   ); 
-  --sidebar-border: var(--color-gray-600); 
+  --sidebar-border: var(--color-gray-700); 
   --sidebar-ring: var(--color-blue-400); 
 
-} */
+}
