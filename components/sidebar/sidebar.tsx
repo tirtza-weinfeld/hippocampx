@@ -245,7 +245,7 @@ const navigationItems: NavigationItem[] = [
 
 // Sidebar variants - fixed widths to prevent layout shift
 const sidebarVariants = cva(
-  "fixed inset-y-0 left-0 z-20 flex flex-col border-r border-sidebar-border  bg-background transition-all duration-300 rounded-xl ease-out",
+  "fixed inset-y-0 left-0 z-50 flex flex-col border-r border-sidebar-border  bg-background transition-all duration-300 rounded-xl ease-out",
   {
     variants: {
       state: {
@@ -528,7 +528,7 @@ export function Sidebar({ children }: { children: React.ReactNode }) {
       {/* Overlay for mobile */}
       {isMobileOpen && isMobile && (
         <div
-          className="fixed inset-0 z-10 bg-black/50 md:hidden animate-in fade-in duration-200"
+          className="fixed inset-0 z-50 bg-black/50 md:hidden animate-in fade-in duration-200"
           onClick={toggleMobileSidebar}
           aria-hidden="true"
         />
@@ -615,7 +615,7 @@ export function Sidebar({ children }: { children: React.ReactNode }) {
               variant="ghost"
               size="icon"
               onClick={isMobile ? toggleMobileSidebar : toggleSidebar}
-              className="fixed left-4 top-4 z-30 h-10 w-10 rounded-lg border bg-background shadow-lg hover:shadow-lg transition-shadow
+              className="fixed left-4 top-4 z-50 h-10 w-10 rounded-lg border bg-background shadow-lg hover:shadow-lg transition-shadow
               border-none
               bg-primary/10
               "

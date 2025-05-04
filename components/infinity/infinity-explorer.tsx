@@ -84,7 +84,7 @@ export function InfinityExplorer() {
   return (
     <div className="relative">
       {/* Desktop Navigation */}
-      <div className="hidden md:block sticky top-0 z-10">
+      <div className="hidden md:block sticky top-0 z-40">
         <nav className="backdrop-blur-sm bg-white/70 dark:bg-slate-900/70 rounded-3xl shadow-md p-2 border border-white/20 dark:border-slate-800/50">
           <div className="flex flex-wrap justify-center gap-2">
             {tabs.map((tab) => {
@@ -123,7 +123,7 @@ export function InfinityExplorer() {
       </div>
 
       {/* Mobile Navigation */}
-      <div className="@md:hidden fixed top-0 left-0 right-0 z-10">
+      <div className="@md:hidden fixed top-0 left-0 right-0 z-40">
         <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-md mx-4 mt-2">
           <div className="flex justify-between items-center p-3">
             <div className="w-10"></div> {/* Empty div for balance */}

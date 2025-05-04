@@ -296,13 +296,13 @@ export function Navigation() {
       {/* Skip to main content link for accessibility */}
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-1/2 focus:-translate-x-1/2 focus:px-4 focus:py-2 focus:bg-background focus:z-[100] focus:rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-1/2 focus:-translate-x-1/2 focus:px-4 focus:py-2 focus:bg-background focus:z-[100] focus:rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
       >
         Skip to main content
       </a>
 
       {/* Main navigation container - positioned fixed */}
-      <div className="fixed inset-0 pointer-events-none z-50" aria-label="Navigation" role="navigation">
+      <div className="fixed inset-0 pointer-events-none z-[9999]" aria-label="Navigation" role="navigation">
         {/* Sparkles background */}
         <div className="absolute inset-0 w-64 h-full">
           <SparklesCore
@@ -327,7 +327,9 @@ export function Navigation() {
           style={{
             right: fabPositionX,
             top: fabPositionY,
-            zIndex: 100,
+            zIndex: 10000,
+            position: 'fixed',
+            transform: 'none',
           }}
           initial="closed"
           animate={isOpen ? "open" : "closed"}
