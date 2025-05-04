@@ -323,10 +323,10 @@ export function Navigation() {
           className={cn(
             "fixed flex items-center justify-center rounded-full bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-lg pointer-events-auto",
             isOpen ? "h-16 w-16" : "h-14 w-14",
+            "right-6 top-6 md:right-8 md:top-8", // Responsive positioning
+            "safe-area-inset-right safe-area-inset-top" // Support for notches and home indicators
           )}
           style={{
-            right: fabPositionX,
-            top: fabPositionY,
             zIndex: 10000,
             position: 'fixed',
             transform: 'none',

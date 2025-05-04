@@ -57,11 +57,11 @@ export function SearchDialog({ isOpen, onClose, navigationItems, onNavigate }: S
   const inputRef = React.useRef<HTMLInputElement>(null)
   const [selectedIndex, setSelectedIndex] = React.useState(0)
 
-  // Recent searches (would normally be stored in localStorage)
+  // [todo:]store Recent searches in in localStorage
   const recentSearches: SearchItem[] = React.useMemo(
     () => [
-      { title: "Dashboard Overview", href: "/dashboard", parent: "Dashboard" },
-      { title: "Project Settings", href: "/projects", parent: "Projects" },
+      { title: "Calculus Overview", href: "/calculus", parent: "Calculus" },
+      { title: "AI Overview", href: "/ai", parent: "AI" },
     ],
     [],
   )
@@ -69,8 +69,8 @@ export function SearchDialog({ isOpen, onClose, navigationItems, onNavigate }: S
   // Favorites (would normally be stored in user preferences)
   const favorites: SearchItem[] = React.useMemo(
     () => [
-      { title: "Team Members", href: "/team/members", parent: "Team" },
-      { title: "Analytics", href: "/dashboard/analytics", parent: "Dashboard" },
+      { title: "Calculus Overview", href: "/calculus", parent: "Calculus" },
+      { title: "AI Overview", href: "/ai", parent: "AI" },
     ],
     [],
   )
@@ -338,7 +338,13 @@ export function SearchDialog({ isOpen, onClose, navigationItems, onNavigate }: S
                 <div className="mt-4">
                   <div className="text-xs text-muted-foreground">Try searching for</div>
                   <div className="mt-2 flex flex-wrap justify-center gap-2">
-                    {["Dashboard", "Team Members", "Settings", "Projects"].map((suggestion) => (
+                    {[
+                      "Calculus",
+                      "AI",
+                      "Hadestown",
+                      "Binary",
+                      "Infinity",
+                    ].map((suggestion) => (
                       <button
                         key={suggestion}
                         className="rounded-full border px-3 py-1 text-xs hover:bg-accent hover:text-accent-foreground transition-colors"
