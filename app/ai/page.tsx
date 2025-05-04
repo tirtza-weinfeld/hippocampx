@@ -21,7 +21,7 @@ export default function Home() {
   }
 
   return (
-    <div className=" min-h-screen bg-gradient-to-b from-blue-50 to-purple-50 dark:from-slate-900 dark:to-slate-800 p-4 md:p-8 overflow-x-hidden">
+    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-purple-50 dark:from-slate-900 dark:to-slate-800 p-4 md:p-8 relative">
       <div className="max-w-6xl mx-auto">
         <header className="text-center mb-8 py-6 relative">
       
@@ -35,7 +35,7 @@ export default function Home() {
         </header>
 
         {/* Mobile Navigation */}
-        <div className="md:hidden sticky top-0 z-50 mb-6">
+        <div className="@md:hidden sticky top-4 z-5 mb-6">
           <div className="flex items-center justify-between bg-white dark:bg-slate-800 rounded-lg shadow-md p-3">
             <span className="font-bold text-lg gradient-text gradient-purple-blue">
               {activeTab === "what-is-ai"
@@ -71,7 +71,7 @@ export default function Home() {
 
         <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
           {/* Desktop Navigation */}
-          <TabsList className="hidden md:grid w-full grid-cols-5 mb-6 sticky top-4 z-50 shadow-lg bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-xl p-1 h-13
+          <TabsList className="hidden md:grid w-full grid-cols-5 mb-6 sticky top-4 z-5 shadow-lg bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-xl p-1 h-13
           [&>*]:h-11
           [&>*]:rounded-full
           [&>*]:cursor-pointer

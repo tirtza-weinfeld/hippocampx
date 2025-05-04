@@ -18,7 +18,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-   <div className="@container infinity" >
+   <div className="@container infinity " >
           {children}
    </div>
    

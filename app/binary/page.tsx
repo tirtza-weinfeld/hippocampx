@@ -151,10 +151,10 @@ export default function Home() {
 
   return (
     <main
-      className="min-h-screen bg-gradient-to-b from-blue-50 via-indigo-50 to-purple-50 dark:from-slate-950 dark:via-indigo-950 dark:to-slate-900 overflow-hidden"
+      className="min-h-screen bg-gradient-to-b from-blue-50 via-indigo-50 to-purple-50 dark:from-slate-950 dark:via-indigo-950 dark:to-slate-900"
       {...handlers}
     >
-      <div className="fixed top-4 right-4 z-50 flex items-center gap-2">
+      <div className="fixed top-4 right-4 z-10 flex items-center gap-2">
         {isMobile && (
           <FunButton
             variant="outline"
@@ -206,104 +206,106 @@ export default function Home() {
 
         <div className="relative z-10 backdrop-blur-sm bg-white/70 dark:bg-slate-900/70 rounded-2xl shadow-xl border border-white/20 dark:border-slate-800/50 p-4 md:p-8">
           <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-            <TabsList className="h-13 hidden md:flex w-full flex-wrap md:flex-nowrap mb-8 p-1.5 bg-blue-100/50 dark:bg-slate-800/50 rounded-xl backdrop-blur-sm overflow-hidden relative">
-              {/* Animated background for active tab */}
-              <motion.div
-                className="absolute h-[calc(100%-0.75rem)] top-1.5 rounded-lg bg-gradient-to-r from-violet-500 to-blue-500 shadow-md z-0 pointer-events-none"
-                layoutId="activeTabBackground"
-                transition={{
-                  type: "spring",
-                  stiffness: 400,
-                  damping: 30,
-                }}
-                style={{
-                  width: `calc(100% / 6)`,
-                  left: `calc((100% / 6) * ${["learn", "convert", "explain", "practice", "fun", "play"].indexOf(activeTab)})`,
-                }}
-              />
-
-              {[
-                { value: "learn", label: "Learn" },
-                { value: "convert", label: "Convert" },
-                { value: "explain", label: "How To" },
-                { value: "practice", label: "Practice" },
-                { value: "fun", label: "Fun Facts" },
-                { value: "play", label: "Play" },
-              ].map((tab) => (
+            <div className="sticky top-10 z-50 mb-8 bg-white/70 dark:bg-slate-900/70 backdrop-blur-sm -mx-4 md:-mx-8 px-4 md:px-8">
+              <TabsList className="h-13 hidden md:flex w-full flex-wrap md:flex-nowrap p-1.5 bg-blue-100/50 dark:bg-slate-800/50 rounded-xl backdrop-blur-sm overflow-hidden relative">
+                {/* Animated background for active tab */}
                 <motion.div
-                  key={tab.value}
-                  className="flex-1 min-w-[80px]"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
+                  className="absolute h-[calc(100%-0.75rem)] top-1.5 rounded-lg bg-gradient-to-r from-violet-500 to-blue-500 shadow-md z-0 pointer-events-none"
+                  layoutId="activeTabBackground"
                   transition={{
-                    delay: ["learn", "convert", "explain", "practice", "fun", "play"].indexOf(tab.value) * 0.05,
-                    duration: 0.3,
+                    type: "spring",
+                    stiffness: 400,
+                    damping: 30,
                   }}
-                  whileHover={{
-                    scale: activeTab !== tab.value ? 1.05 : 1,
-                    transition: { duration: 0.2 },
+                  style={{
+                    width: `calc(100% / 6)`,
+                    left: `calc((100% / 6) * ${["learn", "convert", "explain", "practice", "fun", "play"].indexOf(activeTab)})`,
                   }}
-                  whileTap={{
-                    scale: 0.95,
-                    transition: { duration: 0.1 },
-                  }}
-                >
-                  <TabsTrigger
-                    value={tab.value}
-                    className={`w-full h-12 md:h-14 text-base md:text-lg font-medium rounded-lg relative z-10 transition-colors duration-300 hover:bg-blue-50/50 dark:hover:bg-blue-900/20 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:bg-transparent data-[state=active]:shadow-none ${isPending ? "opacity-70" : ""}`}
-                    onClick={() => {
-                      if (activeTab !== tab.value) {
-                        handleTabChange(tab.value)
+                />
 
-                        // Add subtle scale animation on click
-                        const element = document.querySelector(`[data-value="${tab.value}"]`)
-                        if (element) {
-                          element.animate([{ transform: "scale(0.95)" }, { transform: "scale(1)" }], {
-                            duration: 200,
-                            easing: "ease-out",
-                          })
-                        }
-                      }
+                {[
+                  { value: "learn", label: "Learn" },
+                  { value: "convert", label: "Convert" },
+                  { value: "explain", label: "How To" },
+                  { value: "practice", label: "Practice" },
+                  { value: "fun", label: "Fun Facts" },
+                  { value: "play", label: "Play" },
+                ].map((tab) => (
+                  <motion.div
+                    key={tab.value}
+                    className="flex-1 min-w-[80px]"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{
+                      delay: ["learn", "convert", "explain", "practice", "fun", "play"].indexOf(tab.value) * 0.05,
+                      duration: 0.3,
                     }}
-                    data-value={tab.value}
-                    style={{
-                      // Override any default background styles
-                      background: tab.value === activeTab ? "transparent" : undefined
+                    whileHover={{
+                      scale: activeTab !== tab.value ? 1.05 : 1,
+                      transition: { duration: 0.2 },
                     }}
-                    disabled={isPending}
-                    aria-label={`Switch to ${tab.label} tab`} // Add aria-label for accessibility
+                    whileTap={{
+                      scale: 0.95,
+                      transition: { duration: 0.1 },
+                    }}
                   >
-                    <motion.span
-                      className="relative z-20 block"
-                      initial={false}
-                      animate={{
-                        y: activeTab === tab.value ? 0 : 0,
-                        scale: activeTab === tab.value ? 1.05 : 1,
-                        color: activeTab === tab.value ? "#ffffff" : "",
-                      }}
-                      transition={{
-                        type: "spring",
-                        stiffness: 500,
-                        damping: 30,
-                      }}
-                    >
-                      {tab.label}
+                    <TabsTrigger
+                      value={tab.value}
+                      className={`w-full h-12 md:h-14 text-base md:text-lg font-medium rounded-lg relative z-10 transition-colors duration-300 hover:bg-blue-50/50 dark:hover:bg-blue-900/20 data-[state=active]:text-white data-[state=active]:font-bold data-[state=active]:bg-transparent data-[state=active]:shadow-none ${isPending ? "opacity-70" : ""}`}
+                      onClick={() => {
+                        if (activeTab !== tab.value) {
+                          handleTabChange(tab.value)
 
-                      {/* Subtle underline animation for active tab */}
-                      {activeTab === tab.value && (
-                        <motion.div
-                          className="absolute -bottom-1 left-0 right-0 h-1 bg-white/70 rounded-full"
-                          layoutId="activeTabUnderline"
-                          initial={{ width: 0 }}
-                          animate={{ width: "100%" }}
-                          transition={{ duration: 0.3 }}
-                        />
-                      )}
-                    </motion.span>
-                  </TabsTrigger>
-                </motion.div>
-              ))}
-            </TabsList>
+                          // Add subtle scale animation on click
+                          const element = document.querySelector(`[data-value="${tab.value}"]`)
+                          if (element) {
+                            element.animate([{ transform: "scale(0.95)" }, { transform: "scale(1)" }], {
+                              duration: 200,
+                              easing: "ease-out",
+                            })
+                          }
+                        }
+                      }}
+                      data-value={tab.value}
+                      style={{
+                        // Override any default background styles
+                        background: tab.value === activeTab ? "transparent" : undefined
+                      }}
+                      disabled={isPending}
+                      aria-label={`Switch to ${tab.label} tab`} // Add aria-label for accessibility
+                    >
+                      <motion.span
+                        className="relative z-10 block"
+                        initial={false}
+                        animate={{
+                          y: activeTab === tab.value ? 0 : 0,
+                          scale: activeTab === tab.value ? 1.05 : 1,
+                          color: activeTab === tab.value ? "#ffffff" : "",
+                        }}
+                        transition={{
+                          type: "spring",
+                          stiffness: 500,
+                          damping: 30,
+                        }}
+                      >
+                        {tab.label}
+
+                        {/* Subtle underline animation for active tab */}
+                        {activeTab === tab.value && (
+                          <motion.div
+                            className="absolute -bottom-1 left-0 right-0 h-1 bg-white/70 rounded-full"
+                            layoutId="activeTabUnderline"
+                            initial={{ width: 0 }}
+                            animate={{ width: "100%" }}
+                            transition={{ duration: 0.3 }}
+                          />
+                        )}
+                      </motion.span>
+                    </TabsTrigger>
+                  </motion.div>
+                ))}
+              </TabsList>
+            </div>
 
             <AnimatePresence mode="wait">
               {["learn", "convert", "explain", "practice", "fun", "play"].map((tabValue) => (

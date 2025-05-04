@@ -11,4 +11,38 @@
 @layer base {
   @import "./components/main.css";  
   @import "./base/main.css";
+  :root {
+    --font-family: var(--font-sans);
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+    font-family: var(--font-family);
+  }
+
+  /* Smooth theme transition */
+  .theme-transition,
+  .theme-transition *,
+  .theme-transition *:before,
+  .theme-transition *:after {
+    transition: all 0.3s ease-out !important;
+    transition-delay: 0 !important;
+  }
+
+  /* Add a font transition class to ensure smooth font changes */
+  .font-transition,
+  .font-transition * {
+    transition: font-family 0.3s ease-out !important;
+  }
+}
+
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
 }

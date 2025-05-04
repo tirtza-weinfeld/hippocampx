@@ -46,8 +46,8 @@ export function AppSidebar({ variant, collapsible, className, side }: {
             <SidebarMenu>
               {routes.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild isActive={item.url === pathname}>
-                    <Link href={item.url} onClick={() => setOpenMobile(false)}>
+                  <SidebarMenuButton asChild isActive={item.href === pathname}>
+                    <Link href={item.href} onClick={() => setOpenMobile(false)}>
                       <item.icon />
                       <span>{item.title}</span>
                     </Link>

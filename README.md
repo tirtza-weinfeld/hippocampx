@@ -1,19 +1,18 @@
-# HippoCampX
+# HippocampX
 
-A modern learning platform built with Next.js, TypeScript, and Tailwind CSS. HippoCampX provides an interactive and engaging learning experience with a beautiful, responsive user interface.
+A modern web application built with Next.js, featuring MDX support and a rich set of UI components.
 
 ## 🚀 Features
 
-- Modern, responsive UI with dark/light mode support
-- Interactive learning components
-- Real-time progress tracking
-- Beautiful animations and transitions
-- MDX support for rich content
-- Drag and drop functionality
-- Toast notifications
-- Form handling with validation
-- Database integration with Vercel Postgres
-- Type-safe development with TypeScript
+- ⚡ Next.js with Turbopack for blazing fast development
+- 📝 MDX support for rich content authoring
+- 🎨 Modern UI components using Radix UI
+- 🌙 Dark mode support with next-themes
+- 📊 Data visualization with Recharts
+- 🎉 Interactive UI elements with Framer Motion
+- 📱 Responsive design
+- 🔍 TypeScript for type safety
+- 🎨 Tailwind CSS for styling
 
 ## 🛠️ Tech Stack
 
@@ -21,20 +20,14 @@ A modern learning platform built with Next.js, TypeScript, and Tailwind CSS. Hip
 - **Language:** TypeScript
 - **Styling:** Tailwind CSS
 - **UI Components:** Radix UI
-- **Database:** Vercel Postgres
+- **Database:** PostgreSQL (via @vercel/postgres)
 - **ORM:** Drizzle ORM
 - **Form Handling:** React Hook Form
-- **Animations:** Framer Motion
+- **Animation:** Framer Motion
 - **Charts:** Recharts
 - **Package Manager:** pnpm
 
-## 📦 Prerequisites
-
-- Node.js (Latest LTS version recommended)
-- pnpm (v9.15.2 or later)
-- A Vercel Postgres database (for production)
-
-## 🚀 Getting Started
+## 📦 Installation
 
 1. Clone the repository:
    ```bash
@@ -47,36 +40,40 @@ A modern learning platform built with Next.js, TypeScript, and Tailwind CSS. Hip
    pnpm install
    ```
 
-3. Set up environment variables:
-   - Copy `.env.local.example` to `.env.local`
-   - Fill in your environment variables
-
-4. Start the development server:
+3. Start the development server:
    ```bash
    pnpm dev
    ```
 
-5. Open [http://localhost:3000](http://localhost:3000) in your browser.
-
-## 📝 Available Scripts
+## 🚀 Available Scripts
 
 - `pnpm dev` - Start the development server with Turbopack
-- `pnpm build` - Build the application for production
+- `pnpm build` - Build the production application
 - `pnpm start` - Start the production server
-- `pnpm lint` - Run ESLint for code linting
+- `pnpm lint` - Run ESLint
 
-## 🏗️ Project Structure
+## 📁 Project Structure
 
 ```
 hippocampx/
 ├── app/              # Next.js app directory
 ├── components/       # Reusable UI components
-├── hooks/           # Custom React hooks
 ├── lib/             # Utility functions and configurations
-├── public/          # Static assets
+├── hooks/           # Custom React hooks
 ├── styles/          # Global styles and Tailwind config
-└── types/           # TypeScript type definitions
+├── public/          # Static assets
+└── ...config files
 ```
+
+## 🔧 Configuration
+
+The project uses several configuration files:
+
+- `next.config.ts` - Next.js configuration
+- `tsconfig.json` - TypeScript configuration
+- `postcss.config.mjs` - PostCSS configuration
+- `eslint.config.mjs` - ESLint configuration
+- `tailwind.config.js` - Tailwind CSS configuration
 
 ## 🤝 Contributing
 
@@ -85,12 +82,3 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ## 📄 License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 🙏 Acknowledgments
-
-- [Next.js](https://nextjs.org/)
-- [Radix UI](https://www.radix-ui.com/)
-- [Tailwind CSS](https://tailwindcss.com/)
-- [Vercel](https://vercel.com/)
-
-

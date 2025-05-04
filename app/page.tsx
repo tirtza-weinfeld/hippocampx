@@ -1,7 +1,8 @@
 
 export default function HomePage() {
   return (
-    <div className="h-full w-full flex flex-col place-items-center justify-center">
+
+    <div className="h-full w-full flex flex-col place-items-center justify-center ">
 
 
       <h1
@@ -18,7 +19,11 @@ export default function HomePage() {
         hover:scale-110 
         hover:rotate-3
          hover:from-teal-400 
-         hover:to-indigo-500"
+         hover:to-indigo-500
+         
+         py-10
+         m-50
+         "
       >
         HippoCampX
       </h1>

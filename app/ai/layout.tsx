@@ -14,7 +14,7 @@ export default function RootLayout({
     children: React.ReactNode
 }) {
     return (
-        <div className=" @container ai">
+        <div className=" @container ai p-4 mt-16">
             {children}
         </div>
     )

@@ -82,10 +82,10 @@ export function InfinityExplorer() {
   }, [activeTab])
 
   return (
-    <div className="space-y-6">
+    <div className="relative">
       {/* Desktop Navigation */}
-      <div className="hidden md:block">
-        <nav className="bg-white dark:bg-gray-800 rounded-3xl shadow-md p-2">
+      <div className="hidden md:block sticky top-0 z-50">
+        <nav className="backdrop-blur-sm bg-white/70 dark:bg-slate-900/70 rounded-3xl shadow-md p-2 border border-white/20 dark:border-slate-800/50">
           <div className="flex flex-wrap justify-center gap-2">
             {tabs.map((tab) => {
               const Icon = tab.icon
@@ -123,9 +123,15 @@ export function InfinityExplorer() {
       </div>
 
       {/* Mobile Navigation */}
-      <div className="md:hidden">
-        <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-md">
+      <div className="@md:hidden sticky top-2 z-5">
+        <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-md ">
           <div className="flex justify-between items-center p-3">
+            <div className="w-10"></div> {/* Empty div for balance */}
+            <div className="flex items-center justify-center">
+              <div className="font-bold text-lg bg-gradient-to-r from-fun-purple via-fun-pink to-fun-orange text-transparent bg-clip-text">
+                {tabs.find((tab) => tab.id === activeTab)?.label || "Explore Infinity"}
+              </div>
+            </div>
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="p-2 text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-full"
@@ -152,12 +158,6 @@ export function InfinityExplorer() {
                 )}
               </svg>
             </button>
-            <div className="flex items-center justify-center">
-              <div className="font-bold text-lg bg-gradient-to-r from-fun-purple via-fun-pink to-fun-orange text-transparent bg-clip-text">
-                {tabs.find((tab) => tab.id === activeTab)?.label || "Explore Infinity"}
-              </div>
-            </div>
-            <div className="w-10"></div> {/* Empty div for balance */}
           </div>
 
           <AnimatePresence>
@@ -207,7 +207,7 @@ export function InfinityExplorer() {
         </div>
       </div>
 
-      <div className="relative transition-all duration-300 ease-in-out" style={{ minHeight: contentHeight }}>
+      <div className="relative transition-all duration-300 ease-in-out mt-6" style={{ minHeight: contentHeight }}>
         <div ref={contentRef}>
           <AnimatePresence mode="wait">
             <motion.div

@@ -4,7 +4,7 @@ import createMDX from '@next/mdx'
 
 const nextConfig: NextConfig = {
 
-  pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
+  pageExtensions: ['md', 'mdx', 'ts', 'tsx'],
 
 
   experimental: {
@@ -12,10 +12,24 @@ const nextConfig: NextConfig = {
     mdxRs: true,
 
   },
-};
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'source.unsplash.com',
+        port: '',
+        pathname: '/random/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+        port: '',
+        pathname: '/**',
+      },
+    ],
+  },
+}
 
-const withMDX = createMDX({
-  options: { },
-});
+const withMDX = createMDX({});
 
 export default withMDX(nextConfig);
