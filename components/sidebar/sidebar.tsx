@@ -872,6 +872,7 @@ function NavItem({ item, isExpanded, pathname, onClick, isOpen, onOpenChange, re
                 onClick={() => onClick(child.href, item.href)}
                 data-href={child.href}
               >
+                <Icon className={cn("h-5 w-5", item.color)} />
                 {child.title}
               </Button>
             ))}
