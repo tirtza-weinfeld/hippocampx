@@ -18,7 +18,7 @@ export default function HadestownLayout({
     <div className="@container  rounded-2xl  py-1 mb-2 h-screen ">
       <div className="bg-background border rounded-2xl p-6 h-full overflow-y-auto">
 
-        <div className={cn("min-h-screen bg-background font-sans antialiased hadestown",)}>
+        <div className={cn("min-h-screen bg-background  hadestown",)}>
           {/* Decorative elements */}
           <div className="fixed pointer-events-none inset-0 z-[-1] opacity-10 dark:opacity-20">
             <div className="absolute top-0 left-0 w-full h-64 music-pattern-svg"></div>
