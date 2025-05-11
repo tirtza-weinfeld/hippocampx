@@ -14,13 +14,15 @@
   :root {
     --font-family: var(--font-sans);
   }
+  * {
+    @apply border-border;
+  }
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
     font-family: var(--font-family);
   }
 }
-
 
 
 
@@ -40,12 +42,3 @@
 
 
 
-@layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
-    font-feature-settings: "rlig" 1, "calt" 1;
-  }
-}

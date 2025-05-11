@@ -515,7 +515,7 @@ export function Sidebar({ children }: { children: React.ReactNode }) {
         {/* Mobile Sidebar - Solid background and improved z-index */}
         <motion.aside
           id="mobile-sidebar"
-          className="fixed inset-y-0 left-0 z-50 w-[85%] max-w-[320px] bg-background border-r shadow-xl"
+          className="fixed inset-y-0 left-0 z-50 w-[85%] max-w-[320px] bg-background border-r shadow-xl rounded-2xl"
           initial={{ x: "-100%" }}
           animate={{ x: isMobileOpen ? 0 : "-100%" }}
           transition={{
@@ -611,11 +611,11 @@ export function Sidebar({ children }: { children: React.ReactNode }) {
 
   // DESKTOP LAYOUT
   return (
-    <div className="@container/main flex h-screen">
+    <div className="@container/main flex h-screen ">
       {/* Desktop Sidebar */}
       <motion.aside
         id="desktop-sidebar"
-        className="fixed inset-y-0 left-1  top-1  bottom-1 z-20 bg-background border rounded-xl"
+        className="fixed inset-y-0 left-1  top-1  bottom-1 z-20 bg-background border rounded-2xl"
         initial={{ width: isExpanded ? "16rem" : "5rem" }}
         animate={{ width: isExpanded ? "16rem" : "5rem" }}
         transition={{
@@ -752,7 +752,7 @@ export function Sidebar({ children }: { children: React.ReactNode }) {
           mass: 1,
         }}
       >
-        <div className="@container/content p-6">{children}</div>
+        <div className="@container/content px-6 ">{children}</div>
       </motion.main>
 
       {/* Search Dialog */}
@@ -959,7 +959,7 @@ function NavItem({ item, isExpanded, pathname, onClick, isOpen, onOpenChange, re
                 damping: 30,
               },
             }}
-            className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-[70%] bg-gradient-to-b from-teal-500 to-blue-500 rounded-r-sm"
+            className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-[70%] bg-gradient-to-b from-teal-500  to-black-500   rounded-r-sm"
           />
         )}
 
@@ -1013,7 +1013,7 @@ function NavItem({ item, isExpanded, pathname, onClick, isOpen, onOpenChange, re
               >
                 <div className="flex items-center gap-2 px-3 py-2 text-sm font-medium border-b pb-2 mb-1">
                   <Icon className={cn("h-4 w-4", item.color)} />
-                  <span className="bg-gradient-to-r from-teal-500 to-blue-500 bg-clip-text text-transparent">
+                  <span className="bg-gradient-to-r from-teal-500  to-blue-500 bg-clip-text text-transparent">
                     {item.title}
                   </span>
                 </div>
@@ -1092,7 +1092,7 @@ function NavItem({ item, isExpanded, pathname, onClick, isOpen, onOpenChange, re
       <div className="space-y-1 relative">
         {/* Active indicator */}
         {isActive && (
-          <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-[70%] bg-gradient-to-b from-teal-500 to-blue-500 rounded-r-sm" />
+          <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-[70%] bg-gradient-to-b from-primary via-indigo-400  to-accent rounded-r-sm" />
         )}
 
         {/* Parent item - only toggles dropdown if it has children */}
