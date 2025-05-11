@@ -14,14 +14,16 @@ export function SearchCategory({ title, count, color = "bg-primary", isActive, o
   return (
     <button
       className={cn(
-        "flex items-center gap-2 rounded-md px-3 py-1.5 text-sm transition-colors",
-        isActive ? "bg-muted" : "hover:bg-muted/50",
+        "flex items-center gap-2 rounded-full px-3 py-1.5 text-sm transition-colors",
+        isActive ? "bg-accent text-accent-foreground font-medium" : "hover:bg-muted/50 text-muted-foreground",
       )}
       onClick={onClick}
     >
       <div className={cn("h-2 w-2 rounded-full", color)} />
       <span>{title}</span>
-      <span className="ml-auto rounded-full bg-muted px-1.5 py-0.5 text-xs">{count}</span>
+      <span className={cn("ml-auto rounded-full px-1.5 py-0.5 text-xs", isActive ? "bg-background/20" : "bg-muted")}>
+        {count}
+      </span>
     </button>
   )
 }

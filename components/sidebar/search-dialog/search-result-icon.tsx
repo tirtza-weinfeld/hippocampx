@@ -9,8 +9,8 @@ interface SearchResultIconProps {
 
 export function SearchResultIcon({ icon: Icon, color, bgColor }: SearchResultIconProps) {
   return (
-    <div className={cn("flex h-8 w-8 items-center justify-center rounded-md", bgColor)}>
-      <Icon className={cn("h-4 w-4", color)} />
+    <div className={cn("flex h-9 w-9 items-center justify-center rounded-lg", bgColor)}>
+      <Icon className={cn("h-4.5 w-4.5", color)} />
     </div>
   )
 }

@@ -38,15 +38,10 @@ export default async function RootLayout({
   // const defaultOpen = cookieStore.get("sidebar:state")?.value === "true"
 
   return (
-    <html lang="en" suppressHydrationWarning >
-      <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-      </head>
-      {/* <body className={`${geistSans.variable} ${geistMono.variable} @container `}>
-       */}
+    <html lang="en" suppressHydrationWarning style={{ fontFamily: getFontFamily(font) }}>
       <body className={`${inter.variable} antialiased`}>
        
-      {/* <Fonts /> */}
+      <Fonts />
 
         <ThemeProvider
           attribute="class"
@@ -55,7 +50,7 @@ export default async function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-        <Fonts />
+        {/* <Fonts /> */}
 
           <CustomTheme>
           <SparklesCore
@@ -103,4 +98,35 @@ export default async function RootLayout({
       </body>
     </html>
   );
+}
+
+// Add the getFontFamily function to the layout
+function getFontFamily(font: Font): string {
+  switch (font) {
+    case "dancing-script":
+      return "'Dancing Script', cursive"
+    case "pacifico":
+      return "'Pacifico', cursive"
+    case "great-vibes":
+      return "'Great Vibes', cursive"
+    case "satisfy":
+      return "'Satisfy', cursive"
+    case "tangerine":
+      return "'Tangerine', cursive"
+    case "allura":
+      return "'Allura', cursive"
+    case "kaushan-script":
+      return "'Kaushan Script', cursive"
+    case "sacramento":
+      return "'Sacramento', cursive"
+    case "roboto":
+      return "'Roboto', sans-serif"
+    case "open-sans":
+      return "'Open Sans', sans-serif"
+    case "montserrat":
+      return "'Montserrat', sans-serif"
+    case "inter":
+    default:
+      return "var(--font-sans)"
+  }
 }

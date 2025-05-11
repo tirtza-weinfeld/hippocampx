@@ -22,7 +22,8 @@ const BinaryGame = lazy(() => import("@/components/binary/binary-game"))
 // Loading fallbacks for each component
 const IntroductionFallback = () => (
   <div
-    className="w-full h-[500px] flex items-center justify-center bg-white/70 dark:bg-slate-900/70 rounded-2xl animate-pulse"
+    className="w-full h-[500px] flex items-center justify-center bg-white/70 dark:bg-slate-900/70 rounded-2xl animate-pulse 
+    "
     aria-label="Loading introduction content"
     role="status"
   >
@@ -151,7 +152,8 @@ export default function Home() {
 
   return (
     <main
-      className="min-h-screen bg-gradient-to-b from-blue-50 via-indigo-50 to-purple-50 dark:from-slate-950 dark:via-indigo-950 dark:to-slate-900"
+      className="min-h-screen bg-gradient-to-b from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-indigo-950 dark:to-gray-900
+      "
       {...handlers}
     >
       <div className="fixed top-4 right-4 z-10 flex items-center gap-2">

@@ -166,6 +166,20 @@ export function InfinityFontSelector() {
     }
   }, [isOpen])
 
+  // Add this state for popup position
+  const [popupPosition, setPopupPosition] = React.useState({ bottom: 0, left: 0 })
+
+  // Add this useEffect to calculate position when popup opens
+  React.useEffect(() => {
+    if (isOpen && containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect()
+      setPopupPosition({
+        bottom: window.innerHeight - rect.top + 10,
+        left: rect.left + 100, // Change this from rect.left - 100 to rect.left + 50
+      })
+    }
+  }, [isOpen])
+
   // Get position based on hippo feature
   const getHippoPosition = (fontOption: FontOption) => {
     // Position based on the anatomical feature of the hippo
@@ -242,7 +256,7 @@ export function InfinityFontSelector() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm"
+            className="fixed inset-0 z-[100] bg-black/20 backdrop-blur-sm"
             onClick={() => setIsOpen(false)}
           />
         )}
@@ -254,8 +268,11 @@ export function InfinityFontSelector() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute z-50"
-            style={{ bottom: "100%", left: "calc(50% + 100px)" }} // Moved 100px to the right
+            className="fixed z-[110]"
+            style={{
+              bottom: `${popupPosition.bottom}px`,
+              left: `${popupPosition.left}px`,
+            }}
           >
             {/* Hippo body shape */}
             <motion.div
@@ -626,11 +643,17 @@ export function InfinityFontSelector() {
                             setFont(fontOption.value)
                             setIsOpen(false)
 
-                            // Add a brief flash notification
+                            // Add a more visible notification
                             const notification = document.createElement("div")
                             notification.className =
-                              "fixed top-4 right-4 bg-primary text-primary-foreground px-4 py-2 rounded-md shadow-lg z-50 animate-in fade-in slide-in-from-top duration-300"
-                            notification.textContent = `Font changed to ${fontOption.label}`
+                              "fixed top-4 right-4 bg-primary text-primary-foreground px-4 py-3 rounded-md shadow-lg z-[200] animate-in fade-in slide-in-from-top duration-300"
+                            notification.innerHTML = `
+    <div class="flex items-center gap-2">
+      <span style="font-family: ${getFontFamily(fontOption.value)}">
+        Font changed to ${fontOption.label}
+      </span>
+    </div>
+  `
                             document.body.appendChild(notification)
 
                             setTimeout(() => {

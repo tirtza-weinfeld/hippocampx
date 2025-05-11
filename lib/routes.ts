@@ -1,4 +1,4 @@
-import { Brain, Binary, Sparkles, InfinityIcon, ChartNoAxesCombinedIcon } from "lucide-react"
+import { Brain, Binary, Sparkles, InfinityIcon, ChartNoAxesCombinedIcon, Home } from "lucide-react"
 
 export type NavigationItem = {
     title: string
@@ -9,7 +9,7 @@ export type NavigationItem = {
     children?: NavigationItem[] 
 }
 export const routes: NavigationItem[] = [
-    // { title: 'Home', href: '/', icon: Home, color: "text-blue-500", bgColor: "bg-purple-500/10", },
+    { title: 'Home', href: '/', icon: Home, color: "text-blue-500", bgColor: "bg-purple-500/10", },
     
     { title: 'Binary', href: '/binary', icon: Binary, color: "text-violet-500", bgColor: "bg-violet-500/10",
         // children: [

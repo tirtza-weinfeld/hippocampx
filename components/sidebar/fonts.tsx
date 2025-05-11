@@ -69,17 +69,55 @@ const montserrat = Montserrat({
 
 export function Fonts() {
   return (
-    <style jsx global>{`
-      :root {
-        --font-dancing-script: ${dancingScript.style.fontFamily};
-        --font-pacifico: ${pacifico.style.fontFamily};
-        --font-great-vibes: ${greatVibes.style.fontFamily};
-        --font-satisfy: ${satisfy.style.fontFamily};
-        --font-tangerine: ${tangerine.style.fontFamily};
-        --font-roboto: ${roboto.style.fontFamily};
-        --font-open-sans: ${openSans.style.fontFamily};
-        --font-montserrat: ${montserrat.style.fontFamily};
-      }
-    `}</style>
+    <>
+      <style jsx global>{`
+        :root {
+          --font-dancing-script: ${dancingScript.style.fontFamily};
+          --font-pacifico: ${pacifico.style.fontFamily};
+          --font-great-vibes: ${greatVibes.style.fontFamily};
+          --font-satisfy: ${satisfy.style.fontFamily};
+          --font-tangerine: ${tangerine.style.fontFamily};
+          --font-roboto: ${roboto.style.fontFamily};
+          --font-open-sans: ${openSans.style.fontFamily};
+          --font-montserrat: ${montserrat.style.fontFamily};
+        }
+        
+        /* Add font classes for direct application */
+        .font-dancing-script {
+          font-family: var(--font-dancing-script);
+        }
+        .font-pacifico {
+          font-family: var(--font-pacifico);
+        }
+        .font-great-vibes {
+          font-family: var(--font-great-vibes);
+        }
+        .font-satisfy {
+          font-family: var(--font-satisfy);
+        }
+        .font-tangerine {
+          font-family: var(--font-tangerine);
+        }
+        .font-roboto {
+          font-family: var(--font-roboto);
+        }
+        .font-open-sans {
+          font-family: var(--font-open-sans);
+        }
+        .font-montserrat {
+          font-family: var(--font-montserrat);
+        }
+      `}</style>
+
+      {/* Add font preloading for better performance */}
+      <link
+        rel="preload"
+        href={dancingScript.style.fontFamily as string}
+        as="font"
+        type="font/woff2"
+        crossOrigin="anonymous"
+      />
+      <link rel="preload" href={pacifico.style.fontFamily as string} as="font" type="font/woff2" crossOrigin="anonymous" />
+    </>
   )
 }
