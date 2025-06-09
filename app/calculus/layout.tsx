@@ -1,6 +1,8 @@
 import type React from "react"
 import { Navigation } from "@/components/calculus/navigation"
 import { Mascot } from "@/components/calculus/mascot"
+
+
 import type { Metadata } from "next"
 // import { SparklesCore } from "@/components/calculus/ui/sparkles"
 
@@ -20,10 +22,14 @@ export default function RootLayout({
 
       <Navigation />
       {children}
-      <Mascot
+      {/* <Mascot
         message="Welcome to CalKids! I'm Newton, your calculus guide. Let's explore the fascinating world of change and motion together!"
         character="newton"
-      />
+      /> */}
+            <Mascot
+              message="Welcome to CalKids! I'm Newton, your calculus guide. Let's explore the fascinating world of change and motion together!"
+              character="newton"
+            />
     </div>
     // <div className=" @container calculus min-h-screen bg-background mt-5">
     //   <div className="relative flex min-h-screen flex-col">

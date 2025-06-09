@@ -13,6 +13,7 @@ import { FunButton } from "./fun-button"
 
 export default function BinaryFunFacts() {
   const [currentFactIndex, setCurrentFactIndex] = useState(0)
+  const [direction, setDirection] = useState(0) // 1 for forward, -1 for backward
   const [copied, setCopied] = useState(false)
 
   const funFacts = [
@@ -101,10 +102,12 @@ export default function BinaryFunFacts() {
   const currentFact = funFacts[currentFactIndex]
 
   const goToNextFact = () => {
+    setDirection(1)
     setCurrentFactIndex((prev) => (prev + 1) % funFacts.length)
   }
 
   const goToPrevFact = () => {
+    setDirection(-1)
     setCurrentFactIndex((prev) => (prev - 1 + funFacts.length) % funFacts.length)
   }
 
@@ -193,42 +196,52 @@ export default function BinaryFunFacts() {
             <h2 className="text-2xl md:text-3xl font-bold text-center ml-2 bg-clip-text text-transparent bg-gradient-to-r from-violet-600 to-blue-500">
               Binary Fun Facts
             </h2>
-          </div>
 
-          <div className="w-full max-w-3xl">
-            <AnimatePresence mode="wait">
+          </div>
+          <p className="text-lg text-slate-700 dark:text-slate-300 max-w-2xl mx-auto mb-8 text-center">
+            Discover amazing and surprising facts about binary numbers!
+          </p>
+
+          <div className="w-full max-w-3xl relative bg-white/70 dark:bg-slate-800/70 p-6 rounded-xl shadow-lg backdrop-blur-sm 
+          ">
+            <div className=" h-[50vh] overflow-scroll ">
+            <AnimatePresence mode="wait" >
               <motion.div
                 key={currentFactIndex}
-                initial={{ opacity: 0, x: 50 }}
+                initial={{ opacity: 0, x: direction >= 0 ? 150 : -150 }}
+                // initial={{ opacity: 0,x: direction >= 0 ? -50 : 50 }}
                 animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -50 }}
-                transition={{ duration: 0.3 }}
-                className="bg-white/70 dark:bg-slate-800/70 p-6 rounded-xl shadow-lg backdrop-blur-sm"
+                // exit={{ opacity: 0, x: direction > 0 ? 150 : -150 }}
+                // initial={{ opacity: 0, x: 50}}
+                // exit={{ opacity: 0, x: -50 }}
+                exit={{ opacity: 0, x:direction >= 0 ? -150 : 150 }}
+                transition={{ duration: 0.5 }}
+                className=""
+                
               >
-                <div className="flex flex-col md:flex-row gap-6">
+                <div className="flex flex-col md:flex-row gap-6 ">
                   <div className="flex-1">
                     <div className="flex items-center mb-4">
                       <Lightbulb className={`h-6 w-6 mr-2 text-${currentFact.color.split("-")[1]}-500`} />
                       <h3 className="text-xl font-bold">{currentFact.title}</h3>
                     </div>
-
                     <p className="text-base mb-6">{currentFact.content}</p>
 
-                    <div className="flex justify-between items-center mt-4">
-                      <div className="flex space-x-1">
+
+                    <div className="flex justify-end items-center mt-4">
+                      {/* <div className="flex space-x-1">
                         {funFacts.map((_, i) => (
                           <motion.div
                             key={i}
-                            className={`h-2 w-2 rounded-full ${
-                              i === currentFactIndex
+                            className={`h-2 w-2 rounded-full ${i === currentFactIndex
                                 ? `bg-${currentFact.color.split("-")[1]}-500`
                                 : "bg-gray-300 dark:bg-gray-700"
-                            }`}
+                              }`}
                             animate={i === currentFactIndex ? { scale: [1, 1.5, 1] } : {}}
                             transition={{ repeat: Number.POSITIVE_INFINITY, duration: 2 }}
                           />
                         ))}
-                      </div>
+                      </div> */}
 
                       <div className="flex gap-2">
                         <Button
@@ -260,7 +273,7 @@ export default function BinaryFunFacts() {
                     </div>
                   </div>
 
-                  <div className="md:w-1/3 flex flex-col items-center justify-center">
+                  <div className="md:w-1/3 flex flex-col items-center justify-center hidden md:block">
                     <motion.div
                       animate={{
                         y: [0, -10, 0],
@@ -274,12 +287,11 @@ export default function BinaryFunFacts() {
                 </div>
               </motion.div>
             </AnimatePresence>
+            </div>
 
-            {/* Update the navigation buttons to be more kid-friendly */}
-            <div className="flex justify-between items-center mt-6">
+            <div className="flex justify-between items-center mt-6 absolute bottom-2 left-5 right-5 ">
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                 <FunButton
-                  variant="outline"
                   onClick={goToPrevFact}
                   icon={<ChevronLeft className="h-4 w-4" />}
                   iconPosition="left"
@@ -293,15 +305,20 @@ export default function BinaryFunFacts() {
 
               <div className="flex space-x-1">
                 {funFacts.map((_, i) => (
-                  <motion.div
+                  <motion.button
                     key={i}
-                    className={`h-2 w-2 rounded-full ${
+                    onClick={() => {
+                      setDirection(i > currentFactIndex ? 1 : -1)
+                      setCurrentFactIndex(i)
+                    }}
+                    className={`h-2 w-2 rounded-full transition-all duration-300 hover:scale-150 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${
                       i === currentFactIndex
                         ? `bg-${currentFact.color.split("-")[1]}-500`
-                        : "bg-gray-300 dark:bg-gray-700"
+                        : "bg-gray-300 dark:bg-gray-700 hover:bg-gray-400 dark:hover:bg-gray-600"
                     }`}
                     animate={i === currentFactIndex ? { scale: [1, 1.5, 1] } : {}}
                     transition={{ repeat: Number.POSITIVE_INFINITY, duration: 2 }}
+                    aria-label={`Go to fact ${i + 1}`}
                   />
                 ))}
               </div>
@@ -346,7 +363,7 @@ export default function BinaryFunFacts() {
                   variant="default"
                   bubbles={true}
                   size="xl"
-                  className="px-8 py-5 text-xl font-bold"
+                  className="px-8 py-5 text-xl font-bold h-10"
                 >
                   <span className="relative z-10">Celebrate Binary!</span>
                 </FunButton>
@@ -358,4 +375,5 @@ export default function BinaryFunFacts() {
     </Card>
   )
 }
+
 

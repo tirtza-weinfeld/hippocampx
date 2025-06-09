@@ -147,7 +147,7 @@ export default function BinaryPractice() {
     <Card className="w-full border-0 shadow-xl bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm rounded-2xl overflow-hidden">
       <CardContent className="pt-6">
         <div className="flex flex-col items-center">
-          <div className="flex items-center mb-6">
+          <div className="flex items-center ">
             <motion.div
               animate={{
                 rotate: mascotEmotion === "confused" ? [0, 10, -10, 0] : 0,
@@ -157,10 +157,15 @@ export default function BinaryPractice() {
             >
               <BinaryMascot emotion={mascotEmotion} size="sm" />
             </motion.div>
-            <h2 className="text-2xl md:text-3xl font-bold text-center ml-2 bg-clip-text text-transparent bg-gradient-to-r from-violet-600 to-blue-500">
+            <h2 className="text-2xl md:text-3xl font-bold text-center ml-2 bg-clip-text text-transparent bg-gradient-to-r from-violet-600 to-blue-500 
+            ">
               Binary Practice
             </h2>
+            
           </div>
+          <p className="text-lg text-slate-700 dark:text-slate-300 max-w-2xl mx-auto mb-8">
+            Convert between binary and decimal numbers with our interactive tools.
+          </p>
 
           <div className="w-full max-w-3xl mb-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">

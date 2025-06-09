@@ -127,14 +127,14 @@ export default function AIQuiz() {
       </div>
 
       {!quizCompleted ? (
-        <Card className="hover-card overflow-hidden">
-          <CardHeader className="bg-gradient-to-r from-orange-500 to-red-500 text-white">
+        <Card className="hover-card overflow-hidden bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm">
+          <CardHeader className="bg-gradient-to-r from-blue-500 to-purple-500 text-white">
             <div className="flex justify-between items-center">
               <CardTitle className="flex items-center">
                 <Brain className="h-6 w-6 mr-2" />
                 Question {currentQuestionIndex + 1} of {questions.length}
               </CardTitle>
-              <div className="text-lg font-medium bg-white text-orange-600 px-3 py-1 rounded-full">
+              <div className="text-lg font-medium bg-white/90 text-blue-600 px-3 py-1 rounded-full">
                 Score: {score}/{currentQuestionIndex + (isAnswered ? 1 : 0)}
               </div>
             </div>
@@ -210,7 +210,7 @@ export default function AIQuiz() {
               </div>
             )}
           </CardContent>
-          <CardFooter className="flex justify-between p-6 bg-gray-50 dark:bg-gray-800/50 border-t dark:border-gray-700">
+          <CardFooter className="flex justify-between p-6 bg-gray-50/50 dark:bg-slate-800/50 border-t dark:border-gray-700">
             <Button variant="outline" onClick={restartQuiz} className="flex items-center" aria-label="Restart quiz">
               <RotateCcw className="h-4 w-4 mr-2" />
               Restart
@@ -221,7 +221,7 @@ export default function AIQuiz() {
                 <Button
                   onClick={handleAnswer}
                   disabled={selectedOption === null}
-                  className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600"
+                  className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600"
                   aria-label="Check your answer"
                 >
                   Check Answer
@@ -248,8 +248,8 @@ export default function AIQuiz() {
           </CardFooter>
         </Card>
       ) : (
-        <Card className="text-center hover-card overflow-hidden">
-          <CardHeader className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white">
+        <Card className="text-center hover-card overflow-hidden bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm">
+          <CardHeader className="bg-gradient-to-r from-blue-500 to-purple-500 text-white">
             <CardTitle className="text-2xl flex items-center justify-center">
               <Sparkles className="h-6 w-6 mr-2" />
               Quiz Complete!
@@ -291,7 +291,7 @@ export default function AIQuiz() {
               </p>
             </div>
           </CardContent>
-          <CardFooter className="justify-center p-6 bg-gray-50 dark:bg-gray-800/50 border-t dark:border-gray-700">
+          <CardFooter className="justify-center p-6 bg-gray-50/50 dark:bg-slate-800/50 border-t dark:border-gray-700">
             <Button
               onClick={restartQuiz}
               className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
@@ -305,9 +305,9 @@ export default function AIQuiz() {
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="p-6 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-100 dark:border-orange-800 hover-card">
-          <h3 className="text-xl font-semibold text-orange-700 dark:text-orange-300 mb-3 flex items-center">
-            <Sparkles className="h-5 w-5 mr-2 text-orange-500" />
+        <div className="p-6 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm rounded-lg border border-blue-100 dark:border-slate-700 hover-card">
+          <h3 className="text-xl font-semibold text-blue-700 dark:text-blue-300 mb-3 flex items-center">
+            <Sparkles className="h-5 w-5 mr-2 text-blue-500" />
             Fun AI Facts
           </h3>
           <ul className="list-disc list-inside space-y-2 dark:text-gray-300">
@@ -319,7 +319,7 @@ export default function AIQuiz() {
           </ul>
         </div>
 
-        <div className="p-6 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-100 dark:border-purple-800 hover-card">
+        <div className="p-6 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm rounded-lg border border-purple-100 dark:border-slate-700 hover-card">
           <h3 className="text-xl font-semibold text-purple-700 dark:text-purple-300 mb-3 flex items-center">
             <Brain className="h-5 w-5 mr-2 text-purple-500" />
             AI in Your Future

@@ -3,7 +3,7 @@
 import { useState, useEffect, useTransition, useOptimistic, useCallback } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { motion, AnimatePresence } from "framer-motion"
-import { ChevronRight, ChevronLeft } from "lucide-react"
+import { ArrowLeft, ArrowRight } from "lucide-react"
 import BinaryMascot, { type MascotEmotion } from "./binary-mascot"
 import confetti from "canvas-confetti"
 import { FunButton } from "./fun-button"
@@ -491,146 +491,153 @@ export default function BinaryIntroduction() {
   const currentLesson = lessons[optimisticState.step]
 
   return (
-    <Card className="w-full overflow-hidden border-0 shadow-xl bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm rounded-2xl">
-      <CardContent className="pt-6 pb-6">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={optimisticState.step}
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20, transition: { duration: 0.2 } }} // Faster exit
-            transition={{ duration: 0.3 }}
-            className="flex flex-col items-center"
-          >
-            <div className="flex items-center mb-4">
-              <BinaryMascot emotion={optimisticState.mascotEmotion} size="sm" />
-              <h2 className="text-2xl md:text-3xl font-bold text-center ml-2 bg-clip-text text-transparent bg-gradient-to-r from-violet-600 to-blue-500">
-                {currentLesson.title}
-              </h2>
-            </div>
-
+    <Card className="border-0 h-[calc(100vh-14rem)] max-w-3xl mx-auto">
+      <CardContent className="h-full p-0 relative bg-background">
+        {/* Scrollable content area with padding */}
+        <div className="overflow-y-auto h-[calc(100%-5rem)] pt-6 px-6  ">
+          <AnimatePresence mode="wait">
             <motion.div
-              className="mb-6 text-center max-w-2xl px-4"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.2 }}
+              key={optimisticState.step}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              className="flex-1"
             >
-              <p className="text-base md:text-lg">{currentLesson.content}</p>
+              {/* Content */}
+              <div className="flex flex-col items-center w-full gap-6 pb-20">
+                <div className="flex flex-col items-center text-center gap-2 w-full">
+                  <div className="flex items-center gap-2">
+                    <BinaryMascot emotion={optimisticState.mascotEmotion} size="sm" />
+                    <h2 className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-violet-600 to-blue-500">
+                      {currentLesson.title}
+                    </h2>
+                  </div>
+
+                  <motion.div
+                    className="w-full max-w-2xl"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.2 }}
+                  >
+                    <p className="text-base md:text-lg text-center">{currentLesson.content}</p>
+                  </motion.div>
+                </div>
+
+                <div className="w-full flex justify-center">
+                  {currentLesson.visual}
+                </div>
+
+                {optimisticState.showCelebration && (
+                  <motion.div
+                    className="absolute inset-0 pointer-events-none"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    <div className="absolute top-1/4 left-1/4">
+                      <motion.div
+                        animate={{ y: [0, -100], opacity: [1, 0] }}
+                        transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
+                        className="text-4xl"
+                      >
+                        🎉
+                      </motion.div>
+                    </div>
+                    <div className="absolute top-1/3 right-1/4">
+                      <motion.div
+                        animate={{ y: [0, -100], opacity: [1, 0] }}
+                        transition={{ duration: 2.5, repeat: Number.POSITIVE_INFINITY, delay: 0.3 }}
+                        className="text-4xl"
+                      >
+                        🎈
+                      </motion.div>
+                    </div>
+                    <div className="absolute bottom-1/4 right-1/3">
+                      <motion.div
+                        animate={{ y: [0, -100], opacity: [1, 0] }}
+                        transition={{ duration: 1.8, repeat: Number.POSITIVE_INFINITY, delay: 0.5 }}
+                        className="text-4xl"
+                      >
+                        ⭐
+                      </motion.div>
+                    </div>
+                  </motion.div>
+                )}
+              </div>
             </motion.div>
+          </AnimatePresence>
+        </div>
 
-            {currentLesson.visual}
-
-            {optimisticState.showCelebration && (
+        {/* Fixed navigation at bottom */}
+        <div className="absolute bottom-0 left-0 right-0 h-16 bg-background/80 backdrop-blur-sm">
+          <div className="flex items-center justify-between gap-4 max-w-2xl mx-auto h-full px-6">
+            {/* Previous button - icon only on mobile */}
+            <div>
               <motion.div
-                className="absolute inset-0 pointer-events-none"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.5 }}
+                whileHover={{ scale: optimisticState.step === 0 ? 1 : 1.08, y: optimisticState.step === 0 ? 0 : -5 }}
+                whileTap={{ scale: optimisticState.step === 0 ? 1 : 0.92 }}
               >
-                <div className="absolute top-1/4 left-1/4">
-                  <motion.div
-                    animate={{ y: [0, -100], opacity: [1, 0] }}
-                    transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
-                    className="text-4xl"
-                  >
-                    🎉
-                  </motion.div>
-                </div>
-                <div className="absolute top-1/3 right-1/4">
-                  <motion.div
-                    animate={{ y: [0, -100], opacity: [1, 0] }}
-                    transition={{ duration: 2.5, repeat: Number.POSITIVE_INFINITY, delay: 0.3 }}
-                    className="text-4xl"
-                  >
-                    🎈
-                  </motion.div>
-                </div>
-                <div className="absolute bottom-1/4 right-1/3">
-                  <motion.div
-                    animate={{ y: [0, -100], opacity: [1, 0] }}
-                    transition={{ duration: 1.8, repeat: Number.POSITIVE_INFINITY, delay: 0.5 }}
-                    className="text-4xl"
-                  >
-                    ⭐
-                  </motion.div>
-                </div>
+                <FunButton
+                  // variant={optimisticState.step === 0 ? "ghost" : "default"}
+                  onClick={navigateToPrevious}
+                  disabled={optimisticState.step === 0 || isPending}
+                  icon={<ArrowLeft className="h-5 w-5" />}
+                  className={`${isPending ? "opacity-70" : ""} h-10 w-10 sm:w-auto sm:px-6`}
+                  bubbles={optimisticState.step !== 0}
+                  size="lg"
+                  aria-label="Go to previous lesson"
+                >
+                  <span className="hidden sm:inline ml-1">Previous</span>
+                </FunButton>
               </motion.div>
-            )}
-
-            <div className="relative w-full mt-8 px-4 sm:h-16 flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-0">
-              {/* Fixed position buttons - improved for mobile */}
-              <div className="w-full sm:w-auto sm:absolute sm:left-4 sm:bottom-0">
-                <motion.div
-                  whileHover={{ scale: optimisticState.step === 0 ? 1 : 1.08, y: optimisticState.step === 0 ? 0 : -5 }}
-                  whileTap={{ scale: optimisticState.step === 0 ? 1 : 0.92 }}
-                  animate={{ rotate: [0, -1, 1, 0] }}
-                  transition={{ rotate: { repeat: Number.POSITIVE_INFINITY, duration: 2 } }}
-                >
-                  <FunButton
-                    variant={optimisticState.step === 0 ? "ghost" : "default"}
-                    onClick={navigateToPrevious}
-                    disabled={optimisticState.step === 0 || isPending}
-                    icon={<ChevronLeft className="mr-1 h-5 w-5" />}
-                    iconPosition="left"
-                    className={`flex items-center px-4 sm:px-6 py-3 sm:py-4 text-base sm:text-lg w-full sm:w-auto ${isPending ? "opacity-70" : ""}`}
-                    bubbles={optimisticState.step !== 0}
-                    size="lg"
-                    aria-label="Go to previous lesson"
-                  >
-                    <span className={optimisticState.step === 0 ? "opacity-50" : ""}>Previous</span>
-                  </FunButton>
-                </motion.div>
-              </div>
-
-              {/* Pagination indicators in the center - improved for mobile */}
-              <div className="flex space-x-2 order-first sm:order-none sm:absolute sm:left-1/2 sm:transform sm:-translate-x-1/2 sm:bottom-0">
-                {lessons.map((_, i) => (
-                  <motion.button
-                    key={i}
-                    className={`h-3 w-3 rounded-full ${
-                      i === optimisticState.step
-                        ? "bg-gradient-to-r from-violet-400 to-blue-400 shadow-[0_0_5px_rgba(99,102,241,0.5)]"
-                        : "bg-gray-300 dark:bg-gray-700"
-                    }`}
-                    animate={i === optimisticState.step ? { scale: [1, 1.5, 1], y: [0, -2, 0] } : {}}
-                    transition={{ repeat: Number.POSITIVE_INFINITY, duration: 2 }}
-                    onClick={() => navigateToStep(i)}
-                    disabled={isPending}
-                    aria-label={`Go to lesson ${i + 1}`}
-                    aria-current={i === optimisticState.step ? "step" : undefined}
-                  />
-                ))}
-              </div>
-
-              {/* Next button fixed at right - improved for mobile */}
-              <div className="w-full sm:w-auto sm:absolute sm:right-4 sm:bottom-0">
-                <motion.div
-                  whileHover={{
-                    scale: optimisticState.step === lessons.length - 1 ? 1 : 1.08,
-                    y: optimisticState.step === lessons.length - 1 ? 0 : -5,
-                  }}
-                  whileTap={{ scale: optimisticState.step === lessons.length - 1 ? 1 : 0.92 }}
-                  animate={{ rotate: [0, 1, -1, 0] }}
-                  transition={{ rotate: { repeat: Number.POSITIVE_INFINITY, duration: 2 } }}
-                >
-                  <FunButton
-                    variant={optimisticState.step === lessons.length - 1 ? "ghost" : "default"}
-                    onClick={navigateToNext}
-                    disabled={optimisticState.step === lessons.length - 1 || isPending}
-                    icon={<ChevronRight className="ml-1 h-5 w-5 relative z-10" />}
-                    iconPosition="right"
-                    className={`flex items-center px-4 sm:px-6 py-3 sm:py-4 text-base sm:text-lg w-full sm:w-auto ${isPending ? "opacity-70" : ""}`}
-                    bubbles={optimisticState.step !== lessons.length - 1}
-                    size="lg"
-                    aria-label="Go to next lesson"
-                  >
-                    <span className="relative z-10">Next</span>
-                  </FunButton>
-                </motion.div>
-              </div>
             </div>
-          </motion.div>
-        </AnimatePresence>
+
+            {/* Pagination indicators - centered */}
+            <div className="flex space-x-2">
+              {lessons.map((_, i) => (
+                <motion.button
+                  key={i}
+                  className={`h-2.5 w-2.5 rounded-full ${
+                    i === optimisticState.step
+                      ? "bg-gradient-to-r from-violet-400 to-blue-400 shadow-[0_0_5px_rgba(99,102,241,0.5)]"
+                      : "bg-gray-300 dark:bg-gray-700"
+                  }`}
+                  animate={i === optimisticState.step ? { scale: [1, 1.5, 1], y: [0, -2, 0] } : {}}
+                  transition={{ repeat: Number.POSITIVE_INFINITY, duration: 2 }}
+                  onClick={() => navigateToStep(i)}
+                  disabled={isPending}
+                  aria-label={`Go to lesson ${i + 1}`}
+                  aria-current={i === optimisticState.step ? "step" : undefined}
+                />
+              ))}
+            </div>
+
+            {/* Next button - icon only on mobile */}
+            <div>
+              <motion.div
+                whileHover={{
+                  scale: optimisticState.step === lessons.length - 1 ? 1 : 1.08,
+                  y: optimisticState.step === lessons.length - 1 ? 0 : -5,
+                }}
+                whileTap={{ scale: optimisticState.step === lessons.length - 1 ? 1 : 0.92 }}
+              >
+                <FunButton
+                  // variant={optimisticState.step === lessons.length - 1 ? "ghost" : "default"}
+                  onClick={navigateToNext}
+                  disabled={optimisticState.step === lessons.length - 1 || isPending}
+                  icon={<ArrowRight className="h-5 w-5" />}
+                  className={`${isPending ? "opacity-70" : ""} h-10 w-10 sm:w-auto sm:px-6`}
+                  bubbles={optimisticState.step !== lessons.length - 1}
+                  size="lg"
+                  aria-label="Go to next lesson"
+                  iconPosition="right"
+                >
+                  <span className="hidden sm:inline mr-1">Next</span>
+                </FunButton>
+              </motion.div>
+            </div>
+          </div>
+        </div>
       </CardContent>
     </Card>
   )

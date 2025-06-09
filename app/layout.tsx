@@ -11,6 +11,7 @@ import { SparklesCore } from "@/components/calculus/ui/sparkles";
 import { Fonts } from "@/components/sidebar/fonts";
 // import { Fonts } from "@/components/sidebar/fonts";
 import { Font } from "@/components/theme/theme-provider";
+import 'katex/dist/katex.min.css';
 // const geistSans = Geist({
 //   variable: "--font-geist-sans",
 //   subsets: ["latin"],
@@ -40,7 +41,21 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning style={{ fontFamily: getFontFamily(font) }}>
       <body className={`${inter.variable} antialiased`}>
-       
+      <div className="fixed inset-0 pointer-events-none z-[9999]" aria-label="Navigation" role="navigation">
+        {/* Sparkles background */}
+        <div className="absolute inset-0 w-64 h-full">
+          <SparklesCore
+            id="nav-sparkles"
+            className="absolute inset-0"
+            background="transparent"
+            minSize={0.4}
+            maxSize={1}
+            particleColor="#7C3AED"
+            particleDensity={10}
+          />
+        </div>
+      </div>
+
       <Fonts />
 
         <ThemeProvider
@@ -53,7 +68,7 @@ export default async function RootLayout({
         {/* <Fonts /> */}
 
           <CustomTheme>
-          <SparklesCore
+          {/* <SparklesCore
                 id="tsparticlesfullpage"
                 background="transparent"
                 minSize={0.6}
@@ -61,7 +76,7 @@ export default async function RootLayout({
                 particleDensity={15}
                 className="h-full w-full"
                 particleColor="#7C3AED"
-              />
+              /> */}
             {/* <SidebarProvider defaultOpen={defaultOpen}  >
               <SidebarTrigger className="md:hidden fixed top-3 left-2 z-50 bg-sidebar rounded p-3 rounded-full " />
                */}
@@ -72,6 +87,7 @@ export default async function RootLayout({
               />
 
               <SidebarInset > */}
+              
             <div className="  h-full w-full">
             
               <div className="flex flex-col min-h-screen">

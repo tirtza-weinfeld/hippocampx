@@ -22,6 +22,11 @@ export default function RobotFriend() {
   const [isTyping, setIsTyping] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
+  // Scroll to top on mount
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }, [])
+
   const handleSend = () => {
     if (!input.trim()) return
 
@@ -97,8 +102,13 @@ export default function RobotFriend() {
 
   // Auto-scroll to bottom of messages
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-  }, [messages]) //Corrected dependency
+    if (messagesEndRef.current) {
+      const chatContainer = messagesEndRef.current.parentElement
+      if (chatContainer) {
+        chatContainer.scrollTop = chatContainer.scrollHeight
+      }
+    }
+  }, [messages])
 
   return (
     <SwipeContainer className="space-y-6">
@@ -142,7 +152,7 @@ export default function RobotFriend() {
             </Button>
           </div>
 
-          <div className="flex-1 overflow-y-auto mb-4 space-y-4 pr-2">
+          <div className="flex-1 overflow-y-auto mb-4 space-y-4 pr-2 scroll-smooth">
             <AnimatePresence>
               {messages.map((message) => (
                 <motion.div

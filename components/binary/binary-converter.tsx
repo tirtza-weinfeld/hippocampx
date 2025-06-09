@@ -89,10 +89,11 @@ export default function BinaryConverter() {
   }
 
   return (
-    <Card className="w-full border-0 shadow-xl bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm rounded-2xl overflow-hidden">
-      <CardContent className="pt-6">
+    <Card className="w-full border-0 shadow-xl  backdrop-blur-sm rounded-2xl overflow-hidden ">
+      <CardContent className="pt-6 max-w-4xl mx-auto">
+
         <div className="flex flex-col items-center">
-          <div className="flex items-center mb-6">
+          <div className="flex flex-col items-center mb-6">
             <motion.div
               animate={{ rotate: [0, 10, -10, 0] }}
               transition={{ repeat: Number.POSITIVE_INFINITY, duration: 3 }}
@@ -102,6 +103,9 @@ export default function BinaryConverter() {
             <h2 className="text-2xl md:text-3xl font-bold text-center ml-2 bg-clip-text text-transparent bg-gradient-to-r from-violet-600 to-blue-500">
               Binary Converter
             </h2>
+            <p className="text-lg text-slate-700 dark:text-slate-300 ">
+              Convert numbers between binary and decimal with our interactive tool.
+            </p>
           </div>
 
           {/* Add a fun toggle button for the mode switch */}
@@ -120,10 +124,7 @@ export default function BinaryConverter() {
               checked={mode === "binary-to-decimal"}
               onCheckedChange={toggleMode}
               className="
-              data-[state=checked]:bg-gradient-to-r 
-              data-[state=checked]:from-violet-500 
-              data-[state=checked]:to-blue-500 data-[state=unchecked]:bg-slate-200 
-              dark:data-[state=unchecked]:bg-slate-700
+           
                h-8 w-14"
             />
             <Label
@@ -134,7 +135,7 @@ export default function BinaryConverter() {
             </Label>
           </motion.div>
 
-          <div className="w-full max-w-md space-y-8">
+          <div className="w-full  space-y-8 ">
             <AnimatePresence mode="wait">
               <motion.div
                 key={mode}
@@ -373,7 +374,7 @@ export default function BinaryConverter() {
             </AnimatePresence>
           </div>
 
-          <div className="mt-8 w-full max-w-md">
+          <div className="mt-8 w-full ">
             <Card className="bg-blue-50/70 dark:bg-slate-800/70 border-0 shadow-lg">
               <CardContent className="pt-4 bg-gradient-to-br from-blue-50/80 to-violet-50/80 dark:from-blue-900/30 dark:to-violet-900/30 rounded-xl border border-blue-100/50 dark:border-blue-800/50">
                 <h3 className="font-bold text-lg mb-4 flex items-center">
@@ -390,21 +391,20 @@ export default function BinaryConverter() {
                   {[128, 64, 32, 16, 8, 4, 2, 1].map((value, index) => (
                     <motion.div key={index} className="text-center" whileHover={{ scale: 1.1, y: -5 }}>
                       <motion.div
-                        className={`w-full h-12 rounded-lg flex items-center justify-center font-bold ${
-                          binary.padStart(8, "0")[index] === "1"
-                            ? "bg-gradient-to-br from-blue-400 to-blue-600 dark:from-blue-500 dark:to-blue-700 text-white shadow-md"
-                            : "bg-white dark:bg-slate-700 shadow-inner"
-                        }`}
+                        className={`w-full h-12 rounded-lg flex items-center justify-center font-bold ${binary.padStart(8, "0")[index] === "1"
+                          ? "bg-gradient-to-br from-blue-400 to-blue-600 dark:from-blue-500 dark:to-blue-700 text-white shadow-md"
+                          : "bg-white dark:bg-slate-700 shadow-inner"
+                          }`}
                         animate={
                           binary.padStart(8, "0")[index] === "1"
                             ? {
-                                y: [0, -5, 0],
-                                boxShadow: [
-                                  "0px 0px 0px rgba(59, 130, 246, 0)",
-                                  "0px 5px 15px rgba(59, 130, 246, 0.5)",
-                                  "0px 0px 0px rgba(59, 130, 246, 0)",
-                                ],
-                              }
+                              y: [0, -5, 0],
+                              boxShadow: [
+                                "0px 0px 0px rgba(59, 130, 246, 0)",
+                                "0px 5px 15px rgba(59, 130, 246, 0.5)",
+                                "0px 0px 0px rgba(59, 130, 246, 0)",
+                              ],
+                            }
                             : {}
                         }
                         transition={{ repeat: Number.POSITIVE_INFINITY, duration: 2, delay: index * 0.1 }}
@@ -413,13 +413,13 @@ export default function BinaryConverter() {
                       </motion.div>
                       <div className="flex flex-col items-center mt-2">
                         <motion.div
-                          className="text-xs font-medium"
+                          className="text-xs font-medium "
                           animate={
                             binary.padStart(8, "0")[index] === "1"
                               ? {
-                                  scale: [1, 1.2, 1],
-                                  color: ["inherit", "rgb(59, 130, 246)", "inherit"],
-                                }
+                                scale: [1, 1.2, 1],
+                                color: ["inherit", "rgb(59, 130, 246)", "inherit"],
+                              }
                               : {}
                           }
                           transition={{ repeat: Number.POSITIVE_INFINITY, duration: 2, delay: index * 0.1 }}
@@ -427,7 +427,8 @@ export default function BinaryConverter() {
                           {value}
                         </motion.div>
                         <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                          2<sup>{7 - index}</sup>
+                          2<sup className=" bg-accent/20 dark:bg-accent/70 px-1 rounded-md">{7 - index}</sup>
+                          <span className="text-accent hidden md:inline"> = {value}</span>
                         </div>
                       </div>
                     </motion.div>
@@ -440,10 +441,18 @@ export default function BinaryConverter() {
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.5 }}
                 >
-                  <p>
-                    Each position represents a power of 2: 2<sup>7</sup>, 2<sup>6</sup>, 2<sup>5</sup>... down to 2
-                    <sup>0</sup>=1
-                  </p>
+                  <div className="flex flex-row place-content-center gap-4">
+                    <span className="text-accent">Each position represents a power of 2:</span>
+                    <span>{[7, 6, 5].map((value, index) => (
+                      <span key={index}>
+                        2<sup className="bg-accent/20 dark:bg-accent/70 px-1 rounded-md">{value}</sup>,
+                      </span>
+                    ))}
+                      ... down to 2
+                      <sup className="text-accent">0</sup>
+                      <span className="text-accent">=1</span>
+                    </span>
+                  </div>
                 </motion.div>
               </CardContent>
             </Card>

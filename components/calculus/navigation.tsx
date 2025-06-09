@@ -17,7 +17,7 @@ import {
 import { useIsMobile as useMobile } from "@/hooks/use-mobile"
 import { cn } from "@/lib/utils"
 import { VisuallyHidden } from "@/components/calculus/visually-hidden"
-import { SparklesCore } from "@/components/calculus/ui/sparkles"
+// import { SparklesCore } from "@/components/calculus/ui/sparkles"
 
 // Math symbols for decoration
 const mathSymbols = ["∫", "∑", "∂", "∞", "π", "√", "Δ", "∇", "lim", "dx"]
@@ -305,7 +305,7 @@ export function Navigation() {
       <div className="fixed inset-0 pointer-events-none z-[9999]" aria-label="Navigation" role="navigation">
         {/* Sparkles background */}
         <div className="absolute inset-0 w-64 h-full">
-          <SparklesCore
+          {/* <SparklesCore
             id="nav-sparkles"
             className="absolute inset-0"
             background="transparent"
@@ -313,7 +313,7 @@ export function Navigation() {
             maxSize={1}
             particleColor="#7C3AED"
             particleDensity={10}
-          />
+          /> */}
         </div>
 
         {/* Expanding FAB button */}

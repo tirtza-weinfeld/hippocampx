@@ -62,13 +62,14 @@ export default function AIExplorer() {
 
   return (
     <SwipeContainer className="space-y-8">
-      <div className="space-y-4">
+      <div className="space-y-4 ">
         <motion.h2
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="text-3xl font-bold gradient-text gradient-purple-blue"
+          className="text-3xl font-bold bg-gradient-to-r from-purple-600 via-pink-500 to-blue-600 bg-clip-text text-transparent"
         >
+
           What is Artificial Intelligence?
         </motion.h2>
         <motion.p
@@ -155,7 +156,7 @@ export default function AIExplorer() {
         <h3 className="text-2xl font-semibold text-blue-700 dark:text-blue-300">Examples of AI in the World</h3>
         <p className="mb-4 dark:text-gray-300">Tap or click on each card to learn more!</p>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6  ">
           {examples.map((example) => (
             <motion.div key={example.id} variants={itemVariants}>
               <Card

@@ -50,3 +50,23 @@
    background-color:color-mix(in oklab, var(--color-pink-500), var(--color-blue-800)50%);
   }
 }
+
+/* Math equation styles */
+.math-equation {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 1.2em;
+}
+
+.math-equation.block {
+  display: flex;
+  margin: 1em 0;
+}
+
+.katex {
+  font-size: 1.1em;
+  line-height: 1.2;
+  text-indent: 0;
+  text-rendering: auto;
+}

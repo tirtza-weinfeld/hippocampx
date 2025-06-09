@@ -120,7 +120,7 @@ export default function BinaryGame() {
           ${binary
             .split("")
             .reverse()
-            .map((bit, i) => (bit === "1" ? `2^${i} = ${Math.pow(2, i)}` : null))
+            .map((bit, i) => (bit === "1" ? `2<sup>${i}</sup> = ${Math.pow(2, i)}` : null))
             .filter(Boolean)
             .reverse()
             .join(" + ")} = ${correctAnswer}`,
@@ -151,7 +151,7 @@ export default function BinaryGame() {
             .toString(2)
             .split("")
             .reverse()
-            .map((bit, i) => (bit === "1" ? `2^${i} (${Math.pow(2, i)})` : null))
+            .map((bit, i) => (bit === "1" ? `2<sup>${i}</sup> (${Math.pow(2, i)})` : null))
             .filter(Boolean)
             .reverse()
             .join(" + ")}`,
@@ -177,6 +177,33 @@ export default function BinaryGame() {
       gameContainerRef.current.focus()
     }
   }, [generateQuestion, timePerQuestion])
+
+  // Handle explanation dialog close
+  const handleExplanationClose = useCallback(() => {
+    setShowExplanation(false)
+    if (questionNumber < totalQuestions - 1) {
+      setQuestionNumber((prev) => prev + 1)
+      setCurrentQuestion(generateQuestion())
+      setSelectedAnswer(null)
+      setIsCorrect(null)
+      setTimeLeft(timePerQuestion)
+      setMascotEmotion("thinking")
+    } else {
+      setGameScreen("gameover")
+
+      // Trigger more confetti for game over with good score
+      if (score >= totalQuestions * 10) {
+        setTimeout(() => {
+          confetti({
+            particleCount: 200,
+            spread: 100,
+            origin: { y: 0.6 },
+            colors: ["#8b5cf6", "#6366f1", "#3b82f6", "#10b981"],
+          })
+        }, 500)
+      }
+    }
+  }, [questionNumber, totalQuestions, generateQuestion, timePerQuestion, score, setGameScreen])
 
   // Check the answer
   const checkAnswer = useCallback(
@@ -213,35 +240,8 @@ export default function BinaryGame() {
       setTimeout(() => {
         setShowExplanation(true)
       }, 1000)
-
-      // Move to next question after a delay
-      setTimeout(() => {
-        if (questionNumber < totalQuestions - 1) {
-          setQuestionNumber((prev) => prev + 1)
-          setCurrentQuestion(generateQuestion())
-          setSelectedAnswer(null)
-          setIsCorrect(null)
-          setTimeLeft(timePerQuestion)
-          setMascotEmotion("thinking")
-          setShowExplanation(false)
-        } else {
-          setGameScreen("gameover")
-
-          // Trigger more confetti for game over with good score
-          if (score >= totalQuestions * 10) {
-            setTimeout(() => {
-              confetti({
-                particleCount: 200,
-                spread: 100,
-                origin: { y: 0.6 },
-                colors: ["#8b5cf6", "#6366f1", "#3b82f6", "#10b981"],
-              })
-            }, 500)
-          }
-        }
-      }, 3000)
     },
-    [currentQuestion, questionNumber, generateQuestion, streak, difficulty, score, totalQuestions, timePerQuestion, timeLeft],
+    [currentQuestion, streak, difficulty, timeLeft],
   )
 
   // Handle keyboard navigation
@@ -302,7 +302,7 @@ export default function BinaryGame() {
   // Tutorial content
   const tutorialSteps = [
     {
-      title: "Welcome to Binary Challenge!",
+      title: "Welcome to Binary Games!",
       content:
         "Learn binary conversion while having fun! This game will test your ability to convert between binary and decimal numbers.",
       image: <BinaryMascot emotion="excited" size="md" />,
@@ -367,9 +367,8 @@ export default function BinaryGame() {
           {["Easy", "Medium", "Hard"].map((level, i) => (
             <div
               key={i}
-              className={`px-4 py-2 rounded-full text-white font-medium ${
-                i === 0 ? "bg-emerald-500" : i === 1 ? "bg-amber-500" : "bg-rose-500"
-              }`}
+              className={`px-4 py-2 rounded-full text-white font-medium ${i === 0 ? "bg-emerald-500" : i === 1 ? "bg-amber-500" : "bg-rose-500"
+                }`}
             >
               {level}
             </div>
@@ -427,12 +426,13 @@ export default function BinaryGame() {
         </div>
 
         <h1 className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-violet-600 to-blue-500">
-          Binary Challenge
+          Binary Games
         </h1>
 
         <p className="text-lg text-slate-700 dark:text-slate-300 max-w-md mx-auto">
-          Test your binary conversion skills in this fun and educational game!
+          Test your binary skills with fun and challenging games!
         </p>
+
       </motion.div>
 
       {/* Game mode selection */}
@@ -460,9 +460,9 @@ export default function BinaryGame() {
                     animate={
                       gameMode === "binary-to-decimal"
                         ? {
-                            y: [0, -3, 0],
-                            scale: [1, 1.05, 1],
-                          }
+                          y: [0, -3, 0],
+                          scale: [1, 1.05, 1],
+                        }
                         : {}
                     }
                     transition={{
@@ -480,8 +480,8 @@ export default function BinaryGame() {
                 animate={
                   gameMode === "binary-to-decimal"
                     ? {
-                        x: [0, 5, 0],
-                      }
+                      x: [0, 5, 0],
+                    }
                     : {}
                 }
                 transition={{ repeat: Number.POSITIVE_INFINITY, duration: 1.2 }}
@@ -494,8 +494,8 @@ export default function BinaryGame() {
                 animate={
                   gameMode === "binary-to-decimal"
                     ? {
-                        scale: [1, 1.1, 1],
-                      }
+                      scale: [1, 1.1, 1],
+                    }
                     : {}
                 }
                 transition={{ repeat: Number.POSITIVE_INFINITY, duration: 2 }}
@@ -522,8 +522,8 @@ export default function BinaryGame() {
                 animate={
                   gameMode === "decimal-to-binary"
                     ? {
-                        scale: [1, 1.1, 1],
-                      }
+                      scale: [1, 1.1, 1],
+                    }
                     : {}
                 }
                 transition={{ repeat: Number.POSITIVE_INFINITY, duration: 2 }}
@@ -535,8 +535,8 @@ export default function BinaryGame() {
                 animate={
                   gameMode === "decimal-to-binary"
                     ? {
-                        x: [0, 5, 0],
-                      }
+                      x: [0, 5, 0],
+                    }
                     : {}
                 }
                 transition={{ repeat: Number.POSITIVE_INFINITY, duration: 1.2 }}
@@ -552,9 +552,9 @@ export default function BinaryGame() {
                     animate={
                       gameMode === "decimal-to-binary"
                         ? {
-                            y: [0, -3, 0],
-                            scale: [1, 1.05, 1],
-                          }
+                          y: [0, -3, 0],
+                          scale: [1, 1.05, 1],
+                        }
                         : {}
                     }
                     transition={{
@@ -635,9 +635,8 @@ export default function BinaryGame() {
           ].map((level) => (
             <motion.div
               key={level.id}
-              className={`relative overflow-hidden rounded-xl shadow-md ${
-                difficulty === (level.id as Difficulty) ? "ring-2 ring-offset-2 ring-offset-background" : ""
-              }`}
+              className={`relative overflow-hidden rounded-xl shadow-md ${difficulty === (level.id as Difficulty) ? "ring-2 ring-offset-2 ring-offset-background" : ""
+                }`}
               style={{
                 boxShadow:
                   difficulty === (level.id as Difficulty)
@@ -655,11 +654,10 @@ export default function BinaryGame() {
               }}
             >
               <div
-                className={`h-full w-full p-5 flex flex-col items-center ${
-                  difficulty === (level.id as Difficulty)
-                    ? `bg-gradient-to-br ${level.color} text-white`
-                    : `bg-white/80 dark:bg-slate-800/80 hover:bg-gradient-to-br ${level.color} hover:text-white text-slate-700 dark:text-slate-200 transition-all duration-300`
-                }`}
+                className={`h-full w-full p-5 flex flex-col items-center ${difficulty === (level.id as Difficulty)
+                  ? `bg-gradient-to-br ${level.color} text-white`
+                  : `bg-white/80 dark:bg-slate-800/80 hover:bg-gradient-to-br ${level.color} hover:text-white text-slate-700 dark:text-slate-200 transition-all duration-300`
+                  }`}
               >
                 <div className="text-2xl mb-2">{level.icon}</div>
                 <h3 className="text-lg font-bold mb-1">{level.label}</h3>
@@ -683,7 +681,7 @@ export default function BinaryGame() {
 
       {/* Action buttons */}
       <motion.div
-        className="flex flex-col sm:flex-row gap-4 justify-center"
+        className="flex  gap-4 justify-center"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.6, duration: 0.5 }}
@@ -714,22 +712,7 @@ export default function BinaryGame() {
         </FunButton>
       </motion.div>
 
-      {/* High score display */}
-      {highScore > 0 && (
-        <motion.div
-          className="text-center"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8, duration: 0.5 }}
-        >
-          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-100 to-yellow-100 dark:from-amber-900/30 dark:to-yellow-900/30 px-4 py-2 rounded-full shadow-sm">
-            <Trophy className="h-5 w-5 text-amber-500" />
-            <span className="font-medium">
-              High Score: <span className="text-amber-600 dark:text-amber-400 font-bold">{highScore}</span>
-            </span>
-          </div>
-        </motion.div>
-      )}
+
     </div>
   )
 
@@ -794,11 +777,10 @@ export default function BinaryGame() {
 
         <div className="absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center">
           <span
-            className={`text-xs font-medium ${
-              timeLeft <= timePerQuestion * 0.3
-                ? "text-red-600 dark:text-red-400"
-                : "text-slate-600 dark:text-slate-400"
-            }`}
+            className={`text-xs font-medium ${timeLeft <= timePerQuestion * 0.3
+              ? "text-red-600 dark:text-red-400"
+              : "text-slate-600 dark:text-slate-400"
+              }`}
           >
             {timeLeft}s
           </span>
@@ -850,11 +832,10 @@ export default function BinaryGame() {
                         initial={{ y: -20, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
                         transition={{ delay: index * 0.1 }}
-                        className={`w-12 h-12 md:w-14 md:h-14 flex items-center justify-center text-xl font-mono font-bold m-1 rounded-lg ${
-                          bit === "1"
-                            ? "bg-gradient-to-br from-violet-500 to-blue-600"
-                            : "bg-gradient-to-br from-blue-500 to-indigo-600"
-                        } text-white shadow-md`}
+                        className={`w-12 h-12 md:w-14 md:h-14 flex items-center justify-center text-xl font-mono font-bold m-1 rounded-lg ${bit === "1"
+                          ? "bg-gradient-to-br from-violet-500 to-blue-600"
+                          : "bg-gradient-to-br from-blue-500 to-indigo-600"
+                          } text-white shadow-md`}
                       >
                         {bit}
                       </motion.div>
@@ -928,10 +909,10 @@ export default function BinaryGame() {
           </div>
 
           {/* Explanation */}
-          <Dialog open={showExplanation} onOpenChange={setShowExplanation}>
+          <Dialog open={showExplanation} onOpenChange={handleExplanationClose}>
             <DialogContent
               className={cn(
-                "sm:max-w-md border-2 shadow-lg transform transition-all",
+                "sm:max-w-md border-2 shadow-lg transform transition-all p-4",
                 isCorrect
                   ? "bg-gradient-to-br from-emerald-50/90 to-emerald-100/90 dark:from-emerald-900/30 dark:to-emerald-800/30 border-emerald-200 dark:border-emerald-800/50"
                   : "bg-gradient-to-br from-rose-50/90 to-rose-100/90 dark:from-rose-900/30 dark:to-rose-800/30 border-rose-200 dark:border-rose-800/50",
@@ -980,7 +961,7 @@ export default function BinaryGame() {
                 )}
               >
                 <p className="font-medium mb-2">How it works:</p>
-                <p className="font-mono">{currentQuestion?.explanation}</p>
+                <p className="font-mono" dangerouslySetInnerHTML={{ __html: currentQuestion?.explanation ?? "" }} />
               </div>
 
               {isCorrect && (
@@ -1113,14 +1094,14 @@ export default function BinaryGame() {
 
   const renderTutorialDialog = () => (
     <Dialog open={tutorialOpen} onOpenChange={setTutorialOpen}>
-      <DialogContent className="sm:max-w-2xl bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm p-0">
+      <DialogContent className="sm:max-w-2xl m-1 rounded-lg bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm p-0 h-[60vh] md:h-[50vh]">
         <DialogHeader className="p-6 pb-0">
           <DialogTitle className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-violet-600 to-blue-500">
             How to Play
           </DialogTitle>
         </DialogHeader>
 
-        <div className="px-6 pb-6">
+        <div className="px-6 pb-6 relative">
           <AnimatePresence mode="wait">
             <motion.div
               key={tutorialStep}
@@ -1136,7 +1117,11 @@ export default function BinaryGame() {
 
               <p className="text-slate-700 dark:text-slate-300 mb-8">{tutorialSteps[tutorialStep].content}</p>
 
-              <div className="flex justify-between items-center mt-6">
+           
+            </motion.div>
+            </AnimatePresence>
+
+            <div className="flex justify-between items-center absolute bottom-2  left-0 w-full px-6 ">
                 <FunButton
                   onClick={() => {
                     setTutorialStep((prev) => Math.max(0, prev - 1))
@@ -1156,9 +1141,8 @@ export default function BinaryGame() {
                   {tutorialSteps.map((_, index) => (
                     <button
                       key={index}
-                      className={`h-2.5 w-2.5 rounded-full ${
-                        tutorialStep === index ? "bg-primary" : "bg-slate-300 dark:bg-slate-600"
-                      }`}
+                      className={`h-2.5 w-2.5 rounded-full ${tutorialStep === index ? "bg-primary" : "bg-slate-300 dark:bg-slate-600"
+                        }`}
                       onClick={() => {
                         setTutorialStep(index)
                       }}
@@ -1195,15 +1179,15 @@ export default function BinaryGame() {
                   </FunButton>
                 )}
               </div>
-            </motion.div>
-          </AnimatePresence>
         </div>
       </DialogContent>
     </Dialog>
   )
 
   return (
-    <Card className="w-full border-0 shadow-xl bg-gradient-to-br from-white/80 via-violet-50/30 to-blue-50/30 dark:from-slate-900/80 dark:via-violet-950/30 dark:to-blue-950/30 backdrop-blur-sm rounded-2xl overflow-hidden">
+    <Card className="
+    w-full border-0 bg-transparent rounded-2xl overflow-hidden min-h-[75vh] place-items-center grid
+    ">
       <div className="pt-6 pb-6 px-4 md:px-6">
         {/* Decorative background elements */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -1329,9 +1313,9 @@ function GameModeCard({
             animate={
               isSelected
                 ? {
-                    y: [0, -5, 0],
-                    rotate: [0, 3, -3, 0],
-                  }
+                  y: [0, -5, 0],
+                  rotate: [0, 3, -3, 0],
+                }
                 : {}
             }
             transition={{ repeat: Number.POSITIVE_INFINITY, duration: 3 }}

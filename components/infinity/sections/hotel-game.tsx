@@ -508,4 +508,3 @@ export function HotelGame() {
     </div>
   )
 }
-

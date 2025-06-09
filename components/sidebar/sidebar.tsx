@@ -1191,7 +1191,8 @@ function NavItem({ item, isExpanded, pathname, onClick, isOpen, onOpenChange, re
                     onClick={() => onClick(child.href, item.href)}
                     data-href={child.href}
                   >
-                    {child.title}
+                    {child.icon && <child.icon className={`h-4 w-4 ${  pathname === child.href ? `bg-primary/20 text-primary` : item.color}`} />}
+                    {child.title }
                   </Button>
                 </motion.div>
               ))}

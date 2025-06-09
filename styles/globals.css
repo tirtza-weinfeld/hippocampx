@@ -1,3 +1,4 @@
+@import "katex/dist/katex.min.css";
 @import "tailwindcss";
 
 @variant dark (&:where(.dark, .dark *));
@@ -24,7 +25,22 @@
   }
 }
 
+/* Basic KaTeX styles */
+.katex {
+  font-size: 1.1em;
+  text-rendering: auto;
+}
 
+.katex-container {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Fix vertical alignment */
+.katex-container .katex {
+  vertical-align: middle;
+}
 
 html {
   transition: color var(--transition-theme), background-color var(--transition-theme), border-color

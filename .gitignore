@@ -46,3 +46,6 @@ ui.css
 TODO.md
 
 /.cursor
+
+/logs
+/rules
