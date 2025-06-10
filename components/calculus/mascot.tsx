@@ -9,6 +9,7 @@ import { DictionaryView } from "./mascot/dictionary-view"
 import { GreekLettersView } from "./mascot/greek-letters-view"
 import { SettingsView } from "./mascot/settings-view"
 import { BottomNavigation } from "./mascot/bottom-navigation"
+import { MobileViewportMeta } from "../mobile-viewport-meta"
 
 type MascotProps = {
   message?: string
@@ -74,6 +75,7 @@ export function Mascot({
 
   return (
     <div className={`fixed ${positionClasses[settings.position]} z-50`}>
+      <MobileViewportMeta />
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -81,7 +83,11 @@ export function Mascot({
             initial={{ opacity: 0, y: 20, scale: 0.8 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.8 }}
-            className="mb-4 bg-background/95 backdrop-blur-sm dark:bg-gray-800/95 rounded-2xl shadow-xl border-2 border-primary/50 overflow-hidden w-[95vw] sm:w-[420px] h-[90vh] sm:h-[520px] max-w-[420px] max-h-[520px]"
+            className="mb-4 bg-background/95 backdrop-blur-sm dark:bg-gray-800/95 rounded-2xl shadow-xl border-2 border-primary/50 overflow-hidden w-[95vw] sm:w-[420px] h-[90vh] sm:h-[520px] max-w-[420px] max-h-[520px] transform-gpu will-change-transform"
+            style={{
+              WebkitOverflowScrolling: 'touch',
+              touchAction: 'manipulation',
+            }}
           >
             {/* Main Content Area */}
             <div className="p-4 h-[calc(100%-60px)] overflow-hidden flex flex-col">
