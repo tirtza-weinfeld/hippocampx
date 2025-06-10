@@ -25,15 +25,15 @@ export function MobileViewportMeta() {
     const style = document.createElement('style')
     style.textContent = `
       @media screen and (max-width: 768px) {
-        html, body {
+        .keyboard-open {
           height: 100%;
           min-height: 100%;
-          overflow: hidden;
           position: fixed;
           width: 100%;
           overscroll-behavior: none;
         }
-        #__next, main {
+        .keyboard-open #__next,
+        .keyboard-open main {
           height: 100%;
           overflow-y: auto;
           -webkit-overflow-scrolling: touch;
@@ -42,12 +42,32 @@ export function MobileViewportMeta() {
     `
     document.head.appendChild(style)
 
+    // Function to handle input focus/blur
+    const handleFocus = () => document.documentElement.classList.add('keyboard-open')
+    const handleBlur = () => document.documentElement.classList.remove('keyboard-open')
+
+    // Add event listeners to all input and textarea elements
+    document.addEventListener('focus', (e) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+        handleFocus()
+      }
+    }, true)
+
+    document.addEventListener('blur', (e) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+        handleBlur()
+      }
+    }, true)
+
     // Cleanup function to restore original viewport meta and remove style
     return () => {
       if (viewportMeta) {
         viewportMeta.content = "width=device-width, initial-scale=1"
       }
       style.remove()
+      document.documentElement.classList.remove('keyboard-open')
+      document.removeEventListener('focus', handleFocus, true)
+      document.removeEventListener('blur', handleBlur, true)
     }
   }, [])
 
