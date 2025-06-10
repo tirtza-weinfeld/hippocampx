@@ -87,10 +87,13 @@ export function Mascot({
             style={{
               WebkitOverflowScrolling: 'touch',
               touchAction: 'manipulation',
+              transform: 'translate3d(0,0,0)',
+              position: 'relative',
+              zIndex: 9999,
             }}
           >
             {/* Main Content Area */}
-            <div className="p-4 h-[calc(100%-60px)] overflow-hidden flex flex-col">
+            <div className="p-4 h-[calc(100%-60px)] overflow-hidden flex flex-col" style={{ WebkitOverflowScrolling: 'touch' }}>
               {activeFeature === "main" && (
                 <MainView character={settings.character} message={message} onClose={() => setIsOpen(false)} />
               )}
