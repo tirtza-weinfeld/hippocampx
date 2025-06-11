@@ -1133,9 +1133,9 @@ export default function BinaryExplanation() {
 
                             <div className="grid grid-cols-4 gap-2 font-mono text-center font-bold mb-2 text-sm">
                               <div className="bg-green-100 dark:bg-green-900/30 p-2 rounded">Bit</div>
-                              <div className="bg-green-100 dark:bg-green-900/30 p-2 rounded">Position</div>
+                              <div className="bg-green-100 dark:bg-green-900/30 p-2 rounded">P</div>
                               <div className="bg-green-100 dark:bg-green-900/30 p-2 rounded">
-                                2<sup>Position</sup>
+                                2<sup>P</sup>
                               </div>
                               <div className="bg-green-100 dark:bg-green-900/30 p-2 rounded">Value</div>
                             </div>
