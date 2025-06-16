@@ -10,7 +10,7 @@ import { CustomTheme } from "@/components/theme/custom-theme";
 import { SparklesCore } from "@/components/calculus/ui/sparkles";
 import { Fonts } from "@/components/sidebar/fonts";
 // import { Fonts } from "@/components/sidebar/fonts";
-import { Font } from "@/components/theme/theme-provider";
+import { Font, getFontFamily } from "@/components/theme/font";
 import 'katex/dist/katex.min.css';
 // const geistSans = Geist({
 //   variable: "--font-geist-sans",
@@ -116,33 +116,3 @@ export default async function RootLayout({
   );
 }
 
-// Add the getFontFamily function to the layout
-function getFontFamily(font: Font): string {
-  switch (font) {
-    case "dancing-script":
-      return "'Dancing Script', cursive"
-    case "pacifico":
-      return "'Pacifico', cursive"
-    case "great-vibes":
-      return "'Great Vibes', cursive"
-    case "satisfy":
-      return "'Satisfy', cursive"
-    case "tangerine":
-      return "'Tangerine', cursive"
-    case "allura":
-      return "'Allura', cursive"
-    case "kaushan-script":
-      return "'Kaushan Script', cursive"
-    case "sacramento":
-      return "'Sacramento', cursive"
-    case "roboto":
-      return "'Roboto', sans-serif"
-    case "open-sans":
-      return "'Open Sans', sans-serif"
-    case "montserrat":
-      return "'Montserrat', sans-serif"
-    case "inter":
-    default:
-      return "var(--font-sans)"
-  }
-}

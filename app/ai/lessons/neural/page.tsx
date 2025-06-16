@@ -1,3 +1,7 @@
+"use client"    
+export default function NeuralNetworkLesson() {
+    return <div>Neural Network Lesson</div>
+}
 // "use client"
 
 // import { useState, useEffect, useRef } from "react"

@@ -11,7 +11,7 @@ export type NavigationItem = {
 export const routes: NavigationItem[] = [
     { title: 'Home', href: '/', icon: Home, color: "text-blue-500", bgColor: "bg-purple-500/10", },
 
-   
+
     {
         title: 'Binary',
         href: '/binary',
@@ -72,7 +72,7 @@ export const routes: NavigationItem[] = [
             { title: 'Robot Friend', href: '/ai/robot-friend', icon: Brain, color: "text-blue-500", bgColor: "bg-blue-500/10" },
             { title: 'Fun Quiz', href: '/ai/quiz', icon: Brain, color: "text-blue-500", bgColor: "bg-blue-500/10" },
 
-         
+
         ],
     },
     { title: 'Hadestown', href: '/hadestown', icon: Sparkles, color: "text-green-500", bgColor: "bg-green-500/10", },
@@ -95,6 +95,17 @@ export const routes: NavigationItem[] = [
 
             { title: "Games", href: "/calculus/games", icon: ChartNoAxesCombinedIcon, color: "text-blue-500", bgColor: "bg-blue-500/10" },
             { title: "Lab", href: "/calculus/lab", icon: ChartNoAxesCombinedIcon, color: "text-blue-500", bgColor: "bg-blue-500/10" },
+        ],
+    },
+
+    {
+        title: 'Notes',
+        href: '/notes',
+        icon: BookOpen,
+        color: "text-blue-500",
+        bgColor: "bg-blue-500/10",
+        children: [
+            { title: 'LRU Cache', href: '/notes/lru', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10" },
         ],
     },
 

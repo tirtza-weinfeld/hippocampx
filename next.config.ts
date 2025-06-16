@@ -1,14 +1,42 @@
 import type { NextConfig } from "next";
+import createMDX from '@next/mdx'
+import remarkMath from 'remark-math'
+import rehypeKatex from 'rehype-katex'
+import rehypeMdxCodeProps from 'rehype-mdx-code-props'
+import remarkToc from 'remark-toc'
+import rehypeSlug from 'rehype-slug'
+import rehypeAutolinkHeadings from 'rehype-autolink-headings'
 
+
+const withMDX = createMDX({
+  extension: /\.mdx?$/,
+  options: {
+    remarkPlugins: [remarkMath, remarkToc],
+    rehypePlugins: [
+      rehypeKatex,
+      [rehypeMdxCodeProps, { tagName: 'code' }],
+      rehypeSlug,
+      [rehypeAutolinkHeadings, {
+        behavior: 'wrap',
+        properties: {
+          className: ['anchor'],
+        },
+      }],
+    ],
+  },
+})
 const nextConfig: NextConfig = {
 
-  pageExtensions: [ 'mdx', 'ts', 'tsx'],
 
 
   experimental: {
-    ppr: true,
+    // ppr: true,
+    mdxRs: false,
+    
 
   },
+  pageExtensions: ['ts', 'tsx', 'mdx'],
+
   images: {
     remotePatterns: [
       {
@@ -27,4 +55,4 @@ const nextConfig: NextConfig = {
   },
 }
 
-export default nextConfig;
+export default withMDX(nextConfig)

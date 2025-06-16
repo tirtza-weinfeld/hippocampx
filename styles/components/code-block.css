@@ -1,0 +1,99 @@
+:is(.word-highlight) {
+  /* background-color: var(--color-teal-500); */
+
+  color: var(--color-orange-300) !important;
+  background:linear-gradient(to right,
+    --alpha(var(--color-yellow-500) / 10%),
+    --alpha(var(--color-orange-300) / 10%),
+    --alpha(var(--color-orange-500) / 10%),
+    transparent 100%
+  );
+
+  border-bottom: 1px solid --alpha(var(--color-orange-300) / 60%);
+  border-radius: 0.8rem;
+  font-weight: 600;
+  /* padding: 0.2rem; */
+  /* bg-gradient-to-r from-yellow-500/10 to-pink-500/10 via-sky-500/10
+  border-b-orange-300   
+rounded p-1 border shadow-xl
+font-semibold */
+
+
+}
+:is(.line-highlight) {
+  display: inline-block;
+  width: 100%;
+  /* background-color: --alpha(var(--color-gray-950) / 10%); */
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    --alpha(var(--color-teal-500) / 10%),
+    --alpha(var(--color-blue-500) / 10%),
+    --alpha(var(--color-sky-500) / 10%),
+    --alpha(var(--color-teal-500) / 10%),
+    transparent 100%
+  );
+  /* border-left: 3px solid var(--color-teal-500);
+  padding-left: 10px;
+  margin-left: -10px; */
+}
+
+
+/* 
+/* styles/components/code-block.css or similar */
+pre .line {
+  /* display: flex; */
+  align-items: flex-start;
+  position: relative;
+  padding-left: 2.5em; /* space for line number */
+}
+
+pre .line::before {
+  content: counter(line);
+  counter-increment: line;
+  position: absolute;
+  left: 0;
+  width: 2em;
+  text-align: right;
+  color: #b0b0b0;
+  user-select: none;
+  font-size: 0.9em;
+  opacity: 0.7;
+}
+
+/* Reset the counter at the start of each code block */
+pre {
+  counter-reset: line;
+} 
+
+.line-highlight {
+}
+/* .line-highlight {
+  background-color: color-mix(
+    in oklch,
+    var(--color-teal-500) 3%,
+    transparent 100%
+  );
+  border-left: 3px solid var(--color-teal-500);
+  padding-left: 10px;
+  margin-left: -10px;
+}
+.code-container {
+  counter-reset: line;
+  position: relative;
+}
+.code-container .line {
+  counter-increment: line;
+  padding-left: 3em;
+  position: relative;
+}
+.code-container .line::before {
+  content: counter(line);
+  position: absolute;
+  left: 0;
+  width: 2.5em;
+  text-align: right;
+  font-size: 0.9em;
+  color: var(--color-gray-400);
+  user-select: none;
+} */

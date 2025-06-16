@@ -50,4 +50,3 @@ html {
 html[data-theme-transition="true"] * {
   transition: var(--transition-theme);
 }
-
