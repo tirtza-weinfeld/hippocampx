@@ -108,16 +108,6 @@ export function Fonts() {
           font-family: var(--font-montserrat);
         }
       `}</style>
-
-      {/* Add font preloading for better performance */}
-      <link
-        rel="preload"
-        href={dancingScript.style.fontFamily as string}
-        as="font"
-        type="font/woff2"
-        crossOrigin="anonymous"
-      />
-      <link rel="preload" href={pacifico.style.fontFamily as string} as="font" type="font/woff2" crossOrigin="anonymous" />
     </>
   )
 }

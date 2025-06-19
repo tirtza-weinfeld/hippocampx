@@ -7,7 +7,7 @@ import { Sidebar } from "@/components/sidebar/sidebar";
 import AppFooter from "@/components/layout/app-footer";
 import { cookies } from "next/headers";
 import { CustomTheme } from "@/components/theme/custom-theme";
-import { SparklesCore } from "@/components/calculus/ui/sparkles";
+import { SparklesBackground } from "@/components/calculus/ui/sparkles-background";
 import { Fonts } from "@/components/sidebar/fonts";
 // import { Fonts } from "@/components/sidebar/fonts";
 import { Font, getFontFamily } from "@/components/theme/font";
@@ -36,24 +36,12 @@ export default async function RootLayout({
   const cookieStore = await cookies()
   const theme = cookieStore.get("theme")?.value || "system"
   const font: Font = cookieStore.get("font")?.value as Font || "inter"
-  // const defaultOpen = cookieStore.get("sidebar:state")?.value === "true"
 
   return (
     <html lang="en" suppressHydrationWarning style={{ fontFamily: getFontFamily(font) }}>
       <body className={`${inter.variable} antialiased`}>
       <div className="fixed inset-0 pointer-events-none z-[9999]" aria-label="Navigation" role="navigation">
-        {/* Sparkles background */}
-        <div className="absolute inset-0 w-64 h-full">
-          <SparklesCore
-            id="nav-sparkles"
-            className="absolute inset-0"
-            background="transparent"
-            minSize={0.4}
-            maxSize={1}
-            particleColor="#7C3AED"
-            particleDensity={10}
-          />
-        </div>
+        <SparklesBackground />
       </div>
 
       <Fonts />
@@ -61,7 +49,7 @@ export default async function RootLayout({
         <ThemeProvider
           attribute="class"
           defaultTheme={theme}
-          defaultFont={font }
+          defaultFont={font}
           enableSystem
           disableTransitionOnChange
         >
@@ -88,21 +76,12 @@ export default async function RootLayout({
 
               <SidebarInset > */}
               
-            <div className="  h-full w-full">
-            
+            <div className="h-full w-full">
               <div className="flex flex-col min-h-screen">
-
-                {/* <AppHeader /> */}
-                {/* <div className="mt-12  h-full w-full"> */}
-              
                 <Sidebar>
-
                   {children}
-
                 </Sidebar>
-
               </div>
-
             </div>
             <AppFooter />
 

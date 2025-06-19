@@ -1,6 +1,11 @@
-import { codeToHtml } from 'shiki'
-import { transformerMetaHighlight, transformerMetaWordHighlight } from '@shikijs/transformers'
+import { codeToHast } from 'shiki'
+import { transformerMetaHighlight} from '@shikijs/transformers'
+import { transformerMetaWordHighlight } from './code/transformers/meta-highlight-word'
 import CopyCode from './copy-code';
+import { transformerCodeTooltipWords } from './code/transformers/tooltip-transformer';
+import { POPOVER_CONTENT } from './code/popover-content';
+import { hastToJSX } from './code/hast-to-tsx';
+
 
 export type CodeBlockProps = {
   className: string;
@@ -8,20 +13,15 @@ export type CodeBlockProps = {
   children: React.ReactNode;
 };
 
-
-
-
-
-
 export default async function CodeBlock(props: CodeBlockProps) {
 
   const { className, meta, children: code } = { ...props }
- 
-  const out = await codeToHtml(code as string, {
+
+  const hast= await codeToHast(code as string, {
 
 
     lang: className.replace('language-', ''),
-    meta: { __raw:meta },
+    meta: { __raw: meta },
     themes: {
       light: 'light-plus',
       dark: 'dark-plus',
@@ -37,17 +37,23 @@ export default async function CodeBlock(props: CodeBlockProps) {
     defaultColor: 'light-dark()',
 
     transformers: [
-      transformerMetaWordHighlight({ className: `word-highlight shadow-xl` }),
+      transformerMetaWordHighlight({ 
+        className: `word-highlight shadow-xl`,
+        tooltipMap: POPOVER_CONTENT
+      }),
       transformerMetaHighlight({ className: `line-highlight` }),
-      // transformerStepHighlight(),
-        
-    
+      transformerCodeTooltipWords({
+        ...POPOVER_CONTENT
+      })
+
+
+
 
     ],
   })
 
 
-
+  const jsxTree = hastToJSX(hast)
   return (
 
     <div className=" shadow-2xl rounded-md  dark:bg-gray-800 bg-gray-100  p-4 my-4">
@@ -56,8 +62,8 @@ export default async function CodeBlock(props: CodeBlockProps) {
       <div className="relative ">
 
 
-        <CopyCode className="absolute top-0 right-0" code={code as string} />
-        <div className="overflow-x-auto py-8" dangerouslySetInnerHTML={{ __html: out }} />
+        <CopyCode className="absolute top-0 right-0 " code={code as string} />
+        <div className="overflow-x-auto py-8 ">{jsxTree}</div>
       </div>
     </div>
 

@@ -106,6 +106,7 @@ export const routes: NavigationItem[] = [
         bgColor: "bg-blue-500/10",
         children: [
             { title: 'LRU Cache', href: '/notes/lru', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10" },
+            { title: 'Prefix Sum', href: '/notes/prefix-sum', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10" },
         ],
     },
 

@@ -39,7 +39,7 @@ export function transformerMetaHighlight(
   } = options
 
   return {
-    name: '@shikijs/transformers:meta-highlight',
+    name: 'transformers:meta-highlight',
     line(node, line) {
       if (!this.options.meta?.__raw) {
         return

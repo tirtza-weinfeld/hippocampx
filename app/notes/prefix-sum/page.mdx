@@ -1,0 +1,355 @@
+# Unlocking Subarray Secrets: The Power of Prefix Sums
+
+Imagine you're on a long highway road trip. You pass mile marker 75 and want to know exactly how far you'll drive to get to the exit at mile marker 180. You wouldn't reset your car's trip odometer at marker 75 and watch it count up. You'd do a simple calculation in your head: `180 - 75 = 105` miles.
+
+The mile markers on a highway are a perfect real-world example of a pre-calculated system. Each marker tells you the total distance from the beginning of the road. By using these pre-calculated values, you can find the distance between *any* two points with a single subtraction.
+
+This is the exact principle behind the **prefix sum** technique. It's a computational strategy that does a little prep work up front to answer questions about data ranges—or "subarrays"—with incredible speed.
+
+## The "Aha!" Moment: The Core Idea
+
+Just like highway mile markers, a prefix sum array stores a "running total" for a list of numbers. For an array `nums`, the prefix sum at any index `i` is the sum of all elements from the start of the array up to and including `nums[i]`.
+
+**Example:**
+- `nums` (Daily Sales): `[10, 20, 5, 15, 30]`
+- `prefix_sums` (Total Sales to Date): `[10, 30, 35, 50, 80]`
+
+Here's the magic trick, identical to our highway example: **the sum of any subarray is the difference between two prefix sums.**
+
+To get the sum of a subarray from index `i` to `j` (inclusive), you just calculate `prefix_sum[j] - prefix_sum[i-1]`.
+
+Let's find the sum of `nums[2...4]` which is `[5, 15, 30]`.
+- `prefix_sum[4]` (the total up to the end of our range) is `80`.
+- `prefix_sum[1]` (the total just *before* our range starts) is `30`.
+- The subarray sum is `80 - 30 = 50`.
+
+(To handle subarrays that start at index 0, we can imagine a `prefix_sum[-1]` that is equal to 0, just like the start of the highway is Mile 0).
+
+This simple idea transforms many seemingly complex subarray problems into straightforward calculations. Let's see it in action.
+
+## Core Applications: Finding and Counting Subarrays
+
+These problems use the core prefix sum logic, often with a hash map to remember past sums and their locations.
+
+---
+
+### 1. Maximum Size Subarray Sum Equals k
+
+**The Goal:** Given an integer array `nums` and an integer `k`, find the maximum length of a subarray that sums to `k`.
+
+**The Insight:**
+This problem is a direct application of our core idea. We're looking for two indices, `i` and `j`, that maximize the distance `j - i`, such that the subarray between them sums to `k`.
+
+Using prefix sums, this means we want `prefix_sum[j] - prefix_sum[i] = k`. We can rearrange this to `prefix_sum[i] = prefix_sum[j] - k`.
+
+As we iterate through the array with our index `j`, calculating the current `prefix_sum[j]`, we can instantly check if the `prefix_sum[j] - k` we need has been seen before. By storing the *first* time we see each prefix sum in a hash map, we guarantee that any valid subarray we find (`j - i`) will be the longest possible one for that endpoint `j`.
+
+**Pro Tip:** We initialize our map with a sum of `0` at index `-1` (`{0: -1}`). This elegantly handles cases where the subarray that sums to `k` starts from the very beginning of the array.
+
+**Code Solution:**
+```python
+def maxSubArrayLen(self, nums: list[int], k: int) -> int:
+    prefix_sum = 0
+    max_len = 0
+    # Stores the *first* index where a prefix sum was seen
+    indices = {0: -1} 
+
+    for i, num in enumerate(nums):
+        prefix_sum += num
+        
+        # Check if a previous prefix sum can satisfy the condition
+        if prefix_sum - k in indices:
+            max_len = max(max_len, i - indices[prefix_sum - k])
+            
+        # Only store the first time we see a prefix sum
+        if prefix_sum not in indices:
+            indices[prefix_sum] = i
+            
+    return max_len
+```
+
+**Complexity:**
+* Time: $O(n)$ because we only pass through the array once.
+* Space: $O(n)$ in the worst case for the hash map.
+
+---
+
+### 2. Subarray Sum Equals K
+
+**The Goal:** Given an array `nums` and an integer `k`, return the *total number* of subarrays whose sum equals `k`.
+
+**The Insight:**
+This is a variation of the previous problem. Instead of finding the longest subarray, we need to count *all* of them. This means we can't just store the first time we see a prefix sum; we need to know how many times each prefix sum has occurred.
+
+As we iterate, for a current `curr_sum`, we again look for a previous sum equal to `curr_sum - k`. The number of times `curr_sum - k` has appeared in our frequency map is exactly the number of new subarrays ending at the current position that sum to `k`.
+
+**Code Solution:**
+```python
+from collections import defaultdict
+
+def subarraySum(self, nums: list[int], k: int) -> int:
+    count = 0
+    curr_sum = 0
+    # Map to store frequency of each prefix sum
+    sum_freq = defaultdict(int)
+    sum_freq[0] = 1 # For subarrays that start from index 0
+    
+    for num in nums:
+        curr_sum += num
+        # Add the number of times we've seen the required earlier sum
+        count += sum_freq[curr_sum - k]
+        # Increment the frequency of the current sum
+        sum_freq[curr_sum] += 1
+        
+    return count
+```
+
+**Complexity:**
+* Time: $O(n)$ for a single pass.
+* Space: $O(n)$ for the frequency map.
+
+---
+
+### 3. Contiguous Array
+
+**The Goal:** Given a binary array `nums` (containing only 0s and 1s), find the maximum length of a contiguous subarray with an equal number of 0s and 1s.
+
+**The Insight:**
+This is a clever twist on the prefix sum pattern. How can we rephrase "equal number of 0s and 1s" into a sum problem? By changing all the `0`s in the array to `-1`s!
+
+Now, a subarray with an equal number of `1`s and `-1`s will have a sum of `0`. The problem is transformed into: "Find the maximum length of a subarray that sums to 0." This is the exact same logic as Problem #1, with `k=0`.
+
+**Code Solution:**
+```python
+def findMaxLength(self, nums: list[int]) -> int:
+    # 'count' acts as our prefix sum
+    count = 0 
+    max_length = 0
+    # Map: count -> first index seen
+    lookup = {0: -1} 
+    
+    for i, num in enumerate(nums):
+        count += 1 if num == 1 else -1
+        if count in lookup:
+            max_length = max(max_length, i - lookup[count])
+        else:
+            lookup[count] = i
+            
+    return max_length
+```
+
+**Complexity:**
+* Time: $O(n)$, as it processes each element once.
+* Space: $O(n)$ due to the `lookup` dictionary.
+
+---
+
+## The Modulo Magic: Prefixes for Divisibility
+
+A fascinating extension of this pattern involves modular arithmetic, making it perfect for "divisibility" problems.
+
+---
+
+### 4. Continuous Subarray Sum
+
+**The Goal:** Given an array `nums` and an integer `k`, determine if there's a subarray of at least size two whose sum is a multiple of `k`.
+
+**The Insight:**
+A subarray's sum is a multiple of `k` if `sum(subarray) % k == 0`. Using prefix sums, this means `(prefix_sum[j] - prefix_sum[i]) % k == 0`.
+
+A key property of modular arithmetic states that this is true if and only if `prefix_sum[j] % k == prefix_sum[i] % k`.
+
+So, the task is to find two indices `i` and `j` (with `j > i+1` to ensure the subarray has at least two elements) that have the same prefix sum *remainder* when divided by `k`. We use a hash map to store the first index where we encounter a specific remainder.
+
+
+> **note:** When `k=0`, this logic doesn't apply. Problems of this type usually specify `k` is a non-zero integer.
+
+**Code Solution:**
+```python
+def checkSubarraySum(self, nums: list[int], k: int) -> bool:
+    prefix_mod = 0
+    # Map: remainder -> first index seen
+    mod_seen = {0: -1} 
+
+    for i, num in enumerate(nums):
+        prefix_mod = (prefix_mod + num) % k
+        
+        if prefix_mod in mod_seen:
+            # Ensures the subarray size is at least 2
+            if i - mod_seen[prefix_mod] > 1:
+                return True
+        else:
+            # Mark the first time this remainder is seen
+            mod_seen[prefix_mod] = i
+            
+    return False
+```
+
+**Complexity:**
+* Time: $O(n)$ for a single pass.
+* Space: $O(min(n, k))$ since there are at most `k` possible remainders.
+
+---
+
+### 5. Subarray Sums Divisible by K
+
+**The Goal:** Return the *total number* of non-empty subarrays that have a sum divisible by `k`.
+
+**The Insight:**
+This combines the logic from "Subarray Sum Equals K" and "Continuous Subarray Sum." We know a subarray's sum is divisible by `k` if its start and end prefix sums have the same remainder modulo `k`.
+
+We need to count all such pairs. We use a frequency map, `mod_freq`, to count how many times we've seen each remainder. When we calculate a new `curr_mod`, the number of times we've *already* seen this remainder represents the number of new subarrays ending at the current position that are divisible by `k`. We add this to our total count and then increment the frequency for `curr_mod`.
+
+**Code Solution:**
+```python
+from collections import defaultdict
+
+def subarraysDivByK(self, nums: list[int], k: int) -> int:
+    curr_mod = 0
+    count = 0
+    # Map to store frequency of each prefix sum remainder
+    mod_freq = defaultdict(int)
+    mod_freq[0] = 1
+    
+    for num in nums:
+        curr_mod = (curr_mod + num) % k
+        # If we've seen this remainder `m` times, we found `m` new subarrays.
+        count += mod_freq[curr_mod]
+        # Increment the frequency of the current remainder
+        mod_freq[curr_mod] += 1
+        
+    return count
+```
+
+**Complexity:**
+* Time: $O(n)$ for a single pass.
+* Space: $O(k)$ for the frequency map.
+
+---
+
+### 6. Make Sum Divisible by P
+
+**The Goal:** Given an array `nums`, find the length of the smallest subarray to remove so the sum of the remaining elements is divisible by `p`.
+
+**The Insight:**
+This is a challenging but powerful application.
+1.  First, calculate the sum of the entire array modulo `p`. Let's call this `total_mod`.
+2.  If `total_mod` is already `0`, the sum is divisible by `p`, so we remove nothing. The answer is `0`.
+3.  Otherwise, we must remove a subarray whose own sum, `S`, has a remainder of `total_mod` when divided by `p`. This ensures that `(total_sum - S) % p` will be `0`.
+4.  The problem is now: **find the shortest subarray whose sum modulo `p` is `total_mod`**.
+5.  This means we need `(prefix_sum[j] - prefix_sum[i]) % p == total_mod`. Rearranging gives us the "needed" previous remainder: `prefix_sum[i] % p == (prefix_sum[j] % p - total_mod) % p`.
+6.  We can iterate through the array, calculating the current prefix sum remainder, and use a hash map to look for the `needed` remainder from a previous step, minimizing the length along the way.
+
+**Code Solution:**
+```python
+def minSubarray(self, nums: list[int], p: int) -> int:
+    total_mod = sum(nums) % p
+    if total_mod == 0:
+        return 0
+
+    min_len = len(nums)
+    prefix_mod = 0
+    mod_seen = {0: -1}  # Map: mod -> last index seen
+
+    for i, num in enumerate(nums):
+        prefix_mod = (prefix_mod + num) % p
+        # We need a previous mod, `prev_mod`, such that:
+        # (prefix_mod - prev_mod) % p == total_mod
+        # which means: prev_mod == (prefix_mod - total_mod) % p
+        target_mod = (prefix_mod - total_mod + p) % p
+        
+        if target_mod in mod_seen:
+            min_len = min(min_len, i - mod_seen[target_mod])
+            
+        mod_seen[prefix_mod] = i
+
+    return min_len if min_len < len(nums) else -1
+```
+
+**Complexity:**
+* Time: $O(n)$ for the single pass.
+* Space: $O(p)$ for the `mod_seen` map.
+
+---
+
+## Beyond Sums: The Difference Array
+
+The core idea of prefix sums can be inverted to create another powerful tool: the **Difference Array**. If a prefix sum integrates values, a difference array tracks changes.
+
+---
+
+### 7. Range Addition
+
+**The Goal:** You have an array of zeros and a list of `updates`. Each update `[start, end, inc]` means adding `inc` to all elements from `start` to `end` (inclusive). Return the final array.
+
+**The Insight:**
+The slow way is to iterate from `start` to `end` for every update. A much faster way is to use a "delta" or "difference" array. For each update, we only mark the changes at the boundaries:
+* Add `inc` at the `start` index.
+* Subtract `inc` at the `end + 1` index.
+
+Why does this work? When we later take a prefix sum of this delta array, the `+inc` at `start` will carry forward to all subsequent elements. The `-inc` at `end + 1` will then perfectly cancel it out for all elements beyond the desired range. After processing all updates this way, a *single* prefix sum pass over our delta array reveals the final values.
+
+**Code Solution:**
+```python
+def getModifiedArray(self, length: int, updates: list[list[int]]) -> list[int]:
+    # This delta array stores the changes at each point
+    delta = [0] * length
+    
+    for start, end, inc in updates:
+        delta[start] += inc
+        if end + 1 < length:
+            delta[end + 1] -= inc
+            
+    # Now, compute the prefix sum of the delta array to get the final result
+    result = [0] * length
+    running_sum = 0
+    for i in range(length):
+        running_sum += delta[i]
+        result[i] = running_sum
+        
+    return result
+```
+
+**Complexity:**
+* Time: $O(n + k)$, where `n` is the array length and `k` is the number of updates. This is much better than the naive $O(n \cdot k)$.
+* Space: $O(n)$ for the `delta` array.
+
+---
+
+### 8. Count the Hidden Sequences
+
+**The Goal:** You are given `differences`, an array where `differences[i] = hidden[i+1] - hidden[i]`. You're also given a `[lower, upper]` bound. Find the number of possible hidden sequences.
+
+**The Insight:**
+If we knew the first element of the hidden sequence, say `H`, we could reconstruct the entire sequence. The `differences` array tells us the steps between elements. So, `hidden[i]` is just `H` plus the sum of all differences up to that point—a prefix sum!
+`hidden[i] = H + prefix_sum(differences[0...i-1])`
+
+For a sequence to be valid, every single one of its elements must be within the `[lower, upper]` bounds.
+`lower <= H + prefix_sum[i] <= upper`
+
+By finding the minimum (`min_ps`) and maximum (`max_ps`) values that the prefix sum creates, we can determine the valid range for our starting value `H`.
+- The lowest the sequence can go is `H + min_ps`. This must be `>= lower`.
+- The highest it can go is `H + max_ps`. This must be `<= upper`.
+
+This gives us a valid range for `H`: `lower - min_ps <= H <= upper - max_ps`. The number of integers in this range is our answer.
+
+**Code Solution:**
+```python
+def numberOfArrays(self, differences: list[int], lower: int, upper: int) -> int:
+    prefix_sum = 0
+    min_sum = 0
+    max_sum = 0
+    
+    for diff in differences:
+        prefix_sum += diff
+        min_sum = min(min_sum, prefix_sum)
+        max_sum = max(max_sum, prefix_sum)
+        
+    # The range of possible starting values for the hidden sequence
+    valid_start_range = (upper - max_sum) - (lower - min_sum) + 1
+    return max(0, valid_start_range)
+```
+
+**Complexity:**
+* Time: $O(n)$ for a single pass through `differences`.
+* Space: $O(1)$.

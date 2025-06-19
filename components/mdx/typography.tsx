@@ -7,6 +7,7 @@ const fadeInUp = {
   initial: { opacity: 0, y: 20 },
   animate: { opacity: 1, y: 0 },
   transition: { duration: 0.6, ease: "easeOut" },
+  
 }
 
 interface TypographyProps {
@@ -14,20 +15,24 @@ interface TypographyProps {
 }
 
 export const H1 = ({ children, ...props }: TypographyProps) => (
-  <motion.div {...fadeInUp} className="relative mb-12 mt-16 first:mt-2">
+  <motion.div {...fadeInUp}
+  
+  className="relative mb-12 mt-16 first:mt-2 group  ">
     {/* Decorative background */}
-    <div className="absolute -inset-4 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-transparent rounded blur-2xl"
-    {...props}
-    />
+    {/* <div className="absolute -inset-10 bg-gradient-to-r from-transparent via-20% via-sky-500/10 dark:via-sky-500/5 to-transparent rounded  
+    hover:bg-gradient-to-r  -skew-x-2 -skew-y-1  group-hover:-skew-1 blur-sm group-hover:via-90%
+    transition-all duration-300"></div>
+    <div className="absolute -inset-3 bg-gradient-to-r to-transparent via-5% via-teal-500/10 dark:via-teal-500/5 from-transparent  
+    hover:bg-gradient-to-r  skew-x-1  skew-y-1 group-hover:skew-y-10 blur-md group-hover:via-90% 
+    transition-all duration-3000"></div> */}
+
     {/* <div className="absolute -inset-2 bg-gradient-to-r from-blue-500/5 via-purple-500/5 to-pink-500/5 rounded-xl" /> */}
 
-    <h1 className="relative text-4xl md:text-5xl lg:text-6xl font-black tracking-tight leading-tight " {...props}>
-      <span className="bg-gradient-to-l from-teal-600 via-sky-600/80 via-80% to-blue-600/80 bg-clip-text text-transparent 
-      
-      font-bold
-      uppercase
-
-      ">
+  
+    <h1 className="text-4xl md:text-5xl font-extrabold   text-center
+     tracking-tight leading-tight   " {...props}>
+      {/* <span className="bg-gradient-to-l from-teal-600 via-sky-600/80 via-80% to-blue-600/80 bg-clip-text text-transparent font-bold "> */}
+      <span className="text-teal-600 dark:text-teal-700">
         {children}
 
       </span>
@@ -42,23 +47,27 @@ export const H1 = ({ children, ...props }: TypographyProps) => (
 
 export const H2 = ({ children, ...props }: TypographyProps) => (
   <motion.div {...fadeInUp} className="relative mb-8 mt-12  " {...props}>
-    <div className="absolute -left-6 top-0 w-1 h-full bg-gradient-to-b from-blue-500 to-purple-500 via-teal-500/80 rounded-full" />
-    <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight 
-    bg-gradient-to-r from-teal-600/70 from-5% via-indigo-600/60 via-30% to-blue-500/80 to-50% 
-      bg-clip-text text-transparent
-    " {...props}>
-      {children}
+    <div className="absolute -left-6 top-0 w-1 h-full bg-gradient-to-b from-blue-500 to-sky-500
+     via-teal-500/80 rounded-full" />
+    {/* <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight 
+    bg-gradient-to-r from-red-600/70 from-5% via-red-600/60 via-30% to-red-500/80 to-50% 
+      bg-clip-text text-transparent text-red-600
+    " {...props}> */}
+    <h2 className="text-3xl md:text-4xl  font-black tracking-tight leading-tight" {...props}>
+      <span className="text-teal-500 dark:text-teal-800">
+        {children}
+      </span>
     </h2>
-    <div className="h-px bg-gradient-to-r from-gray-300 via-gray-200 to-transparent dark:from-gray-600 dark:via-gray-700
-     mt-4 " />
+    {/* <div className="h-px bg-gradient-to-r from-gray-300 via-gray-200 to-transparent dark:from-gray-600 dark:via-gray-700
+     mt-4 " /> */}
 
   </motion.div>
 )
 export const H3 = ({ children, ...props }: TypographyProps) => (
   <motion.div {...fadeInUp} className="relative mb-6 mt-10">
     <div className="flex items-center gap-3">
-      <div className="w-3 h-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full" />
-      <h3 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight text-gray-800 dark:text-gray-200" {...props}>
+      {/* <div className="w-3 h-3 bg-gradient-to-r from-blue-700 to-sky-500 rounded-sm" /> */}
+      <h3 className="text-2xl md:text-3xl font-bold tracking-tight text-gray-800 dark:text-gray-200" {...props}>
         {children}
       </h3>
     </div>
@@ -68,7 +77,7 @@ export const H3 = ({ children, ...props }: TypographyProps) => (
 export const H4 = ({ children, ...props }: TypographyProps) => (
   <motion.div {...fadeInUp} className="relative mb-4 mt-8" {...props}>
     <div className="flex items-center gap-2">
-      <div className="w-2 h-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full" />
+      {/* <div className="w-2 h-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full" /> */}
       <h4 className="text-xl md:text-2xl lg:text-3xl font-semibold tracking-tight text-gray-800 dark:text-gray-200" {...props}>
         {children}
       </h4>
@@ -79,9 +88,9 @@ export const H4 = ({ children, ...props }: TypographyProps) => (
 export const H5 = ({ children, ...props }: TypographyProps) => (
   <motion.h5
     {...fadeInUp}
-    className="text-lg md:text-xl lg:text-2xl font-semibold tracking-tight text-gray-800 dark:text-gray-200 mb-3 mt-6 border-l-2 border-blue-500 pl-3" {...props}
- 
- >
+    className="text-lg md:text-xl font-semibold tracking-tight text-gray-800 dark:text-gray-200 mb-3 mt-6 border-l-2 border-blue-500 pl-3" {...props}
+
+  >
     {children}
   </motion.h5>
 )
@@ -90,7 +99,7 @@ export const H6 = ({ children, ...props }: TypographyProps) => (
   <motion.h6
     {...fadeInUp}
     className="text-base md:text-lg lg:text-xl font-semibold tracking-tight text-gray-800 dark:text-gray-200 mb-2 mt-4 uppercase text-blue-600 dark:text-blue-400 tracking-wider" {...props}
-  
+
   >
     {children}
   </motion.h6>
@@ -99,17 +108,38 @@ export const H6 = ({ children, ...props }: TypographyProps) => (
 export const Paragraph = ({ children, ...props }: TypographyProps) => (
   <motion.p
     {...fadeInUp}
-    className="text-base md:text-lg leading-relaxed text-gray-700 dark:text-gray-300 mb-6 max-w-none" {...props}
+    className="text-base md:text-lg leading-relaxed text-gray-700 dark:text-gray-300 mb-6 max-w-none
+    
+    
+    " {...props}
   >
     {children}
   </motion.p>
 )
 
+// bg-gradient-to-r 
+
+// from-pink-500 to-purple-600
+// dark:from-pink-400 dark:to-purple-500
+// via-pink-700 dark:via-pink-400
+// bg-clip-text text-transparent
 export const Strong = ({ children, ...props }: TypographyProps) => (
   <motion.strong
     initial={{ opacity: 0, scale: 0.95 }}
     animate={{ opacity: 1, scale: 1 }}
-    className="font-bold text-gray-900 dark:text-gray-100 bg-gradient-to-r from-yellow-200 to-yellow-300 dark:from-yellow-900/40 dark:to-yellow-800/40 px-1.5 py-0.5 rounded-md" {...props}
+    className="
+      font-semibold
+ 
+      shadow-sm
+      shadow-sky-400/15
+      dark:shadow-sky-300/15
+
+      text-sky-600/80 dark:text-sky-300/80
+
+   
+      px-1.5 py-0.5 rounded-md
+
+    " {...props}
   >
     {children}
   </motion.strong>
@@ -119,7 +149,13 @@ export const Em = ({ children, ...props }: TypographyProps) => (
   <motion.em
     initial={{ opacity: 0 }}
     animate={{ opacity: 1 }}
-    className="italic text-purple-700 dark:text-purple-300 font-medium" {...props}
+    className="italic bg-gradient-to-r 
+    from-sky-500 to-teal-600
+    dark:from-sky-600 dark:to-teal-600
+    via-sky-800 dark:via-sky-400
+    bg-clip-text text-transparent
+      px-1.5 py-0.5 rounded-sm
+    " {...props}
   >
     {children}
   </motion.em>

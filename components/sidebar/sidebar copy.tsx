@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { SearchDialog } from "@/components/sidebar/search-dialog"
-import { InfinityFontSelector } from "./infinity-font-selector"
+import { InfinityFontSelector } from "@/components/sidebar/infinity-font-selector"
 import { ThemeToggle } from "@/components/theme/theme-toggle"
 import { routes, NavigationItem } from "@/lib/routes"
 import { SparklesToggle } from "@/components/calculus/ui/sparkles-toggle"
@@ -575,9 +575,8 @@ export function Sidebar({ children }: { children: React.ReactNode }) {
 
             {/* Fixed Footer - Improved styling */}
             <div className="flex-shrink-0 border-t p-4">
-              <div className="flex items-center justify-between">
+              <div className={cn("flex items-center", isExpanded ? "justify-between" : "flex-col gap-3")}>
                 <InfinityFontSelector />
-                <SparklesToggle side={isExpanded ? "top" : "right"} />
                 <Button
                   variant="ghost"
                   size="icon"
@@ -687,31 +686,19 @@ export function Sidebar({ children }: { children: React.ReactNode }) {
           <div className="p-3 border-t">
             <div className={cn("flex items-center", isExpanded ? "justify-between" : "flex-col gap-3")}>
               <InfinityFontSelector />
-              <SparklesToggle side={isExpanded ? "top" : "right"} />
-
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={toggleSearch}
-                      className="h-9 w-9 rounded-full transition-all duration-200 hover:bg-primary/10"
-                      aria-label="Search"
-                    >
-                      <Search className="h-5 w-5 text-primary" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent side={isExpanded ? "top" : "right"}>
-                    <div className="flex items-center gap-2">
-                      <span>Search</span>
-                      <kbd className="rounded border bg-muted px-1 text-xs">⌘K</kbd>
-                    </div>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-
-              <ThemeToggle side={isExpanded ? "top" : "right"} />
+              <div className="flex items-center gap-2">
+                <SparklesToggle side={isExpanded ? "top" : "right"} />
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setIsSearchOpen(true)}
+                  className="h-10 w-10 rounded-full transition-all duration-200 hover:bg-primary/10 focus:ring-2 focus:ring-primary"
+                  aria-label="Search"
+                >
+                  <Search className="h-5 w-5 text-primary" />
+                </Button>
+                <ThemeToggle side="top" />
+              </div>
             </div>
           </div>
         </div>
