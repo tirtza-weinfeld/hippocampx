@@ -244,7 +244,7 @@ const navigationItems = routes
 
 export function Sidebar({ children }: { children: React.ReactNode }) {
   // State for sidebar
-  const [isExpanded, setIsExpanded] = React.useState(true)
+  const [isExpanded, setIsExpanded] = React.useState(false)
   const [isMobileOpen, setIsMobileOpen] = React.useState(false)
   const [isSearchOpen, setIsSearchOpen] = React.useState(false)
   const pathname = usePathname()
@@ -252,7 +252,7 @@ export function Sidebar({ children }: { children: React.ReactNode }) {
   const [isMobile, setIsMobile] = React.useState(false)
 
   // Refs for navigation items
-  const navRefs = React.useRef<Map<string, HTMLLIElement>>(new Map())
+  const navRefs = React.useRef<Map<string, HTMLElement>>(new Map())
   const navContentRef = React.useRef<HTMLElement>(null)
 
   // State to track which parent items are expanded
@@ -407,7 +407,7 @@ export function Sidebar({ children }: { children: React.ReactNode }) {
           [parentHref]: true,
         }))
 
-        setTimeout(() => scrollToNavItem(href, parentHref), 100)
+        setTimeout(() => scrollToNavItem(href, parentHref), 200)
       } else {
         const parentItem = navigationItems.find((item) => item.href === href && item.children)
         if (parentItem && shouldNavigate) {
@@ -417,10 +417,10 @@ export function Sidebar({ children }: { children: React.ReactNode }) {
           }))
         }
 
-        setTimeout(() => scrollToNavItem(href), 100)
+        setTimeout(() => scrollToNavItem(href), 200)
       }
     },
-    [isMobile, router, scrollToNavItem, setExpandedItems],
+    [isMobile, router, scrollToNavItem, setExpandedItems, navigationItems],
   )
 
   // Keyboard shortcuts
@@ -450,7 +450,7 @@ export function Sidebar({ children }: { children: React.ReactNode }) {
   }, [toggleSidebar, toggleMobileSidebar, toggleSearch, isMobile])
 
   // Register a ref for a navigation item
-  const registerNavRef = React.useCallback((href: string, el: HTMLLIElement | null) => {
+  const registerNavRef = React.useCallback((href: string, el: HTMLElement | null) => {
     if (el) {
       navRefs.current.set(href, el)
     }
@@ -613,7 +613,7 @@ export function Sidebar({ children }: { children: React.ReactNode }) {
 
   // DESKTOP LAYOUT
   return (
-    <div className="@container/main flex h-screen ">
+    <div className="@container/main flex min-h-screen">
       {/* Desktop Sidebar */}
       <motion.aside
         id="desktop-sidebar"
@@ -745,7 +745,7 @@ export function Sidebar({ children }: { children: React.ReactNode }) {
 
       {/* Main content */}
       <motion.main
-        className="flex-1 overflow-auto"
+        className="flex-1"
         initial={{ marginLeft: isExpanded ? "16rem" : "5rem" }}
         animate={{ marginLeft: isExpanded ? "16rem" : "5rem" }}
         transition={{
@@ -755,7 +755,7 @@ export function Sidebar({ children }: { children: React.ReactNode }) {
           mass: 1,
         }}
       >
-        <div className="@container/content px-6 ">{children}</div>
+        <div className="@container/content px-6">{children}</div>
       </motion.main>
 
       {/* Search Dialog */}
@@ -780,7 +780,7 @@ interface NavItemProps {
   onClick: (href: string, parentHref?: string, isParentWithChildren?: boolean, shouldNavigate?: boolean) => void
   isOpen: boolean
   onOpenChange: (open: boolean) => void
-  registerRef: (href: string, el: HTMLLIElement | null) => void
+  registerRef: (href: string, el: HTMLElement | null) => void
   isMobile: boolean
 }
 
@@ -882,9 +882,10 @@ function NavItem({ item, isExpanded, pathname, onClick, isOpen, onOpenChange, re
               }}
               style={{ overflow: "hidden" }}
             >
-              {item.children.map((child, index) => (
+              {item.children.map((child: { title: string; href: string; icon?: React.ElementType }, index: number) => (
                 <motion.li
                   key={child.title}
+                  ref={(el) => registerRef(child.href, el)}
                   initial={{ x: -10, opacity: 0 }}
                   animate={{
                     x: 0,
@@ -1020,36 +1021,39 @@ function NavItem({ item, isExpanded, pathname, onClick, isOpen, onOpenChange, re
                     {item.title}
                   </span>
                 </div>
-                {item.children.map((child, index) => (
-                  <motion.div
-                    key={child.title}
-                    initial={{ x: -5, opacity: 0 }}
-                    animate={{
-                      x: 0,
-                      opacity: 1,
-                      transition: {
-                        type: "spring",
-                        stiffness: 300,
-                        damping: 30,
-                        delay: index * 0.03 + 0.1,
-                      },
-                    }}
-                  >
-                    <Button
-                      variant="ghost"
-                      className={cn(
-                        "w-full justify-start px-3 py-2 text-sm rounded-lg transition-all",
-                        pathname === child.href
-                          ? "bg-primary/20 text-primary font-medium"
-                          : "hover:bg-primary/10 hover:translate-x-1",
-                      )}
-                      onClick={() => onClick(child.href, item.href)}
-                      data-href={child.href}
+                <div className="space-y-2">
+                  {item.children.map((child: { title: string; href: string; icon?: React.ElementType }, index: number) => (
+                    <motion.div
+                      key={child.title}
+                      initial={{ x: -5, opacity: 0 }}
+                      animate={{
+                        x: 0,
+                        opacity: 1,
+                        transition: {
+                          type: "spring",
+                          stiffness: 300,
+                          damping: 30,
+                          delay: index * 0.03 + 0.1,
+                        },
+                      }}
                     >
-                      {child.title}
-                    </Button>
-                  </motion.div>
-                ))}
+                      <Button
+                        ref={(el) => registerRef(child.href, el)}
+                        variant="ghost"
+                        className={cn(
+                          "w-full justify-start px-3 py-2 text-sm rounded-lg transition-all",
+                          pathname === child.href
+                            ? "bg-primary/20 text-primary font-medium"
+                            : "hover:bg-primary/10 hover:translate-x-1",
+                        )}
+                        onClick={() => onClick(child.href, item.href)}
+                        data-href={child.href}
+                      >
+                        {child.title}
+                      </Button>
+                    </motion.div>
+                  ))}
+                </div>
               </motion.div>
             </PopoverContent>
           </Popover>
@@ -1167,38 +1171,41 @@ function NavItem({ item, isExpanded, pathname, onClick, isOpen, onOpenChange, re
               }}
               style={{ overflow: "hidden" }}
             >
-              {item.children.map((child, index) => (
-                <motion.div
-                  key={child.title}
-                  initial={{ x: -10, opacity: 0 }}
-                  animate={{
-                    x: 0,
-                    opacity: 1,
-                    transition: {
-                      type: "spring",
-                      stiffness: 300,
-                      damping: 30,
-                      delay: index * 0.05 + 0.1,
-                    },
-                  }}
-                >
-                  <Button
+              <ul className="space-y-1">
+                {item.children.map((child: { title: string; href: string; icon?: React.ElementType }, index: number) => (
+                  <motion.li
                     key={child.title}
-                    variant="ghost"
-                    className={cn(
-                      "w-full justify-start px-3 py-2 text-sm rounded-lg transition-all",
-                      pathname === child.href
-                        ? "bg-primary/20 text-primary font-medium"
-                        : "hover:bg-primary/10 hover:translate-x-1",
-                    )}
-                    onClick={() => onClick(child.href, item.href)}
-                    data-href={child.href}
+                    ref={(el) => registerRef(child.href, el)}
+                    initial={{ x: -10, opacity: 0 }}
+                    animate={{
+                      x: 0,
+                      opacity: 1,
+                      transition: {
+                        type: "spring",
+                        stiffness: 300,
+                        damping: 30,
+                        delay: index * 0.05 + 0.1,
+                      },
+                    }}
                   >
-                    {child.icon && <child.icon className={`h-4 w-4 ${  pathname === child.href ? `bg-primary/20 text-primary` : item.color}`} />}
-                    {child.title }
-                  </Button>
-                </motion.div>
-              ))}
+                    <a
+                      href={child.href}
+                      className={cn(
+                        "flex rounded-lg px-3 py-2 text-sm transition-all",
+                        pathname === child.href
+                          ? "bg-primary/15 text-primary font-medium"
+                          : "hover:bg-muted/50 hover:translate-x-1",
+                      )}
+                      onClick={(e) => {
+                        e.preventDefault()
+                        onClick(child.href, item.href)
+                      }}
+                    >
+                      {child.title}
+                    </a>
+                  </motion.li>
+                ))}
+              </ul>
             </motion.div>
           )}
         </AnimatePresence>

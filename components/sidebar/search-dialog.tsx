@@ -3,7 +3,6 @@
 import * as React from "react"
 import { Command } from "cmdk"
 import {
-  ArrowRight,
   Clock,
   Compass,
   FileText,
@@ -24,7 +23,6 @@ import { Dialog, DialogContent } from "@/components/ui/dialog"
 import { cn } from "@/lib/utils"
 import { SearchCategory } from "./search-dialog/search-category"
 import { SearchEmptyState } from "./search-dialog/search-empty-state"
-import { SearchResultIcon } from "./search-dialog/search-result-icon"
 import { SearchShortcut } from "./search-dialog/search-shortcut"
 
 interface SearchDialogProps {
@@ -331,11 +329,26 @@ export function SearchDialog({
       } else if (e.key === "Enter" && filteredItems[selectedIndex]) {
         e.preventDefault()
         const selectedItem = filteredItems[selectedIndex]
-        onNavigate(selectedItem.href, selectedItem.parentHref)
+        
+        // Add to recent searches first
+        addToRecentSearches({
+          title: selectedItem.title,
+          href: selectedItem.href,
+          parent: selectedItem.parent,
+          parentHref: selectedItem.parentHref,
+        })
+
+        // Close the dialog first
         onClose()
+
+        // Then navigate with a small delay to ensure the dialog is closed
+        // and the sidebar is ready to scroll
+        setTimeout(() => {
+          onNavigate(selectedItem.href, selectedItem.parentHref, false, true)
+        }, 100)
       }
     },
-    [filteredItems, selectedIndex, onNavigate, onClose],
+    [filteredItems, selectedIndex, onNavigate, onClose, addToRecentSearches],
   )
 
   // Get icon for result
@@ -391,10 +404,7 @@ export function SearchDialog({
         key={item.href}
         value={item.href}
         onSelect={() => {
-          // When an item is selected, ensure we pass both the href and parentHref
-          onNavigate(item.href, item.parentHref)
-
-          // Add to recent searches
+          // Add to recent searches first
           addToRecentSearches({
             title: item.title,
             href: item.href,
@@ -402,53 +412,58 @@ export function SearchDialog({
             parentHref: item.parentHref,
           })
 
-          console.log("Added to recent searches:", item.title)
-
-          // If we're not already in the recent category, switch to it to show the updated list
-          if (category !== "recent") {
-            setCategory("recent")
-            // Don't close the dialog so user can see the updated recents
-            return
-          }
-
+          // Close the dialog first
           onClose()
+
+          // Then navigate with a small delay to ensure the dialog is closed
+          // and the sidebar is ready to scroll
+          setTimeout(() => {
+            onNavigate(item.href, item.parentHref, false, true)
+          }, 100)
         }}
         className={cn(
-          "flex cursor-pointer items-center gap-2 sm:gap-3 rounded-md px-2 sm:px-3 py-3 sm:py-2.5 text-sm transition-colors group",
-          "aria-selected:bg-accent aria-selected:text-accent-foreground",
-          selectedIndex === index && "bg-accent text-accent-foreground",
+          "flex items-center gap-3 px-3 py-2 cursor-pointer rounded-lg transition-colors",
+          selectedIndex === index
+            ? "bg-accent text-accent-foreground"
+            : "hover:bg-muted/50"
         )}
       >
-        <SearchResultIcon icon={Icon} color={color} bgColor={bgColor} />
-        <div className="flex flex-col">
-          <div className="font-medium">{item.title}</div>
-          {item.parent && <div className="text-xs text-muted-foreground">{item.parent}</div>}
+        <div className={cn("flex h-8 w-8 items-center justify-center rounded-md", bgColor)}>
+          <Icon className={cn("h-5 w-5", color)} />
         </div>
-        <div className="ml-auto flex items-center gap-2">
-          <button
-            onClick={(e) => {
-              e.stopPropagation()
-              toggleFavorite({
-                title: item.title,
-                href: item.href,
-                parent: item.parent,
-                parentHref: item.parentHref,
-              })
-            }}
-            className="opacity-0 group-hover:opacity-100 hover:opacity-100 focus:opacity-100 transition-opacity"
-            aria-label={isFavorite(item.href) ? "Remove from favorites" : "Add to favorites"}
-          >
-            <Star
-              className={cn(
-                "h-3.5 w-3.5 transition-colors",
-                isFavorite(item.href) ? "text-amber-500 fill-amber-500" : "text-muted-foreground hover:text-amber-500",
-              )}
-            />
-          </button>
-          <div className="text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
-            <ArrowRight className="h-3.5 w-3.5" />
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2">
+            <span className="font-medium truncate">{item.title}</span>
+            {isFavorite(item.href) && (
+              <Star className="h-3 w-3 text-yellow-500 fill-current" />
+            )}
           </div>
+          {item.parent && (
+            <p className="text-xs text-muted-foreground truncate">
+              {item.parent}
+            </p>
+          )}
         </div>
+        <button
+          onClick={(e) => {
+            e.preventDefault()
+            e.stopPropagation()
+            toggleFavorite({
+              title: item.title,
+              href: item.href,
+              parent: item.parent,
+              parentHref: item.parentHref,
+            })
+          }}
+          className={cn(
+            "p-1 rounded transition-colors",
+            isFavorite(item.href)
+              ? "text-yellow-500 hover:text-yellow-600"
+              : "text-muted-foreground hover:text-foreground"
+          )}
+        >
+          <Star className={cn("h-3 w-3", isFavorite(item.href) && "fill-current")} />
+        </button>
       </Command.Item>
     )
   }
