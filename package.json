@@ -13,6 +13,7 @@
     "db:seed": "tsx lib/db/seed.ts"
   },
   "dependencies": {
+    "@floating-ui/react": "^0.27.12",
     "@mdx-js/loader": "latest",
     "@mdx-js/react": "latest",
     "@radix-ui/react-accordion": "latest",
