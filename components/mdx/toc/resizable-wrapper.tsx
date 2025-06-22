@@ -112,6 +112,25 @@ export function ResizableWrapper({ headings: headingsJson, children, className }
   const handleRight = useMotionValue(defaultWidth);
   const contentOpacity = useMotionValue(defaultWidth > 0 ? 1 : 0);
   const contentPointerEvents = useMotionValue(defaultWidth > 0 ? 'auto' : 'none');
+  const [isMobile, setIsMobile] = useState(false)
+
+  // Track if we're on mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
+
+  // Callback to close TOC on mobile when heading is clicked
+  const handleMobileHeadingClick = useCallback(() => {
+    if (window.innerWidth < 768) {
+      // Close the TOC panel on mobile
+      animate(width, 0, { type: 'spring', stiffness: 400, damping: 40 })
+    }
+  }, [width])
 
   useMotionValueEvent(width, "change", (w) => {
     if(isDragging) {
@@ -145,7 +164,11 @@ export function ResizableWrapper({ headings: headingsJson, children, className }
     <div className={cn("relative", className)}>
       <motion.div
         className="transition-none"
-        style={{ paddingRight: width }}
+        style={{ 
+          // On mobile: no padding (TOC slides over content)
+          // On desktop: padding to push content (TOC pushes content)
+          paddingRight: isMobile ? 0 : width 
+        }}
       >
         <div className='max-w-4xl mx-auto'>
         {children}
@@ -158,21 +181,26 @@ export function ResizableWrapper({ headings: headingsJson, children, className }
         onMouseDown={handleStart}
         onTouchStart={handleStart}
         style={{ right: handleRight }}
-        className="fixed top-1/2 -translate-y-1/2 w-4 h-24 flex items-center
-         justify-center cursor-col-resize z-50 group touch-none"
+        className={cn(
+          "fixed top-1/2 -translate-y-1/2 w-4 h-24 flex items-center justify-center cursor-col-resize z-50 group touch-none",
+          // On mobile: adjust positioning for full-height TOC
+          isMobile && "top-1/2"
+        )}
         aria-label="Resize Table of Contents"
       >
-        <div className="w-1.5 h-20 bg-border rounded-full transition-colors duration-200 ease-in-out 
+        <div className="w-2 h-20 bg-border rounded-full transition-colors duration-200 ease-in-out 
         group-hover:bg-sky-500/20 group-active:bg-sky-500/20" />
       </motion.div>
 
       <motion.aside
-        className="fixed top-2  bottom-2  right-2  backdrop-blur-lg border 
-        border-sky-200/30 border-2
-        shadow-xl shadow-sky-200/30  z-40 
-        dark:shadow-sky-800/20 dark:border-sky-800/20
-        rounded-2xl
-        "
+        className={cn(
+          "backdrop-blur-lg border border-sky-200/30 border-2 shadow-xl shadow-sky-200/30 z-40 dark:shadow-sky-800/20 dark:border-sky-800/20 rounded-2xl",
+          // On mobile: full height with better positioning
+          // On desktop: standard positioning
+          isMobile 
+            ? "fixed top-0 bottom-0 right-0 rounded-l-2xl rounded-r-none" 
+            : "fixed top-2 bottom-2 right-2"
+        )}
         style={{ 
           width: width, 
           pointerEvents: contentPointerEvents 
@@ -187,12 +215,17 @@ export function ResizableWrapper({ headings: headingsJson, children, className }
         />
         
         <motion.div 
-          className="h-full 
-          overflow-hidden
-          p-3 sm:p-4 md:p-6 pt-8 sm:pt-10 md:pt-12"
+          className={cn(
+            "h-full overflow-hidden",
+            // On mobile: more padding for better touch targets
+            // On desktop: standard padding
+            isMobile 
+              ? "p-4 pt-12" 
+              : "p-3 sm:p-4 md:p-6 pt-8 sm:pt-10 md:pt-12"
+          )}
           style={{ opacity: contentOpacity }}
         >
-          <TableOfContents headings={headings} maxHeight="calc(100vh - 120px)" />
+          <TableOfContents headings={headings} maxHeight="calc(100vh - 120px)" onHeadingClick={handleMobileHeadingClick} />
         </motion.div>
       </motion.aside>
     </div>

@@ -14,6 +14,7 @@ interface TableOfContentsProps {
   headings: TocHeading[] | string // Can be an array or a JSON string
   className?: string
   maxHeight?: string // Optional prop to control max height
+  onHeadingClick?: () => void // Optional callback for mobile close behavior
 }
 
 // Chevron icon component
@@ -60,7 +61,7 @@ const ExpandCollapseIcon = ({ isExpanded }: { isExpanded: boolean }) => (
   </svg>
 )
 
-export function TableOfContents({ headings: rawHeadings, className, maxHeight = "calc(100vh - 200px)" }: TableOfContentsProps) {
+export function TableOfContents({ headings: rawHeadings, className, maxHeight = "calc(100vh - 200px)", onHeadingClick }: TableOfContentsProps) {
   const pathname = usePathname()
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const [activeHeading, setActiveHeading] = useState<string>('')
@@ -229,10 +230,26 @@ export function TableOfContents({ headings: rawHeadings, className, maxHeight = 
       const elementPosition = element.getBoundingClientRect().top
       const offsetPosition = elementPosition + window.scrollY - headerOffset
 
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: 'smooth'
-      })
+      // On small screens, we need to handle the scroll differently since TOC slides over content
+      if (onHeadingClick && window.innerWidth < 768) {
+        // First scroll to the position
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        })
+        
+        // Then close the TOC after the scroll animation completes
+        // Use a longer delay to ensure scroll completes
+        setTimeout(() => {
+          onHeadingClick()
+        }, 500) // Increased delay to ensure scroll completes
+      } else {
+        // On desktop, normal behavior
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        })
+      }
     }
   }
 
