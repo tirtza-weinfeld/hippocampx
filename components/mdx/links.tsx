@@ -29,6 +29,7 @@ export const Link = ({ href, children }: ComponentPropsWithoutRef<"a">) => {
         transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left
          bg-gradient-to-r from-teal-600/60 to-teal-700/60 via-sky-600/80 
         group-hover:bg-gradient-to-l 
+        
         " />
       </span>
       {isExternal && (

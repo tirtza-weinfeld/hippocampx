@@ -3,17 +3,22 @@ import createMDX from '@next/mdx'
 import remarkMath from 'remark-math'
 import rehypeKatex from 'rehype-katex'
 import rehypeMdxCodeProps from 'rehype-mdx-code-props'
-import remarkToc from 'remark-toc'
 import rehypeSlug from 'rehype-slug'
 import rehypeAutolinkHeadings from 'rehype-autolink-headings'
 import remarkGfm from 'remark-gfm'
 import rehypeTooltipWords from '@/plugins/content-popover-plugin'
 import { POPOVER_CONTENT } from "./components/mdx/code/popover-content"
+import remarkInjectToc from "@/plugins/toc-plugin"
+import { remarkGithubAlerts } from "@/plugins/remark-github-alerts"
 
 const withMDX = createMDX({
   extension: /\.mdx?$/,
   options: {
-    remarkPlugins: [remarkMath, remarkToc, remarkGfm],
+    remarkPlugins: [remarkMath, 
+      remarkGfm,
+      remarkInjectToc,
+      remarkGithubAlerts
+      ],
     rehypePlugins: [
       rehypeKatex,
       [rehypeMdxCodeProps, { tagName: 'code' }],

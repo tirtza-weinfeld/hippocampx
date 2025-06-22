@@ -6,7 +6,6 @@ type TooltipMap = Record<string, string>;
 
 const rehypeTooltipWords: Plugin<[TooltipMap], Root> = (tooltipMap) => {
     return (tree) => {
-        // console.log('[rehypeTooltipWords] tooltipMap keys:', Object.keys(tooltipMap));
         const normalizedMap: TooltipMap = {};
         for (const key in tooltipMap) {
             normalizedMap[key.toLowerCase()] = tooltipMap[key];
@@ -22,9 +21,7 @@ const rehypeTooltipWords: Plugin<[TooltipMap], Root> = (tooltipMap) => {
             const parentElement = parent as Element;
             if (!('tagName' in parentElement)) return;
 
-            // console.log('[rehypeTooltipWords] visiting tex-c:', node.value);
 
-            // Skip <code> and <pre> blocks
             if (['code', 'pre'].includes(parentElement.tagName)) {
                 return CONTINUE;
             }

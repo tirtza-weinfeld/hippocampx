@@ -10,6 +10,9 @@ import { HorizontalRule } from '@/components/mdx/dividers';
 import Blockquote from '@/components/mdx/blockquotes';
 import ContentPopover from '@/components/mdx/content-popover';
 import { POPOVER_CONTENT } from '@/components/mdx/code/popover-content';
+import Alert from '@/components/mdx/alert';
+import { TableOfContents } from '@/components/mdx/toc/table-of-contents';
+import { ResizableWrapper } from '@/components/mdx/toc/resizable-wrapper';
 
 type SpanProps = ComponentPropsWithoutRef<'span'> & {
   'data-tooltip'?: string;
@@ -30,6 +33,7 @@ export const customComponents = {
   em: Em,
   hr: HorizontalRule,
   blockquote: Blockquote,
+    Alert,
 
   // Links and Images
   a: Link,
@@ -46,12 +50,10 @@ export const customComponents = {
     )
   },
   CodeStep,
-  // ul: (props: ComponentPropsWithoutRef<'ul'>) => {
-  
-  //   return <ul {...props} />
-  // },
-
   ContentPopover,
+  // TOC Components
+  TableOfContents,
+  ResizableWrapper,
   // Custom span renderer to handle tooltips
   span: ({ children, ...props }: SpanProps) => {
     const key = props['data-tooltip'];

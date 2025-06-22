@@ -1,0 +1,12 @@
+/* Alert Component Styles - Tailwind CSS v4.1 */
+
+/* Alert type-specific color tokens and animations */
+@theme inline {
+  /* OKLCH colors chosen for good readability and to match the screenshot */
+  --color-alert-tip: oklch(65% 0.15 150);      /* Teal */
+  --color-alert-note: oklch(65% 0.15 230);     /* Blue */
+  --color-alert-warning: oklch(75% 0.2 80);    /* Amber */
+  --color-alert-important: oklch(65% 0.2 25);  /* Red */
+  --color-alert-caution: oklch(70% 0.2 300);   /* Fuchsia */
+}
+

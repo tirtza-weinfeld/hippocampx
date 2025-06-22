@@ -17,17 +17,8 @@ interface TypographyProps {
 export const H1 = ({ children, ...props }: TypographyProps) => (
   <motion.div {...fadeInUp}
   
-  className="relative mb-12 mt-16 first:mt-2 group  ">
-    {/* Decorative background */}
-    {/* <div className="absolute -inset-10 bg-gradient-to-r from-transparent via-20% via-sky-500/10 dark:via-sky-500/5 to-transparent rounded  
-    hover:bg-gradient-to-r  -skew-x-2 -skew-y-1  group-hover:-skew-1 blur-sm group-hover:via-90%
-    transition-all duration-300"></div>
-    <div className="absolute -inset-3 bg-gradient-to-r to-transparent via-5% via-teal-500/10 dark:via-teal-500/5 from-transparent  
-    hover:bg-gradient-to-r  skew-x-1  skew-y-1 group-hover:skew-y-10 blur-md group-hover:via-90% 
-    transition-all duration-3000"></div> */}
-
-    {/* <div className="absolute -inset-2 bg-gradient-to-r from-blue-500/5 via-purple-500/5 to-pink-500/5 rounded-xl" /> */}
-
+  className="relative mb-12 mt-16 first:mt-2 group  " {...props}>
+   
   
     <h1 className="text-4xl md:text-5xl font-extrabold   text-center
      tracking-tight leading-tight   " {...props}>
@@ -36,30 +27,21 @@ export const H1 = ({ children, ...props }: TypographyProps) => (
         {children}
 
       </span>
-      {/* Decorative underline */}
-      {/* <div className="h-2 bg-gradient-to-r from-teal-600 via-indigo-600 to-blue-600 rounded-full mt-4 w-1/2" /> */}
-      {/* <div className="h-px bg-gradient-to-r from-blue-500 via-pink-500 to-transparent mt-4 ml-4" /> */}
-      {/* <div className="h-px bg-gradient-to-r from-teal-600 via-indigo-600 to-blue-600 mt-4 ml-4" /> */}
-
+ 
     </h1>
   </motion.div>
 )
 
 export const H2 = ({ children, ...props }: TypographyProps) => (
   <motion.div {...fadeInUp} className="relative mb-8 mt-12  " {...props}>
-    <div className="absolute -left-6 top-0 w-1 h-full bg-gradient-to-b from-blue-500 to-sky-500
+    <div className="absolute -left-3 top-0 w-1 h-full bg-gradient-to-b from-blue-500 to-sky-500
      via-teal-500/80 rounded-full" />
-    {/* <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight 
-    bg-gradient-to-r from-red-600/70 from-5% via-red-600/60 via-30% to-red-500/80 to-50% 
-      bg-clip-text text-transparent text-red-600
-    " {...props}> */}
     <h2 className="text-3xl md:text-4xl  font-black tracking-tight leading-tight" {...props}>
       <span className="text-teal-500 dark:text-teal-800">
         {children}
       </span>
     </h2>
-    {/* <div className="h-px bg-gradient-to-r from-gray-300 via-gray-200 to-transparent dark:from-gray-600 dark:via-gray-700
-     mt-4 " /> */}
+
 
   </motion.div>
 )

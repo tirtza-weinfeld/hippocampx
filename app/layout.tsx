@@ -25,11 +25,15 @@ export default async function RootLayout({
   const cookieStore = await cookies()
   const theme = cookieStore.get("theme")?.value || "system"
   const font: Font = cookieStore.get("font")?.value as Font || "inter"
+  const sidebarDefaultOpen = cookieStore.get("sidebar_state")?.value === "true"
 
   return (
     <html lang="en" suppressHydrationWarning style={{ fontFamily: getFontFamily(font) }}>
-      <body className={`${inter.variable} antialiased`}>
-      <div className="fixed inset-0 pointer-events-none z-[9999]" aria-label="Navigation" role="navigation">
+      <body className={`${inter.variable} antialiased 
+    
+      `}>
+      <div className="fixed inset-0 
+      pointer-events-none z-[9999]" aria-label="Navigation" role="navigation">
         <SparklesBackground />
       </div>
 
@@ -47,7 +51,7 @@ export default async function RootLayout({
     
               
             <div className="min-h-screen w-full">
-              <Sidebar>
+              <Sidebar defaultOpen={sidebarDefaultOpen}>
                 <div className="flex flex-col min-h-screen">
                   <main className="flex-1">
                     {children}

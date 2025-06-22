@@ -4,17 +4,14 @@
 @variant dark (&:where(.dark, .dark *));
 /* @variant hadestown (&:where(.hadestown, .hadestown *)); */
 
-
-
 @import "./theme.css";
 
+@custom-variant dark (&:is(.dark *));
 
 @layer base {
-  @import "./components/main.css";  
+  @import "./components/main.css";
   @import "./base/main.css";
-  :root {
-    --font-family: var(--font-sans);
-  }
+
   * {
     @apply border-border;
   }
@@ -24,6 +21,7 @@
     font-family: var(--font-family);
   }
 }
+
 
 /* Basic KaTeX styles */
 .katex {
@@ -43,8 +41,9 @@
 }
 
 html {
-  transition: color var(--transition-theme), background-color var(--transition-theme), border-color
-    var(--transition-theme);
+  transition: color var(--transition-theme),
+    background-color var(--transition-theme),
+    border-color var(--transition-theme);
 }
 
 html[data-theme-transition="true"] * {
@@ -52,12 +51,11 @@ html[data-theme-transition="true"] * {
 }
 
 h1 {
-  font-size: 3.5rem;
-  
-  /* & ::first-line{
-    line-height: 1.4;
+  /* font-size: 3.5rem; */
+/* 
+  & ::first-line {
+    line-height: 1.5;
   } */
-
 }
 
 h1 ::first-letter {
@@ -66,7 +64,6 @@ h1 ::first-letter {
   font-weight: normal;
   letter-spacing: 0;
   vertical-align: middle;
-
 }
 
 /* 
