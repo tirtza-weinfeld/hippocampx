@@ -255,7 +255,7 @@ export function TableOfContents({ headings: rawHeadings, className, maxHeight = 
   if (headings.length === 0) {
     return (
       <nav className={cn("space-y-2", className)} aria-label="Table of Contents">
-        <h3 className="font-semibold text-sm sm:text-base lg:text-lg mb-2 sm:mb-3 lg:mb-4 text-foreground">Table of Contents</h3>
+        <h3 className="text-sm sm:text-base lg:text-lg mb-2 sm:mb-3 lg:mb-4 text-foreground">Table of Contents</h3>
         <p className="text-xs sm:text-sm text-muted-foreground">No headings found</p>
       </nav>
     )
@@ -264,7 +264,7 @@ export function TableOfContents({ headings: rawHeadings, className, maxHeight = 
   return (
     <nav className={cn("space-y-1 sm:space-y-2 ", className)} aria-label="Table of Contents">
       <div className="flex items-center justify-between mb-2 sm:mb-3 lg:mb-4">
-        <h3 className={cn("font-semibold text-sm sm:text-base lg:text-lg",
+        <h3 className={cn("text-sm sm:text-base lg:text-lg",
           "text-toc-gradient",
           "hover:animate-gradient-hover"
         )}>Table of Contents</h3>
@@ -305,33 +305,31 @@ export function TableOfContents({ headings: rawHeadings, className, maxHeight = 
         className="overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 dark:scrollbar-thumb-gray-600 dark:scrollbar-track-gray-800"
         style={{ maxHeight }}
       >
-        <ul className="space-y-0.5 sm:space-y-1 pr-2" role="list">
+        <ul className="space-y-0.5 sm:space-y-1 px-3 my-2" role="list">
           {headingGroups.map(({ h2, children }) => {
             const { isActive: isH2Active, isParent: isH2Parent } = getHeadingHighlightState(h2)
             const isCollapsed = collapsedSections.has(h2.id)
             const hasChildren = children.length > 0
 
             return (
-              <li key={h2.id} className="space-y-0.5 sm:space-y-1 relative">
-
+              <li key={h2.id} className="space-y-0.5 sm:space-y-1 relative shadow-md shadow-sky-500/20 rounded-lg 
+              mt-3
+              ">
+                {/* <div className='absolute top-1 -left-2 w-10 h-[90%]  border-l-2  border-sky-500 rounded-md '/> */}
+               
                 <div
                   data-heading-id={h2.id}
                   className={cn(
-                    
                     "flex items-center gap-2 text-xs sm:text-sm lg:text-base transition-all duration-200 ease-in-out",
                     "focus-within:text-foreground",
                     "cursor-pointer rounded-xl px-2 py-0.5 sm:py-1",
                     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                     "active:bg-toc-gradient",
                     "relative group",
-                    (isH2Active||   isH2Parent) && "bg-toc-gradient  hover:animate-gradient-hover",
-                    (isH2Active && !isH2Parent) && "border-b-1 border-sky-500 border-dashed",
-                    // isH2Parent &&"text-red-200",
+                    (isH2Active || isH2Parent) && "bg-toc-gradient  hover:animate-gradient-hover",
+                    (isH2Active && !isH2Parent) && "border-b-1 border-blue-500/20 border-dashed",
+                        !isH2Parent &&  "ml-2",
 
-                    // isH2Active && "bg-toc-gradient  hover:animate-gradient-hover",
-                    // isH2Parent && `bg-toc-gradient hover:animate-gradient-hover`,
-                    // h2.level === 1 && !isH2Active && "font-medium text-foreground",
-                    // h2.level === 2 && !isH2Active && "text-muted-foreground",
 
                   )}
                   onClick={() => handleHeadingClick(h2.id)}
@@ -353,15 +351,11 @@ export function TableOfContents({ headings: rawHeadings, className, maxHeight = 
                         "hover:scale-105 active:scale-95",
                         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                         "relative overflow-hidden group",
-                        // Background gradient that animates 
                         "bg-toc-gradient",
                         "hover:animate-gradient-hover",
-
-                        // Subtle glow effect
                         "hover:shadow-lg hover:shadow-blue-500/20",
-                        // Border animation
-                        // "border border-transparent hover:border-blue-500/30",
 
+                 
 
                       )}
                       aria-label={isCollapsed ? 'Expand section' : 'Collapse section'}
@@ -383,13 +377,17 @@ export function TableOfContents({ headings: rawHeadings, className, maxHeight = 
                        group-hover:before:animate-underline-slide`
                     )}>
                       <span className={cn(
-                        isH2Active || isH2Parent && "text-toc-gradient",
-                        "group-hover:text-toc-gradient",
-
-                      )}>{h2.text}</span>
+                    
+                        isH2Active || isH2Parent ? "text-toc-gradient" : "",
+                        "group-hover:text-toc-gradient"
+                      )}>
+                        {h2.text}
+                      </span>
                     </span>
                   </span>
                 </div>
+
+                {/* <div className='absolute top-1 -left-2 w-0.5 h-[90%] bg-sky-500 bg-gradient-to-b from-sky-500 to-blue-400 via-sky-300 opacity-50'></div> */}
 
                 {/* Children (h3, h4, etc.) */}
                 {hasChildren && (
@@ -418,6 +416,9 @@ export function TableOfContents({ headings: rawHeadings, className, maxHeight = 
                                 // Parent heading: colored text, no background
                                 isParent && `bg-toc-gradient hover:animate-gradient-hover`,
                                 (isActive && !isParent) && "border-b-1 border-sky-500 border-dashed",
+                                `ml-${3+ (child.level-3) * 3}`,
+                         
+                     
                                 "w-fit"
 
                               )}
@@ -430,7 +431,7 @@ export function TableOfContents({ headings: rawHeadings, className, maxHeight = 
                             >
                               <span className={cn(
                                 "transition-all duration-200 ease-in-out relative px-1",
-                           
+
 
                               )}>
                                 <span className={cn(
@@ -441,7 +442,7 @@ export function TableOfContents({ headings: rawHeadings, className, maxHeight = 
                                    group-hover:before:animate-underline-slide`
                                 )}>
                                   <span className={cn(
-                                
+
                                     isActive && "text-toc-gradient",
                                     "group-hover:text-toc-gradient"
                                   )}>{child.text}</span>

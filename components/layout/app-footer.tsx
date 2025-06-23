@@ -7,7 +7,9 @@ export default function AppFooter() {
     ];
 
     return (
-        <footer className="flex flex-row gap-4 h-12 place-content-center place-items-center border-t
+        <footer className="
+        print:hidden
+        flex flex-row gap-4 h-12 place-content-center place-items-center border-t
          bg-background/50 backdrop-blur-sm">
             
             {links.map((link) => (

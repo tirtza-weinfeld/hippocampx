@@ -233,7 +233,7 @@ export function ResizableWrapper({ headings: headingsJson, children, className }
           paddingRight: isMobile ? 0 : width
         }}
       >
-        <div className='max-w-4xl mx-auto'>
+        <div className='max-w-4xl mx-auto print:w-[600px]'>
           {children}
 
         </div>
@@ -246,6 +246,7 @@ export function ResizableWrapper({ headings: headingsJson, children, className }
         onTouchStart={handleStart}
         style={{ right: handleRight }}
         className={cn(
+          "print:hidden", 
           "fixed top-1/2 -translate-y-1/2 z-50 group",
           // Same size for both mobile and desktop
           "md:w-6  w-7 h-32",
@@ -270,6 +271,7 @@ export function ResizableWrapper({ headings: headingsJson, children, className }
       <motion.aside
         ref={tocRef}
         className={cn(
+          "print:hidden",
           "backdrop-blur-lg border border-sky-200/30 border-2 shadow-xl shadow-sky-200/30 z-40 dark:shadow-sky-800/20 dark:border-sky-800/20 rounded-2xl",
           // On mobile: full height with better positioning
           // On desktop: standard positioning
