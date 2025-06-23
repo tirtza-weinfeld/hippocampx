@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { motion, useMotionValue, animate, useMotionValueEvent } from 'framer-motion'
 import { TableOfContents } from './table-of-contents'
 import { cn } from '@/lib/utils'
@@ -58,12 +58,12 @@ const useResizablePanel = (defaultWidth: number) => {
       e.preventDefault()
     }
     e.stopPropagation()
-    
+
     const clientX = 'touches' in e ? e.touches[0]?.clientX : e.clientX
     setDragStartTime(Date.now())
     setDragStartX(clientX || 0)
     setDragDistance(0)
-    
+
     document.body.style.cursor = 'col-resize'
     document.body.style.userSelect = 'none'
     setIsDragging(true)
@@ -71,14 +71,14 @@ const useResizablePanel = (defaultWidth: number) => {
 
   const handleMove = useCallback((e: MouseEvent | TouchEvent) => {
     if (!isDragging) return
-    
+
     const clientX = 'touches' in e ? e.touches[0]?.clientX : e.clientX
     if (clientX === undefined) return
-    
+
     // Calculate drag distance
     const currentDistance = Math.abs(clientX - dragStartX)
     setDragDistance(currentDistance)
-    
+
     const newWidth = window.innerWidth - clientX
     const maxWidth = Math.min(window.innerWidth * 0.9, 500) // 90% of screen width
     width.set(Math.max(0, Math.min(maxWidth, newWidth)))
@@ -87,11 +87,11 @@ const useResizablePanel = (defaultWidth: number) => {
   const handleEnd = useCallback(() => {
     const dragDuration = Date.now() - dragStartTime
     const isQuickClick = dragDuration < 200 && dragDistance < 5 // Quick click with minimal movement
-    
+
     setIsDragging(false)
     document.body.style.cursor = 'auto'
     document.body.style.userSelect = 'auto'
-    
+
     // If it was a quick click (not a drag), toggle the panel
     if (isQuickClick) {
       const currentWidth = width.get()
@@ -105,7 +105,7 @@ const useResizablePanel = (defaultWidth: number) => {
       }
       return
     }
-    
+
     // Normal drag behavior
     const currentWidth = width.get()
     if (currentWidth < MIN_WIDTH) {
@@ -139,7 +139,9 @@ const useResizablePanel = (defaultWidth: number) => {
 export function ResizableWrapper({ headings: headingsJson, children, className }: ResizableWrapperProps) {
   const defaultWidth = useResponsiveDefaultWidth()
   const { width, handleStart } = useResizablePanel(defaultWidth)
-  
+  const tocRef = useRef<HTMLDivElement>(null)
+  const handleRef = useRef<HTMLDivElement>(null)
+
   const handleRight = useMotionValue(defaultWidth);
   const contentOpacity = useMotionValue(defaultWidth > 0 ? 1 : 0);
   const contentPointerEvents = useMotionValue(defaultWidth > 0 ? 'auto' : 'none');
@@ -163,16 +165,49 @@ export function ResizableWrapper({ headings: headingsJson, children, className }
     }
   }, [width])
 
+  // Handle clicking outside TOC to close it on mobile
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent | TouchEvent) => {
+      if (!isMobile) return
+      
+      const currentWidth = width.get()
+      if (currentWidth === 0) return // TOC is already closed
+      
+      const target = event.target as Node
+      
+      // Check if click is outside both the TOC and the handle
+      const isOutsideToc = tocRef.current && !tocRef.current.contains(target)
+      const isOutsideHandle = handleRef.current && !handleRef.current.contains(target)
+      
+      if (isOutsideToc && isOutsideHandle) {
+        // Close the TOC panel
+        animate(width, 0, { type: 'spring', stiffness: 400, damping: 40 })
+      }
+    }
+
+    // Add event listeners for both mouse and touch events
+    document.addEventListener('mousedown', handleClickOutside)
+    document.addEventListener('touchstart', handleClickOutside)
+    
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('touchstart', handleClickOutside)
+    }
+  }, [isMobile, width])
+
   useMotionValueEvent(width, "change", (w) => {
     // Update handle position immediately to match panel width
     handleRight.set(w > 0 ? w : KNOB_OFFSET);
 
     if (w > 0) {
       contentPointerEvents.set('auto');
-      animate(contentOpacity, 1, { duration: 0.2 });
+      // animate(contentOpacity, 1, { duration: 0.2 });
+      contentOpacity.set(1); // Immediate update
     } else {
       contentPointerEvents.set('none');
-      animate(contentOpacity, 0, { duration: 0.2 });
+      // animate(contentOpacity, 0, { duration: 0.2 });
+      contentOpacity.set(0); // Immediate update
+
     }
   })
 
@@ -192,20 +227,21 @@ export function ResizableWrapper({ headings: headingsJson, children, className }
     <div className={cn("relative", className)}>
       <motion.div
         className="transition-none"
-        style={{ 
+        style={{
           // On mobile: no padding (TOC slides over content)
           // On desktop: padding to push content (TOC pushes content)
-          paddingRight: isMobile ? 0 : width 
+          paddingRight: isMobile ? 0 : width
         }}
       >
         <div className='max-w-4xl mx-auto'>
-        {children}
+          {children}
 
         </div>
       </motion.div>
 
       {/* Enhanced draggable handle with toggle functionality */}
       <motion.div
+        ref={handleRef}
         onMouseDown={handleStart}
         onTouchStart={handleStart}
         style={{ right: handleRight }}
@@ -232,17 +268,18 @@ export function ResizableWrapper({ headings: headingsJson, children, className }
       </motion.div>
 
       <motion.aside
+        ref={tocRef}
         className={cn(
           "backdrop-blur-lg border border-sky-200/30 border-2 shadow-xl shadow-sky-200/30 z-40 dark:shadow-sky-800/20 dark:border-sky-800/20 rounded-2xl",
           // On mobile: full height with better positioning
           // On desktop: standard positioning
-          isMobile 
-            ? "fixed top-0 bottom-0 right-0 rounded-l-2xl rounded-r-none" 
+          isMobile
+            ? "fixed top-0 bottom-0 right-0 rounded-l-2xl rounded-r-none"
             : "fixed top-2 bottom-2 right-2"
         )}
-        style={{ 
-          width: width, 
-          pointerEvents: contentPointerEvents 
+        style={{
+          width: width,
+          pointerEvents: contentPointerEvents
         }}
       >
         {/* Enhanced draggable left border area */}
@@ -256,14 +293,14 @@ export function ResizableWrapper({ headings: headingsJson, children, className }
           )}
           aria-label="Toggle and resize Table of Contents"
         />
-        
-        <motion.div 
+
+        <motion.div
           className={cn(
             "h-full overflow-hidden",
             // On mobile: more padding for better touch targets
             // On desktop: standard padding
-            isMobile 
-              ? "p-4 pt-12" 
+            isMobile
+              ? "p-4 pt-12"
               : "p-3 sm:p-4 md:p-6 pt-8 sm:pt-10 md:pt-12"
           )}
           style={{ opacity: contentOpacity }}
