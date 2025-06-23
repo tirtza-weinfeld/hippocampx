@@ -43,6 +43,9 @@ const useResponsiveDefaultWidth = () => {
 const useResizablePanel = (defaultWidth: number) => {
   const width = useMotionValue(defaultWidth)
   const [isDragging, setIsDragging] = useState(false)
+  const [dragStartTime, setDragStartTime] = useState(0)
+  const [dragDistance, setDragDistance] = useState(0)
+  const [dragStartX, setDragStartX] = useState(0)
 
   // Update width when defaultWidth changes (e.g., on screen resize)
   useEffect(() => {
@@ -56,6 +59,11 @@ const useResizablePanel = (defaultWidth: number) => {
     }
     e.stopPropagation()
     
+    const clientX = 'touches' in e ? e.touches[0]?.clientX : e.clientX
+    setDragStartTime(Date.now())
+    setDragStartX(clientX || 0)
+    setDragDistance(0)
+    
     document.body.style.cursor = 'col-resize'
     document.body.style.userSelect = 'none'
     setIsDragging(true)
@@ -67,16 +75,38 @@ const useResizablePanel = (defaultWidth: number) => {
     const clientX = 'touches' in e ? e.touches[0]?.clientX : e.clientX
     if (clientX === undefined) return
     
+    // Calculate drag distance
+    const currentDistance = Math.abs(clientX - dragStartX)
+    setDragDistance(currentDistance)
+    
     const newWidth = window.innerWidth - clientX
     const maxWidth = Math.min(window.innerWidth * 0.9, 500) // 90% of screen width
     width.set(Math.max(0, Math.min(maxWidth, newWidth)))
-  }, [isDragging, width])
+  }, [isDragging, width, dragStartX])
 
   const handleEnd = useCallback(() => {
+    const dragDuration = Date.now() - dragStartTime
+    const isQuickClick = dragDuration < 200 && dragDistance < 5 // Quick click with minimal movement
+    
     setIsDragging(false)
     document.body.style.cursor = 'auto'
     document.body.style.userSelect = 'auto'
     
+    // If it was a quick click (not a drag), toggle the panel
+    if (isQuickClick) {
+      const currentWidth = width.get()
+      if (currentWidth > MIN_WIDTH / 2) {
+        // Panel is open, close it
+        animate(width, 0, { type: 'spring', stiffness: 400, damping: 40 })
+      } else {
+        // Panel is closed, open it to default width
+        const targetWidth = window.innerWidth < 768 ? 320 : 320
+        animate(width, targetWidth, { type: 'spring', stiffness: 400, damping: 40 })
+      }
+      return
+    }
+    
+    // Normal drag behavior
     const currentWidth = width.get()
     if (currentWidth < MIN_WIDTH) {
       if (currentWidth > MIN_WIDTH / 2) {
@@ -85,7 +115,7 @@ const useResizablePanel = (defaultWidth: number) => {
         animate(width, 0, { type: 'spring', stiffness: 400, damping: 40 })
       }
     }
-  }, [width])
+  }, [width, dragStartTime, dragDistance])
 
   useEffect(() => {
     if (isDragging) {
@@ -103,12 +133,12 @@ const useResizablePanel = (defaultWidth: number) => {
     }
   }, [isDragging, handleMove, handleEnd])
 
-  return { width, handleStart, isDragging }
+  return { width, handleStart }
 }
 
 export function ResizableWrapper({ headings: headingsJson, children, className }: ResizableWrapperProps) {
   const defaultWidth = useResponsiveDefaultWidth()
-  const { width, handleStart, isDragging } = useResizablePanel(defaultWidth)
+  const { width, handleStart } = useResizablePanel(defaultWidth)
   
   const handleRight = useMotionValue(defaultWidth);
   const contentOpacity = useMotionValue(defaultWidth > 0 ? 1 : 0);
@@ -134,11 +164,8 @@ export function ResizableWrapper({ headings: headingsJson, children, className }
   }, [width])
 
   useMotionValueEvent(width, "change", (w) => {
-    if(isDragging) {
-      handleRight.set(w > 0 ? w : KNOB_OFFSET);
-    } else {
-      animate(handleRight, w > 0 ? w : KNOB_OFFSET, { type: 'spring', stiffness: 400, damping: 40 });
-    }
+    // Update handle position immediately to match panel width
+    handleRight.set(w > 0 ? w : KNOB_OFFSET);
 
     if (w > 0) {
       contentPointerEvents.set('auto');
@@ -177,7 +204,7 @@ export function ResizableWrapper({ headings: headingsJson, children, className }
         </div>
       </motion.div>
 
-      {/* Enhanced draggable handle with better mobile UX */}
+      {/* Enhanced draggable handle with toggle functionality */}
       <motion.div
         onMouseDown={handleStart}
         onTouchStart={handleStart}
@@ -185,10 +212,10 @@ export function ResizableWrapper({ headings: headingsJson, children, className }
         className={cn(
           "fixed top-1/2 -translate-y-1/2 z-50 group",
           // Same size for both mobile and desktop
-          "w-6 h-32",
+          "md:w-6  w-7 h-32",
           "flex items-center justify-center cursor-col-resize touch-none"
         )}
-        aria-label="Resize Table of Contents"
+        aria-label="Toggle and resize Table of Contents"
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
       >
@@ -196,7 +223,7 @@ export function ResizableWrapper({ headings: headingsJson, children, className }
         <div className={cn(
           "rounded-full transition-all duration-200 ease-in-out",
           // Same size for both mobile and desktop
-          "w-4 md:w-2 h-28",
+          "w-3 md:w-2 h-28",
           // Consistent visual handle color across all states. Hover/active feedback is handled by scale and shadow, not color change.
           "bg-gradient-to-b from-sky-400/10 to-sky-600/10 dark:from-sky-500/10 dark:to-sky-700/10",
           "group-hover:shadow-lg group-active:shadow-xl",
@@ -227,7 +254,7 @@ export function ResizableWrapper({ headings: headingsJson, children, className }
             // Responsive drag area
             isMobile ? "w-4" : "w-2" // Larger drag area on mobile, but not too large
           )}
-          aria-label="Resize Table of Contents"
+          aria-label="Toggle and resize Table of Contents"
         />
         
         <motion.div 
