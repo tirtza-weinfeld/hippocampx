@@ -46,13 +46,10 @@
   --color-accent-disabled: var(--accent-disabled);
 
   --color-background-gradient: linear-gradient(var(--background), var(--muted));
-  --color-toc-gradient: linear-gradient(to right, var(--color-red-500), var(--color-blue-500));
-  --color-toc-mix: color-mix(in oklch, 
-    color-mix(in oklch, var(--color-red-500) 33%, var(--color-pink-600) 67%) 60%, 
-    var(--color-foreground) 20%
-  );
+  --color-toc-gradient: linear-gradient(to right, var(--color-blue-500), var(--color-sky-400), var(--color-blue-400), var(--color-blue-300), var(--color-blue-600));
+  --color-toc-mix: color-mix(in oklch, var(--color-blue-500) 60%, var(--color-sky-400) 40%);
 
-  --color-toc-underline-gradient: linear-gradient(to right, var(--color-red-500),var(--color-purple-500),var(--color-pink-500), var(--color-blue-500),var(--color-background));
+  --color-toc-underline-gradient: linear-gradient(to right, var(--color-blue-500), var(--color-sky-400), var(--color-blue-400), var(--color-blue-300), var(--color-blue-600), var(--color-background));
   --color-selection: var(--primary);
   --color-selection-background: var(--primary-foreground);
   --color-focus-ring: var(--ring);
@@ -446,7 +443,21 @@
 /* Custom utility for TOC gradient */
 @utility bg-toc-gradient {
   /* background: var(--color-toc-gradient); */
-  background: linear-gradient(to right,transparent -5%, --alpha(var(--color-red-500) / 10%), --alpha(var(--color-blue-500) / 10%), --alpha(var(--color-pink-500) / 10%),var(--color-background),transparent 100%);
+  background: linear-gradient(to right,transparent -10%, 
+  --alpha(var(--color-blue-500) / 10%), 
+  --alpha(var(--color-sky-400) / 10%),
+   --alpha(var(--color-blue-300) / 10%),
+   --alpha(var(--color-teal-700) / 5%)
+   );
+
+  /* background: linear-gradient(to right,
+  transparent -5%,
+   --alpha(var(--color-red-500) / 10%), 
+   --alpha(var(--color-blue-500) / 10%),
+    --alpha(var(--color-pink-500) / 10%),
+    var(--color-background),
+    transparent 100%);
+ */
 
   background-size: 200% 100%;
   background-position: 0% 50%;

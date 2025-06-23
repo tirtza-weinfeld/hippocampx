@@ -50,11 +50,12 @@ const useResizablePanel = (defaultWidth: number) => {
   }, [defaultWidth, width])
 
   const handleStart = useCallback((e: React.MouseEvent | React.TouchEvent) => {
-    // Only prevent default for mouse events, not touch events
+    // Only prevent default for mouse events, not touch events (which are passive)
     if ('clientX' in e) {
       e.preventDefault()
     }
     e.stopPropagation()
+    
     document.body.style.cursor = 'col-resize'
     document.body.style.userSelect = 'none'
     setIsDragging(true)
@@ -176,20 +177,31 @@ export function ResizableWrapper({ headings: headingsJson, children, className }
         </div>
       </motion.div>
 
-      {/* Draggable handle (door knob) - always visible */}
+      {/* Enhanced draggable handle with better mobile UX */}
       <motion.div
         onMouseDown={handleStart}
         onTouchStart={handleStart}
         style={{ right: handleRight }}
         className={cn(
-          "fixed top-1/2 -translate-y-1/2 w-4 h-24 flex items-center justify-center cursor-col-resize z-50 group touch-none",
-          // On mobile: adjust positioning for full-height TOC
-          isMobile && "top-1/2"
+          "fixed top-1/2 -translate-y-1/2 z-50 group",
+          // Same size for both mobile and desktop
+          "w-6 h-32",
+          "flex items-center justify-center cursor-col-resize touch-none"
         )}
         aria-label="Resize Table of Contents"
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
       >
-        <div className="w-2 h-20 bg-border rounded-full transition-colors duration-200 ease-in-out 
-        group-hover:bg-sky-500/20 group-active:bg-sky-500/20" />
+        {/* Visual handle with enhanced styling */}
+        <div className={cn(
+          "rounded-full transition-all duration-200 ease-in-out",
+          // Same size for both mobile and desktop
+          "w-4 md:w-2 h-28",
+          // Consistent visual handle color across all states. Hover/active feedback is handled by scale and shadow, not color change.
+          "bg-gradient-to-b from-sky-400/10 to-sky-600/10 dark:from-sky-500/10 dark:to-sky-700/10",
+          "group-hover:shadow-lg group-active:shadow-xl",
+          "group-hover:shadow-sky-500/20 group-active:shadow-sky-500/30"
+        )} />
       </motion.div>
 
       <motion.aside
@@ -206,11 +218,15 @@ export function ResizableWrapper({ headings: headingsJson, children, className }
           pointerEvents: contentPointerEvents 
         }}
       >
-        {/* Draggable left border area - always visible */}
+        {/* Enhanced draggable left border area */}
         <motion.div
           onMouseDown={handleStart}
           onTouchStart={handleStart}
-          className="absolute left-0 top-0 bottom-0 w-2 cursor-col-resize z-10 touch-none"
+          className={cn(
+            "absolute left-0 top-0 bottom-0 cursor-col-resize z-10 touch-none",
+            // Responsive drag area
+            isMobile ? "w-4" : "w-2" // Larger drag area on mobile, but not too large
+          )}
           aria-label="Resize Table of Contents"
         />
         

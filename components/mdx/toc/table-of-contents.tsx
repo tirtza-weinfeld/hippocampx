@@ -3,6 +3,7 @@
 import React, { useRef, useEffect, useState, useMemo } from 'react'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
+import { ExpandCollapseIcon, ChevronIcon } from '@/components/svgs/toc-icons'
 
 interface TocHeading {
   text: string
@@ -17,49 +18,7 @@ interface TableOfContentsProps {
   onHeadingClick?: () => void // Optional callback for mobile close behavior
 }
 
-// Chevron icon component
-const ChevronIcon = ({ isOpen }: { isOpen: boolean }) => (
-  <svg
-    className={cn(
-      "w-3 h-3 transition-all duration-300 ease-out flex-shrink-0",
-      "transform hover:scale-110 active:scale-95",
-      isOpen ? "rotate-90" : "rotate-0",
-      "text-muted-foreground group-hover:text-foreground"
-    )}
-    fill="none"
-    stroke="currentColor"
-    viewBox="0 0 24 24"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M9 5l7 7-7 7"
-    />
-  </svg>
-)
 
-// Expand/Collapse all icon
-const ExpandCollapseIcon = ({ isExpanded }: { isExpanded: boolean }) => (
-  <svg
-    className={cn(
-      "w-4 h-4 transition-all duration-300 ease-out flex-shrink-0",
-      "transform hover:scale-110 active:scale-95",
-      isExpanded ? "rotate-180" : "rotate-0",
-      "text-muted-foreground group-hover:text-foreground"
-    )}
-    fill="none"
-    stroke="currentColor"
-    viewBox="0 0 24 24"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M19 9l-7 7-7-7"
-    />
-  </svg>
-)
 
 export function TableOfContents({ headings: rawHeadings, className, maxHeight = "calc(100vh - 200px)", onHeadingClick }: TableOfContentsProps) {
   const pathname = usePathname()
@@ -67,11 +26,11 @@ export function TableOfContents({ headings: rawHeadings, className, maxHeight = 
   const [activeHeading, setActiveHeading] = useState<string>('')
   const [collapsedSections, setCollapsedSections] = useState<Set<string>>(new Set())
   const [isAllExpanded, setIsAllExpanded] = useState(true)
-  
+
   // Memoize headings to prevent unnecessary re-renders
   const headings = useMemo(() => {
     let result: TocHeading[] = []
-    
+
     // Handle both array and JSON string props
     if (typeof rawHeadings === 'string') {
       try {
@@ -85,7 +44,7 @@ export function TableOfContents({ headings: rawHeadings, className, maxHeight = 
     } else if (Array.isArray(rawHeadings)) {
       result = rawHeadings
     }
-    
+
     return result
   }, [rawHeadings])
 
@@ -237,7 +196,7 @@ export function TableOfContents({ headings: rawHeadings, className, maxHeight = 
           top: offsetPosition,
           behavior: 'smooth'
         })
-        
+
         // Then close the TOC after the scroll animation completes
         // Use a longer delay to ensure scroll completes
         setTimeout(() => {
@@ -309,38 +268,38 @@ export function TableOfContents({ headings: rawHeadings, className, maxHeight = 
           "text-toc-gradient",
           "hover:animate-gradient-hover"
         )}>Table of Contents</h3>
-        
+
         {/* Collapse/Expand All Toggle */}
         {hasCollapsibleSections && (
           <button
             onClick={toggleAllSections}
             className={cn(
+              "transition-all duration-300 ease-out",
               "flex items-center gap-1 px-3 py-1.5 text-xs sm:text-sm",
               "text-muted-foreground hover:text-foreground",
               "rounded-lg transition-all duration-300 ease-out",
-              "hover:scale-105 active:scale-95",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
               "relative overflow-hidden group",
               // Background gradient that animates
-              "bg-gradient-to-r from-red-500/10 via-orange-500/10 to-purple-500/10",
-              "hover:from-red-500/20 hover:via-orange-500/20 hover:to-purple-500/20",
+              "bg-gradient-to-r from-blue-500/10 via-sky-400/10 to-sky-300/40",
               // Animated background position
-              "hover:animate-gradient-hover",
+              "hover:bg-gradient-to-l",
               // Subtle glow effect
-              "hover:shadow-md hover:shadow-red-500/15",
               // Border animation
-              "border border-transparent hover:border-red-500/20"
+              "[&>*]:text-toc-gradient",
+              "[&>svg]:text-sky-400",
+              "[&>svg]:group-hover:text-blue-400"
             )}
             aria-label={isAllExpanded ? 'Collapse all sections' : 'Expand all sections'}
           >
             <ExpandCollapseIcon isExpanded={isAllExpanded} />
-            <span className="hidden sm:inline">
+            <span className="hidden sm:inline ">
               {isAllExpanded ? 'Collapse' : 'Expand'}
             </span>
           </button>
         )}
       </div>
-      
+
       <div
         ref={scrollContainerRef}
         className="overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 dark:scrollbar-thumb-gray-600 dark:scrollbar-track-gray-800"
@@ -353,23 +312,27 @@ export function TableOfContents({ headings: rawHeadings, className, maxHeight = 
             const hasChildren = children.length > 0
 
             return (
-              <li key={h2.id} className="space-y-0.5 sm:space-y-1">
-                {/* H2 heading with toggle button */}
+              <li key={h2.id} className="space-y-0.5 sm:space-y-1 relative">
+
                 <div
                   data-heading-id={h2.id}
                   className={cn(
+                    
                     "flex items-center gap-2 text-xs sm:text-sm lg:text-base transition-all duration-200 ease-in-out",
                     "focus-within:text-foreground",
                     "cursor-pointer rounded-xl px-2 py-0.5 sm:py-1",
                     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-                    "active:bg-accent/50",
+                    "active:bg-toc-gradient",
                     "relative group",
-                    // Active heading: a soft, glowing, inset pill
-                    isH2Active && "bg-toc-gradient text-toc-mix hover:animate-gradient-hover",
-                    // Parent heading: colored text, no background
-                    isH2Parent && `bg-toc-gradient hover:animate-gradient-hover`,
-                    h2.level === 1 && !isH2Active && "font-medium text-foreground",
-                    h2.level === 2 && !isH2Active && "text-muted-foreground",
+                    (isH2Active||   isH2Parent) && "bg-toc-gradient  hover:animate-gradient-hover",
+                    (isH2Active && !isH2Parent) && "border-b-1 border-sky-500 border-dashed",
+                    // isH2Parent &&"text-red-200",
+
+                    // isH2Active && "bg-toc-gradient  hover:animate-gradient-hover",
+                    // isH2Parent && `bg-toc-gradient hover:animate-gradient-hover`,
+                    // h2.level === 1 && !isH2Active && "font-medium text-foreground",
+                    // h2.level === 2 && !isH2Active && "text-muted-foreground",
+
                   )}
                   onClick={() => handleHeadingClick(h2.id)}
                   onKeyDown={(e) => handleKeyDown(e, h2.id)}
@@ -387,18 +350,19 @@ export function TableOfContents({ headings: rawHeadings, className, maxHeight = 
                       }}
                       className={cn(
                         "p-1 rounded-lg transition-all duration-300 ease-out flex-shrink-0",
-                        "hover:scale-110 active:scale-95",
+                        "hover:scale-105 active:scale-95",
                         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                         "relative overflow-hidden group",
-                        // Background gradient that animates
-                        "bg-gradient-to-r from-red-500/20 via-orange-500/20 to-purple-500/20",
-                        "hover:from-red-500/30 hover:via-orange-500/30 hover:to-purple-500/30",
-                        // Animated background position
+                        // Background gradient that animates 
+                        "bg-toc-gradient",
                         "hover:animate-gradient-hover",
+
                         // Subtle glow effect
-                        "hover:shadow-lg hover:shadow-red-500/20",
+                        "hover:shadow-lg hover:shadow-blue-500/20",
                         // Border animation
-                        "border border-transparent hover:border-red-500/30"
+                        // "border border-transparent hover:border-blue-500/30",
+
+
                       )}
                       aria-label={isCollapsed ? 'Expand section' : 'Collapse section'}
                     >
@@ -406,16 +370,23 @@ export function TableOfContents({ headings: rawHeadings, className, maxHeight = 
                     </button>
                   )}
                   <span className={cn(
-                    "flex-1 min-w-0 transition-all duration-200 ease-in-out relative"
+                    "flex-1 min-w-0 transition-all duration-200 ease-in-out relative",
+                    "px-1"
+
                   )}>
                     <span className={cn(
                       "inline-block relative",
                       // Add underline animation for non-active, non-parent headings
-                      !isH2Active && !isH2Parent && `group-hover:before:absolute group-hover:before:bottom-0 group-hover:before:left-0 group-hover:before:h-0.5 group-hover:before:w-full
+                      !isH2Active && !isH2Parent && `group-hover:before:absolute group-hover:before:bottom-0
+                       group-hover:before:left-0 group-hover:before:h-0.5 group-hover:before:w-full
                        group-hover:before:bg-toc-underline-gradient
                        group-hover:before:animate-underline-slide`
                     )}>
-                      <span className="relative z-10">{h2.text}</span>
+                      <span className={cn(
+                        isH2Active || isH2Parent && "text-toc-gradient",
+                        "group-hover:text-toc-gradient",
+
+                      )}>{h2.text}</span>
                     </span>
                   </span>
                 </div>
@@ -427,7 +398,7 @@ export function TableOfContents({ headings: rawHeadings, className, maxHeight = 
                     isCollapsed ? "grid-rows-[0fr]" : "grid-rows-[1fr]"
                   )}>
                     <div className="overflow-hidden">
-                      <ul className="space-y-0.5 sm:space-y-1 ml-3 sm:ml-4 lg:ml-6 pb-1">
+                      <ul className="space-y-0.5 sm:space-y-1 ml-3 sm:ml-4 lg:ml-8 pb-1">
                         {children.map((child) => {
                           const { isActive, isParent } = getHeadingHighlightState(child)
                           return (
@@ -439,16 +410,16 @@ export function TableOfContents({ headings: rawHeadings, className, maxHeight = 
                                 "focus-within:text-foreground",
                                 "cursor-pointer rounded-xl px-2 py-0.5 sm:py-1",
                                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-                                "active:bg-accent/50",
+                                "active:bg-toc-gradient",
                                 "relative",
                                 // Active heading: a soft, glowing, inset pill
-                                isActive && "bg-toc-gradient text-toc-mix hover:animate-gradient-hover",
+                                // isActive && "bg-toc-gradient text-toc-mix hover:animate-gradient-hover",
+                                isActive && "bg-toc-gradient hover:animate-gradient-hover",
                                 // Parent heading: colored text, no background
                                 isParent && `bg-toc-gradient hover:animate-gradient-hover`,
-                                // child.level === 3 && !isActive && "text-muted-foreground/80",
-                                // child.level === 4 && !isActive && "text-muted-foreground/60",
-                                // child.level === 5 && !isActive && "text-muted-foreground/40",
-                                // child.level === 6 && !isActive && "text-muted-foreground/30",
+                                (isActive && !isParent) && "border-b-1 border-sky-500 border-dashed",
+                                "w-fit"
+
                               )}
                               onClick={() => handleHeadingClick(child.id)}
                               onKeyDown={(e) => handleKeyDown(e, child.id)}
@@ -458,16 +429,22 @@ export function TableOfContents({ headings: rawHeadings, className, maxHeight = 
                               aria-current={isActive ? 'location' : undefined}
                             >
                               <span className={cn(
-                                "transition-all duration-200 ease-in-out relative"
+                                "transition-all duration-200 ease-in-out relative px-1",
+                           
+
                               )}>
                                 <span className={cn(
                                   "inline-block relative",
                                   // Add underline animation for non-active, non-parent headings
                                   !isActive && !isParent && `group-hover:before:absolute group-hover:before:bottom-0 group-hover:before:left-0 group-hover:before:h-0.5 group-hover:before:w-full
-                                   group-hover:before:bg-gradient-to-r group-hover:before:from-red-500 group-hover:before:via-orange-500 group-hover:before:to-purple-500
+                                   group-hover:before:bg-gradient-to-r group-hover:before:from-blue-500 group-hover:before:via-sky-400 group-hover:before:to-blue-400
                                    group-hover:before:animate-underline-slide`
                                 )}>
-                                  <span className="relative z-10">{child.text}</span>
+                                  <span className={cn(
+                                
+                                    isActive && "text-toc-gradient",
+                                    "group-hover:text-toc-gradient"
+                                  )}>{child.text}</span>
                                 </span>
                               </span>
                             </li>
