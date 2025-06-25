@@ -10,6 +10,7 @@ const ICONS = {
   warning: AlertTriangle,
   important: AlertCircle,
   caution: Info,
+  example: Notebook,
 } as const;
 
 // Statically mapping types to full class names ensures Tailwind's JIT compiler
@@ -44,6 +45,12 @@ const STYLES = {
     border: "border-alert-caution",
     text: "text-alert-caution",
     iconBg: "bg-alert-caution/10",
+  },
+  example: {
+    gradient: "from-white to-alert-example/20 dark:from-gray-900 dark:to-alert-example/20",
+    border: "border-alert-example",
+    text: "text-alert-example",
+    iconBg: "bg-alert-example/10",
   },
 } as const;
 
@@ -136,6 +143,9 @@ export default function Alert({ type, children }: { type: keyof typeof ICONS, ch
           `[&_a]:${styles.text} [&_a]:underline [&_a]:underline-offset-2`,
           "[&_code]:bg-black/[0.07] dark:[&_code]:bg-white/[0.07]",
           "[&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded-md [&_code]:font-mono [&_code]:text-xs",
+          "whitespace-pre-wrap overflow-x-scroll w-full",
+
+
         )}>
           {children}
         </div>

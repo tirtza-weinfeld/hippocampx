@@ -404,6 +404,7 @@ export function TableOfContents({ headings: rawHeadings, className, maxHeight = 
                               key={child.id}
                               data-heading-id={child.id}
                               className={cn(
+                                "shadow-sm shadow-sky-500/20 rounded-lg",
                                 "text-xs sm:text-sm lg:text-base transition-all duration-200 ease-in-out group",
                                 "focus-within:text-foreground",
                                 "cursor-pointer rounded-xl px-2 py-0.5 sm:py-1",
