@@ -24,43 +24,64 @@ That one subtraction answers **any** “range distance” question in **O(1)** a
 
 ## 1 Longest Streak Covering Exactly k Kilometers
 
-**LeetCode 325: Maximum Size Subarray Sum Equals k**
-*You need a sightseeing record: find the **maximum number of consecutive days** whose net distance exactly totals **k km**.*
+**[LeetCode 325: Maximum Size Subarray Sum Equals k](https://leetcode.com/problems/maximum-size-subarray-sum-equals-k/)**
+
+*You need a sightseeing record: 
+find the **maximum number of consecutive days** whose net distance exactly totals **k km**.*
 
 ```python
 class Solution:
     def maxSubArrayLen(self, nums: list[int], k: int) -> int:
         
-        sum_index = {0: -1}  # odometer reading → earliest day index
-        max_length = curr_sum = 0
+        sum_index = {0: -1}  # odometer reading(cumulative distance) → earliest day index
+        curr_sum = max_length = 0
         
         for i, num in enumerate(nums):
-            curr_sum += num  # update odometer reading
+            curr_sum += num  # update odometer reading (current cumulative distance)
             
             # if we've seen (curr_sum - k) on day d,
             # then days d+1…i cover exactly k km
-            if (curr_sum - k) in sum_index:
-                max_length = max(max_length,
-                                 i - sum_index[curr_sum - k])
+            if (d:=curr_sum - k) in sum_index:
+                max_length = max(max_length, i - sum_index[d])
             
-            # record the first time we hit this odometer reading
+            # record the first time we hit this odometer reading(this cumulative distance)
             if curr_sum not in sum_index:
                 sum_index[curr_sum] = i
         
         return max_length
 ```
 
+> [!comment] 
+> Here _odometer reading_ **is** your **cumulative distance** from Day 1 up through the current day—that’s exactly what the prefix sum stores.
+> 
+> So when we write:
+> 
+> ```python
+> sum_index = {0: -1}  # odometer reading → earliest day index
+> ```
+> 
+> we mean:
+> 
+> * **Key** = a particular cumulative distance (what your odometer would show)
+> * **Value** = the earliest day on which you reached that distance
+
+
+
+
+
 ---
 
 ## 2 Count of Streaks Covering k Kilometers
 
-**LeetCode 560: Subarray Sum Equals K**
+**[LeetCode 560: Subarray Sum Equals K](https://leetcode.com/problems/subarray-sum-equals-k/)**
 *How many **distinct** consecutive-day intervals sum to exactly **k km**?*
 
 ```python
 def subarraySum(self, nums: list[int], k: int) -> int:
-    count = curr_sum = 0
+
     sum_freq = defaultdict(int, {0: 1})
+    curr_sum = count = 0
+
     for num in nums:
         curr_sum += num
         count += sum_freq[curr_sum - k]
@@ -74,7 +95,7 @@ def subarraySum(self, nums: list[int], k: int) -> int:
 
 ## 3 Finding the Longest Balanced Forward/Backward Day-Count
 
-**LeetCode 525: Contiguous Array**
+**[LeetCode 525: Contiguous Array](https://leetcode.com/problems/contiguous-array/)**
 
 **Problem Description:**
 Given an array of daily driving segments (positive for forward, negative for backtrack), find the **maximum length** of a contiguous subarray with an **equal number of forward days and backward days**.
@@ -102,22 +123,28 @@ class Solution:
 
 ## 4 Detecting a ≥2-Day Multiple-of-k Windfall
 
-**LeetCode 523: Continuous Subarray Sum**
+**[LeetCode 523: Continuous Subarray Sum](https://leetcode.com/problems/continuous-subarray-sum/)**
+    
 *Did you ever cover a total distance that’s an exact **multiple of k km** over at least 2 consecutive days?*
 
 ```python
 class Solution:
     def checkSubarraySum(self, nums: list[int], k: int) -> bool:
+
+        mod_index = {0: -1}
         prefix_mod = 0
-        mod_seen = {0: -1}
+
         for i, num in enumerate(nums):
+
             prefix_mod = (prefix_mod + num) % k
+
             # same remainder at day d and i ⇒ days d+1…i total ≡0 (mod k)
-            if prefix_mod in mod_seen:
-                if i - mod_seen[prefix_mod] > 1:
+            if prefix_mod in mod_index:
+                # ensures that the size of subarray is at least 2
+                if i - mod_index[prefix_mod] > 1:
                     return True
             else:
-                mod_seen[prefix_mod] = i
+                mod_index[prefix_mod] = i
         return False
 ```
 
@@ -127,13 +154,16 @@ class Solution:
 
 ## 5 Counting All Spans Divisible by k
 
-**LeetCode 974: Subarray Sums Divisible by K**
+**[LeetCode 974: Subarray Sums Divisible by K](https://leetcode.com/problems/subarray-sums-divisible-by-k/)**
+
 *How many intervals end on a day where your **cumulative distance** is an exact multiple of k?*
 
 ```python
 def subarraysDivByK(self, nums: list[int], k: int) -> int:
-    curr_mod = count = 0
+
     mod_freq = defaultdict(int, {0: 1})
+    curr_mod = count = 0
+
     for num in nums:
         curr_mod = (curr_mod + num) % k
         count += mod_freq[curr_mod]
@@ -145,32 +175,35 @@ def subarraysDivByK(self, nums: list[int], k: int) -> int:
 
 ## 6 Minimal Skip to Align on k
 
-**LeetCode 1590: Make Sum Divisible by P**
-*If your **total trip distance** isn’t divisible by p, what’s the **shortest consecutive segment** to skip so that 
-the remaining distance is exactly a multiple of p?*
+**[LeetCode 1590: Make Sum Divisible by K](https://leetcode.com/problems/make-sum-divisible-by-p/)**
+
+*If your **total trip distance** isn’t divisible by k, what’s the **shortest consecutive segment** to skip so that 
+the remaining distance is exactly a multiple of k?*
 
 ```python
 class Solution:
-    def minSubarray(self, nums: list[int], p: int) -> int:
-        total_mod = sum(nums) % p
+    def minSubarray(self, nums: list[int], k: int) -> int:
+
+        total_mod = sum(nums) % k
         if total_mod == 0:
             return 0
-        min_len = len(nums)
-        cur = 0
-        mod_seen = {0: -1}
+
+        mod_index = {0: -1}
+        curr_mod, min_len = 0, len(nums)
+
         for i, num in enumerate(nums):
-            cur = (cur + num) % p
-            need = (cur - total_mod + p) % p
-            if need in mod_seen:
-                min_len = min(min_len, i - mod_seen[need])
-            mod_seen[cur] = i
+            curr_mod = (curr_mod + num) % k
+            need = (curr_mod - total_mod + k) % k
+            if need in mod_index:
+                min_len = min(min_len, i - mod_index[need])
+            mod_index[curr_mod] = i
         return min_len if min_len < len(nums) else -1
 ```
 
 ---
 ## 7 Batch Calibration Corrections (Difference Array)
 
-**LeetCode 370: Range Addition**
+**[LeetCode 370: Range Addition](https://leetcode.com/problems/range-addition/)**
 
 **Problem Description:**
 Given a list of corrections `updates`, where each `[s, e, d]` means the sensor misreported by `d` km on days `s…e` (inclusive),
@@ -184,14 +217,15 @@ compute the **corrected nums** array.
 
 
 ```python
-class Solution:
-    def getModifiedArray(self, updates):
-        delta = [0] * (n + 1) # n=len(nums)
-        for s, e, d in updates:
-            delta[s]     += d
-            delta[e + 1] -= d
-        prefix = 0
-        return [(prefix := prefix + delta[i]) for i in range(n)]
+def getModifiedArray(updates):
+
+    delta = [0] * (n + 1)  # n=len(nums)
+    for s, e, d in updates:
+        delta[s] += d
+        delta[e + 1] -= d
+        
+    prefix = 0
+    return [(prefix := prefix + delta[i]) for i in range(n)]
 ```
 
 * **Time Complexity:** $O(n + u)$,  where $u$ = `len(updates)`
@@ -201,17 +235,38 @@ class Solution:
 ---
 ## 8 Counting Valid Starting Odometer Readings
 
-**LeetCode 2145**
+**[LeetCode 2145: Count the Hidden Sequences](https://leetcode.com/problems/count-the-hidden-sequences/)**
 
 **Problem Description:**
-You have an array `nums` of daily **change** in odometer readings (`hidden[i+1] – hidden[i]`). You’ve lost the initial reading `H = hidden[0]`. Knowing that every actual reading must stay within `[lower, upper]`, count how many integer values of `H` make **all** readings valid.
+You have an array `nums` of daily **change** in odometer readings (`hidden[i+1] – hidden[i]`). 
+You’ve lost the initial reading `H = hidden[0]`.
+ Knowing that every actual reading must stay within `[lower, upper]`, 
+ count how many integer values of `H` make **all** readings valid.
 
-**Road-Trip Scenario (adapted):**
-Use our daily net array as the **differences**:
 
-> [!example]
-> `nums = [120, -30, 200, -50, 150]`   each = hidden[i+1] – hidden[i]
-> `lower, upper = 0, 500`                odometer bounds
+
+**Road-Trip Scenario:**
+
+
+```python
+class Solution:
+    def numberOfArrays(self, differences: list[int], lower: int, upper: int) -> int:
+        prefix = min_s = max_s = 0
+        for d in differences: #differences = nums
+            prefix += d
+            min_s = min(min_s, prefix)
+            max_s = max(max_s, prefix)
+        return max(0, (upper - max_s) - (lower - min_s) + 1)
+```
+
+* **Time Complexity:** O(n) 
+* **Space Complexity:** O(1)
+
+
+> [!comment] 
+> Use our daily net array (`nums`) is the **differences**:
+> <CodeStep step="1">nums</CodeStep> = <CodeStep step="3">[120, -30, 200, -50, 150]</CodeStep>   each <CodeStep step="1">nums[i]</CodeStep> = <CodeStep step="3">hidden[i+1] – hidden[i]</CodeStep>
+> <CodeStep step="2">lower, upper</CodeStep> = <CodeStep step="2">0, 500</CodeStep>                odometer bounds
 > 
 > **Cumulative offsets from `H`:**
 >   prefix = [120,  90, 290, 240, 390]
@@ -221,18 +276,10 @@ Use our daily net array as the **differences**:
 >  H + min_offset ≥  lower  ⇒  H ≥ −90  
 >  H + max_offset ≤  upper  ⇒  H ≤ 110  
 > * Valid H ∈ \[−90…110], count = 110 − (−90) + 1 = **201**.
+> the function’s parameter `differences` is exactly the `nums` array in our Road-Trip Scenario, 
+> because `nums` holds the day‐to‐day changes. So we call
+> ```python
+> self.numberOfArrays(differences=nums, lower=0, upper=500)
+> ```
+> we’re passing your `nums` straight in as `differences`.
 
-
-```python
-class Solution:
-    def numberOfArrays(self, differences: list[int], lower: int, upper: int) -> int:
-        prefix = min_s = max_s = 0
-        for d in differences:
-            prefix += d
-            min_s = min(min_s, prefix)
-            max_s = max(max_s, prefix)
-        return max(0, (upper - max_s) - (lower - min_s) + 1)
-```
-
-* **Time Complexity:** O(n) 
-* **Space Complexity:** O(1)

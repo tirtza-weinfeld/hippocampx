@@ -2,7 +2,7 @@ import { visit } from 'unist-util-visit';
 import type { Plugin } from 'unified';
 import type { Node, Parent } from 'unist';
 
-const ALERT_REGEX = /^\s*\[!(NOTE|EXAMPLE|TIP|WARNING|IMPORTANT|CAUTION)\]\s*\n?/i;
+const ALERT_REGEX = /^\s*\[!(NOTE|EXAMPLE|TIP|WARNING|IMPORTANT|CAUTION|COMMENT)\]\s*\n?/i;
 
 export const remarkGithubAlerts: Plugin = () => (tree: Node) => {
   visit(tree, 'blockquote', (node: Node, index: number | null, parent: Parent | null) => {
