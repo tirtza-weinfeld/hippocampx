@@ -1,7 +1,155 @@
-find the **maximum number of consecutive days** whose net distance exactly totals **k km**.*
+// # Prefix Sums: Trip Segments & Highway Markers
+
+// ## Resizable Table of Contents
+// You're on a solo road trip, and each day you note your **net distance** traveled—sometimes you backtrack a little (negative), other days you make big leaps forward (positive):
+
+// ```python
+// # segments[i] = net kilometers driven on Day i+1
+// segments = [120, -30, 200, -50, 150]
+
+// # After one pass, build your odometer readings (prefix sums):
+// # odometer[i] = total km from the start through Day i+1
+// odometer = [120,  90, 290, 240, 390]
+// ```
+
+// Like highway mile markers, your `odometer` array tells you **exactly** how far you've gone from Day 1 to any given day. To find how many kilometers you covered between **Day i…j inclusive**, you simply subtract:
+
+// ```
+// odometer[j] – (odometer[i–1] if i>0 else 0)
+// ```
+
+// That one subtraction answers **any** "range distance" question in **O(1)** after an **O(n)** setup. With that in hand, let's tackle eight classic subarray challenges—each cast in our road-trip world.
+
+// ---
+
+// ## 1 Longest Streak Covering Exactly k Kilometers
+
+// **[LeetCode 325: Maximum Size Subarray Sum Equals k](https://leetcode.com/problems/maximum-size-subarray-sum-equals-k/)**
+
+// *You need a sightseeing record: 
+// find the **maximum number of consecutive days** whose net distance exactly totals **k km**.*
 
 
-```python file=./examples/code/prefix_sum.py#func:maxSubArrayLen
+// ```python file=examples/code/prefix_sum.py#func:maxSubArrayLen#L5-L36 
 
-```
-sweet
+// ```
+
+// ---
+
+// ## 2 Count of Streaks Covering k Kilometers
+
+// **[LeetCode 560: Subarray Sum Equals K](https://leetcode.com/problems/subarray-sum-equals-k/)**
+// *How many **distinct** consecutive-day intervals sum to exactly **k km**?*
+
+// ```python file=./examples/code/prefix_sum.py#L37-L60
+// ```
+
+// ---
+
+// ## 3 Finding the Longest Balanced Forward/Backward Day-Count
+
+// **[LeetCode 525: Contiguous Array](https://leetcode.com/problems/contiguous-array/)**
+
+// **Problem Description:**
+// Given an array of daily driving segments (positive for forward, negative for backtrack), find the **maximum length** of a contiguous subarray with an **equal number of forward days and backward days**.
+
+// **Road-Trip Scenario:**
+// Convert each day to `+1` if you drove forward, or `–1` if you backtracked:
+
+// ```python file=./examples/code/prefix_sum.py#L61-L76
+// ```
+
+// ---
+
+// ## 4 Detecting a ≥2-Day Multiple-of-k Windfall
+
+// **[LeetCode 523: Continuous Subarray Sum](https://leetcode.com/problems/continuous-subarray-sum/)**
+    
+// *Did you ever cover a total distance that's an exact **multiple of k km** over at least 2 consecutive days?*
+
+// ```python file=./examples/code/prefix_sum.py#L77-L104
+// ```
+
+// ---
+
+// ## 5 Counting All Spans Divisible by k
+
+// **[LeetCode 974: Subarray Sums Divisible by K](https://leetcode.com/problems/subarray-sums-divisible-by-k/)**
+
+// *How many intervals end on a day where your **cumulative distance** is an exact multiple of k?*
+
+// ```python file=./examples/code/prefix_sum.py#L105-L127
+// ```
+
+// ---
+
+// ## 6 Minimal Skip to Align on k
+
+// **[LeetCode 1590: Make Sum Divisible by K](https://leetcode.com/problems/make-sum-divisible-by-p/)**
+
+// *If your **total trip distance** isn't divisible by k, what's the **shortest consecutive segment** to skip so that 
+// the remaining distance is exactly a multiple of k?*
+
+// ```python file=./examples/code/prefix_sum.py#L128-L154
+// ```
+
+// ---
+
+// ## 7 Batch Calibration Corrections (Difference Array)
+
+// **[LeetCode 370: Range Addition](https://leetcode.com/problems/range-addition/)**
+
+// **Problem Description:**
+// Given a list of corrections `updates`, where each `[s, e, d]` means the sensor misreported by `d` km on days `s…e` (inclusive),
+// compute the **corrected nums** array.
+
+// **Road-Trip Scenario:**
+// * Your original logs `nums` = `[120, -30, 200, -50, 150]` had drift:
+// * `updates` = `[[0, 3, 50], [2, 4, -30]]`
+// * the corrected `nums` array is `[170, 20, 220, -30, 120]`
+
+// ```python file=./examples/code/prefix_sum.py#L155-L176
+// ```
+
+// * **Time Complexity:** $O(n + u)$,  where $u$ = `len(updates)`
+// * **Space Complexity:** $O(n)$
+
+// ---
+
+// ## 8 Counting Valid Starting Odometer Readings
+
+// **[LeetCode 2145: Count the Hidden Sequences](https://leetcode.com/problems/count-the-hidden-sequences/)**
+
+// **Problem Description:**
+// You have an array `nums` of daily **change** in odometer readings (`hidden[i+1] – hidden[i]`). 
+// You've lost the initial reading `H = hidden[0]`.
+//  Knowing that every actual reading must stay within `[lower, upper]`, 
+//  count how many integer values of `H` make **all** readings valid.
+
+// **Road-Trip Scenario:**
+
+// ```python file=./examples/code/prefix_sum.py#L177-L198
+// ```
+
+// * **Time Complexity:** O(n) 
+// * **Space Complexity:** O(1)
+
+// > [!comment] 
+// > Use our daily net array (`nums`) is the **differences**:
+// > <CodeStep step="1">nums</CodeStep> = <CodeStep step="3">[120, -30, 200, -50, 150]</CodeStep>   each <CodeStep step="1">nums[i]</CodeStep> = <CodeStep step="3">hidden[i+1] – hidden[i]</CodeStep>
+// > <CodeStep step="2">lower, upper</CodeStep> = <CodeStep step="2">0, 500</CodeStep>                odometer bounds
+// > 
+// > **Cumulative offsets from `H`:**
+// >   prefix = [120,  90, 290, 240, 390]
+// >   min_offset = 90,   max_offset = 390
+// > 
+// > **To keep every reading in \[0,500]:**
+// >  H + min_offset ≥  lower  ⇒  H ≥ −90  
+// >  H + max_offset ≤  upper  ⇒  H ≤ 110  
+// > * Valid H ∈ \[−90…110], count = 110 − (−90) + 1 = **201**.
+// > the function's parameter `differences` is exactly the `nums` array in our Road-Trip Scenario, 
+// > because `nums` holds the day‐to‐day changes. So we call
+// > ```python
+// > self.numberOfArrays(differences=nums, lower=0, upper=500)
+// > ```
+// > we're passing your `nums` straight in as `differences`.
