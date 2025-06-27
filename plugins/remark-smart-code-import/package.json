@@ -1,0 +1,23 @@
+{
+  "name": "remark-smart-code-import",
+  "version": "1.0.0",
+  "description": "A remark plugin for dynamic code import into MDX code blocks from external files",
+  "main": "index.ts",
+  "types": "index.ts",
+  "keywords": [
+    "remark",
+    "remark-plugin",
+    "mdx",
+    "code-import",
+    "unified"
+  ],
+  "author": "HippocampX",
+  "license": "MIT",
+  "peerDependencies": {
+    "unified": "^11.0.0",
+    "unist-util-visit": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/unist": "^3.0.0"
+  }
+} 
