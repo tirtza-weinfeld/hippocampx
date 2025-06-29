@@ -1,0 +1,17 @@
+/* Basic KaTeX styles */
+.katex {
+  font-size: 1.1em;
+  text-rendering: auto;
+}
+
+.katex-container {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Fix vertical alignment */
+.katex-container .katex {
+  vertical-align: middle;
+}
+

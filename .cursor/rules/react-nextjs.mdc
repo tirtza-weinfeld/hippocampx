@@ -1,0 +1,52 @@
+---
+description: React/Next.js Rules
+globs: 
+alwaysApply: false
+---
+# React & Next.js Style Guide (June 2025)
+
+## 1. Official Documentation
+
+* **React (19.1):** [https://react.dev](https://react.dev) (hooks, Compiler, concurrency)
+* **Next.js (15.3) App Router:** [https://nextjs.org/docs/app](https://nextjs.org/docs/app)
+
+## 2. React Patterns
+
+* **Components:** functional + Hooks only.
+* **Data fetching:** `use()` + `<Suspense>`.
+* **Transitions:** `useTransition()` / `startTransition()`, `useDeferredValue()`.
+* **Subscriptions:** `useSyncExternalStore()`.
+* **Optimizations:** React Compiler (SWC/Babel) for automatic JSX transforms and memoization; manual `memo()` import only when necessary.
+* **State:** `useState` / `useReducer`; optimistic updates via `useOptimistic()`.
+
+## 3. Next.js App Router
+
+* **Layout & Routes:** `app/` directory, dynamic `[param]`, route groups `(group)`.
+* **Special files:** `loading.tsx`, `error.tsx`, `not-found.tsx`.
+* **Server Components:** `async` functions, `generateMetadata()`, `generateStaticParams()`.
+* **ISR & Caching:** `revalidate`, `revalidatePath()`, `revalidateTag()`; `cache()` / `no-store` for dynamic.
+
+## 4. Server Actions & Data Layer
+
+* **Actions:** `'use server'`: perform runtime validation of FormData (e.g. with Zod) before Drizzle ORM queries → `revalidatePath()`.
+
+  * Drizzle’s TypeScript types ensure compile‑time safety, but untrusted client data needs runtime validation.
+* **Drizzle ORM:**
+
+  * **schema.ts:** define tables with DSL (`pgTable`, `serial`, `text`).
+  * **db.ts:** instantiate `drizzle(sql)`.
+  * **Queries:** typed `db.select().from(...)`; use transactions (`db.transaction(...)`) for multi-step.
+
+## 5. Tooling & Configuration Tooling & Configuration
+
+* **TypeScript:** strict (`satisfies`, `as const`), `next.config.ts` via `defineConfig()`.
+* **Lint & Format:** ESLint + Prettier.
+* **Testing:** Vitest, React Testing Library, Playwright.
+* **Optimizations:** `next/dynamic`, `next/image`, `next/font`, monitor Core Web Vitals.
+
+## 6. Security & Deployment
+
+* **Validation & CSRF:** Zod in Actions, built-in Next.js CSRF protection.
+* **CSP:** `headers()` in `next.config.ts`.
+
+*Last updated June 2025*

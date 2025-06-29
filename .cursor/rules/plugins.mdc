@@ -1,0 +1,28 @@
+---
+description: Plugin Rules
+globs: 
+alwaysApply: false
+---
+# Plugin Development Rules (2025)
+
+**Modern Plugin Development Guidelines:**
+- Use TypeScript 5.4+ with strict type checking enabled
+- Follow modern ES2024+ syntax and features (top-level await, pipeline operator, etc.)
+- Use modern bundlers like Vite, esbuild, or Rollup for plugin builds
+- Implement proper tree-shaking and code splitting
+- Use modern testing frameworks (Vitest, Playwright, or Jest with modern configs)
+- Follow modern security practices (content security policies, input validation)
+- Use modern error handling with structured error objects
+- Implement proper logging with structured logging (Pino, Winston, or similar)
+- Use modern dependency management with proper versioning
+- Follow modern CI/CD practices with automated testing and deployment
+- Use modern monitoring and observability (OpenTelemetry, structured metrics)
+- Implement proper TypeScript decorators and metadata
+- Use modern async patterns (async/await, Promise.allSettled, etc.)
+- Follow modern performance practices (lazy loading, memoization, caching)
+- Use modern state management patterns (Zustand, Jotai, or similar)
+- Implement proper plugin lifecycle management
+- Use modern validation libraries (Zod, Joi, or similar)
+- Follow modern accessibility standards (WCAG 2.1 AA+)
+- Use modern internationalization practices
+- Implement proper plugin configuration with schema validation

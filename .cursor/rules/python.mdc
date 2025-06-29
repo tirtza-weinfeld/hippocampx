@@ -1,0 +1,58 @@
+---
+description: Python Rules
+globs: 
+alwaysApply: false
+---
+# Python 3.13.5 Style Guide
+
+## Built-in Generics & Unions
+
+* `list[int]`, `dict[str, int]`, `set[float]`, `tuple[int, ...]`
+* Union types with `|`: `int | str`
+
+## String Formatting & Literals
+
+* f-strings: `f"{var=}"` for debugging
+* Numeric-literal underscores: `1_000_000`
+* `str.removeprefix()` / `str.removesuffix()`
+
+## Pattern Matching & Operators
+
+* Structural pattern matching: `match/case`
+* Walrus operator: `:=`
+* Dict/set merge: `d1 | d2`, update `d1 |= d2`
+
+## Type Annotations
+
+* Omit `Optional[T]`; use `T | None`
+* `typing.Protocol` for structural typing
+* `typing.Self` for self-referential methods
+* `typing.Literal` for literal constraints
+* `typing.TypedDict` for fixed-key dicts
+* `typing.Never` for never-returning functions
+* `typing.Final` for constants
+
+## Data & Properties
+
+* `@dataclass` for simple data containers
+* `@property` for computed attributes
+* `@cached_property` from `functools` for expensive computations
+
+## Standard Library Preferences
+
+* Use `pathlib.Path` over `os.path`
+* Use context managers (`with`) for resource management
+* Modern exception groups: `except* ExceptionGroup as e:`
+* Logging: use the `logging` module with appropriate levels; avoid bare `print`
+
+## Placeholders & Stubs
+
+* Ellipsis (`...`) for TODOs or stub implementations
+
+## Best Practices
+
+* Avoid wildcard imports (`from module import *`)
+* Use list/dict/set comprehensions
+* Use async/await for asynchronous code
+* Employ descriptive variable and function naming
+* Follow PEP 8 and PEP 257 for style and docstrings

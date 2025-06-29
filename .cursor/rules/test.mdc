@@ -1,0 +1,54 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+folders setup partial example:
+
+HippocampX/
+├── .cursor/
+├── .next/
+├── .vscode/
+├── app/
+│   └── …  
+├── components/
+│   ├── ui/
+│   │   └── Button.tsx
+│   └── mdx/
+│       └── Button.tsx
+├── examples/
+│   └── …
+├── hooks/
+│   └── useAuth.ts
+├── lib/
+│   └── formatDate.ts
+├── plugins/
+│   └── myPlugin.ts
+├── public/
+│   └── …
+├── scripts/
+│   └── generate.ts
+├── styles/
+│   └── global.css
+├── tests/
+│   ├── components/
+│   │   ├── ui/
+│   │   │   └── Button.test.tsx
+│   │   └── mdx/
+│   │       └── Button.test.tsx
+│   ├── hooks/
+│   │   └── useAuth.test.ts
+│   ├── lib/
+│   │   └── formatDate.test.ts
+│   └── plugins/
+│       └── myPlugin.test.ts
+├── e2e/
+│   └── app.spec.ts
+├── test-setup.ts
+├── vite.config.ts
+├── vitest.config.ts
+├── next.config.ts
+├── drizzle.config.ts
+├── package.json
+├── pnpm-lock.yaml
+└── README.md

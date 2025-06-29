@@ -2,8 +2,9 @@ import React from 'react';
 import type { ComponentPropsWithoutRef } from 'react';
 import type { MDXComponents } from 'mdx/types';
 
-// Import code components from the correct location
-import { CodeBlock, InlineCode } from '@/components/mdx/code';
+import CodeBlock from '@/components/mdx/code/code-block';
+import InlineCode from '@/components/mdx/code/code-inline';
+
 import { H1, H2, H3, H4, H5, H6, Paragraph, Strong, Em } from '@/components/mdx/typography';
 import { Link } from '@/components/mdx/links';
 import { HorizontalRule } from '@/components/mdx/dividers';
