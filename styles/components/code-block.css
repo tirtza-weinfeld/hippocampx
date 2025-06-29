@@ -27,7 +27,7 @@
 }
 
 /* Tooltip styling that matches highlighted word colors */
-.tooltip-step-1 {
+/* .tooltip-step-1 {
   background: linear-gradient(to right,
     var(--color-blue-300) 0%,
     var(--color-blue-500) 100%
@@ -93,7 +93,7 @@
   );
   color: #fff;
   box-shadow: 0 2px 16px 0 rgba(0,0,0,0.18);
-}
+} */
 
 /* Text color classes for tooltip words */
 .text-step-1 {
@@ -112,6 +112,18 @@
   color: var(--color-pink-700) !important;
 }
 
+
+/* Default word highlight (no step) */
+/* .word-highlight:not([class*='step-']) {
+  color: var(--color-teal-600) !important;
+  background: linear-gradient(90deg, --alpha(var(--color-sky-700) / 10%) 0%, --alpha(var(--color-sky-400) / 20%)100%, transparent 100%);
+  border-bottom: 1px solid var(--color-sky-400);
+}
+.dark .word-highlight:not([class*='step-']) {
+  color: var(--color-sky-600) !important;
+  background: linear-gradient(90deg, --alpha(var(--color-sky-900) / 20%) 0%, --alpha(var(--color-sky-400) / 20%)100%, transparent 100%);
+  border-bottom: 1px solid var(--color-sky-600);
+} */
 .word-highlight ,.word-highlight>  *{
 
   color: var(--code-step-color-a) !important;
@@ -121,11 +133,10 @@
     --alpha(var(--code-step-color-c) / 10%),
     transparent 100%
   );
-
-  border-bottom: 1px solid --alpha(var(--code-step-color-a) / 60%);
+  /* border-bottom: 1px solid --alpha(var(--code-step-color-a) / 60%); */
   border-radius: 0.8rem;
   font-weight: 600;
-  /* padding: 0.2rem; */
+  padding-inline: 0.2rem;
 }
 
 
@@ -153,22 +164,19 @@
 /* 
 /* styles/components/code-block.css or similar */
 pre .line {
-  /* display: block; */
-  /* align-items: flex-start; */
-  /* position: relative; */
-  /* padding-left: 2.5em;  */
+
   line-height: 1.5rem;
   /* background-color: red; */
 }
 
-pre .line::before {
+pre .line:is(.line-numbers *)::before {
   content: counter(line);
   counter-increment: line;
   /* position: absolute; */
   left: 0;
   width: 2em;
   text-align: left;
-  color: #b0b0b0;
+  color: var(--color-gray-400);
   user-select: none;
   font-size: 0.9em;
   opacity: 0.7;
@@ -180,37 +188,6 @@ pre {
   counter-reset: line;
 } 
 
-.line-highlight {
-}
-/* .line-highlight {
-  background-color: color-mix(
-    in oklch,
-    var(--color-teal-500) 3%,
-    transparent 100%
-  );
-  border-left: 3px solid var(--color-teal-500);
-  padding-left: 10px;
-  margin-left: -10px;
-}
-.code-container {
-  counter-reset: line;
-  position: relative;
-}
-.code-container .line {
-  counter-increment: line;
-  padding-left: 3em;
-  position: relative;
-}
-.code-container .line::before {
-  content: counter(line);
-  position: absolute;
-  left: 0;
-  width: 2.5em;
-  text-align: right;
-  font-size: 0.9em;
-  color: var(--color-gray-400);
-  user-select: none;
-} */
 
 .popover-keyword-step-1 {
   color: var(--color-blue-700) !important;
@@ -259,14 +236,93 @@ pre {
   color: #fff;
 }
 
-/* Default word highlight (no step) */
-.word-highlight:not([class*='step-']) {
-  color: var(--color-teal-600) !important;
-  background: linear-gradient(90deg, --alpha(var(--color-sky-700) / 10%) 0%, --alpha(var(--color-sky-400) / 20%)100%, transparent 100%);
-  border-bottom: 1px solid var(--color-sky-400);
+
+
+/* Code tooltip styling */
+.code-tooltip {
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-decoration-color: rgba(59, 130, 246, 0.5);
+  text-underline-offset: 2px;
+  transition: all 0.2s ease-in-out;
 }
-.dark .word-highlight:not([class*='step-']) {
-  color: var(--color-sky-600) !important;
-  background: linear-gradient(90deg, --alpha(var(--color-sky-900) / 20%) 0%, --alpha(var(--color-sky-400) / 20%)100%, transparent 100%);
-  border-bottom: 1px solid var(--color-sky-600);
+
+.code-tooltip:hover {
+  text-decoration-color: rgb(59, 130, 246);
+  background-color: rgba(59, 130, 246, 0.1);
+  border-radius: 2px;
 }
+
+.code-tooltip:focus {
+  outline: 2px solid rgb(59, 130, 246);
+  outline-offset: 1px;
+  border-radius: 2px;
+}
+
+/* Dark mode adjustments */
+.dark .code-tooltip {
+  text-decoration-color: rgba(96, 165, 250, 0.5);
+}
+
+.dark .code-tooltip:hover {
+  text-decoration-color: rgb(96, 165, 250);
+  background-color: rgba(96, 165, 250, 0.1);
+}
+
+.dark .code-tooltip:focus {
+  outline-color: rgb(96, 165, 250);
+}
+
+/* Animation for tooltip appearance */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -100%) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -100%) scale(1);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.15s ease-out;
+}
+
+/* Tooltip symbol styling */
+.tooltip-symbol {
+  cursor: pointer;
+  /* text-decoration-color: rgba(59, 130, 246, 0.6); */
+  text-underline-offset: 2px;
+  transition: all 0.2s ease-in-out;
+  border-radius: 2rem;
+  border-bottom: 2px dotted;
+  /* padding: 0.2rem; */
+}
+/* 
+.tooltip-symbol:hover {
+  text-decoration-color: rgb(59, 130, 246);
+  background-color: rgba(59, 130, 246, 0.1);
+  text-decoration-thickness: 2px;
+}
+
+.tooltip-symbol:focus {
+  outline: 2px solid rgb(59, 130, 246);
+  outline-offset: 1px;
+  background-color: rgba(59, 130, 246, 0.15);
+}
+
+.dark .tooltip-symbol {
+  text-decoration-color: rgba(96, 165, 250, 0.6);
+}
+
+.dark .tooltip-symbol:hover {
+  text-decoration-color: rgb(96, 165, 250);
+  background-color: rgba(96, 165, 250, 0.1);
+}
+
+.dark .tooltip-symbol:focus {
+  outline-color: rgb(96, 165, 250);
+  background-color: rgba(96, 165, 250, 0.15);
+} */

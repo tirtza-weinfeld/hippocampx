@@ -5,6 +5,7 @@ function parseMeta(meta: string) {
   let lineStart: number | undefined;
   let lineEnd: number | undefined;
   let functionName: string | undefined;
+  let className: string | undefined;
   let stripDocstring = false;
   const preservedMeta: string[] = [];
 
@@ -27,6 +28,11 @@ function parseMeta(meta: string) {
           if (funcMatch) {
             functionName = funcMatch[1];
           }
+          
+          const classMatch = hash.match(/#class:([\w_]+)/);
+          if (classMatch) {
+            className = classMatch[1];
+          }
         }
       }
     } else if (part === 'stripDocstring') {
@@ -41,6 +47,7 @@ function parseMeta(meta: string) {
     lineStart,
     lineEnd,
     functionName,
+    className,
     stripDocstring,
     preservedMeta
   };
@@ -57,6 +64,7 @@ function runTests() {
         lineStart: 5,
         lineEnd: 36,
         functionName: undefined,
+        className: undefined,
         stripDocstring: false,
         preservedMeta: ['meta="example"']
       }
@@ -69,6 +77,7 @@ function runTests() {
         lineStart: undefined,
         lineEnd: undefined,
         functionName: 'maxSubArrayLen',
+        className: undefined,
         stripDocstring: false,
         preservedMeta: ['meta="example"']
       }
@@ -81,6 +90,7 @@ function runTests() {
         lineStart: undefined,
         lineEnd: undefined,
         functionName: 'maxSubArrayLen',
+        className: undefined,
         stripDocstring: true,
         preservedMeta: ['meta="example"']
       }
@@ -93,8 +103,65 @@ function runTests() {
         lineStart: undefined,
         lineEnd: undefined,
         functionName: 'maxSubArrayLen',
+        className: undefined,
         stripDocstring: true,
         preservedMeta: ['meta="example"', 'highlight="true"']
+      }
+    },
+    {
+      name: 'class-based import',
+      input: 'file=examples/code/prefix_sum.py#class:PrefixSumCalculator meta="example"',
+      expected: {
+        filePath: 'examples/code/prefix_sum.py',
+        lineStart: undefined,
+        lineEnd: undefined,
+        functionName: undefined,
+        className: 'PrefixSumCalculator',
+        stripDocstring: false,
+        preservedMeta: ['meta="example"']
+      }
+    },
+    {
+      name: 'class with docstring stripping',
+      input: 'file=examples/code/prefix_sum.py#class:PrefixSumCalculator stripDocstring meta="example"',
+      expected: {
+        filePath: 'examples/code/prefix_sum.py',
+        lineStart: undefined,
+        lineEnd: undefined,
+        functionName: undefined,
+        className: 'PrefixSumCalculator',
+        stripDocstring: true,
+        preservedMeta: ['meta="example"']
+      }
+    },
+    {
+      name: 'class method-based import',
+      input: 'file=examples/code/cache.py#method:LFUCache._bump meta="example"',
+      expected: {
+        filePath: 'examples/code/cache.py',
+        lineStart: undefined,
+        lineEnd: undefined,
+        functionName: undefined,
+        className: undefined,
+        classMethod: 'LFUCache',
+        classMethodName: '_bump',
+        stripDocstring: false,
+        preservedMeta: ['meta="example"']
+      }
+    },
+    {
+      name: 'class method with docstring stripping',
+      input: 'file=examples/code/cache.py#method:LFUCache._bump stripDocstring meta="example"',
+      expected: {
+        filePath: 'examples/code/cache.py',
+        lineStart: undefined,
+        lineEnd: undefined,
+        functionName: undefined,
+        className: undefined,
+        classMethod: 'LFUCache',
+        classMethodName: '_bump',
+        stripDocstring: true,
+        preservedMeta: ['meta="example"']
       }
     }
   ];

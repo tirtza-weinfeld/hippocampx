@@ -19,6 +19,14 @@ This plugin enables dynamic, robust code import into MDX code blocks from extern
        ```python file=../../../../examples/code/prefix_sum.py#func:maxSubArrayLen meta="example"
        ```
        - Imports the function `maxSubArrayLen` from the specified file.
+     - **Class-based import:**
+       ```python file=../../../../examples/code/prefix_sum.py#class:PrefixSumCalculator meta="example"
+       ```
+       - Imports the class `PrefixSumCalculator` from the specified file.
+     - **Class method-based import:**
+       ```python file=../../../../examples/code/cache.py#method:LFUCache._bump meta="example"
+       ```
+       - Imports the method `_bump` from the class `LFUCache` in the specified file.
 
 2. **Docstring Stripping**
    - If the `stripDocstring` flag is present in the meta, remove the first docstring from the imported function.
@@ -26,9 +34,15 @@ This plugin enables dynamic, robust code import into MDX code blocks from extern
      ```python file=../../../../examples/code/prefix_sum.py#func:maxSubArrayLen stripDocstring meta="example"
      ```
      - Imports the function and removes its docstring.
+     ```python file=../../../../examples/code/prefix_sum.py#class:PrefixSumCalculator stripDocstring meta="example"
+     ```
+     - Imports the class and removes its docstring.
+     ```python file=../../../../examples/code/cache.py#method:LFUCache._bump stripDocstring meta="example"
+     ```
+     - Imports the method and removes its docstring.
 
 3. **Meta Attribute Handling**
-   - Extraction-specific attributes (`file=...`, `#Lx-Ly`, `#func:...`, `stripDocstring`) are **removed** from the final code block's meta.
+   - Extraction-specific attributes (`file=...`, `#Lx-Ly`, `#func:...`, `#class:...`, `#method:...`, `stripDocstring`) are **removed** from the final code block's meta.
    - All other meta attributes (e.g., `meta="example"`) are **preserved and passed down** to the final code block.
    - **Example:**
      - Input:  
@@ -44,6 +58,8 @@ This plugin enables dynamic, robust code import into MDX code blocks from extern
 
 5. **Robust Extraction**
    - For function-based import, extract the function by name, supporting both top-level and indented (class) functions.
+   - For class-based import, extract the class by name, supporting both top-level and nested classes.
+   - For class method-based import, extract the method by name from the specified class.
    - For line-based import, extract the exact lines specified.
 
 6. **Modern, Type-Safe Implementation**

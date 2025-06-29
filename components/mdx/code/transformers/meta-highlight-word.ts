@@ -1,27 +1,23 @@
-import type { ShikiTransformer } from 'shiki'
+import type { ShikiTransformer } from '@shikijs/types'
 
-interface HighlightWord {
-  word: string;
-  step?: number;
+interface HighlightedWord {
+  word: string
+  step?: number
 }
 
-export function parseMetaHighlightWords(meta: string): HighlightWord[] {
+export function parseMetaHighlightWords(meta: string): HighlightedWord[] {
   if (!meta)
     return []
 
-  // https://regex101.com/r/BHS5fd/1
-  const match = Array.from(meta.matchAll(/\/((?:\\.|[^/])+)\//g))
+  // Match both formats: /[step:]word/ and /word/
+  // https://regex101.com/r/BHS5fd/1 (updated for new format)
+  const match = Array.from(meta.matchAll(/\/(?:\[(\d+):\])?((?:\\.|[^/])+)\//g))
 
   return match
-    // Escape backslashes and parse step numbers
-    .map(v => {
-      const content = v[1].replace(/\\(.)/g, '$1')
-      const [word, step] = content.split(':')
-      return {
-        word,
-        step: step ? parseInt(step, 10) : undefined
-      }
-    })
+    .map(v => ({
+      step: v[1] ? parseInt(v[1], 10) : undefined,
+      word: v[2].replace(/\\(.)/g, '$1'), // Escape backslashes
+    }))
 }
 
 export interface TransformerMetaWordHighlightOptions {
@@ -31,22 +27,17 @@ export interface TransformerMetaWordHighlightOptions {
    * @default 'highlighted-word'
    */
   className?: string
-  /**
-   * Tooltip content map for words that should have tooltips
-   */
-  tooltipMap?: Record<string, string>
 }
 
 /**
- * Allow using `/word/` or `/word:step/` in the code snippet meta to mark highlighted words.
- * If tooltipMap is provided, words that exist in both highlighting and tooltip map will get both features.
+ * Allow using `/word/` or `/[step:]word/` in the code snippet meta to mark highlighted words.
+ * When step is provided, the class will be `{className}-{step}`.
  */
 export function transformerMetaWordHighlight(
   options: TransformerMetaWordHighlightOptions = {},
 ): ShikiTransformer {
   const {
     className = 'highlighted-word',
-    tooltipMap = {},
   } = options
 
   return {
@@ -55,33 +46,17 @@ export function transformerMetaWordHighlight(
       if (!this.options.meta?.__raw)
         return
 
-      const words = parseMetaHighlightWords(this.options.meta.__raw)
+      const highlightedWords = parseMetaHighlightWords(this.options.meta.__raw)
       options.decorations ||= []
-      for (const { word, step } of words) {
+      for (const { word, step } of highlightedWords) {
         const indexes = findAllSubstringIndexes(code, word)
         for (const index of indexes) {
-          const classes = [className]
-          const properties: Record<string, string> = {}
-    
-          if (step !== undefined) {
-            classes.push(`step-${step} code-step`)
-            properties['data-step'] = step.toString()
-          }
-
-          // Check if this word also has tooltip content
-          const normalizedWord = word.toLowerCase()
-          if (tooltipMap[normalizedWord]) {
-            classes.push('hasToolTip')
-            properties['data-tooltip'] = normalizedWord
-            properties['data-has-highlight'] = 'true'
-          }
-
+          const classWithStep = step !== undefined ? `${className} step-${step}` : className
           options.decorations.push({
             start: index,
             end: index + word.length,
             properties: {
-              class: classes,
-              ...properties,
+              class: ` ${classWithStep}`,
             },
           })
         }

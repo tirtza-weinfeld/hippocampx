@@ -1,5 +1,4 @@
 @import "./sidebar.css";
-@import "./code.css";
 @import "./hadestown.css";
 @import "./binary.css";
 @import "./calculus.css";
@@ -9,3 +8,5 @@
 @import "./code-step.css";
 @import "./notes.css";
 @import "./alert.css";
+@import "./code.css";
+@import "./math.css";

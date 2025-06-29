@@ -1,20 +1,20 @@
+"""Sample Python code for testing the remark-smart-code-import plugin."""
+
 from collections import defaultdict
 
 def maxSubArrayLen(nums: list[int], k: int) -> int:
-    """
-    Find the maximum length of a subarray that sums to exactly k.
-    LeetCode 325: Maximum Size Subarray Sum Equals k
-    """
-    sum_index = {0: -1}
-    curr_sum = max_length = 0
-
+    """Find the maximum length of a subarray that sums to k."""
+    prefix_sum = {0: -1}
+    current_sum = 0
+    max_length = 0
+    
     for i, num in enumerate(nums):
-        curr_sum += num
-        if (d := curr_sum - k) in sum_index:
-            max_length = max(max_length, i - sum_index[d])
-        if curr_sum not in sum_index:
-            sum_index[curr_sum] = i
-
+        current_sum += num
+        if current_sum - k in prefix_sum:
+            max_length = max(max_length, i - prefix_sum[current_sum - k])
+        if current_sum not in prefix_sum:
+            prefix_sum[current_sum] = i
+    
     return max_length
 
 
@@ -38,3 +38,61 @@ class ExampleClass:
     
     def get_value(self):
         return self.value 
+
+class Calculator:
+    """A simple calculator class for testing class extraction."""
+    
+    def __init__(self):
+        self.history = []
+    
+    def add(self, a: float, b: float) -> float:
+        """Add two numbers."""
+        result = a + b
+        self.history.append(f"{a} + {b} = {result}")
+        return result
+    
+    def multiply(self, a: float, b: float) -> float:
+        """Multiply two numbers."""
+        result = a * b
+        self.history.append(f"{a} * {b} = {result}")
+        return result
+    
+    def get_history(self) -> list[str]:
+        """Get calculation history."""
+        return self.history
+
+class PrefixSumCalculator:
+    """A calculator for prefix sum operations."""
+    
+    def __init__(self, nums: list[int]):
+        self.nums = nums
+        self.prefix_sum = self._build_prefix_sum()
+    
+    def _build_prefix_sum(self) -> list[int]:
+        """Build prefix sum array."""
+        prefix = [0] * (len(self.nums) + 1)
+        for i in range(len(self.nums)):
+            prefix[i + 1] = prefix[i] + self.nums[i]
+        return prefix
+    
+    def range_sum(self, left: int, right: int) -> int:
+        """Calculate sum of range [left, right]."""
+        return self.prefix_sum[right + 1] - self.prefix_sum[left]
+
+def another_function():
+    """Another function to test function boundaries."""
+    return "This is another function"
+
+class NestedClass:
+    """A class with nested methods for testing."""
+    
+    def __init__(self):
+        self.value = 42
+    
+    def outer_method(self):
+        """Outer method."""
+        return self.value
+    
+    def inner_method(self):
+        """Inner method."""
+        return self.value * 2 

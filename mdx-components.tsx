@@ -1,27 +1,21 @@
 import React from 'react';
 import type { ComponentPropsWithoutRef } from 'react';
 import type { MDXComponents } from 'mdx/types';
-import CodeBlock, { CodeBlockProps } from '@/components/mdx/code-block';
-import InlineCode from '@/components/mdx/code-inline';
-import CodeStep from '@/components/mdx/code-step';
+
+// Import code components from the correct location
+import { CodeBlock, InlineCode } from '@/components/mdx/code';
 import { H1, H2, H3, H4, H5, H6, Paragraph, Strong, Em } from '@/components/mdx/typography';
 import { Link } from '@/components/mdx/links';
 import { HorizontalRule } from '@/components/mdx/dividers';
 import Blockquote from '@/components/mdx/blockquotes';
 import ContentPopover from '@/components/mdx/content-popover';
-import { POPOVER_CONTENT } from '@/components/mdx/code/popover-content';
 import Alert from '@/components/mdx/alert';
 import { TableOfContents } from '@/components/mdx/toc/table-of-contents';
 import { ResizableWrapper } from '@/components/mdx/toc/resizable-wrapper';
-
-type SpanProps = ComponentPropsWithoutRef<'span'> & {
-  'data-tooltip'?: string;
-  'data-step'?: string;
-  'data-has-highlight'?: string;
-};
+import CodeTooltip from '@/components/mdx/code/code-tooltip';
 
 export const customComponents = {
-
+  // Typography
   h1: H1,
   h2: H2,
   h3: H3,
@@ -33,49 +27,51 @@ export const customComponents = {
   em: Em,
   hr: HorizontalRule,
   blockquote: Blockquote,
-    Alert,
+  Alert,
 
-  // Links and Images
+  // Links
   a: Link,
-  code: ({ children, ...props }: ComponentPropsWithoutRef<'code'> & CodeBlockProps) => {
-    if (props.className?.includes('language-')) {
+
+  // Code components with proper handling
+  code: ({ children, className, ...props }: ComponentPropsWithoutRef<'code'>) => {
+    // Handle code blocks (with language specification)
+    if (className?.includes('language-')) {
       return (
-        <CodeBlock {...props} >
+        <CodeBlock className={className} {...props}>
           {children}
         </CodeBlock>
-      )
+      );
     }
+    
+    // Handle inline code
     return (
-      <InlineCode {...props}>{children}</InlineCode>
-    )
+      <InlineCode {...props}>
+        {children}
+      </InlineCode>
+    );
   },
-  CodeStep,
+
+  // Pre component for code blocks
+  pre: ({ children }: ComponentPropsWithoutRef<'pre'>) => {
+    return (
+      <div className="my-4">
+        {children}
+      </div>
+    );
+  },
+
+  // Content components
   ContentPopover,
+  CodeTooltip,
+  
   // TOC Components
   TableOfContents,
   ResizableWrapper,
-  // Custom span renderer to handle tooltips
-  span: ({ children, ...props }: SpanProps) => {
-    const key = props['data-tooltip'];
-    if (props.className?.includes('hasToolTip') && typeof key === 'string') {
-      const step = props['data-step'] ? parseInt(props['data-step'], 10) : undefined;
-      const hasHighlight = props['data-has-highlight'] === 'true';
-      return <ContentPopover 
-        word={key} 
-        content={POPOVER_CONTENT[key.toLocaleLowerCase()]} 
-        step={step}
-        hasHighlight={hasHighlight}
-        className={props.className}
-      />;
-    }
-    return <span {...props}>{children}</span>;
-  },
 } as MDXComponents;
 
 export function useMDXComponents(components: MDXComponents): MDXComponents {
   return {
     ...customComponents,
-
     ...components,
   };
 }

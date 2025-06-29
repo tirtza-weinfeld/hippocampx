@@ -42,11 +42,8 @@ examples/venv/
 next-env.d.ts
 
 
-.tailwind.config.ts
-ui.css
 TODO.md
 
-/.cursor
+# /.cursor
 
 /logs
-/rules

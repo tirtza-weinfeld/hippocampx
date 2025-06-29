@@ -6,18 +6,19 @@ import rehypeMdxCodeProps from 'rehype-mdx-code-props'
 import rehypeSlug from 'rehype-slug'
 import rehypeAutolinkHeadings from 'rehype-autolink-headings'
 import remarkGfm from 'remark-gfm'
-import rehypeTooltipWords from '@/plugins/content-popover-plugin'
-import { POPOVER_CONTENT } from "./components/mdx/code/popover-content"
+// import rehypeTooltipWords from '@/plugins/content-popover-plugin'
+// import { POPOVER_CONTENT } from "./components/mdx/code/popover-content"
 import remarkInjectToc from "@/plugins/toc-plugin"
 import { remarkGithubAlerts } from "@/plugins/remark-github-alerts"
-// import remarkSmartCodeImport from "@/plugins/remark-smart-code-import"
-
+import remarkSmartCodeImport from "@/plugins/remark-smart-code-import"
+// import remarkCodeTooltip
+//  from "@/plugins/remark-code-tooltip";
 const withMDX = createMDX({
   extension: /\.mdx?$/,
   options: {
     remarkPlugins: [
-      // remarkSmartCodeImport,
-
+      remarkSmartCodeImport, 
+      // remarkCodeTooltip,
       remarkMath, 
       remarkGfm,
       remarkInjectToc,
@@ -35,9 +36,9 @@ const withMDX = createMDX({
           },
         }],
 
-      [rehypeTooltipWords, {
-        ...POPOVER_CONTENT
-      }],
+      // [rehypeTooltipWords, {
+      //   ...POPOVER_CONTENT
+      // }],
     ],
   },
 })
@@ -48,6 +49,14 @@ const nextConfig: NextConfig = {
     mdxRs: false,
   },
   pageExtensions: ['ts', 'tsx', 'mdx'],
+  // Force CSS updates during development
+  webpack: (config, { dev, isServer }) => {
+    if (dev && !isServer) {
+      // Disable CSS caching in development
+      config.cache = false;
+    }
+    return config;
+  },
   images: {
     remotePatterns: [
       {

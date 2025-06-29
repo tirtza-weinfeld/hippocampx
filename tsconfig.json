@@ -26,6 +26,7 @@
       "@/lib/*": ["./lib/*"],
       "@/plugins/*": ["./plugins/*"],
       "@/examples/*": ["./examples/*"],
+      "@/public/*": ["./public/*"],
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

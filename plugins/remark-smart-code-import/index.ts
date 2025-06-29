@@ -16,6 +16,9 @@ interface ParsedMeta {
   lineStart?: number;
   lineEnd?: number;
   functionName?: string;
+  className?: string;
+  classMethod?: string;
+  classMethodName?: string;
   stripDocstring: boolean;
   preservedMeta: string[];
 }
@@ -110,12 +113,176 @@ function extractFunction(code: string, functionName: string, stripDocstring = fa
   return functionCode.trim();
 }
 
+function extractClass(code: string, className: string, stripDocstring = false): string {
+  const lines = code.split('\n');
+  let classStart = -1;
+  let classEnd = -1;
+  let docstringStart = -1;
+  let docstringEnd = -1;
+
+  // Find the class start
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (line.startsWith(`class ${className}`)) {
+      classStart = i;
+      break;
+    }
+  }
+
+  if (classStart === -1) {
+    return '';
+  }
+
+  // Find the class end by looking for the next function/class at the same or lower indentation
+  const startIndent = lines[classStart].search(/\S/);
+  
+  for (let i = classStart + 1; i < lines.length; i++) {
+    const line = lines[i];
+    const trimmedLine = line.trim();
+    
+    // Skip empty lines
+    if (trimmedLine === '') {
+      continue;
+    }
+    
+    const currentIndent = line.search(/\S/);
+    
+    // If we find a line at the same or lower indentation that starts with def, class, or async def
+    if (currentIndent <= startIndent && 
+        (trimmedLine.startsWith('def ') || 
+         trimmedLine.startsWith('class ') || 
+         trimmedLine.startsWith('async def '))) {
+      classEnd = i - 1;
+      break;
+    }
+  }
+
+  // If we didn't find an end, use the last line
+  if (classEnd === -1) {
+    classEnd = lines.length - 1;
+  }
+
+  // Find docstring if it exists
+  if (stripDocstring) {
+    for (let i = classStart; i <= classEnd; i++) {
+      const line = lines[i];
+      if (line.includes('"""') || line.includes("'''")) {
+        if (docstringStart === -1) {
+          docstringStart = i;
+        } else {
+          docstringEnd = i;
+          break;
+        }
+      }
+    }
+  }
+
+  // Extract the class
+  let classCode = lines.slice(classStart, classEnd + 1).join('\n');
+
+  // Strip docstring if requested and found
+  if (stripDocstring && docstringStart !== -1 && docstringEnd !== -1) {
+    const beforeDocstring = lines.slice(classStart, docstringStart).join('\n');
+    const afterDocstring = lines.slice(docstringEnd + 1, classEnd + 1).join('\n');
+    classCode = beforeDocstring + (afterDocstring ? '\n' + afterDocstring : '');
+  }
+
+  return classCode.trim();
+}
+
+function extractClassMethod(code: string, className: string, methodName: string, stripDocstring = false): string {
+  const lines = code.split('\n');
+  let classStart = -1;
+  let classEnd = -1;
+
+  // Find the class start
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (line.startsWith(`class ${className}`)) {
+      classStart = i;
+      break;
+    }
+  }
+
+  if (classStart === -1) {
+    return '';
+  }
+
+  // Find the class end by looking for the next class at the same or lower indentation
+  const startIndent = lines[classStart].search(/\S/);
+  for (let i = classStart + 1; i < lines.length; i++) {
+    const line = lines[i];
+    const trimmedLine = line.trim();
+    if (trimmedLine === '') continue;
+    const currentIndent = line.search(/\S/);
+    if (currentIndent <= startIndent && trimmedLine.startsWith('class ')) {
+      classEnd = i - 1;
+      break;
+    }
+  }
+  if (classEnd === -1) classEnd = lines.length - 1;
+
+  // Now search for the method inside the class
+  let methodStart = -1;
+  let methodEnd = -1;
+  let docstringStart = -1;
+  let docstringEnd = -1;
+  for (let i = classStart + 1; i <= classEnd; i++) {
+    const line = lines[i].trim();
+    if (line.startsWith(`def ${methodName}(`)) {
+      methodStart = i;
+      break;
+    }
+  }
+  if (methodStart === -1) return '';
+  const methodIndent = lines[methodStart].search(/\S/);
+  for (let i = methodStart + 1; i <= classEnd; i++) {
+    const line = lines[i];
+    if (line.trim() === '') continue;
+    const currentIndent = line.search(/\S/);
+    if (currentIndent <= methodIndent && line.trim().startsWith('def ')) {
+      methodEnd = i - 1;
+      break;
+    }
+  }
+  if (methodEnd === -1) methodEnd = classEnd;
+
+  // Find docstring if requested
+  if (stripDocstring) {
+    let inDocstring = false;
+    for (let i = methodStart; i <= methodEnd; i++) {
+      const line = lines[i].trim();
+      if ((line.startsWith('"""') || line.startsWith("'''")) && docstringStart === -1) {
+        docstringStart = i;
+        inDocstring = true;
+        if (line.endsWith('"""') && line.length > 3) {
+          docstringEnd = i;
+          break;
+        }
+      } else if (inDocstring && (line.endsWith('"""') || line.endsWith("'''"))) {
+        docstringEnd = i;
+        break;
+      }
+    }
+  }
+  let methodCode = lines.slice(methodStart, methodEnd + 1).join('\n');
+  if (stripDocstring && docstringStart !== -1 && docstringEnd !== -1) {
+    const beforeDocstring = lines.slice(methodStart, docstringStart).join('\n');
+    const afterDocstring = lines.slice(docstringEnd + 1, methodEnd + 1).join('\n');
+    methodCode = beforeDocstring + (afterDocstring ? '\n' + afterDocstring : '');
+  }
+  return methodCode.trim();
+}
+
 function parseMeta(meta: string): ParsedMeta | null {
   const metaParts = meta.split(/\s+/);
   let filePath = '';
   let lineStart: number | undefined;
   let lineEnd: number | undefined;
   let functionName: string | undefined;
+  let className: string | undefined;
+  let classMethod: string | undefined;
+  let classMethodName: string | undefined;
   let stripDocstring = false;
   const preservedMeta: string[] = [];
 
@@ -142,6 +309,19 @@ function parseMeta(meta: string): ParsedMeta | null {
           if (funcMatch) {
             functionName = funcMatch[1];
           }
+          
+          // Check for class: #class:ClassName
+          const classMatch = hash.match(/#class:([\w_]+)/);
+          if (classMatch) {
+            className = classMatch[1];
+          }
+          
+          // Check for method: #method:ClassName.methodName
+          const methodMatch = hash.match(/#method:([\w_]+)\.([\w_]+)/);
+          if (methodMatch) {
+            classMethod = methodMatch[1];
+            classMethodName = methodMatch[2];
+          }
         }
       }
     } else if (part === 'stripDocstring') {
@@ -161,6 +341,9 @@ function parseMeta(meta: string): ParsedMeta | null {
     lineStart,
     lineEnd,
     functionName,
+    className,
+    classMethod,
+    classMethodName,
     stripDocstring,
     preservedMeta
   };
@@ -199,6 +382,18 @@ const remarkSmartCodeImport: Plugin = () => {
         extractedCode = extractFunction(fileContent, parsed.functionName, parsed.stripDocstring);
         if (!extractedCode) {
           console.warn(`Function '${parsed.functionName}' not found in ${parsed.filePath}`);
+          return;
+        }
+      } else if (parsed.classMethod && parsed.classMethodName) {
+        extractedCode = extractClassMethod(fileContent, parsed.classMethod, parsed.classMethodName, parsed.stripDocstring);
+        if (!extractedCode) {
+          console.warn(`Method '${parsed.classMethod}.${parsed.classMethodName}' not found in ${parsed.filePath}`);
+          return;
+        }
+      } else if (parsed.className) {
+        extractedCode = extractClass(fileContent, parsed.className, parsed.stripDocstring);
+        if (!extractedCode) {
+          console.warn(`Class '${parsed.className}' not found in ${parsed.filePath}`);
           return;
         }
       } else if (parsed.lineStart && parsed.lineEnd) {

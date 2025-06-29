@@ -62,6 +62,9 @@
   --color-scrollbar-thumb: var(--border);
   --color-overlay: rgba(0, 0, 0, 0.5);
 
+
+ 
+
   --animate-accordion-down: accordion-down 0.2s ease-out;
   --animate-accordion-up: accordion-up 0.2s ease-out;
   --animate-bounce-slow: bounce-slow 3s ease-in-out infinite;
@@ -75,7 +78,7 @@
   --animate-slide-in-left: slide-in-left 0.5s ease-out forwards;
   --animate-underline-slide: underline-slide 0.3s ease-out forwards;
 
-  --animate-gradient-hover: gradient-hover 0.5s ease-in-out forwards;
+  /* --animate-gradient-hover: gradient-hover 0.5s ease-in-out forwards; */
 
 
   
@@ -100,7 +103,7 @@
     }
   }
 
-  @keyframes gradient-hover {
+  /* @keyframes gradient-hover {
     0% {
       background-position: 0% 50%;
       
@@ -111,7 +114,7 @@
     100% {
       background-position: 100% 50%;
     }
-  }
+  } */
 
   @keyframes scale-in {
     from {
@@ -440,7 +443,6 @@
   }
 }
 
-/* Custom utility for TOC gradient */
 @utility bg-toc-gradient {
   /* background: var(--color-toc-gradient); */
   background: linear-gradient(to right,transparent -10%, 
@@ -450,19 +452,10 @@
    --alpha(var(--color-teal-700) / 5%)
    );
 
-  /* background: linear-gradient(to right,
-  transparent -5%,
-   --alpha(var(--color-red-500) / 10%), 
-   --alpha(var(--color-blue-500) / 10%),
-    --alpha(var(--color-pink-500) / 10%),
-    var(--color-background),
-    transparent 100%);
- */
 
   background-size: 200% 100%;
   background-position: 0% 50%;
 
-  /* transition: background-position 0.3s ease; */
 }
 
 @utility bg-toc-underline-gradient {

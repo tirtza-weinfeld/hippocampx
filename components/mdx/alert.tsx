@@ -3,7 +3,7 @@
 import { AlertCircle, Info, Lightbulb, Notebook, AlertTriangle, MessageCircle, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-import { useState, useRef, useLayoutEffect } from "react";
+import React, { useState, useRef, useLayoutEffect } from "react";
 
 const ICONS = {
   tip: Lightbulb,
@@ -13,6 +13,7 @@ const ICONS = {
   caution: Info,
   example: Notebook,
   comment: MessageCircle,
+  deepdive: Notebook,
 } as const;
 
 // Statically mapping types to full class names ensures Tailwind's JIT compiler
@@ -60,59 +61,26 @@ const STYLES = {
     text: "text-alert-comment",
     iconBg: "bg-alert-comment/10",
   },
+  deepdive: {
+    gradient: "from-white to-alert-example/20 dark:from-gray-900 dark:to-alert-example/20",
+    border: "border-alert-example",
+    text: "text-alert-example",
+    iconBg: "bg-alert-example/10",
+  },
 } as const;
 
-const containerVariants = {
-  hidden: { opacity: 0, y: 10 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.4,
-      ease: [0.25, 0.46, 0.45, 0.94],
-      when: "beforeChildren",
-      staggerChildren: 0.1,
-    },
-  },
+type AlertProps = {
+  type: keyof typeof ICONS;
+  children: React.ReactNode;
+  collapsible?: boolean;
+  summary?: string;
+  details?: string;
 };
 
-const iconVariants = {
-  hidden: { opacity: 0, scale: 0.5 },
-  visible: {
-    opacity: 1,
-    scale: 1,
-    transition: {
-      type: "spring",
-      damping: 12,
-      stiffness: 120,
-    },
-  },
-};
+export default function Alert({ type, children, collapsible = false }: AlertProps) {
+  const Icon = ICONS[type] || Notebook;
+  const styles = STYLES[type] || STYLES.example;
 
-const contentVariants = {
-  hidden: { opacity: 0, x: -10 },
-  visible: {
-    opacity: 1,
-    x: 0,
-    transition: {
-      duration: 0.4,
-      ease: [0.25, 0.46, 0.45, 0.94],
-    },
-  },
-};
-
-export default function Alert({ type, children }: { type: keyof typeof ICONS, children: React.ReactNode }) {
-  const Icon = ICONS[type];
-  const styles = STYLES[type];
-
-  // Prepare for comment type (extract first line and expanded state)
-  let content = '';
-  if (typeof children === 'string') {
-    content = children;
-  } else if (Array.isArray(children)) {
-    content = children.map(child => typeof child === 'string' ? child : '').join('');
-  }
-  const firstLine = content.split('\n')[0] || 'Click to view comment details...';
   const [expanded, setExpanded] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
   const [contentHeight, setContentHeight] = useState(0);
@@ -121,16 +89,56 @@ export default function Alert({ type, children }: { type: keyof typeof ICONS, ch
     if (contentRef.current) {
       setContentHeight(contentRef.current.scrollHeight);
     }
-  }, [children]);
+  }, [children, expanded]);
 
-  // Special case for comment type - render as expandable/collapsible panel
-  if (type === 'comment') {
+  // Extract content as string from children
+  const getContentString = (): string => {
+    if (typeof children === 'string') {
+      return children;
+    }
+    if (children && typeof children === 'object' && 'props' in children && children.props && typeof children.props === 'object' && 'children' in children.props) {
+      return String(children.props.children || '');
+    }
+    return '';
+  };
+
+  const content = getContentString();
+
+  // Parse content: lines with brackets [] are summary, rest are details
+  const parseContent = (text: string): { summary: string; details: string } => {
+    const lines = text.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+    
+    const summaryLines: string[] = [];
+    const detailsLines: string[] = [];
+    
+    for (const line of lines) {
+      // Check if line contains brackets (summary)
+      if (/\[.*\]/.test(line)) {
+        // Remove all [ ... ] patterns from the summary line
+        summaryLines.push(line.replace(/\[.*?\]/g, '').trim());
+      } else {
+        detailsLines.push(line);
+      }
+    }
+    
+    return {
+      summary: summaryLines.join(' ').trim(),
+      details: detailsLines.join('\n').trim()
+    };
+  };
+
+  const { summary, details } = parseContent(content);
+
+  // For debugging
+  console.log('Parsed content:', { summary, details, originalContent: content });
+
+  if (collapsible) {
     return (
       <motion.div
         initial={false}
         animate={{ height: 'auto' }}
         transition={{ type: "spring", damping: 15, stiffness: 150 }}
-        className={ cn(
+        className={cn(
           styles.gradient,
           styles.border,
           "shadow-lg dark:shadow-2xl",
@@ -138,28 +146,20 @@ export default function Alert({ type, children }: { type: keyof typeof ICONS, ch
           "border-l-2",
           "bg-gradient-to-br",
         )}
+        role="region"
+        aria-label={`Expandable ${type} alert`}
       >
-        <motion.button
+        <button
           onClick={() => setExpanded(v => !v)}
-          whileHover={{ scale: 1.02, y: -2 }}
-          whileTap={{ scale: 0.98 }}
-          transition={{ type: "spring", damping: 15, stiffness: 150 }}
           className={cn(
             "flex items-center gap-4 p-4 w-full text-left cursor-pointer",
-            "rounded-none",
-            "border-alert-comment/10  border-b-1 ",
+            "rounded-none border-b-1 border-opacity-10",
           )}
           aria-expanded={expanded}
         >
-          <motion.div
-            variants={iconVariants}
-            className={cn(
-              "flex-shrink-0 rounded-full p-1.5",
-              styles.iconBg
-            )}
-          >
+          <div className={cn("flex-shrink-0 rounded-full p-1.5", styles.iconBg)}>
             <Icon className={cn("w-5 h-5", styles.text)} />
-          </motion.div>
+          </div>
           <div className="flex-1 min-w-0 pt-0.5">
             <div className={cn(
               "font-semibold text-sm uppercase tracking-wider mb-1",
@@ -168,77 +168,52 @@ export default function Alert({ type, children }: { type: keyof typeof ICONS, ch
               {type}
             </div>
             <div className={cn(
-              "text-sm leading-relaxed",
-              "text-gray-600 dark:text-gray-400",
-              "line-clamp-2"
+              "text-sm leading-relaxed text-gray-600 dark:text-gray-400"
             )}>
-              {firstLine}
-              
+              {summary}
             </div>
           </div>
-          <motion.span
-            animate={{ rotate: expanded ? 180 : 0 }}
-            transition={{ 
-              duration: 0.5, 
-              ease: [0.4, 0.0, 0.2, 1]
-            }}
-            className={cn("transition-transform duration-200")}
+          <span
+            style={{ transition: 'transform 0.3s' }}
+            className={cn("transition-transform duration-200", expanded ? 'rotate-180' : '')}
           >
             <ChevronDown className={cn("w-4 h-4", styles.text)} />
-          </motion.span>
-        </motion.button>
-        
-        <motion.div
-          initial={false}
-          animate={{ 
-            height: expanded ? contentHeight : 0,
-            opacity: expanded ? 1 : 0
-          }}
-          transition={{ 
-            height: { 
-              duration: 0.5, 
-              ease: [0.4, 0.0, 0.2, 1] // Custom cubic-bezier for smooth motion
-            },
-            opacity: { 
-              duration: 0.4, 
-              ease: [0.4, 0.0, 0.2, 1]
-            }
-          }}
-          style={{ overflow: 'hidden' }}
-        >
-          <div 
-            ref={contentRef}
-            className={cn(
-              "p-4 pt-2",
-              "text-sm leading-relaxed",
-              "text-gray-600 dark:text-gray-400",
-              "[&_p]:m-0",
-              "[&_a]:font-medium",
-              `[&_a]:${styles.text} [&_a]:underline [&_a]:underline-offset-2`,
-              "[&_code]:bg-black/[0.07] dark:[&_code]:bg-white/[0.07]",
-              "[&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded-md [&_code]:font-mono [&_code]:text-xs",
-              "whitespace-pre-wrap overflow-x-scroll w-full",
-              "bg-transparent"
-            )}
+          </span>
+        </button>
+        {details && (
+          <motion.div
+            initial={false}
+            animate={{ height: expanded ? contentHeight : 0, opacity: expanded ? 1 : 0 }}
+            transition={{
+              height: { duration: 0.5, ease: [0.4, 0.0, 0.2, 1] },
+              opacity: { duration: 0.4, ease: [0.4, 0.0, 0.2, 1] }
+            }}
+            style={{ overflow: 'hidden' }}
           >
-            {children}
-          </div>
-        </motion.div>
+            <div
+              ref={contentRef}
+              className={cn(
+                "p-4 pt-2 text-sm leading-relaxed text-gray-600 dark:text-gray-400",
+                "[&_p]:m-0 [&_a]:font-medium",
+                `[&_a]:${styles.text} [&_a]:underline [&_a]:underline-offset-2`,
+                "[&_code]:bg-black/[0.07] dark:[&_code]:bg-white/[0.07]",
+                "[&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded-md [&_code]:font-mono [&_code]:text-xs",
+                "whitespace-pre-wrap overflow-x-scroll w-full bg-transparent"
+              )}
+            >
+              {details}
+            </div>
+          </motion.div>
+        )}
       </motion.div>
     );
   }
-  
-  // Regular alert for all other types
+
+  // Non-collapsible: show all content
   return (
-    <motion.div
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-      whileHover={{ scale: 1.02, y: -5 }}
-      transition={{ type: "spring", damping: 15, stiffness: 150 }}
+    <div
       className={cn(
-        "flex items-start gap-4 rounded-xl p-4 m-4",
-        "bg-gradient-to-br",
+        "flex items-start gap-4 rounded-xl p-4 m-4 bg-gradient-to-br",
         styles.gradient,
         "border-l-4",
         styles.border,
@@ -246,43 +221,29 @@ export default function Alert({ type, children }: { type: keyof typeof ICONS, ch
       )}
       role="alert"
     >
-      <motion.div
-        variants={iconVariants}
-        className={cn(
-          "flex-shrink-0 rounded-full p-1.5",
-          styles.iconBg
-        )}
-      >
+      <div className={cn("flex-shrink-0 rounded-full p-1.5", styles.iconBg)}>
         <Icon className={cn("w-5 h-5", styles.text)} />
-      </motion.div>
-      
-      <motion.div 
-        variants={contentVariants}
-        className="flex-1 min-w-0 pt-0.5"
-      >
+      </div>
+      <div className="flex-1 min-w-0 pt-0.5">
         <div className={cn(
           "font-semibold text-sm uppercase tracking-wider mb-1",
           styles.text,
         )}>
           {type}
         </div>
-        
         <div className={cn(
-          "text-sm leading-relaxed",
-          "text-gray-600 dark:text-gray-400",
-          "[&_p]:m-0",
-          "[&_a]:font-medium",
+          "text-sm leading-relaxed text-gray-600 dark:text-gray-400",
+          "[&_p]:m-0 [&_a]:font-medium",
           `[&_a]:${styles.text} [&_a]:underline [&_a]:underline-offset-2`,
           "[&_code]:bg-black/[0.07] dark:[&_code]:bg-white/[0.07]",
           "[&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded-md [&_code]:font-mono [&_code]:text-xs",
-          "whitespace-pre-wrap overflow-x-scroll w-full",
-
-
+          "whitespace-pre-wrap overflow-x-scroll w-full"
         )}>
           {children}
         </div>
-      </motion.div>
-    </motion.div>
+      </div>
+    </div>
   );
 }
+
 

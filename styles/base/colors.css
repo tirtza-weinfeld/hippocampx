@@ -58,6 +58,10 @@
   --color-scrollbar: var(--muted);
   --color-scrollbar-thumb: var(--border);
   --color-overlay: rgba(0, 0, 0, 0.5);
+
+
+
+
 }
 
 .dark {
@@ -121,4 +125,9 @@
   --color-scrollbar: var(--muted);
   --color-scrollbar-thumb: var(--border);
   --color-overlay: rgba(255, 255, 255, 0.1);
+
+
+
+  
+
 }

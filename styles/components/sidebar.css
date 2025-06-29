@@ -1,4 +1,4 @@
-@theme inline {
+:root {
   --color-sidebar: oklch(0.98 0.01 240);
   --color-sidebar-foreground: oklch(0.2 0.01 240);
   --color-sidebar-muted: oklch(0.7 0.01 240);
