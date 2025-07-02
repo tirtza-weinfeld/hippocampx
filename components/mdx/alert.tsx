@@ -130,7 +130,7 @@ export default function Alert({ type, children, collapsible = false }: AlertProp
   const { summary, details } = parseContent(content);
 
   // For debugging
-  console.log('Parsed content:', { summary, details, originalContent: content });
+  // console.log('Parsed content:', { summary, details, originalContent: content });
 
   if (collapsible) {
     return (

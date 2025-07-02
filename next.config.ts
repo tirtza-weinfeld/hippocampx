@@ -6,19 +6,14 @@ import rehypeMdxCodeProps from 'rehype-mdx-code-props'
 import rehypeSlug from 'rehype-slug'
 import rehypeAutolinkHeadings from 'rehype-autolink-headings'
 import remarkGfm from 'remark-gfm'
-// import rehypeTooltipWords from '@/plugins/content-popover-plugin'
-// import { POPOVER_CONTENT } from "./components/mdx/code/popover-content"
 import remarkInjectToc from "@/plugins/toc-plugin"
 import { remarkGithubAlerts } from "@/plugins/remark-github-alerts"
 import remarkSmartCodeImport from "@/plugins/remark-smart-code-import"
-// import remarkCodeTooltip
-//  from "@/plugins/remark-code-tooltip";
 const withMDX = createMDX({
   extension: /\.mdx?$/,
   options: {
     remarkPlugins: [
       remarkSmartCodeImport, 
-      // remarkCodeTooltip,
       remarkMath, 
       remarkGfm,
       remarkInjectToc,
@@ -35,10 +30,6 @@ const withMDX = createMDX({
             className: ['anchor'],
           },
         }],
-
-      // [rehypeTooltipWords, {
-      //   ...POPOVER_CONTENT
-      // }],
     ],
   },
 })

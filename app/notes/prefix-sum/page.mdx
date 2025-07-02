@@ -1,24 +1,45 @@
 
-# Prefix Sums: Trip Segments & Highway Markers
+# Prefix Sum
 
 ## Resizable Table of Contents
 
 ## The Power of a Pre-Calculated Route
 
-Imagine you're on a long highway road trip. The road has mile markers posted sequentially, starting from Mile 0. If you just passed marker 75 and your exit is at marker 180, you instantly know the distance you have left to travel: `180 - 75 = 105` miles.
+Imagine you're on a long highway road trip. The road has mile markers posted sequentially, 
+starting from Mile `0`. If you just passed marker `75` and your exit is at marker `180`, 
+you instantly know the distance you have left to travel: `180 - 75 = 105` miles.
 
-These **Highway Markers** are a perfect real-world example of a pre-calculated system. Each marker represents the total distance from the start of the highway. This allows you to find the distance between *any* two points with a single subtraction, without having to measure the road yourself. This is the core idea behind **prefix sums**.
+These **Highway Markers** are a perfect real-world example of a pre-calculated system. 
+Each marker represents the total distance from the start of the highway. 
+This allows you to find the distance between *any* two points with a single subtraction, 
+without having to measure the road yourself. This is the core idea behind **prefix sums**.
 
-For an array of numbers representing sequential trip segments, its prefix sum array is the set of highway markers. The value at `Markers[i]` is the sum of all trip segments from the start (`Segments[0]`) through the current one (`Segments[i]`).
 
-  * **Original Trip Segments (`segments`):** `[120, -30, 200, -50, 150]`
-    *(This is the actual distance traveled each day: 120km east, 30km west, 200km east, etc.)*
-  * **Highway Markers (`Markers` - the Prefix Sum):** `[120, 90, 290, 240, 390]`
-    *(This is the mile marker you're at after each day's travel.)*
 
-The magic trick is that the total distance of any continuous "segment" of your trip, from day `i` to day `j`, is simply `Markers[j] - Markers[i-1]`. This allows us to answer any range query in constant $O(1)$ time after one $O(n)$ pass to build the `Markers` array.
 
-By combining this technique with a hash map to remember past marker locations, we can solve a huge range of otherwise complex problems with surprising efficiency. Let's see it in action.
+
+
+* **For an array of numbers representing sequential trip segments:** 
+  * `segment = [120, -30, 200, -50, 150]`
+  * This represents the change in position each day: 120km east, then 30km west, 200km east, etc.
+* **Its prefix sum array is the set of highway markers:** 
+  * `marker = [120, 90, 290, 240, 390]`
+  * This is the mile marker you're at after each day's travel.
+  * `marker[i]` is the *sum* of all trip segments from `segment[0]` through the current segment `segment[i]`.
+  * $$marker_i = \sum_{k=0}^{i} segment_k$$
+* **The total distance of any continuous "segment" of your trip, from day `i` to day `j`, is simply `Markers[j] - Markers[i-1]`:**
+  * $$\sum_{k=i}^{j} segment_k = marker_j - marker_{i-1}$$
+    * **Note:** For a range starting at index `0`, the formula is just $marker_j$, since $marker_{-1}$ would be 0.
+  * This allows us to answer any range query(*sum of any continuous segment from index `i` to `j`*) in constant $O(1)$ time after one $O(n)$ pass to build the `Markers` array.
+
+
+---
+
+   
+
+
+By combining this technique with a hash map to remember past marker locations, we can solve a huge range of
+ otherwise complex problems with surprising efficiency. Let's see it in action.
 
 -----
 
@@ -44,11 +65,12 @@ By combining this technique with a hash map to remember past marker locations, w
 
 -----
 
-## 3\. Longest Balanced Forward/Backward Day-Count
+## 3\. Longest Balanced Forward/Backward Day-Count 
 
 **[LeetCode 525: Contiguous Array](https://leetcode.com/problems/contiguous-array/)**
 
-*To balance your trip, find the longest continuous sequence of segments with an equal number of forward (+1 km) and backward (-1 km) movements. This is equivalent to finding the longest sequence of segments whose total length is 0.*
+*To balance your driving, find the longest stretch of days with an equal number of forward (+) and backward (-) segments.
+This is equivalent to finding the longest subarray that sums to zero after converting  forward/backward segments to +/- 1*.
 
 ```python file=examples/code/prefix_sum.py#func:findMaxLength stripDocstring
 ```
@@ -97,8 +119,6 @@ By combining this technique with a hash map to remember past marker locations, w
 ```python file=examples/code/prefix_sum.py#func:getModifiedArray stripDocstring
 ```
 
-  * **Time Complexity:** $O(\\text{length} + k)$, where $k$ = `len(updates)`
-  * **Space Complexity:** $O(\\text{length})$
 
 -----
 
@@ -110,7 +130,4 @@ By combining this technique with a hash map to remember past marker locations, w
 
 ```python file=examples/code/prefix_sum.py#func:numberOfArrays stripDocstring
 ```
-
-  * **Time Complexity:** $O(n)$
-  * **Space Complexity:** $O(1)$
 

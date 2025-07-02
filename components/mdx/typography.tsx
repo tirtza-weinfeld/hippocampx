@@ -131,10 +131,13 @@ export const Em = ({ children, ...props }: TypographyProps) => (
   <motion.em
     initial={{ opacity: 0 }}
     animate={{ opacity: 1 }}
-    className="italic bg-gradient-to-r 
-    from-sky-500 to-teal-600
-    dark:from-sky-600 dark:to-teal-600
-    via-sky-800 dark:via-sky-400
+    className="italic 
+    bg-linear-to-r 
+
+    from-sky-500 to-teal-600 via-sky-800
+
+    dark:from-sky-200 dark:to-teal-200 dark:via-sky-200
+
     bg-clip-text text-transparent
       px-1.5 py-0.5 rounded-sm
     " {...props}

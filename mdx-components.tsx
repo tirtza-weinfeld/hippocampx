@@ -14,8 +14,15 @@ import Alert from '@/components/mdx/alert';
 import { TableOfContents } from '@/components/mdx/toc/table-of-contents';
 import { ResizableWrapper } from '@/components/mdx/toc/resizable-wrapper';
 import CodeTooltip from '@/components/mdx/code/code-tooltip';
+import { ListItem, OrderedList, UnorderedList } from './components/mdx/list';
 
 export const customComponents = {
+  
+  // Lists
+  ul: UnorderedList,
+  ol: OrderedList,
+  li: ListItem,
+
   // Typography
   h1: H1,
   h2: H2,
