@@ -1,11 +1,9 @@
-
 from collections import defaultdict
-
 
 
 def maxSubArrayLen(segments: list[int], k: int) -> int:
     """
-    # 1
+    **1**
     Find the maximum length of a subarray that sums to exactly k.
     LeetCode 325: Maximum Size Subarray Sum Equals k
     https://leetcode.com/problems/maximum-size-subarray-sum-equals-k/
@@ -16,21 +14,25 @@ def maxSubArrayLen(segments: list[int], k: int) -> int:
         The length of the longest subarray with sum == k.
     """
 
-    marker_to_index = {0: -1}
+    marker_idx = {0: -1}
     prefix_sum = max_length = 0
 
     for i, segment in enumerate(segments):
+
         prefix_sum += segment
-        if (target_marker := prefix_sum - k) in marker_to_index:
-            max_length = max(max_length, i - marker_to_index[target_marker])
-        if prefix_sum not in marker_to_index:
-            marker_to_index[prefix_sum] = i
+
+        if (target_marker := prefix_sum - k) in marker_idx:
+            max_length = max(max_length, i - marker_idx[target_marker])
+
+        if prefix_sum not in marker_idx:
+            marker_idx[prefix_sum] = i
+
     return max_length
 
 
 def subarraySum(segments: list[int], k: int) -> int:
     """
-    # 2
+    **2**
     Count the number of subarrays that sum to exactly k.
     LeetCode 560: Subarray Sum Equals K
     https://leetcode.com/problems/subarray-sum-equals-k/
@@ -53,7 +55,7 @@ def subarraySum(segments: list[int], k: int) -> int:
 
 def findMaxLength(segments: list[int]) -> int:
     """
-    # 3
+    **3**
     Find the maximum length of a contiguous subarray with an equal number of positive and negative values.
     LeetCode 525: Contiguous Array
     https://leetcode.com/problems/contiguous-array/
@@ -68,7 +70,7 @@ def findMaxLength(segments: list[int]) -> int:
 
 def checkSubarraySum(segments: list[int], k: int) -> bool:
     """
-    # 4
+    **4**
     Check if the array contains a subarray of at least length 2 whose sum is a multiple of k.
     LeetCode 523: Continuous Subarray Sum
     https://leetcode.com/problems/continuous-subarray-sum/
@@ -78,7 +80,7 @@ def checkSubarraySum(segments: list[int], k: int) -> bool:
     Returns:
         True if such a subarray exists, False otherwise.
     """
-    
+
     remainder_to_index = {0: -1}
     prefix_remainder = 0
 
@@ -94,7 +96,7 @@ def checkSubarraySum(segments: list[int], k: int) -> bool:
 
 def subarraysDivByK(segments: list[int], k: int) -> int:
     """
-    # 5
+    **5**
     Count the number of subarrays whose sum is divisible by k.
     LeetCode 974: Subarray Sums Divisible by K
     https://leetcode.com/problems/subarray-sums-divisible-by-k/
@@ -117,7 +119,7 @@ def subarraysDivByK(segments: list[int], k: int) -> int:
 
 def minSubarray(segments: list[int], p: int) -> int:
     """
-    # 6
+    **6**
     Find the length of the shortest subarray to remove so that the sum of the remaining elements is divisible by p.
     LeetCode 1590: Make Sum Divisible by P
     https://leetcode.com/problems/make-sum-divisible-by-p/
@@ -146,7 +148,7 @@ def minSubarray(segments: list[int], p: int) -> int:
 
 def getModifiedArray(length: int, updates: list[list[int]]) -> list[int]:
     """
-    # 7
+    **7**
     Apply a list of range updates to an array and return the modified array.
     LeetCode 370: Range Addition
     https://leetcode.com/problems/range-addition/
@@ -156,11 +158,12 @@ def getModifiedArray(length: int, updates: list[list[int]]) -> list[int]:
     Returns:
         The final daily travel plan after all updates.
     """
+
     delta = [0] * (length + 1)
+
     for start_day, end_day, change_in_km in updates:
         delta[start_day] += change_in_km
-        if end_day + 1 <= length:
-            delta[end_day + 1] -= change_in_km
+        delta[end_day + 1] -= change_in_km
 
     prefix_sum = 0
     return [prefix_sum := prefix_sum + change for change in delta[:length]]
@@ -168,7 +171,7 @@ def getModifiedArray(length: int, updates: list[list[int]]) -> list[int]:
 
 def numberOfArrays(differences: list[int], lower: int, upper: int) -> int:
     """
-    # 8
+    **8**
     Count the number of valid starting values for a hidden sequence given the differences and bounds.
     LeetCode 2145: Count the Hidden Sequences
     https://leetcode.com/problems/count-the-hidden-sequences/
@@ -180,11 +183,11 @@ def numberOfArrays(differences: list[int], lower: int, upper: int) -> int:
         The number of valid starting values.
     """
 
-    relative_marker = min_marker = max_marker = 0
-    
+    prefix_sum = min_marker = max_marker = 0
+
     for diff in differences:
-        relative_marker += diff
-        min_marker = min(min_marker, relative_marker)
-        max_marker = max(max_marker, relative_marker)
+        prefix_sum += diff
+        min_marker = min(min_marker, prefix_sum)
+        max_marker = max(max_marker, prefix_sum)
 
     return max(0, (upper - max_marker) - (lower - min_marker) + 1)

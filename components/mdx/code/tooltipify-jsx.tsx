@@ -45,7 +45,7 @@ export function tooltipifyJSX(
 
     return (
       <Popover>
-        <PopoverTrigger>
+        <PopoverTrigger className="">
           {cloneElement(element, props, processedChildren)}
         </PopoverTrigger>
         <PopoverContent className="w-96 max-h-96 overflow-y-auto">

@@ -22,10 +22,10 @@ without having to measure the road yourself. This is the core idea behind **pref
 * **For an array of numbers representing sequential trip segments:** 
   * `segment = [120, -30, 200, -50, 150]`
   * This represents the change in position each day: 120km east, then 30km west, 200km east, etc.
-* **Its prefix sum array is the set of highway markers:** 
+* **Its `[13:]prefix_sum` array is the set of highway `[13:]markers`:** 
   * `marker = [120, 90, 290, 240, 390]`
   * This is the mile marker you're at after each day's travel.
-  * `marker[i]` is the *sum* of all trip segments from `segment[0]` through the current segment `segment[i]`.
+  * `marker[i]` = `segment[0]` + `segment[1]` + ... + `segment[i]`.
   * $$marker_i = \sum_{k=0}^{i} segment_k$$
 * **The total distance of any continuous "segment" of your trip, from day `i` to day `j`, is simply `Markers[j] - Markers[i-1]`:**
   * $$\sum_{k=i}^{j} segment_k = marker_j - marker_{i-1}$$
@@ -43,11 +43,11 @@ By combining this technique with a hash map to remember past marker locations, w
 
 -----
 
-## 1\. Longest Streak Covering Exassctly k Kilometers
+## 1\. Longest Streak Covering Exactly k Kilometers
 
 **[LeetCode 325: Maximum Size Subarray Sum Equals k](https://leetcode.com/problems/maximum-size-subarray-sum-equals-k/)**
 
-*You need a sightseeing record: find the longest continuous sequence of trip segments whose combined length is exactly **k km**.*
+*find the longest continuous sequence of trip segments whose combined length is exactly **k km**.*
 
 ```python file=examples/code/prefix_sum.py#func:maxSubArrayLen stripDocstring
 ```
@@ -70,7 +70,7 @@ By combining this technique with a hash map to remember past marker locations, w
 **[LeetCode 525: Contiguous Array](https://leetcode.com/problems/contiguous-array/)**
 
 *To balance your driving, find the longest stretch of days with an equal number of forward (+) and backward (-) segments.
-This is equivalent to finding the longest subarray that sums to zero after converting  forward/backward segments to +/- 1*.
+This is equivalent to finding the longest subarray that sums to zero after converting forward/backward segments to +/- 1*.
 
 ```python file=examples/code/prefix_sum.py#func:findMaxLength stripDocstring
 ```
@@ -110,11 +110,15 @@ This is equivalent to finding the longest subarray that sums to zero after conve
 
 -----
 
-## 7\. Batch Itinerary Updates (Difference Array)
+## 7\. Constructing the Itinerary
 
 **[LeetCode 370: Range Addition](https://leetcode.com/problems/range-addition/)**
 
-*You are a trip planner. You start with an itinerary for `length` days, with 0 km planned for each day. You are given a list of `updates`, like `[start_day, end_day, change_in_km]`. You must add `change_in_km` to the plan for each day in that range. What is the final daily travel plan? This is the inverse of our previous problems; we use a "difference array" and find its prefix sum to reveal the final state.*
+
+*You start with a blank itinerary for a trip of length days. 
+Using a list of instructions like *[16:]add 50km/day for days 2-5*, 
+what is your final daily travel plan?*
+
 
 ```python file=examples/code/prefix_sum.py#func:getModifiedArray stripDocstring
 ```
@@ -122,11 +126,12 @@ This is equivalent to finding the longest subarray that sums to zero after conve
 
 -----
 
-## 8\. Finding a Valid Starting Point on the Highway
+## 8\. Counting Valid Starting Points
 
 **[LeetCode 2145: Count the Hidden Sequences](https://leetcode.com/problems/count-the-hidden-sequences/)**
 
-*You have a log of your daily trsip segments (`differences`) but forgot your starting point on the highway. You only know that your location at all times (your starting point and every marker you passed) had to be within a valid range of the highway, `[lower, upper]`. How many possible integer **starting markers** could you have begun your trip from?*
+*You know your daily travel segments but not your starting mile marker.
+If you always stayed between markers lower and upper, how many starting points could you have had?*
 
 ```python file=examples/code/prefix_sum.py#func:numberOfArrays stripDocstring
 ```

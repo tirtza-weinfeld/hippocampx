@@ -2,12 +2,14 @@
 
 import { motion } from "framer-motion"
 import type { ReactNode } from "react"
+import { getStepColor, getStepGradient, getColorText, getColorGradient, isValidColorName } from "@/lib/step-colors"
+import { cn } from "@/lib/utils"
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
   animate: { opacity: 1, y: 0 },
   transition: { duration: 0.6, ease: "easeOut" },
-  
+
 }
 
 interface TypographyProps {
@@ -16,10 +18,10 @@ interface TypographyProps {
 
 export const H1 = ({ children, ...props }: TypographyProps) => (
   <motion.div {...fadeInUp}
-  
-  className="relative mb-12 mt-16 first:mt-2 group  " {...props}>
-   
-  
+
+    className="relative mb-12 mt-16 first:mt-2 group  " {...props}>
+
+
     <h1 className="text-4xl md:text-5xl font-extrabold   text-center
      tracking-tight leading-tight   " {...props}>
       {/* <span className="bg-gradient-to-l from-teal-600 via-sky-600/80 via-80% to-blue-600/80 bg-clip-text text-transparent font-bold "> */}
@@ -27,7 +29,7 @@ export const H1 = ({ children, ...props }: TypographyProps) => (
         {children}
 
       </span>
- 
+
     </h1>
   </motion.div>
 )
@@ -105,43 +107,149 @@ export const Paragraph = ({ children, ...props }: TypographyProps) => (
 // dark:from-pink-400 dark:to-purple-500
 // via-pink-700 dark:via-pink-400
 // bg-clip-text text-transparent
-export const Strong = ({ children, ...props }: TypographyProps) => (
-  <motion.strong
-    initial={{ opacity: 0, scale: 0.95 }}
-    animate={{ opacity: 1, scale: 1 }}
-    className="
-      font-semibold
- 
-      shadow-sm
-      shadow-sky-400/15
-      dark:shadow-sky-300/15
+export const Strong = ({ children, ...props }: TypographyProps) => {
+  const text = children as string;
+  
+  // Check for step highlighting syntax: [step:]text or [color:]text
+  const stepMatch = typeof text === 'string' ? text.match(/^\[([^:\]]+):\](.+)$/) : null;
+  
+  if (stepMatch) {
+    const [, stepOrColor, content] = stepMatch;
+    
+    let stepColorClass: string;
+    let shadowColorClass: string;
+    
+    // Check if it's a number (step) or color name
+    if (/^\d+$/.test(stepOrColor)) {
+      // It's a numbered step
+      const stepNumber = parseInt(stepOrColor, 10);
+      stepColorClass = getStepColor(stepNumber);
+      // Extract color name for shadow
+      const colorName = stepColorClass.match(/text-(\w+)-/)?.[1] || 'sky';
+      shadowColorClass = `shadow-${colorName}-400/15 dark:shadow-${colorName}-300/15`;
+    } else if (isValidColorName(stepOrColor)) {
+      // It's a color name
+      stepColorClass = getColorText(stepOrColor);
+      shadowColorClass = `shadow-${stepOrColor}-400/15 dark:shadow-${stepOrColor}-300/15`;
+    } else {
+      // Invalid, fallback to default
+      return (
+        <motion.strong
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="font-semibold shadow-sm shadow-sky-400/15 dark:shadow-sky-300/15 text-sky-600/80 dark:text-sky-300/80 px-1.5 py-0.5 rounded-md"
+          {...props}
+        >
+          {children}
+        </motion.strong>
+      );
+    }
+    
+    return (
+      <motion.strong
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className={cn(
+          "font-semibold shadow-sm",
+          stepColorClass,
+          shadowColorClass,
+          "px-1.5 py-0.5 rounded-md"
+        )}
+        {...props}
+      >
+        {content.trim()}
+      </motion.strong>
+    );
+  }
 
-      text-sky-600/80 dark:text-sky-300/80
-
+  return (
+    <motion.strong
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      className="
+        font-semibold
    
-      px-1.5 py-0.5 rounded-md
+        shadow-sm
+        shadow-sky-400/15
+        dark:shadow-sky-300/15
 
-    " {...props}
-  >
-    {children}
-  </motion.strong>
-)
+        text-sky-600/80 dark:text-sky-300/80
 
-export const Em = ({ children, ...props }: TypographyProps) => (
-  <motion.em
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-    className="italic 
-    bg-linear-to-r 
+     
+        px-1.5 py-0.5 rounded-md
 
-    from-sky-500 to-teal-600 via-sky-800
+      " {...props}
+    >
+      {children}
+    </motion.strong>
+  )
+}
 
-    dark:from-sky-200 dark:to-teal-200 dark:via-sky-200
+export const Em = ({ children, ...props }: TypographyProps) => {
+  const text = children as string;
+  
+  // Check for step highlighting syntax: [step:]text or [color:]text
+  const stepMatch = typeof text === 'string' ? text.match(/^\[([^:\]]+):\](.+)$/) : null;
+  
+  if (stepMatch) {
+    const [, stepOrColor, content] = stepMatch;
+    
+    let stepGradientClass: string;
+    
+    // Check if it's a number (step) or color name
+    if (/^\d+$/.test(stepOrColor)) {
+      // It's a numbered step
+      const stepNumber = parseInt(stepOrColor, 10);
+      stepGradientClass = getStepGradient(stepNumber);
+    } else if (isValidColorName(stepOrColor)) {
+      // It's a color name
+      stepGradientClass = getColorGradient(stepOrColor);
+    } else {
+      // Invalid, fallback to default
+      return (
+        <motion.em
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="italic bg-linear-to-r from-sky-500 to-teal-600 via-sky-800 dark:from-sky-200 dark:to-teal-200 dark:via-sky-200 bg-clip-text text-transparent px-1.5 py-0.5 rounded-sm"
+          {...props}
+        >
+          {children}
+        </motion.em>
+      );
+    }
+    
+    return (
+      <motion.em
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className={cn(
+          "italic bg-linear-to-r",
+          stepGradientClass,
+          "bg-clip-text text-transparent px-1.5 py-0.5 rounded-sm"
+        )}
+        {...props}
+      >
+        {content.trim()}
+      </motion.em>
+    );
+  }
 
-    bg-clip-text text-transparent
-      px-1.5 py-0.5 rounded-sm
-    " {...props}
-  >
-    {children}
-  </motion.em>
-)
+  return (
+    <motion.em
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="italic 
+      bg-linear-to-r 
+
+      from-sky-500 to-teal-600 via-sky-800
+
+      dark:from-sky-200 dark:to-teal-200 dark:via-sky-200
+
+      bg-clip-text text-transparent
+        px-1.5 py-0.5 rounded-sm
+      " {...props}
+    >
+      {children}
+    </motion.em>
+  )
+}
