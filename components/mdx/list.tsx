@@ -66,7 +66,7 @@ export const UnorderedList = ({ children, className = "" }: ListProps) => {
         initial="hidden"
         animate="visible"
         className={`
-          ${isNested ? "mt-3 mb-3 ml-6" : "mb-8 ml-0"} 
+          ${isNested ? "mt-3 mb-3 ml-4" : "mb-8 ml-0"} 
           space-y-3
           ${className}
         `}
@@ -100,8 +100,7 @@ export const OrderedList = ({ children, className = "" }: ListProps) => {
         initial="hidden"
         animate="visible"
         className={`
-          ${isNested ? "mt-3 mb-3" : "mb-8"} 
-          ${isNested ? "ml-8" : "ml-8"}
+          ${isNested ? "mt-3 mb-3 ml-4" : "mb-8 ml-0"} 
           space-y-3
           ${getListStyle(level)}
           list-inside

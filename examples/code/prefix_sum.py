@@ -50,6 +50,7 @@ def subarraySum(segments: list[int], k: int) -> int:
         prefix_sum += segment
         count += marker_frequency[prefix_sum - k]
         marker_frequency[prefix_sum] += 1
+
     return count
 
 
@@ -166,7 +167,7 @@ def getModifiedArray(length: int, updates: list[list[int]]) -> list[int]:
         delta[end_day + 1] -= change_in_km
 
     prefix_sum = 0
-    return [prefix_sum := prefix_sum + change for change in delta[:length]]
+    return [prefix_sum := prefix_sum + change for change in delta[:-1]]
 
 
 def numberOfArrays(differences: list[int], lower: int, upper: int) -> int:
@@ -191,3 +192,4 @@ def numberOfArrays(differences: list[int], lower: int, upper: int) -> int:
         max_marker = max(max_marker, prefix_sum)
 
     return max(0, (upper - max_marker) - (lower - min_marker) + 1)
+
