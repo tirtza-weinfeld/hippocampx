@@ -1,4 +1,5 @@
 import React from 'react'
+import { HashScrollHandler } from '@/components/mdx/hash-scroll-handler'
 
 export default function NotesLayout({
   children,
@@ -10,6 +11,7 @@ export default function NotesLayout({
       <div className="max-w-none">
         {children}
       </div>
+      <HashScrollHandler />
     </div>
   )
 }

@@ -27,6 +27,8 @@ export function TableOfContents({ headings: rawHeadings, className, maxHeight = 
   const [collapsedSections, setCollapsedSections] = useState<Set<string>>(new Set())
   const [isAllExpanded, setIsAllExpanded] = useState(true)
 
+
+
   // Memoize headings to prevent unnecessary re-renders
   const headings = useMemo(() => {
     let result: TocHeading[] = []
