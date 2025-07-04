@@ -2,8 +2,8 @@ import { visit } from 'unist-util-visit';
 import type { Plugin } from 'unified';
 import type { Node, Parent } from 'unist';
 
-// Regex: [!TYPE(:collapsible)?] (case-insensitive, allow whitespace)
-const ALERT_REGEX = /^\s*\[!(\w+)(:collapsible)?\]\s*\n?/i;
+// Regex: [!TYPE(:collapse)?] (case-insensitive, allow whitespace)
+const ALERT_REGEX = /^\s*\[!(\w+)(:collapse)?\]\s*\n?/i;
 
 export const remarkGithubAlerts: Plugin = () => (tree: Node) => {
   visit(tree, 'blockquote', (node: Node, index: number | null, parent: Parent | null) => {
@@ -30,14 +30,14 @@ export const remarkGithubAlerts: Plugin = () => (tree: Node) => {
     if (!match) return;
 
     const type = match[1].toLowerCase();
-    const collapsible = !!match[2];
+    const collapse = !!match[2];
     firstTextNode.value = (firstTextNode.value as string).replace(ALERT_REGEX, '');
 
     const attributes = [
       { type: 'mdxJsxAttribute', name: 'type', value: type },
     ];
-    if (collapsible) {
-      attributes.push({ type: 'mdxJsxAttribute', name: 'collapsible', value: 'true' });
+    if (collapse) {
+      attributes.push({ type: 'mdxJsxAttribute', name: 'collapse', value: 'true' });
     }
 
     parent.children[index] = {

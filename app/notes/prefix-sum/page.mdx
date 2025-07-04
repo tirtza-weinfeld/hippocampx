@@ -19,7 +19,7 @@ without having to measure the road yourself. This is the core idea behind **pref
 * **For an array of numbers representing sequential trip segments:** 
   * `segment = [120, -30, 200, -50, 150]`
   * This represents the change in position each day: 120km east, then 30km west, 200km east, etc.
-* **Its `[13:]prefix_sum` array is the set of highway `[13:]markers`:** 
+* **Its *[13:]prefix_sum* array is the set of highway *[13:]markers*:** 
   * `marker = [120, 90, 290, 240, 390]`
   * This is the mile marker you're at after each day's travel.
   * `marker[i]` = `segment[0]` + `segment[1]` + ... + `segment[i]`.
@@ -91,8 +91,22 @@ This is equivalent to finding the longest subarray that sums to zero after conve
 
 *How many continuous sequences of trip segments have a total length that is perfectly divisible by k?*
 
+
 ```python file=examples/code/prefix_sum.py#func:subarraysDivByK stripDocstring
 ```
+
+> [!deepdive:collapse] 
+> *  `sum[i...j]` (*prefix_sum[j] - prefix_sum[i-1]*) is divisible by `k` **iff** `prefix_sum[i]` and `prefix_sum[j]` divided by `k` have an *identical remainder* 
+> * Redefine the problem: counting *every pair* of prefix sums that have an *identical remainder* 
+>   *  The sum of any subarray is the difference between two prefix sums `sum[i...j] = prefix_sum[j] - prefix_sum[i-1]`. [A key principle of modular arithmetic](./modular-arithmetic#congruence-modulo) is that this difference is perfectly divisible by `k` if and only if `prefix_sum[i]` and `prefix_sum[j]`
+>  have the exact same remainder when divided by `k`.
+>   * Therefore, the problem of finding subarray sums divisible by `k` becomes the simpler problem 
+>   of counting *every pair* of prefix sums that have an *identical remainder* .
+> 
+> *  `prefix_remainder = (prefix_remainder + segment) % k`
+>    * This code is a direct application of the [property of modular addition](./modular-arithmetic#addition). `(A + B) mod C = ((A mod C) + (B mod C)) mod C`
+>    * This property guarantees that finding the remainder of a sum `(previous_sum + segment) % k` is equivalent to using the remainder from the previous step: `( (previous_sum % k) + segment) % k`.
+>    * Since the `prefix_remainder` variable already holds `previous_sum % k`, the code correctly uses this efficient shortcut. It yields the same result without needing to calculate the full, and potentially large, prefix sum.
 
 -----
 

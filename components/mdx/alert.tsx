@@ -2,8 +2,8 @@
 
 import { AlertCircle, Info, Lightbulb, Notebook, AlertTriangle, MessageCircle, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
-import React, { useState, useRef, useLayoutEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import React, { useState } from "react";
 
 const ICONS = {
   tip: Lightbulb,
@@ -14,6 +14,7 @@ const ICONS = {
   example: Notebook,
   comment: MessageCircle,
   deepdive: Notebook,
+  definition: Notebook,
 } as const;
 
 // Statically mapping types to full class names ensures Tailwind's JIT compiler
@@ -62,89 +63,95 @@ const STYLES = {
     iconBg: "bg-alert-comment/10",
   },
   deepdive: {
-    gradient: "from-white to-alert-example/20 dark:from-gray-900 dark:to-alert-example/20",
-    border: "border-alert-example",
-    text: "text-alert-example",
-    iconBg: "bg-alert-example/10",
+    gradient: "from-white to-alert-deepdive/20 dark:from-gray-900 dark:to-alert-deepdive/20",
+    border: "border-alert-deepdive",
+    text: "text-alert-deepdive",
+    iconBg: "bg-alert-deepdive/10",
   },
+  definition: {
+    // gradient: "from-white to-alert-definition/20 dark:from-gray-900 dark:to-alert-definition/20",
+    gradient: "from-white to-sky-600/20 dark:from-gray-900 dark:to-alert-definition/20",
+    border: "border-alert-definition",
+    text: "text-alert-definition",
+    iconBg: "bg-alert-definition/10",
+  },
+
 } as const;
 
 type AlertProps = {
   type: keyof typeof ICONS;
   children: React.ReactNode;
-  collapsible?: boolean;
+  collapse?: boolean;
   summary?: string;
   details?: string;
 };
 
-export default function Alert({ type, children, collapsible = false }: AlertProps) {
+// Helper function to split React children into summary and details
+const splitReactChildren = (children: React.ReactNode): { summary: React.ReactNode; details: React.ReactNode } => {
+  if (typeof children === 'string') {
+    const lines = children.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+    if (lines.length === 0) {
+      return { summary: '', details: '' };
+    }
+
+    // First line is summary, rest are details
+    const summary = lines[0];
+    const details = lines.slice(1).join('\n').trim();
+
+    return {
+      summary,
+      details
+    };
+  }
+
+  if (Array.isArray(children)) {
+    if (children.length === 0) {
+      return { summary: null, details: null };
+    }
+
+    // First element is summary, rest are details
+    const summary = children[0];
+    const details = children.slice(1);
+
+    return {
+      summary,
+      details
+    };
+  }
+
+  // For single React element, treat as details
+  return {
+    summary: null,
+    details: children
+  };
+};
+
+export default function Alert({ type, children, collapse = false }: AlertProps) {
   const Icon = ICONS[type] || Notebook;
   const styles = STYLES[type] || STYLES.example;
 
   const [expanded, setExpanded] = useState(false);
-  const contentRef = useRef<HTMLDivElement>(null);
-  const [contentHeight, setContentHeight] = useState(0);
 
-  useLayoutEffect(() => {
-    if (contentRef.current) {
-      setContentHeight(contentRef.current.scrollHeight);
-    }
-  }, [children, expanded]);
+  // Split children into summary and details
+  const { summary, details } = splitReactChildren(children);
 
-  // Extract content as string from children
-  const getContentString = (): string => {
-    if (typeof children === 'string') {
-      return children;
-    }
-    if (children && typeof children === 'object' && 'props' in children && children.props && typeof children.props === 'object' && 'children' in children.props) {
-      return String(children.props.children || '');
-    }
-    return '';
-  };
+  // For collapse mode, we need a summary to show
+  const hasSummary = summary && (typeof summary === 'string' ? summary.length > 0 : true);
+  const hasDetails = details && (typeof details === 'string' ? details.length > 0 : true);
 
-  const content = getContentString();
-
-  // Parse content: lines with brackets [] are summary, rest are details
-  const parseContent = (text: string): { summary: string; details: string } => {
-    const lines = text.split('\n').map(line => line.trim()).filter(line => line.length > 0);
-    
-    const summaryLines: string[] = [];
-    const detailsLines: string[] = [];
-    
-    for (const line of lines) {
-      // Check if line contains brackets (summary)
-      if (/\[.*\]/.test(line)) {
-        // Remove all [ ... ] patterns from the summary line
-        summaryLines.push(line.replace(/\[.*?\]/g, '').trim());
-      } else {
-        detailsLines.push(line);
-      }
-    }
-    
-    return {
-      summary: summaryLines.join(' ').trim(),
-      details: detailsLines.join('\n').trim()
-    };
-  };
-
-  const { summary, details } = parseContent(content);
-
-  // For debugging
-  // console.log('Parsed content:', { summary, details, originalContent: content });
-
-  if (collapsible) {
+  if (collapse && hasSummary) {
     return (
       <motion.div
         initial={false}
-        animate={{ height: 'auto' }}
-        transition={{ type: "spring", damping: 15, stiffness: 150 }}
         className={cn(
           styles.gradient,
           styles.border,
           "shadow-lg dark:shadow-2xl",
           "rounded-md",
           "border-l-2",
-          "bg-gradient-to-br",
+          "bg-linear-to-br",
+          "my-2 p-0",
+
         )}
         role="region"
         aria-label={`Expandable ${type} alert`}
@@ -152,84 +159,116 @@ export default function Alert({ type, children, collapsible = false }: AlertProp
         <button
           onClick={() => setExpanded(v => !v)}
           className={cn(
-            "flex items-center gap-4 p-4 w-full text-left cursor-pointer",
-            "rounded-none border-b-1 border-opacity-10",
+            "flex items-center gap-3 px-3 pt-3  w-full text-left cursor-pointer",
+            "rounded-none ",
+            "hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition-colors",
+            expanded && "border-b-1 border-opacity-10",
           )}
           aria-expanded={expanded}
         >
-          <div className={cn("flex-shrink-0 rounded-full p-1.5", styles.iconBg)}>
-            <Icon className={cn("w-5 h-5", styles.text)} />
-          </div>
-          <div className="flex-1 min-w-0 pt-0.5">
+          <div className="flex-1 min-w-0">
             <div className={cn(
-              "font-semibold text-sm uppercase tracking-wider mb-1",
-              styles.text,
+              "flex items-center gap-2 mb-0.5",
             )}>
-              {type}
+              <div className={cn("flex-shrink-0 rounded-full p-1", styles.iconBg)}>
+                <Icon className={cn("w-3.5 h-3.5", styles.text)} />
+              </div>
+              <div className={cn(
+                "font-semibold text-xs uppercase tracking-wider",
+                styles.text,
+              )}>
+                {type}
+              </div>
             </div>
+
             <div className={cn(
-              "text-sm leading-relaxed text-gray-600 dark:text-gray-400"
+              "text-xs leading-tight text-gray-600 dark:text-gray-400 mb-0 "
             )}>
               {summary}
             </div>
           </div>
-          <span
-            style={{ transition: 'transform 0.3s' }}
-            className={cn("transition-transform duration-200", expanded ? 'rotate-180' : '')}
+          <motion.div
+            animate={{
+              rotate: expanded ? 180 : 0,
+              scale: expanded ? 1.1 : 1
+            }}
+            transition={{
+              duration: 0.3,
+              ease: [0.4, 0.0, 0.2, 1],
+              scale: { duration: 0.15 }
+            }}
+            className={cn(
+              "flex-shrink-0 rounded-full p-1",
+              "hover:bg-black/[0.05] dark:hover:bg-white/[0.05]",
+              "transition-colors duration-200",
+            )}
           >
             <ChevronDown className={cn("w-4 h-4", styles.text)} />
-          </span>
-        </button>
-        {details && (
-          <motion.div
-            initial={false}
-            animate={{ height: expanded ? contentHeight : 0, opacity: expanded ? 1 : 0 }}
-            transition={{
-              height: { duration: 0.5, ease: [0.4, 0.0, 0.2, 1] },
-              opacity: { duration: 0.4, ease: [0.4, 0.0, 0.2, 1] }
-            }}
-            style={{ overflow: 'hidden' }}
-          >
-            <div
-              ref={contentRef}
-              className={cn(
-                "p-4 pt-2 text-sm leading-relaxed text-gray-600 dark:text-gray-400",
-                "[&_p]:m-0 [&_a]:font-medium",
-                `[&_a]:${styles.text} [&_a]:underline [&_a]:underline-offset-2`,
-                "[&_code]:bg-black/[0.07] dark:[&_code]:bg-white/[0.07]",
-                "[&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded-md [&_code]:font-mono [&_code]:text-xs",
-                "whitespace-pre-wrap overflow-x-scroll w-full bg-transparent"
-              )}
-            >
-              {details}
-            </div>
           </motion.div>
-        )}
+        </button>
+
+        <AnimatePresence>
+          {expanded && hasDetails && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{
+                height: { duration: 0.3, ease: [0.4, 0.0, 0.2, 1] },
+                opacity: { duration: 0.2, ease: [0.4, 0.0, 0.2, 1] }
+              }}
+              style={{ overflow: 'hidden' }}
+            >
+              <div
+                className={cn(
+                  "px-3 pb-3 pt-2 text-sm leading-relaxed text-gray-600 dark:text-gray-400",
+                  "[&_p]:m-0 [&_a]:font-medium",
+                  // `[&_a]:${styles.text} [&_a]:underline [&_a]:underline-offset-2`,
+                  "[&_code]:bg-black/[0.07] dark:[&_code]:bg-white/[0.07]",
+                  "[&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded-md [&_code]:font-mono [&_code]:text-xs",
+                  "whitespace-pre-wrap w-full bg-transparent mb-0"
+                )}
+              >
+                {details}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </motion.div>
     );
   }
 
-  // Non-collapsible: show all content
+  // Non-collapse: show all content
   return (
     <div
       className={cn(
-        "flex items-start gap-4 rounded-xl p-4 m-4 bg-gradient-to-br",
+        "flex items-start gap-4 rounded-xl p-4 bg-linear-to-br",
         styles.gradient,
         "border-l-4",
         styles.border,
-        "shadow-lg dark:shadow-2xl"
+        "shadow-lg dark:shadow-2xl",
+        "mb-3"
       )}
       role="alert"
     >
-      <div className={cn("flex-shrink-0 rounded-full p-1.5", styles.iconBg)}>
-        <Icon className={cn("w-5 h-5", styles.text)} />
-      </div>
-      <div className="flex-1 min-w-0 pt-0.5">
+      <div className="flex-1 min-w-0">
         <div className={cn(
-          "font-semibold text-sm uppercase tracking-wider mb-1",
-          styles.text,
+          "flex items-center gap-2 mb-0.5",
         )}>
-          {type}
+          <div className={cn("flex-shrink-0 rounded-full p-1", styles.iconBg)}>
+            <Icon className={cn("w-4 h-4", styles.text)} />
+          </div>
+          <div className={cn(
+            "font-semibold text-sm uppercase tracking-wider",
+            styles.text,
+          )}>
+            {type}
+          </div>
+          {/* <div className={cn(
+            "pb-0  place-self-center ",
+          )}>
+            {summary}
+          </div> */}
         </div>
         <div className={cn(
           "text-sm leading-relaxed text-gray-600 dark:text-gray-400",
@@ -237,9 +276,12 @@ export default function Alert({ type, children, collapsible = false }: AlertProp
           `[&_a]:${styles.text} [&_a]:underline [&_a]:underline-offset-2`,
           "[&_code]:bg-black/[0.07] dark:[&_code]:bg-white/[0.07]",
           "[&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded-md [&_code]:font-mono [&_code]:text-xs",
-          "whitespace-pre-wrap overflow-x-scroll w-full"
+          "whitespace-pre-wrap w-full mb-0"
         )}>
-          {children}
+          <div className="flex flex-col gap-2">
+            <div className="">{summary}</div>
+            <div className="">{details}</div>
+          </div>
         </div>
       </div>
     </div>

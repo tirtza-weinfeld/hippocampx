@@ -1,68 +1,95 @@
+
 # Modular Arithmetic
 
 ## Resizable table of contents
 
+## Introduction to Modular Arithmetic
+
+When we divide two integers we will have an equation that looks like the following:
+
+
+
+$$
+\dfrac{\color{#e11d48}{A}}{\color{#2563eb}{B}} = \color{#059669}{Q} \ \text{\color{#f59e42}{remainder}} \ \color{#f59e42}{R}
+$$
+
+$\color{#e11d48}{A}$ is the dividend  
+$\color{#2563eb}{B}$ is the divisor  
+$\color{#059669}{Q}$ is the quotient  
+$\color{#f59e42}{R}$ is the remainder
+
+Sometimes, we are only interested in what the **remainder** is when we divide $A$ by $B$.
+For these cases there is an operator called the *modulo operator* (abbreviated as *mod*).
+Using the same $\color{#e11d48}{A}$, $\color{#2563eb}{B}$, $\color{#059669}{Q}$, and $\color{#f59e42}{R}$ as above, we would have: 
+
+$$ 
+\color{#e11d48}{A}\color{gray}{\pmod{\color{#2563eb}{B}}} = \color{#f59e42}{R} 
+$$
 
 
 ## What is Modular Arithmetic?
 
-Modular arithmetic is a system where numbers "wrap around" after reaching a value called the **modulus**.
-* **Example:** A clock 🕰️ wraps around at 12. If it's 10 o'clock and you add 4 hours, it becomes 2 o'clock, not 14.
 
-We use the **modulo operator**, `mod`, to find the remainder of a division.
-* **Example:** `14 mod 12 = 2`
+Modular arithmetic is a system of arithmetic for integers,
+ where numbers "wrap around" upon reaching a certain value—the 
+ **modulus**.
+* **Example:** The most common example is a clock 🕰️. 
+ If it's `10` o'clock and `4` hours pass, 
+ the time becomes `2` o'clock, not `14`. 
+ This is because a clock *wraps around* at a modulus of `12`.
+
+ We use the **modulo operator** (written as `mod` or `%`) 
+ to find the remainder of a division.
+* **Example:** `14 mod 12 = 2` *or* `14 % 12 = 2`
 
 ---
 
-## Congruence Modulo
+## Congruence Modulo 
 
-Two integers `A` and `B` are **congruent modulo C** (`A ≡ B mod C`) if they satisfy two equivalent conditions:
+`A ≡ B (mod C)`
 
-1.  They have the **same remainder** when divided by `C`.
+Two integers `A` and `B` are **congruent modulo C** if they satisfy two equivalent conditions:
+
+1. They have the **same remainder** when divided by `C`  
+*`a % c == b % c`*
     * **Example:** `14 mod 12 = 2` and `2 mod 12 = 2`.
 
-2.  Their **difference `(A - B)` is a multiple** of `C`.
+2. Their **difference `(A - B)` is a multiple** of `C`  
+*`(a - b) % c == 0`*
     * **Example:** `14 - 2 = 12`, which is a multiple of 12. In programming style, this means `(14 - 2) mod 12 = 0`.
 
----
+
+
+
+> [!deepdive:collapse]
+> **Proof That The Two Conditions Are Equivalent:**
+> 
+> 1.  **Same Remainder → Difference is a Multiple:**
+>     If `A` and `B` have the same remainder `r`, we can write `A = q₁C + r`  and `B = q₂C + r`. Subtracting them cancels the remainder `r`, leaving `A - B = (q₁ - q₂)C`, which is a multiple of `C`
+> 
+> 2. **Difference is a Multiple → Same Remainder:**
+>   If `A - B` is a multiple of `C`, then `A - B = qC`. This means `A = B + qC`. Applying the modulo C operation to both sides, we get `A % C = (B + qC) % C`, the `qC` term's remainder is 0, leaving `A % C = B % C`
+
 
 ## Basic Operations
 
 You can simplify numbers by taking the `mod` before or after an operation.
 
-* **Addition:** `(A + B) mod C = ((A mod C) + (B mod C)) mod C`
-    * **Example:** `(14 + 17) mod 5 = (4 + 2) mod 5 = 1`
+### Addition
+`(A + B) mod C` = `((A mod C) + (B mod C)) mod C`
 
-* **Subtraction:** `(A - B) mod C = ((A mod C) - (B mod C)) mod C`
-    * **Example:** `(14 - 3) mod 5 = (4 - 3) mod 5 = 1`
+**Example:** `(14 + 17) mod 5` = `(4 + 2) mod 5` = `1`
 
-* **Multiplication:** `(A * B) mod C = ((A mod C) * (B mod C)) mod C`
-    * **Example:** `(14 * 17) mod 5 = (4 * 2) mod 5 = 3`
+### Subtraction
 
----
+`(A - B) mod C` = `((A mod C) - (B mod C)) mod C`
 
-## Modular Division and Inverses
+**Example:** `(14 - 3) mod 5` = `(4 - 3) mod 5` = `1`
 
-To "divide" by a number `A`, you instead **multiply by its modular inverse**, `A⁻¹`.
+### Multiplication
 
-The modular inverse of `A` is a number `A⁻¹` such that `(A * A⁻¹) ≡ 1 mod C`.
-* **Example:** The inverse of `3 mod 10` is `7`, because `(3 * 7) mod 10 = 21 mod 10 = 1`.
-
-An inverse exists only if `A` and `C` are **coprime** (their greatest common divisor is 1).
-* **Possible:** ✅ You can "divide by 3" mod 10, since `gcd(3, 10) = 1`.
-* **Impossible:** ❌ You cannot "divide by 2" mod 10, since `gcd(2, 10) = 2`.
+`(A * B) mod C` = `((A mod C) * (B mod C)) mod C`
+    
+**Example:** `(14 * 17) mod 5` = `(4 * 2) mod 5` = `3`
 
 ---
-
-## Fast Modular Exponentiation
-
-This is an efficient algorithm to compute `A^B mod C` without using huge numbers.
-
-The key idea is to use the **binary representation** of the exponent `B`.
-* **Example:** To compute `3^10 mod 7`, we use the binary for 10, which is `1010₂`.
-
-This breaks the exponent into a **sum of powers of 2**.
-* **Example:** `10 = 8 + 2`, so `3^10` becomes `3^8 * 3^2`.
-
-The algorithm finds these powers by **repeatedly squaring**, applying `mod` at each step.
-* **Example:** To find `3^4 mod 7`, you first find `3^2 mod 7 = 2`, then calculate `(2 * 2) mod 7 = 4`.

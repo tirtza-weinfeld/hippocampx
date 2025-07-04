@@ -1,15 +1,89 @@
-> [!example:collapsible] 
-> [1:]Summary 
-> [1:] about the example
-> Details line 1
-> Details line 2
-> Details line 3
-> Details line 4
-> Details line 5
-> Details line 6
-> Details line 7
-> Details line 8
-> Details line 9
-> Details line 10
+## resizable table of contents
 
 
+
+## What is Modular Arithmetic?
+
+Modular arithmetic is a system of arithmetic for integers,
+ where numbers "wrap around" upon reaching a certain value—the 
+ **modulus**.
+  The most common example is a clock 🕰️. 
+  If it's 10 o'clock and 4 hours pass, 
+  the time becomes 2 o'clock, not 14. 
+  This is because a clock "wraps around" at a modulus of 12.
+
+We use the **modulo operator** (written as `mod` or `%`) 
+to find the remainder of a division.
+
+* **Example:** `14 mod 12 = 2`, because when 14 is divided by 12, the remainder is 2.
+
+---
+
+## Congruence Modulo
+
+Two integers are **congruent** if they have the same position on the "clock" face. We use the notation `A ≡ B (mod C)`, where `C` is the modulus. This statement is true if two equivalent conditions are met:
+
+1.  `A` and `B` have the **same remainder** when divided by `C`.
+2.  Their **difference `(A - B)` is an exact multiple** of `C`.
+
+* **Example:** We can say `14 ≡ 2 (mod 12)` because:
+    1.  `14 % 12 = 2` and `2 % 12 = 2`.
+    2.  `14 - 2 = 12`, which is a multiple of 12.
+
+> [!deepdive:collapse]
+> **Proof That The Two Conditions Are Equivalent:**
+> 
+> 1.  **Same Remainder → Difference is a Multiple:**
+>     If `A` and `B` have the same remainder `r`, we can write `A = q₁C + r` and `B = q₂C + r`. Subtracting them cancels the remainder `r`, leaving `A - B = (q₁ - q₂)C`, which is a multiple of `C`.
+> 
+> 2.  **Difference is a Multiple → Same Remainder:**
+>     If `A - B` is a multiple of `C`, then `A - B = qC`. This means `A = B + qC`. When you take the remainder of both sides, the `qC` term's remainder is 0, leaving `A % C = B % C`.
+
+---
+
+## Properties of Modular Arithmetic
+
+A key feature of modular arithmetic is that you can apply the modulus operation at any step of a calculation without changing the final result. This is useful for keeping numbers small and manageable.
+
+### Addition
+
+`(A + B) mod C = ((A mod C) + (B mod C)) mod C`
+
+* **Example:** `(14 + 17) mod 5 = (4 + 2) mod 5 = 6 mod 5 = 1`
+
+### Subtraction
+
+`(A - B) mod C = ((A mod C) - (B mod C)) mod C`
+
+* **Example:** `(14 - 3) mod 5 = (4 - 3) mod 5 = 1 mod 5 = 1`
+
+### Multiplication
+
+`(A * B) mod C = ((A mod C) * (B mod C)) mod C`
+
+* **Example:** `(14 * 17) mod 5 = (4 * 2) mod 5 = 8 mod 5 = 3`
+
+---
+
+## Modular Division
+
+Division in modular arithmetic is different. To "divide" by a number `A`, you instead **multiply by its modular inverse**, written as `A⁻¹`.
+
+The modular inverse of `A` is a number `A⁻¹` such that `(A * A⁻¹) ≡ 1 (mod C)`.
+
+* **Example:** The inverse of `3 mod 10` is `7`, because `(3 * 7) mod 10 = 21 mod 10 = 1`.
+
+An inverse only exists if `A` and `C` are **coprime** (their greatest common divisor is 1).
+
+* ✅ **Possible:** You can find an inverse for `3 mod 10` because `gcd(3, 10) = 1`.
+* ❌ **Impossible:** You cannot find an inverse for `2 mod 10` because `gcd(2, 10) = 2`.
+
+---
+
+## Modular Exponentiation
+
+This is an efficient algorithm to compute `A^B mod C` without handling huge intermediate numbers.
+
+Instead of calculating the massive value of `A^B` and then taking the modulus, the algorithm is based on **repeatedly squaring** the base and applying the modulus at each step. This keeps the results small and avoids overflow.
+
+* **Example:** To compute `3^4 mod 7`, you first find `3^2 mod 7 = 9 mod 7 = 2`. Then you square that result: `2^2 mod 7 = 4 mod 7 = 4`.
