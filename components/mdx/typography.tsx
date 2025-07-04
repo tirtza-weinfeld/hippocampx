@@ -49,7 +49,7 @@ export const H2 = ({ children, ...props }: TypographyProps) => (
 )
 export const H3 = ({ children, ...props }: TypographyProps) => (
   <motion.div {...fadeInUp} className="relative mb-6 mt-10 ">
-      <div className="w-3 h-1 bg-linear-to-r from-blue-700 to-sky-500 rounded-sm absolute -left-3 top-1/2 
+      <div className="w-2 h-1 bg-linear-to-r from-blue-700 to-sky-500 rounded-sm absolute -left-2 top-1/2 
       hover:bg-linear-to-l transition-all duration-300  "/>
       <h3 className="text-2xl md:text-3xl font-bold tracking-tight text-gray-800 dark:text-gray-200" {...props}>
         {children}
