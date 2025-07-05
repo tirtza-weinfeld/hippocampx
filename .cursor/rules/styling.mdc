@@ -1,7 +1,5 @@
 ---
-description: Styling Rules
-globs: 
-alwaysApply: false
+alwaysApply: true
 ---
 # React & Next.js Styling & Animations Guide (June 2025)
 

@@ -65,7 +65,33 @@ export function transformerCodeTooltipWords(tooltipMap: Record<string, SymbolMet
     
     preprocess(code, options) {
       options.decorations ||= [];
-      
+      // --- NEW: Build function code regions ---
+      const functionRegions: Record<string, { start: number; end: number }> = {};
+      for (const [symbol, meta] of Object.entries(tooltipMap)) {
+        if (meta.signature) {
+          // Find the first occurrence of the function signature in the code
+          const sig = meta.signature.replace(/\s+/g, ' ').trim();
+          const regex = new RegExp(sig.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+          const match = regex.exec(code);
+          if (match) {
+            const start = match.index;
+            // Heuristic: function region ends at the start of the next function or end of file
+            let end = code.length;
+            for (const [otherSymbol, otherMeta] of Object.entries(tooltipMap)) {
+              if (otherSymbol !== symbol && otherMeta.signature) {
+                const otherSig = otherMeta.signature.replace(/\s+/g, ' ').trim();
+                const otherRegex = new RegExp(otherSig.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+                const otherMatch = otherRegex.exec(code);
+                if (otherMatch && otherMatch.index > start && otherMatch.index < end) {
+                  end = otherMatch.index;
+                }
+              }
+            }
+            functionRegions[symbol] = { start, end };
+          }
+        }
+      }
+      // --- END NEW ---
       // Find all occurrences of function/method/class names (whole word only)
       for (const symbolName of Object.keys(tooltipMap)) {
         const indexes = findAllWordIndexes(code, symbolName);
@@ -80,23 +106,25 @@ export function transformerCodeTooltipWords(tooltipMap: Record<string, SymbolMet
           });
         }
       }
-      
-      // Find all occurrences of parameters (whole word only)
+      // --- UPDATED: Parameter tooltips scoped to parent function region ---
       for (const [paramName, parentSymbols] of Object.entries(parameterToHierarchy)) {
-        const indexes = findAllWordIndexes(code, paramName);
-        for (const index of indexes) {
-          // Use the first parent symbol as fallback (in a real AST context, we'd have scope info)
-          const { symbol, path } = parentSymbols[0];
-          options.decorations.push({
-            start: index,
-            end: index + paramName.length,
-            properties: {
-              'data-tooltip-symbol': paramName,
-              'data-tooltip-parent': symbol,
-              'data-tooltip-path': JSON.stringify(path),
-              class: 'tooltip-symbol',
-            },
-          });
+        for (const { symbol, path } of parentSymbols) {
+          const region = functionRegions[symbol];
+          if (!region) continue;
+          const indexes = findAllWordIndexes(code.slice(region.start, region.end), paramName);
+          for (const relIndex of indexes) {
+            const index = region.start + relIndex;
+            options.decorations.push({
+              start: index,
+              end: index + paramName.length,
+              properties: {
+                'data-tooltip-symbol': paramName,
+                'data-tooltip-parent': symbol,
+                'data-tooltip-path': JSON.stringify(path),
+                class: 'tooltip-symbol',
+              },
+            });
+          }
         }
       }
     },

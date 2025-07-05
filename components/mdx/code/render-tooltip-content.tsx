@@ -127,7 +127,10 @@ export function renderTooltipContent(
   }
   // Fallback: show symbol and parent
   if (!meta) {
-    return <div>{symbol} {parent && <span>({parent})</span>}</div>;
+    if (parent) {
+      return <div className="text-red-600">Parameter <b>{symbol}</b> not found in <b>{parent}</b> context.</div>;
+    }
+    return <div>{symbol}</div>;
   }
   return (
     <div className="min-w-[220px] max-w-[400px]">

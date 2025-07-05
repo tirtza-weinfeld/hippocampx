@@ -2,7 +2,7 @@ def mod(a: int, b: int) -> int:
     """
     a mod b
     Args:
-        a: the first number
+        a: the first number1
         b: the second number
     Returns:
         int
@@ -15,7 +15,7 @@ def congruent1(a: int, b: int, n: int) -> bool:
     """
     a ≡ b (mod n)
     Args:
-        a: the first number
+        a: the first number2
         b: the second number
         n: the modulus, the number by which we are dividing
     Returns:
@@ -28,7 +28,7 @@ def congruent2(a: int, b: int, n: int) -> bool:
     """
     a ≡ b (mod n)
     Args:
-        a: the first number
+        a: the first number3
         b: the second number
         n: the modulus, the number by which we are dividing
     Returns:

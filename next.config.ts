@@ -41,13 +41,13 @@ const nextConfig: NextConfig = {
   },
   pageExtensions: ['ts', 'tsx', 'mdx'],
   // Force CSS updates during development
-  webpack: (config, { dev, isServer }) => {
-    if (dev && !isServer) {
-      // Disable CSS caching in development
-      config.cache = false;
-    }
-    return config;
-  },
+  // webpack: (config, { dev, isServer }) => {
+  //   if (dev && !isServer) {
+  //     // Disable CSS caching in development
+  //     config.cache = false;
+  //   }
+  //   return config;
+  // },
   images: {
     remotePatterns: [
       {

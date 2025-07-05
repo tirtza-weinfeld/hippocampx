@@ -118,6 +118,35 @@ This is equivalent to finding the longest subarray that sums to zero after conve
 
 ```python file=examples/code/prefix_sum.py#func:minSubarray stripDocstring
 ```
+> [!deepdive:collapse] 
+>
+> [a ≡ b (mod c) iff](./modular-arithmetic#congruence-modulo)
+> 
+> 1. `a % c == b % c` (They have the same remainder when divided by c)
+> 
+> 2. `(a - b) % c == 0` (Their difference (a - b) is a multiple of c)
+> 
+> 
+> 
+> `a = sum(segments)`, `c = p`
+> 
+> so if we find a subarray with with sum `b` such that `a % c == b % c` 
+>  then we know`(a - b) % c = 0` 
+> which means removing that sum `b` will make the rest divisable by `c`
+>
+>
+> so the goal is to find the **shortest subarray `b` whose sum has the same remainder** as the total sum.
+> 
+> Since any subarray's sum is the difference between two prefix sums (`Current Prefix Sum - Past Prefix Sum`), we are looking for:
+> 
+> `(Current Prefix Sum - Past Prefix Sum) % p == Total's Remainder`
+> 
+> By rearranging this, we can calculate the exact `Past Prefix Sum` remainder required at any given step. This is the **`need`** variable in the code:
+> 
+> `need = (Current Prefix Sum % p - Total's Remainder + p) % p`
+> 
+> A hash map stores the most recent index of each prefix sum remainder encountered. 
+> At each step, the code calculates the `need` and checks the map for its index to find the shortest valid subarray.
 
 -----
 

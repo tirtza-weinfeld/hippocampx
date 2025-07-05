@@ -1,9 +1,7 @@
 from collections import defaultdict
 
-
 def maxSubArrayLen(segments: list[int], k: int) -> int:
     """
-    **1**
     Find the maximum length of a subarray that sums to exactly k.
     LeetCode 325: Maximum Size Subarray Sum Equals k
     https://leetcode.com/problems/maximum-size-subarray-sum-equals-k/
@@ -29,10 +27,8 @@ def maxSubArrayLen(segments: list[int], k: int) -> int:
 
     return max_length
 
-
 def subarraySum(segments: list[int], k: int) -> int:
     """
-    **2**
     Count the number of subarrays that sum to exactly k.
     LeetCode 560: Subarray Sum Equals K
     https://leetcode.com/problems/subarray-sum-equals-k/
@@ -53,10 +49,8 @@ def subarraySum(segments: list[int], k: int) -> int:
 
     return count
 
-
 def findMaxLength(segments: list[int]) -> int:
     """
-    **3**
     Find the maximum length of a contiguous subarray with an equal number of positive and negative values.
     LeetCode 525: Contiguous Array
     https://leetcode.com/problems/contiguous-array/
@@ -68,10 +62,8 @@ def findMaxLength(segments: list[int]) -> int:
     normalized_segments = [1 if num > 0 else -1 for num in segments]
     return maxSubArrayLen(normalized_segments, 0)
 
-
 def checkSubarraySum(segments: list[int], k: int) -> bool:
     """
-    **4**
     Check if the array contains a subarray of at least length 2 whose sum is a multiple of k.
     LeetCode 523: Continuous Subarray Sum
     https://leetcode.com/problems/continuous-subarray-sum/
@@ -82,22 +74,20 @@ def checkSubarraySum(segments: list[int], k: int) -> bool:
         True if such a subarray exists, False otherwise.
     """
 
-    remainder_to_index = {0: -1}
+    remainder_idx = {0: -1}
     prefix_remainder = 0
 
     for i, segment in enumerate(segments):
         prefix_remainder = (prefix_remainder + segment) % k
-        if prefix_remainder in remainder_to_index:
-            if i - remainder_to_index[prefix_remainder] > 1:
+        if prefix_remainder in remainder_idx:
+            if i - remainder_idx[prefix_remainder] > 1:
                 return True
         else:
-            remainder_to_index[prefix_remainder] = i
+            remainder_idx[prefix_remainder] = i
     return False
-
 
 def subarraysDivByK(segments: list[int], k: int) -> int:
     """
-    **5**
     Count the number of subarrays whose sum is divisible by k.
     LeetCode 974: Subarray Sums Divisible by K
     https://leetcode.com/problems/subarray-sums-divisible-by-k/
@@ -117,10 +107,8 @@ def subarraysDivByK(segments: list[int], k: int) -> int:
         remainder_frequency[prefix_remainder] += 1
     return count
 
-
 def minSubarray(segments: list[int], p: int) -> int:
     """
-    **6**
     Find the length of the shortest subarray to remove so that the sum of the remaining elements is divisible by p.
     LeetCode 1590: Make Sum Divisible by P
     https://leetcode.com/problems/make-sum-divisible-by-p/
@@ -147,10 +135,8 @@ def minSubarray(segments: list[int], p: int) -> int:
 
     return min_length if min_length < len(segments) else -1
 
-
 def getModifiedArray(length: int, updates: list[list[int]]) -> list[int]:
     """
-    **7**
     Apply a list of range updates to an array and return the modified array.
     LeetCode 370: Range Addition
     https://leetcode.com/problems/range-addition/
@@ -170,10 +156,8 @@ def getModifiedArray(length: int, updates: list[list[int]]) -> list[int]:
     prefix_sum = 0
     return [prefix_sum := prefix_sum + change for change in delta[:-1]]
 
-
 def numberOfArrays(differences: list[int], lower: int, upper: int) -> int:
     """
-    **8**
     Count the number of valid starting values for a hidden sequence given the differences and bounds.
     LeetCode 2145: Count the Hidden Sequences
     https://leetcode.com/problems/count-the-hidden-sequences/

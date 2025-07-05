@@ -103,7 +103,7 @@ export const OrderedList = ({ children, className = "" }: ListProps) => {
           ${isNested ? "mt-3 mb-3 ml-4" : "mb-8 ml-0"} 
           space-y-3
           ${getListStyle(level)}
-          list-inside
+          list-none
           ${className}
         `}
       >

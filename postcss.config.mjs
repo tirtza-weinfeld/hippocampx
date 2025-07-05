@@ -3,7 +3,7 @@ const config = {
   plugins: {
     '@tailwindcss/postcss': {
       // Disable caching in development for better hot reloading
-      cache: process.env.NODE_ENV === 'production',
+      // cache: process.env.NODE_ENV === 'production',
     },
   },
 };

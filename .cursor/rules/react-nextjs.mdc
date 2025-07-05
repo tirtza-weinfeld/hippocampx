@@ -1,7 +1,5 @@
 ---
-description: React/Next.js Rules
-globs: 
-alwaysApply: false
+alwaysApply: true
 ---
 # React & Next.js Style Guide (June 2025)
 
