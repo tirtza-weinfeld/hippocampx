@@ -14,7 +14,17 @@ import Alert from '@/components/mdx/alert';
 import { TableOfContents } from '@/components/mdx/toc/table-of-contents';
 import { ResizableWrapper } from '@/components/mdx/toc/resizable-wrapper';
 import CodeTooltip from '@/components/mdx/code/code-tooltip';
-import { ListItem, OrderedList, UnorderedList } from './components/mdx/list';
+import { 
+  Table, 
+  TableHeader, 
+  TableBody, 
+  TableFooter, 
+  TableRow, 
+  TableHead, 
+  TableCell, 
+  TableCaption 
+} from '@/components/mdx/table';
+import { ListItem, OrderedList, UnorderedList } from '@/components/mdx/list';
 
 export const customComponents = {
   
@@ -39,6 +49,16 @@ export const customComponents = {
 
   // Links
   a: Link,
+
+  // Table components
+  table: Table,
+  thead: TableHeader,
+  tbody: TableBody,
+  tfoot: TableFooter,
+  tr: TableRow,
+  th: TableHead,
+  td: TableCell,
+  caption: TableCaption,
 
   // Code components with proper handling
   code: ({ children, className, ...props }: ComponentPropsWithoutRef<'code'>) => {

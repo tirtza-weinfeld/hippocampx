@@ -1,0 +1,60 @@
+# Table Component Examples
+
+This page demonstrates the various table components available in our MDX setup.
+
+## Basic Table
+
+A simple table with headers and data:
+
+| Name | Age | City | Occupation |
+|------|-----|------|------------|
+| John Doe | 30 | New York | Developer |
+| Jane Smith | 25 | Los Angeles | Designer |
+| Bob Johnson | 35 | Chicago | Manager |
+
+## Table with Caption
+
+| Algorithm | Time Complexity | Space Complexity | Use Case |
+|-----------|----------------|------------------|----------|
+| Bubble Sort | O(n²) | O(1) | Educational |
+| Quick Sort | O(n log n) | O(log n) | General purpose |
+| Merge Sort | O(n log n) | O(n) | Stable sorting |
+| Heap Sort | O(n log n) | O(1) | In-place sorting |
+
+*Table showing common sorting algorithms and their complexities*
+
+## Mathematical Data Table
+
+| Function | Derivative | Integral | Domain |
+|----------|------------|----------|--------|
+| f(x) = x² | f'(x) = 2x | ∫x²dx = x³/3 + C | ℝ |
+| f(x) = e^x | f'(x) = e^x | ∫e^xdx = e^x + C | ℝ |
+| f(x) = ln(x) | f'(x) = 1/x | ∫1/xdx = ln|x| + C | (0,∞) |
+| f(x) = sin(x) | f'(x) = cos(x) | ∫sin(x)dx = -cos(x) + C | ℝ |
+
+## Performance Comparison
+
+| Framework | Bundle Size | First Paint | Time to Interactive |
+|-----------|-------------|-------------|-------------------|
+| React | ~42KB | 1.2s | 2.1s |
+| Vue | ~34KB | 1.1s | 1.9s |
+| Angular | ~135KB | 2.3s | 3.8s |
+| Svelte | ~12KB | 0.8s | 1.4s |
+
+## Code Example
+
+Here's how you can use tables in your MDX files:
+
+```markdown
+| Column 1 | Column 2 | Column 3 |
+|----------|----------|----------|
+| Data 1   | Data 2   | Data 3   |
+| Data 4   | Data 5   | Data 6   |
+```
+
+The table components automatically provide:
+- Responsive design with horizontal scrolling on mobile
+- Dark mode support
+- Smooth animations with Framer Motion
+- Accessible markup
+- Hover effects and visual feedback 

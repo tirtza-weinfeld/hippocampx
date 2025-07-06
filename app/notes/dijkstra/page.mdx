@@ -1,0 +1,62 @@
+
+import TransitMapAnimation from '@/components/notes/trip';
+
+# Dijkstra's Algorithm
+
+## Resizable table of contents
+
+
+
+## Description
+
+Given a directed or undirected graph with **non-negative edge weights**  
+($\forall e \in E,\ w(e) \geq 0$), and a source vertex $s$,  
+compute the **shortest path distance** to every vertex:  
+$\delta(s, v),\ \forall v \in V$.
+
+---
+
+### Code Snippet (Binary Heap)
+
+```python file=examples/code/dijkstra.py#func:dijkstra stripDocstring
+```
+
+---
+
+### Runtime Analysis
+
+Let $|V|$ be the number of vertices and $|E|$ the number of edges.
+Let $T_i$, $T_e$, and $T_d$ be the costs of insert, extract-min, and decrease-key:
+
+$$
+T_{\text{Dijkstra}} = O(|V| \cdot T_i + |V| \cdot T_e + |E| \cdot T_d)
+$$
+
+| Priority Queue | Build    | Extract-Min   | Decrease-Key  | Total Time           |
+| -------------- | -------- | ------------- | ------------- | -------------------- |
+| Array          | $O(V)$ | $O(V)$      | $O(1)$      | $O(V^2 + E)$       |
+| Binary Heap    | $O(V)$ | $O(\log V)$ | $O(\log V)$ | **$O((V + E)\log V)$** |
+| Fibonacci Heap | $O(V)$ | $O(\log V)$ | $O(1)_a$  | $O(V \log V + E)$  |
+
+
+> In practice, **binary heaps** are preferred: they offer near-optimal performance with simple, efficient implementations.
+> Fibonacci heaps achieve better asymptotic bounds but are rarely used due to large constant factors and implementation complexity.
+
+
+
+---
+
+### Example *Your Personal Transit Map*
+
+You're planning the fastest routes from **Home** to various destinations:
+`Work`, the `Gym`, and the nearby transit `Stations`.
+
+**The Map:**
+`Home → Station A: 5`
+`Home → Station B: 12`
+`Station A → Gym: 10`
+`Station B → Gym: 2`
+`Station B → Work: 20`
+
+<TransitMapAnimation />
+

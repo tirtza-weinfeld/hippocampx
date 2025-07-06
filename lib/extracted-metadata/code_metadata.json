@@ -1,4 +1,31 @@
 {
+  "dijkstra": {
+    "name": "dijkstra",
+    "type": "function",
+    "language": "python",
+    "file": "examples/code/dijkstra.py",
+    "line": 3,
+    "signature": "def dijkstra(graph: dict[str, dict[str, int]], s: str):",
+    "parameters": [
+      {
+        "name": "graph",
+        "type": "dict[(str, dict[(str, int)])]",
+        "description": "A dictionary representing the graph.",
+        "default": null
+      },
+      {
+        "name": "s",
+        "type": "str",
+        "description": "The source vertex.",
+        "default": null
+      }
+    ],
+    "return_type": "",
+    "return_description": "",
+    "description": "Dijkstra's algorithm for finding the shortest path in a non-negative weighted graph.",
+    "code": "def dijkstra(graph: dict[str, dict[str, int]], s: str):\n    d = {v: float('inf') for v in graph} | {s: 0}\n    p = {v: None for v in graph}\n    pq = [(0, s)]\n    while pq:\n        d_u, u = heapq.heappop(pq)\n        if d_u > d[u]:\n            continue\n        for v ,w in graph[u]:\n            if (weight := d_u + w) < d[v]:\n                d[v], p[v] = weight, u\n                heapq.heappush(pq, (weight, v))\n    return d, p",
+    "links": []
+  },
   "LRUCache": {
     "name": "LRUCache",
     "type": "class",
@@ -327,7 +354,7 @@
     "type": "function",
     "language": "python",
     "file": "examples/code/prefix_sum.py",
-    "line": 4,
+    "line": 3,
     "signature": "def maxSubArrayLen(segments: list[int], k: int) -> int:",
     "parameters": [
       {
@@ -354,7 +381,7 @@
     "type": "function",
     "language": "python",
     "file": "examples/code/prefix_sum.py",
-    "line": 32,
+    "line": 30,
     "signature": "def subarraySum(segments: list[int], k: int) -> int:",
     "parameters": [
       {
@@ -381,7 +408,7 @@
     "type": "function",
     "language": "python",
     "file": "examples/code/prefix_sum.py",
-    "line": 55,
+    "line": 52,
     "signature": "def findMaxLength(segments: list[int]) -> int:",
     "parameters": [
       {
@@ -402,7 +429,7 @@
     "type": "function",
     "language": "python",
     "file": "examples/code/prefix_sum.py",
-    "line": 69,
+    "line": 65,
     "signature": "def checkSubarraySum(segments: list[int], k: int) -> bool:",
     "parameters": [
       {
@@ -429,7 +456,7 @@
     "type": "function",
     "language": "python",
     "file": "examples/code/prefix_sum.py",
-    "line": 94,
+    "line": 89,
     "signature": "def subarraysDivByK(segments: list[int], k: int) -> int:",
     "parameters": [
       {
@@ -456,7 +483,7 @@
     "type": "function",
     "language": "python",
     "file": "examples/code/prefix_sum.py",
-    "line": 116,
+    "line": 110,
     "signature": "def minSubarray(segments: list[int], p: int) -> int:",
     "parameters": [
       {
@@ -483,7 +510,7 @@
     "type": "function",
     "language": "python",
     "file": "examples/code/prefix_sum.py",
-    "line": 145,
+    "line": 138,
     "signature": "def getModifiedArray(length: int, updates: list[list[int]]) -> list[int]:",
     "parameters": [
       {
@@ -510,7 +537,7 @@
     "type": "function",
     "language": "python",
     "file": "examples/code/prefix_sum.py",
-    "line": 167,
+    "line": 159,
     "signature": "def numberOfArrays(differences: list[int], lower: int, upper: int) -> int:",
     "parameters": [
       {
