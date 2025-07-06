@@ -4,6 +4,7 @@ import type { MDXComponents } from 'mdx/types';
 
 import CodeBlock from '@/components/mdx/code/code-block';
 import InlineCode from '@/components/mdx/code/code-inline';
+// import TabbedCodeBlock from '@/components/mdx/code/tabbed-code-block';
 
 import { H1, H2, H3, H4, H5, H6, Paragraph, Strong, Em } from '@/components/mdx/typography';
 import { Link } from '@/components/mdx/links';
@@ -87,6 +88,11 @@ export const customComponents = {
       </div>
     );
   },
+
+  // Custom tabbed code block node
+  // TabbedCodeBlock: (props: { tabs: string }) => (
+  //   <TabbedCodeBlock tabs={JSON.parse(props.tabs)} />
+  // ),
 
   // Content components
   ContentPopover,

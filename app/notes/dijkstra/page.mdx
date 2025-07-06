@@ -60,3 +60,32 @@ You're planning the fastest routes from **Home** to various destinations:
 
 <TransitMapAnimation />
 
+
+
+
+-----
+
+## Problems
+
+
+
+### 1\. The Classic Broadcast: Network Delay Time
+[743. Network Delay Time](https://leetcode.com/problems/network-delay-time/)
+
+
+*Given `n` nodes labeled `1` through `n` 
+and directed travel times between them, find the minimum time for a signal starting at node `k` 
+to reach *all* nodes. If impossible, return -1*
+
+
+
+```python file=examples/code/dijkstra.py#func:networkDelayTime stripDocstring stripDocstring 
+```
+
+> [!note:collapse]
+> This is Dijkstra's canonical use case: finding the shortest time for a signal to reach every node from a single source.
+>
+> This is a direct application where **"distance" is time**. The algorithm finds the shortest time from `k` to every other node. The final answer is the **maximum** of these shortest times, which represents the moment the *last* node receives the signal.
+ 
+**Time Complexity:** **$O(E \log V)$**
+

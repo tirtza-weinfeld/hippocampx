@@ -4,7 +4,7 @@
     "type": "function",
     "language": "python",
     "file": "examples/code/dijkstra.py",
-    "line": 3,
+    "line": 4,
     "signature": "def dijkstra(graph: dict[str, dict[str, int]], s: str):",
     "parameters": [
       {
@@ -24,6 +24,39 @@
     "return_description": "",
     "description": "Dijkstra's algorithm for finding the shortest path in a non-negative weighted graph.",
     "code": "def dijkstra(graph: dict[str, dict[str, int]], s: str):\n    d = {v: float('inf') for v in graph} | {s: 0}\n    p = {v: None for v in graph}\n    pq = [(0, s)]\n    while pq:\n        d_u, u = heapq.heappop(pq)\n        if d_u > d[u]:\n            continue\n        for v ,w in graph[u]:\n            if (weight := d_u + w) < d[v]:\n                d[v], p[v] = weight, u\n                heapq.heappush(pq, (weight, v))\n    return d, p",
+    "links": []
+  },
+  "networkDelayTime": {
+    "name": "networkDelayTime",
+    "type": "function",
+    "language": "python",
+    "file": "examples/code/dijkstra.py",
+    "line": 35,
+    "signature": "def networkDelayTime(times: list[list[int]], n: int, k: int) -> int:",
+    "parameters": [
+      {
+        "name": "times",
+        "type": "list[list[int]]",
+        "description": "",
+        "default": null
+      },
+      {
+        "name": "n",
+        "type": "int",
+        "description": "",
+        "default": null
+      },
+      {
+        "name": "k",
+        "type": "int",
+        "description": "",
+        "default": null
+      }
+    ],
+    "return_type": "int",
+    "return_description": "",
+    "description": "",
+    "code": "def networkDelayTime(times: list[list[int]], n: int, k: int) -> int:\n    adj = defaultdict(list)\n    for u, v, w in times:\n        adj[u].append((v, w))\n    pq, finalized, time = [(0, k)], set(), 0\n    while pq:\n        t, node = heapq.heappop(pq)\n        if node in finalized:\n            continue\n        finalized.add(node)\n        time = t\n        for neighbor, travel_time in adj[node]:\n            if neighbor not in finalized:\n                heapq.heappush(pq, (time + travel_time, neighbor))\n    return time if len(finalized) == n else -1",
     "links": []
   },
   "LRUCache": {

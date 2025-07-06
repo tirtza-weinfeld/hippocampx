@@ -170,6 +170,7 @@ const EdgesWithWeights = ({ paths, currentStep }: EdgesWithWeightsProps) => {
               style={{
                 paintOrder: 'stroke',
                 stroke: 'white',
+                strokeOpacity: 0.9,
                 strokeWidth: '6px',
                 strokeLinecap: 'butt',
                 strokeLinejoin: 'miter',
@@ -238,15 +239,18 @@ const LocationNode = ({ name, pos, isFinalized, isVisiting, isFrontier }: { name
       transition={{ type: 'spring', stiffness: 260, damping: 20 }}
     >
       <motion.div
-        className={`w-8 h-8 @sm:w-12 @md:w-16 @lg:w-20 rounded-full flex flex-col items-center justify-center shadow-lg ring-4 ${ringColor} ${bgColor} ${textColor} ${order}`}
+        className={`w-8 h-8 @sm:w-12 @md:w-16 @lg:w-20 rounded-full flex flex-col items-center
+           justify-center shadow-lg ring-4 ${ringColor} ${bgColor} ${textColor} ${order}`}
         animate={{ scale }}
         transition={{ duration: 0.3 }}
       >
         <Icon className="@container-[map]:size-4 @sm:size-5 @md:size-6 @lg:size-7" />
       </motion.div>
-      <span className={`@container-[map]:text-[10px] @sm:text-xs @md:text-base @lg:text-lg bg-white/90 dark:bg-gray-900/90 border border-gray-200 dark:border-gray-700 px-1 @sm:px-2 @md:px-3 py-1 rounded-md shadow font-bold text-gray-900 dark:text-gray-50 ${labelClass}`}>
-        <span className="@container-[map]:inline @sm:hidden">{shortLabels[name]}</span>
-        <span className="hidden @sm:inline">{name}</span>
+      <span className={`@container-[map]:text-[10px] @sm:text-xs @md:text-base @lg:text-lg 
+         px-1 @sm:px-2 @md:px-3 py-1 
+        rounded-md shadow font-bold text-gray-900 dark:text-gray-50 ${labelClass}`}>
+        <span className={`@container-[map]:inline @sm:hidden ${!isFinalized ? 'text-yellow-500' : 'text-green-500'}`}>{shortLabels[name]}</span>
+        <span className={`hidden @sm:inline text-sm px-1 ${!isFinalized ? 'text-yellow-500' : 'text-green-500'}`}>{name}</span>
       </span>
     </motion.div>
   );
