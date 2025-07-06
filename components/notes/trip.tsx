@@ -270,10 +270,11 @@ export default function TransitMapAnimation() {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row w-full h-screen  font-sans gap-4 mt-4">
-      {/* Left Panel: Map Visualization */}
-      <div className="w-full lg:w-2/3 h-1/2 lg:h-full bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-4 flex flex-col">
-        <h1 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">Your Personal Transit Map </h1>
+    <div className="flex flex-col  w-full h-screen  font-sans gap-4 mt-4">
+      {/* Map Visualization */}
+
+      <div className="w-full h-1/2  bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 flex flex-col">
+        <h1 className="text-2xl font-bold bg-linear-to-r from-blue-500 to-purple-500 via-pink-500 text-transparent bg-clip-text mb-4">Your Personal Transit Map </h1>
         <div className="relative flex-grow w-full h-full border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg container container-[map]">
           <EdgesWithWeights paths={paths} currentStep={currentStep} />
           {Object.entries(locations).map(([name, pos]) => (
@@ -289,8 +290,8 @@ export default function TransitMapAnimation() {
         </div>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6">
-          <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-3">Distances from Home</h3>
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+          <h3 className="text-lg font-bold bg-linear-to-r from-blue-500 to-purple-500 via-pink-500 text-transparent bg-clip-text mb-3 ">Distances from Home</h3>
           <div className="w-full overflow-x-auto">
             <div className="min-w-[400px] flex flex-col">
               <div className="flex justify-between text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-200 mb-1">
@@ -320,9 +321,9 @@ export default function TransitMapAnimation() {
         </div>
 
       {/* Controls and Explanation */}
-      <div className="w-full lg:w-1/3 h-1/2 lg:h-full flex flex-col gap-4">
-        <div className="flex-grow bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 flex flex-col">
-          <h2 className="text-xl font-bold text-blue-600 dark:text-blue-400 mb-2">{currentStep.title}</h2>
+      <div className="w-full  h-1/2 @lg:h-1/4  flex flex-col gap-4">
+        <div className="flex-grow bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 flex flex-col">
+          <h2 className="text-xl font-bold bg-linear-to-r from-blue-500 to-purple-500 via-pink-500 text-transparent bg-clip-text mb-2">{currentStep.title}</h2>
           <AnimatePresence mode="wait">
             <motion.div
               key={stepIndex}
@@ -341,22 +342,41 @@ export default function TransitMapAnimation() {
             <button
               onClick={handlePrev}
               disabled={stepIndex === 0}
-              className="px-4 py-2 font-semibold text-white bg-blue-500 rounded-lg shadow-md hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="px-4 py-2 font-semibold  rounded-lg 
+              hover:bg-linear-to-r disabled:opacity-50 disabled:cursor-not-allowed transition-colors
+              
+                bg-linear-to-r from-blue-500/10 via-sky-400/10 to-sky-300/40
+                hover:bg-gradient-to-l"
             >
-              Previous
+              <span className="bg-gradient-to-r from-blue-500 to-sky-600 via-sky-500 text-transparent bg-clip-text">
+                Previous
+              </span>
             </button>
             <button
               onClick={handleReset}
-              className="px-4 py-2 font-semibold text-gray-700 bg-gray-200 rounded-lg shadow-md hover:bg-gray-300 transition-colors dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+              className="px-4 py-2 font-semibold  rounded-lg 
+              hover:bg-linear-to-r disabled:opacity-50 disabled:cursor-not-allowed transition-colors
+              
+                bg-linear-to-r from-blue-500/5 via-sky-400/5 to-sky-300/5
+                hover:bg-gradient-to-l"
             >
-              Reset
+              <span className="bg-gradient-to-r from-blue-500 to-sky-600 via-sky-500 text-transparent bg-clip-text">
+                Reset
+              </span>
             </button>
             <button
               onClick={handleNext}
               disabled={stepIndex === animationSteps.length - 1}
-              className="px-4 py-2 font-semibold text-white bg-blue-500 rounded-lg shadow-md hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="px-4 py-2 font-semibold  rounded-lg 
+              hover:bg-linear-to-r disabled:opacity-50 disabled:cursor-not-allowed transition-colors
+              
+                bg-linear-to-r from-blue-500/10 via-sky-400/10 to-sky-300/40
+                hover:bg-gradient-to-l"
+                
             >
-              Next
+              <span className="bg-gradient-to-r from-blue-500 to-sky-600 via-sky-500 text-transparent bg-clip-text">
+                Next
+              </span>
             </button>
           </div>
         </div>
