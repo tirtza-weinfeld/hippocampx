@@ -118,36 +118,82 @@ This is equivalent to finding the longest subarray that sums to zero after conve
 
 ```python file=examples/code/prefix_sum.py#func:minSubarray stripDocstring
 ```
-> [!deepdive:collapse] 
->
-> [a ≡ b (mod c) iff](./modular-arithmetic#congruence-modulo)
-> 
-> 1. `a % c == b % c` (They have the same remainder when divided by c)
-> 
-> 2. `(a - b) % c == 0` (Their difference (a - b) is a multiple of c)
-> 
-> 
-> 
-> `a = sum(segments)`, `c = p`
-> 
-> so if we find a subarray with with sum `b` such that `a % c == b % c` 
->  then we know`(a - b) % c = 0` 
-> which means removing that sum `b` will make the rest divisable by `c`
->
->
-> so the goal is to find the **shortest subarray `b` whose sum has the same remainder** as the total sum.
-> 
-> Since any subarray's sum is the difference between two prefix sums (`Current Prefix Sum - Past Prefix Sum`), we are looking for:
-> 
-> `(Current Prefix Sum - Past Prefix Sum) % p == Total's Remainder`
-> 
-> By rearranging this, we can calculate the exact `Past Prefix Sum` remainder required at any given step. This is the **`need`** variable in the code:
-> 
-> `need = (Current Prefix Sum % p - Total's Remainder + p) % p`
-> 
-> A hash map stores the most recent index of each prefix sum remainder encountered. 
-> At each step, the code calculates the `need` and checks the map for its index to find the shortest valid subarray.
 
+> [\!deepdive:collapse]
+>
+> The logic is based on a core principle of [modular congruence `A ≡ B (mod C)`](./modular-arithmetic#congruence-modulo):
+>
+> 1.  `a % c == b % c` (Two numbers have the same remainder)
+> 2.  `(a - b) % c == 0` (Their difference is a multiple of `c`)
+>
+>
+>
+> Let's apply this:
+>
+>   * If `Total Sum % p == Subarray Sum % p`
+>   * Then `(Total Sum - Subarray Sum) % p == 0`
+>
+> Since `Total Sum - Subarray Sum` is the **Remaining Sum**, this proves that removing a subarray with the same remainder makes the new total divisible by `p`.
+> 
+>  **The Logic and Implementation**
+> 
+> The reasoning above simplifies our goal: **find the shortest subarray whose sum has the same remainder** as the total sum.
+> 
+> The code achieves this using prefix sums, where `Subarray Sum = Current Prefix Sum - Past Prefix Sum`. The goal is to find a subarray where `Subarray Sum % p == Total's Remainder`. This leads to the derivation of the `need` variable.
+> 
+> **Deriving `need`**
+> 
+> Let's simplify the names for clarity:
+> 
+>   * `C = Current Prefix Sum`
+>   * `P = Past Prefix Sum`
+>   * `R = Total's Remainder`
+> 
+> 
+> 1.  **Start with the objective:** We need the subarray's sum (`C - P`) to have the remainder `R`.
+>     `(C - P) % p == R`
+> 
+> 2.  **Isolate the unknown:** We need to find the `Past Prefix Sum` (`P`). Using the rules of modular arithmetic, we can rearrange the equation to solve for `P`.
+>     `P % p == (C - R) % p`
+> > [!note:collapse] That rearrangement is based on the algebraic rules of **modular congruence**
+> > 
+> > **The Rule**
+> > 
+> > The principle is that a modular congruence `A ≡ B (mod p)` behaves like a standard algebraic equation. You can add or subtract the same value on both sides of the `≡` symbol and the congruence remains true.
+> > 
+> > **Applying the Rule**
+> > 
+> > 1.  **Start with the equation in congruence form:**
+> >     `(C - P) % p == R` is the same as `C - P ≡ R (mod p)`.
+> > 
+> > 2.  **Rearrange using algebra:** To solve for `P`, you can add `P` to both sides and subtract `R` from both sides.
+> >     `C - R ≡ P (mod p)`
+> > 
+> > 3.  **Convert back:** :
+> >     `P % p == (C - R) % p`
+> >     
+> > Think of `(mod p)` like a unit of measurement, such as "in kilograms" or a currency like "in USD." It's not a number or variable that you move around algebraically.
+> > 
+> > If you have an equation where all terms are in kilograms:
+> > `Weight A = Weight B` (in kg)
+> > 
+> > And you subtract 5 kg from both sides, the new equation is still valid within that context:
+> > `Weight A - 5 kg = Weight B - 5 kg` (in kg)
+> > 
+> > You don't "move" the "(in kg)" part; it remains as the context for the relationship.
+> > 
+> > Similarly, `(mod p)` tells us the mathematical system we are working in. All the algebra we perform on `C`, `P`, and `R` happens **within that system**. The `(mod p)` at the end simply states that the congruence relationship is true under those specific rules.
+> 
+> 3.  **Define `need`:** The term we solved for, `Past Prefix Sum % p`, is the value the code is looking for. This is what **`need`** represents.
+>     `need = (C - R) % p`
+> 
+> **Why add `+ p`?**
+> 
+> This is a common trick in programming to correctly handle potential negative numbers. The subtraction `(C - R)` could result in a negative value. 
+> Adding `p` before the modulo operation ensures the input is always positive, which guarantees a consistent remainder from `0` to `p-1` for the hash map lookup.
+> 
+> Therefore, `(C - R + p) % p` is the robust, code-friendly way to calculate `(C - R) % p`.
+> 
 -----
 
 ## 7\. Constructing the Itinerary

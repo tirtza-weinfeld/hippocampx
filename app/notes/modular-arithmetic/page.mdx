@@ -93,3 +93,26 @@ You can simplify numbers by taking the `mod` before or after an operation.
 **Example:** `(14 * 17) mod 5` = `(4 * 2) mod 5` = `3`
 
 ---
+
+## Algebraic Properties of Congruence
+
+A powerful feature of congruences is that they behave much like standard algebraic equations. You can add, subtract, or multiply them. This is crucial for solving equations involving modular arithmetic.
+
+### Addition and Subtraction
+
+If you have two separate congruences with the same modulus, you can add or subtract them.
+
+If `A ≡ B (mod C)` and `D ≡ E (mod C)`, then:
+
+$$A + D \equiv B + E \pmod{C}$$
+$$A - D \equiv B - E \pmod{C}$$
+
+* **Example:** We know `14 ≡ 2 (mod 12)` and `20 ≡ 8 (mod 12)`.
+    * Adding them: `14 + 20 ≡ 2 + 8 (mod 12)` results in `34 ≡ 10 (mod 12)`. This is true, as both sides have a remainder of 10.
+
+### A Special Case: Adding a Constant
+
+The rule that you can add the same integer `k` to both sides of a congruence is a special case of the rule above, where the second congruence is the simple fact that `k ≡ k (mod C)`.
+
+* If we have `A ≡ B (mod C)` and add it to `k ≡ k (mod C)`, we get:
+    `A + k ≡ B + k (mod C)`
