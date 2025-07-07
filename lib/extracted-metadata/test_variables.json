@@ -25,7 +25,18 @@
     "description": "Dijkstra's algorithm for finding the shortest path in a non-negative weighted graph.",
     "code": "def dijkstra(graph: dict[str, dict[str, int]], s: str):\n    d = {v: float('inf') for v in graph} | {s: 0}\n    p = {v: None for v in graph}\n    pq = [(0, s)]\n    while pq:\n        d_u, u = heapq.heappop(pq)\n        if d_u > d[u]:\n            continue\n        for v ,w in graph[u]:\n            if (weight := d_u + w) < d[v]:\n                d[v], p[v] = weight, u\n                heapq.heappush(pq, (weight, v))\n    return d, p",
     "links": [],
-    "variables": []
+    "variables": [
+      {
+        "name": "graph",
+        "description": "A dictionary representing the graph.",
+        "type": "variable"
+      },
+      {
+        "name": "s",
+        "description": "The source vertex.",
+        "type": "variable"
+      }
+    ]
   },
   "networkDelayTime2": {
     "name": "networkDelayTime2",
@@ -93,7 +104,23 @@
     "description": "Given `n` nodes labeled `1` through `n` and directed travel times between them,",
     "code": "def networkDelayTime(times: list[list[int]], n: int, k: int) -> int:\n    adj = defaultdict(list)\n    for u, v, w in times:\n        adj[u].append((v, w))\n    pq, finalized, time = [(0, k)], set(), 0\n    while pq:\n        t, node = heapq.heappop(pq)\n        if node in finalized:\n            continue\n        finalized.add(node)\n        time = t\n        for neighbor, travel_time in adj[node]:\n            if neighbor not in finalized:\n                heapq.heappush(pq, (time + travel_time, neighbor))\n    return time if len(finalized) == n else -1",
     "links": [],
-    "variables": []
+    "variables": [
+      {
+        "name": "times",
+        "description": "list of lists of integers representing the edges and their weights",
+        "type": "variable"
+      },
+      {
+        "name": "n",
+        "description": "number of nodes",
+        "type": "variable"
+      },
+      {
+        "name": "k",
+        "description": "starting node",
+        "type": "variable"
+      }
+    ]
   },
   "minimumEffortPath": {
     "name": "minimumEffortPath",
@@ -124,6 +151,11 @@
       {
         "name": "resolved",
         "description": "set to store the positions that have been resolved",
+        "type": "variable"
+      },
+      {
+        "name": "heights",
+        "description": "2D list of integers representing the heights of the cells",
         "type": "variable"
       }
     ]

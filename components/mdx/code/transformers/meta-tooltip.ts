@@ -6,6 +6,7 @@ interface SymbolHierarchy {
   symbol: string;
   parent?: string;
   parameters: string[];
+  variables: string[];
   children: string[];
 }
 
@@ -17,6 +18,7 @@ export function transformerCodeTooltipWords(tooltipMap: Record<string, SymbolMet
       symbol,
       parent: meta.parent,
       parameters: meta.parameters?.map(p => p.name) || [],
+      variables: meta.variables?.map(v => v.name) || [],
       children: []
     });
   }
@@ -35,6 +37,12 @@ export function transformerCodeTooltipWords(tooltipMap: Record<string, SymbolMet
         parameterToParent[param.name].add(symbol);
       }
     }
+    if (meta.variables) {
+      for (const variable of meta.variables) {
+        if (!parameterToParent[variable.name]) parameterToParent[variable.name] = new Set();
+        parameterToParent[variable.name].add(symbol);
+      }
+    }
   }
 
   // Build parameter resolution map: parameter -> full hierarchical path (scoped)
@@ -46,6 +54,10 @@ export function transformerCodeTooltipWords(tooltipMap: Record<string, SymbolMet
     for (const param of hierarchy.parameters) {
       if (!parameterToHierarchy[param]) parameterToHierarchy[param] = [];
       parameterToHierarchy[param].push({ symbol, path: currentPath });
+    }
+    for (const variable of hierarchy.variables) {
+      if (!parameterToHierarchy[variable]) parameterToHierarchy[variable] = [];
+      parameterToHierarchy[variable].push({ symbol, path: currentPath });
     }
     for (const child of hierarchy.children) {
       buildParameterMap(child, currentPath);
@@ -106,19 +118,19 @@ export function transformerCodeTooltipWords(tooltipMap: Record<string, SymbolMet
           });
         }
       }
-      // --- UPDATED: Parameter tooltips scoped to parent function region ---
-      for (const [paramName, parentSymbols] of Object.entries(parameterToHierarchy)) {
+      // --- UPDATED: Parameter and variable tooltips scoped to parent function region ---
+      for (const [symbolName, parentSymbols] of Object.entries(parameterToHierarchy)) {
         for (const { symbol, path } of parentSymbols) {
           const region = functionRegions[symbol];
           if (!region) continue;
-          const indexes = findAllWordIndexes(code.slice(region.start, region.end), paramName);
+          const indexes = findAllWordIndexes(code.slice(region.start, region.end), symbolName);
           for (const relIndex of indexes) {
             const index = region.start + relIndex;
             options.decorations.push({
               start: index,
-              end: index + paramName.length,
+              end: index + symbolName.length,
               properties: {
-                'data-tooltip-symbol': paramName,
+                'data-tooltip-symbol': symbolName,
                 'data-tooltip-parent': symbol,
                 'data-tooltip-path': JSON.stringify(path),
                 class: 'tooltip-symbol',
@@ -148,9 +160,9 @@ export function transformerCodeTooltipWords(tooltipMap: Record<string, SymbolMet
         return;
       }
       
-      // Parameter (with full hierarchical path, scoped by parent symbol)
+      // Parameter or variable (with full hierarchical path, scoped by parent symbol)
       if (parameterToHierarchy[value.trim()]) {
-        // Try to find the correct parent symbol for this parameter in the current context
+        // Try to find the correct parent symbol for this parameter/variable in the current context
         // (In Shiki, we don't have AST context, so we fallback to the first match)
         const { symbol, path } = parameterToHierarchy[value.trim()][0];
         node.properties = node.properties || {};

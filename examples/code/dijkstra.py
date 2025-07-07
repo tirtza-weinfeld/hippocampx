@@ -55,6 +55,19 @@ def networkDelayTime2(times: list[list[int]], n: int, k: int) -> int:
 
 
 def networkDelayTime(times: list[list[int]], n: int, k: int) -> int:
+    """
+    Given `n` nodes labeled `1` through `n` and directed travel times between them, 
+    find the minimum time for a signal starting at node `k` to reach *all* nodes. 
+    If impossible, return -1
+    [743. Network Delay Time](https://leetcode.com/problems/network-delay-time/)
+    Args:
+        times: list of lists of integers representing the edges and their weights
+        n: number of nodes
+        k: starting node
+    Returns:
+        minimum time for a signal starting at node `k` to reach *all* nodes or -1 if impossible
+    """
+
     adj = defaultdict(list)
     for u, v, w in times:
         adj[u].append((v, w))
@@ -71,3 +84,34 @@ def networkDelayTime(times: list[list[int]], n: int, k: int) -> int:
     return time if len(finalized) == n else -1
 
 
+
+
+
+
+def minimumEffortPath(heights: list[list[int]]) -> int:
+    """
+    Find a path from the top-left to the bottom-right of a height grid that minimizes the "effort".
+    Effort is the single largest height difference between any two adjacent cells on the path.
+    [1631. Path With Minimum Effort](https://leetcode.com/problems/path-with-minimum-effort/)
+    Args:
+        heights: 2D list of integers representing the heights of the cells
+    Returns:
+        minimum effort to reach the bottom-right cell
+    Variables:
+    - pq:  Priority queue stores (max_effort_on_path, r, c)
+    - resolved: set to store the positions that have been resolved
+    """
+
+    R, C = len(heights), len(heights[0])
+    pq, resolved = [(0, 0, 0)], set()
+
+    while pq:
+        effort, r, c = heapq.heappop(pq)
+        if (r, c) in resolved: continue
+        if (r, c) == (R - 1, C - 1): return effort
+        resolved.add((r, c))
+
+        for nr, nc in [(r, c + 1), (r, c - 1), (r + 1, c), (r - 1, c)]:
+            if 0 <= nr < R and 0 <= nc < C and (nr, nc) not in resolved:
+                neighbor_effort = max(effort, abs(heights[nr][nc] - heights[r][c]))
+                heapq.heappush(pq, (neighbor_effort, nr, nc))

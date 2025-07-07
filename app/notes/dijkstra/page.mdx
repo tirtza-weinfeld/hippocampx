@@ -83,9 +83,69 @@ to reach *all* nodes. If impossible, return -1*
 ```
 
 > [!note:collapse]
+>
 > This is Dijkstra's canonical use case: finding the shortest time for a signal to reach every node from a single source.
 >
 > This is a direct application where **"distance" is time**. The algorithm finds the shortest time from `k` to every other node. The final answer is the **maximum** of these shortest times, which represents the moment the *last* node receives the signal.
  
-**Time Complexity:** **$O(E \log V)$**
 
+> [!deepdive:collapse]**Time Complexity**  **$O(\text{len(times)} \log n)$**
+> 
+> * **V (Vertices):** The number of vertices corresponds to the input **n**, the total number of nodes.
+> * **E (Edges):** The number of edges corresponds to the length of the input list **times**, as each element in `times` defines a single directed edge.
+> 
+> By substituting these into the standard Dijkstra complexity formula, $O(E \log V)$, you get $O(\text{len(times)} \log n)$.
+
+
+
+### 2. The Thrifty Hike: Path With Minimum Effort
+[1631. Path With Minimum Effort](https://leetcode.com/problems/path-with-minimum-effort/)
+
+*Find a path from the top-left to the bottom-right of a height grid that minimizes the "effort".
+ Effort is the single largest height difference between any two adjacent cells on the path.*
+
+
+```python file=examples/code/dijkstra.py#func:minimumEffortPath stripDocstring stripDocstring 
+```
+
+
+> [!note:collapse]
+>
+> *This problem redefines "cost." It's not the sum of a path's edges but its single most challenging step:*
+> The graph is the grid. The key is redefining path cost. 
+> Instead of a *[13:]sum* of the path, the *[16:]cost is its bottleneck: the max_effort_so_far*.
+>
+> Dijkstra's greedy choice to always explore the path with the minimum current max_effort naturally finds the route with the overall minimum bottleneck.
+
+
+> [!deepdive:collapse]
+>  **Time Complexity** **$O(R \cdot C \log(R \cdot C))$** time complexity for Dijkstra's on a grid.
+>
+> **General Dijkstra Complexity**
+> 
+> First, the standard time complexity for Dijkstra's algorithm when using a priority queue (like Python's `heapq`) is $O(E \log V)$.
+> 
+> * **V (Vertices):** The total number of nodes in the graph.
+> * **E (Edges):** The total number of connections between nodes.
+> * **log V:** This part comes from the cost of push and pop operations on the priority queue, which can hold up to all $V$ vertices.
+> 
+> ***
+> 
+> **Applying to a Grid**
+> 
+> Now, let's map the graph terms `V` and `E` to a grid with `R` rows and `C` columns.
+> 
+> * **Vertices (V):** Each cell in the grid is a vertex. So, the total number of vertices is $V = R \cdot C$.
+> * **Edges (E):** Each cell can have an edge connecting to its neighbors (up, down, left, right). At most, each of the $R \cdot C$ cells has 4 edges. Therefore, the total number of edges $E$ is proportional to $R \cdot C$, which we write as $E = O(R \cdot C)$.
+> 
+> ***
+> 
+> **Putting It Together**
+> 
+> By substituting the grid values back into the general formula, we get the final complexity:
+> 
+> 1.  **Start with the general formula:** $O(E \log V)$
+> 2.  **Substitute E:** $O((R \cdot C) \log V)$
+> 3.  **Substitute V:** $O((R \cdot C) \log(R \cdot C))$
+> 
+> So, the complexity $O(R \cdot C \log(R \cdot C))$ represents the cost of visiting each cell's edges ($O(R \cdot C)$) and, for each edge, potentially performing an operation on the priority queue that costs $\log(R \cdot C)$.

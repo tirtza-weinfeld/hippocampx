@@ -97,6 +97,9 @@ class PythonExtractor:
             # Extract links from docstring
             links = self._extract_links(node)
             
+            # Extract variables from docstring
+            variables = self._extract_variables(node)
+            
             symbol = {
                 "name": name,
                 "type": symbol_type,
@@ -109,7 +112,8 @@ class PythonExtractor:
                 "return_description": return_description,
                 "description": description,
                 "code": code,
-                "links": links
+                "links": links,
+                "variables": variables
             }
             
             if parent:
@@ -446,6 +450,44 @@ class PythonExtractor:
             links.append(link_info)
         
         return links
+    
+    def _extract_variables(self, node: Union[ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef]) -> List[Dict[str, str]]:
+        """Extract variables ONLY from a Variables: section in the docstring."""
+        docstring = self._get_docstring(node)
+        if not docstring:
+            return []
+        
+        variables = []
+        # Pattern to match "Variables:" section with variable descriptions
+        # Matches formats like:
+        # Variables:
+        #     - pq:  Priority queue stores (max_effort_on_path, r, c)
+        #     - resolved: set to store the positions that have been resolved
+        variables_section_pattern = r'Variables?:\s*\n((?:\s*[-*]\s*[a-zA-Z_][a-zA-Z0-9_]*\s*:\s*[^\n]+\n?)*)'
+        
+        variables_match = re.search(variables_section_pattern, docstring, re.IGNORECASE | re.MULTILINE)
+        if variables_match:
+            variables_section = variables_match.group(1)
+            
+            # Parse individual variable entries
+            # Pattern to match: "- variable_name: description"
+            variable_entry_pattern = r'^\s*[-*]\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*:\s*(.+)$'
+            
+            for line in variables_section.split('\n'):
+                line = line.strip()
+                if not line:
+                    continue
+                entry_match = re.match(variable_entry_pattern, line)
+                if entry_match:
+                    variable_name = entry_match.group(1)
+                    description = entry_match.group(2).strip()
+                    variable_info = {
+                        "name": variable_name,
+                        "description": description,
+                        "type": "variable"
+                    }
+                    variables.append(variable_info)
+        return variables
 
 
 class MetadataExtractor:

@@ -7,6 +7,12 @@ export interface Parameter {
   default: string | null
 }
 
+export interface Variable {
+  name: string
+  description: string
+  type: string
+}
+
 export interface SymbolMetadata {
   name: string
   type: 'function' | 'class' | 'method'
@@ -19,6 +25,7 @@ export interface SymbolMetadata {
   return_description: string
   description: string
   code: string
+  variables: Variable[]
   parent?: string
 }
 

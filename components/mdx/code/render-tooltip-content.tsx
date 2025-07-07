@@ -1,5 +1,5 @@
 import React from 'react';
-import type { SymbolMetadata, Parameter } from '@/lib/types';
+import type { SymbolMetadata, Parameter, Variable } from '@/lib/types';
 import highlightCode from './code-highlighter';
 import InlineCode from './code-inline';
 
@@ -9,7 +9,14 @@ interface ParameterTooltip extends Parameter {
   path?: string[];
   isParam?: boolean;
 }
-type TooltipMeta = SymbolMetadata | ParameterTooltip;
+
+interface VariableTooltip extends Variable {
+  parent: string;
+  path?: string[];
+  isVar?: boolean;
+}
+
+type TooltipMeta = SymbolMetadata | ParameterTooltip | VariableTooltip;
 
 function TooltipHeader({ meta }: { meta: TooltipMeta }) {
   if ('isParam' in meta && meta.isParam) {
@@ -88,6 +95,43 @@ function TooltipReturns({ meta }: { meta: TooltipMeta }) {
   ) : null;
 }
 
+function TooltipVariables({ meta }: { meta: TooltipMeta }) {
+  // Handle individual variable tooltip
+  if ('isVar' in meta && meta.isVar) {
+    return (
+      <div className="text-xs mb-1">
+        <div className="flex flex-row gap-1">
+          <div className="font-semibold text-purple-700 dark:text-purple-300">Variable:</div>
+          <div className="font-mono bg-linear-to-t from-blue-500/20 to-transparent via-purple-500/20  rounded-md px-1 ">
+            
+     
+            
+      <div className="bg-linear-to-r from-blue-500  to-purple-500 text-transparent bg-clip-text text-md  ">       {meta.name}</div>
+            
+            </div>
+        </div>
+       
+        {meta.description && <div className="bg-linear-to-r from-blue-500  to-purple-500 text-transparent bg-clip-text text-md mt-1 ">{meta.description}</div>}
+      </div>
+    );
+  }
+  
+  // Handle variables list for function/class tooltips
+  return 'variables' in meta && Array.isArray(meta.variables) && meta.variables.length > 0 ? (
+    <div className="text-xs mb-1">
+      <div className="font-semibold text-purple-700">Variables:</div>
+      <ul className="ml-4">
+        {meta.variables.map((variable, idx) => (
+          <li key={variable.name || idx}>
+            <span className="font-mono">{variable.name}</span>
+            {variable.description && <span className="text-gray-600"> — {variable.description}</span>}
+          </li>
+        ))}
+      </ul>
+    </div>
+  ) : null;
+}
+
 async function TooltipCode({ meta }: { meta: TooltipMeta }) {
   if  ('code' in meta && meta.code) {
     const highlightedCode = await highlightCode(meta.code as string, 'python', undefined, false)
@@ -120,6 +164,13 @@ export function renderTooltipContent(
         meta = { ...paramMeta, parent, path ,isParam: true};
       }
     }
+    // If this is a variable, look up the parent and variable info
+    if (!meta && parentMeta && Array.isArray(parentMeta.variables)) {
+      const varMeta = parentMeta.variables.find((v: Variable) => v.name === trimmedSymbol);
+      if (varMeta) {
+        meta = { ...varMeta, parent, path, isVar: true };
+      }
+    }
   }
   // If this is a top-level symbol (function/method/class), show full info
   if (!meta && TOOLTIP_CONTENT[trimmedSymbol]) {
@@ -128,10 +179,20 @@ export function renderTooltipContent(
   // Fallback: show symbol and parent
   if (!meta) {
     if (parent) {
-      return <div className="text-red-600">Parameter <b>{symbol}</b> not found in <b>{parent}</b> context.</div>;
+      return <div className="text-red-600">Symbol <b>{symbol}</b> not found in <b>{parent}</b> context.</div>;
     }
     return <div>{symbol}</div>;
   }
+
+  // --- Only render the variable block for variables ---
+  if ('isVar' in meta && meta.isVar) {
+    return (
+      <div className="min-w-[220px] max-w-[400px]">
+        <TooltipVariables meta={meta} />
+      </div>
+    );
+  }
+
   return (
     <div className="min-w-[220px] max-w-[400px]">
       <TooltipHeader meta={meta} />
@@ -140,6 +201,7 @@ export function renderTooltipContent(
       <TooltipDescription meta={meta} />
       <TooltipParameters meta={meta} />
       <TooltipReturns meta={meta} />
+      <TooltipVariables meta={meta} />
       <TooltipCode meta={meta} />
     </div>
   );
