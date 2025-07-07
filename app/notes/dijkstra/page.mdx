@@ -82,14 +82,14 @@ to reach *all* nodes. If impossible, return -1*
 ```python file=examples/code/dijkstra.py#func:networkDelayTime stripDocstring stripDocstring 
 ```
 
-> [!note:collapse]
+> [!insight:collapse]
 >
 > This is Dijkstra's canonical use case: finding the shortest time for a signal to reach every node from a single source.
 >
 > This is a direct application where **"distance" is time**. The algorithm finds the shortest time from `k` to every other node. The final answer is the **maximum** of these shortest times, which represents the moment the *last* node receives the signal.
  
 
-> [!deepdive:collapse]**Time Complexity**  **$O(\text{len(times)} \log n)$**
+> [!timecomplexity:collapse]**$O(\text{len(times)} \log n)$**
 > 
 > * **V (Vertices):** The number of vertices corresponds to the input **n**, the total number of nodes.
 > * **E (Edges):** The number of edges corresponds to the length of the input list **times**, as each element in `times` defines a single directed edge.
@@ -109,7 +109,7 @@ to reach *all* nodes. If impossible, return -1*
 ```
 
 
-> [!note:collapse]
+> [!insight:collapse]
 >
 > *This problem redefines "cost." It's not the sum of a path's edges but its single most challenging step:*
 > The graph is the grid. The key is redefining path cost. 
@@ -118,8 +118,7 @@ to reach *all* nodes. If impossible, return -1*
 > Dijkstra's greedy choice to always explore the path with the minimum current max_effort naturally finds the route with the overall minimum bottleneck.
 
 
-> [!deepdive:collapse]
->  **Time Complexity** **$O(R \cdot C \log(R \cdot C))$** time complexity for Dijkstra's on a grid.
+> [!timecomplexity:collapse]**$O(R \cdot C \log(R \cdot C))$** time complexity for Dijkstra's on a grid.
 >
 > **General Dijkstra Complexity**
 > 
@@ -149,3 +148,48 @@ to reach *all* nodes. If impossible, return -1*
 > 3.  **Substitute V:** $O((R \cdot C) \log(R \cdot C))$
 > 
 > So, the complexity $O(R \cdot C \log(R \cdot C))$ represents the cost of visiting each cell's edges ($O(R \cdot C)$) and, for each edge, potentially performing an operation on the priority queue that costs $\log(R \cdot C)$.
+
+
+
+-----
+
+### 3\. Swim in Rising Water
+
+  [778. Swim in Rising Water](https://leetcode.com/problems/swim-in-rising-water/)
+  
+  *You are given an `N x N` grid of elevations. Find the minimum "time" `t` to travel from `(0, 0)` to `(N-1, N-1)`. 
+    You can only move between adjacent cells if their elevation is less than or equal to the time `t`*
+
+    ```python file=examples/code/dijkstra.py#func:swimInWater stripDocstring 
+    ```
+
+  > [!insight:collapse]
+  >
+  > This problem elegantly frames a "bottleneck" challenge. (similar to the [Path With Minimum Effort](#2-the-thrifty-hike-path-with-minimum-effort)
+  > You must find a path where the highest point is as low as possible.
+  > This code uses **Dijkstra's algorithm** where the path "cost" is not a sum, but the **maximum elevation** encountered so far. The priority queue always explores the path requiring the lowest water level (`time`). By doing this, the first time it reaches the destination, it guarantees it has found the path with the absolute minimum water level required.
+  
+
+
+  > [!timecomplexity:collapse]**$O(N^2 \log N)$**
+  >
+  > The standard time complexity for Dijkstra's algorithm using a priority queue is $O(E \log V)$, where:
+  > * **V** is the number of vertices (nodes).
+  > * **E** is the number of edges.
+  >  
+  > When we apply this to an $N \times N$ grid:
+  > 1.  **Vertices (V):** Each of the cells is a vertex, so $V = N^2$.
+  > 2.  **Edges (E):** Each cell connects to at most 4 neighbors, so the total number of edges is roughly $4 \times N^2$. In Big O notation, this is just $O(N^2)$.
+  >
+  > Substituting these into the formula gives us:
+  > $O(E \log V) \rightarrow O(N^2 \log(N^2))$
+  >
+  > Using the logarithm property that $\log(x^2) = 2\log(x)$, we can simplify $\log(N^2)$ to $2\log N$. This gives us:
+  > $O(N^2 \cdot 2\log N)$
+  >
+  > Finally, we drop the constant factor `2`, leaving the final time complexity as **$O(N^2 \log N)$**. 
+  > The `log N` part comes directly from the cost of the `heappush` and `heappop` operations on the priority queue.
+
+
+
+

@@ -1,6 +1,6 @@
 "use client"; // Required for Framer Motion components
 
-import { AlertCircle, Info, Lightbulb, Notebook, AlertTriangle, MessageCircle, ChevronDown } from "lucide-react";
+import { AlertCircle, Info, Lightbulb, Notebook, AlertTriangle, MessageCircle, ChevronDown, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
@@ -15,7 +15,23 @@ const ICONS = {
   comment: MessageCircle,
   deepdive: Notebook,
   definition: Notebook,
+  timecomplexity: Clock,
+  insight: Lightbulb,
 } as const;
+
+const LABELS = {
+  tip: "Tip",
+  note: "Note",
+  warning: "Warning",
+  important: "Important",
+  caution: "Caution",
+  example: "Example",
+  comment: "Comment",
+  deepdive: "Deep Dive",
+  definition: "Definition",
+  timecomplexity: "Time Complexity",
+  insight: "Insight",
+} as const; // static mapping of types to labels
 
 // Statically mapping types to full class names ensures Tailwind's JIT compiler
 // can find and generate these classes. This is the correct approach.
@@ -74,6 +90,18 @@ const STYLES = {
     border: "border-alert-definition",
     text: "text-alert-definition",
     iconBg: "bg-alert-definition/10",
+  },
+  timecomplexity: {
+    gradient: "from-white to-alert-timecomplexity/20 dark:from-gray-900 dark:to-alert-timecomplexity/20",
+    border: "border-alert-timecomplexity",
+    text: "text-alert-timecomplexity",
+    iconBg: "bg-alert-timecomplexity/10",
+  },
+  insight: {
+    gradient: "from-white to-alert-insight/20 dark:from-gray-900 dark:to-alert-insight/20",
+    border: "border-alert-insight",
+    text: "text-alert-insight",
+    iconBg: "bg-alert-insight/10",
   },
 
 } as const;
@@ -177,7 +205,7 @@ export default function Alert({ type, children, collapse = false }: AlertProps) 
                 "font-semibold text-xs uppercase tracking-wider",
                 styles.text,
               )}>
-                {type}
+                {LABELS[type]}
               </div>
             </div>
 

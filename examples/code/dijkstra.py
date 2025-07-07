@@ -115,3 +115,32 @@ def minimumEffortPath(heights: list[list[int]]) -> int:
             if 0 <= nr < R and 0 <= nc < C and (nr, nc) not in resolved:
                 neighbor_effort = max(effort, abs(heights[nr][nc] - heights[r][c]))
                 heapq.heappush(pq, (neighbor_effort, nr, nc))
+
+
+def swimInWater(grid: list[list[int]]) -> int:
+    """
+    You are given an `N x N` grid of elevations. Find the minimum "time" `t` to travel from `(0, 0)` to `(N-1, N-1)`. 
+    You can only move between adjacent cells if their elevation is less than or equal to the time `t`
+    [778. Swim in Rising Water](https://leetcode.com/problems/swim-in-rising-water/)
+    Args:
+        grid: 2D list of integers representing the elevations of the cells
+    Returns:
+        minimum time to travel from `(0, 0)` to `(N-1, N-1)`
+    Variables:
+    - pq:  Priority queue stores (max_elevation_on_path, r, c)
+    - resolved: set to store the cells for which we have found the minimum time required to reach them
+    """
+
+    n=len(grid)
+    pq, resolved = [(grid[0][0], 0, 0)], set()
+
+    while pq:
+        time, r, c = heapq.heappop(pq)
+        if (r, c) in resolved:continue
+        if (r, c) == (n - 1, n - 1):return time
+        resolved.add((r, c))
+
+        for nr, nc in [(r, c + 1), (r, c - 1), (r + 1, c), (r - 1, c)]:
+            if 0 <= nr < n and 0 <= nc < n and (nr, nc) not in resolved:
+                bottleneck_time = max(time, grid[nr][nc])
+                heapq.heappush(pq, (bottleneck_time, nr, nc))

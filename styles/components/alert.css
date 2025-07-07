@@ -12,5 +12,7 @@
   --color-alert-comment:var(--color-emerald-500);
   --color-alert-definition:var(--color-sky-800);
   --color-alert-deepdive:var(--color-sky-500);
+  --color-alert-timecomplexity:var(--color-sky-500);
+  --color-alert-insight:var(--color-sky-500);
 }
 

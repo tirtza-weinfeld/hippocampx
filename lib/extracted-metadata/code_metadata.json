@@ -127,5 +127,622 @@
         "type": "variable"
       }
     ]
+  },
+  "swimInWater": {
+    "name": "swimInWater",
+    "type": "function",
+    "language": "python",
+    "file": "examples/code/dijkstra.py",
+    "line": 120,
+    "signature": "def swimInWater(grid: list[list[int]]) -> int:",
+    "parameters": [
+      {
+        "name": "grid",
+        "type": "list[list[int]]",
+        "description": "2D list of integers representing the elevations of the cells",
+        "default": null
+      }
+    ],
+    "return_type": "int",
+    "return_description": "minimum time to travel from `(0, 0)` to `(N-1, N-1)`",
+    "description": "You are given an `N x N` grid of elevations. Find the minimum \"time\" `t` to travel from `(0, 0)` to `(N-1, N-1)`.",
+    "code": "def swimInWater(grid: list[list[int]]) -> int:\n    n=len(grid)\n    pq, resolved = [(grid[0][0], 0, 0)], set()\n    while pq:\n        time, r, c = heapq.heappop(pq)\n        if (r, c) in resolved:continue\n        if (r, c) == (n - 1, n - 1):return time\n        resolved.add((r, c))\n        for nr, nc in [(r, c + 1), (r, c - 1), (r + 1, c), (r - 1, c)]:\n            if 0 <= nr < n and 0 <= nc < n and (nr, nc) not in resolved:\n                bottleneck_time = max(time, grid[nr][nc])\n                heapq.heappush(pq, (bottleneck_time, nr, nc))",
+    "links": [],
+    "variables": [
+      {
+        "name": "pq",
+        "description": "Priority queue stores (max_elevation_on_path, r, c)",
+        "type": "variable"
+      },
+      {
+        "name": "resolved",
+        "description": "set to store the cells for which we have found the minimum time required to reach them",
+        "type": "variable"
+      }
+    ]
+  },
+  "Solution": {
+    "name": "Solution",
+    "type": "class",
+    "language": "python",
+    "file": "examples/code/stack.py",
+    "line": 1,
+    "signature": "class Solution:",
+    "parameters": [],
+    "return_type": "",
+    "return_description": "",
+    "description": "",
+    "code": "class Solution:\n    def decodeString(self, s: str) -> str:\n        stack, s = [], \"1[\" + s + \"]\"\n        for c in s:\n            if c == \"]\":\n                curr = []\n                while stack[-1] != \"[\":\n                    curr.append(stack.pop())\n                stack.pop()  \n                num = []\n                while stack and stack[-1].isdigit():\n                    num.append(stack.pop())\n                stack.append(\"\".join(reversed(curr)) * int(\"\".join(reversed(num))))\n            else:\n                stack.append(c)\n        return stack[0]",
+    "links": [],
+    "variables": []
+  },
+  "Solution.swimInWater": {
+    "name": "swimInWater",
+    "type": "method",
+    "language": "python",
+    "file": "examples/code/blackboard.py",
+    "line": 5,
+    "signature": "def swimInWater(self, grid: list[list[int]]) -> int:",
+    "parameters": [
+      {
+        "name": "grid",
+        "type": "list[list[int]]",
+        "description": "",
+        "default": null
+      }
+    ],
+    "return_type": "int",
+    "return_description": "",
+    "description": "",
+    "code": "def swimInWater(self, grid: list[list[int]]) -> int:\n        n=len(grid)\n        pq, resolved = [(grid[0][0], 0, 0)], set()\n        while pq:\n            time, r, c = heapq.heappop(pq)\n            if (r, c) in resolved:continue\n            if (r, c) == (n - 1, n - 1):return time\n            resolved.add((r, c))\n            for nr, nc in [(r, c + 1), (r, c - 1), (r + 1, c), (r - 1, c)]:\n                if 0 <= nr < n and 0 <= nc < n and (nr, nc) not in resolved:\n                    bottleneck_time = max(time, grid[nr][nc])\n                    heapq.heappush(pq, (bottleneck_time, nr, nc))",
+    "links": [],
+    "variables": [],
+    "parent": "Solution"
+  },
+  "LRUCache": {
+    "name": "LRUCache",
+    "type": "class",
+    "language": "python",
+    "file": "examples/code/cache.py",
+    "line": 4,
+    "signature": "class LRUCache:",
+    "parameters": [],
+    "return_type": "",
+    "return_description": "",
+    "description": "",
+    "code": "class LRUCache:\n    def __init__(self, capacity: int):\n        self.cache: OrderedDict[int, int] = OrderedDict()\n        self.capacity = capacity\n\n    def get(self, key: int) -> int:\n        if (val := self.cache.get(key)) is None:\n            return -1\n        self.cache.move_to_end(key)\n        return val\n\n    def put(self, key: int, value: int) -> None:\n        if key in self.cache:\n            self.cache.move_to_end(key)\n        self.cache[key] = value\n        if len(self.cache) > self.capacity:\n            self.cache.popitem(last=False)",
+    "links": [],
+    "variables": []
+  },
+  "LRUCache.__init__": {
+    "name": "__init__",
+    "type": "method",
+    "language": "python",
+    "file": "examples/code/cache.py",
+    "line": 5,
+    "signature": "def __init__(self, capacity: int):",
+    "parameters": [
+      {
+        "name": "capacity",
+        "type": "int",
+        "description": "",
+        "default": null
+      }
+    ],
+    "return_type": "",
+    "return_description": "",
+    "description": "",
+    "code": "def __init__(self, capacity: int):\n        self.cache: OrderedDict[int, int] = OrderedDict()\n        self.capacity = capacity",
+    "links": [],
+    "variables": [],
+    "parent": "LRUCache"
+  },
+  "LRUCache.get": {
+    "name": "get",
+    "type": "method",
+    "language": "python",
+    "file": "examples/code/cache.py",
+    "line": 9,
+    "signature": "def get(self, key: int) -> int:",
+    "parameters": [
+      {
+        "name": "key",
+        "type": "int",
+        "description": "",
+        "default": null
+      }
+    ],
+    "return_type": "int",
+    "return_description": "",
+    "description": "",
+    "code": "def get(self, key: int) -> int:\n        if (val := self.cache.get(key)) is None:\n            return -1\n        self.cache.move_to_end(key)\n        return val",
+    "links": [],
+    "variables": [],
+    "parent": "LRUCache"
+  },
+  "LRUCache.put": {
+    "name": "put",
+    "type": "method",
+    "language": "python",
+    "file": "examples/code/cache.py",
+    "line": 15,
+    "signature": "def put(self, key: int, value: int) -> None:",
+    "parameters": [
+      {
+        "name": "key",
+        "type": "int",
+        "description": "",
+        "default": null
+      },
+      {
+        "name": "value",
+        "type": "int",
+        "description": "",
+        "default": null
+      }
+    ],
+    "return_type": "None",
+    "return_description": "",
+    "description": "",
+    "code": "def put(self, key: int, value: int) -> None:\n        if key in self.cache:\n            self.cache.move_to_end(key)\n        self.cache[key] = value\n        if len(self.cache) > self.capacity:\n            self.cache.popitem(last=False)",
+    "links": [],
+    "variables": [],
+    "parent": "LRUCache"
+  },
+  "LFUCache": {
+    "name": "LFUCache",
+    "type": "class",
+    "language": "python",
+    "file": "examples/code/cache.py",
+    "line": 24,
+    "signature": "class LFUCache:",
+    "parameters": [],
+    "return_type": "",
+    "return_description": "",
+    "description": "",
+    "code": "class LFUCache:\n    def __init__(self, capacity: int):\n        self.capacity    = capacity\n        self.cache       = {}  \n        self.freq        = {}  \n        \n        self.buckets     = defaultdict(OrderedDict)  \n        self.minfreq     = 0\n\n    def _bump(self, key: int):\n        \"\"\"Move key from freq f to f+1.\"\"\"\n        f = self.freq[key]\n        \n        del self.buckets[f][key]\n        if not self.buckets[f]:\n            del self.buckets[f]\n            if self.minfreq == f:\n                self.minfreq += 1\n        \n        self.freq[key] +=1 \n        self.buckets[f + 1][key] = None\n\n    def get(self, key: int) -> int:\n        if key not in self.cache:\n            return -1\n        self._bump(key)\n        return self.cache[key]\n\n    def put(self, key: int, value: int) -> None:\n        if self.capacity <= 0:\n            return\n\n        if key in self.cache:\n            self.cache[key] = value\n            self._bump(key)\n            return\n\n        \n        if len(self.cache) >= self.capacity:\n            old_key, _ = self.buckets[self.minfreq].popitem(last=False)\n            del self.cache[old_key]\n            del self.freq[old_key]\n\n        \n        self.cache[key] = value\n        self.freq[key] = 1\n        self.buckets[1][key] = None\n        self.minfreq = 1",
+    "links": [],
+    "variables": []
+  },
+  "LFUCache.__init__": {
+    "name": "__init__",
+    "type": "method",
+    "language": "python",
+    "file": "examples/code/cache.py",
+    "line": 25,
+    "signature": "def __init__(self, capacity: int):",
+    "parameters": [
+      {
+        "name": "capacity",
+        "type": "int",
+        "description": "",
+        "default": null
+      }
+    ],
+    "return_type": "",
+    "return_description": "",
+    "description": "",
+    "code": "def __init__(self, capacity: int):\n        self.capacity    = capacity\n        self.cache       = {}  \n        self.freq        = {}  \n        self.buckets     = defaultdict(OrderedDict)  \n        self.minfreq     = 0",
+    "links": [],
+    "variables": [],
+    "parent": "LFUCache"
+  },
+  "LFUCache._bump": {
+    "name": "_bump",
+    "type": "method",
+    "language": "python",
+    "file": "examples/code/cache.py",
+    "line": 33,
+    "signature": "def _bump(self, key: int):",
+    "parameters": [
+      {
+        "name": "key",
+        "type": "int",
+        "description": "",
+        "default": null
+      }
+    ],
+    "return_type": "",
+    "return_description": "",
+    "description": "Move key from freq f to f+1.",
+    "code": "def _bump(self, key: int):\n        del self.buckets[f][key]\n        if not self.buckets[f]:\n            del self.buckets[f]\n            if self.minfreq == f:\n                self.minfreq += 1\n        self.freq[key] +=1 \n        self.buckets[f + 1][key] = None",
+    "links": [],
+    "variables": [],
+    "parent": "LFUCache"
+  },
+  "LFUCache.get": {
+    "name": "get",
+    "type": "method",
+    "language": "python",
+    "file": "examples/code/cache.py",
+    "line": 46,
+    "signature": "def get(self, key: int) -> int:",
+    "parameters": [
+      {
+        "name": "key",
+        "type": "int",
+        "description": "",
+        "default": null
+      }
+    ],
+    "return_type": "int",
+    "return_description": "",
+    "description": "",
+    "code": "def get(self, key: int) -> int:\n        if key not in self.cache:\n            return -1\n        self._bump(key)\n        return self.cache[key]",
+    "links": [],
+    "variables": [],
+    "parent": "LFUCache"
+  },
+  "LFUCache.put": {
+    "name": "put",
+    "type": "method",
+    "language": "python",
+    "file": "examples/code/cache.py",
+    "line": 52,
+    "signature": "def put(self, key: int, value: int) -> None:",
+    "parameters": [
+      {
+        "name": "key",
+        "type": "int",
+        "description": "",
+        "default": null
+      },
+      {
+        "name": "value",
+        "type": "int",
+        "description": "",
+        "default": null
+      }
+    ],
+    "return_type": "None",
+    "return_description": "",
+    "description": "",
+    "code": "def put(self, key: int, value: int) -> None:\n        if self.capacity <= 0:\n            return\n        if key in self.cache:\n            self.cache[key] = value\n            self._bump(key)\n            return\n        if len(self.cache) >= self.capacity:\n            old_key, _ = self.buckets[self.minfreq].popitem(last=False)\n            del self.cache[old_key]\n            del self.freq[old_key]\n        self.cache[key] = value\n        self.freq[key] = 1\n        self.buckets[1][key] = None\n        self.minfreq = 1",
+    "links": [],
+    "variables": [],
+    "parent": "LFUCache"
+  },
+  "Solution.decodeString": {
+    "name": "decodeString",
+    "type": "method",
+    "language": "python",
+    "file": "examples/code/stack.py",
+    "line": 2,
+    "signature": "def decodeString(self, s: str) -> str:",
+    "parameters": [
+      {
+        "name": "s",
+        "type": "str",
+        "description": "",
+        "default": null
+      }
+    ],
+    "return_type": "str",
+    "return_description": "",
+    "description": "",
+    "code": "def decodeString(self, s: str) -> str:\n        stack, s = [], \"1[\" + s + \"]\"\n        for c in s:\n            if c == \"]\":\n                curr = []\n                while stack[-1] != \"[\":\n                    curr.append(stack.pop())\n                stack.pop()  \n                num = []\n                while stack and stack[-1].isdigit():\n                    num.append(stack.pop())\n                stack.append(\"\".join(reversed(curr)) * int(\"\".join(reversed(num))))\n            else:\n                stack.append(c)\n        return stack[0]",
+    "links": [],
+    "variables": [],
+    "parent": "Solution"
+  },
+  "mod": {
+    "name": "mod",
+    "type": "function",
+    "language": "python",
+    "file": "examples/code/modular-arithmetic.py",
+    "line": 1,
+    "signature": "def mod(a: int, b: int) -> int:",
+    "parameters": [
+      {
+        "name": "a",
+        "type": "int",
+        "description": "the first number1",
+        "default": null
+      },
+      {
+        "name": "b",
+        "type": "int",
+        "description": "the second number",
+        "default": null
+      }
+    ],
+    "return_type": "int",
+    "return_description": "int",
+    "description": "a mod b",
+    "code": "def mod(a: int, b: int) -> int:",
+    "links": [],
+    "variables": []
+  },
+  "congruent1": {
+    "name": "congruent1",
+    "type": "function",
+    "language": "python",
+    "file": "examples/code/modular-arithmetic.py",
+    "line": 14,
+    "signature": "def congruent1(a: int, b: int, n: int) -> bool:",
+    "parameters": [
+      {
+        "name": "a",
+        "type": "int",
+        "description": "the first number2",
+        "default": null
+      },
+      {
+        "name": "b",
+        "type": "int",
+        "description": "the second number",
+        "default": null
+      },
+      {
+        "name": "n",
+        "type": "int",
+        "description": "the modulus, the number by which we are dividing",
+        "default": null
+      }
+    ],
+    "return_type": "bool",
+    "return_description": "bool",
+    "description": "a ≡ b (mod n)",
+    "code": "def congruent1(a: int, b: int, n: int) -> bool:",
+    "links": [],
+    "variables": []
+  },
+  "congruent2": {
+    "name": "congruent2",
+    "type": "function",
+    "language": "python",
+    "file": "examples/code/modular-arithmetic.py",
+    "line": 27,
+    "signature": "def congruent2(a: int, b: int, n: int) -> bool:",
+    "parameters": [
+      {
+        "name": "a",
+        "type": "int",
+        "description": "the first number3",
+        "default": null
+      },
+      {
+        "name": "b",
+        "type": "int",
+        "description": "the second number",
+        "default": null
+      },
+      {
+        "name": "n",
+        "type": "int",
+        "description": "the modulus, the number by which we are dividing",
+        "default": null
+      }
+    ],
+    "return_type": "bool",
+    "return_description": "bool",
+    "description": "a ≡ b (mod n)",
+    "code": "def congruent2(a: int, b: int, n: int) -> bool:",
+    "links": [],
+    "variables": []
+  },
+  "maxSubArrayLen": {
+    "name": "maxSubArrayLen",
+    "type": "function",
+    "language": "python",
+    "file": "examples/code/prefix_sum.py",
+    "line": 3,
+    "signature": "def maxSubArrayLen(segments: list[int], k: int) -> int:",
+    "parameters": [
+      {
+        "name": "segments",
+        "type": "list[int]",
+        "description": "List of integers representing trip segments.",
+        "default": null
+      },
+      {
+        "name": "k",
+        "type": "int",
+        "description": "Target sum.",
+        "default": null
+      }
+    ],
+    "return_type": "int",
+    "return_description": "The length of the longest subarray with sum == k.",
+    "description": "Find the maximum length of a subarray that sums to exactly k.",
+    "code": "def maxSubArrayLen(segments: list[int], k: int) -> int:\n    marker_idx = {0: -1}\n    prefix_sum = max_length = 0\n    for i, segment in enumerate(segments):\n        prefix_sum += segment\n        if (target_marker := prefix_sum - k) in marker_idx:\n            max_length = max(max_length, i - marker_idx[target_marker])\n        if prefix_sum not in marker_idx:\n            marker_idx[prefix_sum] = i\n    return max_length",
+    "links": [],
+    "variables": []
+  },
+  "subarraySum": {
+    "name": "subarraySum",
+    "type": "function",
+    "language": "python",
+    "file": "examples/code/prefix_sum.py",
+    "line": 30,
+    "signature": "def subarraySum(segments: list[int], k: int) -> int:",
+    "parameters": [
+      {
+        "name": "segments",
+        "type": "list[int]",
+        "description": "List of integers representing trip segments.",
+        "default": null
+      },
+      {
+        "name": "k",
+        "type": "int",
+        "description": "Target sum.",
+        "default": null
+      }
+    ],
+    "return_type": "int",
+    "return_description": "The count of subarrays with sum == k.",
+    "description": "Count the number of subarrays that sum to exactly k.",
+    "code": "def subarraySum(segments: list[int], k: int) -> int:\n    marker_frequency = defaultdict(int, {0: 1})\n    prefix_sum = count = 0\n    for segment in segments:\n        prefix_sum += segment\n        count += marker_frequency[prefix_sum - k]\n        marker_frequency[prefix_sum] += 1\n    return count",
+    "links": [],
+    "variables": []
+  },
+  "findMaxLength": {
+    "name": "findMaxLength",
+    "type": "function",
+    "language": "python",
+    "file": "examples/code/prefix_sum.py",
+    "line": 52,
+    "signature": "def findMaxLength(segments: list[int]) -> int:",
+    "parameters": [
+      {
+        "name": "segments",
+        "type": "list[int]",
+        "description": "List of integers (positive for forward, negative/zero for backward).",
+        "default": null
+      }
+    ],
+    "return_type": "int",
+    "return_description": "The length of the longest balanced subarray.",
+    "description": "Find the maximum length of a contiguous subarray with an equal number of positive and negative values.",
+    "code": "def findMaxLength(segments: list[int]) -> int:\n    return maxSubArrayLen(normalized_segments, 0)",
+    "links": [],
+    "variables": []
+  },
+  "checkSubarraySum": {
+    "name": "checkSubarraySum",
+    "type": "function",
+    "language": "python",
+    "file": "examples/code/prefix_sum.py",
+    "line": 65,
+    "signature": "def checkSubarraySum(segments: list[int], k: int) -> bool:",
+    "parameters": [
+      {
+        "name": "segments",
+        "type": "list[int]",
+        "description": "List of integers representing trip segments.",
+        "default": null
+      },
+      {
+        "name": "k",
+        "type": "int",
+        "description": "The divisor.",
+        "default": null
+      }
+    ],
+    "return_type": "bool",
+    "return_description": "True if such a subarray exists, False otherwise.",
+    "description": "Check if the array contains a subarray of at least length 2 whose sum is a multiple of k.",
+    "code": "def checkSubarraySum(segments: list[int], k: int) -> bool:\n    remainder_idx = {0: -1}\n    prefix_remainder = 0\n    for i, segment in enumerate(segments):\n        prefix_remainder = (prefix_remainder + segment) % k\n        if prefix_remainder in remainder_idx:\n            if i - remainder_idx[prefix_remainder] > 1:\n                return True\n        else:\n            remainder_idx[prefix_remainder] = i\n    return False",
+    "links": [],
+    "variables": []
+  },
+  "subarraysDivByK": {
+    "name": "subarraysDivByK",
+    "type": "function",
+    "language": "python",
+    "file": "examples/code/prefix_sum.py",
+    "line": 89,
+    "signature": "def subarraysDivByK(segments: list[int], k: int) -> int:",
+    "parameters": [
+      {
+        "name": "segments",
+        "type": "list[int]",
+        "description": "List of integers representing trip segments.",
+        "default": null
+      },
+      {
+        "name": "k",
+        "type": "int",
+        "description": "The divisor.",
+        "default": null
+      }
+    ],
+    "return_type": "int",
+    "return_description": "The count of subarrays with sum divisible by k.",
+    "description": "Count the number of subarrays whose sum is divisible by k.",
+    "code": "def subarraysDivByK(segments: list[int], k: int) -> int:\n    remainder_frequency = defaultdict(int, {0: 1})\n    prefix_remainder = count = 0\n    for segment in segments:\n        prefix_remainder = (prefix_remainder + segment) % k\n        count += remainder_frequency[prefix_remainder]\n        remainder_frequency[prefix_remainder] += 1\n    return count",
+    "links": [],
+    "variables": []
+  },
+  "minSubarray": {
+    "name": "minSubarray",
+    "type": "function",
+    "language": "python",
+    "file": "examples/code/prefix_sum.py",
+    "line": 110,
+    "signature": "def minSubarray(segments: list[int], p: int) -> int:",
+    "parameters": [
+      {
+        "name": "segments",
+        "type": "list[int]",
+        "description": "List of integers representing trip segments.",
+        "default": null
+      },
+      {
+        "name": "p",
+        "type": "int",
+        "description": "The divisor.",
+        "default": null
+      }
+    ],
+    "return_type": "int",
+    "return_description": "The length of the shortest subarray to remove, or -1 if not possible.",
+    "description": "Find the length of the shortest subarray to remove so that the sum of the remaining elements is divisible by p.",
+    "code": "def minSubarray(segments: list[int], p: int) -> int:\n    total_remainder = sum(segments) % p\n    if total_remainder == 0:\n        return 0\n    remainder_idx = {0: -1}\n    prefix_remainder, min_length = 0, len(segments)\n    for i, segment in enumerate(segments):\n        prefix_remainder = (prefix_remainder + segment) % p\n        need = (prefix_remainder - total_remainder + p) % p\n        if need in remainder_idx:\n            min_length = min(min_length, i - remainder_idx[need])\n        remainder_idx[prefix_remainder] = i\n    return min_length if min_length < len(segments) else -1",
+    "links": [],
+    "variables": []
+  },
+  "getModifiedArray": {
+    "name": "getModifiedArray",
+    "type": "function",
+    "language": "python",
+    "file": "examples/code/prefix_sum.py",
+    "line": 138,
+    "signature": "def getModifiedArray(length: int, updates: list[list[int]]) -> list[int]:",
+    "parameters": [
+      {
+        "name": "length",
+        "type": "int",
+        "description": "The number of days in the itinerary.",
+        "default": null
+      },
+      {
+        "name": "updates",
+        "type": "list[list[int]]",
+        "description": "List of [start_day, end_day, change_in_km] updates.",
+        "default": null
+      }
+    ],
+    "return_type": "list[int]",
+    "return_description": "The final daily travel plan after all updates.",
+    "description": "Apply a list of range updates to an array and return the modified array.",
+    "code": "def getModifiedArray(length: int, updates: list[list[int]]) -> list[int]:\n    delta = [0] * (length + 1)\n    for start_day, end_day, change_in_km in updates:\n        delta[start_day] += change_in_km\n        delta[end_day + 1] -= change_in_km\n    prefix_sum = 0\n    return [prefix_sum := prefix_sum + change for change in delta[:-1]]",
+    "links": [],
+    "variables": []
+  },
+  "numberOfArrays": {
+    "name": "numberOfArrays",
+    "type": "function",
+    "language": "python",
+    "file": "examples/code/prefix_sum.py",
+    "line": 159,
+    "signature": "def numberOfArrays(differences: list[int], lower: int, upper: int) -> int:",
+    "parameters": [
+      {
+        "name": "differences",
+        "type": "list[int]",
+        "description": "List of daily changes (trip segments).",
+        "default": null
+      },
+      {
+        "name": "lower",
+        "type": "int",
+        "description": "Lower bound for any marker on the highway.",
+        "default": null
+      },
+      {
+        "name": "upper",
+        "type": "int",
+        "description": "Upper bound for any marker on the highway.",
+        "default": null
+      }
+    ],
+    "return_type": "int",
+    "return_description": "The number of valid starting values.",
+    "description": "Count the number of valid starting values for a hidden sequence given the differences and bounds.",
+    "code": "def numberOfArrays(differences: list[int], lower: int, upper: int) -> int:\n    prefix_sum = min_marker = max_marker = 0\n    for diff in differences:\n        prefix_sum += diff\n        min_marker = min(min_marker, prefix_sum)\n        max_marker = max(max_marker, prefix_sum)\n    return max(0, (upper - max_marker) - (lower - min_marker) + 1)",
+    "links": [],
+    "variables": []
   }
 }
