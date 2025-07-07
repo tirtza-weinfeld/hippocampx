@@ -25,75 +25,14 @@
   --code-step-color-b: var(--color-pink-500);
   --code-step-color-c: var(--color-pink-500);
 }
-
-/* Tooltip styling that matches highlighted word colors */
-/* .tooltip-step-1 {
-  background: linear-gradient(to right,
-    var(--color-blue-300) 0%,
-    var(--color-blue-500) 100%
-  );
-  color: #111;
-  box-shadow: 0 2px 16px 0 rgba(0,0,0,0.08);
-}
-.tooltip-step-1.dark, .dark .tooltip-step-1 {
-  background: linear-gradient(to right,
-    var(--color-blue-700) 0%,
-    var(--color-blue-900) 100%
-  );
-  color: #fff;
-  box-shadow: 0 2px 16px 0 rgba(0,0,0,0.18);
+.step-5 {
+  --code-step-color-a: var(--color-orange-700);
+  --code-step-color-b: var(--color-orange-500);
+  --code-step-color-c: var(--color-orange-500);
 }
 
-.tooltip-step-2 {
-  background: linear-gradient(to right,
-    var(--color-green-300) 0%,
-    var(--color-teal-500) 100%
-  );
-  color: #111;
-  box-shadow: 0 2px 16px 0 rgba(0,0,0,0.08);
-}
-.tooltip-step-2.dark, .dark .tooltip-step-2 {
-  background: linear-gradient(to right,
-    var(--color-teal-700) 0%,
-    var(--color-green-900) 100%
-  );
-  color: #fff;
-  box-shadow: 0 2px 16px 0 rgba(0,0,0,0.18);
-}
 
-.tooltip-step-3 {
-  background: linear-gradient(to right,
-    var(--color-purple-300) 0%,
-    var(--color-purple-500) 100%
-  );
-  color: #111;
-  box-shadow: 0 2px 16px 0 rgba(0,0,0,0.08);
-}
-.tooltip-step-3.dark, .dark .tooltip-step-3 {
-  background: linear-gradient(to right,
-    var(--color-purple-700) 0%,
-    var(--color-purple-900) 100%
-  );
-  color: #fff;
-  box-shadow: 0 2px 16px 0 rgba(0,0,0,0.18);
-}
 
-.tooltip-step-4 {
-  background: linear-gradient(to right,
-    var(--color-pink-300) 0%,
-    var(--color-pink-500) 100%
-  );
-  color: #111;
-  box-shadow: 0 2px 16px 0 rgba(0,0,0,0.08);
-}
-.tooltip-step-4.dark, .dark .tooltip-step-4 {
-  background: linear-gradient(to right,
-    var(--color-pink-700) 0%,
-    var(--color-pink-900) 100%
-  );
-  color: #fff;
-  box-shadow: 0 2px 16px 0 rgba(0,0,0,0.18);
-} */
 
 /* Text color classes for tooltip words */
 .text-step-1 {
@@ -111,33 +50,13 @@
 .text-step-4 {
   color: var(--color-pink-700) !important;
 }
-
-
-/* Default word highlight (no step) */
-/* .word-highlight:not([class*='step-']) {
-  color: var(--color-teal-600) !important;
-  background: linear-gradient(90deg, --alpha(var(--color-sky-700) / 10%) 0%, --alpha(var(--color-sky-400) / 20%)100%, transparent 100%);
-  border-bottom: 1px solid var(--color-sky-400);
+.text-step-5 {
+  color: var(--color-orange-300) !important;
 }
-.dark .word-highlight:not([class*='step-']) {
-  color: var(--color-sky-600) !important;
-  background: linear-gradient(90deg, --alpha(var(--color-sky-900) / 20%) 0%, --alpha(var(--color-sky-400) / 20%)100%, transparent 100%);
-  border-bottom: 1px solid var(--color-sky-600);
-} */
-.word-highlight ,.word-highlight>  *{
 
-  color: var(--code-step-color-a) !important;
-  background:linear-gradient(to right,
-    --alpha(var(--code-step-color-a) / 10%),
-    --alpha(var(--code-step-color-b) / 10%),
-    --alpha(var(--code-step-color-c) / 10%),
-    transparent 100%
-  );
-  /* border-bottom: 1px solid --alpha(var(--code-step-color-a) / 60%); */
-  border-radius: 0.8rem;
-  font-weight: 600;
-  padding-inline: 0.2rem;
-}
+
+
+
 
 
 
@@ -215,6 +134,12 @@ pre {
 }
 .dark .popover-keyword-step-4 {
   color: var(--color-pink-300) !important;
+}
+.popover-keyword-step-5 {
+  color: var(--color-orange-300) !important;
+}
+.dark .popover-keyword-step-5 {
+  color: var(--color-orange-700) !important;
 }
 
 /* Default popover and highlight (no step) use a calm green/teal gradient */
@@ -299,6 +224,23 @@ pre {
   border-radius: 2rem;
   border-bottom: 2px dotted;
   /* padding: 0.2rem; */
+}
+
+
+
+.word-highlight ,.word-highlight>  *{
+
+  color: var(--code-step-color-a) !important;
+  background:linear-gradient(to right,
+    --alpha(var(--code-step-color-a) / 10%),
+    --alpha(var(--code-step-color-b) / 10%),
+    --alpha(var(--code-step-color-c) / 10%),
+    transparent 100%
+  );
+  /* border-bottom: 1px solid --alpha(var(--code-step-color-a) / 60%); */
+  border-radius: 0.8rem;
+  font-weight: 600;
+  padding-inline: 0.2rem;
 }
 /* 
 .tooltip-symbol:hover {

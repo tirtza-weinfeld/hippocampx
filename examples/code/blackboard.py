@@ -1,21 +1,36 @@
+from collections import defaultdict
 import heapq
 
 
 class Solution:
-    def swimInWater(self, grid: list[list[int]]) -> int:
-        """
-        """
+    def findCheapestPrice(self, n: int, flights: list[list[int]], src: int, dst: int, k: int) -> int:
 
-        n=len(grid)
-        pq, resolved = [(grid[0][0], 0, 0)], set()
+        graph = defaultdict(list)
+        for u, v, price in flights:
+            graph[u].append((v, price))
+
+        # State in PQ: (cost, city, stops_taken)
+        pq = [(0, src, 0)]
+
+        # Tracks the minimum stops to reach each city
+        min_stops = {}
 
         while pq:
-            time, r, c = heapq.heappop(pq)
-            if (r, c) in resolved:continue
-            if (r, c) == (n - 1, n - 1):return time
-            resolved.add((r, c))
+            cost, city, stops = heapq.heappop(pq)
 
-            for nr, nc in [(r, c + 1), (r, c - 1), (r + 1, c), (r - 1, c)]:
-                if 0 <= nr < n and 0 <= nc < n and (nr, nc) not in resolved:
-                    bottleneck_time = max(time, grid[nr][nc])
-                    heapq.heappush(pq, (bottleneck_time, nr, nc))
+            # If we've already found a path to this city using fewer or equal stops, skip.
+            # A path with fewer stops must have been cheaper or equal due to PQ ordering.
+            if stops > min_stops.get(city, float("inf")):
+                continue
+
+            # Record the new minimum stops to reach this city
+            min_stops[city] = stops
+
+            if city == dst:
+                return cost
+
+            if stops <= k:
+                for neighbor, price in graph[city]:
+                    heapq.heappush(pq, (cost + price, neighbor, stops + 1))
+
+        return -1

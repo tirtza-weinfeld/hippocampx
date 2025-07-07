@@ -1,9 +1,248 @@
-# Test
+## Resizable Table Of Contents
 
-```python file=examples/code/modular-arithmetic.py#mod
-``` 
-```python file=examples/code/modular-arithmetic.py#congruent1
-``` 
-```python file=examples/code/modular-arithmetic.py#congruent2
-``` 
 
+
+## 1\. Cheapest Flights Within K Stops 
+[LC 787](https://leetcode.com/problems/cheapest-flights-within-k-stops/)
+
+**Problem Definition:** Find the cheapest flight from a source to a destination with at most `k` stops.
+
+```python
+import heapq
+import collections
+
+def find_cheapest_price(n: int, flights: list[list[int]], src: int, dst: int, k: int) -> int:
+    graph = collections.defaultdict(list)
+    for u, v, price in flights:
+        graph[u].append((v, price))
+    pq = [(0, src, 0)]  # (cost, city, stops)
+    min_cost = {}
+    while pq:
+        cost, city, stops = heapq.heappop(pq)
+        if stops > k + 1 or cost > min_cost.get((city, stops), float('inf')):
+            continue
+        if city == dst:
+            return cost
+        min_cost[(city, stops)] = cost
+        for neighbor, price in graph[city]:
+            heapq.heappush(pq, (cost + price, neighbor, stops + 1))
+    return -1
+```
+
+  * **Insight:** 💡 A classic constrained path problem. The Dijkstra state is expanded from `(cost, node)` to `(cost, node, stops)` to track the extra constraint, a very common interview pattern.
+  * **Time Complexity:** $O(\\text{len(flights)} \\cdot k \\log(n \\cdot k))$
+
+-----
+
+
+## 2\. The Maze II 
+[LC 505](https://leetcode.com/problems/the-maze-ii/)
+
+**Problem Definition:** A ball in a maze can roll until it hits a wall. Find the shortest total distance the ball must travel to get from a start point to a destination.
+
+```python
+import heapq
+
+def shortest_distance(maze: list[list[int]], start: list[int], dest: list[int]) -> int:
+    m, n = len(maze), len(maze[0])
+    dist = {}
+    pq = [(0, start[0], start[1])] # (distance, r, c)
+    while pq:
+        d, r, c = heapq.heappop(pq)
+        if (r, c) in dist: continue
+        dist[(r,c)] = d
+        for dr, dc in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
+            nr, nc, steps = r, c, 0
+            while 0 <= nr + dr < m and 0 <= nc + dc < n and maze[nr + dr][nc + dc] == 0:
+                nr, nc, steps = nr + dr, nc + dc, steps + 1
+            if (nr, nc) not in dist:
+                heapq.heappush(pq, (d + steps, nr, nc))
+    return dist.get(tuple(dest), -1)
+```
+
+  * **Insight:** 💡 This problem uses an implicit graph where "edges" are full rolls, not single steps. The weight of each edge is the distance of the roll, a non-uniform cost perfect for Dijkstra.
+  * **Time Complexity:** $O(R \\cdot C \\log(R \\cdot C))$
+
+-----
+
+## 3\. Path with Maximum Probability [LC 1514](https://leetcode.com/problems/path-with-maximum-probability/)
+
+**Problem Definition:** Given a graph where edge weights are success probabilities, find the path from a start to an end node that has the highest total probability.
+
+```python
+import heapq
+import collections
+import math
+
+def max_probability(n: int, edges: list[list[int]], succ_prob: list[float], start: int, end: int) -> float:
+    graph = collections.defaultdict(list)
+    for i, (u, v) in enumerate(edges):
+        graph[u].append((v, -math.log(succ_prob[i])))
+        graph[v].append((u, -math.log(succ_prob[i])))
+    pq = [(0, start)]
+    min_log_prob = {start: 0}
+    while pq:
+        log_p, node = heapq.heappop(pq)
+        if node == end:
+            return math.exp(-log_p)
+        if log_p > min_log_prob.get(node, float('inf')):
+            continue
+        for neighbor, weight in graph[node]:
+            new_log_p = log_p + weight
+            if new_log_p < min_log_prob.get(neighbor, float('inf')):
+                min_log_prob[neighbor] = new_log_p
+                heapq.heappush(pq, (new_log_p, neighbor))
+    return 0.0
+```
+
+  * **Insight:** 💡 Tests problem transformation skills. Maximizing a product (`p1*p2`) is converted to minimizing a sum (`-log(p1) + -log(p2)`), turning it into a classic shortest path problem.
+  * **Time Complexity:** $O(\\text{len(edges)} \\log n)$
+
+-----
+
+## 4\. Word Ladder II [LC 126](https://leetcode.com/problems/word-ladder-ii/)
+
+**Problem Definition:** Given two words and a dictionary, find all shortest transformation sequences from the begin word to the end word, where only one letter can be changed at a time.
+
+```python
+import collections
+
+def find_ladders(begin_word: str, end_word: str, word_list: list[str]) -> list[list[str]]:
+    word_set = set(word_list)
+    if end_word not in word_set: return []
+    graph = collections.defaultdict(list)
+    dist = {begin_word: 0}
+    q = collections.deque([begin_word])
+    found = False
+    while q and not found:
+        for _ in range(len(q)):
+            word = q.popleft()
+            for i in range(len(word)):
+                for char_code in range(ord('a'), ord('z') + 1):
+                    new_word = word[:i] + chr(char_code) + word[i+1:]
+                    if new_word == end_word: found = True
+                    if new_word in word_set and new_word not in dist:
+                        dist[new_word] = dist[word] + 1
+                        graph[word].append(new_word)
+                        q.append(new_word)
+                    elif new_word in dist and dist[new_word] == dist[word] + 1:
+                        graph[word].append(new_word)
+    res = []
+    def dfs(path):
+        if path[-1] == end_word:
+            res.append(path[:])
+            return
+        for neighbor in graph[path[-1]]:
+            path.append(neighbor)
+            dfs(path)
+            path.pop()
+    dfs([begin_word])
+    return res
+```
+
+  * **Insight:** 💡 A famously hard interview problem. A BFS (Dijkstra on an unweighted graph) first finds the shortest path lengths and builds a DAG. Then, a DFS reconstructs all valid shortest paths from that graph.
+  * **Time Complexity:** $O(N \\cdot L^2)$, where N is the number of words and L is the length of each word.
+
+-----
+
+## 5\. Minimum Cost to Make at Least One Valid Path in a Grid [LC 1368](https://leetcode.com/problems/minimum-cost-to-make-at-least-one-valid-path-in-a-grid/)
+
+**Problem Definition:** A grid has arrows pointing in a direction. Following an arrow costs 0, while changing an arrow's direction costs 1. Find the minimum cost to get from the top-left to the bottom-right.
+
+```python
+import collections
+
+def min_cost(grid: list[list[int]]) -> int:
+    m, n = len(grid), len(grid[0])
+    costs = {}
+    dq = collections.deque([(0, 0, 0)]) # (cost, r, c)
+    while dq:
+        cost, r, c = dq.popleft()
+        if (r, c) in costs: continue
+        costs[(r, c)] = cost
+        if r == m - 1 and c == n - 1: return cost
+        for i, (dr, dc) in enumerate([(0, 1), (0, -1), (1, 0), (-1, 0)]):
+            nr, nc = r + dr, c + dc
+            if 0 <= nr < m and 0 <= nc < n:
+                change_cost = 1 if grid[r][c] != i + 1 else 0
+                if change_cost == 0:
+                    dq.appendleft((cost, nr, nc))
+                else:
+                    dq.append((cost + 1, nr, nc))
+```
+
+  * **Insight:** 💡 A special case of Dijkstra's known as "0-1 BFS." When edge weights are only 0 or 1, a deque is more efficient than a priority queue. 0-cost edges are pushed to the front, maintaining the greedy order.
+  * **Time Complexity:** $O(R \\cdot C)$
+
+-----
+
+## 6\. Sliding Puzzle 
+[LC 773](https://leetcode.com/problems/sliding-puzzle/)
+
+**Problem Definition:** On a 2x3 board, find the minimum number of moves to solve the puzzle, where a move is swapping the empty square '0' with an adjacent piece.
+
+```python
+import heapq
+import collections
+
+def sliding_puzzle(board: list[list[int]]) -> int:
+    target = "123450"
+    start = "".join(str(d) for row in board for d in row)
+    pq = [(0, start)] # (moves, board_string)
+    visited = {start}
+    while pq:
+        moves, state = heapq.heappop(pq)
+        if state == target: return moves
+        zero_idx = state.find('0')
+        r, c = zero_idx // 3, zero_idx % 3
+        for dr, dc in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
+            nr, nc = r + dr, c + dc
+            if 0 <= nr < 2 and 0 <= nc < 3:
+                new_zero_idx = nr * 3 + nc
+                new_state_list = list(state)
+                new_state_list[zero_idx], new_state_list[new_zero_idx] = new_state_list[new_zero_idx], new_state_list[zero_idx]
+                new_state = "".join(new_state_list)
+                if new_state not in visited:
+                    visited.add(new_state)
+                    heapq.heappush(pq, (moves + 1, new_state))
+    return -1
+```
+
+  * **Insight:** 💡 Dijkstra on an abstract state space graph. Each "node" is a configuration of the puzzle board. This tests the ability to apply graph algorithms to problems not explicitly defined as graphs.
+  * **Time Complexity:** $O(R \\cdot C \\cdot (R \\cdot C)\!)$, but the number of reachable states is small and constant, so it's effectively constant time.
+
+-----
+
+## 7\. Number of Ways to Arrive at Destination [LC 1976](https://leetcode.com/problems/number-of-ways-to-arrive-at-destination/)
+
+**Problem Definition:** Find the number of distinct paths that share the minimum possible travel time from intersection 0 to intersection `n-1`.
+
+```python
+import heapq
+import collections
+
+def count_paths(n: int, roads: list[list[int]]) -> int:
+    graph = collections.defaultdict(list)
+    for u, v, t in roads:
+        graph[u].append((v, t))
+        graph[v].append((u, t))
+    dist = {i: float('inf') for i in range(n)}
+    ways = {i: 0 for i in range(n)}
+    dist[0], ways[0] = 0, 1
+    pq = [(0, 0)]  # (time, intersection)
+    mod = 10**9 + 7
+    while pq:
+        d, u = heapq.heappop(pq)
+        if d > dist[u]: continue
+        for v, t in graph[u]:
+            if dist[v] > d + t:
+                dist[v] = d + t
+                ways[v] = ways[u]
+                heapq.heappush(pq, (dist[v], v))
+            elif dist[v] == d + t:
+                ways[v] = (ways[v] + ways[u]) % mod
+    return ways[n - 1]
+```
+
+  * **Insight:** 💡 Tests augmenting Dijkstra's. While finding the shortest path, the algorithm also counts the number of ways to achieve that exact shortest path, updating the counts when new, equally short paths are discovered.
+  * **Time Complexity:** $O(\\text{len(roads)} \\log n)$

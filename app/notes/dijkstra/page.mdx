@@ -160,7 +160,7 @@ to reach *all* nodes. If impossible, return -1*
   *You are given an `N x N` grid of elevations. Find the minimum "time" `t` to travel from `(0, 0)` to `(N-1, N-1)`. 
     You can only move between adjacent cells if their elevation is less than or equal to the time `t`*
 
-    ```python file=examples/code/dijkstra.py#func:swimInWater stripDocstring 
+    ```python file=examples/code/dijkstra.py#func:swimInWater stripDocstring  meta="/[2:]grid[0][0]/"
     ```
 
   > [!insight:collapse]
@@ -168,7 +168,7 @@ to reach *all* nodes. If impossible, return -1*
   > This problem elegantly frames a "bottleneck" challenge. (similar to the [Path With Minimum Effort](#2-the-thrifty-hike-path-with-minimum-effort)
   > You must find a path where the highest point is as low as possible.
   > This code uses **Dijkstra's algorithm** where the path "cost" is not a sum, but the **maximum elevation** encountered so far. The priority queue always explores the path requiring the lowest water level (`time`). By doing this, the first time it reaches the destination, it guarantees it has found the path with the absolute minimum water level required.
-  
+  > notice  pq=[(**[6:]grid[0][0]**, 0, 0)]
 
 
   > [!timecomplexity:collapse]**$O(N^2 \log N)$**
@@ -191,5 +191,35 @@ to reach *all* nodes. If impossible, return -1*
   > The `log N` part comes directly from the cost of the `heappush` and `heappop` operations on the priority queue.
 
 
+-----
+
+### 4\. Cheapest Flights Within K Stops 
+[787. Cheapest Flights Within K Stops](https://leetcode.com/problems/cheapest-flights-within-k-stops/)
+
+*Find the cheapest flight from a source to a destination with at most `k` stops.*
+
+```python file=examples/code/dijkstra.py#func:findCheapestPrice stripDocstring 
+```
+
+> [!insight:collapse]
+>
+> This problem requires a **modified Dijkstra's algorithm**. 
+> The state in the priority queue is expanded to `(cost, city, stops)` to track the stop count.
+>  To optimize, we prune any path that reaches a city with more stops than a previously found path to that same city. 
+> 
+> >[!tip:collapse] Achieve **$O(Ek)$** with *Bellman-Ford*
+> > 
+> > While this Dijkstra approach works, with *Bellman-Ford* we can achieve **$O(Ek)$** which is faster than our modified Dijkstra's $O(Ek\log(Nk))$ by a logarithmic term.   
 
 
+> [!timecomplexity:collapse] **$O(Ek \log(Nk))$** 
+>
+> 
+> * **Standard Dijkstra:** Complexity is $O(E \log V)$, where `V` is the number of nodes (cities). The priority queue holds at most `V` items.
+> * **Modified Dijkstra (This problem):** The "nodes" in our search aren't just cities, but **states** defined by `(city, stops)`.
+>  
+>   * **`log(Nk)` - The Size of the Priority Queue:**
+>       Since we can visit each of the `N` cities with up to `k` different stop counts, the maximum number of unique states we might store in the priority queue is on the order of `N * k`. This replaces the `V` in the standard `log(V)` term.
+>   
+>   * **`Ek` - The Number of Operations:**
+>       In the worst case, we might explore the outgoing edges (`E`) from a city for each possible stop count up to `k`. This gives a loose upper bound on the number of times we push to the priority queue.

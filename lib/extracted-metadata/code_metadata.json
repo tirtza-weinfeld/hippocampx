@@ -161,6 +161,57 @@
       }
     ]
   },
+  "findCheapestPrice": {
+    "name": "findCheapestPrice",
+    "type": "function",
+    "language": "python",
+    "file": "examples/code/dijkstra.py",
+    "line": 152,
+    "signature": "def findCheapestPrice( flights: list[list[int]], src: int, dst: int, k: int) -> int:",
+    "parameters": [
+      {
+        "name": "flights",
+        "type": "list[list[int]]",
+        "description": "",
+        "default": null
+      },
+      {
+        "name": "src",
+        "type": "int",
+        "description": "",
+        "default": null
+      },
+      {
+        "name": "dst",
+        "type": "int",
+        "description": "",
+        "default": null
+      },
+      {
+        "name": "k",
+        "type": "int",
+        "description": "",
+        "default": null
+      }
+    ],
+    "return_type": "int",
+    "return_description": "",
+    "description": "Variables:",
+    "code": "def findCheapestPrice( flights: list[list[int]], src: int, dst: int, k: int) -> int:\n    graph = defaultdict(list)\n    for u, v, price in flights:\n        graph[u].append((v, price))\n    pq, min_stops = [(0, src, 0)], {}\n    while pq:\n        cost, city, stops = heapq.heappop(pq)\n        if stops > min_stops.get(city, float(\"inf\")): continue\n        if city == dst: return cost\n        min_stops[city] = stops\n        if stops <= k:\n            for neighbor, price in graph[city]:\n                heapq.heappush(pq, (cost + price, neighbor, stops + 1))\n    return -1",
+    "links": [],
+    "variables": [
+      {
+        "name": "pq",
+        "description": "Priority queue to store the state (cost, city, stops_taken)",
+        "type": "variable"
+      },
+      {
+        "name": "min_stops",
+        "description": "Tracks the minimum stops to reach each city",
+        "type": "variable"
+      }
+    ]
+  },
   "Solution": {
     "name": "Solution",
     "type": "class",
@@ -176,17 +227,41 @@
     "links": [],
     "variables": []
   },
-  "Solution.swimInWater": {
-    "name": "swimInWater",
+  "Solution.findCheapestPrice": {
+    "name": "findCheapestPrice",
     "type": "method",
     "language": "python",
     "file": "examples/code/blackboard.py",
-    "line": 5,
-    "signature": "def swimInWater(self, grid: list[list[int]]) -> int:",
+    "line": 6,
+    "signature": "def findCheapestPrice(self, n: int, flights: list[list[int]], src: int, dst: int, k: int) -> int:",
     "parameters": [
       {
-        "name": "grid",
+        "name": "n",
+        "type": "int",
+        "description": "",
+        "default": null
+      },
+      {
+        "name": "flights",
         "type": "list[list[int]]",
+        "description": "",
+        "default": null
+      },
+      {
+        "name": "src",
+        "type": "int",
+        "description": "",
+        "default": null
+      },
+      {
+        "name": "dst",
+        "type": "int",
+        "description": "",
+        "default": null
+      },
+      {
+        "name": "k",
+        "type": "int",
         "description": "",
         "default": null
       }
@@ -194,7 +269,7 @@
     "return_type": "int",
     "return_description": "",
     "description": "",
-    "code": "def swimInWater(self, grid: list[list[int]]) -> int:\n        n=len(grid)\n        pq, resolved = [(grid[0][0], 0, 0)], set()\n        while pq:\n            time, r, c = heapq.heappop(pq)\n            if (r, c) in resolved:continue\n            if (r, c) == (n - 1, n - 1):return time\n            resolved.add((r, c))\n            for nr, nc in [(r, c + 1), (r, c - 1), (r + 1, c), (r - 1, c)]:\n                if 0 <= nr < n and 0 <= nc < n and (nr, nc) not in resolved:\n                    bottleneck_time = max(time, grid[nr][nc])\n                    heapq.heappush(pq, (bottleneck_time, nr, nc))",
+    "code": "def findCheapestPrice(self, n: int, flights: list[list[int]], src: int, dst: int, k: int) -> int:\n        graph = defaultdict(list)\n        for u, v, price in flights:\n            graph[u].append((v, price))\n        pq = [(0, src, 0)]\n        min_stops = {}\n        while pq:\n            cost, city, stops = heapq.heappop(pq)\n            if stops > min_stops.get(city, float(\"inf\")):\n                continue\n            min_stops[city] = stops\n            if city == dst:\n                return cost\n            if stops <= k:\n                for neighbor, price in graph[city]:\n                    heapq.heappush(pq, (cost + price, neighbor, stops + 1))\n        return -1",
     "links": [],
     "variables": [],
     "parent": "Solution"
