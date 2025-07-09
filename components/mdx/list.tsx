@@ -4,6 +4,7 @@ import { motion } from "framer-motion"
 import type { ReactNode } from "react"
 import { Minus, Star, Sparkles, Check, ListChecks, Award, ArrowRight, Shapes, Triangle } from "lucide-react" 
 import { useState, createContext, useContext } from "react"
+import { cn } from "@/lib/utils"
 
 interface ListProps {
   children: ReactNode
@@ -99,13 +100,18 @@ export const OrderedList = ({ children, className = "" }: ListProps) => {
         variants={listVariants}
         initial="hidden"
         animate="visible"
-        className={`
-          ${isNested ? "mt-3 mb-3 ml-4" : "mb-8 ml-0"} 
-          space-y-3
-          ${getListStyle(level)}
-          list-none
-          ${className}
-        `}
+        className={cn(
+          // isNested ? "mt-3 mb-3 ml-4" : "mb-8 ml-0",
+          isNested ? " ml-4" : " ml-0",
+          "my-2",
+          "space-y-3",
+          getListStyle(level),
+          // "list-decimal",
+          "list-none",
+       
+          
+          className
+        )}
       >
         {children}
       </motion.ol>
@@ -143,21 +149,21 @@ export const ListItem = ({ children, className = "" }: ListItemProps) => {
       <motion.li
         variants={itemVariants}
         whileHover={{ x: 4 }} // Subtle hover for ordered list items
-        className={`
-          text-gray-700 dark:text-gray-300 
-          leading-relaxed
-          py-2
-          rounded-lg
-          relative
-          pl-8
-          before:content-[''] before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1.5 
-          before:bg-gradient-to-b before:from-sky-400 before:to-teal-400 before:rounded-r-md
-          bg-gradient-to-r from-gray-50/50 to-transparent dark:from-gray-800/30 dark:to-transparent
-          transition-all duration-200
-          ${className}
-        `}
+        className={cn(
+          "text-gray-700 dark:text-gray-300",
+          "leading-relaxed",
+          "py-2",
+          "rounded-lg",
+          "relative",
+          "pl-8", 
+          className,
+          "before:content-[''] before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1.5",
+          "before:bg-gradient-to-b before:from-sky-400 before:to-teal-400 before:rounded-r-md",
+          "bg-gradient-to-r from-gray-50/50 to-transparent dark:from-gray-800/30 dark:to-transparent",
+          "transition-all duration-200",
+        )}
       >
-        <div className="flex items-start">
+        <div className="flex items-start ">
           <div className="flex-1">{children}</div>
         </div>
       </motion.li>

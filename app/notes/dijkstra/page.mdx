@@ -198,6 +198,13 @@ to reach *all* nodes. If impossible, return -1*
 
 *Find the cheapest flight from a source to a destination with at most `k` stops.*
 
+> [!warning:collapse] Achieve **$O(Ek)$** with *Bellman-Ford* ,faster than this modified Dijkstra's $O(Ek\log(Nk))$ 
+>  
+> `N` = number of cities
+> `E` = number of flights
+> `k` = number of stops
+>  While this Dijkstra approach works, with *Bellman-Ford* we can achieve **$O(Ek)$** which is faster than our modified Dijkstra's $O(Ek\log(Nk))$ by a logarithmic term.   
+
 ```python file=examples/code/dijkstra.py#func:findCheapestPrice stripDocstring 
 ```
 
@@ -206,10 +213,6 @@ to reach *all* nodes. If impossible, return -1*
 > This problem requires a **modified Dijkstra's algorithm**. 
 > The state in the priority queue is expanded to `(cost, city, stops)` to track the stop count.
 >  To optimize, we prune any path that reaches a city with more stops than a previously found path to that same city. 
-> 
-> >[!tip:collapse] Achieve **$O(Ek)$** with *Bellman-Ford*
-> > 
-> > While this Dijkstra approach works, with *Bellman-Ford* we can achieve **$O(Ek)$** which is faster than our modified Dijkstra's $O(Ek\log(Nk))$ by a logarithmic term.   
 
 
 > [!timecomplexity:collapse] **$O(Ek \log(Nk))$** 

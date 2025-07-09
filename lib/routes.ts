@@ -107,6 +107,7 @@ export const routes: NavigationItem[] = [
         children: [
             { title: 'Prefix Sum', href: '/notes/prefix-sum', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10" },
             { title: 'Dijkstra', href: '/notes/dijkstra', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10" },
+            // { title: 'Bellman-Ford', href: '/notes/bellman-ford', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10" },
             { title: 'Modular Arithmetic', href: '/notes/modular-arithmetic', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10" },
             { title: 'LRU Cache', href: '/notes/lru', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10" },
 

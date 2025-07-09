@@ -1,0 +1,316 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#### **1. Path with Maximum Probability**
+
+  * **LeetCode Link**: [https://leetcode.com/problems/path-with-maximum-probability/](https://leetcode.com/problems/path-with-maximum-probability/)
+  * **Concise Problem Statement**: In a graph with edges representing traversal probabilities, find the path from a `start` to an `end` node with the highest success probability.
+  * **Python Code Snippet**
+    ```python
+    import math
+    import collections
+
+    def maxProbability(n: int, edges: list[list[int]], succProb: list[float], start_node: int, end_node: int) -> float:
+        graph = collections.defaultdict(list)
+        for i, (u, v) in enumerate(edges):
+            if succProb[i] > 0:
+                weight = -math.log(succProb[i])
+                graph[u].append((v, weight))
+                graph[v].append((u, weight))
+
+        dist = [float('inf')] * n
+        dist[start_node] = 0
+
+        for _ in range(n - 1):
+            for u in range(n):
+                if dist[u] == float('inf'): continue
+                for v, w in graph[u]:
+                    dist[v] = min(dist[v], dist[u] + w)
+
+        return math.exp(-dist[end_node]) if dist[end_node] != float('inf') else 0.0
+    ```
+  * **Key Insight**: Maximizing a product is equivalent to minimizing a sum of **negative logs**. This transforms the problem into a classic SSSP structure. If the problem involved "fees" instead of probabilities (leading to negative weights), Bellman-Ford's standard `V-1` relaxations would be the mandatory algorithm.
+  * **Time Complexity**: $O(V \\cdot E)$
+
+-----
+
+#### **2. Cheapest Flight Within K Stops**
+
+  * **LeetCode Link**: [https://leetcode.com/problems/cheapest-flight-within-k-stops/](https://www.google.com/search?q=https://leetcode.com/problems/cheapest-flight-within-k-stops/)
+  * **Concise Problem Statement**: Find the cheapest flight from `src` to `dst` using at most `k` stops.
+  * **Python Code Snippet**
+    ```python
+    def findCheapestPrice(n: int, flights: list[list[int]], src: int, dst: int, k: int) -> int:
+        dist = [float('inf')] * n
+        dist[src] = 0
+
+        for _ in range(k + 1):
+            temp_dist = list(dist)
+            for u, v, price in flights:
+                if dist[u] != float('inf'):
+                    temp_dist[v] = min(temp_dist[v], dist[u] + price)
+            dist = temp_dist
+
+        return int(dist[dst]) if dist[dst] != float('inf') else -1
+    ```
+  * **Key Insight**: The constraint on the **number of edges** (`k+1` for `k` stops) is key. This requires a modified Bellman-Ford where the number of relaxation loops is `k+1`, perfectly illustrating the bounded-edge path technique.
+  * **Time Complexity**: $O(k \\cdot E)$
+
+-----
+
+#### **3. Triangle**
+
+  * **LeetCode Link**: [https://leetcode.com/problems/triangle/](https://leetcode.com/problems/triangle/)
+  * **Concise Problem Statement**: Given a triangle array of numbers, find the minimum path sum from the top to the bottom, where you can only move to adjacent numbers on the row below.
+  * **Python Code Snippet**
+    ```python
+    def minimumTotal(triangle: list[list[int]]) -> int:
+        n = len(triangle)
+        dp = list(triangle[-1]) # Start with the last row
+
+        for r in range(n - 2, -1, -1):
+            for c in range(len(triangle[r])):
+                # Relaxation step: update current path with the best from the next level
+                dp[c] = triangle[r][c] + min(dp[c], dp[c + 1])
+        
+        return dp[0]
+    ```
+  * **Key Insight**: This is a shortest path problem on a Directed Acyclic Graph (DAG). The DP solution is a form of Bellman-Ford adapted for a DAG, processing nodes layer by layer. The update `dp[c] = ...` is a relaxation step.
+  * **Time Complexity**: $O(N)$, where `N` is the total number of numbers in the triangle.
+
+-----
+
+#### **4. Minimum Falling Path Sum**
+
+  * **LeetCode Link**: [https://leetcode.com/problems/minimum-falling-path-sum/](https://leetcode.com/problems/minimum-falling-path-sum/)
+  * **Concise Problem Statement**: Given an `n x n` matrix, find the minimum sum of a "falling path," which starts at any element in the first row and moves to the next row in a column that is at most one away.
+  * **Python Code Snippet**
+    ```python
+    def minFallingPathSum(matrix: list[list[int]]) -> int:
+        n = len(matrix)
+        dp = list(matrix[0])
+
+        for r in range(1, n):
+            new_dp = list(dp)
+            for c in range(n):
+                parent_min = dp[c]
+                if c > 0: parent_min = min(parent_min, dp[c - 1])
+                if c < n - 1: parent_min = min(parent_min, dp[c + 1])
+                new_dp[c] = matrix[r][c] + parent_min
+            dp = new_dp
+        
+        return min(dp)
+    ```
+  * **Key Insight**: Similar to "Triangle," this is a shortest path on a DAG. The DP state `dp[c]` at each row represents the shortest path to that cell. The inner loop that calculates `new_dp[c]` is a relaxation step based on the minimum paths from the previous layer.
+  * **Time Complexity**: $O(n^2)$, where `n` is the dimension of the matrix.
+
+-----
+
+#### **5. Knight Dialer**
+
+  * **LeetCode Link**: [https://leetcode.com/problems/knight-dialer/](https://leetcode.com/problems/knight-dialer/)
+  * **Concise Problem Statement**: A chess knight is on a phone keypad. Find how many distinct phone numbers of length `n` can be dialed.
+  * **Python Code Snippet**
+    ```python
+    def knightDialer(n: int) -> int:
+        moves = [[4,6],[6,8],[7,9],[4,8],[0,3,9],[],[0,1,7],[2,6],[1,3],[2,4]]
+        dp = [1] * 10
+        MOD = 10**9 + 7
+
+        for _ in range(n - 1):
+            new_dp = [0] * 10
+            for i in range(10):
+                for move in moves[i]:
+                    new_dp[move] = (new_dp[move] + dp[i]) % MOD
+            dp = new_dp
+            
+        return sum(dp) % MOD
+    ```
+  * **Key Insight**: A path-counting problem on a graph solved with DP. The structure is identical to a modified Bellman-Ford where the relaxation operation is **summation** instead of `min()`. Each step calculates the number of ways to reach a node after one more move.
+  * **Time Complexity**: $O(n)$, as the keypad graph is constant size.
+
+-----
+
+#### **6. Frog Jump**
+
+  * **LeetCode Link**: [https://leetcode.com/problems/frog-jump/](https://leetcode.com/problems/frog-jump/)
+  * **Concise Problem Statement**: A frog hops on stones across a river. Given stone positions, determine if the frog can reach the last stone. The next jump size must be `k-1`, `k`, or `k+1` of the previous jump `k`.
+  * **Python Code Snippet**
+    ```python
+    def canCross(stones: list[int]) -> bool:
+        dp = {stone: set() for stone in stones}
+        dp[0].add(0)
+
+        for stone in stones:
+            for k in dp[stone]:
+                for step in range(k - 1, k + 2):
+                    if step > 0 and stone + step in dp:
+                        dp[stone + step].add(step)
+        
+        return len(dp[stones[-1]]) > 0
+    ```
+  * **Key Insight**: This is a reachability problem on a state graph where a state is `(position, prev_jump_k)`. The DP approach is a Bellman-Ford-style exploration, iteratively discovering all reachable states layer by layer.
+  * **Time Complexity**: $O(n^2)$, where `n` is the number of stones.
+
+-----
+
+#### **7. Cherry Pickup II**
+
+  * **LeetCode Link**: [https://leetcode.com/problems/cherry-pickup-ii/](https://leetcode.com/problems/cherry-pickup-ii/)
+  * **Concise Problem Statement**: Two robots start at opposite top corners of a grid. They both move to the bottom row. Find the maximum cherries they can collect together.
+  * **Python Code Snippet**
+    ```python
+    def cherryPickup(grid: list[list[int]]) -> int:
+        m, n = len(grid), len(grid[0])
+        dp = [[-1] * n for _ in range(n)]
+        dp[0][n - 1] = grid[0][0] + grid[0][n - 1]
+
+        for r in range(1, m):
+            new_dp = [[-1] * n for _ in range(n)]
+            for c1 in range(n):
+                for c2 in range(n):
+                    if dp[c1][c2] == -1: continue
+                    for nc1 in range(c1 - 1, c1 + 2):
+                        for nc2 in range(c2 - 1, c2 + 2):
+                            if 0 <= nc1 < n and 0 <= nc2 < n:
+                                cherries = grid[r][nc1] + (grid[r][nc2] if nc1 != nc2 else 0)
+                                new_dp[nc1][nc2] = max(new_dp[nc1][nc2], dp[c1][c2] + cherries)
+            dp = new_dp
+            
+        return max(map(max, dp)) if m > 1 else dp[0][n-1]
+    ```
+  * **Key Insight**: This is a DP problem on a complex state graph where a state is `(row, robot1_col, robot2_col)`. The transition from one row to the next is a "relaxation" step, exploring all possible next states and maximizing the value (`max()` instead of `min()`).
+  * **Time Complexity**: $O(m \\cdot n^2)$, where `m` is rows and `n` is columns.
+
+-----
+
+#### **8. Number of Restricted Paths From First to Last Node**
+
+  * **LeetCode Link**: [https://leetcode.com/problems/number-of-restricted-paths-from-first-to-last-node/](https://leetcode.com/problems/number-of-restricted-paths-from-first-to-last-node/)
+  * **Concise Problem Statement**: A path is "restricted" if the distance from each node in the path to the last node is strictly decreasing. Find the number of restricted paths from node 1 to node `n`.
+  * **Python Code Snippet**
+    ```python
+    import heapq
+
+    def countRestrictedPaths(n: int, edges: list[list[int]]) -> int:
+        graph = [[] for _ in range(n + 1)]
+        for u, v, w in edges:
+            graph[u].append((v, w))
+            graph[v].append((u, w))
+            
+        dist = [float('inf')] * (n + 1)
+        dist[n] = 0
+        pq = [(0, n)]
+        
+        while pq:
+            d, u = heapq.heappop(pq)
+            if d > dist[u]: continue
+            for v, w in graph[v]:
+                if dist[u] + w < dist[v]:
+                    dist[v] = dist[u] + w
+                    heapq.heappush(pq, (dist[v], v))
+
+        memo = {}
+        def dfs(u):
+            if u == n: return 1
+            if u in memo: return memo[u]
+            res = 0
+            for v, w in graph[u]:
+                if dist[u] > dist[v]:
+                    res = (res + dfs(v)) % (10**9 + 7)
+            memo[u] = res
+            return res
+
+        return dfs(1)
+    ```
+  * **Key Insight**: This problem demonstrates how a shortest path algorithm is often a **subroutine**. First, an SSSP algorithm (Dijkstra's here, but would be Bell-Ford if weights could be negative) is run from the destination node. Then, this distance information is used to count paths on the resulting DAG with a second algorithm (DFS with memoization).
+  * **Time Complexity**: $O(E \\log V + V + E)$ for Dijkstra's then DFS.
+
+-----
+
+#### **9. Minimum Cost to Reach Destination in Time**
+
+  * **LeetCode Link**: [https://leetcode.com/problems/minimum-cost-to-reach-destination-in-time/](https://leetcode.com/problems/minimum-cost-to-reach-destination-in-time/)
+  * **Concise Problem Statement**: Find the minimum cost to travel from node 0 to `n-1` within `maxTime`. Edges have travel times, and nodes have passing fees.
+  * **Python Code Snippet**
+    ```python
+    def minCost(maxTime: int, edges: list[list[int]], passingFees: list[int]) -> int:
+        n = len(passingFees)
+        min_cost = [float('inf')] * n
+        min_time = [float('inf')] * n
+        min_cost[0], min_time[0] = passingFees[0], 0
+        
+        pq = [(passingFees[0], 0, 0)] # cost, time, node
+
+        while pq:
+            cost, time, u = heapq.heappop(pq)
+            if cost > min_cost[u] and time > min_time[u]: continue
+
+            for v, t in [(v, t) for u_edge, v, t in edges if u_edge == u] + [(u, t) for v, u_edge, t in edges if v == u]:
+                if time + t <= maxTime:
+                    if cost + passingFees[v] < min_cost[v]:
+                        min_cost[v] = cost + passingFees[v]
+                        min_time[v] = time + t
+                        heapq.heappush(pq, (min_cost[v], min_time[v], v))
+                    elif time + t < min_time[v]:
+                        min_time[v] = time + t
+                        heapq.heappush(pq, (cost + passingFees[v], min_time[v], v))
+
+        return min_cost[n-1] if min_cost[n-1] != float('inf') else -1
+    ```
+  * **Key Insight**: This problem requires a modified Dijkstra's or Bellman-Ford on a state of `(cost, time, node)`. The relaxation condition is more complex: we update a neighbor if we can reach it with either lower cost or the same cost but in less time. This shows how the core relaxation idea can be adapted for multi-objective optimization.
+  * **Time Complexity**: Hard to define simply, but related to the number of paths explored, worse than a standard Dijkstra's.
+
+-----
+
+#### **10. Alien Dictionary**
+
+  * **LeetCode Link**: [https://leetcode.com/problems/alien-dictionary/](https://leetcode.com/problems/alien-dictionary/)
+  * **Concise Problem Statement**: Given a dictionary of words from an alien language sorted lexicographically, find the proper order of letters.
+  * **Python Code Snippet**
+    ```python
+    from collections import deque, defaultdict
+
+    def alienOrder(words: list[str]) -> str:
+        adj = defaultdict(set)
+        in_degree = {c: 0 for word in words for c in word}
+
+        for i in range(len(words) - 1):
+            w1, w2 = words[i], words[i + 1]
+            if len(w1) > len(w2) and w1.startswith(w2): return ""
+            for c1, c2 in zip(w1, w2):
+                if c1 != c2:
+                    if c2 not in adj[c1]:
+                        adj[c1].add(c2)
+                        in_degree[c2] += 1
+                    break
+        
+        q = deque([c for c in in_degree if in_degree[c] == 0])
+        res = []
+        while q:
+            c = q.popleft()
+            res.append(c)
+            for neighbor in adj[c]:
+                in_degree[neighbor] -= 1
+                if in_degree[neighbor] == 0: q.append(neighbor)
+        
+        return "".join(res) if len(res) == len(in_degree) else ""
+    ```
+  * **Key Insight**: This problem is solved by finding a **topological sort** of a character dependency graph. The connection to Bellman-Ford is conceptual: both algorithms process graphs based on predecessor states. Detecting a cycle in the topological sort (which makes an ordering impossible) is analogous to Bellman-Ford detecting a negative cycle (which makes a shortest path undefined).
+  * **Time Complexity**: $O(C)$, where `C` is the total number of characters in all words.

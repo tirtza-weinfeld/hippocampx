@@ -9,5 +9,5 @@ export const getTooltipContent = cache(async () => {
         ? testMetadata
         : codeMetadata;
     
-    return metadata as Record<string, SymbolMetadata>;
+    return metadata as unknown as Record<string, SymbolMetadata>;
 });

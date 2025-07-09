@@ -4,13 +4,13 @@
 @theme inline {
   /* OKLCH colors chosen for good readability and to match the screenshot */
   --color-alert-tip: oklch(65% 0.15 150);      /* Teal */
-  --color-alert-note: oklch(65% 0.15 230);     /* Blue */
+  --color-alert-note: var(--color-sky-600);    /* Blue */
   --color-alert-warning: oklch(75% 0.2 80);    /* Amber */
   --color-alert-important: oklch(65% 0.2 25);  /* Red */
   --color-alert-caution: oklch(70% 0.2 300);   /* Fuchsia */
   --color-alert-example: oklch(65% 0.15 230);   /* Blue */
   --color-alert-comment:var(--color-emerald-500);
-  --color-alert-definition:var(--color-sky-800);
+  --color-alert-definition:var(--color-sky-600);
   --color-alert-deepdive:var(--color-sky-500);
   --color-alert-timecomplexity:var(--color-sky-500);
   --color-alert-insight:var(--color-sky-500);

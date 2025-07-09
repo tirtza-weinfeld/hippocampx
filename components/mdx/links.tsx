@@ -43,7 +43,7 @@ export const Link = ({ href, children }: ComponentPropsWithoutRef<"a">) => {
       {!isExternal &&(
       <span className={cn(" group-hover:-translate-y-1 transition-transform duration-300",
         "text-teal-400 dark:text-teal-600",
-        "[h2_&]:hidden [h3_&]:hidden [h4_&]:hidden [h5_&]:hidden [h6_&]:hidden"
+        "[h1_&]:hidden [h2_&]:hidden [h3_&]:hidden [h4_&]:hidden [h5_&]:hidden [h6_&]:hidden"
      )}> 
         <ArrowUpRight className="w-4 h-4 
           " />

@@ -43,7 +43,7 @@ const STYLES = {
     iconBg: "bg-alert-tip/10",
   },
   note: {
-    gradient: "from-white to-alert-note/20 dark:from-gray-900 dark:to-alert-note/20",
+    gradient: "from-white to-alert-note/10 dark:from-gray-900 dark:to-alert-note/20",
     border: "border-alert-note",
     text: "text-alert-note",
     iconBg: "bg-alert-note/10",
@@ -86,7 +86,7 @@ const STYLES = {
   },
   definition: {
     // gradient: "from-white to-alert-definition/20 dark:from-gray-900 dark:to-alert-definition/20",
-    gradient: "from-white to-sky-600/20 dark:from-gray-900 dark:to-alert-definition/20",
+    gradient: "from-white to-alert-definition/10 dark:from-gray-900 dark:to-alert-definition/20",
     border: "border-alert-definition",
     text: "text-alert-definition",
     iconBg: "bg-alert-definition/10",
@@ -180,6 +180,7 @@ export default function Alert({ type, children, collapse = false }: AlertProps) 
           "bg-linear-to-br",
           "my-2 p-0",
 
+
         )}
         role="region"
         aria-label={`Expandable ${type} alert`}
@@ -270,11 +271,14 @@ export default function Alert({ type, children, collapse = false }: AlertProps) 
   return (
     <div
       className={cn(
-        "flex items-start gap-4 rounded-xl p-4 bg-linear-to-br",
+
+        "flex items-start gap-4",
+        "rounded-md bg-linear-to-br",
+        "p-4",
         styles.gradient,
-        "border-l-4",
+        // "border-l-4",
         styles.border,
-        "shadow-lg dark:shadow-2xl",
+        "shadow-sm ",
         "mb-3"
       )}
       role="alert"
@@ -283,7 +287,7 @@ export default function Alert({ type, children, collapse = false }: AlertProps) 
         <div className={cn(
           "flex items-center gap-2 mb-0.5",
         )}>
-          <div className={cn("flex-shrink-0 rounded-full p-1", styles.iconBg)}>
+          {/* <div className={cn("flex-shrink-0 rounded-full p-1", styles.iconBg)}>
             <Icon className={cn("w-4 h-4", styles.text)} />
           </div>
           <div className={cn(
@@ -291,7 +295,8 @@ export default function Alert({ type, children, collapse = false }: AlertProps) 
             styles.text,
           )}>
             {type}
-          </div>
+          </div> */}
+
           {/* <div className={cn(
             "pb-0  place-self-center ",
           )}>
@@ -304,11 +309,20 @@ export default function Alert({ type, children, collapse = false }: AlertProps) 
           `[&_a]:${styles.text} [&_a]:underline [&_a]:underline-offset-2`,
           "[&_code]:bg-black/[0.07] dark:[&_code]:bg-white/[0.07]",
           "[&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded-md [&_code]:font-mono [&_code]:text-xs",
-          "whitespace-pre-wrap w-full mb-0"
+          // "[&_p]:whitespace-pre-wrap ",
+          styles.text,
+
+          "w-full mb-0",
         )}>
           <div className="flex flex-col gap-2">
             <div className="">{summary}</div>
-            <div className="">{details}</div>
+            <div className={cn(
+              // `[&_p]:${styles.text}`,
+              // `[&_p]:text-red-500`,
+
+            )}>
+              {details}
+            </div>
           </div>
         </div>
       </div>

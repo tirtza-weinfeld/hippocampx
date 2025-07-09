@@ -49,7 +49,7 @@ export function Table({ className, children }: TableProps) {
       variants={tableVariants}
       className="relative w-full my-8"
     >
-      <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+      <div className="overflow-x-auto rounded-lg border border-sky-500/20 dark:border-sky-400/20 shadow-sm">
         <table
           className={cn(
             "w-full caption-bottom text-sm",
@@ -74,8 +74,8 @@ export function TableHeader({ className, children }: TableHeaderProps) {
     <motion.thead
       variants={rowVariants}
       className={cn(
-        "bg-gray-50 dark:bg-gray-800",
-        "[&_tr]:border-b [&_tr]:border-gray-200 dark:[&_tr]:border-gray-700",
+        "bg-sky-50/50 dark:bg-sky-900/20",
+        "[&_tr]:border-b [&_tr]:border-sky-500/20 dark:[&_tr]:border-sky-400/20",
         className
       )}
     >
@@ -94,7 +94,7 @@ export function TableBody({ className, children }: TableBodyProps) {
     <motion.tbody
       variants={rowVariants}
       className={cn(
-        "divide-y divide-gray-200 dark:divide-gray-700",
+        "divide-y divide-sky-500/20 dark:divide-sky-400/20",
         "[&_tr:last-child]:border-0",
         className
       )}
@@ -114,8 +114,8 @@ export function TableFooter({ className, children }: TableFooterProps) {
     <motion.tfoot
       variants={rowVariants}
       className={cn(
-        "bg-gray-50/50 dark:bg-gray-800/50",
-        "border-t border-gray-200 dark:border-gray-700",
+        "bg-sky-50/50 dark:bg-sky-800/50",
+        "border-t border-sky-500/20 dark:border-sky-400/20",
         "font-medium",
         "[&>tr]:last:border-b-0",
         className
@@ -136,9 +136,9 @@ export function TableRow({ className, children }: TableRowProps) {
     <motion.tr
       variants={cellVariants}
       className={cn(
-        "hover:bg-gray-50/50 dark:hover:bg-gray-800/50",
+        "hover:bg-sky-50/50 dark:hover:bg-sky-800/50",
         "data-[state=selected]:bg-blue-50 dark:data-[state=selected]:bg-blue-900/20",
-        "border-b border-gray-200 dark:border-gray-700",
+        "border-b border-sky-500/20 dark:border-sky-400/20",
         "transition-colors duration-200",
         className
       )}
@@ -159,7 +159,7 @@ export function TableHead({ className, children }: TableHeadProps) {
       variants={cellVariants}
       className={cn(
         "h-12 px-4 text-left align-middle",
-        "font-semibold text-gray-900 dark:text-gray-100",
+        "font-semibold text-sky-900 dark:text-sky-100",
         "whitespace-nowrap",
         "[&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
         className
@@ -181,7 +181,7 @@ export function TableCell({ className, children }: TableCellProps) {
       variants={cellVariants}
       className={cn(
         "p-4 align-middle",
-        "text-gray-700 dark:text-gray-300",
+        "text-sky-700 dark:text-sky-300",
         "whitespace-nowrap",
         "[&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
         className
@@ -204,7 +204,7 @@ export function TableCaption({ className, children }: TableCaptionProps) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: 0.2 }}
       className={cn(
-        "mt-4 text-sm text-gray-500 dark:text-gray-400",
+        "mt-4 text-sm text-sky-500 dark:text-sky-400",
         "text-center italic",
         className
       )}

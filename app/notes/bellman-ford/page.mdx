@@ -1,0 +1,133 @@
+# Bellman-Ford
+
+## Resizable Table of Contents
+
+
+## Variant 1: Classical Bellman-Ford (SSSP)
+
+
+
+> [!definition] 
+Given a directed graph $G = (V, E)$, edge weights $w: E \to \mathbb{R}$, 
+and source node $s$, 
+compute $\delta(s, v)$ for all $v \in V$ , or detect 
+if $\delta(s, v) = -\infty$ due to a negative-weight cycle reachable from $s$.
+
+> This Classical Bellman-Ford solves *SSSP*'s (*single-source shortest paths*) using only $O(|V |)$ space, but only detects whether a negative-weight cycle exists
+(will not return such a negative weight cycle). It is based on the relaxation framework.
+
+
+
+> *The algorithm is straight-forward:*
+> 1. initialize distance estimates, 
+> 2. **Relax all edges |V|–1 times** to compute shortest paths(*where each relaxation improves distance estimates*).
+> 3. **Then** do one more pass (the $V$th): 
+>       1. if any edge is relaxable (i.e., violates the triangle inequality) → *negative-weight cycle exists*.
+>       2. otherwise, *d(s, v) = δ(s, v) for all v ∈ V*
+
+
+
+
+
+
+#### Algorithm
+```python file=examples/code/bellman-ford.py#func:bellman_ford_classic_recitation stripDocstring 
+```
+
+Time: $\mathcal{O}(|V||E|)$
+
+Space: $\mathcal{O}(|V|)$
+
+
+## Variant 2: DAG-Relaxation with Graph Duplication (more powerful)
+
+> [!definition] 
+$\delta_k(s, v)$: Shortest path from $s$ to $v$ using $\leq k$ edges. 
+Construct a DAG $G'$ with levels $k = 0$ to $|V|$, each node $v_k$ tracks distance using $k$ edges.
+If $\delta_{|V|}(s, v) < \delta_{|V|-1}(s, v)$, then $v$ is a witness to a negative cycle.
+
+> *The algorithm is straight-forward:*
+> 1.	Build $G'$ with (|V|+1) levels
+> 2.	Edges:
+>       1.	From $v_{k-1} \to v_k$: weight 0
+>       2.	From $u_{k-1} \to v_k$: weight $w(u, v)$
+> 3.	Run DAG Relaxation from $s_0$
+> 4.	Final value $\delta(s, v) = \delta_{|V|-1}(s, v)$ unless reachable from a witness → $-\infty$
+
+
+
+Time: $\mathcal{O}(|V||E|)$
+
+Space: $\mathcal{O}(|V||E|)$
+
+```python file=examples/code/bellman-ford.py#func:bellman_ford_classic_recitation stripDocstring 
+```
+
+
+
+
+## Comparison
+
+
+|Feature	|Classical 	|Graph Duplication + DAG|
+|---|---|---|
+|Negative cycle detection	|✅ Yes	|✅ Yes (with witnesses)|
+|Recover cycle	|❌ No	|✅ Yes|
+|Space Complexity	|O(V)	|O(V² + V·E)|
+|Time Complexity	|O(V·E)	|O(V·E)|
+|Tracks δₖ(s, v)	|❌ No	|✅ Yes|
+|Simplicity	|✅ Simple to implement	|❌ More complex (level DAG)|
+|Early stopping	|✅ Possible if no updates	|❌ Full pass needed|
+
+> [!deepdive:collapse] 
+>
+> Below are key distinctions between the Classical Bellman–Ford and the Layered DAG variant:
+> - **Space Usage**: Classical uses $O(V)$ space for the distance array. Layered DAG constructs $(|V|+1)$ levels with edges duplicated, requiring $O(V·E)$ space.
+> - **Cycle Detection Mechanism**: Classical uses an extra $V$th relaxation pass to flag further possible relaxations as a negative cycle. Layered DAG compares $\delta_{|V|}$ and $\delta_{|V|-1}$ to identify witnesses.
+> - **Cycle Recovery**: Layered DAG can recover a specific negative cycle by backtracking from a witness node. Classical Bellman–Ford only detects presence without providing the cycle.
+> - **Early Termination**: Classical Bellman–Ford can stop early if a full pass yields no updates. the Layered DAG variant must build and fully relax all levels before final comparison.
+> - **Implementation Complexity**: Classical is simpler and in-place, the Layered DAG method requires explicit graph transformation into levels and additional bookkeeping.
+
+
+
+### 🚲 Example: Tee-Ball Problem 
+
+Let fun of edge = $f(u, v)$. Build graph with weights $w(u, v) = -f(u, v)$.
+To detect infinite fun → check for negative cycles using Bellman-Ford.
+Otherwise, run Bellman-Ford from each child’s home (3 times).
+Find $v$ minimizing $d(a,v) + d(b,v) + d(c,v)$.
+
+Total Time: $\mathcal{O}(3|V||E|)$
+
+
+
+
+## Problems
+
+### 1. Cheapest Flight Within K Stops
+[Cheapest Flights With at Most K Stops](https://leetcode.com/problems/cheapest-flights-within-k-stops/description/)
+
+*Find the cheapest flight from `src` to `dst` using at most `k` stops.*
+
+```python file=examples/code/bellman-ford.py#func:findCheapestPrice stripDocstring 
+```
+
+> [!note:collapse] 
+>
+> The constraint on the **number of edges** (`k+1` for `k` stops) is key. This requires a modified Bellman-Ford where the number of relaxation loops is `k+1`, perfectly illustrating the bounded-edge path technique.
+
+> [!timecomplexity:collapse] 
+> $O(kE)$
+>
+> where `E` is the number of flights.
+
+
+### 2. Path with Maximum Probability
+[Path with Maximum Probability](https://leetcode.com/problems/path-with-maximum-probability/description/)
+
+*In a graph with edges representing traversal probabilities,
+ find the path from a `start` to an `end` node with the highest success probability.*
+
+```python file=examples/code/bellman-ford.py#func:maxProbability stripDocstring 
+```
+

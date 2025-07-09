@@ -1,4 +1,514 @@
 {
+  "findCheapestPrice": {
+    "name": "findCheapestPrice",
+    "type": "function",
+    "language": "python",
+    "file": "examples/code/dijkstra.py",
+    "line": 152,
+    "signature": "def findCheapestPrice( flights: list[list[int]], src: int, dst: int, k: int) -> int:",
+    "parameters": [
+      {
+        "name": "flights",
+        "type": "list[list[int]]",
+        "description": "",
+        "default": null
+      },
+      {
+        "name": "src",
+        "type": "int",
+        "description": "",
+        "default": null
+      },
+      {
+        "name": "dst",
+        "type": "int",
+        "description": "",
+        "default": null
+      },
+      {
+        "name": "k",
+        "type": "int",
+        "description": "",
+        "default": null
+      }
+    ],
+    "return_type": "int",
+    "return_description": "",
+    "description": "Variables:",
+    "code": "def findCheapestPrice( flights: list[list[int]], src: int, dst: int, k: int) -> int:\n    graph = defaultdict(list)\n    for u, v, price in flights:\n        graph[u].append((v, price))\n    pq, min_stops = [(0, src, 0)], {}\n    while pq:\n        cost, city, stops = heapq.heappop(pq)\n        if stops > min_stops.get(city, float(\"inf\")): continue\n        if city == dst: return cost\n        min_stops[city] = stops\n        if stops <= k:\n            for neighbor, price in graph[city]:\n                heapq.heappush(pq, (cost + price, neighbor, stops + 1))\n    return -1",
+    "links": [],
+    "variables": [
+      {
+        "name": "pq",
+        "description": "Priority queue to store the state (cost, city, stops_taken)",
+        "type": "variable"
+      },
+      {
+        "name": "min_stops",
+        "description": "Tracks the minimum stops to reach each city",
+        "type": "variable"
+      }
+    ]
+  },
+  "maxProbability": {
+    "name": "maxProbability",
+    "type": "function",
+    "language": "python",
+    "file": "examples/code/bellman-ford.py",
+    "line": 20,
+    "signature": "def maxProbability(n: int, edges: list[list[int]], succProb: list[float], start: int, end: int) -> float:",
+    "parameters": [
+      {
+        "name": "n",
+        "type": "int",
+        "description": "number of nodes",
+        "default": null
+      },
+      {
+        "name": "edges",
+        "type": "list[list[int]]",
+        "description": "edges[i] = [u, v] is an undirected edge connecting the nodes u and v with a probability of success of traversing that edge succProb[i].",
+        "default": null
+      },
+      {
+        "name": "succProb",
+        "type": "list[float]",
+        "description": "list of probabilities, e.g. [0.5,0.5,0.2],",
+        "default": null
+      },
+      {
+        "name": "start",
+        "type": "int",
+        "description": "start node",
+        "default": null
+      },
+      {
+        "name": "end",
+        "type": "int",
+        "description": "end node",
+        "default": null
+      }
+    ],
+    "return_type": "float",
+    "return_description": "",
+    "description": "Bellman-Ford variant to maximize product of probabilities.",
+    "code": "def maxProbability(n: int, edges: list[list[int]], succProb: list[float], start: int, end: int) -> float:\n    prob[start] = 1.0  \n    for _ in range(n - 1):  \n        updated = False\n        for (u, v), p in zip(edges, succProb):\n            if prob[u] * p > prob[v]:  \n                prob[v] = prob[u] * p\n                updated = True\n            if prob[v] * p > prob[u]:  \n                prob[u] = prob[v] * p\n                updated = True\n        if not updated:  \n            break\n    return prob[end]",
+    "links": [
+      {
+        "symbol": "i",
+        "display": "[i]",
+        "target": "i",
+        "valid": false,
+        "target_symbol": null
+      },
+      {
+        "symbol": "i",
+        "display": "[i]",
+        "target": "i",
+        "valid": false,
+        "target_symbol": null
+      },
+      {
+        "symbol": "start",
+        "display": "[start]",
+        "target": "start",
+        "valid": false,
+        "target_symbol": null
+      },
+      {
+        "symbol": "end",
+        "display": "[end]",
+        "target": "end",
+        "valid": false,
+        "target_symbol": null
+      }
+    ],
+    "variables": []
+  },
+  "expr_0": {
+    "id": "expr_0",
+    "type": "expression",
+    "language": "python",
+    "file": "examples/code/bellman-ford.py",
+    "line": 12,
+    "expression": "for u, v, w in flights:",
+    "description": "Relaxation step - update distance if we found a shorter path",
+    "context": {
+      "start_line": 9,
+      "end_line": 16,
+      "surrounding_code": [
+        "",
+        "    for _ in range(k + 1):",
+        "        tmp = d[:]",
+        "        for u, v, w in flights:",
+        "            if d[u] + w < tmp[v]:  # @tooltip: Relaxation step - update distance if we found a shorter path",
+        "                tmp[v] = d[u] + w",
+        "        d = tmp",
+        ""
+      ],
+      "function_context": "def findCheapestPrice(n: int, flights: list[list[int]], src: int, dst: int, k: int) -> int:"
+    }
+  },
+  "expr_1": {
+    "id": "expr_1",
+    "type": "expression",
+    "language": "python",
+    "file": "examples/code/bellman-ford.py",
+    "line": 45,
+    "expression": "for (u, v), p in zip(edges, succProb):",
+    "description": "Try to improve v through u - multiply probabilities for path",
+    "context": {
+      "start_line": 42,
+      "end_line": 49,
+      "surrounding_code": [
+        "",
+        "    for _ in range(n - 1):  # @tooltip: Perform up to n-1 rounds of relaxation (Bellman-Ford property)",
+        "        updated = False",
+        "        for (u, v), p in zip(edges, succProb):",
+        "            if prob[u] * p > prob[v]:  # @tooltip: Try to improve v through u - multiply probabilities for path",
+        "                prob[v] = prob[u] * p",
+        "                updated = True",
+        "            if prob[v] * p > prob[u]:  # @tooltip: Try to improve u through v (undirected graph)"
+      ],
+      "function_context": "def maxProbability(n: int, edges: list[list[int]], succProb: list[float], start: int, end: int) -> float:"
+    }
+  },
+  "expr_2": {
+    "id": "expr_2",
+    "type": "expression",
+    "language": "python",
+    "file": "examples/code/bellman-ford.py",
+    "line": 48,
+    "expression": "updated = True",
+    "description": "Try to improve u through v (undirected graph)",
+    "context": {
+      "start_line": 45,
+      "end_line": 52,
+      "surrounding_code": [
+        "        for (u, v), p in zip(edges, succProb):",
+        "            if prob[u] * p > prob[v]:  # @tooltip: Try to improve v through u - multiply probabilities for path",
+        "                prob[v] = prob[u] * p",
+        "                updated = True",
+        "            if prob[v] * p > prob[u]:  # @tooltip: Try to improve u through v (undirected graph)",
+        "                prob[u] = prob[v] * p",
+        "                updated = True",
+        "        if not updated:  # @tooltip: Early exit if no updates in this round (optimization)"
+      ],
+      "function_context": "def maxProbability(n: int, edges: list[list[int]], succProb: list[float], start: int, end: int) -> float:"
+    }
+  },
+  "expr_3": {
+    "id": "expr_3",
+    "type": "expression",
+    "language": "python",
+    "file": "examples/code/bellman-ford.py",
+    "line": 51,
+    "expression": "updated = True",
+    "description": "Early exit if no updates in this round (optimization)",
+    "context": {
+      "start_line": 48,
+      "end_line": 55,
+      "surrounding_code": [
+        "                updated = True",
+        "            if prob[v] * p > prob[u]:  # @tooltip: Try to improve u through v (undirected graph)",
+        "                prob[u] = prob[v] * p",
+        "                updated = True",
+        "        if not updated:  # @tooltip: Early exit if no updates in this round (optimization)",
+        "            break",
+        "",
+        "    return prob[end]"
+      ],
+      "function_context": "def maxProbability(n: int, edges: list[list[int]], succProb: list[float], start: int, end: int) -> float:"
+    }
+  },
+  "expr_4": {
+    "id": "expr_4",
+    "type": "expression",
+    "language": "python",
+    "file": "examples/code/bellman-ford.py",
+    "line": 43,
+    "expression": "range(n - 1)",
+    "description": "Perform up to n-1 rounds of relaxation (Bellman-Ford property)",
+    "context": {
+      "start_line": 40,
+      "end_line": 47,
+      "surrounding_code": [
+        "    prob = [0.0] * n",
+        "    prob[start] = 1.0  # Start with full certainty",
+        "",
+        "    for _ in range(n - 1):  # @tooltip: Perform up to n-1 rounds of relaxation (Bellman-Ford property)",
+        "        updated = False",
+        "        for (u, v), p in zip(edges, succProb):",
+        "            if prob[u] * p > prob[v]:  # @tooltip: Try to improve v through u - multiply probabilities for path",
+        "                prob[v] = prob[u] * p"
+      ],
+      "function_context": "def maxProbability(n: int, edges: list[list[int]], succProb: list[float], start: int, end: int) -> float:"
+    }
+  },
+  "expr_5": {
+    "id": "expr_5",
+    "type": "expression",
+    "language": "python",
+    "file": "examples/code/bellman-ford.py",
+    "line": 43,
+    "expression": "n - 1",
+    "description": "Perform up to n-1 rounds of relaxation (Bellman-Ford property)",
+    "context": {
+      "start_line": 40,
+      "end_line": 47,
+      "surrounding_code": [
+        "    prob = [0.0] * n",
+        "    prob[start] = 1.0  # Start with full certainty",
+        "",
+        "    for _ in range(n - 1):  # @tooltip: Perform up to n-1 rounds of relaxation (Bellman-Ford property)",
+        "        updated = False",
+        "        for (u, v), p in zip(edges, succProb):",
+        "            if prob[u] * p > prob[v]:  # @tooltip: Try to improve v through u - multiply probabilities for path",
+        "                prob[v] = prob[u] * p"
+      ],
+      "function_context": "def maxProbability(n: int, edges: list[list[int]], succProb: list[float], start: int, end: int) -> float:"
+    }
+  },
+  "expr_6": {
+    "id": "expr_6",
+    "type": "expression",
+    "language": "python",
+    "file": "examples/code/bellman-ford.py",
+    "line": 45,
+    "expression": "zip(edges, succProb)",
+    "description": "Try to improve v through u - multiply probabilities for path",
+    "context": {
+      "start_line": 42,
+      "end_line": 49,
+      "surrounding_code": [
+        "",
+        "    for _ in range(n - 1):  # @tooltip: Perform up to n-1 rounds of relaxation (Bellman-Ford property)",
+        "        updated = False",
+        "        for (u, v), p in zip(edges, succProb):",
+        "            if prob[u] * p > prob[v]:  # @tooltip: Try to improve v through u - multiply probabilities for path",
+        "                prob[v] = prob[u] * p",
+        "                updated = True",
+        "            if prob[v] * p > prob[u]:  # @tooltip: Try to improve u through v (undirected graph)"
+      ],
+      "function_context": "def maxProbability(n: int, edges: list[list[int]], succProb: list[float], start: int, end: int) -> float:"
+    }
+  },
+  "expr_7": {
+    "id": "expr_7",
+    "type": "expression",
+    "language": "python",
+    "file": "examples/code/bellman-ford.py",
+    "line": 13,
+    "expression": "d[u] + w",
+    "description": "Relaxation step - update distance if we found a shorter path",
+    "context": {
+      "start_line": 10,
+      "end_line": 17,
+      "surrounding_code": [
+        "    for _ in range(k + 1):",
+        "        tmp = d[:]",
+        "        for u, v, w in flights:",
+        "            if d[u] + w < tmp[v]:  # @tooltip: Relaxation step - update distance if we found a shorter path",
+        "                tmp[v] = d[u] + w",
+        "        d = tmp",
+        "",
+        "    return d[dst] if d[dst] < float('inf') else -1"
+      ],
+      "function_context": "def findCheapestPrice(n: int, flights: list[list[int]], src: int, dst: int, k: int) -> int:"
+    }
+  },
+  "expr_8": {
+    "id": "expr_8",
+    "type": "expression",
+    "language": "python",
+    "file": "examples/code/bellman-ford.py",
+    "line": 13,
+    "expression": "tmp[v]",
+    "description": "Relaxation step - update distance if we found a shorter path",
+    "context": {
+      "start_line": 10,
+      "end_line": 17,
+      "surrounding_code": [
+        "    for _ in range(k + 1):",
+        "        tmp = d[:]",
+        "        for u, v, w in flights:",
+        "            if d[u] + w < tmp[v]:  # @tooltip: Relaxation step - update distance if we found a shorter path",
+        "                tmp[v] = d[u] + w",
+        "        d = tmp",
+        "",
+        "    return d[dst] if d[dst] < float('inf') else -1"
+      ],
+      "function_context": "def findCheapestPrice(n: int, flights: list[list[int]], src: int, dst: int, k: int) -> int:"
+    }
+  },
+  "expr_9": {
+    "id": "expr_9",
+    "type": "expression",
+    "language": "python",
+    "file": "examples/code/bellman-ford.py",
+    "line": 46,
+    "expression": "prob[u] * p",
+    "description": "Try to improve v through u - multiply probabilities for path",
+    "context": {
+      "start_line": 43,
+      "end_line": 50,
+      "surrounding_code": [
+        "    for _ in range(n - 1):  # @tooltip: Perform up to n-1 rounds of relaxation (Bellman-Ford property)",
+        "        updated = False",
+        "        for (u, v), p in zip(edges, succProb):",
+        "            if prob[u] * p > prob[v]:  # @tooltip: Try to improve v through u - multiply probabilities for path",
+        "                prob[v] = prob[u] * p",
+        "                updated = True",
+        "            if prob[v] * p > prob[u]:  # @tooltip: Try to improve u through v (undirected graph)",
+        "                prob[u] = prob[v] * p"
+      ],
+      "function_context": "def maxProbability(n: int, edges: list[list[int]], succProb: list[float], start: int, end: int) -> float:"
+    }
+  },
+  "expr_10": {
+    "id": "expr_10",
+    "type": "expression",
+    "language": "python",
+    "file": "examples/code/bellman-ford.py",
+    "line": 46,
+    "expression": "prob[v]",
+    "description": "Try to improve v through u - multiply probabilities for path",
+    "context": {
+      "start_line": 43,
+      "end_line": 50,
+      "surrounding_code": [
+        "    for _ in range(n - 1):  # @tooltip: Perform up to n-1 rounds of relaxation (Bellman-Ford property)",
+        "        updated = False",
+        "        for (u, v), p in zip(edges, succProb):",
+        "            if prob[u] * p > prob[v]:  # @tooltip: Try to improve v through u - multiply probabilities for path",
+        "                prob[v] = prob[u] * p",
+        "                updated = True",
+        "            if prob[v] * p > prob[u]:  # @tooltip: Try to improve u through v (undirected graph)",
+        "                prob[u] = prob[v] * p"
+      ],
+      "function_context": "def maxProbability(n: int, edges: list[list[int]], succProb: list[float], start: int, end: int) -> float:"
+    }
+  },
+  "expr_11": {
+    "id": "expr_11",
+    "type": "expression",
+    "language": "python",
+    "file": "examples/code/bellman-ford.py",
+    "line": 49,
+    "expression": "prob[v] * p",
+    "description": "Try to improve u through v (undirected graph)",
+    "context": {
+      "start_line": 46,
+      "end_line": 53,
+      "surrounding_code": [
+        "            if prob[u] * p > prob[v]:  # @tooltip: Try to improve v through u - multiply probabilities for path",
+        "                prob[v] = prob[u] * p",
+        "                updated = True",
+        "            if prob[v] * p > prob[u]:  # @tooltip: Try to improve u through v (undirected graph)",
+        "                prob[u] = prob[v] * p",
+        "                updated = True",
+        "        if not updated:  # @tooltip: Early exit if no updates in this round (optimization)",
+        "            break"
+      ],
+      "function_context": "def maxProbability(n: int, edges: list[list[int]], succProb: list[float], start: int, end: int) -> float:"
+    }
+  },
+  "expr_12": {
+    "id": "expr_12",
+    "type": "expression",
+    "language": "python",
+    "file": "examples/code/bellman-ford.py",
+    "line": 49,
+    "expression": "prob[u]",
+    "description": "Try to improve u through v (undirected graph)",
+    "context": {
+      "start_line": 46,
+      "end_line": 53,
+      "surrounding_code": [
+        "            if prob[u] * p > prob[v]:  # @tooltip: Try to improve v through u - multiply probabilities for path",
+        "                prob[v] = prob[u] * p",
+        "                updated = True",
+        "            if prob[v] * p > prob[u]:  # @tooltip: Try to improve u through v (undirected graph)",
+        "                prob[u] = prob[v] * p",
+        "                updated = True",
+        "        if not updated:  # @tooltip: Early exit if no updates in this round (optimization)",
+        "            break"
+      ],
+      "function_context": "def maxProbability(n: int, edges: list[list[int]], succProb: list[float], start: int, end: int) -> float:"
+    }
+  },
+  "expr_13": {
+    "id": "expr_13",
+    "type": "expression",
+    "language": "python",
+    "file": "examples/code/bellman-ford.py",
+    "line": 13,
+    "expression": "d[u]",
+    "description": "Relaxation step - update distance if we found a shorter path",
+    "context": {
+      "start_line": 10,
+      "end_line": 17,
+      "surrounding_code": [
+        "    for _ in range(k + 1):",
+        "        tmp = d[:]",
+        "        for u, v, w in flights:",
+        "            if d[u] + w < tmp[v]:  # @tooltip: Relaxation step - update distance if we found a shorter path",
+        "                tmp[v] = d[u] + w",
+        "        d = tmp",
+        "",
+        "    return d[dst] if d[dst] < float('inf') else -1"
+      ],
+      "function_context": "def findCheapestPrice(n: int, flights: list[list[int]], src: int, dst: int, k: int) -> int:"
+    }
+  },
+  "expr_14": {
+    "id": "expr_14",
+    "type": "expression",
+    "language": "python",
+    "file": "examples/code/bellman-ford.py",
+    "line": 46,
+    "expression": "prob[u]",
+    "description": "Try to improve v through u - multiply probabilities for path",
+    "context": {
+      "start_line": 43,
+      "end_line": 50,
+      "surrounding_code": [
+        "    for _ in range(n - 1):  # @tooltip: Perform up to n-1 rounds of relaxation (Bellman-Ford property)",
+        "        updated = False",
+        "        for (u, v), p in zip(edges, succProb):",
+        "            if prob[u] * p > prob[v]:  # @tooltip: Try to improve v through u - multiply probabilities for path",
+        "                prob[v] = prob[u] * p",
+        "                updated = True",
+        "            if prob[v] * p > prob[u]:  # @tooltip: Try to improve u through v (undirected graph)",
+        "                prob[u] = prob[v] * p"
+      ],
+      "function_context": "def maxProbability(n: int, edges: list[list[int]], succProb: list[float], start: int, end: int) -> float:"
+    }
+  },
+  "expr_15": {
+    "id": "expr_15",
+    "type": "expression",
+    "language": "python",
+    "file": "examples/code/bellman-ford.py",
+    "line": 49,
+    "expression": "prob[v]",
+    "description": "Try to improve u through v (undirected graph)",
+    "context": {
+      "start_line": 46,
+      "end_line": 53,
+      "surrounding_code": [
+        "            if prob[u] * p > prob[v]:  # @tooltip: Try to improve v through u - multiply probabilities for path",
+        "                prob[v] = prob[u] * p",
+        "                updated = True",
+        "            if prob[v] * p > prob[u]:  # @tooltip: Try to improve u through v (undirected graph)",
+        "                prob[u] = prob[v] * p",
+        "                updated = True",
+        "        if not updated:  # @tooltip: Early exit if no updates in this round (optimization)",
+        "            break"
+      ],
+      "function_context": "def maxProbability(n: int, edges: list[list[int]], succProb: list[float], start: int, end: int) -> float:"
+    }
+  },
   "dijkstra": {
     "name": "dijkstra",
     "type": "function",
@@ -160,119 +670,6 @@
         "type": "variable"
       }
     ]
-  },
-  "findCheapestPrice": {
-    "name": "findCheapestPrice",
-    "type": "function",
-    "language": "python",
-    "file": "examples/code/dijkstra.py",
-    "line": 152,
-    "signature": "def findCheapestPrice( flights: list[list[int]], src: int, dst: int, k: int) -> int:",
-    "parameters": [
-      {
-        "name": "flights",
-        "type": "list[list[int]]",
-        "description": "",
-        "default": null
-      },
-      {
-        "name": "src",
-        "type": "int",
-        "description": "",
-        "default": null
-      },
-      {
-        "name": "dst",
-        "type": "int",
-        "description": "",
-        "default": null
-      },
-      {
-        "name": "k",
-        "type": "int",
-        "description": "",
-        "default": null
-      }
-    ],
-    "return_type": "int",
-    "return_description": "",
-    "description": "Variables:",
-    "code": "def findCheapestPrice( flights: list[list[int]], src: int, dst: int, k: int) -> int:\n    graph = defaultdict(list)\n    for u, v, price in flights:\n        graph[u].append((v, price))\n    pq, min_stops = [(0, src, 0)], {}\n    while pq:\n        cost, city, stops = heapq.heappop(pq)\n        if stops > min_stops.get(city, float(\"inf\")): continue\n        if city == dst: return cost\n        min_stops[city] = stops\n        if stops <= k:\n            for neighbor, price in graph[city]:\n                heapq.heappush(pq, (cost + price, neighbor, stops + 1))\n    return -1",
-    "links": [],
-    "variables": [
-      {
-        "name": "pq",
-        "description": "Priority queue to store the state (cost, city, stops_taken)",
-        "type": "variable"
-      },
-      {
-        "name": "min_stops",
-        "description": "Tracks the minimum stops to reach each city",
-        "type": "variable"
-      }
-    ]
-  },
-  "Solution": {
-    "name": "Solution",
-    "type": "class",
-    "language": "python",
-    "file": "examples/code/stack.py",
-    "line": 1,
-    "signature": "class Solution:",
-    "parameters": [],
-    "return_type": "",
-    "return_description": "",
-    "description": "",
-    "code": "class Solution:\n    def decodeString(self, s: str) -> str:\n        stack, s = [], \"1[\" + s + \"]\"\n        for c in s:\n            if c == \"]\":\n                curr = []\n                while stack[-1] != \"[\":\n                    curr.append(stack.pop())\n                stack.pop()  \n                num = []\n                while stack and stack[-1].isdigit():\n                    num.append(stack.pop())\n                stack.append(\"\".join(reversed(curr)) * int(\"\".join(reversed(num))))\n            else:\n                stack.append(c)\n        return stack[0]",
-    "links": [],
-    "variables": []
-  },
-  "Solution.findCheapestPrice": {
-    "name": "findCheapestPrice",
-    "type": "method",
-    "language": "python",
-    "file": "examples/code/blackboard.py",
-    "line": 6,
-    "signature": "def findCheapestPrice(self, n: int, flights: list[list[int]], src: int, dst: int, k: int) -> int:",
-    "parameters": [
-      {
-        "name": "n",
-        "type": "int",
-        "description": "",
-        "default": null
-      },
-      {
-        "name": "flights",
-        "type": "list[list[int]]",
-        "description": "",
-        "default": null
-      },
-      {
-        "name": "src",
-        "type": "int",
-        "description": "",
-        "default": null
-      },
-      {
-        "name": "dst",
-        "type": "int",
-        "description": "",
-        "default": null
-      },
-      {
-        "name": "k",
-        "type": "int",
-        "description": "",
-        "default": null
-      }
-    ],
-    "return_type": "int",
-    "return_description": "",
-    "description": "",
-    "code": "def findCheapestPrice(self, n: int, flights: list[list[int]], src: int, dst: int, k: int) -> int:\n        graph = defaultdict(list)\n        for u, v, price in flights:\n            graph[u].append((v, price))\n        pq = [(0, src, 0)]\n        min_stops = {}\n        while pq:\n            cost, city, stops = heapq.heappop(pq)\n            if stops > min_stops.get(city, float(\"inf\")):\n                continue\n            min_stops[city] = stops\n            if city == dst:\n                return cost\n            if stops <= k:\n                for neighbor, price in graph[city]:\n                    heapq.heappush(pq, (cost + price, neighbor, stops + 1))\n        return -1",
-    "links": [],
-    "variables": [],
-    "parent": "Solution"
   },
   "LRUCache": {
     "name": "LRUCache",
@@ -476,6 +873,21 @@
     "links": [],
     "variables": [],
     "parent": "LFUCache"
+  },
+  "Solution": {
+    "name": "Solution",
+    "type": "class",
+    "language": "python",
+    "file": "examples/code/stack.py",
+    "line": 1,
+    "signature": "class Solution:",
+    "parameters": [],
+    "return_type": "",
+    "return_description": "",
+    "description": "",
+    "code": "class Solution:\n    def decodeString(self, s: str) -> str:\n        stack, s = [], \"1[\" + s + \"]\"\n        for c in s:\n            if c == \"]\":\n                curr = []\n                while stack[-1] != \"[\":\n                    curr.append(stack.pop())\n                stack.pop()  \n                num = []\n                while stack and stack[-1].isdigit():\n                    num.append(stack.pop())\n                stack.append(\"\".join(reversed(curr)) * int(\"\".join(reversed(num))))\n            else:\n                stack.append(c)\n        return stack[0]",
+    "links": [],
+    "variables": []
   },
   "Solution.decodeString": {
     "name": "decodeString",

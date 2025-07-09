@@ -4,12 +4,41 @@ import { motion } from 'framer-motion'
 import { memo } from 'react'
 import type { ReactNode } from 'react'
 import { isValidColorName } from '@/lib/step-colors'
+import { InlineMath } from '@/components/mdx/inline-math'
 
 export interface InlineCodeClientProps {
   children: ReactNode
   highlighted: boolean
   step?: number
   colorName?: string
+}
+
+// Helper function to render mixed content (text + math)
+function renderMixedContent(content: ReactNode): ReactNode {
+  if (typeof content === 'string') {
+    // Check if the string contains math expressions
+    if (content.includes('$') && content.match(/\$[^$]+\$/)) {
+      const parts = content.split(/(\$[^$]+\$)/);
+      
+      return parts.map((part, index) => {
+        const mathMatch = part.match(/^\$([^$]+)\$$/);
+        if (mathMatch) {
+          const [, mathExpression] = mathMatch;
+          return (
+            <InlineMath 
+              key={index}
+              className="inline-block"
+            >
+              {mathExpression.trim()}
+            </InlineMath>
+          );
+        }
+        return part;
+      });
+    }
+  }
+  
+  return content;
 }
 
 export const InlineCodeClient = memo(function InlineCodeClient({ 
@@ -58,7 +87,7 @@ export const InlineCodeClient = memo(function InlineCodeClient({
            font-bold
            hover:bg-linear-to-l
            `}>
-        {children}
+        {renderMixedContent(children)}
         </span>
       </motion.code>
     )
@@ -79,7 +108,7 @@ export const InlineCodeClient = memo(function InlineCodeClient({
           transition={{ duration: 0.1 }}
           role="code"
       >
-        {children}
+        {renderMixedContent(children)}
       </motion.span>
     )
   }
@@ -109,7 +138,7 @@ export const InlineCodeClient = memo(function InlineCodeClient({
          font-bold
          hover:bg-linear-to-l
          ">
-      {children}
+      {renderMixedContent(children)}
       </span>
     </motion.code>
   )
