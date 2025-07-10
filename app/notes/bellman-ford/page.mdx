@@ -13,7 +13,7 @@
 
 
 
-> *The algorithm is straight-forward:*
+> *Algorithm:*
 > 1. initialize distance estimates, 
 > 2. **Relax all edges |V|–1 times** to compute shortest paths(*where each relaxation improves distance estimates*).
 > 3. **Then** do one more pass (the $V$th): 
@@ -41,7 +41,7 @@ Space: $O(|V|)$
 > Construct DAG $G'$ with levels $k = 0$ to $|V|$, each node $v_k$ tracks distance using $k$ edges.
 > If $\delta_{|V|}(s, v) < \delta_{|V|-1}(s, v)$, then $v$ is a witness to a negative cycle.
 
-> *The algorithm is straight-forward:*
+> *Algorithm:*
 > 1.	Build $G'$ with (|V|+1) levels
 > 2.	Edges:
 >       1.	From $v_{k-1} \to v_k$: weight 0
@@ -201,7 +201,7 @@ Space: $O(|V| + |E|)$
 > 3. **Mapping to the variant 2's layered-DAG Bellman-Ford**
 > 
 >    * **variant 2** builds an explicit |V|+1 layer DAG, where each pass relaxes only edges from layer k−1 → k, so after k passes you have δₖ(s,v).
->    * **Your DP** does the same in “software”: each `for _ in range(k+1)` pass reads δₖ from `d` and writes δₖ₊₁ into `tmp`.
+>    * **Our Solution** does the same in “software”: each `for _ in range(k+1)` pass reads δₖ from `d` and writes δₖ₊₁ into `tmp`.
 >    * After k+1 passes, `d[v] = δ_{k+1}(s,v)`.
 > 
 > 4. **Classic (in-place) Bellman-Ford vs. layered version**
@@ -223,7 +223,7 @@ Space: $O(|V| + |E|)$
 > 
 > ---
 > 
-> **In summary:** your cheapest-flights DP *is* the layered-DAG Bellman-Ford in disguise. The `tmp` copy enforces strict layering (δₖ→δₖ₊₁), matching
+> **In summary:** our cheapest-flights solution *is* the layered-DAG Bellman-Ford in disguise. The `tmp` copy enforces strict layering (δₖ→δₖ₊₁), matching
   variant 2's model, while in-place updates would collapse multiple hops per pass into the classic algorithm.
 
 
