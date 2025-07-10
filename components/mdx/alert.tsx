@@ -1,6 +1,6 @@
 "use client"; // Required for Framer Motion components
 
-import { AlertCircle, Info, Lightbulb, Notebook, AlertTriangle, MessageCircle, ChevronDown, Clock } from "lucide-react";
+import { AlertCircle, Info, Lightbulb, Notebook, AlertTriangle, ChevronDown, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
@@ -12,7 +12,7 @@ const ICONS = {
   important: AlertCircle,
   caution: Info,
   example: Notebook,
-  comment: MessageCircle,
+  comment: Notebook,
   deepdive: Notebook,
   definition: Notebook,
   timecomplexity: Clock,
@@ -73,11 +73,17 @@ const STYLES = {
     iconBg: "bg-alert-example/10",
   },
   comment: {
-    gradient: "from-white to-alert-comment/20 dark:from-gray-900 dark:to-alert-comment/20",
-    border: "border-alert-comment",
-    text: "text-alert-comment",
-    iconBg: "bg-alert-comment/10",
+    gradient: "from-white to-alert-note/20 dark:from-gray-900 dark:to-alert-note/20",
+    border: "border-alert-note",
+    text: "text-alert-note",
+    iconBg: "bg-alert-note/10",
   },
+  // comment: {
+  //   gradient: "from-white to-alert-comment/20 dark:from-gray-900 dark:to-alert-comment/20",
+  //   border: "border-alert-comment",
+  //   text: "text-alert-comment",
+  //   iconBg: "bg-alert-comment/10",
+  // },
   deepdive: {
     gradient: "from-white to-alert-deepdive/20 dark:from-gray-900 dark:to-alert-deepdive/20",
     border: "border-alert-deepdive",
@@ -287,15 +293,16 @@ export default function Alert({ type, children, collapse = false }: AlertProps) 
         <div className={cn(
           "flex items-center gap-2 mb-0.5",
         )}>
-          {/* <div className={cn("flex-shrink-0 rounded-full p-1", styles.iconBg)}>
+          {type != "note" && <>
+          <div className={cn("flex-shrink-0 rounded-full p-1", styles.iconBg)}>
             <Icon className={cn("w-4 h-4", styles.text)} />
           </div>
           <div className={cn(
             "font-semibold text-sm uppercase tracking-wider",
             styles.text,
           )}>
-            {type}
-          </div> */}
+            { `${type === "comment" ? "Note" : type}`}
+          </div></>}
 
           {/* <div className={cn(
             "pb-0  place-self-center ",
