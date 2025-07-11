@@ -1,0 +1,86 @@
+# Cache
+
+## Resizable table of contents
+
+
+## Caching Strategies: LRU and LFU
+
+Caching is a fundamental technique in computer science used to store frequently accessed data temporarily in a faster-to-access location (a "cache"). When the cache reaches its capacity, an eviction policy decides which item to discard to make room for new ones. Two popular policies are **Least Recently Used (LRU)** and **Least Frequently Used (LFU)**. Both can be implemented to achieve `O(1)` time complexity for their core operations.
+
+-----
+
+## LRU Cache: Evicting the Oldest
+
+An **LRU (Least Recently Used)** cache discards the item that hasn't been accessed for the longest time. The logic is simple: if you haven't used something recently, you're less likely to use it in the near future.
+
+This policy is efficiently implemented using an `OrderedDict` in Python, which internally combines a hash map for fast lookups and a doubly-linked list to maintain insertion order.
+
+  * **`get(key)`**: When an item is accessed, it becomes the most recently used. We fetch the item and move it to the end of the `OrderedDict`.
+  * **`put(key, value)`**: When an item is added or updated, it's also considered the most recently used and is moved to the end. If the cache exceeds its capacity, the item at the front of the `OrderedDict` (the least recently used) is removed.
+
+
+
+
+
+
+
+### Example: The Library Convenience Shelf
+
+
+  > **The Setup:**
+  > 1. A single shelf *[8:]starts* at a *[8:]reshelving basket* `$🧺  _📘..._📕 👵$` and *[2:]ends* right next to the *[2:]librarian's chair*.
+
+
+
+  > **The Action:**
+    > 1.  When a book is needed (`get` or `put`), the librarian places it on the shelf right beside her chair—at the very **end** of the line.
+    > 2.  As she adds books, the line gets pushed down the shelf until the book at the far end(the one at the beginning of the shelf) falls into the basket. This evicted book is the one that was least recently used.
+    >
+
+> **In Code:**
+  > 1. `cache.move_to_end(key)` places a book at the *[2:]end*, near the *[2:]librarian's chair*.
+  > 2. `cache.popitem(last=False)` drops the book farthest from the librarian(a.k.a. the one at the *[8:]beginning* of the shelf) into the *[8:]basket*.
+
+### Python Implementation
+
+```python file=examples/code/cache.py#class:LRUCache stripDocstring 
+```
+
+## LFU Cache: Evicting the Rarest
+
+An **LFU (Least Frequently Used)** cache tracks how often each item is accessed. When eviction is necessary, it removes the item with the lowest access count. If there's a tie (multiple items have the same lowest frequency), the least recently used among them is chosen.
+
+This requires a more complex structure:
+
+  * A **cache dictionary** (`key → value`) for the main data store.
+  * A **frequency dictionary** (`key → frequency_count`).
+  * A **buckets dictionary** that groups keys by their frequency count. Each bucket is an `OrderedDict` to maintain LRU order within that frequency level (`frequency_count → OrderedDict[key, None]`).
+
+When an item is accessed (`get` or `put`), its frequency count is incremented, and it moves from its current frequency bucket to the next, becoming the most recent item in that new bucket. For eviction, we remove the least recently used item from the lowest frequency bucket.
+
+
+### Example: Bookcase with Multiple Convenience Shelves
+
+The librarian notices a flaw in her simple system: a popular book can be pushed out by a burst of new, less important books. To solve this, she upgrades.
+
+  > **The Setup:** Instead of one shelf, she now has a small bookcase with **multiple shelves**, stacked vertically. This is the **LFU (Least Frequently Used)** system, which tracks a book's **popularity**.
+  
+  > **The Action:**
+    > 1.  The shelves represent popularity levels. The **bottom shelf (\#1)** is for newcomers (used once), the shelf above it **(\#2)** is for books used twice, and so on.
+    > 2.  When a book on a lower shelf (say, Shelf \#1) is needed again, it gets a **promotion\!** The librarian moves it up to Shelf \#2 and places it in the spot **right next to her chair**—at the end of that new line. It is now the most recently used among all books with a popularity score of two.
+    > 3.  For **eviction**, she always takes from the **bottom shelf (\#1)**, since it holds the least popular books. From that shelf, she removes the book at the far end—the one closest to the basket.
+  > 
+  > This protects popular books by moving them up the bookcase, away from the eviction zone on the bottom shelf.
+
+> **In Code:**
+> 1. The `[8:]buckets` dictionary is our *[8:]bookcase*(our *[8:]shelves*); each `[14:]key` is a *[14:]shelf number*.
+
+
+### Python Implementation
+
+```python file=examples/code/cache.py#class:LFUCache stripDocstring 
+```
+
+
+
+

@@ -187,7 +187,71 @@ function extractClass(code: string, className: string, stripDocstring = false): 
     classCode = beforeDocstring + (afterDocstring ? '\n' + afterDocstring : '');
   }
 
+  // Strip method docstrings if requested
+  if (stripDocstring) {
+    classCode = stripMethodDocstrings(classCode);
+  }
+
   return classCode.trim();
+}
+
+function stripMethodDocstrings(code: string): string {
+  const lines = code.split('\n');
+  const result: string[] = [];
+  let i = 0;
+  
+  while (i < lines.length) {
+    const line = lines[i];
+    const trimmed = line.trim();
+    
+    // If this is a method definition, add it and check for docstring
+    if (trimmed.startsWith('def ') || trimmed.startsWith('async def ')) {
+      result.push(line);
+      i++;
+      
+      // Skip empty lines after method definition
+      while (i < lines.length && lines[i].trim() === '') {
+        result.push(lines[i]);
+        i++;
+      }
+      
+      // Check if next non-empty line is a docstring
+      if (i < lines.length) {
+        const nextLine = lines[i];
+        const nextTrimmed = nextLine.trim();
+        
+        if (nextTrimmed.startsWith('"""') || nextTrimmed.startsWith("'''")) {
+          const quoteType = nextTrimmed.startsWith('"""') ? '"""' : "'''";
+          
+          // Single-line docstring
+          if (nextTrimmed.length > 3 && nextTrimmed.endsWith(quoteType)) {
+            i++; // Skip this line
+            continue;
+          }
+          
+          // Multi-line docstring - skip until closing quotes
+          i++; // Skip opening line
+          while (i < lines.length) {
+            if (lines[i].trim().endsWith(quoteType)) {
+              i++; // Skip closing line
+              break;
+            }
+            i++; // Skip content line
+          }
+          continue;
+        }
+      }
+      // If we reach here, there was no docstring after the method definition
+      // Continue to next iteration without adding the line again
+      continue;
+    }
+    
+    // For all other lines, just add them
+    result.push(line);
+    i++;
+  }
+  
+  return result.join('\n');
 }
 
 function extractClassMethod(code: string, className: string, methodName: string, stripDocstring = false): string {

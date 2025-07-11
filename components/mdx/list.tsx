@@ -164,7 +164,7 @@ export const ListItem = ({ children, className = "" }: ListItemProps) => {
         )}
       >
         <div className="flex items-start ">
-          <div className="flex-1">{children}</div>
+          <div className="flex-1 text-lg">{children}</div>
         </div>
       </motion.li>
     )

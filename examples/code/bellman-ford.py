@@ -36,10 +36,12 @@ def bellman_ford_layered_dag(vertices: list[str], edges: list[tuple[str, str, fl
        the best cost using ≤ i edges.
     3. Identify any vertex v where δ_V(s,v) < δ_{V−1}(s,v) as a negative-cycle witness.
     4. Flood successors of those witnesses and mark their distances as −∞.
+
     Args:
         vertices: All hashable vertex identifiers.
         edges: Iterable of (u, v, weight) tuples.
         source: Starting vertex.
+        
     Returns:
         A dict mapping each vertex to its true shortest-path cost from `source`,
         or float('-inf') if it’s reachable from a negative-weight cycle.
@@ -109,18 +111,9 @@ def maxProbability(n: int, edges: list[list[int]], succProb: list[float], start:
         n: number of nodes
         edges: edges[i] = [u, v] is an undirected edge connecting the nodes u and v with a probability of success of traversing that edge succProb[i].
         succProb: list of probabilities, e.g. [0.5,0.5,0.2],
-        start: start node
-        end: end node
 
-    Variables:
-    •	prob: prob[i] stores max probability to reach node i
-    •   prob = [0.0] * n  # Initialize all probabilities to 0
-    •	prob[start] = 1.0  # Starting node has probability 1 (certainty)
-    •	prob[end] is the final result
-
-    Expressions:
     """
-    prob = [0.0] * n
+    prob = [0.0] * n # rob[i] stores max probability to reach node i
     prob[start] = 1.0  # Start with full certainty
 
     for _ in range(n - 1):  # Perform up to n-1 rounds of relaxation

@@ -1,8 +1,8 @@
-import CopyCode from './copy-code';
 import { tooltipifyJSX } from './tooltipify-jsx';
 import { renderTooltipContent } from './render-tooltip-content';
 import highlightCode from './code-highlighter';
 import { getTooltipContent } from './tooltip-content';
+import { CodeBlockClient } from './code-block-client';
 
 export type CodeBlockProps = {
   className: string;
@@ -11,7 +11,6 @@ export type CodeBlockProps = {
 };
 
 export default async function CodeBlock(props: CodeBlockProps) {
-
   const { className, meta, children: code } = { ...props }
 
   const tooltipContent = await getTooltipContent()
@@ -23,13 +22,16 @@ export default async function CodeBlock(props: CodeBlockProps) {
       renderTooltipContent(symbol, parent, { ...tooltipContent}, path)
   );
 
+  // Count lines in the code
+  const codeLines = (code as string).split('\n');
+  const totalLines = codeLines.length;
+
   return (
-    <div className="shadow-2xl rounded-md dark:bg-gray-800 bg-gray-100 p-4 my-4">
-      <div className="relative">
-        <CopyCode className="absolute top-0 right-0" code={code as string} />
-        <div className="overflow-x-auto py-8 line-numbers">{highlightedCodeWithTooltips}</div>
-      </div>
-    </div>
+    <CodeBlockClient
+      code={code as string}
+      highlightedCodeWithTooltips={highlightedCodeWithTooltips}
+      totalLines={totalLines}
+    />
   )
 }
 

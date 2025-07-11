@@ -120,6 +120,64 @@ def test_class_method_links():
     assert link['valid'] == True, "Link should be valid"
 
 
+def test_class_docstring_stripping():
+    """Test that class code extraction removes all docstrings and inserts 'pass' if needed."""
+    import tempfile
+    import textwrap
+    import ast
+    project_root = Path(__file__).parent.parent.parent.resolve()
+    # Minimal test class with class and method docstrings
+    code = textwrap.dedent('''
+        class TestClass:
+            """Class docstring"""
+            def method_with_doc(self):
+                """Method docstring"""
+                x = 1
+            def method_without_doc(self):
+                y = 2
+            def only_doc(self):
+                """Only docstring"""
+    ''')
+    # Write to a temp file
+    with tempfile.NamedTemporaryFile('w', suffix='.py', delete=False) as f:
+        f.write(code)
+        f.flush()
+        test_file = Path(f.name)
+    try:
+        extractor = PythonExtractor()
+        symbols = extractor.extract_from_file(test_file, project_root)
+        cls = symbols.get('TestClass')
+        assert cls is not None, 'TestClass not found'
+        class_code = cls['code']
+        # Should not contain any docstring
+        assert '"""' not in class_code, 'Docstring not removed from class code'
+        assert 'Class docstring' not in class_code, 'Class docstring not removed'
+        assert 'Method docstring' not in class_code, 'Method docstring not removed'
+        # Should contain all method signatures
+        assert 'def method_with_doc' in class_code, 'method_with_doc missing'
+        assert 'def method_without_doc' in class_code, 'method_without_doc missing'
+        assert 'def only_doc' in class_code, 'only_doc missing'
+        # Should insert pass for only_doc
+        lines = class_code.splitlines()
+        found_only_doc = False
+        for i, line in enumerate(lines):
+            if 'def only_doc' in line:
+                found_only_doc = True
+                # Next non-empty line should be 'pass'
+                for j in range(i+1, len(lines)):
+                    if lines[j].strip():
+                        assert lines[j].strip() == 'pass', 'pass not inserted for empty method'
+                        break
+        assert found_only_doc, 'only_doc method not found'
+        # Should be valid Python code
+        try:
+            ast.parse(class_code)
+        except Exception as e:
+            assert False, f'Class code is not valid Python: {e}'
+    finally:
+        test_file.unlink()
+
+
 if __name__ == '__main__':
     print("Running extractor tests...")
     test_extractor()

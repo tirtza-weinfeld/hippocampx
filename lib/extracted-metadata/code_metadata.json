@@ -3,29 +3,10 @@
     "name": "bellman_ford_classic",
     "type": "function",
     "language": "python",
-    "file": "examples/code/bellman-ford.py",
+    "file": "/Users/tirtza/dev-local/hippocampx/examples/code/bellman-ford.py",
     "line": 3,
     "signature": "def bellman_ford_classic(vertices:list[str], edges:list[tuple[str, str, float]], source:str)->dict[str, float]:",
-    "parameters": [
-      {
-        "name": "vertices",
-        "type": "list[str]",
-        "description": "",
-        "default": null
-      },
-      {
-        "name": "edges",
-        "type": "list[tuple[(str, str, float)]]",
-        "description": "",
-        "default": null
-      },
-      {
-        "name": "source",
-        "type": "str",
-        "description": "",
-        "default": null
-      }
-    ],
+    "parameters": [],
     "return_type": "dict[(str, float)]",
     "return_description": "",
     "description": "Classic Bellman-Ford with early exit.",
@@ -45,7 +26,7 @@
     "name": "bellman_ford_layered_dag",
     "type": "function",
     "language": "python",
-    "file": "examples/code/bellman-ford.py",
+    "file": "/Users/tirtza/dev-local/hippocampx/examples/code/bellman-ford.py",
     "line": 31,
     "signature": "def bellman_ford_layered_dag(vertices: list[str], edges: list[tuple[str, str, float]], source: str) -> dict[str, float]:",
     "parameters": [
@@ -79,59 +60,23 @@
     "name": "findCheapestPrice",
     "type": "function",
     "language": "python",
-    "file": "examples/code/dijkstra.py",
-    "line": 152,
-    "signature": "def findCheapestPrice( flights: list[list[int]], src: int, dst: int, k: int) -> int:",
-    "parameters": [
-      {
-        "name": "flights",
-        "type": "list[list[int]]",
-        "description": "",
-        "default": null
-      },
-      {
-        "name": "src",
-        "type": "int",
-        "description": "",
-        "default": null
-      },
-      {
-        "name": "dst",
-        "type": "int",
-        "description": "",
-        "default": null
-      },
-      {
-        "name": "k",
-        "type": "int",
-        "description": "",
-        "default": null
-      }
-    ],
+    "file": "/Users/tirtza/dev-local/hippocampx/examples/code/bellman-ford.py",
+    "line": 89,
+    "signature": "def findCheapestPrice(n: int, flights: list[list[int]], src: int, dst: int, k: int) -> int:",
+    "parameters": [],
     "return_type": "int",
     "return_description": "",
-    "description": "Variables:",
-    "code": "def findCheapestPrice( flights: list[list[int]], src: int, dst: int, k: int) -> int:\n    graph = defaultdict(list)\n    for u, v, price in flights:\n        graph[u].append((v, price))\n    pq, min_stops = [(0, src, 0)], {}\n    while pq:\n        cost, city, stops = heapq.heappop(pq)\n        if stops > min_stops.get(city, float(\"inf\")): continue\n        if city == dst: return cost\n        min_stops[city] = stops\n        if stops <= k:\n            for neighbor, price in graph[city]:\n                heapq.heappush(pq, (cost + price, neighbor, stops + 1))\n    return -1",
+    "description": "",
+    "code": "def findCheapestPrice(n: int, flights: list[list[int]], src: int, dst: int, k: int) -> int:\n    d = [float(\"inf\")] * n\n    d[src] = 0\n    for _ in range(k + 1):\n        tmp = d[:]\n        for u, v, w in flights:\n            if d[u] + w < tmp[v]:\n                tmp[v] = d[u] + w\n        d = tmp\n    return d[dst] if d[dst] < float(\"inf\") else -1",
     "links": [],
-    "variables": [
-      {
-        "name": "pq",
-        "description": "Priority queue to store the state (cost, city, stops_taken)",
-        "type": "variable"
-      },
-      {
-        "name": "min_stops",
-        "description": "Tracks the minimum stops to reach each city",
-        "type": "variable"
-      }
-    ]
+    "variables": []
   },
   "maxProbability": {
     "name": "maxProbability",
     "type": "function",
     "language": "python",
-    "file": "examples/code/bellman-ford.py",
-    "line": 102,
+    "file": "/Users/tirtza/dev-local/hippocampx/examples/code/bellman-ford.py",
+    "line": 104,
     "signature": "def maxProbability(n: int, edges: list[list[int]], succProb: list[float], start: int, end: int) -> float:",
     "parameters": [
       {
@@ -150,18 +95,6 @@
         "name": "succProb",
         "type": "list[float]",
         "description": "list of probabilities, e.g. [0.5,0.5,0.2],",
-        "default": null
-      },
-      {
-        "name": "start",
-        "type": "int",
-        "description": "start node",
-        "default": null
-      },
-      {
-        "name": "end",
-        "type": "int",
-        "description": "end node",
         "default": null
       }
     ],
@@ -183,27 +116,6 @@
         "target": "i",
         "valid": false,
         "target_symbol": null
-      },
-      {
-        "symbol": "i",
-        "display": "[i]",
-        "target": "i",
-        "valid": false,
-        "target_symbol": null
-      },
-      {
-        "symbol": "start",
-        "display": "[start]",
-        "target": "start",
-        "valid": false,
-        "target_symbol": null
-      },
-      {
-        "symbol": "end",
-        "display": "[end]",
-        "target": "end",
-        "valid": false,
-        "target_symbol": null
       }
     ],
     "variables": []
@@ -212,7 +124,7 @@
     "name": "dijkstra",
     "type": "function",
     "language": "python",
-    "file": "examples/code/dijkstra.py",
+    "file": "/Users/tirtza/dev-local/hippocampx/examples/code/dijkstra.py",
     "line": 4,
     "signature": "def dijkstra(graph: dict[str, dict[str, int]], s: str):",
     "parameters": [
@@ -240,29 +152,10 @@
     "name": "networkDelayTime2",
     "type": "function",
     "language": "python",
-    "file": "examples/code/dijkstra.py",
+    "file": "/Users/tirtza/dev-local/hippocampx/examples/code/dijkstra.py",
     "line": 34,
     "signature": "def networkDelayTime2(times: list[list[int]], n: int, k: int) -> int:",
-    "parameters": [
-      {
-        "name": "times",
-        "type": "list[list[int]]",
-        "description": "",
-        "default": null
-      },
-      {
-        "name": "n",
-        "type": "int",
-        "description": "",
-        "default": null
-      },
-      {
-        "name": "k",
-        "type": "int",
-        "description": "",
-        "default": null
-      }
-    ],
+    "parameters": [],
     "return_type": "int",
     "return_description": "",
     "description": "",
@@ -274,7 +167,7 @@
     "name": "networkDelayTime",
     "type": "function",
     "language": "python",
-    "file": "examples/code/dijkstra.py",
+    "file": "/Users/tirtza/dev-local/hippocampx/examples/code/dijkstra.py",
     "line": 57,
     "signature": "def networkDelayTime(times: list[list[int]], n: int, k: int) -> int:",
     "parameters": [
@@ -308,7 +201,7 @@
     "name": "minimumEffortPath",
     "type": "function",
     "language": "python",
-    "file": "examples/code/dijkstra.py",
+    "file": "/Users/tirtza/dev-local/hippocampx/examples/code/dijkstra.py",
     "line": 91,
     "signature": "def minimumEffortPath(heights: list[list[int]]) -> int:",
     "parameters": [
@@ -341,7 +234,7 @@
     "name": "swimInWater",
     "type": "function",
     "language": "python",
-    "file": "examples/code/dijkstra.py",
+    "file": "/Users/tirtza/dev-local/hippocampx/examples/code/dijkstra.py",
     "line": 120,
     "signature": "def swimInWater(grid: list[list[int]]) -> int:",
     "parameters": [
@@ -370,18 +263,44 @@
       }
     ]
   },
+  "findCheapestPriceDijkstra": {
+    "name": "findCheapestPriceDijkstra",
+    "type": "function",
+    "language": "python",
+    "file": "/Users/tirtza/dev-local/hippocampx/examples/code/dijkstra.py",
+    "line": 152,
+    "signature": "def findCheapestPriceDijkstra( flights: list[list[int]], src: int, dst: int, k: int) -> int:",
+    "parameters": [],
+    "return_type": "int",
+    "return_description": "",
+    "description": "Variables:",
+    "code": "def findCheapestPriceDijkstra( flights: list[list[int]], src: int, dst: int, k: int) -> int:\n    graph = defaultdict(list)\n    for u, v, price in flights:\n        graph[u].append((v, price))\n    pq, min_stops = [(0, src, 0)], {}\n    while pq:\n        cost, city, stops = heapq.heappop(pq)\n        if stops > min_stops.get(city, float(\"inf\")): continue\n        if city == dst: return cost\n        min_stops[city] = stops\n        if stops <= k:\n            for neighbor, price in graph[city]:\n                heapq.heappush(pq, (cost + price, neighbor, stops + 1))\n    return -1",
+    "links": [],
+    "variables": [
+      {
+        "name": "pq",
+        "description": "Priority queue to store the state (cost, city, stops_taken)",
+        "type": "variable"
+      },
+      {
+        "name": "min_stops",
+        "description": "Tracks the minimum stops to reach each city",
+        "type": "variable"
+      }
+    ]
+  },
   "LRUCache": {
     "name": "LRUCache",
     "type": "class",
     "language": "python",
-    "file": "examples/code/cache.py",
+    "file": "/Users/tirtza/dev-local/hippocampx/examples/code/cache.py",
     "line": 4,
     "signature": "class LRUCache:",
     "parameters": [],
     "return_type": "",
     "return_description": "",
-    "description": "",
-    "code": "class LRUCache:\n    def __init__(self, capacity: int):\n        self.cache: OrderedDict[int, int] = OrderedDict()\n        self.capacity = capacity\n\n    def get(self, key: int) -> int:\n        if (val := self.cache.get(key)) is None:\n            return -1\n        self.cache.move_to_end(key)\n        return val\n\n    def put(self, key: int, value: int) -> None:\n        if key in self.cache:\n            self.cache.move_to_end(key)\n        self.cache[key] = value\n        if len(self.cache) > self.capacity:\n            self.cache.popitem(last=False)",
+    "description": "The LRU system is simple. It tracks *when* a book was last used.",
+    "code": "class LRUCache:\n        self.cache: OrderedDict[int, int] = OrderedDict()\n        self.capacity = capacity\n    def get(self, key: int) -> int:\n            return -1\n        self.cache.move_to_end(key)\n        return val\n    def put(self, key: int, value: int) -> None:\n            self.cache.move_to_end(key)\n        self.cache[key] = value\n        if len(self.cache) > self.capacity:\n            self.cache.popitem(last=False)",
     "links": [],
     "variables": []
   },
@@ -389,17 +308,10 @@
     "name": "__init__",
     "type": "method",
     "language": "python",
-    "file": "examples/code/cache.py",
-    "line": 5,
+    "file": "/Users/tirtza/dev-local/hippocampx/examples/code/cache.py",
+    "line": 8,
     "signature": "def __init__(self, capacity: int):",
-    "parameters": [
-      {
-        "name": "capacity",
-        "type": "int",
-        "description": "",
-        "default": null
-      }
-    ],
+    "parameters": [],
     "return_type": "",
     "return_description": "",
     "description": "",
@@ -412,21 +324,14 @@
     "name": "get",
     "type": "method",
     "language": "python",
-    "file": "examples/code/cache.py",
-    "line": 9,
+    "file": "/Users/tirtza/dev-local/hippocampx/examples/code/cache.py",
+    "line": 12,
     "signature": "def get(self, key: int) -> int:",
-    "parameters": [
-      {
-        "name": "key",
-        "type": "int",
-        "description": "",
-        "default": null
-      }
-    ],
+    "parameters": [],
     "return_type": "int",
     "return_description": "",
-    "description": "",
-    "code": "def get(self, key: int) -> int:\n        if (val := self.cache.get(key)) is None:\n            return -1\n        self.cache.move_to_end(key)\n        return val",
+    "description": "When an item is accessed, it becomes the most recently used. We fetch the item and move it to the end of the `OrderedDict`.",
+    "code": "def get(self, key: int) -> int:\n            return -1\n        self.cache.move_to_end(key)\n        return val",
     "links": [],
     "variables": [],
     "parent": "LRUCache"
@@ -435,27 +340,14 @@
     "name": "put",
     "type": "method",
     "language": "python",
-    "file": "examples/code/cache.py",
-    "line": 15,
+    "file": "/Users/tirtza/dev-local/hippocampx/examples/code/cache.py",
+    "line": 21,
     "signature": "def put(self, key: int, value: int) -> None:",
-    "parameters": [
-      {
-        "name": "key",
-        "type": "int",
-        "description": "",
-        "default": null
-      },
-      {
-        "name": "value",
-        "type": "int",
-        "description": "",
-        "default": null
-      }
-    ],
+    "parameters": [],
     "return_type": "None",
     "return_description": "",
-    "description": "",
-    "code": "def put(self, key: int, value: int) -> None:\n        if key in self.cache:\n            self.cache.move_to_end(key)\n        self.cache[key] = value\n        if len(self.cache) > self.capacity:\n            self.cache.popitem(last=False)",
+    "description": "When an item is added or updated, it's also considered the most recently used and is moved to the end. If the cache exceeds its capacity, the item at the front of the OrderedDict (the least recently used) is removed.",
+    "code": "def put(self, key: int, value: int) -> None:\n            self.cache.move_to_end(key)\n        self.cache[key] = value\n        if len(self.cache) > self.capacity:\n            self.cache.popitem(last=False)",
     "links": [],
     "variables": [],
     "parent": "LRUCache"
@@ -464,14 +356,14 @@
     "name": "LFUCache",
     "type": "class",
     "language": "python",
-    "file": "examples/code/cache.py",
-    "line": 24,
+    "file": "/Users/tirtza/dev-local/hippocampx/examples/code/cache.py",
+    "line": 33,
     "signature": "class LFUCache:",
     "parameters": [],
     "return_type": "",
     "return_description": "",
-    "description": "",
-    "code": "class LFUCache:\n    def __init__(self, capacity: int):\n        self.capacity    = capacity\n        self.cache       = {}  \n        self.freq        = {}  \n        \n        self.buckets     = defaultdict(OrderedDict)  \n        self.minfreq     = 0\n\n    def _bump(self, key: int):\n        \"\"\"Move key from freq f to f+1.\"\"\"\n        f = self.freq[key]\n        \n        del self.buckets[f][key]\n        if not self.buckets[f]:\n            del self.buckets[f]\n            if self.minfreq == f:\n                self.minfreq += 1\n        \n        self.freq[key] +=1 \n        self.buckets[f + 1][key] = None\n\n    def get(self, key: int) -> int:\n        if key not in self.cache:\n            return -1\n        self._bump(key)\n        return self.cache[key]\n\n    def put(self, key: int, value: int) -> None:\n        if self.capacity <= 0:\n            return\n\n        if key in self.cache:\n            self.cache[key] = value\n            self._bump(key)\n            return\n\n        \n        if len(self.cache) >= self.capacity:\n            old_key, _ = self.buckets[self.minfreq].popitem(last=False)\n            del self.cache[old_key]\n            del self.freq[old_key]\n\n        \n        self.cache[key] = value\n        self.freq[key] = 1\n        self.buckets[1][key] = None\n        self.minfreq = 1",
+    "description": "The LFU system is more sophisticated. It tracks not just *when* a book was last used, but also *how often* it has been used.",
+    "code": "class LFUCache:\n        self.capacity    = capacity\n        self.cache       = {}  \n        self.freq        = {}  \n        self.buckets     = defaultdict(OrderedDict)  \n        self.minfreq     = 0\n    def _bump(self, key: int):\n        del self.buckets[f][key]\n        if not self.buckets[f]:\n            del self.buckets[f]\n            if self.minfreq == f:\n                self.minfreq += 1\n        self.freq[key] +=1 \n        self.buckets[f + 1][key] = None\n    def get(self, key: int) -> int:\n            return -1\n        self._bump(key)\n        return self.cache[key]\n    def put(self, key: int, value: int) -> None:\n            return\n        if key in self.cache:\n            self.cache[key] = value\n            self._bump(key)\n            return\n        if len(self.cache) >= self.capacity:\n            old_key, _ = self.buckets[self.minfreq].popitem(last=False)\n            del self.cache[old_key]\n            del self.freq[old_key]\n        self.cache[key] = value\n        self.freq[key] = 1\n        self.buckets[1][key] = None\n        self.minfreq = 1",
     "links": [],
     "variables": []
   },
@@ -479,17 +371,10 @@
     "name": "__init__",
     "type": "method",
     "language": "python",
-    "file": "examples/code/cache.py",
-    "line": 25,
+    "file": "/Users/tirtza/dev-local/hippocampx/examples/code/cache.py",
+    "line": 37,
     "signature": "def __init__(self, capacity: int):",
-    "parameters": [
-      {
-        "name": "capacity",
-        "type": "int",
-        "description": "",
-        "default": null
-      }
-    ],
+    "parameters": [],
     "return_type": "",
     "return_description": "",
     "description": "",
@@ -502,17 +387,10 @@
     "name": "_bump",
     "type": "method",
     "language": "python",
-    "file": "examples/code/cache.py",
-    "line": 33,
+    "file": "/Users/tirtza/dev-local/hippocampx/examples/code/cache.py",
+    "line": 44,
     "signature": "def _bump(self, key: int):",
-    "parameters": [
-      {
-        "name": "key",
-        "type": "int",
-        "description": "",
-        "default": null
-      }
-    ],
+    "parameters": [],
     "return_type": "",
     "return_description": "",
     "description": "Move key from freq f to f+1.",
@@ -525,21 +403,14 @@
     "name": "get",
     "type": "method",
     "language": "python",
-    "file": "examples/code/cache.py",
-    "line": 46,
+    "file": "/Users/tirtza/dev-local/hippocampx/examples/code/cache.py",
+    "line": 58,
     "signature": "def get(self, key: int) -> int:",
-    "parameters": [
-      {
-        "name": "key",
-        "type": "int",
-        "description": "",
-        "default": null
-      }
-    ],
+    "parameters": [],
     "return_type": "int",
     "return_description": "",
-    "description": "",
-    "code": "def get(self, key: int) -> int:\n        if key not in self.cache:\n            return -1\n        self._bump(key)\n        return self.cache[key]",
+    "description": "When an item is accessed (get or put), its frequency count is incremented, and it moves from its current frequency bucket to the next, becoming the most recent item in that new bucket. For eviction, we remove the least recently used item from the lowest frequency bucket.",
+    "code": "def get(self, key: int) -> int:\n            return -1\n        self._bump(key)\n        return self.cache[key]",
     "links": [],
     "variables": [],
     "parent": "LFUCache"
@@ -548,27 +419,14 @@
     "name": "put",
     "type": "method",
     "language": "python",
-    "file": "examples/code/cache.py",
-    "line": 52,
+    "file": "/Users/tirtza/dev-local/hippocampx/examples/code/cache.py",
+    "line": 67,
     "signature": "def put(self, key: int, value: int) -> None:",
-    "parameters": [
-      {
-        "name": "key",
-        "type": "int",
-        "description": "",
-        "default": null
-      },
-      {
-        "name": "value",
-        "type": "int",
-        "description": "",
-        "default": null
-      }
-    ],
+    "parameters": [],
     "return_type": "None",
     "return_description": "",
-    "description": "",
-    "code": "def put(self, key: int, value: int) -> None:\n        if self.capacity <= 0:\n            return\n        if key in self.cache:\n            self.cache[key] = value\n            self._bump(key)\n            return\n        if len(self.cache) >= self.capacity:\n            old_key, _ = self.buckets[self.minfreq].popitem(last=False)\n            del self.cache[old_key]\n            del self.freq[old_key]\n        self.cache[key] = value\n        self.freq[key] = 1\n        self.buckets[1][key] = None\n        self.minfreq = 1",
+    "description": "When an item is added or updated, its frequency count is set to 1, and it's added to the lowest frequency bucket. If the cache exceeds its capacity, the least recently used item from the lowest frequency bucket is removed.",
+    "code": "def put(self, key: int, value: int) -> None:\n            return\n        if key in self.cache:\n            self.cache[key] = value\n            self._bump(key)\n            return\n        if len(self.cache) >= self.capacity:\n            old_key, _ = self.buckets[self.minfreq].popitem(last=False)\n            del self.cache[old_key]\n            del self.freq[old_key]\n        self.cache[key] = value\n        self.freq[key] = 1\n        self.buckets[1][key] = None\n        self.minfreq = 1",
     "links": [],
     "variables": [],
     "parent": "LFUCache"
@@ -577,7 +435,7 @@
     "name": "Solution",
     "type": "class",
     "language": "python",
-    "file": "examples/code/stack.py",
+    "file": "/Users/tirtza/dev-local/hippocampx/examples/code/stack.py",
     "line": 1,
     "signature": "class Solution:",
     "parameters": [],
@@ -592,17 +450,10 @@
     "name": "decodeString",
     "type": "method",
     "language": "python",
-    "file": "examples/code/stack.py",
+    "file": "/Users/tirtza/dev-local/hippocampx/examples/code/stack.py",
     "line": 2,
     "signature": "def decodeString(self, s: str) -> str:",
-    "parameters": [
-      {
-        "name": "s",
-        "type": "str",
-        "description": "",
-        "default": null
-      }
-    ],
+    "parameters": [],
     "return_type": "str",
     "return_description": "",
     "description": "",
@@ -615,7 +466,7 @@
     "name": "mod",
     "type": "function",
     "language": "python",
-    "file": "examples/code/modular-arithmetic.py",
+    "file": "/Users/tirtza/dev-local/hippocampx/examples/code/modular-arithmetic.py",
     "line": 1,
     "signature": "def mod(a: int, b: int) -> int:",
     "parameters": [
@@ -643,7 +494,7 @@
     "name": "congruent1",
     "type": "function",
     "language": "python",
-    "file": "examples/code/modular-arithmetic.py",
+    "file": "/Users/tirtza/dev-local/hippocampx/examples/code/modular-arithmetic.py",
     "line": 14,
     "signature": "def congruent1(a: int, b: int, n: int) -> bool:",
     "parameters": [
@@ -677,7 +528,7 @@
     "name": "congruent2",
     "type": "function",
     "language": "python",
-    "file": "examples/code/modular-arithmetic.py",
+    "file": "/Users/tirtza/dev-local/hippocampx/examples/code/modular-arithmetic.py",
     "line": 27,
     "signature": "def congruent2(a: int, b: int, n: int) -> bool:",
     "parameters": [
@@ -711,7 +562,7 @@
     "name": "maxSubArrayLen",
     "type": "function",
     "language": "python",
-    "file": "examples/code/prefix_sum.py",
+    "file": "/Users/tirtza/dev-local/hippocampx/examples/code/prefix_sum.py",
     "line": 3,
     "signature": "def maxSubArrayLen(segments: list[int], k: int) -> int:",
     "parameters": [
@@ -739,7 +590,7 @@
     "name": "subarraySum",
     "type": "function",
     "language": "python",
-    "file": "examples/code/prefix_sum.py",
+    "file": "/Users/tirtza/dev-local/hippocampx/examples/code/prefix_sum.py",
     "line": 30,
     "signature": "def subarraySum(segments: list[int], k: int) -> int:",
     "parameters": [
@@ -767,7 +618,7 @@
     "name": "findMaxLength",
     "type": "function",
     "language": "python",
-    "file": "examples/code/prefix_sum.py",
+    "file": "/Users/tirtza/dev-local/hippocampx/examples/code/prefix_sum.py",
     "line": 52,
     "signature": "def findMaxLength(segments: list[int]) -> int:",
     "parameters": [
@@ -789,7 +640,7 @@
     "name": "checkSubarraySum",
     "type": "function",
     "language": "python",
-    "file": "examples/code/prefix_sum.py",
+    "file": "/Users/tirtza/dev-local/hippocampx/examples/code/prefix_sum.py",
     "line": 65,
     "signature": "def checkSubarraySum(segments: list[int], k: int) -> bool:",
     "parameters": [
@@ -817,7 +668,7 @@
     "name": "subarraysDivByK",
     "type": "function",
     "language": "python",
-    "file": "examples/code/prefix_sum.py",
+    "file": "/Users/tirtza/dev-local/hippocampx/examples/code/prefix_sum.py",
     "line": 89,
     "signature": "def subarraysDivByK(segments: list[int], k: int) -> int:",
     "parameters": [
@@ -845,7 +696,7 @@
     "name": "minSubarray",
     "type": "function",
     "language": "python",
-    "file": "examples/code/prefix_sum.py",
+    "file": "/Users/tirtza/dev-local/hippocampx/examples/code/prefix_sum.py",
     "line": 110,
     "signature": "def minSubarray(segments: list[int], p: int) -> int:",
     "parameters": [
@@ -873,7 +724,7 @@
     "name": "getModifiedArray",
     "type": "function",
     "language": "python",
-    "file": "examples/code/prefix_sum.py",
+    "file": "/Users/tirtza/dev-local/hippocampx/examples/code/prefix_sum.py",
     "line": 138,
     "signature": "def getModifiedArray(length: int, updates: list[list[int]]) -> list[int]:",
     "parameters": [
@@ -901,7 +752,7 @@
     "name": "numberOfArrays",
     "type": "function",
     "language": "python",
-    "file": "examples/code/prefix_sum.py",
+    "file": "/Users/tirtza/dev-local/hippocampx/examples/code/prefix_sum.py",
     "line": 159,
     "signature": "def numberOfArrays(differences: list[int], lower: int, upper: int) -> int:",
     "parameters": [

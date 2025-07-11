@@ -165,12 +165,14 @@ class PythonExtractor:
             # Get description from docstring
             param_description = docstring_params.get(param_name, "")
             
-            parameters.append({
-                "name": param_name,
-                "type": param_type,
-                "description": param_description,
-                "default": default_value
-            })
+            # Only include parameters that have descriptions in the docstring
+            if param_description.strip():
+                parameters.append({
+                    "name": param_name,
+                    "type": param_type,
+                    "description": param_description,
+                    "default": default_value
+                })
         
         return parameters
     
@@ -386,14 +388,20 @@ class PythonExtractor:
         start_line = node.lineno - 1
         end_line = node.end_lineno if hasattr(node, 'end_lineno') else start_line + 1
         code_lines = lines[start_line:end_line]
+        
         # Remove docstring if present
         if node.body and isinstance(node.body[0], ast.Expr) and isinstance(node.body[0].value, ast.Constant):
             docstring_node = node.body[0]
             docstring_start = docstring_node.lineno - 1
             docstring_end = docstring_node.end_lineno if hasattr(docstring_node, 'end_lineno') else docstring_start
-            # Remove docstring lines
-            code_lines = [line for i, line in enumerate(code_lines, start=start_line)
-                          if i < docstring_start or i > docstring_end]
+            # Remove docstring lines by filtering out the lines within the docstring range
+            filtered_lines = []
+            for i, line in enumerate(code_lines):
+                absolute_line_num = start_line + i
+                if absolute_line_num < docstring_start or absolute_line_num > docstring_end:
+                    filtered_lines.append(line)
+            code_lines = filtered_lines
+        
         # Remove comments and clean up
         cleaned_lines = []
         for line in code_lines:
@@ -401,6 +409,7 @@ class PythonExtractor:
             cleaned_line = re.sub(r'#.*$', '', line)
             if cleaned_line.strip():
                 cleaned_lines.append(cleaned_line)
+        
         code = '\n'.join(cleaned_lines).strip()
         return code
     
@@ -410,16 +419,82 @@ class PythonExtractor:
         class_start = node.lineno - 1
         class_end = node.end_lineno if hasattr(node, 'end_lineno') else class_start + 1
         class_lines = lines[class_start:class_end]
-        # Remove class docstring if present
-        if node.body and isinstance(node.body[0], ast.Expr) and isinstance(node.body[0].value, ast.Constant):
-            class_lines = self._remove_docstring_lines(class_lines)
+        
+        # Remove all docstrings from the class code
+        class_lines = self._remove_all_docstrings_from_class(node, class_lines, class_start)
+        
         # Remove comments
         cleaned_lines = []
         for line in class_lines:
             cleaned_line = re.sub(r'#.*$', '', line)
-            cleaned_lines.append(cleaned_line)
+            if cleaned_line.strip():  # Only keep non-empty lines
+                cleaned_lines.append(cleaned_line)
+        
         code = '\n'.join(cleaned_lines).strip()
         return code
+    
+    def _remove_all_docstrings_from_class(self, node: ast.ClassDef, class_lines: List[str], class_start: int) -> List[str]:
+        """Remove all docstrings from class code, including class docstrings and method docstrings."""
+        # Create a set of line numbers that contain docstrings
+        docstring_lines = set()
+        
+        # Check for class docstring
+        if node.body and isinstance(node.body[0], ast.Expr) and isinstance(node.body[0].value, ast.Constant):
+            docstring_node = node.body[0]
+            docstring_start = docstring_node.lineno - 1
+            docstring_end = docstring_node.end_lineno if hasattr(docstring_node, 'end_lineno') else docstring_start
+            for line_num in range(docstring_start, docstring_end + 1):
+                docstring_lines.add(line_num)
+        
+        # Check for method docstrings
+        for item in node.body:
+            if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                if item.body and isinstance(item.body[0], ast.Expr) and isinstance(item.body[0].value, ast.Constant):
+                    docstring_node = item.body[0]
+                    docstring_start = docstring_node.lineno - 1
+                    docstring_end = docstring_node.end_lineno if hasattr(docstring_node, 'end_lineno') else docstring_start
+                    for line_num in range(docstring_start, docstring_end + 1):
+                        docstring_lines.add(line_num)
+        
+        # Filter out docstring lines and handle empty methods
+        filtered_lines = []
+        i = 0
+        while i < len(class_lines):
+            absolute_line_num = class_start + i
+            line = class_lines[i]
+            
+            if absolute_line_num not in docstring_lines:
+                filtered_lines.append(line)
+                # Check if this is a method definition that might need a 'pass' statement
+                if line.strip().startswith('def ') and line.strip().endswith(':'):
+                    # Look ahead to see if there's any non-docstring content in this method
+                    j = i + 1
+                    has_content = False
+                    method_indent = len(line) - len(line.lstrip())
+                    
+                    while j < len(class_lines):
+                        next_line = class_lines[j]
+                        next_absolute_line = class_start + j
+                        
+                        # If we hit a line that's not indented more than the method, we're done with this method
+                        if next_line.strip() and len(next_line) - len(next_line.lstrip()) <= method_indent:
+                            break
+                        
+                        # If this line is not a docstring and has content, the method has content
+                        if next_absolute_line not in docstring_lines and next_line.strip():
+                            has_content = True
+                            break
+                        
+                        j += 1
+                    
+                    # If method has no content, we need to add a 'pass' statement
+                    if not has_content:
+                        indent = ' ' * (method_indent + 4)  # Add 4 spaces for method body
+                        filtered_lines.append(f"{indent}pass")
+            
+            i += 1
+        
+        return filtered_lines
     
     def _extract_links(self, node: Union[ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef]) -> List[Dict[str, str]]:
         """Extract links in the format [symbol_name#method_name] from docstring."""

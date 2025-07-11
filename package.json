@@ -19,7 +19,8 @@
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:headed": "playwright test --headed",
-    "test:e2e:debug": "playwright test --debug"
+    "test:e2e:debug": "playwright test --debug",
+    "test:py": "cd examples && pytest scripts/test_extract_metadata.py -v"
   },
   "dependencies": {
     "@floating-ui/react": "^0.27.13",

@@ -17,6 +17,7 @@ const TAILWIND_COLORS = [
   'fuchsia',  // 15
   'pink',     // 16
   'rose',     // 17
+  'brown',     // 18
 ];
 
 // Color configurations for each Tailwind color
@@ -105,6 +106,11 @@ const COLOR_CONFIGS = {
     text: 'text-rose-600 dark:text-rose-400 shadow-rose-400/20 dark:shadow-rose-300/20',
     gradient: 'from-rose-500 to-rose-600 via-rose-800 dark:from-rose-200 dark:to-rose-200 dark:via-rose-200',
     background: 'bg-rose-100 dark:bg-rose-900/30 border-rose-300 dark:border-rose-700 text-rose-800 dark:text-rose-200',
+  },
+  brown : {
+    text: 'text-stone-600 dark:text-stone-400 shadow-stone-400/20 dark:shadow-stone-300/20',
+    gradient: 'from-stone-500 to-stone-600 via-stone-800 dark:from-stone-200 dark:to-stone-200 dark:via-stone-200',
+    background: 'bg-stone-100 dark:bg-stone-900/30 border-stone-300 dark:border-stone-700 text-stone-800 dark:text-stone-200',
   },
 } as const;
 

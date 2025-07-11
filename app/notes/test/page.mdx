@@ -1,160 +1,107 @@
-# Bellman-Ford Variants and Implementation
-
-## Resizable Table of Contents
 
 
-## Variant 1: Classical Bellman-Ford
+### The LRU System: The Shelf by the Chair
 
-> **Definition**: Given a directed graph $G = (V, E)$, edge weights $w: E \to \mathbb{R}$, and source node $s$, compute $\delta(s, v)$ for all $v \in V$, or detect a negative-weight cycle reachable from $s$.
+This system is about pure convenience.
 
-This in-place Bellman-Ford:
+  * **The Setup:** A single shelf starts at a reshelving basket 🧺 and ends right next to the librarian's chair.
+  * **The Action:**
+    1.  When a book is needed (`get` or `put`), the librarian places it on the shelf right beside her chair—at the very **end** of the line.
+    2.  As she adds books, the line gets pushed down the shelf until the book at the far end falls into the basket. This evicted book is the one that was least recently used.
 
-1. Initializes distances.
-2. **Relaxes all edges** $|V|-1$ times to compute shortest paths.
-3. Performs a **$V$th pass**:
+The spot by her chair is the **end** of our data structure. The basket is the **beginning**.
 
-   1. If any edge is still relaxable, a negative-weight cycle exists.
-   2. Otherwise, $d(s, v) = \delta(s, v)$ for all $v \in V$.
+#### The Code
 
-```python file=examples/code/bellman-ford.py#func:bellman_ford_classic stripDocstring
+  * **`move_to_end()`** places a book by the chair.
+  * **`popitem(last=False)`** drops the book at the far end into the basket.
+
+
+```python
+from collections import OrderedDict
+
+class LRUCache:
+    def __init__(self, capacity: int):
+        self.cache: OrderedDict[int, int] = OrderedDict()
+        self.capacity = capacity
+
+    def get(self, key: int) -> int:
+        if (val := self.cache.get(key)) is None:
+            return -1
+        self.cache.move_to_end(key) # Move book to the spot by the chair
+        return val
+
+    def put(self, key: int, value: int) -> None:
+        if key in self.cache:
+            self.cache.move_to_end(key)
+        self.cache[key] = value
+        if len(self.cache) > self.capacity:
+            self.cache.popitem(last=False) # Drop the book into the basket
 ```
 
-* **Time**: $O(|V|\times|E|)$
-* **Space**: $O(|V|)$
+-----
 
----
+### The LFU System: A Smarter Set of Shelves
 
-## Variant 2: DAG-Relaxation with Graph Duplication (more powerful)
+The librarian notices a flaw in her simple system: a popular book can be pushed out by a burst of new, less important books. To solve this, she upgrades.
 
-> **Definition**: Let $\delta_k(s, v)$ be the shortest path cost from $s$ to $v$ using $\le k$ edges. Build a layered DAG $G'$ with levels $k = 0,1,\dots,|V|$, duplicating each vertex across layers. Relaxing edges from layer $k-1$ to $k$ tracks $\delta_k(s,v)$, and if
->
-> $$
-> \delta_{|V|}(s,v) < \delta_{|V|-1}(s,v)
-> $$
->
-> then $v$ is a negative-cycle witness.
+  * **The Setup:** Instead of one shelf, she now has a small bookcase with **multiple shelves**, stacked vertically. This is the **LFU (Least Frequently Used)** system, which tracks a book's **popularity**.
+  * **The Action:**
+    1.  The shelves represent popularity levels. The **bottom shelf (\#1)** is for newcomers (used once), the shelf above it **(\#2)** is for books used twice, and so on.
+    2.  When a book on a lower shelf (say, Shelf \#1) is needed again, it gets a **promotion\!** The librarian moves it up to Shelf \#2 and places it in the spot **right next to her chair**—at the end of that new line. It is now the most recently used among all books with a popularity score of two.
+    3.  For **eviction**, she always takes from the **bottom shelf (\#1)**, since it holds the least popular books. From that shelf, she removes the book at the far end—the one closest to the basket.
 
-```python file=examples/code/bellman-ford.py#func:bellman_ford_layered_dag stripDocstring
-```
+This protects popular books by moving them up the bookcase, away from the eviction zone on the bottom shelf.
 
-* **Time**: $O(|V|\times|E|)$
-* **Space**: $O(|V|\times|E|)$
+#### The Code
 
-### Deep Dive: Mapping `bellman_ford_layered_dag` to the Algorithm
+The `buckets` dictionary is our bookcase; each key is a shelf number.
 
-Below are the five conceptual steps of the layered-DAG variant, with the exact code snippets that implement each step.
+```python
+from collections import defaultdict, OrderedDict
 
-1. **Initialize $\delta_0$ (distance 0 at `source`, $\infty$ elsewhere)**
+class LFUCache:
+    def __init__(self, capacity: int):
+        self.capacity      = capacity
+        self.cache         = {}
+        self.freq          = {}
+        self.buckets       = defaultdict(OrderedDict)
+        self.minfreq       = 0
 
-   ```python
-   d = {v: float("inf") for v in vertices}
-   d[source], V = 0, len(vertices)
-   ```
+    def _bump(self, key: int):
+        f = self.freq[key]
+        del self.buckets[f][key]
+        if not self.buckets[f]:
+            if self.minfreq == f:
+                self.minfreq += 1
+        
+        # Promote the book to the next shelf up, placing it by the chair.
+        self.freq[key] += 1
+        self.buckets[f + 1][key] = None
 
-   * Sets
+    def get(self, key: int) -> int:
+        if key not in self.cache:
+            return -1
+        self._bump(key)
+        return self.cache[key]
 
-   $$
-   d[v] = \delta_0(s, v) = \begin{cases}0,&v=s\\\infty,&\text{otherwise}\end{cases}
-   $$
+    def put(self, key: int, value: int) -> None:
+        if self.capacity <= 0: return
 
-2. **Layered relaxation: compute $\delta_1,\dots,\delta_V$**
+        if key in self.cache:
+            self.cache[key] = value
+            self._bump(key)
+            return
 
-   ```python
-   for k in range(V):            # k = 0…V-1
-       d_k = {**d}               # snapshot of \delta_k
-       for u, v, w in edges:
-           if d[u] + w < d_k[v]:
-               d_k[v] = d[u] + w  # build \delta_{k+1}(s,v)
-       d = d_k                   # now holds \delta_{k+1}
-   ```
+        if len(self.cache) >= self.capacity:
+            # Evict from the far end of the least popular shelf.
+            old_key, _ = self.buckets[self.minfreq].popitem(last=False)
+            del self.cache[old_key]
+            del self.freq[old_key]
 
-   * After iteration $k$:
-
-   $$
-   d[v] = \delta_{k+1}(s,v)
-   $$
-
-3. **Detect direct witnesses ($\delta_V < \delta_{V-1}$)**
-
-   ```python
-   witnesses = {
-       v
-       for u, v, w in edges
-       if d[u] + w < d[v]
-   }
-   if not witnesses:
-       return d
-   ```
-
-   * A vertex $v$ with
-
-   $$
-   \delta_V(s,v) < \delta_{V-1}(s,v)
-   $$
-
-   is a negative-cycle witness.
-
-4. **Build successor list for propagation**
-
-   ```python
-   adj = defaultdict(list)
-   for u, v, _ in edges:
-       adj[u].append(v)
-   ```
-
-   * `adj[u]` holds all $v$ such that $(u\to v) \in E$.
-
-5. **Flood-fill $-\infty$ from each witness**
-
-   ```python
-   stack = list(witnesses)
-   reachable = set(witnesses)
-
-   while stack:
-       u = stack.pop()
-       d[u] = float("-inf")
-       for v in adj[u]:
-           if v not in reachable:
-               reachable.add(v)
-               stack.append(v)
-   return d
-   ```
-
-   * Marks each witness and any vertex reachable from it with $-\infty$.
-
----
-
-## Comparison
-
-| Feature                   | Classical BF | Layered-DAG Duplication |
-| ------------------------- | ------------ | ----------------------- |
-| Negative-cycle detection  | ✅ Yes        | ✅ Yes                   |
-| Recover cycle             | ❌ No         | ✅ Yes                   |
-| Space complexity          | $O(|V|)$      | $O(|V| \cdot |E|)$        |
-| Time complexity           | $O(|V| \cdot |E|)$ | $O(|V| \cdot |E|)$ |
-| Tracks $\delta_k(s,v)$    | ❌ No         | ✅ Yes                   |
-| Early termination         | ✅ Possible   | ❌ No                    |
-| Implementation complexity | ✅ Simple     | ❌ More complex          |
-
----
-
-## Problems
-
-### 1. Cheapest Flight Within K Stops
-
-**LeetCode 787**: Cheapest Flights Within K Stops
-Find the cheapest flight from `src` to `dst` using at most $k$ stops.
-
-```python file=examples/code/bellman-ford.py#func:findCheapestPrice stripDocstring
-```
-
-> **Key**: relax edges exactly $k+1$ times to enforce at most $k$ stops.
-> **Time**: $O(k \cdot E)$
-
-### 2. Path with Maximum Probability
-
-**LeetCode 1514**: Path with Maximum Probability
-Find the path in a graph that maximizes product of edge probabilities.
-
-```python file=examples/code/bellman-ford.py#func:maxProbability stripDocstring
+        # A new book starts on the bottom shelf, by the chair.
+        self.cache[key] = value
+        self.freq[key] = 1
+        self.buckets[1][key] = None
+        self.minfreq = 1
 ```

@@ -173,4 +173,42 @@ describe('CodeBlock', () => {
     const codeBlock = screen.getByTestId('code-block')
     expect(codeBlock).toBeInTheDocument()
   })
+
+  it('renders tooltip for class method (LRUCache.get) using extracted metadata', () => {
+    // This code snippet matches the LRUCache.get method from examples/code/cache.py
+    const lruGetCode = `class LRUCache:\n    def get(self, key: int) -> int:\n        \"\"\"\n        When an item is accessed, it becomes the most recently used. We fetch the item and move it to the end of the OrderedDict.\n        \"\"\"\n        if (val := self.cache.get(key)) is None:\n            return -1\n        self.cache.move_to_end(key)\n        return val`;
+
+    render(
+      <CodeBlock className="language-python">
+        {lruGetCode}
+      </CodeBlock>
+    );
+
+    // Look for a span/div with tooltip data for 'get' (the method name)
+    // This will fail until the transformer is fixed to match qualified method names
+    const tooltipNode = screen.queryByText('get');
+    expect(tooltipNode).toHaveAttribute('data-tooltip-symbol', expect.stringContaining('get'));
+  });
+
+  it('renders correct tooltips for top-level and class methods with the same name', async () => {
+    const code = `
+def get():
+    """Top-level get docstring"""
+    pass
+
+class LRUCache:
+    def get(self):
+        """LRUCache.get docstring"""
+        pass
+`;
+
+    // Use the real pipeline (not a mock)
+    // This assumes CodeBlock is not mocked for this test
+    const { container } = render(<CodeBlock className="language-python">{code}</CodeBlock>);
+    // Find all elements with a tooltip symbol
+    const tooltipNodes = Array.from(container.querySelectorAll('[data-tooltip-symbol]'));
+    // Find the class method 'LRUCache.get'
+    const classGet = tooltipNodes.find(node => node.getAttribute('data-tooltip-symbol') === 'LRUCache.get');
+    expect(classGet).toBeTruthy();
+  });
 }) 

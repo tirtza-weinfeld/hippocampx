@@ -77,7 +77,34 @@ export function transformerCodeTooltipWords(tooltipMap: Record<string, SymbolMet
     
     preprocess(code, options) {
       options.decorations ||= [];
-      // --- NEW: Build function code regions ---
+      
+      // Build class regions to determine which class each method belongs to
+      const classRegions: Record<string, { start: number; end: number }> = {};
+      for (const [symbol, meta] of Object.entries(tooltipMap)) {
+        if (meta.type === 'class' && meta.signature) {
+          const sig = meta.signature.replace(/\s+/g, ' ').trim();
+          const regex = new RegExp(sig.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+          const match = regex.exec(code);
+          if (match) {
+            const start = match.index;
+            // Find the end of this class by looking for the next class or end of file
+            let end = code.length;
+            for (const [otherSymbol, otherMeta] of Object.entries(tooltipMap)) {
+              if (otherSymbol !== symbol && otherMeta.type === 'class' && otherMeta.signature) {
+                const otherSig = otherMeta.signature.replace(/\s+/g, ' ').trim();
+                const otherRegex = new RegExp(otherSig.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+                const otherMatch = otherRegex.exec(code);
+                if (otherMatch && otherMatch.index > start && otherMatch.index < end) {
+                  end = otherMatch.index;
+                }
+              }
+            }
+            classRegions[symbol] = { start, end };
+          }
+        }
+      }
+      
+      // Build function code regions for function-scoped parameter tooltips
       const functionRegions: Record<string, { start: number; end: number }> = {};
       for (const [symbol, meta] of Object.entries(tooltipMap)) {
         if (meta.signature) {
@@ -103,7 +130,7 @@ export function transformerCodeTooltipWords(tooltipMap: Record<string, SymbolMet
           }
         }
       }
-      // --- END NEW ---
+      
       // Find all occurrences of function/method/class names (whole word only)
       for (const symbolName of Object.keys(tooltipMap)) {
         const indexes = findAllWordIndexes(code, symbolName);
@@ -118,7 +145,33 @@ export function transformerCodeTooltipWords(tooltipMap: Record<string, SymbolMet
           });
         }
       }
-      // --- UPDATED: Parameter and variable tooltips scoped to parent function region ---
+      
+      // FIXED: Context-aware method name tooltips - only within the correct class
+      for (const [fullSymbolName, meta] of Object.entries(tooltipMap)) {
+        if (meta.parent && meta.type === 'method' && classRegions[meta.parent]) {
+          const shortName = meta.name;
+          const classRegion = classRegions[meta.parent];
+          
+          // Only look for method names within this class's region
+          const classCode = code.slice(classRegion.start, classRegion.end);
+          const indexes = findAllWordIndexes(classCode, shortName);
+          
+          for (const relativeIndex of indexes) {
+            const absoluteIndex = classRegion.start + relativeIndex;
+            
+            options.decorations.push({
+              start: absoluteIndex,
+              end: absoluteIndex + shortName.length,
+              properties: {
+                'data-tooltip-symbol': fullSymbolName,
+                class: 'tooltip-symbol',
+              },
+            });
+          }
+        }
+      }
+      
+      // Parameter and variable tooltips scoped to parent function region
       for (const [symbolName, parentSymbols] of Object.entries(parameterToHierarchy)) {
         for (const { symbol, path } of parentSymbols) {
           const region = functionRegions[symbol];

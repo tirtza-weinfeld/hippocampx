@@ -149,7 +149,7 @@ def swimInWater(grid: list[list[int]]) -> int:
 
 
 
-def findCheapestPrice( flights: list[list[int]], src: int, dst: int, k: int) -> int:
+def findCheapestPriceDijkstra( flights: list[list[int]], src: int, dst: int, k: int) -> int:
     """
     Variables:
     - pq: Priority queue to store the state (cost, city, stops_taken)
