@@ -1,0 +1,191 @@
+# Breadth-First Search (BFS) 
+
+## Resizable table of contents
+
+
+## Problems
+
+
+### Binary Tree Level Order Traversal
+
+
+  *Given the root of a binary tree, return its nodes' values organized by level,
+   from left to right.*
+  
+  [102. Binary Tree Level Order Traversal](https://leetcode.com/problems/binary-tree-level-order-traversal/)
+
+    ```python file=examples/code/bfs.py#func:levelOrder stripDocstring 
+    ```
+  > [!insight:collapse] `for _ in range(len(queue))` , `len(queue)` is the level size.
+  >
+  > The core logic hinges on the inner `for` loop. The expression `len(queue)`
+   takes a *"snapshot"* of the number of nodes on the current level before the loop begins. The loop then dequeues and processes exactly that many nodes, ensuring that only nodes from the current level are handled while their children are queued up for the next iteration. This technique is the key to cleanly separating the levels.
+
+  > [!timecomplexity:collapse] $O(N)$
+  >
+  > where $N$ is the total number of nodes in the tree. This is optimal as every node must be visited once.
+
+-----
+
+### Number of Islands
+
+ *Given an `m x n` 2D grid of '1's (land) and '0's (water), return the number of islands. An island is formed by connecting adjacent lands horizontally or vertically.*
+ assume all four edges of the grid are all surrounded by water.
+
+[200. Number of Islands](https://leetcode.com/problems/number-of-islands/)
+
+```python file=examples/code/bfs.py#func:numIslands  stripDocstring 
+```
+> [\!insight:collapse] Find, Count, and Sink 🏝️
+>
+> The strategy is to scan every cell of the grid. If an unvisited piece of land (`1`) is found, you've discovered a new island, so you increment the `islands` counter. Then, immediately launch a BFS from that cell to find and "sink" all connected parts of that same island by changing their value to `0`. This modification of the grid ensures each island group is counted exactly once.
+
+> [\!timecomplexity:collapse] $O(m \cdot n)$
+>
+> where $m$ and $n$ are the dimensions of the grid. This is optimal as each cell is visited a constant number of times.
+
+-----
+
+
+### Rotting Oranges
+
+
+ *In a grid of `0`s (empty), `1`s (fresh), and `2`s (rotten), every minute, any fresh orange adjacent to a rotten one becomes rotten. Return the minimum minutes required until no fresh oranges remain. If it's impossible, return -1.*
+
+[994. Rotting Oranges](https://leetcode.com/problems/rotting-oranges/)
+
+```python file=examples/code/bfs.py#func:orangesRotting  stripDocstring 
+```
+
+> [\!insight:collapse] Multi-Source BFS 🍊
+>
+> This problem is a classic multi-source BFS. The key is to initialize the queue with the coordinates of *all* initially rotten oranges. The BFS then naturally simulates the rotting process in parallel from all sources. Each "level" of the BFS corresponds to one minute passing. Finally, you must check if any `fresh_oranges` remain to handle cases where some are unreachable.
+
+> [\!timecomplexity:collapse] $O(m \cdot n)$
+>
+> where $m$ and $n$ are the grid dimensions. Each cell is enqueued and dequeued at most once, making the process highly efficient and optimal.
+
+-----
+
+### Clone Graph
+
+*Given a reference to a node in a connected undirected graph, return a deep copy (clone) of the graph.*
+
+[133. Clone Graph](https://leetcode.com/problems/clone-graph/)
+
+```python file=examples/code/bfs.py#func:cloneGraph stripDocstring 
+```
+
+> [\!insight:collapse] Hash Map as a Visited Set & Node Cache 🗺️
+>
+> The key to traversing a potentially cyclic graph is a `visited` set. Here, the `cloned` dictionary serves a dual purpose. It acts as both a **`visited` set** (by checking `if n not in cloned`) and a **cache** that maps an original node to its clone. This ensures each node is cloned exactly once and prevents getting stuck in an infinite loop.
+
+> [\!timecomplexity:collapse] $O(V + E)$
+>
+> where $V$ is the number of vertices (nodes) and $E$ is the number of edges. This is optimal as we must visit every node and traverse every edge to create the full copy.
+
+-----
+
+
+### Snakes and Ladders
+
+
+ *Given an `$n \times n$` integer board where cells are numbered from `1` to `$n^{2}$` 
+ in a Boustrophedonical style.
+  Each cell's value is either **[3:]-1** for a *[3:]normal* square or a **[16:]destination** number for a *[16:]snake/ladder*.
+   Starting from square `1`, return the least number of moves to reach square `$n^{2}$`. You must take any snake or ladder you land on.*
+
+[909. Snakes and Ladders](https://leetcode.com/problems/snakes-and-ladders/)
+
+> [!note:collapse] *Boustrophedonical Style* zigzag pattern
+>
+> In this context, **Boustrophedonical** simply means the board is numbered in a back-and-forth, zigzag pattern. The numbering starts at `1` in the bottom-left corner, and the direction reverses on each row moving up the grid.
+>
+> **Example 4x4 Board Numbering:**
+>
+> ```
+>
+>        ←| 16 15 14 13 | 
+>        →|  9 10 11 12 | 
+>        ←|  8  7  6  5 | 
+>  start →|  1  2  3  4 |  
+> 
+> ```
+
+
+```python file=examples/code/bfs.py#func:snakesAndLadders stripDocstring 
+```
+
+> [\!insight:collapse] Flatten the Board First 🎲
+>
+> The key insight here is to **pre-process the 2D `board` into a 1D `flat_board` list**. This powerful first step handles all the complex Boustrophedonical logic upfront. By doing this, the BFS loop becomes exceptionally clean and avoids the need for a coordinate conversion function. The search can then operate on a simple 1D array, treating the board as the simple, linear graph it truly represents.
+
+> [\!timecomplexity:collapse] $O(n^2)$
+>
+> where $n$ is the dimension of the board. The initial flattening of the board takes $O(n^2)$ time. The subsequent BFS visits each of the $n^2$ squares at most once.
+
+-----
+
+### 01 Matrix
+
+*Given an `m x n` binary matrix, return the distance of the nearest `0` for each cell. The distance between two adjacent cells is 1.*
+
+[542. 01 Matrix](https://leetcode.com/problems/01-matrix/)
+
+```python file=examples/code/bfs.py#func:updateMatrix stripDocstring 
+```
+
+> [\!insight:collapse]  Multi-Source BFS from the Target 🎯
+>
+> Instead of starting a separate BFS from every `1` to find the nearest `0` (which would be slow), this approach inverts the problem. It starts a single, **multi-source BFS from all `0`s simultaneously**. The level of the BFS at which a cell is reached is, by definition, its shortest distance to any `0`. This "start from the answer" strategy is a powerful technique for shortest path problems.
+
+> [\!timecomplexity:collapse] $O(m \cdot n)$
+>
+> where $m$ and $n$ are the grid dimensions. Every cell is enqueued and processed exactly once, making this the optimal solution.
+
+-----
+
+
+### Shortest Path in a Grid with Obstacles Elimination
+
+*Find the length of the shortest path from the top-left to the bottom-right of a grid containing empty cells (`0`) and obstacles (`1`). You can move through a maximum of `k` obstacles.*
+
+[1293. Shortest Path in a Grid with Obstacles Elimination](https://leetcode.com/problems/shortest-path-in-a-grid-with-obstacles-elimination/)
+
+```python file=examples/code/bfs.py#func:shortestPath stripDocstring 
+```
+
+> [!insight:collapse] BFS with Optimized State Pruning ⚡
+>
+> This solution uses a optimized BFS. Instead of just tracking `(row, col, k)` tuples in a set, 
+the `visited` array stores the **maximum elimination power** remaining upon arrival at each `(x, y)` cell.
+A new path to a cell is only explored if it arrives with *more* power than any previous path (`nk > visited[nx][ny]`). 
+This aggressively prunes suboptimal paths.
+> The initial check (`m + n - 2 <= k`) is another optimization, instantly solving trivial cases where obstacles don't matter.
+
+> [!timecomplexity:collapse] $O(m \cdot n \cdot k)$
+>
+> The theoretical worst-case state space is defined by the grid dimensions and `k`. However, the state pruning optimization makes the practical performance much faster than the worst-case for most inputs.
+
+-----
+
+
+### Word Ladder
+
+> *Given a `beginWord`, an `endWord`, and a dictionary `wordList`, find the length of the shortest transformation sequence from `beginWord` to `endWord` such that only one letter is changed at a time and each transformed word exists in the `wordList`.*
+
+[127. Word Ladder](https://leetcode.com/problems/word-ladder/)
+
+```python file=examples/code/bfs.py#func:ladderLength stripDocstring 
+```
+
+> [\!insight:collapse] Bidirectional BFS Meets in the Middle 🤝
+>
+> This solution uses two  optimizations. First, it **pre-computes all possible generic transformations** (e.g., `h*t`) in a dictionary, allowing for instant lookups of neighboring words instead of generating them on the fly. Second, it performs a **bidirectional BFS**, launching one search from the `beginWord` and another from the `endWord`. By always expanding the smaller of the two frontiers, it drastically reduces the search space. The algorithm finishes when the two searches meet, at which point the shortest path is found.
+
+> [\!timecomplexity:collapse] $O(N \cdot L)$
+>
+> where $N$ is the number of words and $L$ is the length of each word. The dominant operation is the initial pre-computation step to build the `combos` dictionary. The subsequent bidirectional search is typically much faster than this initial setup.
+
+-----
+

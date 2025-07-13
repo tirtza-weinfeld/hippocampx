@@ -160,9 +160,9 @@ function TooltipParameters({ meta }: { meta: TooltipMeta }) {
           <div key={param.name || idx} className="flex flex-col gap-1 p-2 bg-emerald-50 dark:bg-emerald-900/20 rounded border border-emerald-200 dark:border-emerald-700">
             <div className="flex items-center gap-2">
               <span className="font-mono text-emerald-800 dark:text-emerald-200 font-medium">{param.name}</span>
-              {param.type && <span className="text-xs px-2 py-1 bg-emerald-100 dark:bg-emerald-900/50 text-emerald-800 dark:text-emerald-100 rounded border border-emerald-200 dark:border-emerald-600">{param.type}</span>}
+              {param.type && <span className="text-xs px-2 py-1 bg-emerald-100 dark:bg-emerald-900/50 text-emerald-800 dark:text-emerald-100 rounded border border-emerald-200 dark:border-emerald-600"><TooltipMarkdown>{param.type}</TooltipMarkdown></span>}
             </div>
-            {param.description && <span className="text-emerald-700 dark:text-emerald-300 text-xs">{param.description}</span>}
+            {param.description && <span className="text-emerald-700 dark:text-emerald-300 text-xs"><TooltipMarkdown>{param.description}</TooltipMarkdown></span>}
           </div>
         ))}
       </div>
@@ -179,10 +179,10 @@ function TooltipReturns({ meta }: { meta: TooltipMeta }) {
       </div>
       <div className="p-2 bg-indigo-50 dark:bg-indigo-900/20 rounded border border-indigo-200 dark:border-indigo-700">
         <div className="flex items-center gap-2">
-          <span className="font-mono text-indigo-800 dark:text-indigo-100 font-medium px-2 py-1 bg-indigo-100 dark:bg-indigo-900/50 rounded border border-indigo-200 dark:border-indigo-600">{meta.return_type}</span>
+          <span className="font-mono text-indigo-800 dark:text-indigo-100 font-medium px-2 py-1 bg-indigo-100 dark:bg-indigo-900/50 rounded border border-indigo-200 dark:border-indigo-600"><TooltipMarkdown>{meta.return_type}</TooltipMarkdown></span>
         </div>
         {'return_description' in meta && meta.return_description && (
-          <div className="text-indigo-700 dark:text-indigo-300 text-xs mt-1">{meta.return_description}</div>
+          <div className="text-indigo-700 dark:text-indigo-300 text-xs mt-1"><TooltipMarkdown>{meta.return_description}</TooltipMarkdown></div>
         )}
       </div>
     </div>
@@ -205,7 +205,7 @@ function TooltipVariables({ meta }: { meta: TooltipMeta }) {
             </div>
         </div>
        
-        {meta.description && <div className="bg-linear-to-r from-blue-500  to-purple-500 text-transparent bg-clip-text text-md mt-1 ">{meta.description}</div>}
+        {meta.description && <div className="bg-linear-to-r from-blue-500  to-purple-500 text-transparent bg-clip-text text-md mt-1 "><TooltipMarkdown>{meta.description}</TooltipMarkdown></div>}
       </div>
     );
   }
@@ -218,7 +218,7 @@ function TooltipVariables({ meta }: { meta: TooltipMeta }) {
         {meta.variables.map((variable, idx) => (
           <li key={variable.name || idx}>
             <span className="font-mono">{variable.name}</span>
-            {variable.description && <span className="text-gray-600"> — {variable.description}</span>}
+            {variable.description && <span className="text-gray-600"> — <TooltipMarkdown>{variable.description}</TooltipMarkdown></span>}
           </li>
         ))}
       </ul>

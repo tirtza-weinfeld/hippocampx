@@ -108,10 +108,15 @@ export function transformerCodeTooltipWords(tooltipMap: Record<string, SymbolMet
       const functionRegions: Record<string, { start: number; end: number }> = {};
       for (const [symbol, meta] of Object.entries(tooltipMap)) {
         if (meta.signature) {
-          // Find the first occurrence of the function signature in the code
+          // Extract just the function definition line (without docstring)
           const sig = meta.signature.replace(/\s+/g, ' ').trim();
-          const regex = new RegExp(sig.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
-          const match = regex.exec(code);
+          
+          // Create a more flexible regex that matches the function signature
+          // but allows for whitespace variations and doesn't require exact match after the colon
+          const escapedSig = sig.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+          const flexibleRegex = new RegExp(escapedSig.replace(/:\\s*$/, ':\\s*'), 'g');
+          
+          const match = flexibleRegex.exec(code);
           if (match) {
             const start = match.index;
             // Heuristic: function region ends at the start of the next function or end of file
@@ -119,14 +124,17 @@ export function transformerCodeTooltipWords(tooltipMap: Record<string, SymbolMet
             for (const [otherSymbol, otherMeta] of Object.entries(tooltipMap)) {
               if (otherSymbol !== symbol && otherMeta.signature) {
                 const otherSig = otherMeta.signature.replace(/\s+/g, ' ').trim();
-                const otherRegex = new RegExp(otherSig.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
-                const otherMatch = otherRegex.exec(code);
+                const otherEscapedSig = otherSig.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                const otherFlexibleRegex = new RegExp(otherEscapedSig.replace(/:\\s*$/, ':\\s*'), 'g');
+                const otherMatch = otherFlexibleRegex.exec(code);
                 if (otherMatch && otherMatch.index > start && otherMatch.index < end) {
                   end = otherMatch.index;
                 }
               }
             }
             functionRegions[symbol] = { start, end };
+          } else {
+            // Function signature not found - this is normal for functions not in current code block
           }
         }
       }
@@ -175,7 +183,11 @@ export function transformerCodeTooltipWords(tooltipMap: Record<string, SymbolMet
       for (const [symbolName, parentSymbols] of Object.entries(parameterToHierarchy)) {
         for (const { symbol, path } of parentSymbols) {
           const region = functionRegions[symbol];
-          if (!region) continue;
+          // FIXED: Only apply parameter tooltips if the parent function is actually in this code block
+          if (!region) {
+            continue;
+          }
+          
           const indexes = findAllWordIndexes(code.slice(region.start, region.end), symbolName);
           for (const relIndex of indexes) {
             const index = region.start + relIndex;
@@ -213,20 +225,20 @@ export function transformerCodeTooltipWords(tooltipMap: Record<string, SymbolMet
         return;
       }
       
-      // Parameter or variable (with full hierarchical path, scoped by parent symbol)
-      if (parameterToHierarchy[value.trim()]) {
-        // Try to find the correct parent symbol for this parameter/variable in the current context
-        // (In Shiki, we don't have AST context, so we fallback to the first match)
-        const { symbol, path } = parameterToHierarchy[value.trim()][0];
-        node.properties = node.properties || {};
-        node.properties['data-tooltip-symbol'] = value.trim();
-        node.properties['data-tooltip-parent'] = symbol;
-        node.properties['data-tooltip-path'] = JSON.stringify(path);
-        node.properties['class'] = [
-          ...(Array.isArray(node.properties['class']) ? node.properties['class'] : []),
-          'tooltip-symbol',
-        ];
-      }
+      // DISABLED: Parameter fallback - now handled properly in preprocess with function scoping
+      // The old fallback logic was applying parameter tooltips to all occurrences of parameter names
+      // regardless of function context, which caused incorrect tooltips to appear
+      // if (parameterToHierarchy[value.trim()]) {
+      //   const { symbol, path } = parameterToHierarchy[value.trim()][0];
+      //   node.properties = node.properties || {};
+      //   node.properties['data-tooltip-symbol'] = value.trim();
+      //   node.properties['data-tooltip-parent'] = symbol;
+      //   node.properties['data-tooltip-path'] = JSON.stringify(path);
+      //   node.properties['class'] = [
+      //     ...(Array.isArray(node.properties['class']) ? node.properties['class'] : []),
+      //     'tooltip-symbol',
+      //   ];
+      // }
     },
   };
 }

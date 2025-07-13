@@ -1,0 +1,359 @@
+# Tailwind CSS 4.1 Essential Guide
+
+## resizable table of contents
+
+## Theme Configuration
+
+### Basic Setup
+```css
+@import "tailwindcss";
+
+@theme {
+  /* Colors */
+  --color-primary: oklch(0.7 0.15 280);
+  --color-secondary: oklch(0.8 0.12 120);
+  
+  /* Typography */
+  --font-display: "Inter", sans-serif;
+  --text-hero: 4rem;
+  --text-hero--line-height: 1.1;
+  
+  /* Spacing */
+  --spacing-xs: 0.5rem;
+  --spacing-xl: 2rem;
+  
+  /* Breakpoints */
+  --breakpoint-3xl: 120rem;
+  
+  /* Animations */
+  --animate-fade-in: fade-in 0.3s ease-out;
+  
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+}
+```
+
+### Theme Options
+
+**Default:** Extends existing theme
+```css
+@theme {
+  --color-brand: #3b82f6;
+}
+```
+
+**Override namespace:** Remove defaults
+```css
+@theme {
+  --color-*: initial;
+  --color-brand: #3b82f6;
+  --color-accent: #10b981;
+}
+```
+
+**Start from scratch:** Remove all defaults
+```css
+@theme {
+  --*: initial;
+  --color-brand: #3b82f6;
+  --spacing: 0.25rem;
+}
+```
+
+**Inline theme:** For referencing variables
+```css
+@theme inline {
+  --font-sans: var(--font-inter);
+}
+```
+
+**Static theme:** Always generate CSS variables
+```css
+@theme static {
+  --color-primary: var(--color-red-500);
+}
+```
+
+## Dark Mode
+
+### Method 1: CSS Class (Recommended)
+```css
+@theme {
+  --color-bg: #ffffff;
+  --color-text: #000000;
+}
+
+.dark {
+  --color-bg: #000000;
+  --color-text: #ffffff;
+}
+```
+
+**Toggle in JavaScript:**
+```javascript
+document.documentElement.classList.toggle('dark')
+```
+
+### Method 2: Media Query (Automatic)
+```css
+@theme {
+  --color-bg: #ffffff;
+  --color-text: #000000;
+}
+
+@media (prefers-color-scheme: dark) {
+  @theme {
+    --color-bg: #000000;
+    --color-text: #ffffff;
+  }
+}
+```
+
+### Method 3: Custom Variant
+```css
+@variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-bg: #ffffff;
+}
+
+@theme dark {
+  --color-bg: #000000;
+}
+```
+
+## Container Queries
+
+### Setup
+```css
+@theme {
+  --container-card: 20rem;
+  --container-sidebar: 16rem;
+}
+```
+
+### Usage
+```html
+<!-- Basic container -->
+<div class="@container">
+  <div class="grid @sm:grid-cols-2 @lg:grid-cols-3">
+    Content adapts to container size
+  </div>
+</div>
+
+<!-- Named container -->
+<div class="@container/card">
+  <div class="grid @lg/card:grid-cols-2">
+    Responsive to card container
+  </div>
+</div>
+
+<!-- Max-width queries -->
+<div class="@container">
+  <div class="grid grid-cols-3 @max-md:grid-cols-1">
+    Three columns, one on small containers
+  </div>
+</div>
+
+<!-- Range queries -->
+<div class="@container">
+  <div class="@min-md:@max-xl:hidden">
+    Hidden between medium and extra large
+  </div>
+</div>
+```
+
+## Pseudo-Classes & Variants
+
+### Built-in Pseudo-Selectors
+```html
+<!-- Structural -->
+<li class="first:font-bold last:text-gray-500">Item</li>
+<li class="odd:bg-gray-100 even:bg-white">Item</li>
+<li class="nth-3:underline nth-last-2:text-red-500">Item</li>
+
+<!-- State -->
+<input class="user-valid:border-green-500 user-invalid:border-red-500" />
+<div class="inert:opacity-50 inert:blur">Inert content</div>
+<div class="starting:opacity-0 opacity-100">Starting style</div>
+
+<!-- Relationships -->
+<div class="has-[:focus]:ring-2">Has focused child</div>
+<div class="not-hover:bg-gray-500">Not hovering</div>
+```
+
+### Arbitrary Variants
+```html
+<!-- Custom pseudo-selectors -->
+<div class="[&:nth-child(3n)]:bg-red-100">Every third child</div>
+<div class="[&[data-state='active']]:bg-green-100">Data attribute</div>
+<div class="[&>*:not(pre)]:text-blue-600">Complex selector</div>
+
+<!-- Descendant selectors -->
+<div class="**:data-avatar:rounded-full">All descendants</div>
+<div class="*:p-4">Direct children</div>
+```
+
+### Custom Variants
+```css
+@variant theme-dark (&:where([data-theme="dark"] *));
+@variant pointer-coarse (@media (pointer: coarse));
+@variant any-hover {
+  @media (any-hover: hover) {
+    &:hover {
+      @slot;
+    }
+  }
+}
+```
+
+## Theme Variable Namespaces
+
+| Namespace | Generates | Example |
+|-----------|-----------|---------|
+| `--color-*` | Color utilities | `--color-brand` → `bg-brand`, `text-brand` |
+| `--font-*` | Font families | `--font-display` → `font-display` |
+| `--text-*` | Font sizes | `--text-hero` → `text-hero` |
+| `--spacing-*` | Spacing/sizing | `--spacing-xl` → `p-xl`, `w-xl` |
+| `--breakpoint-*` | Breakpoints | `--breakpoint-3xl` → `3xl:*` |
+| `--container-*` | Container queries | `--container-card` → `@card:*` |
+| `--radius-*` | Border radius | `--radius-xl` → `rounded-xl` |
+| `--shadow-*` | Box shadows | `--shadow-soft` → `shadow-soft` |
+| `--animate-*` | Animations | `--animate-fade` → `animate-fade` |
+
+## New 4.1 Features
+
+### Pseudo-Class Variants
+```html
+<div class="first:font-bold last:text-gray-500">Structural</div>
+<div class="odd:bg-gray-100 even:bg-white">Alternating</div>
+<div class="has-[:focus]:ring-2">Has focused child</div>
+<div class="not-hover:underline">Not hovering</div>
+```
+
+### Pointer Variants
+```html
+<button class="px-3 py-1 pointer-coarse:px-5 pointer-coarse:py-3">
+  Touch-optimized
+</button>
+```
+
+### Text Shadows
+```css
+@theme {
+  --text-shadow-sm: 1px 1px 2px rgba(0,0,0,0.5);
+  --text-shadow-lg: 2px 2px 4px rgba(0,0,0,0.7);
+}
+```
+
+### Mask Utilities
+```css
+@theme {
+  --mask-fade: linear-gradient(to right, black 0%, transparent 100%);
+}
+```
+
+### Safe Alignment
+```html
+<div class="flex justify-center-safe">
+  Content that won't clip
+</div>
+```
+
+### Color Scheme
+```html
+<html class="scheme-light dark:scheme-dark">
+  <div class="overflow-y-scroll">Themed scrollbars</div>
+</html>
+```
+
+## Arbitrary Values
+
+### Basic Usage
+```html
+<div class="top-[117px] bg-[#bada55] text-[22px]">
+  Arbitrary values
+</div>
+```
+
+### CSS Variables
+```html
+<div class="bg-(--my-color) text-(color:--my-text)">
+  Variable shortcuts
+</div>
+```
+
+### Whitespace Handling
+```html
+<div class="grid-cols-[1fr_500px_2fr]">
+  Underscore becomes space
+</div>
+```
+
+## Custom Utilities
+
+### Simple Utility
+```css
+@utility content-auto {
+  content-visibility: auto;
+}
+```
+
+### Complex Utility
+```css
+@utility scrollbar-hidden {
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+```
+
+### Functional Utility
+```css
+@theme {
+  --tab-size-2: 2;
+  --tab-size-4: 4;
+}
+
+@utility tab-* {
+  tab-size: --value(--tab-size-*, integer, [integer]);
+}
+```
+
+## Performance
+
+- **3.5x faster** builds than v3
+- **Microsecond** incremental rebuilds
+- **Automatic** content detection
+- **Tree-shaking** for smaller bundles
+
+## Essential Setup
+
+```css
+@import "tailwindcss";
+
+@theme {
+  /* Your design tokens here */
+}
+
+/* Custom utilities */
+@utility my-utility {
+  /* Custom styles */
+}
+
+/* Custom variants */
+@variant my-variant (&:where(.my-class *));
+```
+
+**Usage:**
+```html
+<div class="bg-primary text-secondary p-xl rounded-lg shadow-md">
+  <div class="@container">
+    <div class="grid @lg:grid-cols-2">
+      <div class="first:font-bold">Content</div>
+    </div>
+  </div>
+</div>
+``` 

@@ -43,8 +43,8 @@ function parseMarkdownWithMath(text: string): React.ReactNode {
             dangerouslySetInnerHTML={{ __html: katexHtml }}
           />
         )
-             } catch {
-         // Fallback to styled code if KaTeX fails
+      } catch {
+        // Fallback to styled code if KaTeX fails
         return (
           <code key={index} className="mx-1 px-1.5 py-0.5 bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 text-blue-800 dark:text-blue-200 rounded font-mono text-sm border border-blue-200 dark:border-blue-700">
             ${part}$

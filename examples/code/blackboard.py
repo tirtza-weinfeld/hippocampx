@@ -1,2 +1,37 @@
 
+
+from collections import defaultdict
+
+class Solution: 
+    def ladderLength(self, beginWord: str, endWord: str, wordList: list[str]) -> int:
+
+        if endWord not in wordList:
+            return 0
     
+        L = len(beginWord)
+        combos: dict[str, list[str]] = defaultdict(list)
+        for w in wordList:
+            for i in range(L):
+                combos[w[:i] + "*" + w[i+1:]].append(w)
+    
+        front, back = {beginWord}, {endWord}
+        dist_front, dist_back = {beginWord: 1}, {endWord: 1}
+    
+        while front and back:
+            # expand smaller side
+            if len(front) > len(back):
+                front, back = back, front
+                dist_front, dist_back = dist_back, dist_front
+    
+            next_front = set()
+            for word in front:
+                for i in range(L):
+                    for n in combos[word[:i] + "*" + word[i+1:]]:
+                        if n in dist_back:
+                            return dist_front[word] + dist_back[n]
+                        if n not in dist_front:
+                            dist_front[n] = dist_front[word] + 1
+                            next_front.add(n)
+            front = next_front
+    
+        return 0

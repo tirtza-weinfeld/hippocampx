@@ -16,7 +16,7 @@ An **LRU (Least Recently Used)** cache discards the item that hasn't been access
 This policy is efficiently implemented using an `OrderedDict` in Python, which internally combines a hash map for fast lookups and a doubly-linked list to maintain insertion order.
 
   * **`get(key)`**: When an item is accessed, it becomes the most recently used. We fetch the item and move it to the end of the `OrderedDict`.
-  * **`put(key, value)`**: When an item is added or updated, it's also considered the most recently used and is moved to the end. If the cache exceeds its capacity, the item at the front of the `OrderedDict` (the least recently used) is removed.
+  * **`put(key, value)`**: When an item is added or updated, it's also considered the most recently used and is added to the end. If the cache exceeds its capacity, the item at the front of the `OrderedDict` (the least recently used) is removed.
 
 
 
