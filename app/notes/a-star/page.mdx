@@ -1,0 +1,75 @@
+
+
+## A\* Search Algorithm
+
+A\* is essentially **“BFS + brain”**: instead of exploring purely by distance-so-far (like BFS) or purely by guessed distance-to-go (like a greedy search), it ranks each potential node by:
+
+**`f(n) = g(n) + h(n)`**
+
+  * **`g(n)`**: The **actual cost** of steps taken so far from the start.
+  * **`h(n)`**: The **heuristic**, an estimated cost of the steps remaining to the target (e.g., Manhattan distance).
+
+By always expanding the node with the lowest `f(n)` score, A\* “hones in” on paths that look cheapest overall. If `h(n)` never overestimates the true remaining distance (i.e., it's *admissible*), A\* is guaranteed to find the shortest path.
+
+### Why It Works: Balancing Cost and Heuristics
+
+The combination of both `g(n)` and `h(n)` is what gives A\* its power. The `g(n)` term grounds the search in reality, preventing it from following a path that looks direct but is actually a costly trap.
+
+For example, imagine finding a path over a mountain. A greedy search (using only `h(n)`) would head straight up a winding, slow trail because it points directly at the goal. However, A\*'s `g(n)` term would quickly increase, reflecting the long time spent on this trail. The algorithm would soon realize that a different path—one that goes around the mountain on a faster road—is better overall, even if it initially seems less direct.
+
+In short, **`h(n)` provides the direction, while `g(n)` ensures the path remains efficient.**
+
+### Optimal Python Implementation (LeetCode 1293)
+
+This code uses the A\* algorithm to solve the "Shortest Path in a Grid with Obstacles Elimination" problem. It features an efficient `max_k` array to prune suboptimal paths.
+
+```python
+import heapq
+
+class Solution:
+    def shortestPath(self, grid: list[list[int]], k: int) -> int:
+        rows, cols = len(grid), len(grid[0])
+        
+        # Early exit if k is large enough to ignore all obstacles
+        min_dist = rows + cols - 2
+        if k >= min_dist:
+            return min_dist
+
+        # max_k[r][c] stores the best remaining eliminations seen at (r,c)
+        max_k = [[-1] * cols for _ in range(rows)]
+        max_k[0][0] = k
+
+        # Heuristic function: Manhattan distance
+        def heuristic(r, c):
+            return (rows - 1 - r) + (cols - 1 - c)
+
+        # Priority queue: (f_score, steps, r, c, remaining_k)
+        # f_score = steps (g) + heuristic (h)
+        pq = [(heuristic(0,0), 0, 0, 0, k)]
+        directions = [(1,0),(-1,0),(0,1),(0,-1)]
+
+        while pq:
+            f, steps, r, c, rem_k = heapq.heappop(pq)
+            
+            if (r, c) == (rows - 1, cols - 1):
+                return steps
+
+            # If we've already found a path to this cell with more
+            # elimination power, this current path is suboptimal.
+            if rem_k < max_k[r][c]:
+                continue
+
+            for dr, dc in directions:
+                nr, nc = r + dr, c + dc
+                if 0 <= nr < rows and 0 <= nc < cols:
+                    nk = rem_k - grid[nr][nc]
+                    
+                    # Explore neighbor only if we can afford it and it's a better state
+                    if nk >= 0 and nk > max_k[nr][nc]:
+                        max_k[nr][nc] = nk
+                        g_new = steps + 1
+                        f_new = g_new + heuristic(nr, nc)
+                        heapq.heappush(pq, (f_new, g_new, nr, nc, nk))
+
+        return -1
+```

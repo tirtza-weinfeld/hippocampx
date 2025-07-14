@@ -1,4 +1,35 @@
 {
+  "SolutionAStar": {
+    "name": "SolutionAStar",
+    "type": "class",
+    "language": "python",
+    "file": "examples/code/a-star.py",
+    "line": 4,
+    "signature": "class SolutionAStar:",
+    "parameters": [],
+    "return_type": "",
+    "return_description": "",
+    "description": "",
+    "code": "class SolutionAStar:\n    def shortestPath(self, grid: list[list[int]], k: int) -> int:\n        rows, cols = len(grid), len(grid[0])\n        min_dist = rows + cols - 2\n        if k >= min_dist:\n            return min_dist\n        max_k = [[-1] * cols for _ in range(rows)]\n        max_k[0][0] = k\n        def heuristic(r, c):\n            return (rows - 1 - r) + (cols - 1 - c)\n        pq = [(heuristic(0,0), 0, 0, 0, k)]\n        directions = [(1,0),(-1,0),(0,1),(0,-1)]\n        while pq:\n            f, steps, r, c, rem_k = heapq.heappop(pq)\n            if (r, c) == (rows - 1, cols - 1):\n                return steps\n            if rem_k < max_k[r][c]:\n                continue\n            for dr, dc in directions:\n                nr, nc = r + dr, c + dc\n                if 0 <= nr < rows and 0 <= nc < cols:\n                    nk = rem_k - grid[nr][nc]\n                    if nk >= 0 and nk > max_k[nr][nc]:\n                        max_k[nr][nc] = nk\n                        g = steps + 1\n                        f_new = g + heuristic(nr, nc)\n                        heapq.heappush(pq, (f_new, g, nr, nc, nk))\n        return -1",
+    "links": [],
+    "variables": []
+  },
+  "SolutionAStar.shortestPath": {
+    "name": "shortestPath",
+    "type": "method",
+    "language": "python",
+    "file": "examples/code/a-star.py",
+    "line": 5,
+    "signature": "def shortestPath(self, grid: list[list[int]], k: int) -> int:",
+    "parameters": [],
+    "return_type": "int",
+    "return_description": "",
+    "description": "",
+    "code": "def shortestPath(self, grid: list[list[int]], k: int) -> int:\n        rows, cols = len(grid), len(grid[0])\n        min_dist = rows + cols - 2\n        if k >= min_dist:\n            return min_dist\n        max_k = [[-1] * cols for _ in range(rows)]\n        max_k[0][0] = k\n        def heuristic(r, c):\n            return (rows - 1 - r) + (cols - 1 - c)\n        pq = [(heuristic(0,0), 0, 0, 0, k)]\n        directions = [(1,0),(-1,0),(0,1),(0,-1)]\n        while pq:\n            f, steps, r, c, rem_k = heapq.heappop(pq)\n            if (r, c) == (rows - 1, cols - 1):\n                return steps\n            if rem_k < max_k[r][c]:\n                continue\n            for dr, dc in directions:\n                nr, nc = r + dr, c + dc\n                if 0 <= nr < rows and 0 <= nc < cols:\n                    nk = rem_k - grid[nr][nc]\n                    if nk >= 0 and nk > max_k[nr][nc]:\n                        max_k[nr][nc] = nk\n                        g = steps + 1\n                        f_new = g + heuristic(nr, nc)\n                        heapq.heappush(pq, (f_new, g, nr, nc, nk))\n        return -1",
+    "links": [],
+    "variables": [],
+    "parent": "SolutionAStar"
+  },
   "bellman_ford_classic": {
     "name": "bellman_ford_classic",
     "type": "function",
@@ -289,6 +320,37 @@
       }
     ]
   },
+  "Solution": {
+    "name": "Solution",
+    "type": "class",
+    "language": "python",
+    "file": "examples/code/stack.py",
+    "line": 1,
+    "signature": "class Solution:",
+    "parameters": [],
+    "return_type": "",
+    "return_description": "",
+    "description": "",
+    "code": "class Solution:\n    def decodeString(self, s: str) -> str:\n        stack, s = [], \"1[\" + s + \"]\"\n        for c in s:\n            if c == \"]\":\n                curr = []\n                while stack[-1] != \"[\":\n                    curr.append(stack.pop())\n                stack.pop()  \n                num = []\n                while stack and stack[-1].isdigit():\n                    num.append(stack.pop())\n                stack.append(\"\".join(reversed(curr)) * int(\"\".join(reversed(num))))\n            else:\n                stack.append(c)\n        return stack[0]",
+    "links": [],
+    "variables": []
+  },
+  "Solution.ladderLength": {
+    "name": "ladderLength",
+    "type": "method",
+    "language": "python",
+    "file": "examples/code/blackboard.py",
+    "line": 6,
+    "signature": "def ladderLength(self, beginWord: str, endWord: str, wordList: list[str]) -> int:",
+    "parameters": [],
+    "return_type": "int",
+    "return_description": "",
+    "description": "",
+    "code": "def ladderLength(self, beginWord: str, endWord: str, wordList: list[str]) -> int:\n        if endWord not in wordList:\n            return 0\n        L = len(beginWord)\n        combos: dict[str, list[str]] = defaultdict(list)\n        for w in wordList:\n            for i in range(L):\n                combos[w[:i] + \"*\" + w[i+1:]].append(w)\n        front, back = {beginWord}, {endWord}\n        dist_front, dist_back = {beginWord: 1}, {endWord: 1}\n        while front and back:\n            if len(front) > len(back):\n                front, back = back, front\n                dist_front, dist_back = dist_back, dist_front\n            next_front = set()\n            for word in front:\n                for i in range(L):\n                    for n in combos[word[:i] + \"*\" + word[i+1:]]:\n                        if n in dist_back:\n                            return dist_front[word] + dist_back[n]\n                        if n not in dist_front:\n                            dist_front[n] = dist_front[word] + 1\n                            next_front.add(n)\n            front = next_front\n        return 0",
+    "links": [],
+    "variables": [],
+    "parent": "Solution"
+  },
   "LRUCache": {
     "name": "LRUCache",
     "type": "class",
@@ -430,21 +492,6 @@
     "links": [],
     "variables": [],
     "parent": "LFUCache"
-  },
-  "Solution": {
-    "name": "Solution",
-    "type": "class",
-    "language": "python",
-    "file": "examples/code/stack.py",
-    "line": 1,
-    "signature": "class Solution:",
-    "parameters": [],
-    "return_type": "",
-    "return_description": "",
-    "description": "",
-    "code": "class Solution:\n    def decodeString(self, s: str) -> str:\n        stack, s = [], \"1[\" + s + \"]\"\n        for c in s:\n            if c == \"]\":\n                curr = []\n                while stack[-1] != \"[\":\n                    curr.append(stack.pop())\n                stack.pop()  \n                num = []\n                while stack and stack[-1].isdigit():\n                    num.append(stack.pop())\n                stack.append(\"\".join(reversed(curr)) * int(\"\".join(reversed(num))))\n            else:\n                stack.append(c)\n        return stack[0]",
-    "links": [],
-    "variables": []
   },
   "Solution.decodeString": {
     "name": "decodeString",
@@ -647,28 +694,72 @@
     "type": "function",
     "language": "python",
     "file": "examples/code/bfs.py",
-    "line": 178,
+    "line": 180,
     "signature": "def shortestPath(grid: list[list[int]], k: int) -> int:",
-    "parameters": [],
+    "parameters": [
+      {
+        "name": "grid",
+        "type": "list[list[int]]",
+        "description": "`m x n` 2D grid of `0`s (empty) and `1`s (obstacle)",
+        "default": null
+      },
+      {
+        "name": "k",
+        "type": "int",
+        "description": "maximum number of eliminations allowed",
+        "default": null
+      }
+    ],
     "return_type": "int",
-    "return_description": "",
-    "description": "",
-    "code": "def shortestPath(grid: list[list[int]], k: int) -> int:\n    m, n = len(grid), len(grid[0])\n    if m + n - 2 <= k:\n        return m + n - 2\n    visited = [[-1] * n for _ in range(m)]\n    visited[0][0] = k\n    q = deque([(0, 0, k, 0)])  \n    dirs = [(1,0),(-1,0),(0,1),(0,-1)]\n    while q:\n        x, y, k, steps = q.popleft()\n        for dx, dy in dirs:\n            nx, ny = x + dx, y + dy\n            if 0 <= nx < m and 0 <= ny < n:\n                nk = k - grid[nx][ny]\n                if nk >= 0 and nk > visited[nx][ny]:\n                    if nx == m - 1 and ny == n - 1:\n                        return steps + 1\n                    visited[nx][ny] = nk\n                    q.append((nx, ny, nk, steps + 1))\n    return -1",
-    "links": [],
-    "variables": []
+    "return_description": "minimum number of steps to reach the bottom-right corner, or -1 if it's impossible",
+    "description": "Args:",
+    "code": "def shortestPath(grid: list[list[int]], k: int) -> int:\n    rows, cols = len(grid), len(grid[0])\n    min_steps = rows + cols - 2  \n    if k >= min_steps:\n        return min_steps\n    max_k = [[-1] * cols for _ in range(rows)]\n    max_k[0][0] = k\n    q = deque([(0, 0, 0, k)])\n    directions = [(1,0), (-1,0), (0,1), (0,-1)]\n    while q:\n        r, c, steps, remaining_k = q.popleft()\n        for dr, dc in directions:\n            nr, nc = r + dr, c + dc\n            if 0 <= nr < rows and 0 <= nc < cols:\n                new_remaining_k = remaining_k - grid[nr][nc]\n                if new_remaining_k > max_k[nr][nc]:\n                    if (nr, nc) == (rows - 1, cols - 1):\n                        return steps + 1\n                    max_k[nr][nc] = new_remaining_k\n                    q.append((nr, nc, steps + 1, new_remaining_k))\n    return -1",
+    "links": [
+      {
+        "symbol": "r",
+        "display": "[r]",
+        "target": "r",
+        "valid": false,
+        "target_symbol": null
+      },
+      {
+        "symbol": "c",
+        "display": "[c]",
+        "target": "c",
+        "valid": false,
+        "target_symbol": null
+      }
+    ],
+    "variables": [
+      {
+        "name": "max_k",
+        "description": "max_k[r][c] = maximum eliminations remaining when visiting (r,c)",
+        "type": "variable"
+      },
+      {
+        "name": "q",
+        "description": "queue items: (row, col, steps, remaining_k)",
+        "type": "variable"
+      },
+      {
+        "name": "min_steps",
+        "description": "Manhattan distance lower bound",
+        "type": "variable"
+      }
+    ]
   },
   "ladderLength": {
     "name": "ladderLength",
     "type": "function",
     "language": "python",
     "file": "examples/code/bfs.py",
-    "line": 207,
+    "line": 223,
     "signature": "def ladderLength(beginWord: str, endWord: str, wordList: list[str]) -> int:",
     "parameters": [],
     "return_type": "int",
     "return_description": "",
     "description": "",
-    "code": "def ladderLength(beginWord: str, endWord: str, wordList: list[str]) -> int:\n    if endWord not in wordList:\n        return 0\n    L = len(beginWord)\n    combos: dict[str, list[str]] = defaultdict(list)\n    for w in wordList:\n        for i in range(L):\n            combos[w[:i] + \"*\" + w[i+1:]].append(w)\n    front, back = {beginWord}, {endWord}\n    dist_front, dist_back = {beginWord: 1}, {endWord: 1}\n    while front and back:\n        if len(front) > len(back):\n            front, back = back, front\n            dist_front, dist_back = dist_back, dist_front\n        next_front = set()\n        for word in front:\n            for i in range(L):\n                for nei in combos[word[:i] + \"*\" + word[i+1:]]:\n                    if nei in dist_back:\n                        return dist_front[word] + dist_back[nei]\n                    if nei not in dist_front:\n                        dist_front[nei] = dist_front[word] + 1\n                        next_front.add(nei)\n        front = next_front\n    return 0",
+    "code": "def ladderLength(beginWord: str, endWord: str, wordList: list[str]) -> int:\n    if endWord not in wordList:\n        return 0\n    L = len(beginWord)\n    combos: dict[str, list[str]] = defaultdict(list)\n    for w in wordList:\n        for i in range(L):\n            combos[w[:i] + \"*\" + w[i+1:]].append(w)\n    front, back = {beginWord}, {endWord}\n    dist_front, dist_back = {beginWord: 1}, {endWord: 1}\n    while front and back:\n        if len(front) > len(back):\n            front, back = back, front\n            dist_front, dist_back = dist_back, dist_front\n        next_front = set()\n        for word in front:\n            for i in range(L):\n                for n in combos[word[:i] + \"*\" + word[i+1:]]: \n                    if n in dist_back:\n                        return dist_front[word] + dist_back[n]\n                    if n not in dist_front:\n                        dist_front[n] = dist_front[word] + 1\n                        next_front.add(n)\n        front = next_front\n    return 0",
     "links": [],
     "variables": []
   },

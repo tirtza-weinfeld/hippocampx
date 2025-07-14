@@ -1,8 +1,8 @@
-import fs from 'fs';
-import path from 'path';
+import * as fs from 'fs';
+import * as path from 'path';
 import type { Plugin } from 'unified';
 import { visit } from 'unist-util-visit';
-import type { Literal, Node } from 'unist';
+import type { Literal, Node, Parent } from 'unist';
 
 interface CodeNode extends Literal {
   type: 'code';
@@ -21,6 +21,179 @@ interface ParsedMeta {
   classMethodName?: string;
   stripDocstring: boolean;
   preservedMeta: string[];
+}
+
+interface ExtractedInsight {
+  type: 'insight' | 'timecomplexity' | 'spacecomplexity';
+  title?: string;
+  content: string;
+}
+
+function extractInsights(code: string): ExtractedInsight[] {
+  const insights: ExtractedInsight[] = [];
+  const lines = code.split('\n');
+  let currentInsight: ExtractedInsight | null = null;
+  let collectingContent = false;
+  
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const trimmedLine = line.trim();
+    
+    // Check for insight patterns
+    if (trimmedLine.startsWith('Insight:')) {
+      currentInsight = {
+        type: 'insight',
+        title: '', // Will be set from first content line
+        content: ''
+      };
+      collectingContent = true;
+      continue;
+    }
+    
+    if (trimmedLine.startsWith('Time Complexity:')) {
+      if (currentInsight) {
+        insights.push(currentInsight);
+      }
+      currentInsight = {
+        type: 'timecomplexity',
+        content: trimmedLine.replace('Time Complexity:', '').trim()
+      };
+      collectingContent = true;
+      continue;
+    }
+    
+    if (trimmedLine.startsWith('Space Complexity:')) {
+      if (currentInsight) {
+        insights.push(currentInsight);
+      }
+      currentInsight = {
+        type: 'spacecomplexity',
+        content: trimmedLine.replace('Space Complexity:', '').trim()
+      };
+      collectingContent = true;
+      continue;
+    }
+    
+    // Collect content for current insight
+    if (collectingContent && currentInsight) {
+      // Stop collecting if we hit docstring end or a non-indented line or another insight
+      if (trimmedLine === '"""' || trimmedLine === "'''" || 
+          (trimmedLine && !line.startsWith('    ') && !line.startsWith('\t') && 
+           !trimmedLine.startsWith('Insight:') && 
+           !trimmedLine.startsWith('Time Complexity:') && 
+           !trimmedLine.startsWith('Space Complexity:'))) {
+        insights.push(currentInsight);
+        currentInsight = null;
+        collectingContent = false;
+        continue;
+      }
+      
+      // Add content line (remove leading whitespace)
+      const contentLine = line.replace(/^\s{4,}/, ''); // Remove up to 4 spaces
+      
+      if (currentInsight.content === '' && contentLine.trim()) {
+        // First content line - extract title and start content properly
+        if (currentInsight.type === 'insight') {
+          // For insights, first bullet point becomes title, rest becomes content
+          const cleanedLine = contentLine.trim().replace(/^-\s*/, ''); // Remove bullet point
+          currentInsight.title = cleanedLine;
+        } else {
+          // For time/space complexity, first line becomes title
+          const cleanedLine = contentLine.trim().replace(/^-\s*/, ''); // Remove bullet point
+          currentInsight.content = cleanedLine;
+        }
+              } else {
+          // Subsequent content lines
+          const cleanedLine = contentLine.replace(/^-\s*/, ''); // Remove bullet points
+        if (currentInsight.content) {
+          currentInsight.content += '\n' + cleanedLine;
+        } else {
+          currentInsight.content = cleanedLine;
+        }
+      }
+    }
+  }
+  
+  // Add the last insight if it exists
+  if (currentInsight) {
+    insights.push(currentInsight);
+  }
+  
+  return insights;
+}
+
+function parseInlineContent(text: string): Node[] {
+  const nodes: Node[] = [];
+  // Split by math ($...$) and code (`...`) patterns
+  const parts = text.split(/(\$[^$]+\$|`[^`]+`)/);
+  
+  for (const part of parts) {
+    if (part.startsWith('$') && part.endsWith('$') && part.length > 2) {
+      // Math expression - create math node that rehypeKatex can process
+      nodes.push({
+        type: 'math',
+        value: part.slice(1, -1)
+      } as Node);
+    } else if (part.startsWith('`') && part.endsWith('`') && part.length > 2) {
+      // Inline code
+      nodes.push({
+        type: 'inlineCode',
+        value: part.slice(1, -1)
+      } as Node);
+    } else if (part) {
+      // Regular text
+      nodes.push({
+        type: 'text',
+        value: part
+      } as Node);
+    }
+  }
+  
+  return nodes;
+}
+
+function createInsightMDXNodes(insights: ExtractedInsight[]): string[] {
+  const mdxBlocks: string[] = [];
+  
+  for (const insight of insights) {
+    let alertType = insight.type;
+    let title = insight.title || '';
+    
+    // Format title for different types
+    if (insight.type === 'timecomplexity') {
+      const lines = insight.content.split('\n').filter(line => line.trim());
+      title = lines[0] || '$O(n)$';
+      alertType = 'timecomplexity';
+    } else if (insight.type === 'spacecomplexity') {
+      const lines = insight.content.split('\n').filter(line => line.trim());
+      title = lines[0] || '$O(1)$';
+      alertType = 'spacecomplexity';
+    }
+    
+    // Create the MDX alert block  
+    let alertContent = insight.content;
+    
+    // For complexity types, remove the title line from content
+    if (insight.type === 'timecomplexity' || insight.type === 'spacecomplexity') {
+      const lines = insight.content.split('\n').filter(line => line.trim());
+      alertContent = lines.slice(1).join(' ').trim(); // Join with spaces for better formatting
+    } else if (insight.type === 'insight') {
+      // For insights, format content to match manual style - join lines properly
+      const lines = insight.content.split('\n').filter(line => line.trim());
+      alertContent = lines.join(' ').trim();
+    }
+    
+    // Clean up the content - remove excessive whitespace but preserve formatting
+    alertContent = alertContent.trim();
+    
+    const mdxBlock = `> [!${alertType}:collapse] ${title}
+>
+> ${alertContent.split('\n').join('\n> ')}`;
+    
+    mdxBlocks.push(mdxBlock);
+  }
+  
+  return mdxBlocks;
 }
 
 function extractLines(code: string, start: number, end: number): string {
@@ -427,56 +600,126 @@ function readFileSafely(filePath: string): string | null {
 
 const remarkSmartCodeImport: Plugin = () => {
   return (tree: Node) => {
-    visit(tree, 'code', (node: CodeNode) => {
+    const nodesToProcess: { node: CodeNode; parent: Parent; index: number }[] = [];
+    
+    // First pass: collect all code nodes that need processing
+    visit(tree, 'code', (node: CodeNode, index: number, parent: Parent) => {
       if (!node.meta || !node.meta.includes('file=')) {
         return;
       }
+      nodesToProcess.push({ node, parent, index });
+    });
 
-      const parsed = parseMeta(node.meta);
+    // Second pass: process in reverse order to maintain correct indices
+    for (let i = nodesToProcess.length - 1; i >= 0; i--) {
+      const { node, parent, index } = nodesToProcess[i];
+      
+      const parsed = parseMeta(node.meta || '');
       if (!parsed) {
-        return;
+        continue;
       }
 
       const fileContent = readFileSafely(parsed.filePath);
       if (!fileContent) {
-        return;
+        continue;
       }
 
       let extractedCode = '';
+      let fullCode = ''; // Store the full code for insight extraction
 
       if (parsed.functionName) {
         extractedCode = extractFunction(fileContent, parsed.functionName, parsed.stripDocstring);
+        fullCode = extractFunction(fileContent, parsed.functionName, false); // Keep docstring for insight extraction
         if (!extractedCode) {
           console.warn(`Function '${parsed.functionName}' not found in ${parsed.filePath}`);
-          return;
+          continue;
         }
       } else if (parsed.classMethod && parsed.classMethodName) {
         extractedCode = extractClassMethod(fileContent, parsed.classMethod, parsed.classMethodName, parsed.stripDocstring);
+        fullCode = extractClassMethod(fileContent, parsed.classMethod, parsed.classMethodName, false);
         if (!extractedCode) {
           console.warn(`Method '${parsed.classMethod}.${parsed.classMethodName}' not found in ${parsed.filePath}`);
-          return;
+          continue;
         }
       } else if (parsed.className) {
         extractedCode = extractClass(fileContent, parsed.className, parsed.stripDocstring);
+        fullCode = extractClass(fileContent, parsed.className, false);
         if (!extractedCode) {
           console.warn(`Class '${parsed.className}' not found in ${parsed.filePath}`);
-          return;
+          continue;
         }
       } else if (parsed.lineStart && parsed.lineEnd) {
         extractedCode = extractLines(fileContent, parsed.lineStart, parsed.lineEnd);
+        fullCode = extractedCode;
         if (!extractedCode) {
           console.warn(`Lines ${parsed.lineStart}-${parsed.lineEnd} not found in ${parsed.filePath}`);
-          return;
+          continue;
         }
       } else {
         // If no specific extraction is specified, use the entire file
         extractedCode = fileContent;
+        fullCode = fileContent;
       }
 
       // Update the node with extracted code and preserved meta
       node.value = extractedCode;
       node.meta = parsed.preservedMeta.length > 0 ? parsed.preservedMeta.join(' ') : undefined;
-    });
+
+      // Extract insights from the full code (with docstrings)
+      const insights = extractInsights(fullCode);
+      if (insights.length > 0) {
+        const mdxBlocks = createInsightMDXNodes(insights);
+        
+        // Add MDX blocks after the code block
+        for (let j = 0; j < mdxBlocks.length; j++) {
+          // Create a blockquote node that represents the alert
+          const lines = mdxBlocks[j].split('\n');
+          const alertLine = lines[0]; // > [!type:collapse] title
+          const contentLines = lines.slice(2); // Skip the empty line
+          
+          // Extract alert type and title from the first line
+          const alertMatch = alertLine.match(/>\s*\[!(\w+):collapse\]\s*(.*)/);
+          if (alertMatch) {
+            const alertType = alertMatch[1];
+            const title = alertMatch[2];
+            const content = contentLines.map(line => line.replace(/^>\s*/, '')).join('\n');
+            
+            // Parse title and content to create proper AST nodes
+            const titleChildren = parseInlineContent(title);
+            const contentChildren = content.trim() ? parseInlineContent(content) : [];
+            
+            const children = [
+              {
+                type: 'paragraph',
+                children: [
+                  {
+                    type: 'text',
+                    value: `[!${alertType}:collapse] `
+                  },
+                  ...titleChildren
+                ]
+              }
+            ];
+            
+            if (contentChildren.length > 0) {
+              children.push({
+                type: 'paragraph',
+                children: contentChildren
+              });
+            }
+            
+            const blockquoteNode = {
+              type: 'blockquote',
+              children
+            } as Node;
+            
+            if (parent.children) {
+              parent.children.splice(index + 1 + j, 0, blockquoteNode);
+            }
+          }
+        }
+      }
+    }
   };
 };
 

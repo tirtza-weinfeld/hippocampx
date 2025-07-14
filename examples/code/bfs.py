@@ -175,33 +175,48 @@ def updateMatrix(mat : list[list[int]]) -> list[list[int]]:
                 q.append((ni, nj))
     return dist
 
+
+
 def shortestPath(grid: list[list[int]], k: int) -> int:
+    """
+    Args:
+        grid: `m x n` 2D grid of `0`s (empty) and `1`s (obstacle)
+        k: maximum number of eliminations allowed
+    Returns:
+        minimum number of steps to reach the bottom-right corner, or -1 if it's impossible
+
+    Variables:
+        - max_k:  max_k[r][c] = maximum eliminations remaining when visiting (r,c)
+        - q: queue items: (row, col, steps, remaining_k)
+        - min_steps:  Manhattan distance lower bound
+
+
+    """
     
-    m, n = len(grid), len(grid[0])
+    rows, cols = len(grid), len(grid[0])
+    min_steps = rows + cols - 2  
+    if k >= min_steps:
+        return min_steps
+   
+    max_k = [[-1] * cols for _ in range(rows)]
+    max_k[0][0] = k
 
-    # trivial case: enough eliminations to go straight in m+n−2 steps
-    if m + n - 2 <= k:
-        return m + n - 2
-
-    # visited[x][y] = max eliminations remaining when visiting (x,y)
-    visited = [[-1] * n for _ in range(m)]
-    visited[0][0] = k
-
-    q = deque([(0, 0, k, 0)])  # (row, col, rem_elims, steps)
-    dirs = [(1,0),(-1,0),(0,1),(0,-1)]
-
+    
+    q = deque([(0, 0, 0, k)])
+    directions = [(1,0), (-1,0), (0,1), (0,-1)]
     while q:
-        x, y, k, steps = q.popleft()
-        for dx, dy in dirs:
-            nx, ny = x + dx, y + dy
-            if 0 <= nx < m and 0 <= ny < n:
-                nk = k - grid[nx][ny]
-                if nk >= 0 and nk > visited[nx][ny]:
-                    if nx == m - 1 and ny == n - 1:
+        r, c, steps, remaining_k = q.popleft()
+        for dr, dc in directions:
+            nr, nc = r + dr, c + dc
+            if 0 <= nr < rows and 0 <= nc < cols:
+                new_remaining_k = remaining_k - grid[nr][nc]
+                if new_remaining_k > max_k[nr][nc]:
+                    if (nr, nc) == (rows - 1, cols - 1):
                         return steps + 1
-                    visited[nx][ny] = nk
-                    q.append((nx, ny, nk, steps + 1))
+                    max_k[nr][nc] = new_remaining_k
+                    q.append((nr, nc, steps + 1, new_remaining_k))
     return -1
+
 
 
 

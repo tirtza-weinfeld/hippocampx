@@ -14,7 +14,7 @@
   
   [102. Binary Tree Level Order Traversal](https://leetcode.com/problems/binary-tree-level-order-traversal/)
 
-    ```python file=examples/code/bfs.py#func:levelOrder stripDocstring 
+    ```python file=examples/code/bfs.py#func:levelOrder  
     ```
   > [!insight:collapse] `for _ in range(len(queue))` , `len(queue)` is the level size.
   >
@@ -34,7 +34,7 @@
 
 [200. Number of Islands](https://leetcode.com/problems/number-of-islands/)
 
-```python file=examples/code/bfs.py#func:numIslands  stripDocstring 
+```python file=examples/code/bfs.py#func:numIslands   
 ```
 > [\!insight:collapse] Find, Count, and Sink 🏝️
 >
@@ -54,7 +54,7 @@
 
 [994. Rotting Oranges](https://leetcode.com/problems/rotting-oranges/)
 
-```python file=examples/code/bfs.py#func:orangesRotting  stripDocstring 
+```python file=examples/code/bfs.py#func:orangesRotting   
 ```
 
 > [\!insight:collapse] Multi-Source BFS 🍊
@@ -73,7 +73,7 @@
 
 [133. Clone Graph](https://leetcode.com/problems/clone-graph/)
 
-```python file=examples/code/bfs.py#func:cloneGraph stripDocstring 
+```python file=examples/code/bfs.py#func:cloneGraph 
 ```
 
 > [\!insight:collapse] Hash Map as a Visited Set & Node Cache 🗺️
@@ -113,7 +113,7 @@
 > ```
 
 
-```python file=examples/code/bfs.py#func:snakesAndLadders stripDocstring 
+```python file=examples/code/bfs.py#func:snakesAndLadders  
 ```
 
 > [\!insight:collapse] Flatten the Board First 🎲
@@ -132,7 +132,7 @@
 
 [542. 01 Matrix](https://leetcode.com/problems/01-matrix/)
 
-```python file=examples/code/bfs.py#func:updateMatrix stripDocstring 
+```python file=examples/code/bfs.py#func:updateMatrix  
 ```
 
 > [\!insight:collapse]  Multi-Source BFS from the Target 🎯
@@ -152,22 +152,32 @@
 
 [1293. Shortest Path in a Grid with Obstacles Elimination](https://leetcode.com/problems/shortest-path-in-a-grid-with-obstacles-elimination/)
 
-```python file=examples/code/bfs.py#func:shortestPath stripDocstring 
+```python file=examples/code/bfs.py#func:shortestPath  
 ```
 
-> [!insight:collapse] BFS with Optimized State Pruning ⚡
+
+
+
+> [!insight:collapse]  **BFS with State-Budget Pruning**
 >
-> This solution uses a optimized BFS. Instead of just tracking `(row, col, k)` tuples in a set, 
-the `visited` array stores the **maximum elimination power** remaining upon arrival at each `(x, y)` cell.
-A new path to a cell is only explored if it arrives with *more* power than any previous path (`nk > visited[nx][ny]`). 
-This aggressively prunes suboptimal paths.
-> The initial check (`m + n - 2 <= k`) is another optimization, instantly solving trivial cases where obstacles don't matter.
+> * **Core idea:** Perform a standard BFS over `(row, col, steps, remaining_k)` states, but only enqueue a move if it arrives at a cell with **strictly more** `remaining_k` than any prior visit.
+> * **Trivial shortcut:** If `k ≥ rows+cols–2`, you can go straight in `rows+cols–2` steps without ever touching an obstacle.
+> * **Correctness guarantee:** Because BFS explores in order of increasing `steps`, the first time you dequeue the goal is the fewest-step path. Pruning by `remaining_k` never discards any shorter-step route—it simply avoids re-exploring dominated states.
+
 
 > [!timecomplexity:collapse] $O(m \cdot n \cdot k)$
->
-> The theoretical worst-case state space is defined by the grid dimensions and `k`. However, the state pruning optimization makes the practical performance much faster than the worst-case for most inputs.
+> 
+> Worst-case $O(m \cdot n \cdot k)$ (every cell × every possible $k$), but aggressive pruning usually makes it far faster in practice.
+
+> [!spacecomplexity:collapse] $O(m·n)$
+> 
+> for the `max_k` grid plus up to $O(m·n·k)$ queued states in the pathological worst case.
+
 
 -----
+
+
+
 
 
 ### Word Ladder
@@ -176,7 +186,7 @@ This aggressively prunes suboptimal paths.
 
 [127. Word Ladder](https://leetcode.com/problems/word-ladder/)
 
-```python file=examples/code/bfs.py#func:ladderLength stripDocstring 
+```python file=examples/code/bfs.py#func:ladderLength  
 ```
 
 > [\!insight:collapse] Bidirectional BFS Meets in the Middle 🤝

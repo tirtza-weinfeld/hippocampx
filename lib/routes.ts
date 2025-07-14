@@ -108,14 +108,13 @@ export const routes: NavigationItem[] = [
 
             {title:'bfs', href:'/notes/bfs', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10"},    
             // {title:'dfs', href:'/notes/dfs', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10"},    
+            // {title:'A*', href:'/notes/a-star', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10"},    
             { title: 'Dijkstra', href: '/notes/dijkstra', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10" },
-
             { title: 'Bellman-Ford', href: '/notes/bellman-ford', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10" },
-
-            { title: 'Prefix Sum', href: '/notes/prefix-sum', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10" },
-
-            { title: 'Modular Arithmetic', href: '/notes/modular-arithmetic', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10" },
             { title: 'Cache', href: '/notes/cache', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10" },
+            { title: 'Prefix Sum', href: '/notes/prefix-sum', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10" },
+            { title: 'Modular Arithmetic', href: '/notes/modular-arithmetic', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10" },
+
 
         ],
     },

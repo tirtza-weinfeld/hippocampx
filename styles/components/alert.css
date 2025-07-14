@@ -14,5 +14,7 @@
   --color-alert-deepdive:var(--color-sky-500);
   --color-alert-timecomplexity:var(--color-sky-500);
   --color-alert-insight:var(--color-sky-500);
+  --color-alert-complexity:var(--color-sky-500);
+  --color-alert-spacecomplexity:var(--color-sky-500);
 }
 

@@ -1,6 +1,6 @@
 "use client"; // Required for Framer Motion components
 
-import { AlertCircle, Info, Lightbulb, Notebook, AlertTriangle, ChevronDown, Clock } from "lucide-react";
+import { AlertCircle, Info, Lightbulb, Notebook, AlertTriangle, ChevronDown, Clock, Database } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
@@ -16,10 +16,13 @@ const ICONS = {
   deepdive: Notebook,
   definition: Notebook,
   timecomplexity: Clock,
+  complexity: Clock,
+  spacecomplexity: Database,
   insight: Lightbulb,
 } as const;
 
 const LABELS = {
+  complexity: "Complexity",
   tip: "Tip",
   note: "Note",
   warning: "Warning",
@@ -30,6 +33,7 @@ const LABELS = {
   deepdive: "Deep Dive",
   definition: "Definition",
   timecomplexity: "Time Complexity",
+  spacecomplexity: "Space Complexity",
   insight: "Insight",
 } as const; // static mapping of types to labels
 
@@ -97,11 +101,23 @@ const STYLES = {
     text: "text-alert-definition",
     iconBg: "bg-alert-definition/10",
   },
-  timecomplexity: {
+  timecomplexity : {
     gradient: "from-white to-alert-timecomplexity/20 dark:from-gray-900 dark:to-alert-timecomplexity/20",
     border: "border-alert-timecomplexity",
     text: "text-alert-timecomplexity",
     iconBg: "bg-alert-timecomplexity/10",
+  },
+  spacecomplexity: {
+    gradient: "from-white to-alert-spacecomplexity/20 dark:from-gray-900 dark:to-alert-spacecomplexity/20",
+    border: "border-alert-spacecomplexity",
+    text: "text-alert-spacecomplexity",
+    iconBg: "bg-alert-spacecomplexity/10",
+  },
+  complexity: {
+    gradient: "from-white to-alert-complexity/20 dark:from-gray-900 dark:to-alert-complexity/20",
+    border: "border-alert-complexity",
+    text: "text-alert-complexity",
+    iconBg: "bg-alert-complexity/10",
   },
   insight: {
     gradient: "from-white to-alert-insight/20 dark:from-gray-900 dark:to-alert-insight/20",
