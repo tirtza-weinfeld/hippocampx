@@ -9,12 +9,12 @@
   --color-alert-important: oklch(65% 0.2 25);  /* Red */
   --color-alert-caution: oklch(70% 0.2 300);   /* Fuchsia */
   --color-alert-example: oklch(65% 0.15 230);   /* Blue */
-  --color-alert-comment:var(--color-emerald-500);
-  --color-alert-definition:var(--color-sky-600);
-  --color-alert-deepdive:var(--color-sky-500);
-  --color-alert-timecomplexity:var(--color-sky-500);
-  --color-alert-insight:var(--color-sky-500);
-  --color-alert-complexity:var(--color-sky-500);
-  --color-alert-spacecomplexity:var(--color-sky-500);
+  --color-alert-comment: var(--color-emerald-500);
+  --color-alert-definition: var(--color-sky-600);
+  --color-alert-deepdive: var(--color-sky-500);
+  --color-alert-timecomplexity: var(--color-sky-500);
+  --color-alert-insight: var(--color-sky-500);
+  --color-alert-complexity: var(--color-sky-500);
+  --color-alert-spacecomplexity: var(--color-sky-500);
 }
 

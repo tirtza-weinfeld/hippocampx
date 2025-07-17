@@ -332,145 +332,30 @@
     ],
     "expressions": []
   },
-  "test_function_with_expressions": {
-    "name": "test_function_with_expressions",
-    "type": "function",
-    "language": "python",
-    "file": "examples/code/test_expressions.py",
-    "line": 1,
-    "signature": "def test_function_with_expressions():",
-    "parameters": [],
-    "return_type": "",
-    "return_description": "",
-    "description": "Test function with various expression formats.",
-    "code": "def test_function_with_expressions():\n    y = 2\n    items = [1, 2, 3]\n    i = 0\n    result = x + y\n    doubled = x * 2\n    count = len(items)\n    safe_item = items[i] if i < len(items) else None\n    return result, doubled, count, safe_item",
-    "links": [
-      {
-        "symbol": "i",
-        "display": "[i]",
-        "target": "i",
-        "valid": false,
-        "target_symbol": null
-      }
-    ],
-    "variables": [
-      {
-        "name": "x",
-        "description": "test variable",
-        "type": "variable"
-      },
-      {
-        "name": "y",
-        "description": "another test variable",
-        "type": "variable"
-      }
-    ],
-    "expressions": [
-      {
-        "expression": "x + y",
-        "description": "add two variables together",
-        "type": "expression"
-      },
-      {
-        "expression": "x * 2",
-        "description": "multiply x by 2",
-        "type": "expression"
-      },
-      {
-        "expression": "len(items)",
-        "description": "get the length of items list",
-        "type": "expression"
-      },
-      {
-        "expression": "items[i] if i < len(items) else None",
-        "description": "safe array access",
-        "type": "expression"
-      }
-    ]
-  },
-  "test_function_without_expressions": {
-    "name": "test_function_without_expressions",
-    "type": "function",
-    "language": "python",
-    "file": "examples/code/test_expressions.py",
-    "line": 27,
-    "signature": "def test_function_without_expressions():",
-    "parameters": [],
-    "return_type": "",
-    "return_description": "",
-    "description": "Test function without expressions section.",
-    "code": "def test_function_without_expressions():\n    return z",
-    "links": [],
-    "variables": [
-      {
-        "name": "z",
-        "description": "simple variable",
-        "type": "variable"
-      }
-    ],
-    "expressions": []
-  },
-  "test_function_with_empty_expressions": {
-    "name": "test_function_with_empty_expressions",
-    "type": "function",
-    "language": "python",
-    "file": "examples/code/test_expressions.py",
-    "line": 37,
-    "signature": "def test_function_with_empty_expressions():",
-    "parameters": [],
-    "return_type": "",
-    "return_description": "",
-    "description": "Test function with empty expressions section.",
-    "code": "def test_function_with_empty_expressions():\n    return w",
-    "links": [],
-    "variables": [
-      {
-        "name": "w",
-        "description": "another variable",
-        "type": "variable"
-      }
-    ],
-    "expressions": []
-  },
-  "searchInsert": {
-    "name": "searchInsert",
-    "type": "function",
-    "language": "python",
-    "file": "examples/code/binary_search.py",
-    "line": 3,
-    "signature": "def searchInsert(nums: list[int], target: int) -> int:",
-    "parameters": [],
-    "return_type": "int",
-    "return_description": "",
-    "description": "",
-    "code": "def searchInsert(nums: list[int], target: int) -> int:\n    return bisect_left(nums, target)",
-    "links": [],
-    "variables": [],
-    "expressions": []
-  },
   "simple_bisect_left": {
     "name": "simple_bisect_left",
     "type": "function",
     "language": "python",
     "file": "examples/code/binary_search.py",
-    "line": 7,
-    "signature": "def simple_bisect_left(a:list[int], x:int):",
+    "line": 5,
+    "signature": "def simple_bisect_left(a, x):",
     "parameters": [],
     "return_type": "",
     "return_description": "",
     "description": "Return the index where to insert item x in list a, assuming a is sorted.",
-    "code": "def simple_bisect_left(a:list[int], x:int):\n    l, r = 0, len(a)\n    while l < r:\n        mid = (l + r) // 2\n        if x > a[mid]:\n            l = mid + 1\n        else:  \n            r = mid  \n    return l",
+    "code": "def simple_bisect_left(a, x):\n    lo, hi = 0, len(a)\n    while lo < hi:\n        mid = (lo + hi) // 2\n        if a[mid] < x:\n            lo = mid + 1\n        else:  \n            hi = mid  \n    return lo",
     "links": [],
-    "variables": [],
+    "variables": [
+      {
+        "name": "mid",
+        "description": "the middle index of the array",
+        "type": "variable"
+      }
+    ],
     "expressions": [
       {
-        "expression": "r = mid",
-        "description": "If the x is greater than the middle element, the insertion point could be `mid` or to its right. Shrink search space to the right half.",
-        "type": "expression"
-      },
-      {
-        "expression": "l = mid + 1",
-        "description": "If the x is <= middle element, the insertion point must be to the right of `mid`.",
+        "expression": "(lo + hi) // 2",
+        "description": "round down to the nearest integer",
         "type": "expression"
       }
     ]
@@ -480,94 +365,29 @@
     "type": "function",
     "language": "python",
     "file": "examples/code/binary_search.py",
-    "line": 26,
+    "line": 33,
     "signature": "def simple_bisect_right(a, x):",
     "parameters": [],
     "return_type": "",
     "return_description": "",
     "description": "Return the index where to insert item x in list a, assuming a is sorted.",
-    "code": "def simple_bisect_right(a, x):\n    l, r = 0, len(a)\n    while l < r:\n        mid = (l + r) // 2\n        if x < a[mid]:\n            r = mid\n        else: \n            l = mid + 1 \n    return l",
+    "code": "def simple_bisect_right(a, x):\n    lo, hi = 0, len(a)\n    while lo < hi:\n        mid = (lo + hi) // 2\n        if x < a[mid]:\n            hi = mid\n        else: \n            lo = mid + 1 \n    return lo",
     "links": [],
     "variables": [],
-    "expressions": [
-      {
-        "expression": "r = mid",
-        "description": "If the x is less than the middle element, the insertion point could be `mid` or to its left. Shrink search space to the left half.",
-        "type": "expression"
-      },
-      {
-        "expression": "l = mid + 1",
-        "description": "If the x is >= middle element, the insertion point must be to the right of `mid`.",
-        "type": "expression"
-      }
-    ]
+    "expressions": []
   },
   "searchRange": {
     "name": "searchRange",
     "type": "function",
     "language": "python",
     "file": "examples/code/binary_search.py",
-    "line": 48,
+    "line": 54,
     "signature": "def searchRange(nums: list[int], target: int) -> list[int]:",
     "parameters": [],
     "return_type": "list[int]",
     "return_description": "",
     "description": "",
     "code": "def searchRange(nums: list[int], target: int) -> list[int]:\n    start = bisect_left(nums, target)\n    if start < len(nums) and nums[start] == target:\n        return start, bisect_right(nums, target) - 1\n    return -1, -1",
-    "links": [],
-    "variables": [],
-    "expressions": []
-  },
-  "findMin": {
-    "name": "findMin",
-    "type": "function",
-    "language": "python",
-    "file": "examples/code/binary_search.py",
-    "line": 55,
-    "signature": "def findMin(nums: list[int]) -> int:",
-    "parameters": [],
-    "return_type": "int",
-    "return_description": "",
-    "description": "Given a unique-element sorted array that has been rotated at an unknown pivot, find its minimum value.",
-    "code": "def findMin(nums: list[int]) -> int:\n    l, r = 0, len(nums) - 1\n    while l < r:\n        mid = (l + r) // 2\n        if nums[mid] < nums[r]:\n            r = mid\n        else:\n            l = mid + 1 \n    return nums[l]",
-    "links": [],
-    "variables": [],
-    "expressions": [
-      {
-        "expression": "l = mid + 1",
-        "description": "the smallest is on the right",
-        "type": "expression"
-      }
-    ]
-  },
-  "minEatingSpeed": {
-    "name": "minEatingSpeed",
-    "type": "function",
-    "language": "python",
-    "file": "examples/code/binary_search.py",
-    "line": 75,
-    "signature": "def minEatingSpeed(piles: list[int], h: int) -> int:",
-    "parameters": [],
-    "return_type": "int",
-    "return_description": "",
-    "description": "",
-    "code": "def minEatingSpeed(piles: list[int], h: int) -> int:\n        def hours(k):\n            return sum((p + k - 1) // k for p in piles)\n        l, r = 1, max(piles)\n        while l < r:\n            mid = (l + r) // 2\n            if hours(mid) <= h:\n                r = mid\n            else:\n                l = mid + 1\n        return l",
-    "links": [],
-    "variables": [],
-    "expressions": []
-  },
-  "shipWithinDays": {
-    "name": "shipWithinDays",
-    "type": "function",
-    "language": "python",
-    "file": "examples/code/binary_search.py",
-    "line": 91,
-    "signature": "def shipWithinDays(weights: list[int], days: int) -> int:",
-    "parameters": [],
-    "return_type": "int",
-    "return_description": "",
-    "description": "",
-    "code": "def shipWithinDays(weights: list[int], days: int) -> int:\n    def can(cap: int) -> bool:\n        d ,curr = 1, 0\n        for w in weights:\n            if curr + w <= cap:\n                curr += w\n            else:\n                d += 1\n                curr = w\n        return d <= days\n    l, r = max(weights), sum(weights)\n    while l < r:\n        mid = (l + r) // 2\n        if can(mid):\n            r = mid\n        else:\n            l = mid + 1\n    return l",
     "links": [],
     "variables": [],
     "expressions": []
@@ -722,44 +542,6 @@
     "variables": [],
     "expressions": [],
     "parent": "LFUCache"
-  },
-  "test_function": {
-    "name": "test_function",
-    "type": "function",
-    "language": "python",
-    "file": "examples/code/test_expression_tooltip.py",
-    "line": 1,
-    "signature": "def test_function():",
-    "parameters": [],
-    "return_type": "",
-    "return_description": "",
-    "description": "Test function with expression tooltip.",
-    "code": "def test_function():\n    y = 2\n    lo = 0\n    hi = 10\n    mid = (lo + hi) // 2\n    result = x + y\n    return mid, result",
-    "links": [],
-    "variables": [
-      {
-        "name": "x",
-        "description": "test variable",
-        "type": "variable"
-      },
-      {
-        "name": "y",
-        "description": "another variable",
-        "type": "variable"
-      }
-    ],
-    "expressions": [
-      {
-        "expression": "(lo + hi) // 2",
-        "description": "round down to the nearest integer",
-        "type": "expression"
-      },
-      {
-        "expression": "x + y",
-        "description": "add two variables together",
-        "type": "expression"
-      }
-    ]
   },
   "Solution": {
     "name": "Solution",

@@ -105,10 +105,11 @@ export const routes: NavigationItem[] = [
         color: "text-blue-500",
         bgColor: "bg-blue-500/10",
         children: [
-
+            // {title:'stack', href:'/notes/stack', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10"},    
+            {title:'binary-search', href:'/notes/binary-search', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10"},    
             {title:'bfs', href:'/notes/bfs', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10"},    
             // {title:'dfs', href:'/notes/dfs', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10"},    
-            // {title:'A*', href:'/notes/a-star', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10"},    
+            // {title:'A*', href:'/notes/a-star', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10"},   
             { title: 'Dijkstra', href: '/notes/dijkstra', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10" },
             { title: 'Bellman-Ford', href: '/notes/bellman-ford', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10" },
             { title: 'Cache', href: '/notes/cache', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10" },

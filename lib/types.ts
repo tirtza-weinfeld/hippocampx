@@ -13,6 +13,12 @@ export interface Variable {
   type: string
 }
 
+export interface Expression {
+  expression: string
+  description: string
+  type: string
+}
+
 export interface SymbolMetadata {
   name: string
   type: 'function' | 'class' | 'method'
@@ -26,6 +32,7 @@ export interface SymbolMetadata {
   description: string
   code: string
   variables: Variable[]
+  expressions: Expression[]
   parent?: string
 }
 

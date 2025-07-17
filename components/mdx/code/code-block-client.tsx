@@ -145,7 +145,7 @@ export function CodeBlockClient({
         </motion.div>
         
         {/* Line count indicator */}
-        {shouldShowToggle && (
+        {/* {shouldShowToggle && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -161,7 +161,7 @@ export function CodeBlockClient({
               {isExpanded ? `${totalLines} lines` : `${MAX_LINES_COLLAPSED}/${totalLines} lines`}
             </motion.span>
           </motion.div>
-        )}
+        )} */}
       </div>
     </div>
   );

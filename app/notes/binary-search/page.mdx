@@ -1,0 +1,118 @@
+# Binary search
+
+## Resizable Table of Contents
+
+Binary search is an efficient `$O(\log n)$` algorithm for finding an item in a **sorted** list. 
+ It works by repeatedly dividing the search space in half.
+
+The core idea is to compare the target value with the middle element of the array.
+ If they are not equal, the half in which the target cannot lie is eliminated, 
+ and the search continues on the remaining half.
+
+-----
+
+## Finding the Leftmost Insertion Point 
+
+*Given a sorted list `a` and a target `x`, return the index at which `x` should be inserted to maintain order.
+(i.e. **first** position `i` where `a[i] >= x`)*
+
+```python file=examples/code/binary_search.py#func:simple_bisect_left 
+```
+
+>[!tip] 
+>When `a[mid]` is greater than or equal to `x`, we set `hi = mid`.
+ This ensures we keep considering the `mid` index as a potential answer and forces the search to
+  converge on the leftmost possible index.
+
+-----
+
+## Finding the Rightmost Insertion Point 
+
+*Given a sorted list `a` and a target `x`, return the index at which `x` should be inserted to maintain order.
+(i.e. **first** position `i` where `a[i] > x`)*
+
+```python file=examples/code/binary_search.py#func:simple_bisect_right
+```
+
+>[!tip] 
+>When `a[mid]` is less than or equal to `x`, we set `lo = mid + 1`. This effectively pushes the search past all elements equal to `x`, ensuring the final index is just after the rightmost occurrence.
+
+-----
+## Examples
+
+
+### 1. Search Insert Position
+
+[35. Search Insert Position](https://leetcode.com/problems/search-insert-position/)
+
+*Given a sorted array of distinct integers and a target value, find the index of the target.
+If absent, return the index where it would be inserted to maintain order.*
+
+```python file=examples/code/binary_search.py#func:searchInsert
+```
+
+  >[!tip] 
+  Python's `bisect` module is the standard for binary search.
+  See [Finding the Leftmost Insertion Point](#finding-the-leftmost-insertion-point) for simplified `bisect_left`.
+
+
+-----
+
+### 2. Find First and Last Position of Element in Sorted Array
+
+[34. Find First and Last Position of Element in Sorted Array](https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/)
+
+*Given a sorted array of integers `nums` that may contain duplicates, 
+find the starting and ending indices of a given `target`. If the target is not in the array, return `[-1, -1]`.*
+
+```python file=examples/code/binary_search.py#func:searchRange
+```
+
+  >[!tip] 
+   [bisect_left](#simple_bisect_left) finds the first position where `target` could be inserted, and
+    [bisect_right](#simple_bisect_right) finds the first position *after* all 
+  existing `target`s. 
+
+
+-----
+
+### 3. Find Minimum in Rotated Sorted Array
+
+[153. Find Minimum in Rotated Sorted Array](https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/)
+
+*Given a unique-element sorted array that has been rotated at an unknown pivot, find its minimum value.*
+
+```python file=examples/code/binary_search.py#func:findMin
+```
+
+
+
+-----
+
+### 4. Koko Eating Bananas
+
+[875. Koko Eating Bananas](https://leetcode.com/problems/koko-eating-bananas/)
+
+*Given `n` piles of bananas and `h` hours, find the minimum integer eating speed `k` required to consume all bananas within the time limit.*
+
+```python file=examples/code/binary_search.py#func:minEatingSpeed
+```
+
+ 
+  >[!timecomplexity] $O(n \log m)$, where `$n$` is the number of piles and `$m$` is the maximum pile size.
+
+
+-----
+
+### 5. Capacity To Ship Packages Within D Days
+
+[1011. Capacity To Ship Packages Within D Days](https://leetcode.com/problems/capacity-to-ship-packages-within-d-days/)
+
+*Given a list of weights and a number of days, find the minimum capacity of a ship that can ship all the weights within the given number of days.*
+
+```python file=examples/code/binary_search.py#func:shipWithinDays
+```
+
+
+
+-----

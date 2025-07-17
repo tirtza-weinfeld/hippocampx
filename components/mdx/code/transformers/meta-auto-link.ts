@@ -22,10 +22,10 @@ export function transformerMetaAddIds(
     className = 'auto-link-target',
   } = options;
 
-  // Build a map of symbol names to their metadata for fast lookup
+  // Build a map of symbol names to their metadata for fast lookup (case-sensitive)
   const symbolMap = new Map<string, SymbolMetadata>();
   for (const [symbol, metadata] of Object.entries(tooltipMap)) {
-    symbolMap.set(symbol.toLowerCase(), metadata);
+    symbolMap.set(symbol, metadata);
   }
 
   return {
@@ -36,10 +36,9 @@ export function transformerMetaAddIds(
       const textNode = node.children[0];
       if (!textNode || textNode.type !== 'text') return;
       const value = textNode.value.trim();
-      const key = value.toLowerCase();
       
-      // Check if this is a known symbol
-      const metadata = symbolMap.get(key);
+      // Check if this is a known symbol (case-sensitive)
+      const metadata = symbolMap.get(value);
       if (metadata) {
         // Add ID to the existing element
         node.properties = node.properties || {};
@@ -67,10 +66,10 @@ export function transformerMetaAddHrefs(
     className = 'auto-link',
   } = options;
 
-  // Build a map of symbol names to their metadata for fast lookup
+  // Build a map of symbol names to their metadata for fast lookup (case-sensitive)
   const symbolMap = new Map<string, SymbolMetadata>();
   for (const [symbol, metadata] of Object.entries(tooltipMap)) {
-    symbolMap.set(symbol.toLowerCase(), metadata);
+    symbolMap.set(symbol, metadata);
   }
 
   return {
@@ -105,10 +104,9 @@ export function transformerMetaAddHrefs(
       const textNode = node.children[0];
       if (!textNode || textNode.type !== 'text') return;
       const value = textNode.value.trim();
-      const key = value.toLowerCase();
       
-      // Check if this is a known symbol
-      if (symbolMap.has(key)) {
+      // Check if this is a known symbol (case-sensitive)
+      if (symbolMap.has(value)) {
         // Create a link element after the current node
         // Note: This is a simplified approach - the main work is done in preprocess
         return;

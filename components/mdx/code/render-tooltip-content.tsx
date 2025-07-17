@@ -1,5 +1,5 @@
 import React from 'react';
-import type { SymbolMetadata, Parameter, Variable } from '@/lib/types';
+import type { SymbolMetadata, Parameter, Variable, Expression } from '@/lib/types';
 import highlightCode from './code-highlighter';
 import InlineCode from './code-inline';
 import { TooltipMarkdown } from './tooltip-markdown';
@@ -17,7 +17,13 @@ interface VariableTooltip extends Variable {
   isVar?: boolean;
 }
 
-type TooltipMeta = SymbolMetadata | ParameterTooltip | VariableTooltip;
+interface ExpressionTooltip extends Expression {
+  parent: string;
+  path?: string[];
+  isExpr?: boolean;
+}
+
+type TooltipMeta = SymbolMetadata | ParameterTooltip | VariableTooltip | ExpressionTooltip;
 
 function TooltipHeader({ meta }: { meta: TooltipMeta }) {
   if ('isParam' in meta && meta.isParam) {
@@ -33,12 +39,26 @@ function TooltipHeader({ meta }: { meta: TooltipMeta }) {
       </div>
     );
   }
+  
+  if ('isExpr' in meta && meta.isExpr) {
+    return (
+      <div className="text-sm mb-2 flex items-center gap-2">
+        <span className="px-2 py-1 bg-cyan-100 dark:bg-cyan-900/30 text-cyan-700 dark:text-cyan-300 rounded text-xs font-medium">
+          expression
+        </span>
+        <InlineCode className="bg-cyan-50 dark:bg-cyan-900/20 text-cyan-800 dark:text-cyan-200">
+          {meta.expression}
+        </InlineCode>
+      </div>
+    );
+  }
+  
   // Function/class style as before
   const displayName = 'path' in meta && Array.isArray(meta.path) && meta.path.length > 0 
-    ? [...meta.path, meta.name].join('.') 
+    ? [...meta.path, 'name' in meta ? meta.name : meta.expression].join('.') 
     : 'parent' in meta && meta.parent 
-      ? `${meta.parent}.${meta.name}` 
-      : meta.name;
+      ? `${meta.parent}.${'name' in meta ? meta.name : meta.expression}` 
+      : 'name' in meta ? meta.name : meta.expression;
   
   const typeColor = meta.type === 'function' ? 'text-blue-600 dark:text-blue-400' :
                    meta.type === 'method' ? 'text-purple-600 dark:text-purple-400' :
@@ -119,7 +139,19 @@ function TooltipDescription({ meta }: { meta: TooltipMeta }) {
     return (
       <div className="text-sm mb-2 p-2 bg-emerald-50 dark:bg-emerald-900/20 border-l-4 border-emerald-400 dark:border-emerald-600 rounded-r">
         <div className="text-emerald-800 dark:text-emerald-200 font-medium">
-          {meta.name}: <TooltipMarkdown>{desc}</TooltipMarkdown>
+          {'name' in meta ? meta.name : ''}{'name' in meta ? ': ' : ''}<TooltipMarkdown>{desc}</TooltipMarkdown>
+        </div>
+      </div>
+    );
+  }
+  
+  // VS Code style for expression
+  if ('isExpr' in meta && meta.isExpr) {
+    const desc = typeof meta.description === 'string' && meta.description ? meta.description : 'No description.';
+    return (
+      <div className="text-sm mb-2 p-2 bg-cyan-50 dark:bg-cyan-900/20 border-l-4 border-cyan-400 dark:border-cyan-600 rounded-r">
+        <div className="text-cyan-800 dark:text-cyan-200 font-medium">
+          <TooltipMarkdown>{desc}</TooltipMarkdown>
         </div>
       </div>
     );
@@ -191,37 +223,96 @@ function TooltipReturns({ meta }: { meta: TooltipMeta }) {
 
 function TooltipVariables({ meta }: { meta: TooltipMeta }) {
   // Handle individual variable tooltip
-  if ('isVar' in meta && meta.isVar) {
+  if ('isVar' in meta && meta.isVar && 'name' in meta) {
     return (
-      <div className="text-xs mb-1">
-        <div className="flex flex-row gap-1">
-          <div className="font-semibold text-purple-700 dark:text-purple-300">Variable:</div>
-          <div className="font-mono bg-linear-to-t from-blue-500/20 to-transparent via-purple-500/20  rounded-md px-1 ">
-            
-     
-            
-      <div className="bg-linear-to-r from-blue-500  to-purple-500 text-transparent bg-clip-text text-md  ">       {meta.name}</div>
-            
-            </div>
+      <div className="text-sm mb-3">
+        <div className="font-semibold text-purple-700 dark:text-purple-300 mb-2 flex items-center gap-2">
+          <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
+          Variable:
         </div>
-       
-        {meta.description && <div className="bg-linear-to-r from-blue-500  to-purple-500 text-transparent bg-clip-text text-md mt-1 "><TooltipMarkdown>{meta.description}</TooltipMarkdown></div>}
+        <div className="p-2 bg-purple-50 dark:bg-purple-900/20 rounded border border-purple-200 dark:border-purple-700">
+          <div className="flex items-center gap-2">
+            <span className="font-mono text-purple-800 dark:text-purple-200 font-medium">{meta.name}</span>
+          </div>
+          {meta.description && (
+            <div className="text-purple-700 dark:text-purple-300 text-xs mt-1">
+              <TooltipMarkdown>{meta.description}</TooltipMarkdown>
+            </div>
+          )}
+        </div>
       </div>
     );
   }
   
   // Handle variables list for function/class tooltips
   return 'variables' in meta && Array.isArray(meta.variables) && meta.variables.length > 0 ? (
-    <div className="text-xs mb-1">
-      <div className="font-semibold text-purple-700">Variables:</div>
-      <ul className="ml-4">
+    <div className="text-sm mb-3">
+      <div className="font-semibold text-purple-700 dark:text-purple-300 mb-2 flex items-center gap-2">
+        <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
+        Variables:
+      </div>
+      <div className="space-y-2">
         {meta.variables.map((variable, idx) => (
-          <li key={variable.name || idx}>
-            <span className="font-mono">{variable.name}</span>
-            {variable.description && <span className="text-gray-600"> — <TooltipMarkdown>{variable.description}</TooltipMarkdown></span>}
-          </li>
+          <div key={variable.name || idx} className="p-2 bg-purple-50 dark:bg-purple-900/20 rounded border border-purple-200 dark:border-purple-700">
+            <div className="flex items-center gap-2">
+              <span className="font-mono text-purple-800 dark:text-purple-200 font-medium">{variable.name}</span>
+            </div>
+            {variable.description && (
+              <div className="text-purple-700 dark:text-purple-300 text-xs mt-1">
+                <TooltipMarkdown>{variable.description}</TooltipMarkdown>
+              </div>
+            )}
+          </div>
         ))}
-      </ul>
+      </div>
+    </div>
+  ) : null;
+}
+
+function TooltipExpressions({ meta }: { meta: TooltipMeta }) {
+  // Handle individual expression tooltip
+  if ('isExpr' in meta && meta.isExpr) {
+    return (
+      <div className="text-sm mb-3">
+        <div className="font-semibold text-cyan-700 dark:text-cyan-300 mb-2 flex items-center gap-2">
+          <span className="w-2 h-2 bg-cyan-500 rounded-full"></span>
+          Expression:
+        </div>
+        <div className="p-2 bg-cyan-50 dark:bg-cyan-900/20 rounded border border-cyan-200 dark:border-cyan-700">
+          <div className="flex items-center gap-2">
+            <span className="font-mono text-cyan-800 dark:text-cyan-200 font-medium">{meta.expression}</span>
+          </div>
+          {meta.description && (
+            <div className="text-cyan-700 dark:text-cyan-300 text-xs mt-1">
+              <TooltipMarkdown>{meta.description}</TooltipMarkdown>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+  
+  // Handle expressions list for function/class tooltips
+  return 'expressions' in meta && Array.isArray(meta.expressions) && meta.expressions.length > 0 ? (
+    <div className="text-sm mb-3">
+      <div className="font-semibold text-cyan-700 dark:text-cyan-300 mb-2 flex items-center gap-2">
+        <span className="w-2 h-2 bg-cyan-500 rounded-full"></span>
+        Expressions:
+      </div>
+      <div className="space-y-2">
+        {meta.expressions.map((expression, idx) => (
+          <div key={expression.expression || idx} className="p-2 bg-cyan-50 dark:bg-cyan-900/20 rounded border border-cyan-200 dark:border-cyan-700">
+            <div className="flex items-center gap-2">
+              <span className="font-mono text-cyan-800 dark:text-cyan-200 font-medium">{expression.expression}</span>
+            </div>
+            {expression.description && (
+              <div className="text-cyan-700 dark:text-cyan-300 text-xs mt-1">
+                <TooltipMarkdown>{expression.description}</TooltipMarkdown>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
     </div>
   ) : null;
 }
@@ -271,6 +362,13 @@ export function renderTooltipContent(
         meta = { ...varMeta, parent, path, isVar: true };
       }
     }
+    // If this is an expression, look up the parent and expression info
+    if (!meta && parentMeta && Array.isArray(parentMeta.expressions)) {
+      const exprMeta = parentMeta.expressions.find((e: Expression) => e.expression === trimmedSymbol);
+      if (exprMeta) {
+        meta = { ...exprMeta, parent, path, isExpr: true };
+      }
+    }
   }
   // If this is a top-level symbol (function/method/class), show full info
   if (!meta && TOOLTIP_CONTENT[trimmedSymbol]) {
@@ -293,6 +391,15 @@ export function renderTooltipContent(
     );
   }
 
+  // --- Only render the expression block for expressions ---
+  if ('isExpr' in meta && meta.isExpr) {
+    return (
+      <div className="min-w-[220px] max-w-[400px]">
+        <TooltipExpressions meta={meta} />
+      </div>
+    );
+  }
+
   return (
     <div className="min-w-[220px] max-w-[400px]">
       <TooltipHeader meta={meta} />
@@ -300,6 +407,7 @@ export function renderTooltipContent(
       <TooltipParameters meta={meta} />
       <TooltipReturns meta={meta} />
       <TooltipVariables meta={meta} />
+      <TooltipExpressions meta={meta} />
       <TooltipCode meta={meta} />
     </div>
   );

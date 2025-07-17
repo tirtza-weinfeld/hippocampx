@@ -7,6 +7,7 @@ interface SymbolHierarchy {
   parent?: string;
   parameters: string[];
   variables: string[];
+  expressions: string[];
   children: string[];
 }
 
@@ -19,6 +20,7 @@ export function transformerCodeTooltipWords(tooltipMap: Record<string, SymbolMet
       parent: meta.parent,
       parameters: meta.parameters?.map(p => p.name) || [],
       variables: meta.variables?.map(v => v.name) || [],
+      expressions: meta.expressions?.map(e => e.expression) || [],
       children: []
     });
   }
@@ -43,6 +45,12 @@ export function transformerCodeTooltipWords(tooltipMap: Record<string, SymbolMet
         parameterToParent[variable.name].add(symbol);
       }
     }
+    if (meta.expressions && Array.isArray(meta.expressions)) {
+      for (const expression of meta.expressions) {
+        if (!parameterToParent[expression.expression]) parameterToParent[expression.expression] = new Set();
+        parameterToParent[expression.expression].add(symbol);
+      }
+    }
   }
 
   // Build parameter resolution map: parameter -> full hierarchical path (scoped)
@@ -59,6 +67,10 @@ export function transformerCodeTooltipWords(tooltipMap: Record<string, SymbolMet
       if (!parameterToHierarchy[variable]) parameterToHierarchy[variable] = [];
       parameterToHierarchy[variable].push({ symbol, path: currentPath });
     }
+    for (const expression of hierarchy.expressions) {
+      if (!parameterToHierarchy[expression]) parameterToHierarchy[expression] = [];
+      parameterToHierarchy[expression].push({ symbol, path: currentPath });
+    }
     for (const child of hierarchy.children) {
       buildParameterMap(child, currentPath);
     }
@@ -69,8 +81,8 @@ export function transformerCodeTooltipWords(tooltipMap: Record<string, SymbolMet
     }
   }
 
-  // Collect all function/method/class names for fast lookup
-  const allSymbolNames = new Set(Object.keys(tooltipMap).map(k => k.toLowerCase()));
+  // Collect all function/method/class names for fast lookup (case-sensitive)
+  const allSymbolNames = new Set(Object.keys(tooltipMap));
 
   return {
     name: 'data-tooltip-symbol',
@@ -148,6 +160,7 @@ export function transformerCodeTooltipWords(tooltipMap: Record<string, SymbolMet
             end: index + symbolName.length,
             properties: {
               'data-tooltip-symbol': symbolName,
+              'data-tooltip-type': tooltipMap[symbolName].type,
               class: 'tooltip-symbol',
             },
           });
@@ -172,6 +185,7 @@ export function transformerCodeTooltipWords(tooltipMap: Record<string, SymbolMet
               end: absoluteIndex + shortName.length,
               properties: {
                 'data-tooltip-symbol': fullSymbolName,
+                'data-tooltip-type': meta.type,
                 class: 'tooltip-symbol',
               },
             });
@@ -179,16 +193,42 @@ export function transformerCodeTooltipWords(tooltipMap: Record<string, SymbolMet
         }
       }
       
-      // Parameter and variable tooltips scoped to parent function region
+      // Parameter, variable, and expression tooltips scoped to parent function region
       for (const [symbolName, parentSymbols] of Object.entries(parameterToHierarchy)) {
         for (const { symbol, path } of parentSymbols) {
           const region = functionRegions[symbol];
-          // FIXED: Only apply parameter tooltips if the parent function is actually in this code block
+          // FIXED: Only apply tooltips if the parent function is actually in this code block
           if (!region) {
             continue;
           }
           
-          const indexes = findAllWordIndexes(code.slice(region.start, region.end), symbolName);
+          // Check if this is an expression by looking up the parent's expressions
+          const parentMeta = tooltipMap[symbol];
+          const isExpression = parentMeta?.expressions?.some(e => e.expression === symbolName);
+          const isParameter = parentMeta?.parameters?.some(p => p.name === symbolName);
+          const isVariable = parentMeta?.variables?.some(v => v.name === symbolName);
+          
+          // Determine the type
+          let tooltipType: string;
+          if (isExpression) {
+            tooltipType = 'expression';
+          } else if (isParameter) {
+            tooltipType = 'parameter';
+          } else if (isVariable) {
+            tooltipType = 'variable';
+          } else {
+            tooltipType = 'unknown';
+          }
+          
+          let indexes: number[];
+          if (isExpression) {
+            // For expressions, use substring search (not word boundaries)
+            indexes = findAllSubstringIndexes(code.slice(region.start, region.end), symbolName);
+          } else {
+            // For parameters and variables, use word boundary search
+            indexes = findAllWordIndexes(code.slice(region.start, region.end), symbolName);
+          }
+          
           for (const relIndex of indexes) {
             const index = region.start + relIndex;
             options.decorations.push({
@@ -196,6 +236,7 @@ export function transformerCodeTooltipWords(tooltipMap: Record<string, SymbolMet
               end: index + symbolName.length,
               properties: {
                 'data-tooltip-symbol': symbolName,
+                'data-tooltip-type': tooltipType,
                 'data-tooltip-parent': symbol,
                 'data-tooltip-path': JSON.stringify(path),
                 class: 'tooltip-symbol',
@@ -211,13 +252,13 @@ export function transformerCodeTooltipWords(tooltipMap: Record<string, SymbolMet
       if (!Array.isArray(node.children) || node.children.length !== 1) return;
       const textNode = node.children[0];
       if (!textNode || textNode.type !== 'text') return;
-      const value = textNode.value;
-      const key = value.trim().toLowerCase();
+      const value = textNode.value.trim();
       
-      // Always add tooltip for function/method/class names
-      if (allSymbolNames.has(key)) {
+      // Always add tooltip for function/method/class names (case-sensitive)
+      if (allSymbolNames.has(value)) {
         node.properties = node.properties || {};
-        node.properties['data-tooltip-symbol'] = value.trim();
+        node.properties['data-tooltip-symbol'] = value;
+        node.properties['data-tooltip-type'] = tooltipMap[value]?.type || 'unknown';
         node.properties['class'] = [
           ...(Array.isArray(node.properties['class']) ? node.properties['class'] : []),
           'tooltip-symbol',
@@ -250,6 +291,20 @@ export function findAllWordIndexes(str: string, word: string): number[] {
   // Escape regex special chars in word
   const escaped = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const regex = new RegExp(`\\b${escaped}\\b`, 'g');
+  let match;
+  while ((match = regex.exec(str)) !== null) {
+    indexes.push(match.index);
+  }
+  return indexes;
+}
+
+// Use regex to match substrings (no word boundaries)
+export function findAllSubstringIndexes(str: string, substring: string): number[] {
+  const indexes: number[] = [];
+  if (!substring) return indexes;
+  // Escape regex special chars in substring
+  const escaped = substring.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const regex = new RegExp(escaped, 'g');
   let match;
   while ((match = regex.exec(str)) !== null) {
     indexes.push(match.index);

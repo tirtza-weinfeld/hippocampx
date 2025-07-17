@@ -1,0 +1,158 @@
+# Binary search
+
+## Resizable Table of Contents
+
+Binary search is an efficient algorithm that operates on data with a **monotonic property** (e.g., a sorted array). It works by repeatedly halving the search space until a target is found or the space is exhausted.
+
+Binary search is a `$O(\log n)$` efficient algorithm for finding an item in a **sorted** list. 
+ It works by repeatedly dividing the search interval in half.
+
+The core idea is to compare the target value with the middle element of the array.
+ If they are not equal, the half in which the target cannot lie is eliminated, 
+ and the search continues on the remaining half.
+
+-----
+
+## Finding the Leftmost Insertion Point 
+
+`bisect_left` determines the index at which a target `x` should be inserted into a sorted list `a` to maintain order.
+It finds the **first** position `i` where `a[i] >= x`.
+
+```python file=examples/code/binary_search.py#func:simple_bisect_left
+```
+
+**Key Logic**: When `a[mid]` is greater than or equal to `x`, we set `hi = mid`. This ensures we keep considering the `mid` index as a potential answer and forces the search to converge on the leftmost possible index.
+
+-----
+
+## Finding the Rightmost Insertion Point 
+
+`bisect_right` is similar but finds the insertion point to the **right** of any existing entries of `x`. It finds the first position `i` where `a[i] > x`.
+
+```python file=examples/code/binary_search.py#func:simple_bisect_right
+```
+
+**Key Logic**: When `a[mid]` is less than or equal to `x`, we set `lo = mid + 1`. This effectively pushes the search past all elements equal to `x`, ensuring the final index is just after the rightmost occurrence.
+
+-----
+## Examples
+
+
+
+### Pattern 1: Search on Index
+
+This pattern uses an element's value to find its position within a sorted data structure. Python's `bisect` module is the professional standard for this.
+
+**Problem: Search Insert Position** ([LeetCode 35](https://leetcode.com/problems/search-insert-position/))
+
+  * **Problem Definition:** Given a sorted array of distinct integers and a target value, find the index of the target. If absent, return the index where it would be inserted to maintain order.
+
+  * **Code Snippet:**
+
+    ```python
+    from bisect import bisect_left
+
+    def searchInsert(nums: list[int], target: int) -> int:
+        return bisect_left(nums, target)
+    ```
+
+  * **Tip:** 💡 This problem is a direct application of **binary search on an index**. The `bisect_left` function is purpose-built for this, returning the exact insertion point in $O(\\log n)$ time, making it the ideal tool.
+
+  * **Time Complexity:** $O(\\log n)$
+
+-----
+
+### Pattern 2: Search on Index for Boundaries
+
+This extends the first pattern to find the full range of a target that may appear multiple times.
+
+**Problem: Find First and Last Position of Element in Sorted Array** ([LeetCode 34](https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/))
+
+  * **Problem Definition:** Given a sorted array of integers `nums` that may contain duplicates, find the starting and ending indices of a given `target`. If the target is not in the array, return `[-1, -1]`.
+
+  * **Code Snippet:**
+
+    ```python
+    from bisect import bisect_left, bisect_right
+
+    def searchRange(nums: list[int], target: int) -> list[int]:
+        start = bisect_left(nums, target)
+        if start == len(nums) or nums[start] != target:
+            return [-1, -1]
+        
+        end = bisect_right(nums, target) - 1
+        return [start, end]
+    ```
+
+  * **Tip:** 💡 This problem is elegantly solved by using two **binary searches on index**. `bisect_left` finds the first position where `target` could be inserted, and `bisect_right` finds the first position *after* all existing `target`s. Combining them is the most robust way to find the boundaries.
+
+  * **Time Complexity:** $O(\\log n)$
+
+-----
+
+### Pattern 3: Search with a Modified Condition
+
+This pattern is required when the data isn't strictly sorted but has a custom monotonic property (e.g., a rotated array). A manual implementation is necessary as standard libraries don't cover these unique conditions.
+
+**Problem: Find Minimum in Rotated Sorted Array** ([LeetCode 153](https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/))
+
+  * **Problem Definition:** Given a unique-element sorted array that has been rotated at an unknown pivot, find its minimum value.
+
+  * **Code Snippet:**
+
+    ```python
+    def findMin(nums: list[int]) -> int:
+        low, high = 0, len(nums) - 1
+        while low < high:
+            mid = low + (high - low) // 2
+            if nums[mid] > nums[high]:
+                low = mid + 1
+            else:
+                high = mid
+        return nums[low]
+    ```
+
+  * **Tip:** 💡 This is a **binary search on index with a modified condition**. You must implement the logic manually. The key is comparing `nums[mid]` to an endpoint (`nums[high]`) to determine which half contains the rotational pivot (the minimum) and can't be discarded.
+
+  * **Time Complexity:** $O(\\log n)$
+
+-----
+
+### Pattern 4: Search on the Answer Space
+
+This advanced pattern solves optimization problems by searching within a conceptual range of possible answers to find the most optimal one that satisfies specific constraints.
+
+**Problem: Koko Eating Bananas** ([LeetCode 875](https://leetcode.com/problems/koko-eating-bananas/))
+
+  * **Problem Definition:** Given `n` piles of bananas and `h` hours, find the minimum integer eating speed `k` required to consume all bananas within the time limit.
+
+  * **Code Snippet:**
+
+    ```python
+    import math
+
+    def minEatingSpeed(piles: list[int], h: int) -> int:
+        low, high = 1, max(piles)
+        min_speed = high
+
+        while low <= high:
+            k = low + (high - low) // 2
+            # Handle potential division by zero if low can be 0
+            if k == 0:
+                low = 1
+                continue
+            
+            hours_taken = sum(math.ceil(p / k) for p in piles)
+
+            if hours_taken <= h:
+                min_speed = k
+                high = k - 1
+            else:
+                low = k + 1
+        
+        return min_speed
+    ```
+
+  * **Tip:** 💡 This problem requires a **binary search on the answer space**. The search space is the range of possible speeds (`k`). The algorithm must be manually implemented to test each `k` against the problem's constraints (`hours_taken <= h`) to find the lowest valid speed.
+
+  * **Time Complexity:** $O(n \\log m)$, where $n$ is the number of piles and $m$ is the maximum pile size.

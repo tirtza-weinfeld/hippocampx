@@ -317,7 +317,7 @@ export default function Alert({ type, children, collapse = false }: AlertProps) 
             "font-semibold text-sm uppercase tracking-wider",
             styles.text,
           )}>
-            { `${type === "comment" ? "Note" : type}`}
+            { `${type === "comment" ? "Note" : LABELS[type]}`}
           </div></>}
 
           {/* <div className={cn(
@@ -329,7 +329,7 @@ export default function Alert({ type, children, collapse = false }: AlertProps) 
         <div className={cn(
           "text-sm leading-relaxed text-gray-600 dark:text-gray-400",
           "[&_p]:m-0 [&_a]:font-medium",
-          `[&_a]:${styles.text} [&_a]:underline [&_a]:underline-offset-2`,
+          // `[&_a]:${styles.text} [&_a]:underline [&_a]:underline-offset-2`,
           "[&_code]:bg-black/[0.07] dark:[&_code]:bg-white/[0.07]",
           "[&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded-md [&_code]:font-mono [&_code]:text-xs",
           // "[&_p]:whitespace-pre-wrap ",

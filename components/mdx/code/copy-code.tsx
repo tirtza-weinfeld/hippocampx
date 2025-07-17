@@ -20,7 +20,7 @@ export default function CopyCode({code, className=""}: {code: string, className:
             <Tooltip>
                 <TooltipTrigger asChild>
                     <motion.button
-                        whileHover={{ scale: 1.07, translateY: -5}}
+                        whileHover={{ scale: 1.07, rotate: 5}}
                         whileTap={{ scale: 0.95 }}
                         onClick={handleCopy}
                         className="p-2 rounded-lg  transition-colors shadow-sm  cursor-pointer "

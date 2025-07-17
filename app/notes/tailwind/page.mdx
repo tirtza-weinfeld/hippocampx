@@ -1,359 +1,936 @@
-# Tailwind CSS 4.1 Essential Guide
+# Tailwind CSS v4.1: CSS-First Configuration & Theme Mastery
 
-## resizable table of contents
+## Resizable Table Of Contents
 
-## Theme Configuration
+> **Revolutionary Change**: Tailwind v4.1 introduces CSS-first configuration, eliminating the need for `tailwind.config.js` in most projects. Everything happens directly in CSS using the new `@theme` directive and native CSS cascade layers.
 
-### Basic Setup
+## 🎯 The Big Picture
+
+Tailwind CSS v4.1 represents a fundamental shift from JavaScript configuration to **CSS-first configuration**, leveraging cutting-edge CSS features:
+
+- ✅ **CSS-first configuration** - No more `tailwind.config.js` for most projects
+- ✅ **Native cascade layers** - Predictable style precedence with `@layer`
+- ✅ **Built-in container queries** - Component-level responsiveness without plugins
+- ✅ **OKLCH colors & P3 gamut** - More vivid colors for modern displays
+- ✅ **Text shadows & masks** - Long-awaited visual utilities finally here
+- ✅ **Modern CSS transpilation** - Built-in vendor prefixing and optimization
+- ✅ **Performance boost** - Up to 5x faster builds, 100x faster incremental builds
+
+## 🏗️ Perfect globals.css Structure
+
+Your main CSS file should follow this battle-tested structure:
+
 ```css
+/* Import Tailwind CSS with modern syntax */
 @import "tailwindcss";
 
+/* 1. Theme Configuration - Your Design System Foundation */
 @theme {
-  /* Colors */
-  --color-primary: oklch(0.7 0.15 280);
-  --color-secondary: oklch(0.8 0.12 120);
+  /* Typography System */
+  --font-display: "Satoshi", "sans-serif";
+  --font-mono: "JetBrains Mono", monospace;
   
-  /* Typography */
-  --font-display: "Inter", sans-serif;
-  --text-hero: 4rem;
-  --text-hero--line-height: 1.1;
+  /* Custom Breakpoints */
+  --breakpoint-3xl: 1920px;
+  --breakpoint-4xl: 2560px;
   
-  /* Spacing */
-  --spacing-xs: 0.5rem;
-  --spacing-xl: 2rem;
+  /* OKLCH Colors for Modern Displays */
+  --color-brand-50: oklch(0.98 0.02 220);
+  --color-brand-500: oklch(0.64 0.24 220);
+  --color-brand-950: oklch(0.15 0.05 220);
   
-  /* Breakpoints */
-  --breakpoint-3xl: 120rem;
+  /* Dynamic Spacing Scale */
+  --spacing: 0.25rem; /* Enables mt-17, w-23, etc. automatically */
   
-  /* Animations */
-  --animate-fade-in: fade-in 0.3s ease-out;
+  /* Custom Animations & Timing */
+  --ease-fluid: cubic-bezier(0.3, 0, 0, 1);
+  --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --animate-slide: slide 0.3s var(--ease-fluid);
   
-  @keyframes fade-in {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+  /* Visual Effects */
+  --shadow-glow: 0 0 20px rgba(59, 130, 246, 0.5);
+  --text-shadow-soft: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+/* 2. Base Layer - HTML Element Defaults */
+@layer base {
+  html {
+    @apply antialiased scroll-smooth;
+    color-scheme: light dark; /* Proper scrollbar colors */
+  }
+  
+  body {
+    @apply font-sans text-gray-900 dark:text-gray-100;
+    @apply bg-white dark:bg-gray-900;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display;
+  }
+  
+  /* Better focus styles */
+  *:focus-visible {
+    @apply outline-2 outline-blue-500 outline-offset-2;
   }
 }
-```
 
-### Theme Options
-
-**Default:** Extends existing theme
-```css
-@theme {
-  --color-brand: #3b82f6;
-}
-```
-
-**Override namespace:** Remove defaults
-```css
-@theme {
-  --color-*: initial;
-  --color-brand: #3b82f6;
-  --color-accent: #10b981;
-}
-```
-
-**Start from scratch:** Remove all defaults
-```css
-@theme {
-  --*: initial;
-  --color-brand: #3b82f6;
-  --spacing: 0.25rem;
-}
-```
-
-**Inline theme:** For referencing variables
-```css
-@theme inline {
-  --font-sans: var(--font-inter);
-}
-```
-
-**Static theme:** Always generate CSS variables
-```css
-@theme static {
-  --color-primary: var(--color-red-500);
-}
-```
-
-## Dark Mode
-
-### Method 1: CSS Class (Recommended)
-```css
-@theme {
-  --color-bg: #ffffff;
-  --color-text: #000000;
-}
-
-.dark {
-  --color-bg: #000000;
-  --color-text: #ffffff;
-}
-```
-
-**Toggle in JavaScript:**
-```javascript
-document.documentElement.classList.toggle('dark')
-```
-
-### Method 2: Media Query (Automatic)
-```css
-@theme {
-  --color-bg: #ffffff;
-  --color-text: #000000;
-}
-
-@media (prefers-color-scheme: dark) {
-  @theme {
-    --color-bg: #000000;
-    --color-text: #ffffff;
+/* 3. Components Layer - Reusable UI Patterns */
+@layer components {
+  .btn {
+    @apply inline-flex items-center px-4 py-2;
+    @apply font-medium rounded-md transition-all duration-200;
+    @apply focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-blue-500;
+  }
+  
+  .btn-primary {
+    @apply bg-brand-500 text-white;
+    @apply hover:bg-brand-600 active:bg-brand-700;
+  }
+  
+  .card {
+    @apply bg-white dark:bg-gray-800 rounded-lg shadow-md p-6;
+    @apply border border-gray-200 dark:border-gray-700;
+  }
+  
+  /* Container Query Components */
+  .responsive-grid {
+    @apply @container grid grid-cols-1;
+    @apply @md:grid-cols-2 @lg:grid-cols-3 @xl:grid-cols-4;
   }
 }
-```
 
-### Method 3: Custom Variant
-```css
-@variant dark (&:where(.dark, .dark *));
-
-@theme {
-  --color-bg: #ffffff;
-}
-
-@theme dark {
-  --color-bg: #000000;
-}
-```
-
-## Container Queries
-
-### Setup
-```css
-@theme {
-  --container-card: 20rem;
-  --container-sidebar: 16rem;
-}
-```
-
-### Usage
-```html
-<!-- Basic container -->
-<div class="@container">
-  <div class="grid @sm:grid-cols-2 @lg:grid-cols-3">
-    Content adapts to container size
-  </div>
-</div>
-
-<!-- Named container -->
-<div class="@container/card">
-  <div class="grid @lg/card:grid-cols-2">
-    Responsive to card container
-  </div>
-</div>
-
-<!-- Max-width queries -->
-<div class="@container">
-  <div class="grid grid-cols-3 @max-md:grid-cols-1">
-    Three columns, one on small containers
-  </div>
-</div>
-
-<!-- Range queries -->
-<div class="@container">
-  <div class="@min-md:@max-xl:hidden">
-    Hidden between medium and extra large
-  </div>
-</div>
-```
-
-## Pseudo-Classes & Variants
-
-### Built-in Pseudo-Selectors
-```html
-<!-- Structural -->
-<li class="first:font-bold last:text-gray-500">Item</li>
-<li class="odd:bg-gray-100 even:bg-white">Item</li>
-<li class="nth-3:underline nth-last-2:text-red-500">Item</li>
-
-<!-- State -->
-<input class="user-valid:border-green-500 user-invalid:border-red-500" />
-<div class="inert:opacity-50 inert:blur">Inert content</div>
-<div class="starting:opacity-0 opacity-100">Starting style</div>
-
-<!-- Relationships -->
-<div class="has-[:focus]:ring-2">Has focused child</div>
-<div class="not-hover:bg-gray-500">Not hovering</div>
-```
-
-### Arbitrary Variants
-```html
-<!-- Custom pseudo-selectors -->
-<div class="[&:nth-child(3n)]:bg-red-100">Every third child</div>
-<div class="[&[data-state='active']]:bg-green-100">Data attribute</div>
-<div class="[&>*:not(pre)]:text-blue-600">Complex selector</div>
-
-<!-- Descendant selectors -->
-<div class="**:data-avatar:rounded-full">All descendants</div>
-<div class="*:p-4">Direct children</div>
-```
-
-### Custom Variants
-```css
-@variant theme-dark (&:where([data-theme="dark"] *));
-@variant pointer-coarse (@media (pointer: coarse));
-@variant any-hover {
-  @media (any-hover: hover) {
-    &:hover {
-      @slot;
+/* 4. Utilities Layer - Custom Utilities (Highest Priority) */
+@layer utilities {
+  .text-shadow-soft {
+    text-shadow: var(--text-shadow-soft);
+  }
+  
+  .scrollbar-hidden {
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+      display: none;
     }
   }
+  
+  .glass {
+    backdrop-filter: blur(12px) saturate(190%);
+    background: rgba(255, 255, 255, 0.09);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+}
+
+/* 5. Custom Utilities & Variants */
+@utility focus-ring {
+  &:focus-visible {
+    outline: 2px solid theme(--color-blue-500);
+    outline-offset: 2px;
+  }
+}
+
+@variant pointer-coarse (@media (pointer: coarse));
+@variant reduced-motion (@media (prefers-reduced-motion: reduce));
+@variant high-contrast (@media (prefers-contrast: high));
+```
+
+## 🏢 CSS Cascade Layers - The Foundation
+
+Tailwind v4.1 uses **native CSS cascade layers** for bulletproof style organization:
+
+```css
+/* Layer declaration order determines priority */
+@layer theme, base, components, utilities;
+
+@layer theme {
+  /* Design tokens and CSS variables */
+  :root {
+    --color-brand: oklch(0.64 0.24 220);
+    --font-display: "Inter", sans-serif;
+  }
+}
+
+@layer base {
+  /* HTML element defaults and resets */
+  body {
+    @apply font-sans text-gray-900 bg-white;
+  }
+}
+
+@layer components {
+  /* Reusable component classes */
+  .btn {
+    @apply px-4 py-2 rounded font-medium;
+  }
+}
+
+@layer utilities {
+  /* Utility classes - highest priority */
+  .text-shadow-sm {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
 }
 ```
 
-## Theme Variable Namespaces
+### Layer Priority Rules
 
-| Namespace | Generates | Example |
-|-----------|-----------|---------|
-| `--color-*` | Color utilities | `--color-brand` → `bg-brand`, `text-brand` |
-| `--font-*` | Font families | `--font-display` → `font-display` |
-| `--text-*` | Font sizes | `--text-hero` → `text-hero` |
-| `--spacing-*` | Spacing/sizing | `--spacing-xl` → `p-xl`, `w-xl` |
-| `--breakpoint-*` | Breakpoints | `--breakpoint-3xl` → `3xl:*` |
-| `--container-*` | Container queries | `--container-card` → `@card:*` |
-| `--radius-*` | Border radius | `--radius-xl` → `rounded-xl` |
-| `--shadow-*` | Box shadows | `--shadow-soft` → `shadow-soft` |
-| `--animate-*` | Animations | `--animate-fade` → `animate-fade` |
+**Critical Understanding:**
+1. **utilities** always beats **components** beats **base** beats **theme**
+2. Later layers win regardless of CSS specificity
+3. Within same layer, normal specificity rules apply
+4. Use `!important` utilities when needed: `bg-red-500!`
 
-## New 4.1 Features
-
-### Pseudo-Class Variants
+**Example:**
 ```html
-<div class="first:font-bold last:text-gray-500">Structural</div>
-<div class="odd:bg-gray-100 even:bg-white">Alternating</div>
-<div class="has-[:focus]:ring-2">Has focused child</div>
-<div class="not-hover:underline">Not hovering</div>
+<!-- This element will be red, even though .card sets blue background -->
+<div class="card bg-red-500">
+  <!-- utilities layer beats components layer -->
+</div>
 ```
 
-### Pointer Variants
+## 🔧 Theme Variables Deep Dive
+
+### The `@theme` Directive - Your Design System
+
+Every CSS variable in `@theme` automatically generates corresponding utilities:
+
+```css
+@theme {
+  /* Typography */
+  --font-display: "Inter", sans-serif;      /* → font-display */
+  --text-hero: 4rem;                        /* → text-hero */
+  --text-hero--line-height: 1.1;           /* → Default line-height for text-hero */
+  --text-hero--font-weight: 800;           /* → Default font-weight for text-hero */
+  
+  /* Colors with OKLCH for wider gamut */
+  --color-brand-50: oklch(0.98 0.02 220);  /* → bg-brand-50, text-brand-50, etc. */
+  --color-brand-500: oklch(0.64 0.24 220); /* → bg-brand-500, text-brand-500, etc. */
+  --color-brand-950: oklch(0.15 0.05 220); /* → bg-brand-950, text-brand-950, etc. */
+  
+  /* Spacing */
+  --spacing: 0.25rem;                       /* → Dynamic scale: mt-1 to mt-999 */
+  --spacing-tight: 0.125rem;               /* → p-tight, m-tight, w-tight */
+  
+  /* Breakpoints */
+  --breakpoint-3xl: 1920px;                /* → 3xl:* variants */
+  --breakpoint-4xl: 2560px;                /* → 4xl:* variants */
+  
+  /* Animations */
+  --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --animate-wiggle: wiggle 1s ease-in-out infinite;
+  
+  @keyframes wiggle {
+    0%, 100% { transform: rotate(-3deg); }
+    50% { transform: rotate(3deg); }
+  }
+}
+```
+
+### Advanced Theme Techniques
+
+**Override entire namespaces:**
+```css
+@theme {
+  /* Remove all default fonts */
+  --font-*: initial;
+  --font-sans: "Your Brand Font", system-ui;
+  --font-display: "Your Display Font", serif;
+}
+```
+
+**Variable references and cascading:**
+```css
+@theme {
+  --color-primary: var(--color-blue-600);
+  --color-accent: var(--color-primary);
+  --color-interactive: var(--color-accent);
+}
+```
+
+**Dynamic values with calc():**
+```css
+@theme {
+  --spacing-golden: calc(var(--spacing) * 1.618);
+  --text-responsive: clamp(1rem, 4vw, 3rem);
+}
+```
+
+## 📱 Container Queries Revolution
+
+Container queries are **built into core** v4.1 - no plugins needed:
+
+### Basic Container Query Setup
+
 ```html
-<button class="px-3 py-1 pointer-coarse:px-5 pointer-coarse:py-3">
-  Touch-optimized
+<!-- 1. Mark element as container -->
+<div class="@container">
+  <!-- 2. Children respond to container size, not viewport -->
+  <div class="grid grid-cols-1 @md:grid-cols-2 @lg:grid-cols-3">
+    <div class="p-4 @sm:p-6">
+      Content adapts to container width!
+    </div>
+  </div>
+</div>
+```
+
+### Advanced Container Techniques
+
+**Named containers for precision:**
+```html
+<!-- Multiple containers with different purposes -->
+<aside class="@container/sidebar w-64 xl:w-80">
+  <nav class="@lg/sidebar:flex @lg/sidebar:flex-col space-y-2">
+    <!-- Only responds to sidebar container -->
+    <a class="@md/sidebar:text-sm @lg/sidebar:text-base">Dashboard</a>
+    <a class="@md/sidebar:text-sm @lg/sidebar:text-base">Settings</a>
+  </nav>
+</aside>
+
+<main class="@container/content flex-1">
+  <article class="@xl/content:prose-xl @lg/content:prose-lg prose">
+    <!-- Only responds to main content container -->
+    <h1>Article adapts to available space</h1>
+  </article>
+</main>
+```
+
+**Range queries and max-width:**
+```html
+<div class="@container">
+  <!-- Hide in small containers -->
+  <div class="@max-sm:hidden">Desktop-only widget</div>
+  
+  <!-- Show only in specific range -->
+  <div class="@min-md:@max-lg:block hidden">
+    Medium container only
+  </div>
+  
+  <!-- Complex responsive grid -->
+  <div class="grid @sm:grid-cols-2 @lg:grid-cols-3 @xl:grid-cols-4 gap-4">
+    <!-- Grid adapts to container, not viewport -->
+  </div>
+</div>
+```
+
+**Container query units for fluid scaling:**
+```css
+@layer components {
+  .fluid-card {
+    /* 5% of container inline size */
+    padding: 5cqi;
+    /* Font scales with container */
+    font-size: clamp(1rem, 4cqi, 3rem);
+    /* Height based on container block size */
+    min-height: 30cqb;
+  }
+}
+```
+
+### Real-World Container Examples
+
+**Dashboard sidebar that reshapes:**
+```html
+<aside class="@container/sidebar bg-gray-50 dark:bg-gray-800">
+  <!-- User profile adapts to sidebar width -->
+  <div class="p-4 @lg/sidebar:p-6">
+    <div class="@sm/sidebar:flex @sm/sidebar:items-center @sm/sidebar:space-x-3">
+      <img class="@sm/sidebar:w-12 @sm/sidebar:h-12 w-16 h-16 rounded-full" 
+           src="/avatar.jpg" alt="User" />
+      <div class="@sm/sidebar:mt-0 mt-3 text-center @sm/sidebar:text-left">
+        <h3 class="@lg/sidebar:text-lg font-medium">John Doe</h3>
+        <p class="@md/sidebar:block hidden text-sm text-gray-600">Admin</p>
+      </div>
+    </div>
+    
+    <!-- Actions appear based on available space -->
+    <div class="@lg/sidebar:flex @lg/sidebar:space-x-2 @lg/sidebar:mt-4 hidden">
+      <button class="btn btn-sm flex-1">Profile</button>
+      <button class="btn btn-sm flex-1">Settings</button>
+    </div>
+  </div>
+</aside>
+```
+
+**Product card that reorganizes:**
+```html
+<div class="@container max-w-sm mx-auto">
+  <div class="card">
+    <!-- Layout switches based on card width -->
+    <div class="@lg:flex @lg:space-x-4">
+      <img class="@lg:w-32 @lg:h-32 w-full h-48 object-cover rounded-md" 
+           src="/product.jpg" alt="Product" />
+      <div class="@lg:flex-1 @lg:mt-0 mt-4">
+        <h3 class="@xl:text-xl @lg:text-lg text-base font-semibold">
+          Product Name
+        </h3>
+        <p class="@lg:text-sm text-xs text-gray-600 @lg:mt-1 mt-2">
+          Product description that adapts to available space
+        </p>
+        <div class="@lg:mt-3 mt-4 @lg:flex @lg:space-x-2">
+          <button class="btn btn-primary @lg:text-sm @lg:px-3 w-full @lg:w-auto">
+            Buy Now
+          </button>
+          <button class="btn @lg:text-sm @lg:px-3 @lg:mt-0 mt-2 w-full @lg:w-auto">
+            Details
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+## 🆕 Revolutionary v4.1 Features
+
+### Text Shadows (Finally!)
+
+After years of requests, text shadows are here with full color control:
+
+```html
+<!-- Size variants -->
+<h1 class="text-shadow-2xs">Subtle shadow</h1>
+<h1 class="text-shadow-xs">Small shadow</h1>
+<h1 class="text-shadow-sm">Small shadow</h1>
+<h1 class="text-shadow-md">Medium shadow</h1>
+<h1 class="text-shadow-lg">Large shadow</h1>
+
+<!-- Colored shadows -->
+<h1 class="text-shadow-lg text-shadow-blue-500/30">Blue glow effect</h1>
+<h1 class="text-shadow-md text-shadow-white/70">Subtle white highlight</h1>
+
+<!-- Embossed effect -->
+<button class="text-gray-900 text-shadow-sm text-shadow-white/60 bg-gray-100">
+  Embossed Button
 </button>
+
+<!-- Opacity modifiers -->
+<h1 class="text-shadow-xl/20">20% opacity shadow</h1>
+<h1 class="text-shadow-lg/50">50% opacity shadow</h1>
 ```
 
-### Text Shadows
-```css
-@theme {
-  --text-shadow-sm: 1px 1px 2px rgba(0,0,0,0.5);
-  --text-shadow-lg: 2px 2px 4px rgba(0,0,0,0.7);
-}
+### CSS Masking for Creative Effects
+
+Powerful composable masking utilities for stunning visual effects:
+
+```html
+<!-- Fade image edges -->
+<img src="hero.jpg" 
+     class="mask-t-from-50% mask-b-to-0% w-full h-64 object-cover" 
+     alt="Fading hero image" />
+
+<!-- Radial spotlight effect -->
+<div class="mask-radial-from-70% mask-radial-to-90% 
+            bg-gradient-to-r from-purple-500 to-blue-500 
+            p-12 text-center text-white">
+  <h2 class="text-3xl font-bold">Spotlight Content</h2>
+</div>
+
+<!-- Complex combined masks -->
+<div class="mask-b-from-80% mask-r-from-80% 
+            mask-radial-from-60% mask-radial-to-85%
+            bg-cover bg-center h-96"
+     style="background-image: url('/landscape.jpg')">
+  <div class="p-8 text-white">
+    Content with multiple mask layers
+  </div>
+</div>
+
+<!-- Linear gradient masks -->
+<div class="mask-l-from-50% mask-l-to-90% mask-r-from-30%">
+  Masked on left and right edges
+</div>
 ```
 
-### Mask Utilities
-```css
-@theme {
-  --mask-fade: linear-gradient(to right, black 0%, transparent 100%);
-}
+### Pointer Device Variants
+
+Design specifically for different input methods:
+
+```html
+<!-- Touch-optimized controls -->
+<button class="px-3 py-2 text-sm
+               pointer-coarse:px-6 pointer-coarse:py-4 pointer-coarse:text-base">
+  Larger touch targets on mobile devices
+</button>
+
+<!-- Precision hover effects for mouse users -->
+<div class="transition-all duration-200
+            pointer-fine:hover:scale-105 pointer-fine:hover:shadow-lg
+            pointer-coarse:active:scale-95">
+  Hover effects only for precise pointing devices
+</div>
+
+<!-- Different layouts for different input types -->
+<nav class="flex space-x-2
+            pointer-coarse:flex-col pointer-coarse:space-x-0 pointer-coarse:space-y-3
+            pointer-coarse:p-4">
+  <a href="#" class="nav-link pointer-coarse:text-lg pointer-coarse:py-3">Home</a>
+  <a href="#" class="nav-link pointer-coarse:text-lg pointer-coarse:py-3">About</a>
+</nav>
+
+<!-- Hybrid device support with any-pointer */
+<div class="any-pointer-coarse:pb-safe-area-inset-bottom">
+  Adapts to any touch capability
+</div>
 ```
 
 ### Safe Alignment
+
+Keep content visible when it overflows:
+
 ```html
-<div class="flex justify-center-safe">
-  Content that won't clip
+<!-- Navigation that stays accessible -->
+<nav class="flex justify-center-safe gap-6 px-4 py-2">
+  <a href="#" class="nav-link">Home</a>
+  <a href="#" class="nav-link">Products</a>
+  <a href="#" class="nav-link">Services</a>
+  <a href="#" class="nav-link">About</a>
+  <a href="#" class="nav-link">Contact</a>
+  <!-- On narrow screens, aligns left instead of hiding content -->
+</nav>
+
+<!-- Centered dialog that remains visible -->
+<div class="fixed inset-0 flex items-center-safe justify-center-safe p-4">
+  <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+    <h2>Modal content always visible</h2>
+    <p>Even when content is larger than viewport</p>
+  </div>
+</div>
+
+<!-- Safe grid alignment */
+<div class="grid place-items-center-safe min-h-screen p-4">
+  <div class="content-box">
+    Content stays visible even when overflowing
+  </div>
 </div>
 ```
 
-### Color Scheme
-```html
-<html class="scheme-light dark:scheme-dark">
-  <div class="overflow-y-scroll">Themed scrollbars</div>
-</html>
-```
+### Improved Text Wrapping
 
-## Arbitrary Values
+Better control over text overflow and breaking:
 
-### Basic Usage
 ```html
-<div class="top-[117px] bg-[#bada55] text-[22px]">
-  Arbitrary values
+<!-- Prevent layout breaking from long words -->
+<div class="wrap-break-word max-w-sm p-4 bg-gray-100">
+  supercalifragilisticexpialidocioussupercalifragilisticexpialidocious
+</div>
+
+<!-- More aggressive wrapping for flex containers -->
+<div class="flex items-center space-x-3">
+  <img src="/avatar.jpg" class="w-12 h-12 rounded-full flex-shrink-0" />
+  <div class="wrap-anywhere flex-1 min-w-0">
+    <h3 class="font-medium">Very Long Name That Might Break Layout</h3>
+    <p class="text-sm text-gray-600">
+      verylongemailaddress@verylongcompanyname.com
+    </p>
+  </div>
 </div>
 ```
 
-### CSS Variables
+### Last Baseline Alignment
+
+Align items to the last line of text:
+
 ```html
-<div class="bg-(--my-color) text-(color:--my-text)">
-  Variable shortcuts
+<div class="flex items-baseline-last gap-4">
+  <div>
+    <h4 class="font-semibold text-lg">Spencer Sharp</h4>
+    <p class="text-sm text-gray-600">
+      Working on the future of astronaut recruitment at Space Recruit.
+      Building amazing experiences for space exploration teams.
+    </p>
+  </div>
+  <a href="#" class="text-blue-600 text-sm">
+    Visit Profile
+  </a>
 </div>
 ```
 
-### Whitespace Handling
+## 🎨 New Visual Utilities
+
+### Colored Drop Shadows
+
 ```html
-<div class="grid-cols-[1fr_500px_2fr]">
-  Underscore becomes space
-</div>
+<!-- Colored filter shadows -->
+<svg class="w-16 h-16 fill-cyan-500 drop-shadow-xl drop-shadow-cyan-500/50">
+  <!-- SVG content -->
+</svg>
+
+<img src="/icon.png" 
+     class="w-20 h-20 drop-shadow-lg drop-shadow-purple-500/40" 
+     alt="Glowing icon" />
 ```
 
-## Custom Utilities
+### New Variants
 
-### Simple Utility
+```html
+<!-- No JavaScript fallback -->
+<div class="hidden noscript:block p-4 bg-yellow-50 border border-yellow-200">
+  <p>Please enable JavaScript for the best experience.</p>
+</div>
+
+<!-- Better form validation states -->
+<input type="email" 
+       required 
+       class="border border-gray-300 
+              user-invalid:border-red-500 user-invalid:ring-1 user-invalid:ring-red-500
+              user-valid:border-green-500 user-valid:ring-1 user-valid:ring-green-500" />
+
+<!-- Inverted colors support -->
+<div class="shadow-xl inverted-colors:shadow-none bg-white inverted-colors:bg-transparent">
+  Content that adapts to inverted color schemes
+</div>
+
+<!-- Details/summary content styling -->
+<details class="border rounded-lg p-4 details-content:pt-4 details-content:border-t">
+  <summary class="font-medium cursor-pointer">Click to expand</summary>
+  <div class="mt-3 text-gray-600">
+    Content area that can be styled independently
+  </div>
+</details>
+```
+
+## 🔧 Custom Utilities & Variants
+
+### Creating Custom Utilities
+
 ```css
-@utility content-auto {
-  content-visibility: auto;
-}
-```
+@import "tailwindcss";
 
-### Complex Utility
-```css
+/* Simple custom utility */
 @utility scrollbar-hidden {
+  scrollbar-width: none;
   &::-webkit-scrollbar {
     display: none;
   }
 }
+
+/* Complex glass morphism utility */
+@utility glass {
+  backdrop-filter: blur(12px) saturate(190%) contrast(70%) brightness(80%);
+  background: rgba(255, 255, 255, 0.09);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
+}
+
+/* Utility with pseudo-elements */
+@utility focus-ring {
+  &:focus-visible {
+    outline: 2px solid theme(--color-blue-500);
+    outline-offset: 2px;
+    border-radius: theme(--radius-md);
+  }
+}
+
+/* Animation utility */
+@utility animate-wiggle {
+  animation: wiggle 1s ease-in-out infinite;
+  
+  @keyframes wiggle {
+    0%, 100% { transform: rotate(-3deg); }
+    50% { transform: rotate(3deg); }
+  }
+}
 ```
 
-### Functional Utility
+### Custom Variants
+
 ```css
-@theme {
-  --tab-size-2: 2;
-  --tab-size-4: 4;
-}
+/* Media query variants */
+@variant reduced-motion (@media (prefers-reduced-motion: reduce));
+@variant high-contrast (@media (prefers-contrast: high));
+@variant portrait (@media (orientation: portrait));
+@variant print (@media print);
 
-@utility tab-* {
-  tab-size: --value(--tab-size-*, integer, [integer]);
-}
+/* Selector-based variants */
+@variant theme-dark (&:where([data-theme="dark"] *));
+@variant loading (&[data-loading="true"]);
+@variant invalid (&:invalid);
+
+/* Combined complex variants */
+@variant group-focus-within (&:where(.group:focus-within *));
+@variant peer-checked (&:where(.peer:checked ~ *));
 ```
 
-## Performance
+## 📋 Complete Namespace Reference
 
-- **3.5x faster** builds than v3
-- **Microsecond** incremental rebuilds
-- **Automatic** content detection
-- **Tree-shaking** for smaller bundles
+### Core Design Token Namespaces
 
-## Essential Setup
+| Namespace | Purpose | Example Variable | Generated Utilities |
+|-----------|---------|------------------|-------------------|
+| `--color-*` | Color system | `--color-brand-500` | `bg-brand-500`, `text-brand-500`, `border-brand-500` |
+| `--font-*` | Font families | `--font-display` | `font-display` |
+| `--text-*` | Typography scale | `--text-hero` | `text-hero` |
+| `--font-weight-*` | Font weights | `--font-weight-black` | `font-black` |
+| `--leading-*` | Line heights | `--leading-relaxed` | `leading-relaxed` |
+| `--tracking-*` | Letter spacing | `--tracking-wide` | `tracking-wide` |
 
+### Layout & Spacing Namespaces
+
+| Namespace | Purpose | Example Variable | Generated Utilities |
+|-----------|---------|------------------|-------------------|
+| `--spacing-*` | Spacing scale | `--spacing-tight` | `p-tight`, `m-tight`, `w-tight` |
+| `--spacing` | Dynamic scale | `--spacing: 0.25rem` | `mt-1` through `mt-999` |
+| `--breakpoint-*` | Responsive breakpoints | `--breakpoint-3xl` | `3xl:*` variants |
+| `--container-*` | Container queries | `--container-sidebar` | `@sidebar:*`, `max-w-sidebar` |
+| `--radius-*` | Border radius | `--radius-xl` | `rounded-xl` |
+
+### Visual Effect Namespaces
+
+| Namespace | Purpose | Example Variable | Generated Utilities |
+|-----------|---------|------------------|-------------------|
+| `--shadow-*` | Box shadows | `--shadow-glow` | `shadow-glow` |
+| `--text-shadow-*` | Text shadows | `--text-shadow-soft` | `text-shadow-soft` |
+| `--inset-shadow-*` | Inset shadows | `--inset-shadow-pressed` | `inset-shadow-pressed` |
+| `--drop-shadow-*` | Filter shadows | `--drop-shadow-colored` | `drop-shadow-colored` |
+
+### Animation & Interaction Namespaces
+
+| Namespace | Purpose | Example Variable | Generated Utilities |
+|-----------|---------|------------------|-------------------|
+| `--ease-*` | Timing functions | `--ease-bounce` | `ease-bounce` |
+| `--animate-*` | Keyframe animations | `--animate-slide` | `animate-slide` |
+
+## 💡 Best Practices & Guidelines
+
+### ✅ Recommended Patterns
+
+**1. Use CSS-first configuration:**
 ```css
 @import "tailwindcss";
 
 @theme {
-  /* Your design tokens here */
+  /* Centralized design system */
+  --color-brand: oklch(0.64 0.24 220);
+  --font-display: "Inter", sans-serif;
+  --spacing: 0.25rem;
 }
-
-/* Custom utilities */
-@utility my-utility {
-  /* Custom styles */
-}
-
-/* Custom variants */
-@variant my-variant (&:where(.my-class *));
 ```
 
-**Usage:**
+**2. Organize with proper layers:**
+```css
+@layer base {
+  /* HTML element defaults */
+  body { @apply font-sans; }
+}
+
+@layer components {
+  /* Reusable patterns */
+  .btn { @apply px-4 py-2 rounded; }
+}
+
+@layer utilities {
+  /* Custom utilities */
+  .text-shadow-glow { text-shadow: 0 0 10px currentColor; }
+}
+```
+
+**3. Use container queries for true responsiveness:**
 ```html
-<div class="bg-primary text-secondary p-xl rounded-lg shadow-md">
-  <div class="@container">
-    <div class="grid @lg:grid-cols-2">
-      <div class="first:font-bold">Content</div>
-    </div>
+<div class="@container">
+  <div class="@md:flex @md:items-center">
+    <!-- Responds to container, not viewport -->
   </div>
 </div>
-``` 
+```
+
+**4. Leverage modern CSS features:**
+```css
+@theme {
+  /* OKLCH for vivid colors */
+  --color-electric: oklch(0.72 0.25 320);
+  /* CSS variables for runtime flexibility */
+  --color-primary: var(--color-brand);
+}
+```
+
+### ❌ Anti-Patterns to Avoid
+
+**1. Don't mix v3 and v4 syntax:**
+```css
+/* ❌ Old v3 syntax */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ✅ New v4.1 syntax */
+@import "tailwindcss";
+```
+
+**2. Don't bypass the layer system:**
+```css
+/* ❌ Unclear precedence */
+.my-component {
+  background: blue !important;
+}
+
+/* ✅ Use layers properly */
+@layer components {
+  .my-component {
+    @apply bg-blue-500;
+  }
+}
+```
+
+**3. Don't ignore container queries:**
+```html
+<!-- ❌ Viewport-only thinking -->
+<div class="md:flex">
+  <!-- Always responds to viewport -->
+</div>
+
+<!-- ✅ Container-aware design -->
+<div class="@container">
+  <div class="@md:flex">
+    <!-- Responds to available space -->
+  </div>
+</div>
+```
+
+## 🔄 CSS Variables Integration
+
+All theme variables become CSS variables you can use anywhere:
+
+```css
+/* In custom CSS */
+.custom-component {
+  background: var(--color-brand-500);
+  font-family: var(--font-display);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-glow);
+  animation: var(--animate-slide);
+}
+
+/* With calc() for dynamic values */
+.responsive-spacing {
+  padding: calc(var(--spacing) * 4);
+  margin: calc(var(--spacing) * 2);
+}
+```
+
+```jsx
+// In React/JavaScript
+function ThemedComponent() {
+  return (
+    <div 
+      style={{
+        backgroundColor: 'var(--color-brand-500)',
+        borderRadius: 'var(--radius-lg)',
+        padding: 'calc(var(--spacing) * 4)'
+      }}
+    >
+      Runtime theming with CSS variables!
+    </div>
+  );
+}
+```
+
+## 🚀 Migration & Quick Start
+
+### Upgrading from v3 to v4.1
+
+**1. Update dependencies:**
+```bash
+# For PostCSS users
+npm install tailwindcss@latest @tailwindcss/postcss@latest
+
+# For Vite users  
+npm install tailwindcss@latest @tailwindcss/vite@latest
+
+# For CLI users
+npm install tailwindcss@latest @tailwindcss/cli@latest
+```
+
+**2. Use the automatic upgrade tool:**
+```bash
+npx @tailwindcss/upgrade@latest
+```
+
+**3. Update your CSS file:**
+```css
+/* Replace this v3 syntax */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* With this v4.1 syntax */
+@import "tailwindcss";
+
+@theme {
+  /* Move your theme config here */
+  --color-brand: #3b82f6;
+  --font-display: "Inter", sans-serif;
+}
+```
+
+**4. Organize with layers:**
+```css
+@layer base {
+  /* Move base styles here */
+}
+
+@layer components {
+  /* Move component styles here */
+}
+
+@layer utilities {
+  /* Move custom utilities here */
+}
+```
+
+### New Project Setup
+
+**1. Install Tailwind CSS v4.1:**
+```bash
+npm create tailwindcss@latest my-project
+cd my-project
+```
+
+**2. Set up your CSS foundation:**
+```css
+@import "tailwindcss";
+
+@theme {
+  /* Your design system */
+  --color-brand: oklch(0.64 0.24 220);
+  --font-display: "Inter", sans-serif;
+  --spacing: 0.25rem;
+  --breakpoint-3xl: 1920px;
+}
+
+@layer base {
+  html {
+    @apply antialiased scroll-smooth;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply px-4 py-2 rounded font-medium transition-colors;
+  }
+}
+```
+
+**3. Start building with modern features:**
+```html
+<div class="@container">
+  <div class="@md:flex @md:items-center space-y-4 @md:space-y-0 @md:space-x-6">
+    <h1 class="text-3xl @lg:text-4xl font-display text-shadow-sm">
+      Modern Tailwind v4.1!
+    </h1>
+    <button class="btn bg-brand-500 text-white pointer-coarse:px-6 pointer-coarse:py-4">
+      Get Started
+    </button>
+  </div>
+</div>
+```
+
+## 🏁 Summary
+
+Tailwind CSS v4.1 represents the future of utility-first styling:
+
+- **CSS-first configuration** eliminates JavaScript config complexity
+- **Native cascade layers** provide bulletproof style organization  
+- **Container queries** enable true component-level responsiveness
+- **Modern CSS features** like OKLCH colors and text shadows
+- **Performance improvements** up to 100x faster incremental builds
+- **Better developer experience** with cleaner, more intuitive APIs
+
+This comprehensive guide gives you everything needed to master Tailwind CSS v4.1's revolutionary approach and build better, more maintainable web interfaces!

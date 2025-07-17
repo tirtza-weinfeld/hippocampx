@@ -100,8 +100,34 @@ class PythonExtractor:
             # Extract variables from docstring
             variables = self._extract_variables(node)
             
-            # Extract expressions from docstring
-            expressions = self._extract_expressions(node)
+            # Extract expression tooltips from function/method body and docstring
+            comment_expressions = self._extract_expression_tooltips(node, content)
+            docstring_expressions = self._extract_docstring_expressions(node)
+            expression_tooltips = comment_expressions + docstring_expressions
+            
+            # Extract line range tooltips from docstring (Blocks: section)
+            line_range_tooltips = self._extract_docstring_line_ranges(node)
+            
+            # Combine all tooltips for the symbol
+            all_tooltips = expression_tooltips + line_range_tooltips
+            
+            # Calculate highlight ranges for line range expressions (functions/methods only)
+            if symbol_type in ["function", "method"]:
+                body_start_line = self._get_body_start_line(node)
+                for expression in all_tooltips:
+                    if expression.get("type") == "line_range" and "end_line" in expression:
+                        start_line = expression["start_line"]
+                        end_line = expression["end_line"]
+                        
+                        # Calculate highlight positions relative to the function body (excluding docstring)
+                        highlight_start, highlight_end, highlight_content = self._calculate_highlight_range(
+                            start_line, end_line, code, body_start_line, content, node
+                        )
+                        
+                        if highlight_start >= 0 and highlight_end > highlight_start:
+                            expression["highlight_start"] = highlight_start
+                            expression["highlight_end"] = highlight_end
+                            expression["highlight_content"] = highlight_content
             
             symbol = {
                 "name": name,
@@ -117,7 +143,7 @@ class PythonExtractor:
                 "code": code,
                 "links": links,
                 "variables": variables,
-                "expressions": expressions
+                "expressions": all_tooltips
             }
             
             if parent:
@@ -568,8 +594,206 @@ class PythonExtractor:
                     variables.append(variable_info)
         return variables
 
-    def _extract_expressions(self, node: Union[ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef]) -> List[Dict[str, str]]:
-        """Extract expressions ONLY from an Expressions: section in the docstring."""
+    def _get_body_start_line(self, node: Union[ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef]) -> int:
+        """Get the line number where the function/method body starts (after docstring)."""
+        body_start = node.lineno  # Function definition line
+        
+        # Check if first statement is a docstring
+        if (node.body and isinstance(node.body[0], ast.Expr) and 
+            isinstance(node.body[0].value, ast.Constant) and 
+            isinstance(node.body[0].value.value, str)):
+            # Skip docstring
+            docstring_node = node.body[0]
+            if hasattr(docstring_node, 'end_lineno') and docstring_node.end_lineno:
+                body_start = docstring_node.end_lineno
+            else:
+                body_start = docstring_node.lineno
+        
+        return body_start
+
+    def _calculate_highlight_range(self, start_line: int, end_line: int, function_body_code: str, 
+                                 function_body_start_line: int, content: str, node: Union[ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef]) -> tuple[int, int, str]:
+        """Calculate highlight character positions relative to function body code."""
+        # Get the original file lines for accurate mapping
+        file_lines = content.split('\n')
+        
+        # Convert 1-based line numbers to 0-based indices
+        start_idx = start_line - 1
+        end_idx = end_line - 1
+        
+        # Clamp to valid file range
+        start_idx = max(0, min(start_idx, len(file_lines) - 1))
+        end_idx = max(start_idx, min(end_idx, len(file_lines) - 1))
+        
+        # Extract the target lines from the original file
+        target_lines = file_lines[start_idx:end_idx + 1]
+        target_content = '\n'.join(target_lines)
+        
+        # Find these exact lines in the function body code (which excludes docstring)
+        body_lines = function_body_code.split('\n')
+        
+        # Look for the target content in the body
+        for i in range(len(body_lines)):
+            # Check if we can match the target lines starting at position i
+            if i + len(target_lines) <= len(body_lines):
+                candidate_lines = body_lines[i:i + len(target_lines)]
+                candidate_content = '\n'.join(candidate_lines)
+                
+                # Compare trimmed versions to handle whitespace differences
+                if self._normalize_code(candidate_content) == self._normalize_code(target_content):
+                    # Found a match - calculate character positions
+                    char_start = 0
+                    for j in range(i):
+                        if j < len(body_lines):
+                            char_start += len(body_lines[j]) + 1  # +1 for newline
+                    
+                    char_end = char_start + len(candidate_content)
+                    
+                    return char_start, char_end, candidate_content
+        
+        # If no exact match found, return invalid range
+        return -1, -1, ""
+    
+    def _normalize_code(self, code: str) -> str:
+        """Normalize code for comparison by removing extra whitespace."""
+        return '\n'.join(line.strip() for line in code.split('\n')).strip()
+
+    def _extract_expression_tooltips(self, node: Union[ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef], 
+                                   content: str) -> List[Dict[str, str]]:
+        """Extract comment-expression pairs for tooltip functionality using @tooltip annotations.
+        
+        Supports two syntaxes:
+        1. @tooltip: explanation (applies to next line)
+        2. @tooltip[specific_expression]: explanation (applies to specific expression)
+        """
+        lines = content.split('\n')
+        start_line = node.lineno - 1
+        end_line = node.end_lineno if hasattr(node, 'end_lineno') else start_line + 1
+        
+        expression_tooltips = []
+        
+        # Only process function and method bodies, not classes
+        if isinstance(node, ast.ClassDef):
+            return expression_tooltips
+        
+        # Skip docstring lines
+        body_start = start_line + 1  # Skip function definition line
+        if (node.body and isinstance(node.body[0], ast.Expr) and 
+            isinstance(node.body[0].value, ast.Constant) and 
+            isinstance(node.body[0].value.value, str)):
+            # Skip docstring
+            docstring_end = node.body[0].end_lineno if hasattr(node.body[0], 'end_lineno') else node.body[0].lineno
+            body_start = docstring_end
+        
+        i = body_start
+        while i < end_line:
+            line = lines[i]
+            stripped_line = line.strip()
+            
+            # Look for @tooltip annotations in comments
+            if stripped_line.startswith('#') and '@tooltip' in stripped_line:
+                
+                # Check for specific expression syntax: @tooltip[expression]: explanation
+                specific_match = re.search(r'#\s*@tooltip\[([^\]]+)\]\s*:\s*(.+)', stripped_line)
+                if specific_match:
+                    expression = specific_match.group(1).strip()
+                    comment_text = specific_match.group(2).strip()
+                    
+                    # For specific expressions, we don't need to look for the next line
+                    if expression and comment_text:
+                        expression_tooltips.append({
+                            "expression": expression,
+                            "full_line": expression,  # Use the specified expression
+                            "comment": comment_text,
+                            "line": i + 1,  # 1-indexed
+                            "type": "expression"
+                        })
+                    i += 1
+                    continue
+                
+                # Check for general syntax: @tooltip: explanation (applies to next line)
+                general_match = re.search(r'#\s*@tooltip\s*:\s*(.+)', stripped_line)
+                if general_match:
+                    comment_text = general_match.group(1).strip()
+                    
+                    # Look for the next meaningful statement after the tooltip comment
+                    j = i + 1
+                    while j < end_line and j < len(lines):
+                        statement_line = lines[j].strip()
+                        if statement_line and not statement_line.startswith('#'):
+                            # Found a statement that follows the tooltip comment
+                            expression = statement_line
+                            
+                            # Extract the key part of the expression for matching
+                            expression_key = self._extract_expression_key(expression)
+                            if expression_key and comment_text:
+                                expression_tooltips.append({
+                                    "expression": expression_key,
+                                    "full_line": expression,
+                                    "comment": comment_text,
+                                    "line": j + 1,  # 1-indexed
+                                    "type": "expression"
+                                })
+                            break
+                        j += 1
+                    
+                    i = j  # Move past this tooltip-expression pair
+                else:
+                    i += 1
+            else:
+                i += 1
+        
+        return expression_tooltips
+
+    def _extract_expression_key(self, expression: str) -> str:
+        """Extract the key part of an expression that users would likely click on."""
+        expression = expression.strip()
+        
+        # Handle else statements specifically
+        if expression.startswith('else:'):
+            return 'else'
+        
+        # Handle elif statements
+        if expression.startswith('elif ') and ':' in expression:
+            condition = expression[5:expression.index(':')].strip()
+            return condition
+        
+        # Common patterns to extract clickable expressions
+        patterns = [
+            # if/while/for conditions: extract the condition part
+            r'^(if|while)\s+(.+?)(?=:|\s+then)',
+            r'^for\s+\w+\s+in\s+(.+?)(?=:)',
+            # Assignment operations: extract the right side
+            r'^\w+\s*[+\-*/]?=\s*(.+?)(?=\s*$|\s*#)',
+            # Return statements: extract what's being returned
+            r'^return\s+(.+?)(?=\s*$|\s*#)',
+            # Function calls: extract the whole call
+            r'^(\w+\([^)]*\))',
+        ]
+        
+        for pattern in patterns:
+            match = re.search(pattern, expression, re.IGNORECASE)
+            if match:
+                extracted = match.group(2) if len(match.groups()) > 1 else match.group(1)
+                return extracted.strip()
+        
+        # For if statements, try to extract just the condition
+        if expression.startswith('if ') and ':' in expression:
+            condition = expression[3:expression.index(':')].strip()
+            return condition
+        
+        # For simple statements, return the whole thing if it's not too long
+        if len(expression) < 50 and not expression.endswith(':'):
+            return expression
+        
+        # If it's a keyword statement like "else:", return the keyword
+        if expression.endswith(':') and len(expression.split()) == 1:
+            return expression[:-1]  # Remove the colon
+        
+        return ""
+
+    def _extract_docstring_expressions(self, node: Union[ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef]) -> List[Dict[str, str]]:
+        """Extract expressions from an Expressions: section in the docstring."""
         docstring = self._get_docstring(node)
         if not docstring:
             return []
@@ -578,33 +802,79 @@ class PythonExtractor:
         # Pattern to match "Expressions:" section with expression descriptions
         # Matches formats like:
         # Expressions:
-        #     - '(lo + hi) // 2': round down to the nearest integer
-        #     - 'a[mid] < x': check if middle element is less than target
-        expressions_section_pattern = r'Expressions?:\s*\n((?:\s*[-*]\s*\'[^\']+\'\s*:\s*[^\n]+\n?)*)'
+        #     - `(lo + hi) // 2`: round down to the nearest integer
+        expressions_section_pattern = r'Expressions?:\s*\n((?:\s*[-*]\s*[^:\n]+\s*:\s*[^\n]+\n?)*)'
         
         expressions_match = re.search(expressions_section_pattern, docstring, re.IGNORECASE | re.MULTILINE)
         if expressions_match:
             expressions_section = expressions_match.group(1)
             
             # Parse individual expression entries
-            # Pattern to match: "- 'expression': description"
-            expression_entry_pattern = r'^\s*[-*]\s*\'([^\']+)\'\s*:\s*(.+)$'
-            
+            # Pattern to match: "- `expression`: description"
             for line in expressions_section.split('\n'):
                 line = line.strip()
                 if not line:
                     continue
-                entry_match = re.match(expression_entry_pattern, line)
-                if entry_match:
-                    expression_text = entry_match.group(1)
-                    description = entry_match.group(2).strip()
-                    expression_info = {
-                        "expression": expression_text,
-                        "description": description,
+                
+                # Handle quoted expressions: - `expression`: description or - 'expression': description
+                quoted_match = re.match(r'^\s*[-*]\s*[`\'"]([^`\'"]+)[`\'"]\s*:\s*(.+)$', line)
+                if quoted_match:
+                    expression = quoted_match.group(1).strip()
+                    description = quoted_match.group(2).strip()
+                    expressions.append({
+                        "expression": expression,
+                        "full_line": expression,
+                        "comment": description,
+                        "line": 0,  # Will be resolved later
                         "type": "expression"
-                    }
-                    expressions.append(expression_info)
+                    })
+                    continue
+        
         return expressions
+
+    def _extract_docstring_line_ranges(self, node: Union[ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef]) -> List[Dict[str, str]]:
+        """Extract line ranges from a Blocks: section in the docstring."""
+        docstring = self._get_docstring(node)
+        if not docstring:
+            return []
+        
+        line_ranges = []
+        # Pattern to match "Blocks:" section with line range descriptions
+        # Matches formats like:
+        # Blocks:        
+        #     - [23-24]: If the middle element is less than the target, the insertion point must be in the right half.
+        blocks_section_pattern = r'Blocks?:\s*\n((?:\s*[-*]\s*[^:\n]+\s*:\s*[^\n]+\n?)*)'
+        
+        blocks_match = re.search(blocks_section_pattern, docstring, re.IGNORECASE | re.MULTILINE)
+        if blocks_match:
+            blocks_section = blocks_match.group(1)
+            
+            # Parse individual block entries
+            # Pattern to match: "- [start-end]: description"
+            for line in blocks_section.split('\n'):
+                line = line.strip()
+                if not line:
+                    continue
+                
+                # Handle line ranges: - [23-24]: description
+                line_match = re.match(r'^\s*[-*]\s*\[(\d+)(?:-(\d+))?\]\s*:\s*(.+)$', line)
+                if line_match:
+                    start_line = int(line_match.group(1))
+                    end_line = int(line_match.group(2)) if line_match.group(2) else start_line
+                    description = line_match.group(3).strip()
+                    
+                    # Store line range info - highlight calculation will be done later in _extract_symbol
+                    line_ranges.append({
+                        "expression": f"@line[{start_line}-{end_line}]",
+                        "full_line": f"lines {start_line}-{end_line}",
+                        "comment": description,
+                        "start_line": start_line,
+                        "end_line": end_line,
+                        "type": "line_range"
+                    })
+                    continue
+        
+        return line_ranges
 
 
 class MetadataExtractor:

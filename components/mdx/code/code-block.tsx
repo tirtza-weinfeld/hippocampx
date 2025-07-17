@@ -16,6 +16,8 @@ export default async function CodeBlock(props: CodeBlockProps) {
   const tooltipContent = await getTooltipContent()
 
   const highlightedCode = await highlightCode(code as string, className.replace('language-', ''), meta as string)
+  
+  // Use tooltipifyJSX which internally handles both line range grouping and expression tooltips
   const highlightedCodeWithTooltips = tooltipifyJSX(
     highlightedCode,
     (symbol, parent, path) =>
