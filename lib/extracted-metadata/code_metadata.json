@@ -459,18 +459,33 @@
     "return_type": "",
     "return_description": "",
     "description": "Return the index where to insert item x in list a, assuming a is sorted.",
-    "code": "def simple_bisect_left(a:list[int], x:int):\n    l, r = 0, len(a)\n    while l < r:\n        mid = (l + r) // 2\n        if x > a[mid]:\n            l = mid + 1\n        else:  \n            r = mid  \n    return l",
-    "links": [],
+    "code": "def simple_bisect_left(a:list[int], x:int):\n    l, r = 0, len(a)\n    while l < r:\n        mid = (l + r) // 2\n        if x > a[mid]:\n            l = mid + 1\n        else:\n            r = mid\n    return l",
+    "links": [
+      {
+        "symbol": "mid",
+        "display": "[mid]",
+        "target": "mid",
+        "valid": false,
+        "target_symbol": null
+      },
+      {
+        "symbol": "mid",
+        "display": "[mid]",
+        "target": "mid",
+        "valid": false,
+        "target_symbol": null
+      }
+    ],
     "variables": [],
     "expressions": [
       {
-        "expression": "r = mid",
-        "description": "If the x is greater than the middle element, the insertion point could be `mid` or to its right. Shrink search space to the right half.",
+        "expression": "l = mid + 1",
+        "description": "If the target `x` is greater than the middle element `a[mid]`, the insertion point must be to the right of `mid`.",
         "type": "expression"
       },
       {
-        "expression": "l = mid + 1",
-        "description": "If the x is <= middle element, the insertion point must be to the right of `mid`.",
+        "expression": "r = mid",
+        "description": "If the target `x` is less than or equal to `a[mid]`, then `mid` is a potential answer, so we search the left half including `mid`.",
         "type": "expression"
       }
     ]
