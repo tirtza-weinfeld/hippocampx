@@ -20,7 +20,7 @@ The core idea is to compare the target value with the middle element of the arra
 ```
 
 >[!tip] 
->When `a[mid]` is greater than or equal to `x`, we set `hi = mid`.
+>When `a[mid]` is greater than or equal to `x`, we set `r = mid`.
  This ensures we keep considering the `mid` index as a potential answer and forces the search to
   converge on the leftmost possible index.
 
@@ -35,7 +35,8 @@ The core idea is to compare the target value with the middle element of the arra
 ```
 
 >[!tip] 
->When `a[mid]` is less than or equal to `x`, we set `lo = mid + 1`. This effectively pushes the search past all elements equal to `x`, ensuring the final index is just after the rightmost occurrence.
+>When `a[mid]` is less than or equal to `x`, we set `l = mid + 1`.
+ This effectively pushes the search past all elements equal to `x`, ensuring the final index is just after the rightmost occurrence.
 
 -----
 ## Examples
