@@ -54,9 +54,10 @@ def searchRange(nums: list[int], target: int) -> list[int]:
 
 def findMin(nums: list[int]) -> int:
     """
-    Given a unique-element sorted array that has been rotated at an unknown pivot, find its minimum value.
+    Finds the minimum element in a rotated sorted array using binary search.
 
     Expressions:
+        - 'r = mid' : If nums[mid] is less than nums[r], the minimum is in the left half (inclusive of mid).
         - 'l = mid + 1' : the smallest is on the right
     """
         
@@ -74,39 +75,44 @@ def findMin(nums: list[int]) -> int:
 
 def minEatingSpeed(piles: list[int], h: int) -> int:
 
-        def hours(k):
-            return sum((p + k - 1) // k for p in piles)
+    def hours(k:int) -> int:
+        """
+        computes total hours needed at speed k
+        """
+        return sum((p + k - 1) // k for p in piles)
+        # return sum(math.ceil(pile / k) for pile in piles)
 
-        l, r = 1, max(piles)
+    l, r = 1, max(piles)
+    while l < r:
+        k = (l + r) // 2
+        if hours(k) <= h:
+            r = k
+        else:
+            l = k + 1
+    return l
 
-        while l < r:
-            mid = (l + r) // 2
-            if hours(mid) <= h:
-                r = mid
-            else:
-                l = mid + 1
-        return l
+
+
 
 
 def shipWithinDays(weights: list[int], days: int) -> int:
 
-    def can(cap: int) -> bool:
-        d ,curr = 1, 0
+    def daysNeeded(capacity: int) -> int:
+        d, load = 1, 0
         for w in weights:
-            if curr + w <= cap:
-                curr += w
+            if load + w <= capacity:
+                load += w
             else:
                 d += 1
-                curr = w
-        return d <= days
+                load = w
+        return d
     
 
     l, r = max(weights), sum(weights)
-
     while l < r:
-        mid = (l + r) // 2
-        if can(mid):
-            r = mid
+        capacity = (l + r) // 2
+        if daysNeeded(capacity) <= days:
+            r = capacity
         else:
-            l = mid + 1
+            l = capacity + 1
     return l

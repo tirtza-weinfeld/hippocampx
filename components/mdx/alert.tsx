@@ -19,6 +19,7 @@ const ICONS = {
   complexity: Clock,
   spacecomplexity: Database,
   insight: Lightbulb,
+  intuition: Lightbulb,
 } as const;
 
 const LABELS = {
@@ -35,6 +36,7 @@ const LABELS = {
   timecomplexity: "Time Complexity",
   spacecomplexity: "Space Complexity",
   insight: "Insight",
+  intuition: "Intuition",
 } as const; // static mapping of types to labels
 
 // Statically mapping types to full class names ensures Tailwind's JIT compiler
@@ -124,6 +126,12 @@ const STYLES = {
     border: "border-alert-insight",
     text: "text-alert-insight",
     iconBg: "bg-alert-insight/10",
+  },
+  intuition: {
+    gradient: "from-white to-alert-intuition/20 dark:from-gray-900 dark:to-alert-intuition/20",
+    border: "border-alert-intuition",
+    text: "text-alert-intuition",
+    iconBg: "bg-alert-intuition/10",
   },
 
 } as const;

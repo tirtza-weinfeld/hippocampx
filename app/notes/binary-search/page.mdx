@@ -68,23 +68,35 @@ find the starting and ending indices of a given `target`. If the target is not i
 
 ```python file=examples/code/binary_search.py#func:searchRange
 ```
-
   >[!tip] 
    [bisect_left](#simple_bisect_left) finds the first position where `target` could be inserted, and
     [bisect_right](#simple_bisect_right) finds the first position *after* all 
   existing `target`s. 
 
-
 -----
-
 ### 3. Find Minimum in Rotated Sorted Array
-
 [153. Find Minimum in Rotated Sorted Array](https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/)
 
 *Given a unique-element sorted array that has been rotated at an unknown pivot, find its minimum value.*
 
 ```python file=examples/code/binary_search.py#func:findMin
 ```
+> [!intuition:collapse] 
+> 
+> This problem requires a modified binary search to locate the array's "inflection point," which is the minimum element. 
+> 
+> The core logic hinges on comparing `nums[mid]` with `nums[r]` to determine which half of the array is guaranteed to be sorted and can be potentially discarded.
+> 
+>   - **Case 1: `nums[mid] < nums[r]`**  ex: `[7:][6,7,0,1`   `[9:]2,` `[3:]3,4,5]`
+>     This condition implies that the entire **[1:]right portion of the array is sorted**   `[9:][2,` `[3:]3,4,5]`. 
+>     The minimum element could be `nums[mid]`  `[9:]2` or an element to its left `[7:][6,7,0,1]`
+>     Therefore, we can safely eliminate the search space to the right of `mid` by setting `r = mid`.
+> 
+>   - **Case 2: `nums[mid] >= nums[r]`** ex: `[3:][6,7,`   `[9:]8,` `[7:]9,3,4,5]`
+>     This is the else condition. It indicates that the inflection point (the minimum value) must lie to the right of `mid`.
+>  **[1:]The left portion, is sorted**   `[3:][6,7 ` `[9:]8,`  but contains values larger than the elements in the second rotated sequence. We discard this left portion by setting `l = mid + 1`.
+> 
+> The loop terminates when `l` and `r` converge, at which point `nums[l]` is the smallest element in the array.
 
 
 
@@ -94,14 +106,19 @@ find the starting and ending indices of a given `target`. If the target is not i
 
 [875. Koko Eating Bananas](https://leetcode.com/problems/koko-eating-bananas/)
 
-*Given `n` piles of bananas and `h` hours, find the minimum integer eating speed `k` required to consume all bananas within the time limit.*
+
+
+*Given banana piles `piles` and hour limit `h`, 
+find the minimum eating speed `$k∈ℕ$` such that 
+`$\displaystyle \sum_{i=1}^{|piles|} \left\lceil \frac{p_i}{k} \right\rceil \le h$`
+where each hour Koko eats up to `$k$` bananas from one pile
+(any leftover hour is wasted)*
 
 ```python file=examples/code/binary_search.py#func:minEatingSpeed
 ```
 
- 
-  >[!timecomplexity] $O(n \log m)$, where `$n$` is the number of piles and `$m$` is the maximum pile size.
 
+  >[!timecomplexity] $O(n \log m)$, where `$n$` is the number of piles and `$m$` is the maximum pile size.
 
 -----
 
@@ -111,9 +128,10 @@ find the starting and ending indices of a given `target`. If the target is not i
 
 *Given a list of weights and a number of days, find the minimum capacity of a ship that can ship all the weights within the given number of days.*
 
+
+
 ```python file=examples/code/binary_search.py#func:shipWithinDays
 ```
-
 
 
 -----

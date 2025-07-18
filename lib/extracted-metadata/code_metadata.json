@@ -543,11 +543,31 @@
     "parameters": [],
     "return_type": "int",
     "return_description": "",
-    "description": "Given a unique-element sorted array that has been rotated at an unknown pivot, find its minimum value.",
+    "description": "Finds the minimum element in a rotated sorted array using binary search.",
     "code": "def findMin(nums: list[int]) -> int:\n    l, r = 0, len(nums) - 1\n    while l < r:\n        mid = (l + r) // 2\n        if nums[mid] < nums[r]:\n            r = mid\n        else:\n            l = mid + 1 \n    return nums[l]",
-    "links": [],
+    "links": [
+      {
+        "symbol": "mid",
+        "display": "[mid]",
+        "target": "mid",
+        "valid": false,
+        "target_symbol": null
+      },
+      {
+        "symbol": "r",
+        "display": "[r]",
+        "target": "r",
+        "valid": false,
+        "target_symbol": null
+      }
+    ],
     "variables": [],
     "expressions": [
+      {
+        "expression": "r = mid",
+        "description": "If nums[mid] is less than nums[r], the minimum is in the left half (inclusive of mid).",
+        "type": "expression"
+      },
       {
         "expression": "l = mid + 1",
         "description": "the smallest is on the right",
@@ -560,13 +580,13 @@
     "type": "function",
     "language": "python",
     "file": "examples/code/binary_search.py",
-    "line": 75,
+    "line": 76,
     "signature": "def minEatingSpeed(piles: list[int], h: int) -> int:",
     "parameters": [],
     "return_type": "int",
     "return_description": "",
     "description": "",
-    "code": "def minEatingSpeed(piles: list[int], h: int) -> int:\n        def hours(k):\n            return sum((p + k - 1) // k for p in piles)\n        l, r = 1, max(piles)\n        while l < r:\n            mid = (l + r) // 2\n            if hours(mid) <= h:\n                r = mid\n            else:\n                l = mid + 1\n        return l",
+    "code": "def minEatingSpeed(piles: list[int], h: int) -> int:\n    def hours(k:int) -> int:\n        \"\"\"\n        computes total hours needed at speed k\n        \"\"\"\n        return sum((p + k - 1) // k for p in piles)\n    l, r = 1, max(piles)\n    while l < r:\n        k = (l + r) // 2\n        if hours(k) <= h:\n            r = k\n        else:\n            l = k + 1\n    return l",
     "links": [],
     "variables": [],
     "expressions": []
@@ -576,13 +596,13 @@
     "type": "function",
     "language": "python",
     "file": "examples/code/binary_search.py",
-    "line": 91,
+    "line": 98,
     "signature": "def shipWithinDays(weights: list[int], days: int) -> int:",
     "parameters": [],
     "return_type": "int",
     "return_description": "",
     "description": "",
-    "code": "def shipWithinDays(weights: list[int], days: int) -> int:\n    def can(cap: int) -> bool:\n        d ,curr = 1, 0\n        for w in weights:\n            if curr + w <= cap:\n                curr += w\n            else:\n                d += 1\n                curr = w\n        return d <= days\n    l, r = max(weights), sum(weights)\n    while l < r:\n        mid = (l + r) // 2\n        if can(mid):\n            r = mid\n        else:\n            l = mid + 1\n    return l",
+    "code": "def shipWithinDays(weights: list[int], days: int) -> int:\n    def daysNeeded(capacity: int) -> int:\n        d, load = 1, 0\n        for w in weights:\n            if load + w <= capacity:\n                load += w\n            else:\n                d += 1\n                load = w\n        return d\n    l, r = max(weights), sum(weights)\n    while l < r:\n        capacity = (l + r) // 2\n        if daysNeeded(capacity) <= days:\n            r = capacity\n        else:\n            l = capacity + 1\n    return l",
     "links": [],
     "variables": [],
     "expressions": []
