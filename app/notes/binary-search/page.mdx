@@ -2,15 +2,15 @@
 
 ## Resizable Table of Contents
 
-Binary search is an efficient `$O(\log n)$` algorithm for finding an item in a **sorted** list. 
- It works by repeatedly dividing the search space in half.
+Binary search is an efficient `$O(\log n)$` algorithm for finding an item in a **sorted** list . 
+ It works by repeatedly dividing the list in half.
 
-The core idea is to compare the target value with the middle element of the array.
+The core idea is to compare the target value with the middle element of the list.
  If they are not equal, the half in which the target cannot lie is eliminated, 
  and the search continues on the remaining half.
 
------
 
+---
 ## Finding the Leftmost Insertion Point 
 
 *Given a sorted list `a` and a target `x`, return the index at which `x` should be inserted to maintain order.
@@ -81,24 +81,22 @@ find the starting and ending indices of a given `target`. If the target is not i
 
 ```python file=examples/code/binary_search.py#func:findMin
 ```
+
 > [!intuition:collapse] 
-> 
-> This problem requires a modified binary search to locate the array's "inflection point," which is the minimum element. 
-> 
-> The core logic hinges on comparing `nums[mid]` with `nums[r]` to determine which half of the array is guaranteed to be sorted and can be potentially discarded.
-> 
->   - **Case 1: `nums[mid] < nums[r]`**  ex: `[7:][6,7,0,1`   `[9:]2,` `[3:]3,4,5]`
->     This condition implies that the entire **[1:]right portion of the array is sorted**   `[9:][2,` `[3:]3,4,5]`. 
->     The minimum element could be `nums[mid]`  `[9:]2` or an element to its left `[7:][6,7,0,1]`
->     Therefore, we can safely eliminate the search space to the right of `mid` by setting `r = mid`.
-> 
->   - **Case 2: `nums[mid] >= nums[r]`** ex: `[3:][6,7,`   `[9:]8,` `[7:]9,3,4,5]`
->     This is the else condition. It indicates that the inflection point (the minimum value) must lie to the right of `mid`.
->  **[1:]The left portion, is sorted**   `[3:][6,7 ` `[9:]8,`  but contains values larger than the elements in the second rotated sequence. We discard this left portion by setting `l = mid + 1`.
-> 
-> The loop terminates when `l` and `r` converge, at which point `nums[l]` is the smallest element in the array.
-
-
+> The goal is to find the *inflection point* in the rotated list (where the numbers switch from high to low) — this point is the minimum element. 
+> We use a modified binary search to home in on this point.
+>
+> The key is comparing the middle element `nums[mid]` with the rightmost element `nums[r]`. This comparison tells us which part of the array is currently sorted and can be discarded.
+>
+> -   **Case 1: `nums[mid] < nums[r]`**
+>     -   **Example:** In `[4, 5, 1, 2, 3]`, if `mid` points to `1`, `nums[mid]` (`1`) is less than `nums[r]` (`3`).
+>     -   **Logic:** This indicates that the entire right portion of the array from `mid` to `r` (i.e., `[1, 2, 3]`) is sorted. The minimum element could be `nums[mid]` itself, or it could be to its left. We can safely search the left half (including `mid`) by setting `r = mid`.
+>
+> -   **Case 2: `nums[mid] >= nums[r]`**
+>     -   **Example:** In `[4, 5, 1, 2, 3]`, if `mid` points to `5` in an earlier step, `nums[mid]` (`5`) is greater than `nums[r]` (`3`).
+>     -   **Logic:** This indicates that the inflection point (the minimum value) must lie to the right of `mid`. The left portion `[4, 5]` is sorted but contains values larger than the true minimum. We discard this left portion by setting `l = mid + 1`.
+>
+> The loop terminates when `l` and `r` converge, at which point `nums[l]` is the smallest element.
 
 -----
 
@@ -116,9 +114,18 @@ where each hour Koko eats up to `$k$` bananas from one pile
 
 ```python file=examples/code/binary_search.py#func:minEatingSpeed
 ```
+> [\!intuition:collapse] *binary searching the answer space, (the eating speed `k`)*
+>
+> The range of possible speeds is from `1` to `max(piles)`.
+>
+> The key property is that the problem is **monotonic** (if a speed `k` is fast enough, any speed greater than `k` will also be fast enough). This allows us to binary search for the *minimum* valid speed.
+>
+> We test a mid speed (`k = (l + r) // 2`). If it's valid (`hours(k) <= h`), we try to find a smaller valid speed by searching the lower half (`r = k`). If it's too slow, we must increase the speed by searching the upper half (`l = k + 1`). The loop converges on the smallest `k` that works. 🍌
+
+> [\!timecomplexity]
+> $O(n \log m)$, where `$n$` is the number of piles and `$m$` is the maximum pile size.
 
 
-  >[!timecomplexity] $O(n \log m)$, where `$n$` is the number of piles and `$m$` is the maximum pile size.
 
 -----
 
@@ -134,4 +141,16 @@ where each hour Koko eats up to `$k$` bananas from one pile
 ```
 
 
+
+
+> [!intuition:collapse] Binary Search on the Answer Space *(ship's capacity)*
+>
+> The search space for the answer (the ship's capacity) ranges from a lower bound of `max(weights)`to carry the heaviest item, to an upper bound of `sum(weights)` to ship everything in one day.
+>
+> The problem has a **monotonic property** ideal for binary search. The function `daysNeeded(capacity)` is monotonically non-increasing: as `capacity` grows, the days required can only decrease or stay the same.
+>
+> This creates a predictable `[False, ..., False, True, ..., True]` sequence for our condition, `daysNeeded(capacity) <= days`. The goal is to find the leftmost `True`, which represents the minimal valid capacity.
+>
+> -   If `daysNeeded(capacity) <= days` is `True`, then `capacity` is a potential answer, and we try for a better (smaller) one in the left half by setting `r = capacity`.
+> -   If it is `False`, then `capacity` is too small, and we must search for a larger capacity in the right half by setting `l = capacity + 1`.
 -----
