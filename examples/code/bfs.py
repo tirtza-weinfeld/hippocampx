@@ -187,14 +187,14 @@ def shortestPath(grid: list[list[int]], k: int) -> int:
 
     Variables:
         - max_k:  max_k[r][c] = maximum eliminations remaining when visiting (r,c)
-        - q: queue items: (row, col, steps, remaining_k)
+        - q: (row, col, steps, remaining_k)
         - min_steps:  Manhattan distance lower bound
 
 
     """
     
     rows, cols = len(grid), len(grid[0])
-    min_steps = rows + cols - 2  
+    min_steps = rows + cols - 3 
     if k >= min_steps:
         return min_steps
    
@@ -203,10 +203,11 @@ def shortestPath(grid: list[list[int]], k: int) -> int:
 
     
     q = deque([(0, 0, 0, k)])
-    directions = [(1,0), (-1,0), (0,1), (0,-1)]
+
+
     while q:
         r, c, steps, remaining_k = q.popleft()
-        for dr, dc in directions:
+        for dr, dc in [(1,0), (-1,0), (0,1), (0,-1)]:
             nr, nc = r + dr, c + dc
             if 0 <= nr < rows and 0 <= nc < cols:
                 new_remaining_k = remaining_k - grid[nr][nc]

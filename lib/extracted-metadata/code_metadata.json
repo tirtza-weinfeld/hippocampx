@@ -1,36 +1,122 @@
 {
-  "SolutionAStar": {
-    "name": "SolutionAStar",
-    "type": "class",
+  "manhattan_distance": {
+    "name": "manhattan_distance",
+    "type": "function",
     "language": "python",
     "file": "examples/code/a-star.py",
-    "line": 4,
-    "signature": "class SolutionAStar:",
-    "parameters": [],
-    "return_type": "",
-    "return_description": "",
-    "description": "",
-    "code": "class SolutionAStar:\n    def shortestPath(self, grid: list[list[int]], k: int) -> int:\n        rows, cols = len(grid), len(grid[0])\n        min_dist = rows + cols - 2\n        if k >= min_dist:\n            return min_dist\n        max_k = [[-1] * cols for _ in range(rows)]\n        max_k[0][0] = k\n        def heuristic(r, c):\n            return (rows - 1 - r) + (cols - 1 - c)\n        pq = [(heuristic(0,0), 0, 0, 0, k)]\n        directions = [(1,0),(-1,0),(0,1),(0,-1)]\n        while pq:\n            f, steps, r, c, rem_k = heapq.heappop(pq)\n            if (r, c) == (rows - 1, cols - 1):\n                return steps\n            if rem_k < max_k[r][c]:\n                continue\n            for dr, dc in directions:\n                nr, nc = r + dr, c + dc\n                if 0 <= nr < rows and 0 <= nc < cols:\n                    nk = rem_k - grid[nr][nc]\n                    if nk >= 0 and nk > max_k[nr][nc]:\n                        max_k[nr][nc] = nk\n                        g = steps + 1\n                        f_new = g + heuristic(nr, nc)\n                        heapq.heappush(pq, (f_new, g, nr, nc, nk))\n        return -1",
+    "line": 7,
+    "signature": "def manhattan_distance(a: tuple[int, int], b: tuple[int, int]) -> int:",
+    "parameters": [
+      {
+        "name": "a",
+        "type": "tuple[(int, int)]",
+        "description": "(row, col) of the first point.",
+        "default": null
+      },
+      {
+        "name": "b",
+        "type": "tuple[(int, int)]",
+        "description": "(row, col) of the second point.",
+        "default": null
+      }
+    ],
+    "return_type": "int",
+    "return_description": "The Manhattan distance |a.row - b.row| + |a.col - b.col|.",
+    "description": "Manhattan distance between two grid points $(r,c)$ and the goal $(r^*,c^*)$ is $h = |r^* - r| + |c^* - c|$. It measures the minimum number of orthogonal moves (up/down/left/right) ignoring obstacles, and is both admissible and consistent on a 4‑connected grid.",
+    "code": "def manhattan_distance(a: tuple[int, int], b: tuple[int, int]) -> int:\n    return abs(a[0] - b[0]) + abs(a[1] - b[1])",
     "links": [],
     "variables": [],
     "expressions": []
   },
-  "SolutionAStar.shortestPath": {
-    "name": "shortestPath",
-    "type": "method",
+  "aStarShortestPath": {
+    "name": "aStarShortestPath",
+    "type": "function",
     "language": "python",
     "file": "examples/code/a-star.py",
-    "line": 5,
-    "signature": "def shortestPath(self, grid: list[list[int]], k: int) -> int:",
+    "line": 24,
+    "signature": "def aStarShortestPath(grid: list[list[int]], k: int) -> int:",
     "parameters": [],
     "return_type": "int",
     "return_description": "",
-    "description": "",
-    "code": "def shortestPath(self, grid: list[list[int]], k: int) -> int:\n        rows, cols = len(grid), len(grid[0])\n        min_dist = rows + cols - 2\n        if k >= min_dist:\n            return min_dist\n        max_k = [[-1] * cols for _ in range(rows)]\n        max_k[0][0] = k\n        def heuristic(r, c):\n            return (rows - 1 - r) + (cols - 1 - c)\n        pq = [(heuristic(0,0), 0, 0, 0, k)]\n        directions = [(1,0),(-1,0),(0,1),(0,-1)]\n        while pq:\n            f, steps, r, c, rem_k = heapq.heappop(pq)\n            if (r, c) == (rows - 1, cols - 1):\n                return steps\n            if rem_k < max_k[r][c]:\n                continue\n            for dr, dc in directions:\n                nr, nc = r + dr, c + dc\n                if 0 <= nr < rows and 0 <= nc < cols:\n                    nk = rem_k - grid[nr][nc]\n                    if nk >= 0 and nk > max_k[nr][nc]:\n                        max_k[nr][nc] = nk\n                        g = steps + 1\n                        f_new = g + heuristic(nr, nc)\n                        heapq.heappush(pq, (f_new, g, nr, nc, nk))\n        return -1",
-    "links": [],
-    "variables": [],
-    "expressions": [],
-    "parent": "SolutionAStar"
+    "description": "Variables:",
+    "code": "def aStarShortestPath(grid: list[list[int]], k: int) -> int:\n    rows, cols = len(grid), len(grid[0])\n    def h(r: int, c: int) -> int:\n        return manhattan_distance((r, c), (rows - 1, cols - 1))\n    if k >= (md:= h(0, 0)) - 1:\n        return md\n    pq = [(md, 0, 0, 0, k)]\n    max_k = [[-1] * cols for _ in range(rows)]\n    max_k[0][0] = k\n    while pq:\n        _, steps, r, c, remaining_k = heapq.heappop(pq)\n        if (r, c) == (rows - 1, cols - 1):\n            return steps\n        if remaining_k < max_k[r][c]:\n            continue\n        for dr, dc in [(0, 1), (0, -1), (1, 0), (-1, 0)]:\n            if 0 <= (nr:= r + dr) < rows and 0 <= (nc:= c + dc) < cols:\n                if (new_remaining_k := remaining_k - grid[nr][nc] ) > max_k[nr][nc]:\n                    max_k[nr][nc] = new_remaining_k\n                    heapq.heappush(pq, ((steps + 1) + h(nr, nc), steps + 1, nr, nc, new_remaining_k))\n    return -1",
+    "links": [
+      {
+        "symbol": "nr",
+        "display": "[nr]",
+        "target": "nr",
+        "valid": false,
+        "target_symbol": null
+      },
+      {
+        "symbol": "nc",
+        "display": "[nc]",
+        "target": "nc",
+        "valid": false,
+        "target_symbol": null
+      },
+      {
+        "symbol": "nr",
+        "display": "[nr]",
+        "target": "nr",
+        "valid": false,
+        "target_symbol": null
+      },
+      {
+        "symbol": "nc",
+        "display": "[nc]",
+        "target": "nc",
+        "valid": false,
+        "target_symbol": null
+      },
+      {
+        "symbol": "nr",
+        "display": "[nr]",
+        "target": "nr",
+        "valid": false,
+        "target_symbol": null
+      },
+      {
+        "symbol": "nc",
+        "display": "[nc]",
+        "target": "nc",
+        "valid": false,
+        "target_symbol": null
+      },
+      {
+        "symbol": "r",
+        "display": "[r]",
+        "target": "r",
+        "valid": false,
+        "target_symbol": null
+      },
+      {
+        "symbol": "c",
+        "display": "[c]",
+        "target": "c",
+        "valid": false,
+        "target_symbol": null
+      }
+    ],
+    "variables": [
+      {
+        "name": "pq",
+        "description": "(f_cost, steps, r, c, remaining_k)",
+        "type": "variable"
+      }
+    ],
+    "expressions": [
+      {
+        "expression": "new_remaining_k",
+        "description": "= remaining_k - grid[nr][nc], how many obstacle eliminations you will have left **after** moving to the next cell , if the cell is empty grid[nr][nc] is 0, if the cell is an obstacle grid[nr][nc] is 1.",
+        "type": "expression"
+      },
+      {
+        "expression": "if remaining_k < max_k[r][c]",
+        "description": "Handle items that are already outdated by the time they are popped.",
+        "type": "expression"
+      }
+    ]
   },
   "bellman_ford_classic": {
     "name": "bellman_ford_classic",
@@ -331,6 +417,83 @@
       }
     ],
     "expressions": []
+  },
+  "dijkstraShortestPath": {
+    "name": "dijkstraShortestPath",
+    "type": "function",
+    "language": "python",
+    "file": "examples/code/dijkstra.py",
+    "line": 183,
+    "signature": "def dijkstraShortestPath(grid: list[list[int]], k: int) -> int:",
+    "parameters": [],
+    "return_type": "int",
+    "return_description": "",
+    "description": "Finds the shortest path using Dijkstra's algorithm.",
+    "code": "def dijkstraShortestPath(grid: list[list[int]], k: int) -> int:\n    rows, cols = len(grid), len(grid[0])\n    if k >= rows + cols - 3:\n        return rows + cols - 2\n    pq = [(0, 0, 0, k)]\n    max_k = [[-1] * cols for _ in range(rows)]\n    max_k[0][0] = k\n    while pq:\n        steps, r, c, k_rem = heapq.heappop(pq)\n        if (r, c) == (rows - 1, cols - 1):\n            return steps\n        if k_rem < max_k[r][c]:\n            continue\n        for dr, dc in [(0, 1), (0, -1), (1, 0), (-1, 0)]:\n            if 0 <= (nr:= r + dr) < rows and 0 <= (nc:= c + dc) < cols:\n                if (new_k:= k_rem - grid[nr][nc]) > max_k[nr][nc]:\n                    max_k[nr][nc] = new_k\n                    heapq.heappush(pq, (steps + 1, nr, nc, new_k))\n    return -1",
+    "links": [
+      {
+        "symbol": "r",
+        "display": "[r]",
+        "target": "r",
+        "valid": false,
+        "target_symbol": null
+      },
+      {
+        "symbol": "c",
+        "display": "[c]",
+        "target": "c",
+        "valid": false,
+        "target_symbol": null
+      },
+      {
+        "symbol": "r",
+        "display": "[r]",
+        "target": "r",
+        "valid": false,
+        "target_symbol": null
+      },
+      {
+        "symbol": "c",
+        "display": "[c]",
+        "target": "c",
+        "valid": false,
+        "target_symbol": null
+      }
+    ],
+    "variables": [
+      {
+        "name": "pq",
+        "description": "(g_cost, r, c, k_rem), The priority uses g_cost (steps) itself. No heuristic is used.",
+        "type": "variable"
+      },
+      {
+        "name": "steps",
+        "description": "The number of steps taken so far (g_cost)",
+        "type": "variable"
+      },
+      {
+        "name": "max_k",
+        "description": "max_k[r][c] stores the max eliminations we have at cell (r,c)",
+        "type": "variable"
+      }
+    ],
+    "expressions": [
+      {
+        "expression": "heapq.heappush(pq, (steps + 1, nr, nc, new_k))",
+        "description": "The priority is simply the new step count.No heuristic is added, which is the only difference from the A* implementation.",
+        "type": "expression"
+      },
+      {
+        "expression": "heapq.heappop(pq)",
+        "description": "Pop the path with the lowest g_cost (steps) so far",
+        "type": "expression"
+      },
+      {
+        "expression": "k_rem < max_k[r][c]",
+        "description": "Prune paths that are suboptimal for a given cell",
+        "type": "expression"
+      }
+    ]
   },
   "test_function_with_expressions": {
     "name": "test_function_with_expressions",
@@ -1043,7 +1206,7 @@
     "return_type": "int",
     "return_description": "minimum number of steps to reach the bottom-right corner, or -1 if it's impossible",
     "description": "Args:",
-    "code": "def shortestPath(grid: list[list[int]], k: int) -> int:\n    rows, cols = len(grid), len(grid[0])\n    min_steps = rows + cols - 2  \n    if k >= min_steps:\n        return min_steps\n    max_k = [[-1] * cols for _ in range(rows)]\n    max_k[0][0] = k\n    q = deque([(0, 0, 0, k)])\n    directions = [(1,0), (-1,0), (0,1), (0,-1)]\n    while q:\n        r, c, steps, remaining_k = q.popleft()\n        for dr, dc in directions:\n            nr, nc = r + dr, c + dc\n            if 0 <= nr < rows and 0 <= nc < cols:\n                new_remaining_k = remaining_k - grid[nr][nc]\n                if new_remaining_k > max_k[nr][nc]:\n                    if (nr, nc) == (rows - 1, cols - 1):\n                        return steps + 1\n                    max_k[nr][nc] = new_remaining_k\n                    q.append((nr, nc, steps + 1, new_remaining_k))\n    return -1",
+    "code": "def shortestPath(grid: list[list[int]], k: int) -> int:\n    rows, cols = len(grid), len(grid[0])\n    min_steps = rows + cols - 3 \n    if k >= min_steps:\n        return min_steps\n    max_k = [[-1] * cols for _ in range(rows)]\n    max_k[0][0] = k\n    q = deque([(0, 0, 0, k)])\n    while q:\n        r, c, steps, remaining_k = q.popleft()\n        for dr, dc in [(1,0), (-1,0), (0,1), (0,-1)]:\n            nr, nc = r + dr, c + dc\n            if 0 <= nr < rows and 0 <= nc < cols:\n                new_remaining_k = remaining_k - grid[nr][nc]\n                if new_remaining_k > max_k[nr][nc]:\n                    if (nr, nc) == (rows - 1, cols - 1):\n                        return steps + 1\n                    max_k[nr][nc] = new_remaining_k\n                    q.append((nr, nc, steps + 1, new_remaining_k))\n    return -1",
     "links": [
       {
         "symbol": "r",
@@ -1068,7 +1231,7 @@
       },
       {
         "name": "q",
-        "description": "queue items: (row, col, steps, remaining_k)",
+        "description": "(row, col, steps, remaining_k)",
         "type": "variable"
       },
       {
@@ -1084,7 +1247,7 @@
     "type": "function",
     "language": "python",
     "file": "examples/code/bfs.py",
-    "line": 223,
+    "line": 224,
     "signature": "def ladderLength(beginWord: str, endWord: str, wordList: list[str]) -> int:",
     "parameters": [],
     "return_type": "int",

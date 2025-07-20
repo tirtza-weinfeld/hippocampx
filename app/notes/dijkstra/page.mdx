@@ -198,7 +198,7 @@ to reach *all* nodes. If impossible, return -1*
 
 *Find the cheapest flight from a source to a destination with at most `k` stops.*
 
-> [!warning:collapse] Achieve **$O(Ek)$** with *Bellman-Ford* ,faster than this modified Dijkstra's $O(Ek\log(Nk))$ 
+> [!warning:collapse] Achieve **$O(Ek)$** with [*Bellman-Ford*](./bellman-ford#1-cheapest-flight-within-k-stops),faster than this modified Dijkstra's $O(Ek\log(Nk))$ 
 >  
 > `N` = number of cities
 > `E` = number of flights
@@ -227,4 +227,29 @@ to reach *all* nodes. If impossible, return -1*
 >   * **`Ek` - The Number of Operations:**
 >       In the worst case, we might explore the outgoing edges (`E`) from a city for each possible stop count up to `k`. This gives a loose upper bound on the number of times we push to the priority queue.
 
+
+
+### 5\. Shortest Path in a Grid with Obstacles Elimination
+[1293. Shortest Path in a Grid with Obstacles Elimination](https://leetcode.com/problems/shortest-path-in-a-grid-with-obstacles-elimination/)
+
+  *Given an `m x n` grid where cells are either empty (`0`) or an obstacle (`1`), and an integer `k` 
+  representing the maximum number of obstacles you can eliminate, find the minimum number of steps to travel from the top-left corner `(0, 0)`
+  to the bottom-right `(m-1, n-1)`. Each move (up, down, left, right) costs one step. If no such path exists, return `-1`.*
+      
+
+```python file=examples/code/dijkstra.py#func:dijkstraShortestPath  
+```
+
+
+> [!timecomplexity:collapse] $O(m \cdot n \cdot k \cdot \log(m \cdot n \cdot k))$
+> 
+> Let:
+>`m` be the number of rows.
+>`n` be the number of columns.
+>`k` be the maximum number of eliminations.
+>
+> The state in the search is defined by `(row, col, remaining_k)`, leading to a total of `m * n * k` possible states. The time complexity is driven by the priority queue operations (`heappush` and `heappop`), which take logarithmic time relative to the number of items in the queue.
+> 
+> Therefore, the complexity is the total number of states multiplied by the logarithmic cost of the heap operations.
+>
 

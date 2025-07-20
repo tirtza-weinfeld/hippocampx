@@ -1,0 +1,23 @@
+
+# Adversarial Search ⚔️
+
+In some problems, an AI agent faces an opponent who is actively trying to achieve an opposing goal. This is common in games like tic-tac-toe.
+
+## Minimax Algorithm
+
+The **Minimax** algorithm is designed for two-player adversarial games. One player is the **maximizer** (MAX), who tries to achieve the highest possible score, while the other is the **minimizer** (MIN), who tries to get the lowest score. The algorithm works by exploring future moves to determine the best possible action.
+
+The key components of a game for the Minimax algorithm are:
+* **Initial State ($S_0$)**: The starting configuration of the game.
+* **PLAYER(s)**: A function that determines which player has the move in state `s`.
+* **ACTIONS(s)**: A function that returns all legal moves from state `s`.
+* **RESULT(s, a)**: The state that results from taking action `a` in state `s`.
+* **TERMINAL(s)**: A function that checks if the game has ended (win, lose, or tie).
+* **UTILITY(s)**: A function that assigns a final numerical value to a terminal state (e.g., +1 for a MAX win, -1 for a MIN win, 0 for a tie).
+
+The algorithm works by having the maximizer pick actions that lead to the highest value, assuming the minimizer will always pick actions that lead to the lowest value. This creates a recursive process where each player anticipates the other's optimal response.
+
+### Optimizations for Minimax
+
+* **Alpha-Beta Pruning**: This optimization allows the Minimax algorithm to skip evaluating branches that won't affect the final decision. If the maximizer finds a path that guarantees a certain score, it can ignore (or "prune") any other path where the minimizer could force a worse outcome.
+* **Depth-Limited Minimax**: For complex games like chess, exploring every possible game to its end is computationally impossible. This technique limits the search to a certain number of moves ahead. To make decisions without reaching a terminal state, it uses an **evaluation function** that estimates the utility of a non-final game state, for instance, by assessing which player has a material or positional advantage.

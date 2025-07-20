@@ -1,75 +1,106 @@
+# A\* Search
+
+## Resizable Table Of Contents
 
 
-## A\* Search Algorithm
+## Informed Search
+Informed search algorithms use problem-specific knowledge to find solutions more efficiently.
+ This is in contrast to uninformed search algorithms like Depth-First or Breadth-First Search, which don't use any knowledge they haven't acquired through exploration.
 
-A\* is essentially **“BFS + brain”**: instead of exploring purely by distance-so-far (like BFS) or purely by guessed distance-to-go (like a greedy search), it ranks each potential node by:
 
-**`f(n) = g(n) + h(n)`**
 
-  * **`g(n)`**: The **actual cost** of steps taken so far from the start.
-  * **`h(n)`**: The **heuristic**, an estimated cost of the steps remaining to the target (e.g., Manhattan distance).
+---
 
-By always expanding the node with the lowest `f(n)` score, A\* “hones in” on paths that look cheapest overall. If `h(n)` never overestimates the true remaining distance (i.e., it's *admissible*), A\* is guaranteed to find the shortest path.
+## Greedy Best-First Search
 
-### Why It Works: Balancing Cost and Heuristics
+Greedy best-first search is an informed search algorithm that works by always expanding the node that appears to be closest to the goal. This decision is based on a **heuristic function**, denoted as $h(n)$, which estimates how close a node is to the goal.
 
-The combination of both `g(n)` and `h(n)` is what gives A\* its power. The `g(n)` term grounds the search in reality, preventing it from following a path that looks direct but is actually a costly trap.
+A common example of a heuristic is the **Manhattan distance**. Used in grid-based problems, it calculates the distance between a node and the goal by counting the steps up, down, left, or right, ignoring any walls or obstacles that might be in the way.
 
-For example, imagine finding a path over a mountain. A greedy search (using only `h(n)`) would head straight up a winding, slow trail because it points directly at the goal. However, A\*'s `g(n)` term would quickly increase, reflecting the long time spent on this trail. The algorithm would soon realize that a different path—one that goes around the mountain on a faster road—is better overall, even if it initially seems less direct.
+The "greedy" nature of this algorithm means it can be very fast. However, because it only considers the estimated cost to the goal and ignores the path cost already taken, it can be misled by a poor heuristic and is not guaranteed to find the **optimal solution**. The algorithm's effectiveness is entirely dependent on the quality of its heuristic function.
 
-In short, **`h(n)` provides the direction, while `g(n)` ensures the path remains efficient.**
+---
 
-### Optimal Python Implementation (LeetCode 1293)
+## A\* Search 🌲
 
-This code uses the A\* algorithm to solve the "Shortest Path in a Grid with Obstacles Elimination" problem. It features an efficient `max_k` array to prune suboptimal paths.
+*A\* is essentially Dijkstra's algorithm plus a heuristic (h) that estimates the remaining cost to the destination.* 
 
-```python
-import heapq
+A\* search is a development of the greedy best-first algorithm that combines both the estimated cost to the goal and the actual cost incurred to reach the current node
 
-class Solution:
-    def shortestPath(self, grid: list[list[int]], k: int) -> int:
-        rows, cols = len(grid), len(grid[0])
-        
-        # Early exit if k is large enough to ignore all obstacles
-        min_dist = rows + cols - 2
-        if k >= min_dist:
-            return min_dist
+The algorithm evaluates nodes based on the formula:
+**$f(n) = g(n) + h(n)$**
 
-        # max_k[r][c] stores the best remaining eliminations seen at (r,c)
-        max_k = [[-1] * cols for _ in range(rows)]
-        max_k[0][0] = k
+* **$g(n)$**: The **cost** to reach the current node `n` from the start.
+* **$h(n)$**: The **heuristic** (estimated) cost from node `n` to the goal.
 
-        # Heuristic function: Manhattan distance
-        def heuristic(r, c):
-            return (rows - 1 - r) + (cols - 1 - c)
+By summing these two values, the algorithm gets a more accurate way to determine the cost of a solution and optimize its choices.
 
-        # Priority queue: (f_score, steps, r, c, remaining_k)
-        # f_score = steps (g) + heuristic (h)
-        pq = [(heuristic(0,0), 0, 0, 0, k)]
-        directions = [(1,0),(-1,0),(0,1),(0,-1)]
+For A\* search to be optimal (meaning it's guaranteed to find the best solution), its heuristic function $h(n)$ must be:
+* **Admissible**: It must never overestimate the true cost to reach the goal.
+* **Consistent**: For any node `n` and its successor `n'`, the heuristic's value at `n` must be less than or equal to the cost of moving to `n'` plus the heuristic's value at `n'`. In other words, $h(n) \le h(n') + c$, where c is the step cost
 
-        while pq:
-            f, steps, r, c, rem_k = heapq.heappop(pq)
-            
-            if (r, c) == (rows - 1, cols - 1):
-                return steps
+### Examples
 
-            # If we've already found a path to this cell with more
-            # elimination power, this current path is suboptimal.
-            if rem_k < max_k[r][c]:
-                continue
+#### 1. Shortest Path in a Grid with Obstacles Elimination
+ [LeetCode 1293](https://leetcode.com/problems/shortest-path-in-a-grid-with-obstacles-elimination/)
 
-            for dr, dc in directions:
-                nr, nc = r + dr, c + dc
-                if 0 <= nr < rows and 0 <= nc < cols:
-                    nk = rem_k - grid[nr][nc]
-                    
-                    # Explore neighbor only if we can afford it and it's a better state
-                    if nk >= 0 and nk > max_k[nr][nc]:
-                        max_k[nr][nc] = nk
-                        g_new = steps + 1
-                        f_new = g_new + heuristic(nr, nc)
-                        heapq.heappush(pq, (f_new, g_new, nr, nc, nk))
+*Given an `m x n` grid where cells are either empty (`0`) or an obstacle (`1`), and an integer `k` 
+representing the maximum number of obstacles you can eliminate, find the minimum number of steps to travel from the top-left corner `(0, 0)`
+to the bottom-right `(m-1, n-1)`. Each move (up, down, left, right) costs one step. If no such path exists, return `-1`.*
+    
 
-        return -1
+```python file=./examples/code/a-star.py#func:aStarShortestPath
 ```
+
+
+
+> [!timecomplexity:collapse]  $O(m \cdot n \cdot k \cdot \log(m \cdot n \cdot k))$
+> 
+> > **The  $A^{*}$ vs  [Breadth-First](./bfs#7-shortest-path-in-a-grid-with-obstacles-elimination)** vs **[Dijkstra](./dijkstra#5-shortest-path-in-a-grid-with-obstacles-elimination)**
+>> For this type of single-destination grid problem, **A\* is almost always faster in practice than BFS or Dijkstra**. While all three algorithms can find the correct answer, their search strategies lead to dramatically different performance.
+>
+>> **The Core Difference: Guided vs. Blind Search**
+>> 
+>> The reason for A\*'s superior speed is that it's an **informed** search algorithm, while BFS and Dijkstra are **blind**.
+>> 
+>>   * **BFS and Dijkstra (Blind)**: These algorithms explore outwards from the start without any sense of the goal's direction. Dijkstra's expands based on the lowest cost from the start, and BFS expands layer by layer. This is like searching for an address in a city by systematically checking every block in an ever-expanding circle—you'll find it, but you'll visit countless useless locations.
+>> 
+>>   * **A\* (Guided)**: A\* uses a heuristic as a "sense of direction" or a magic compass that always points toward the goal. At every step, it prioritizes paths that are not only short but are also moving in the right direction. This allows it to ignore vast, irrelevant parts of the grid and focus its effort.
+>
+>
+>> **How the Search Area Differs on a Grid**
+>> 
+>> This difference is most obvious when visualizing the cells each algorithm explores (`x`) to get from a start `S` to a goal `G`.
+>> 
+>> **Dijkstra / BFS Exploration (Blind)**
+>> The search expands in a uniform wave, exploring many cells that are not on the optimal path.
+>> 
+>> ```
+>> ....................G
+>> .xxxxxxxx...........
+>> .xxxxxxxxxxxx.......
+>> .xxxxxxxxxxxxxxx....
+>> .xxxxxxxxxxxxxxxx...
+>> Sxxxxxxxxxxxxxxxxxx.
+>> ```
+>> 
+>> 
+>> 
+>> **A\* Exploration (Guided)**
+>> The heuristic "pulls" the search toward the goal, creating a much narrower search corridor.
+>> 
+>> ```
+>> ....................G
+>> ............xxxx....
+>> .........xxxxx......
+>> ......xxxx..........
+>> ...xxxx.............
+>> Sxxxx...............
+>> ```
+>> 
+>
+>> **Why This Matters for Performance**
+>> 
+>> This leads to a crucial trade-off. A\*'s worst-case time complexity of `$O(m \cdot n \cdot k \cdot \log(m \cdot n \cdot k))$` looks slower on paper than BFS's `$O(m \cdot n \cdot k)$` due to the logarithmic factor from the priority queue.
+>> 
+>> However, this is misleading. In practice, the number of states A\* actually needs to visit is so dramatically smaller than for BFS or Dijkstra that the savings from exploring fewer states far outweigh the small additional cost per node, resulting in a much faster solution.
