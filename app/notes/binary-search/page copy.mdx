@@ -2,157 +2,180 @@
 
 ## Resizable Table of Contents
 
-Binary search is an efficient algorithm that operates on data with a **monotonic property** (e.g., a sorted array). It works by repeatedly halving the search space until a target is found or the space is exhausted.
+Binary search is an efficient `$O(\log n)$` algorithm for finding an item in a **sorted** list . 
+ It works by repeatedly dividing the list in half.
 
-Binary search is a `$O(\log n)$` efficient algorithm for finding an item in a **sorted** list. 
- It works by repeatedly dividing the search interval in half.
-
-The core idea is to compare the target value with the middle element of the array.
+The core idea is to compare the target value with the middle element of the list.
  If they are not equal, the half in which the target cannot lie is eliminated, 
  and the search continues on the remaining half.
 
------
 
+>[!definition:collapse] Formal definition
+>
+>  Let $(D,\le)$ be a totally ordered set, and let
+> 
+>  $$
+> P\colon D\to\{\mathsf{false}<\mathsf{true}\}
+> \quad\bigl(P^{\uparrow}:\;\forall\,x\le y\implies P(x)\le P(y)\bigr)
+> $$
+>  Binary search finds
+>  $$
+>  \alpha = \min\{x\in D\mid P(x)=\mathsf{true}\}
+>  $$
+>  in $O(\log|D|)$ time by halving the interval $[\ell,r)$ at
+>  $$
+>  m = \left\lfloor\frac{\ell+r}{2}\right\rfloor
+>  $$
+>  and repeating until $\ell = r = \alpha.$
+
+
+
+
+Let `(D, ≤)` be a totally ordered set, and let `$P\colon D\to\{\mathsf{false} < \mathsf{true}\}$` be a monotonic predicate.
+
+Binary search finds `$\alpha = \min\{x\in D\mid P(x)=\mathsf{true}\}$` in `$O(\log|D|)$` time by maintaining an interval `$[\ell,r)$`, probing the midpoint `$m=\lfloor(\ell+r)/2\rfloor$`, and discarding the half in which `$\alpha$` cannot lie, repeating until `$\ell = r = \alpha$`.
+
+---
 ## Finding the Leftmost Insertion Point 
 
-`bisect_left` determines the index at which a target `x` should be inserted into a sorted list `a` to maintain order.
-It finds the **first** position `i` where `a[i] >= x`.
+*Given a sorted list `a` and a target `x`, return the index at which `x` should be inserted to maintain order.
+(i.e. **first** position `i` where `a[i] >= x`)*
 
-```python file=backend/algorithms/binary_search.py#func:simple_bisect_left
+```python file=backend/algorithms/binary_search.py#func:simple_bisect_left 
 ```
 
-**Key Logic**: When `a[mid]` is greater than or equal to `x`, we set `hi = mid`. This ensures we keep considering the `mid` index as a potential answer and forces the search to converge on the leftmost possible index.
+>[!tip] 
+>When `a[mid]` is greater than or equal to `x`, we set `r = mid`.
+ This ensures we keep considering the `mid` index as a potential answer and forces the search to
+  converge on the leftmost possible index.
 
 -----
 
 ## Finding the Rightmost Insertion Point 
 
-`bisect_right` is similar but finds the insertion point to the **right** of any existing entries of `x`. It finds the first position `i` where `a[i] > x`.
+*Given a sorted list `a` and a target `x`, return the index at which `x` should be inserted to maintain order.
+(i.e. **first** position `i` where `a[i] > x`)*
 
 ```python file=backend/algorithms/binary_search.py#func:simple_bisect_right
 ```
 
-**Key Logic**: When `a[mid]` is less than or equal to `x`, we set `lo = mid + 1`. This effectively pushes the search past all elements equal to `x`, ensuring the final index is just after the rightmost occurrence.
+>[!tip] 
+>When `a[mid]` is less than or equal to `x`, we set `l = mid + 1`.
+ This effectively pushes the search past all elements equal to `x`, ensuring the final index is just after the rightmost occurrence.
 
 -----
 ## Examples
 
 
+### 1. Search Insert Position
 
-### Pattern 1: Search on Index
+[35. Search Insert Position](https://leetcode.com/problems/search-insert-position/)
 
-This pattern uses an element's value to find its position within a sorted data structure. Python's `bisect` module is the professional standard for this.
+*Given a sorted array of distinct integers and a target value, find the index of the target.
+If absent, return the index where it would be inserted to maintain order.*
 
-**Problem: Search Insert Position** ([LeetCode 35](https://leetcode.com/problems/search-insert-position/))
+```python file=backend/algorithms/binary_search.py#func:searchInsert
+```
 
-  * **Problem Definition:** Given a sorted array of distinct integers and a target value, find the index of the target. If absent, return the index where it would be inserted to maintain order.
+  >[!tip] 
+  Python's `bisect` module is the standard for binary search.
+  See [Finding the Leftmost Insertion Point](#finding-the-leftmost-insertion-point) for simplified `bisect_left`.
 
-  * **Code Snippet:**
-
-    ```python
-    from bisect import bisect_left
-
-    def searchInsert(nums: list[int], target: int) -> int:
-        return bisect_left(nums, target)
-    ```
-
-  * **Tip:** 💡 This problem is a direct application of **binary search on an index**. The `bisect_left` function is purpose-built for this, returning the exact insertion point in $O(\\log n)$ time, making it the ideal tool.
-
-  * **Time Complexity:** $O(\\log n)$
 
 -----
 
-### Pattern 2: Search on Index for Boundaries
+### 2. Find First and Last Position of Element in Sorted Array
 
-This extends the first pattern to find the full range of a target that may appear multiple times.
+[34. Find First and Last Position of Element in Sorted Array](https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/)
 
-**Problem: Find First and Last Position of Element in Sorted Array** ([LeetCode 34](https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/))
+*Given a sorted array of integers `nums` that may contain duplicates, 
+find the starting and ending indices of a given `target`. If the target is not in the array, return `[-1, -1]`.*
 
-  * **Problem Definition:** Given a sorted array of integers `nums` that may contain duplicates, find the starting and ending indices of a given `target`. If the target is not in the array, return `[-1, -1]`.
+```python file=backend/algorithms/binary_search.py#func:searchRange
+```
+  >[!tip] 
+   [bisect_left](#simple_bisect_left) finds the first position where `target` could be inserted, and
+    [bisect_right](#simple_bisect_right) finds the first position *after* all 
+  existing `target`s. 
 
-  * **Code Snippet:**
+-----
+### 3. Find Minimum in Rotated Sorted Array
+[153. Find Minimum in Rotated Sorted Array](https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/)
 
-    ```python
-    from bisect import bisect_left, bisect_right
+*Given a unique-element sorted array that has been rotated at an unknown pivot, find its minimum value.*
 
-    def searchRange(nums: list[int], target: int) -> list[int]:
-        start = bisect_left(nums, target)
-        if start == len(nums) or nums[start] != target:
-            return [-1, -1]
-        
-        end = bisect_right(nums, target) - 1
-        return [start, end]
-    ```
+```python file=backend/algorithms/binary_search.py#func:findMin
+```
 
-  * **Tip:** 💡 This problem is elegantly solved by using two **binary searches on index**. `bisect_left` finds the first position where `target` could be inserted, and `bisect_right` finds the first position *after* all existing `target`s. Combining them is the most robust way to find the boundaries.
-
-  * **Time Complexity:** $O(\\log n)$
+> [!intuition:collapse] 
+> The goal is to find the *inflection point* in the rotated list (where the numbers switch from high to low) — this point is the minimum element. 
+> We use a modified binary search to home in on this point.
+>
+> The key is comparing the middle element `nums[mid]` with the rightmost element `nums[r]`. This comparison tells us which part of the array is currently sorted and can be discarded.
+>
+> -   **Case 1: `nums[mid] < nums[r]`**
+>     -   **Example:** In `[4, 5, 1, 2, 3]`, if `mid` points to `1`, `nums[mid]` (`1`) is less than `nums[r]` (`3`).
+>     -   **Logic:** This indicates that the entire right portion of the array from `mid` to `r` (i.e., `[1, 2, 3]`) is sorted. The minimum element could be `nums[mid]` itself, or it could be to its left. We can safely search the left half (including `mid`) by setting `r = mid`.
+>
+> -   **Case 2: `nums[mid] >= nums[r]`**
+>     -   **Example:** In `[4, 5, 1, 2, 3]`, if `mid` points to `5` in an earlier step, `nums[mid]` (`5`) is greater than `nums[r]` (`3`).
+>     -   **Logic:** This indicates that the inflection point (the minimum value) must lie to the right of `mid`. The left portion `[4, 5]` is sorted but contains values larger than the true minimum. We discard this left portion by setting `l = mid + 1`.
+>
+> The loop terminates when `l` and `r` converge, at which point `nums[l]` is the smallest element.
 
 -----
 
-### Pattern 3: Search with a Modified Condition
+### 4. Koko Eating Bananas
 
-This pattern is required when the data isn't strictly sorted but has a custom monotonic property (e.g., a rotated array). A manual implementation is necessary as standard libraries don't cover these unique conditions.
+[875. Koko Eating Bananas](https://leetcode.com/problems/koko-eating-bananas/)
 
-**Problem: Find Minimum in Rotated Sorted Array** ([LeetCode 153](https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/))
 
-  * **Problem Definition:** Given a unique-element sorted array that has been rotated at an unknown pivot, find its minimum value.
 
-  * **Code Snippet:**
+*Given banana piles `piles` and hour limit `h`, 
+find the minimum eating speed `$k∈ℕ$` such that 
+`$\displaystyle \sum_{i=1}^{|piles|} \left\lceil \frac{p_i}{k} \right\rceil \le h$`
+where each hour Koko eats up to `$k$` bananas from one pile
+(any leftover hour is wasted)*
 
-    ```python
-    def findMin(nums: list[int]) -> int:
-        low, high = 0, len(nums) - 1
-        while low < high:
-            mid = low + (high - low) // 2
-            if nums[mid] > nums[high]:
-                low = mid + 1
-            else:
-                high = mid
-        return nums[low]
-    ```
+```python file=backend/algorithms/binary_search.py#func:minEatingSpeed
+```
+> [\!intuition:collapse] *binary searching the answer space, (the eating speed `k`)*
+>
+> The range of possible speeds is from `1` to `max(piles)`.
+>
+> The key property is that the problem is **monotonic** (if a speed `k` is fast enough, any speed greater than `k` will also be fast enough). This allows us to binary search for the *minimum* valid speed.
+>
+> We test a mid speed (`k = (l + r) // 2`). If it's valid (`hours(k) <= h`), we try to find a smaller valid speed by searching the lower half (`r = k`). If it's too slow, we must increase the speed by searching the upper half (`l = k + 1`). The loop converges on the smallest `k` that works. 🍌
 
-  * **Tip:** 💡 This is a **binary search on index with a modified condition**. You must implement the logic manually. The key is comparing `nums[mid]` to an endpoint (`nums[high]`) to determine which half contains the rotational pivot (the minimum) and can't be discarded.
+> [\!timecomplexity]
+> $O(n \log m)$, where `$n$` is the number of piles and `$m$` is the maximum pile size.
 
-  * **Time Complexity:** $O(\\log n)$
+
 
 -----
 
-### Pattern 4: Search on the Answer Space
+### 5. Capacity To Ship Packages Within D Days
 
-This advanced pattern solves optimization problems by searching within a conceptual range of possible answers to find the most optimal one that satisfies specific constraints.
+[1011. Capacity To Ship Packages Within D Days](https://leetcode.com/problems/capacity-to-ship-packages-within-d-days/)
 
-**Problem: Koko Eating Bananas** ([LeetCode 875](https://leetcode.com/problems/koko-eating-bananas/))
+*Given a list of weights and a number of days, find the minimum capacity of a ship that can ship all the weights within the given number of days.*
 
-  * **Problem Definition:** Given `n` piles of bananas and `h` hours, find the minimum integer eating speed `k` required to consume all bananas within the time limit.
 
-  * **Code Snippet:**
 
-    ```python
-    import math
+```python file=backend/algorithms/binary_search.py#func:shipWithinDays
+```
 
-    def minEatingSpeed(piles: list[int], h: int) -> int:
-        low, high = 1, max(piles)
-        min_speed = high
 
-        while low <= high:
-            k = low + (high - low) // 2
-            # Handle potential division by zero if low can be 0
-            if k == 0:
-                low = 1
-                continue
-            
-            hours_taken = sum(math.ceil(p / k) for p in piles)
 
-            if hours_taken <= h:
-                min_speed = k
-                high = k - 1
-            else:
-                low = k + 1
-        
-        return min_speed
-    ```
 
-  * **Tip:** 💡 This problem requires a **binary search on the answer space**. The search space is the range of possible speeds (`k`). The algorithm must be manually implemented to test each `k` against the problem's constraints (`hours_taken <= h`) to find the lowest valid speed.
-
-  * **Time Complexity:** $O(n \\log m)$, where $n$ is the number of piles and $m$ is the maximum pile size.
+> [!intuition:collapse] Binary Search on the Answer Space *(ship's capacity)*
+>
+> The search space for the answer (the ship's capacity) ranges from a lower bound of `max(weights)`to carry the heaviest item, to an upper bound of `sum(weights)` to ship everything in one day.
+>
+> The problem has a **monotonic property** ideal for binary search. The function `daysNeeded(capacity)` is monotonically non-increasing: as `capacity` grows, the days required can only decrease or stay the same.
+>
+> This creates a predictable `[False, ..., False, True, ..., True]` sequence for our condition, `daysNeeded(capacity) <= days`. The goal is to find the leftmost `True`, which represents the minimal valid capacity.
+>
+> -   If `daysNeeded(capacity) <= days` is `True`, then `capacity` is a potential answer, and we try for a better (smaller) one in the left half by setting `r = capacity`.
+> -   If it is `False`, then `capacity` is too small, and we must search for a larger capacity in the right half by setting `l = capacity + 1`.
+-----

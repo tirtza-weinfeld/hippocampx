@@ -1,0 +1,154 @@
+
+# Dynamic Programming (DP) 
+
+## Resizable Table Of contents
+
+Dynamic Programming is a powerful technique for solving optimization and counting problems by breaking them down into simpler, overlapping subproblems. The key is to solve each subproblem only once and store its result for future use, avoiding redundant computations.
+
+-----
+
+##  Examples
+
+### 1. Triangle
+
+*Given a `triangle` (list of lists), find the minimum path sum from top to bottom. From index `i` in a row, you may move to index `i` or `i + 1` in the next row.*
+
+[120. Triangle](https://leetcode.com/problems/triangle/)
+
+```python
+class Solution:
+    def minimumTotal(self, triangle: list[list[int]]) -> int:
+        memo, n = {}, len(triangle)
+        def dp(r, c):
+            if r >= n or c > r:
+                return 0
+            if (r, c) not in memo:
+                memo[(r, c)] = min(
+                    triangle[r][c] + dp(r + 1, c), 
+                    triangle[r][c] + dp(r + 1, c + 1)
+                )
+            return memo[(r, c)]
+        return dp(0, 0)
+```
+
+> [\!Intuition:collapse]
+>
+> The core insight is that the minimum path to any cell must come from one of the two cells directly below it. The function `dp(r, c)` leverages this by recursively finding the best path from the bottom up. By starting at the top and asking for the solution to the subproblems below (`dp(r+1, ...)`), we find the optimal path. Memoization ensures that the path from any given cell is computed only once.
+
+> [\!timecomplexity:collapse] **$O(n^2)$**
+>
+> **$O(n^2)$**: where `n` is the number of rows in the triangle. Each state `(r, c)` is computed once.
+
+-----
+
+### 2. Partition Equal Subset Sum
+
+*Given an integer array `nums`, determine if you can partition it into two subsets with an equal sum.*
+
+[416. Partition Equal Subset Sum](https://leetcode.com/problems/partition-equal-subset-sum/)
+
+```python
+def canPartition(self, nums: list[int]) -> bool:
+    if (total_sum := sum(nums)) % 2 != 0:
+        return False
+    subset_sum = total_sum // 2
+    dp = [True] + [False] * (subset_sum)
+    for num in nums:
+        for j in reversed(range(num, subset_sum + 1)):
+            dp[j] = dp[j] or dp[j - num]
+    return dp[subset_sum]
+```
+
+> [\!Intuition:collapse]
+>
+> The problem can be reframed as a classic **0/1 Knapsack** problem: can we select a subset of numbers (items) that perfectly "fills" a knapsack with a capacity of `total_sum / 2`? The `dp[j]` array tracks whether a sum of `j` is possible. The inner loop iterates backward to ensure each number (item) is used at most once per subset, correctly modeling the "0/1" choice.
+
+> [\!timecomplexity:collapse] **$O(N \cdot \text{Sum})$**
+>
+> where `N` is the number of elements and `Sum` is the target subset sum.
+
+-----
+
+### 3. Coin Change II
+
+*Given an array of coin denominations and a total amount, return the number of combinations of coins that make up that amount. You can assume an infinite number of each coin.*
+
+[518. Coin Change II](https://leetcode.com/problems/coin-change-ii/)
+
+```python
+def change_bottom_up_1d(self, amount: int, coins: list[int]) -> int:
+    dp = [1] + [0] * amount
+    for coin in coins:
+        for t in range(coin, amount + 1):
+            dp[t] += dp[t - coins[i]]
+    return dp[amount]
+```
+
+> [\!Intuition:collapse]
+>
+> This is an **Unbounded Knapsack** problem focused on counting combinations. The key insight is the **loop order**. By iterating through **coins first (outer loop)**, we ensure that we are building combinations. For each coin, we update the number of ways to form each amount `t` by adding the combinations we already found for `t - coin`. If we were to loop through amounts first, we would be counting permutations (e.g., `1+2` and `2+1` would be treated as distinct).
+
+> [\!timecomplexity:collapse] **$O(n \cdot \text{amount})$**
+>
+> where `n` is the number of coins.
+
+-----
+
+### 4. Stone Game IV
+
+*Alice and Bob play a game starting with `n` stones. On each turn, a player removes a non-zero square number of stones. The player who cannot make a move loses. Determine if Alice (the first player) wins if both play optimally.*
+
+[1510. Stone Game IV](https://leetcode.com/problems/stone-game-iv/)
+
+```python
+def winnerSquareGame(n: int) -> bool:
+    dp = [False] * (n + 1)
+    for i in range(1, n + 1):
+        j = 1
+        while j * j <= i:
+            if not dp[i - j * j]:
+                dp[i] = True
+                break
+            j += 1
+    return dp[n]
+```
+
+> [\!Intuition:collapse]
+>
+> The insight is that this is an impartial game that can be solved with DP. A state `i` (number of stones) is a **winning position** if you can make a move to any **losing position** for your opponent. A losing position is one from which all moves lead to winning positions. The DP array `dp[i]` stores whether `i` is a winning (`True`) or losing (`False`) state. We build this from `1` to `n`, leveraging the already-computed results for smaller stone counts.
+
+> [\!timecomplexity:collapse] **$O(n^{3/2})$**
+>
+> For each state `i` from 1 to `n`, we iterate roughly `sqrt(i)` times. The sum of these operations is approximately $O(n\sqrt{n})$.
+
+-----
+
+### 5. Solving Questions With Brainpower
+
+*You are given an array `questions` where `questions[i] = [points, brainpower]`. You can either solve question `i` to earn `points` (but must skip the next `brainpower` questions) or skip it. Find the maximum points you can earn.*
+
+[2140. Solving Questions With Brainpower](https://leetcode.com/problems/solving-questions-with-brainpower/)
+
+```python
+class Solution:
+    def mostPoints(self, questions: list[list[int]]) -> int:
+        memo, n = {}, len(questions)
+        def dp(i):
+            if i >= n:
+                return 0
+            if i not in memo:
+                memo[i] = max(
+                    questions[i][0] + dp(i + questions[i][1] + 1), 
+                    dp(i + 1)
+                )
+            return memo[i]
+        return dp(0)
+```
+
+> [\!Intuition:collapse]
+>
+> The key insight is to solve the problem by considering the future. From any question `i`, the maximum score we can get depends on the optimal scores from later questions. This dependency on future states makes it a perfect fit for DP. The most natural way to model this is by working **backwards**. `dp[i]` represents the max score from `questions[i:]`. The choice at `i` is between skipping (`dp[i+1]`) and solving (`points[i] + dp[i + brainpower[i] + 1]`). The provided top-down solution computes this dependency recursively.
+
+> [\!timecomplexity:collapse] **$O(n)$**
+>
+> where `n` is the number of questions, as each state `dp(i)` is computed once.

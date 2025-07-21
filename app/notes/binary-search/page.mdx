@@ -10,31 +10,6 @@ The core idea is to compare the target value with the middle element of the list
  and the search continues on the remaining half.
 
 
->[!definition:collapse] Formal definition
->
->  Let $(D,\le)$ be a totally ordered set, and let
-> 
->  $$
-> P\colon D\to\{\mathsf{false}<\mathsf{true}\}
-> \quad\bigl(P^{\uparrow}:\;\forall\,x\le y\implies P(x)\le P(y)\bigr)
-> $$
->  Binary search finds
->  $$
->  \alpha = \min\{x\in D\mid P(x)=\mathsf{true}\}
->  $$
->  in $O(\log|D|)$ time by halving the interval $[\ell,r)$ at
->  $$
->  m = \left\lfloor\frac{\ell+r}{2}\right\rfloor
->  $$
->  and repeating until $\ell = r = \alpha.$
-
-
-
-
-Let `(D, ≤)` be a totally ordered set, and let `$P\colon D\to\{\mathsf{false} < \mathsf{true}\}$` be a monotonic predicate.
-
-Binary search finds `$\alpha = \min\{x\in D\mid P(x)=\mathsf{true}\}$` in `$O(\log|D|)$` time by maintaining an interval `$[\ell,r)$`, probing the midpoint `$m=\lfloor(\ell+r)/2\rfloor$`, and discarding the half in which `$\alpha$` cannot lie, repeating until `$\ell = r = \alpha$`.
-
 ---
 ## Finding the Leftmost Insertion Point 
 
