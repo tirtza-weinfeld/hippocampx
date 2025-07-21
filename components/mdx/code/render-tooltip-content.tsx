@@ -60,18 +60,18 @@ function TooltipHeader({ meta }: { meta: TooltipMeta }) {
       ? `${meta.parent}.${'name' in meta ? meta.name : meta.expression}` 
       : 'name' in meta ? meta.name : meta.expression;
   
-  const typeColor = meta.type === 'function' ? 'text-blue-600 dark:text-blue-400' :
+  const typeColor = meta.type === 'function' ? 'text-yellow-600 dark:text-yellow-400' :
                    meta.type === 'method' ? 'text-purple-600 dark:text-purple-400' :
-                   meta.type === 'class' ? 'text-orange-600 dark:text-orange-400' :
+                   meta.type === 'class' ? 'text-sky-600 dark:text-sky-400' :
                    'text-gray-600 dark:text-gray-400';
   
   return (
     <div className="mb-2">
       <div className="flex items-center gap-2 mb-1">
         <span className={`px-2 py-1 rounded text-xs font-medium ${
-          meta.type === 'function' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' :
+          meta.type === 'function' ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300' :
           meta.type === 'method' ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' :
-          meta.type === 'class' ? 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300' :
+          meta.type === 'class' ? 'bg-sky-100 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300' :
           'bg-gray-100 dark:bg-gray-900/30 text-gray-700 dark:text-gray-300'
         }`}>
           {meta.type}
@@ -374,12 +374,45 @@ export function renderTooltipContent(
   if (!meta && TOOLTIP_CONTENT[trimmedSymbol]) {
     meta = TOOLTIP_CONTENT[trimmedSymbol];
   }
-  // Fallback: show symbol and parent
+  
+  // Try to find nested function with parent context
+  if (!meta && parent) {
+    // Try combinations with parent for nested functions
+    const possibleKeys = [
+      `${parent}.${trimmedSymbol}`,
+      // Handle nested paths like DP.triangle.dp
+      ...Object.keys(TOOLTIP_CONTENT).filter(key => 
+        key.includes(parent) && key.endsWith(`.${trimmedSymbol}`)
+      )
+    ];
+    
+    for (const key of possibleKeys) {
+      if (TOOLTIP_CONTENT[key]) {
+        meta = TOOLTIP_CONTENT[key];
+        break;
+      }
+    }
+  }
+  
+  // Fallback: show symbol and parent with helpful debug info
   if (!meta) {
     if (parent) {
-      return <div className="text-red-600">Symbol <b>{symbol}</b> not found in <b>{parent}</b> context.</div>;
+      const availableKeys = Object.keys(TOOLTIP_CONTENT).filter(key => 
+        key.includes(parent) || key.includes(trimmedSymbol)
+      ).slice(0, 3); // Show first 3 matches for debugging
+      
+      return (
+        <div className="text-red-600">
+          <div>Symbol <b>{trimmedSymbol}</b> not found in <b>{parent}</b> context.</div>
+          {availableKeys.length > 0 && (
+            <div className="text-xs mt-2 text-gray-500">
+              Available: {availableKeys.join(', ')}
+            </div>
+          )}
+        </div>
+      );
     }
-    return <div>{symbol}</div>;
+    return <div>No tooltip data for: <b>{trimmedSymbol}</b></div>;
   }
 
   // --- Only render the variable block for variables ---

@@ -34,6 +34,7 @@ export interface SymbolMetadata {
   variables: Variable[]
   expressions: Expression[]
   parent?: string
+  path?: string[]
 }
 
 export interface HighlightedCode {

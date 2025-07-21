@@ -38,24 +38,8 @@ class PythonExtractor:
                 # If file_path is not relative to project_root, use the absolute path
                 relative_path = str(file_path)
             
-            # Extract top-level functions and classes
-            for node in tree.body:
-                if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                    symbol_data = self._extract_symbol(node, content, relative_path)
-                    if symbol_data:
-                        self.symbols[symbol_data['name']] = symbol_data
-                elif isinstance(node, ast.ClassDef):
-                    class_symbol = self._extract_symbol(node, content, relative_path)
-                    if class_symbol:
-                        self.symbols[class_symbol['name']] = class_symbol
-                    # Extract methods inside the class
-                    for item in node.body:
-                        if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                            method_symbol = self._extract_symbol(item, content, relative_path, parent=node.name)
-                            if method_symbol:
-                                # Use ClassName.method_name as key
-                                key = f"{node.name}.{item.name}"
-                                self.symbols[key] = method_symbol
+            # Extract top-level functions and classes, plus nested functions
+            self._extract_all_symbols(tree.body, content, relative_path)
             
             return self.symbols
             
@@ -63,8 +47,43 @@ class PythonExtractor:
             logging.warning(f"Failed to parse {file_path}: {e}")
             return {}
     
+    def _extract_all_symbols(self, nodes: list, content: str, file_path: str, 
+                           parent: Optional[str] = None, path: Optional[list[str]] = None) -> None:
+        """Extract all symbols from a list of AST nodes, including nested functions."""
+        if path is None:
+            path = []
+            
+        for node in nodes:
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                symbol_data = self._extract_symbol(node, content, file_path, parent, path)
+                if symbol_data:
+                    # Use appropriate key based on context
+                    if parent and path:
+                        key = f"{parent}.{'.'.join(path + [node.name])}"
+                    elif parent:
+                        key = f"{parent}.{node.name}"
+                    else:
+                        key = node.name
+                    
+                    self.symbols[key] = symbol_data
+                
+                # Extract nested functions
+                # For nested functions, parent should be the current symbol's full key
+                current_symbol_key = key  # Use the key we just created
+                self._extract_all_symbols(node.body, content, file_path, current_symbol_key, [])
+                
+            elif isinstance(node, ast.ClassDef):
+                class_symbol = self._extract_symbol(node, content, file_path, parent, path)
+                if class_symbol:
+                    class_key = node.name if not parent else f"{parent}.{node.name}"
+                    self.symbols[class_key] = class_symbol
+                
+                # Extract methods and nested items in the class
+                self._extract_all_symbols(node.body, content, file_path, node.name, [])
+    
     def _extract_symbol(self, node: Union[ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef], 
-                       content: str, file_path: str, parent: Optional[str] = None) -> Optional[Dict[str, Any]]:
+                       content: str, file_path: str, parent: Optional[str] = None, 
+                       path: Optional[list[str]] = None) -> Optional[Dict[str, Any]]:
         """Extract metadata for a single symbol."""
         try:
             name = node.name
@@ -122,6 +141,8 @@ class PythonExtractor:
             
             if parent:
                 symbol["parent"] = parent
+            if path:
+                symbol["path"] = path
             
             return symbol
         except Exception as e:
@@ -219,14 +240,13 @@ class PythonExtractor:
             return {}
         params = {}
         # Google format: Args: section
-        args_match = re.search(r'Args:\s*(.+?)(?=\n\s*\n|\n\s*[A-Z]|\Z)', docstring, re.DOTALL)
+        args_match = re.search(r'Args?:\s*(.+?)(?=\n\s*\n|\n\s*[A-Z][a-z]*:|\Z)', docstring, re.DOTALL)
         if args_match:
             args_section = args_match.group(1)
             # Parse individual parameters with (type): description
-            param_matches = re.finditer(r'(\w+)\s*\(([^)]*)\):\s*(.+?)(?=\n\s*\w+\s*(?:\([^)]*\))?:|\Z)', args_section, re.DOTALL)
+            param_matches = re.finditer(r'^\s*(\w+)\s*\(([^)]*)\):\s*(.+?)(?=\n\s*\w+\s*(?:\([^)]*\))?:|\Z)', args_section, re.DOTALL | re.MULTILINE)
             for match in param_matches:
                 param_name = match.group(1)
-                param_type = match.group(2).strip()
                 param_desc = match.group(3).strip()
                 params[param_name] = param_desc
             # Also handle lines like 'param: description' (no type), even if indented
@@ -243,7 +263,6 @@ class PythonExtractor:
             param_matches = re.finditer(r'(\w+)\s*:\s*([^\n]+)\s*\n\s*(.+?)(?=\n\s*\w+\s*:|\Z)', params_section, re.DOTALL)
             for match in param_matches:
                 param_name = match.group(1)
-                param_type = match.group(2).strip()
                 param_desc = match.group(3).strip()
                 params[param_name] = param_desc
         # reStructuredText format: :param name: description
@@ -312,8 +331,9 @@ class PythonExtractor:
             func = self._ast_to_string(node.func)
             args = [self._ast_to_string(arg) for arg in node.args]
             return f"{func}({', '.join(args)})"
-        elif isinstance(node, ast.Index):
-            return self._ast_to_string(node.value)
+        # ast.Index was removed in Python 3.9+
+        # elif isinstance(node, ast.Index):
+        #     return self._ast_to_string(node.value)
         elif isinstance(node, ast.Slice):
             lower = self._ast_to_string(node.lower) if node.lower else ""
             upper = self._ast_to_string(node.upper) if node.upper else ""
@@ -393,18 +413,17 @@ class PythonExtractor:
         end_line = node.end_lineno if hasattr(node, 'end_lineno') else start_line + 1
         code_lines = lines[start_line:end_line]
         
-        # Remove docstring if present
-        if node.body and isinstance(node.body[0], ast.Expr) and isinstance(node.body[0].value, ast.Constant):
-            docstring_node = node.body[0]
-            docstring_start = docstring_node.lineno - 1
-            docstring_end = docstring_node.end_lineno if hasattr(docstring_node, 'end_lineno') else docstring_start
-            # Remove docstring lines by filtering out the lines within the docstring range
-            filtered_lines = []
-            for i, line in enumerate(code_lines):
-                absolute_line_num = start_line + i
-                if absolute_line_num < docstring_start or absolute_line_num > docstring_end:
-                    filtered_lines.append(line)
-            code_lines = filtered_lines
+        # Remove ALL docstrings (including nested ones) by using recursive collection
+        docstring_lines = set()
+        self._collect_all_docstring_lines(node, docstring_lines)
+        
+        # Filter out all docstring lines
+        filtered_lines = []
+        for i, line in enumerate(code_lines):
+            absolute_line_num = start_line + i
+            if absolute_line_num not in docstring_lines:
+                filtered_lines.append(line)
+        code_lines = filtered_lines
         
         # Remove comments and clean up
         cleaned_lines = []
@@ -450,15 +469,8 @@ class PythonExtractor:
             for line_num in range(docstring_start, docstring_end + 1):
                 docstring_lines.add(line_num)
         
-        # Check for method docstrings
-        for item in node.body:
-            if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                if item.body and isinstance(item.body[0], ast.Expr) and isinstance(item.body[0].value, ast.Constant):
-                    docstring_node = item.body[0]
-                    docstring_start = docstring_node.lineno - 1
-                    docstring_end = docstring_node.end_lineno if hasattr(docstring_node, 'end_lineno') else docstring_start
-                    for line_num in range(docstring_start, docstring_end + 1):
-                        docstring_lines.add(line_num)
+        # Recursively find all function docstrings (including nested ones)
+        self._collect_all_docstring_lines(node, docstring_lines)
         
         # Filter out docstring lines and handle empty methods
         filtered_lines = []
@@ -499,6 +511,19 @@ class PythonExtractor:
             i += 1
         
         return filtered_lines
+    
+    def _collect_all_docstring_lines(self, node: ast.AST, docstring_lines: Set[int]) -> None:
+        """Recursively collect line numbers of all docstrings in the AST node."""
+        # Walk through all child nodes
+        for child_node in ast.walk(node):
+            if isinstance(child_node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                # Check if this function has a docstring
+                if child_node.body and isinstance(child_node.body[0], ast.Expr) and isinstance(child_node.body[0].value, ast.Constant):
+                    docstring_node = child_node.body[0]
+                    docstring_start = docstring_node.lineno - 1
+                    docstring_end = docstring_node.end_lineno if hasattr(docstring_node, 'end_lineno') else docstring_start
+                    for line_num in range(docstring_start, docstring_end + 1):
+                        docstring_lines.add(line_num)
     
     def _extract_links(self, node: Union[ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef]) -> List[Dict[str, str]]:
         """Extract links in the format [symbol_name#method_name] from docstring."""

@@ -59,6 +59,8 @@ export function transformerCodeTooltipWords(tooltipMap: Record<string, SymbolMet
     const hierarchy = hierarchyMap.get(symbol);
     if (!hierarchy) return;
     const currentPath = [...path, symbol];
+    
+    // Add current scope's parameters, variables, and expressions
     for (const param of hierarchy.parameters) {
       if (!parameterToHierarchy[param]) parameterToHierarchy[param] = [];
       parameterToHierarchy[param].push({ symbol, path: currentPath });
@@ -71,6 +73,25 @@ export function transformerCodeTooltipWords(tooltipMap: Record<string, SymbolMet
       if (!parameterToHierarchy[expression]) parameterToHierarchy[expression] = [];
       parameterToHierarchy[expression].push({ symbol, path: currentPath });
     }
+    
+    // FIXED: For nested functions, also include parent scope variables
+    // This allows nested functions to access variables from their enclosing scope
+    if (hierarchy.parent) {
+      const parentHierarchy = hierarchyMap.get(hierarchy.parent);
+      if (parentHierarchy) {
+        // Add parent's variables to current scope (Python scoping rule)
+        for (const variable of parentHierarchy.variables) {
+          if (!parameterToHierarchy[variable]) parameterToHierarchy[variable] = [];
+          parameterToHierarchy[variable].push({ symbol, path: currentPath });
+        }
+        // Also add parent's parameters (they're accessible in nested functions)
+        for (const param of parentHierarchy.parameters) {
+          if (!parameterToHierarchy[param]) parameterToHierarchy[param] = [];
+          parameterToHierarchy[param].push({ symbol, path: currentPath });
+        }
+      }
+    }
+    
     for (const child of hierarchy.children) {
       buildParameterMap(child, currentPath);
     }
@@ -151,19 +172,23 @@ export function transformerCodeTooltipWords(tooltipMap: Record<string, SymbolMet
         }
       }
       
-      // Find all occurrences of function/method/class names (whole word only)
+      // Find all occurrences of top-level function/class names (whole word only)
+      // Skip symbols with parents - they'll be handled by context-aware sections below
       for (const symbolName of Object.keys(tooltipMap)) {
-        const indexes = findAllWordIndexes(code, symbolName);
-        for (const index of indexes) {
-          options.decorations.push({
-            start: index,
-            end: index + symbolName.length,
-            properties: {
-              'data-tooltip-symbol': symbolName,
-              'data-tooltip-type': tooltipMap[symbolName].type,
-              class: 'tooltip-symbol',
-            },
-          });
+        const meta = tooltipMap[symbolName];
+        if (!meta.parent) { // Only process top-level symbols
+          const indexes = findAllWordIndexes(code, symbolName);
+          for (const index of indexes) {
+            options.decorations.push({
+              start: index,
+              end: index + symbolName.length,
+              properties: {
+                'data-tooltip-symbol': symbolName,
+                'data-tooltip-type': meta.type,
+                class: 'tooltip-symbol',
+              },
+            });
+          }
         }
       }
       
@@ -193,6 +218,32 @@ export function transformerCodeTooltipWords(tooltipMap: Record<string, SymbolMet
         }
       }
       
+      // FIXED: Handle nested function tooltips - functions within other functions
+      for (const [fullSymbolName, meta] of Object.entries(tooltipMap)) {
+        if (meta.parent && meta.path && meta.path.length > 0 && functionRegions[meta.parent]) {
+          const shortName = meta.name;
+          const parentRegion = functionRegions[meta.parent];
+          
+          // Only look for nested function names within the parent function's region
+          const parentCode = code.slice(parentRegion.start, parentRegion.end);
+          const indexes = findAllWordIndexes(parentCode, shortName);
+          
+          for (const relativeIndex of indexes) {
+            const absoluteIndex = parentRegion.start + relativeIndex;
+            
+            options.decorations.push({
+              start: absoluteIndex,
+              end: absoluteIndex + shortName.length,
+              properties: {
+                'data-tooltip-symbol': fullSymbolName,
+                'data-tooltip-type': meta.type,
+                class: 'tooltip-symbol',
+              },
+            });
+          }
+        }
+      }
+      
       // Parameter, variable, and expression tooltips scoped to parent function region
       for (const [symbolName, parentSymbols] of Object.entries(parameterToHierarchy)) {
         for (const { symbol, path } of parentSymbols) {
@@ -204,9 +255,36 @@ export function transformerCodeTooltipWords(tooltipMap: Record<string, SymbolMet
           
           // Check if this is an expression by looking up the parent's expressions
           const parentMeta = tooltipMap[symbol];
-          const isExpression = parentMeta?.expressions?.some(e => e.expression === symbolName);
-          const isParameter = parentMeta?.parameters?.some(p => p.name === symbolName);
-          const isVariable = parentMeta?.variables?.some(v => v.name === symbolName);
+          let isExpression = parentMeta?.expressions?.some(e => e.expression === symbolName);
+          let isParameter = parentMeta?.parameters?.some(p => p.name === symbolName);
+          let isVariable = parentMeta?.variables?.some(v => v.name === symbolName);
+          
+          // FIXED: Python scoping - walk up the scope chain to find variables
+          let currentScope = symbol;
+          if (!isExpression && !isParameter && !isVariable) {
+            // Walk up the scope chain starting from the parent
+            while (currentScope && !isExpression && !isParameter && !isVariable) {
+              const scopeMeta = tooltipMap[currentScope];
+              if (scopeMeta && scopeMeta.parent) {
+                const parentScopeMeta = tooltipMap[scopeMeta.parent];
+                if (parentScopeMeta) {
+                  isExpression = parentScopeMeta.expressions?.some(e => e.expression === symbolName);
+                  isParameter = parentScopeMeta.parameters?.some(p => p.name === symbolName);
+                  isVariable = parentScopeMeta.variables?.some(v => v.name === symbolName);
+                  
+                  // If found, update the symbol reference to point to the parent scope
+                  if (isExpression || isParameter || isVariable) {
+                    currentScope = scopeMeta.parent;
+                    break;
+                  }
+                }
+                // Move up one level in the scope chain
+                currentScope = scopeMeta.parent;
+              } else {
+                break;
+              }
+            }
+          }
           
           // Determine the type
           let tooltipType: string;
@@ -231,14 +309,26 @@ export function transformerCodeTooltipWords(tooltipMap: Record<string, SymbolMet
           
           for (const relIndex of indexes) {
             const index = region.start + relIndex;
+            
+            // Use the correct parent scope if variable was found in ancestor scope
+            let tooltipParent = symbol;
+            let tooltipPath = path;
+            
+            // If we found the variable in a parent scope during scope chain walk, use that scope
+            if (currentScope && currentScope !== symbol) {
+              tooltipParent = currentScope;
+              const parentMeta = tooltipMap[currentScope];
+              tooltipPath = parentMeta?.path || [];
+            }
+            
             options.decorations.push({
               start: index,
               end: index + symbolName.length,
               properties: {
                 'data-tooltip-symbol': symbolName,
                 'data-tooltip-type': tooltipType,
-                'data-tooltip-parent': symbol,
-                'data-tooltip-path': JSON.stringify(path),
+                'data-tooltip-parent': tooltipParent,
+                'data-tooltip-path': JSON.stringify(tooltipPath),
                 class: 'tooltip-symbol',
               },
             });
