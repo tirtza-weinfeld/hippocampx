@@ -1,0 +1,19 @@
+# Core FastAPI dependencies
+fastapi==0.115.6
+uvicorn[standard]==0.32.1
+pydantic==2.10.4
+
+# Development dependencies
+python-multipart==0.0.12
+
+# Testing dependencies
+pytest==8.3.4
+pytest-asyncio==0.24.0
+pytest-cov==6.0.0
+pytest-xdist==3.6.0
+httpx==0.28.1
+coverage[toml]==7.6.9
+
+# Development dependencies  
+ruff==0.8.4
+mypy==1.13.0

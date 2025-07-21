@@ -46,7 +46,7 @@ By combining this technique with a hash map to remember past marker locations, w
 
 *find the longest continuous sequence of trip segments whose combined length is exactly **k km**.*
 
-```python file=examples/code/prefix_sum.py#func:maxSubArrayLen 
+```python file=backend/algorithms/prefix_sum.py#func:maxSubArrayLen 
 ```
 
 -----
@@ -57,7 +57,7 @@ By combining this technique with a hash map to remember past marker locations, w
 
 *How many distinct, continuous sequences of trip segments have a total length of exactly **k km**?*
 
-```python file=examples/code/prefix_sum.py#func:subarraySum 
+```python file=backend/algorithms/prefix_sum.py#func:subarraySum 
 ```
 
 -----
@@ -69,7 +69,7 @@ By combining this technique with a hash map to remember past marker locations, w
 *To balance your driving, find the longest stretch of days with an equal number of forward (+) and backward (-) segments.
 This is equivalent to finding the longest subarray that sums to zero after converting forward/backward segments to +/- 1*.
 
-```python file=examples/code/prefix_sum.py#func:findMaxLength 
+```python file=backend/algorithms/prefix_sum.py#func:findMaxLength 
 ```
 
 -----
@@ -80,7 +80,7 @@ This is equivalent to finding the longest subarray that sums to zero after conve
 
 *Did any continuous part of your trip, lasting at least two days, cover a total distance that was an exact **multiple of k km**?*
 
-```python file=examples/code/prefix_sum.py#func:checkSubarraySum 
+```python file=backend/algorithms/prefix_sum.py#func:checkSubarraySum 
 ```
 
 -----
@@ -92,7 +92,7 @@ This is equivalent to finding the longest subarray that sums to zero after conve
 *How many continuous sequences of trip segments have a total length that is perfectly divisible by k?*
 
 
-```python file=examples/code/prefix_sum.py#func:subarraysDivByK 
+```python file=backend/algorithms/prefix_sum.py#func:subarraysDivByK 
 ```
 
 > [!deepdive:collapse] 
@@ -116,7 +116,7 @@ This is equivalent to finding the longest subarray that sums to zero after conve
 
 *Your total trip length (the final highway marker) isn’t divisible by `p`. Find the **shortest continuous trip segment** you can remove from your log, so that the length of the remaining segments *is* divisible by `p`.*
 
-```python file=examples/code/prefix_sum.py#func:minSubarray 
+```python file=backend/algorithms/prefix_sum.py#func:minSubarray 
 ```
 
 > [\!deepdive:collapse]
@@ -206,7 +206,7 @@ Using a list of instructions like *[16:]add 50km/day for days 2-5*,
 what is your final daily travel plan?*
 
 
-```python file=examples/code/prefix_sum.py#func:getModifiedArray 
+```python file=backend/algorithms/prefix_sum.py#func:getModifiedArray 
 ```
 
 
@@ -219,6 +219,6 @@ what is your final daily travel plan?*
 *You know your daily travel segments but not your starting mile marker.
 If you always stayed between markers lower and upper, how many starting points could you have had?*
 
-```python file=examples/code/prefix_sum.py#func:numberOfArrays 
+```python file=backend/algorithms/prefix_sum.py#func:numberOfArrays 
 ```
 

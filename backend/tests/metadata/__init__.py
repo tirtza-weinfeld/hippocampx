@@ -1,0 +1,1 @@
+"""Metadata extraction tests package."""

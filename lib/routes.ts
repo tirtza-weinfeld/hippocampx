@@ -10,7 +10,7 @@ export type NavigationItem = {
 }
 export const routes: NavigationItem[] = [
     { title: 'Home', href: '/', icon: Home, color: "text-blue-500", bgColor: "bg-purple-500/10", },
-
+    // { title: 'Tic Tac Toe', href: '/tic-tac-toe', icon: Gamepad2, color: "text-rose-500", bgColor: "bg-rose-500/10", },
 
     {
         title: 'Binary',
@@ -105,6 +105,7 @@ export const routes: NavigationItem[] = [
         color: "text-blue-500",
         bgColor: "bg-blue-500/10",
         children: [
+            // { title: 'Tic Tac Toe', href: '/notes/tic-tac-toe', icon: Gamepad2, color: "text-rose-500", bgColor: "bg-rose-500/10" },
             // {title:'stack', href:'/notes/stack', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10"},    
             {title:'binary-search', href:'/notes/binary-search', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10"},    
             {title:'bfs', href:'/notes/bfs', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10"},    

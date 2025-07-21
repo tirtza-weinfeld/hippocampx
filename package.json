@@ -12,15 +12,19 @@
     "db:push": "drizzle-kit push:pg",
     "db:studio": "drizzle-kit studio",
     "db:seed": "tsx lib/db/seed.ts",
-    "extract-metadata": "python3 examples/scripts/extract_metadata.py --dirs examples/code",
+    "extract-metadata": "python3 backend/scripts/extract_metadata.py --dirs backend/algorithms",
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",
+    "test:watch": "vitest --watch",
+    "test:run": "vitest run",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:debug": "playwright test --debug",
-    "test:py": "cd examples && pytest scripts/test_extract_metadata.py -v"
+    "test:e2e:report": "playwright show-report",
+    "test:all": "pnpm test:run && pnpm test:e2e",
+    "test:py": "cd backend && pytest scripts/test_extract_metadata.py -v"
   },
   "dependencies": {
     "@floating-ui/react": "^0.27.13",

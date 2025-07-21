@@ -18,7 +18,7 @@ The core idea is to compare the target value with the middle element of the arra
 `bisect_left` determines the index at which a target `x` should be inserted into a sorted list `a` to maintain order.
 It finds the **first** position `i` where `a[i] >= x`.
 
-```python file=examples/code/binary_search.py#func:simple_bisect_left
+```python file=backend/algorithms/binary_search.py#func:simple_bisect_left
 ```
 
 **Key Logic**: When `a[mid]` is greater than or equal to `x`, we set `hi = mid`. This ensures we keep considering the `mid` index as a potential answer and forces the search to converge on the leftmost possible index.
@@ -29,7 +29,7 @@ It finds the **first** position `i` where `a[i] >= x`.
 
 `bisect_right` is similar but finds the insertion point to the **right** of any existing entries of `x`. It finds the first position `i` where `a[i] > x`.
 
-```python file=examples/code/binary_search.py#func:simple_bisect_right
+```python file=backend/algorithms/binary_search.py#func:simple_bisect_right
 ```
 
 **Key Logic**: When `a[mid]` is less than or equal to `x`, we set `lo = mid + 1`. This effectively pushes the search past all elements equal to `x`, ensuring the final index is just after the rightmost occurrence.

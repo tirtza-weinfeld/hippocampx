@@ -3,7 +3,7 @@
     "name": "manhattan_distance",
     "type": "function",
     "language": "python",
-    "file": "examples/code/a-star.py",
+    "file": "backend/algorithms/a-star.py",
     "line": 7,
     "signature": "def manhattan_distance(a: tuple[int, int], b: tuple[int, int]) -> int:",
     "parameters": [
@@ -32,7 +32,7 @@
     "name": "aStarShortestPath",
     "type": "function",
     "language": "python",
-    "file": "examples/code/a-star.py",
+    "file": "backend/algorithms/a-star.py",
     "line": 24,
     "signature": "def aStarShortestPath(grid: list[list[int]], k: int) -> int:",
     "parameters": [],
@@ -122,7 +122,7 @@
     "name": "bellman_ford_classic",
     "type": "function",
     "language": "python",
-    "file": "examples/code/bellman-ford.py",
+    "file": "backend/algorithms/bellman-ford.py",
     "line": 3,
     "signature": "def bellman_ford_classic(vertices:list[str], edges:list[tuple[str, str, float]], source:str)->dict[str, float]:",
     "parameters": [],
@@ -146,7 +146,7 @@
     "name": "bellman_ford_layered_dag",
     "type": "function",
     "language": "python",
-    "file": "examples/code/bellman-ford.py",
+    "file": "backend/algorithms/bellman-ford.py",
     "line": 31,
     "signature": "def bellman_ford_layered_dag(vertices: list[str], edges: list[tuple[str, str, float]], source: str) -> dict[str, float]:",
     "parameters": [
@@ -181,7 +181,7 @@
     "name": "findCheapestPrice",
     "type": "function",
     "language": "python",
-    "file": "examples/code/bellman-ford.py",
+    "file": "backend/algorithms/bellman-ford.py",
     "line": 89,
     "signature": "def findCheapestPrice(n: int, flights: list[list[int]], src: int, dst: int, k: int) -> int:",
     "parameters": [],
@@ -197,7 +197,7 @@
     "name": "maxProbability",
     "type": "function",
     "language": "python",
-    "file": "examples/code/bellman-ford.py",
+    "file": "backend/algorithms/bellman-ford.py",
     "line": 104,
     "signature": "def maxProbability(n: int, edges: list[list[int]], succProb: list[float], start: int, end: int) -> float:",
     "parameters": [
@@ -247,7 +247,7 @@
     "name": "dijkstra",
     "type": "function",
     "language": "python",
-    "file": "examples/code/dijkstra.py",
+    "file": "backend/algorithms/dijkstra.py",
     "line": 4,
     "signature": "def dijkstra(graph: dict[str, dict[str, int]], s: str):",
     "parameters": [
@@ -276,7 +276,7 @@
     "name": "networkDelayTime2",
     "type": "function",
     "language": "python",
-    "file": "examples/code/dijkstra.py",
+    "file": "backend/algorithms/dijkstra.py",
     "line": 34,
     "signature": "def networkDelayTime2(times: list[list[int]], n: int, k: int) -> int:",
     "parameters": [],
@@ -292,7 +292,7 @@
     "name": "networkDelayTime",
     "type": "function",
     "language": "python",
-    "file": "examples/code/dijkstra.py",
+    "file": "backend/algorithms/dijkstra.py",
     "line": 57,
     "signature": "def networkDelayTime(times: list[list[int]], n: int, k: int) -> int:",
     "parameters": [
@@ -327,7 +327,7 @@
     "name": "minimumEffortPath",
     "type": "function",
     "language": "python",
-    "file": "examples/code/dijkstra.py",
+    "file": "backend/algorithms/dijkstra.py",
     "line": 91,
     "signature": "def minimumEffortPath(heights: list[list[int]]) -> int:",
     "parameters": [
@@ -361,7 +361,7 @@
     "name": "swimInWater",
     "type": "function",
     "language": "python",
-    "file": "examples/code/dijkstra.py",
+    "file": "backend/algorithms/dijkstra.py",
     "line": 120,
     "signature": "def swimInWater(grid: list[list[int]]) -> int:",
     "parameters": [
@@ -395,7 +395,7 @@
     "name": "findCheapestPriceDijkstra",
     "type": "function",
     "language": "python",
-    "file": "examples/code/dijkstra.py",
+    "file": "backend/algorithms/dijkstra.py",
     "line": 152,
     "signature": "def findCheapestPriceDijkstra( flights: list[list[int]], src: int, dst: int, k: int) -> int:",
     "parameters": [],
@@ -422,7 +422,7 @@
     "name": "dijkstraShortestPath",
     "type": "function",
     "language": "python",
-    "file": "examples/code/dijkstra.py",
+    "file": "backend/algorithms/dijkstra.py",
     "line": 183,
     "signature": "def dijkstraShortestPath(grid: list[list[int]], k: int) -> int:",
     "parameters": [],
@@ -495,111 +495,11 @@
       }
     ]
   },
-  "test_function_with_expressions": {
-    "name": "test_function_with_expressions",
-    "type": "function",
-    "language": "python",
-    "file": "examples/code/test_expressions.py",
-    "line": 1,
-    "signature": "def test_function_with_expressions():",
-    "parameters": [],
-    "return_type": "",
-    "return_description": "",
-    "description": "Test function with various expression formats.",
-    "code": "def test_function_with_expressions():\n    y = 2\n    items = [1, 2, 3]\n    i = 0\n    result = x + y\n    doubled = x * 2\n    count = len(items)\n    safe_item = items[i] if i < len(items) else None\n    return result, doubled, count, safe_item",
-    "links": [
-      {
-        "symbol": "i",
-        "display": "[i]",
-        "target": "i",
-        "valid": false,
-        "target_symbol": null
-      }
-    ],
-    "variables": [
-      {
-        "name": "x",
-        "description": "test variable",
-        "type": "variable"
-      },
-      {
-        "name": "y",
-        "description": "another test variable",
-        "type": "variable"
-      }
-    ],
-    "expressions": [
-      {
-        "expression": "x + y",
-        "description": "add two variables together",
-        "type": "expression"
-      },
-      {
-        "expression": "x * 2",
-        "description": "multiply x by 2",
-        "type": "expression"
-      },
-      {
-        "expression": "len(items)",
-        "description": "get the length of items list",
-        "type": "expression"
-      },
-      {
-        "expression": "items[i] if i < len(items) else None",
-        "description": "safe array access",
-        "type": "expression"
-      }
-    ]
-  },
-  "test_function_without_expressions": {
-    "name": "test_function_without_expressions",
-    "type": "function",
-    "language": "python",
-    "file": "examples/code/test_expressions.py",
-    "line": 27,
-    "signature": "def test_function_without_expressions():",
-    "parameters": [],
-    "return_type": "",
-    "return_description": "",
-    "description": "Test function without expressions section.",
-    "code": "def test_function_without_expressions():\n    return z",
-    "links": [],
-    "variables": [
-      {
-        "name": "z",
-        "description": "simple variable",
-        "type": "variable"
-      }
-    ],
-    "expressions": []
-  },
-  "test_function_with_empty_expressions": {
-    "name": "test_function_with_empty_expressions",
-    "type": "function",
-    "language": "python",
-    "file": "examples/code/test_expressions.py",
-    "line": 37,
-    "signature": "def test_function_with_empty_expressions():",
-    "parameters": [],
-    "return_type": "",
-    "return_description": "",
-    "description": "Test function with empty expressions section.",
-    "code": "def test_function_with_empty_expressions():\n    return w",
-    "links": [],
-    "variables": [
-      {
-        "name": "w",
-        "description": "another variable",
-        "type": "variable"
-      }
-    ],
-    "expressions": []
-  },
   "searchInsert": {
     "name": "searchInsert",
     "type": "function",
     "language": "python",
-    "file": "examples/code/binary_search.py",
+    "file": "backend/algorithms/binary_search.py",
     "line": 3,
     "signature": "def searchInsert(nums: list[int], target: int) -> int:",
     "parameters": [],
@@ -615,7 +515,7 @@
     "name": "simple_bisect_left",
     "type": "function",
     "language": "python",
-    "file": "examples/code/binary_search.py",
+    "file": "backend/algorithms/binary_search.py",
     "line": 7,
     "signature": "def simple_bisect_left(a:list[int], x:int):",
     "parameters": [],
@@ -657,7 +557,7 @@
     "name": "simple_bisect_right",
     "type": "function",
     "language": "python",
-    "file": "examples/code/binary_search.py",
+    "file": "backend/algorithms/binary_search.py",
     "line": 26,
     "signature": "def simple_bisect_right(a, x):",
     "parameters": [],
@@ -684,7 +584,7 @@
     "name": "searchRange",
     "type": "function",
     "language": "python",
-    "file": "examples/code/binary_search.py",
+    "file": "backend/algorithms/binary_search.py",
     "line": 48,
     "signature": "def searchRange(nums: list[int], target: int) -> list[int]:",
     "parameters": [],
@@ -700,7 +600,7 @@
     "name": "findMin",
     "type": "function",
     "language": "python",
-    "file": "examples/code/binary_search.py",
+    "file": "backend/algorithms/binary_search.py",
     "line": 55,
     "signature": "def findMin(nums: list[int]) -> int:",
     "parameters": [],
@@ -742,7 +642,7 @@
     "name": "minEatingSpeed",
     "type": "function",
     "language": "python",
-    "file": "examples/code/binary_search.py",
+    "file": "backend/algorithms/binary_search.py",
     "line": 76,
     "signature": "def minEatingSpeed(piles: list[int], h: int) -> int:",
     "parameters": [],
@@ -758,7 +658,7 @@
     "name": "shipWithinDays",
     "type": "function",
     "language": "python",
-    "file": "examples/code/binary_search.py",
+    "file": "backend/algorithms/binary_search.py",
     "line": 98,
     "signature": "def shipWithinDays(weights: list[int], days: int) -> int:",
     "parameters": [],
@@ -774,7 +674,7 @@
     "name": "LRUCache",
     "type": "class",
     "language": "python",
-    "file": "examples/code/cache.py",
+    "file": "backend/algorithms/cache.py",
     "line": 4,
     "signature": "class LRUCache:",
     "parameters": [],
@@ -790,7 +690,7 @@
     "name": "__init__",
     "type": "method",
     "language": "python",
-    "file": "examples/code/cache.py",
+    "file": "backend/algorithms/cache.py",
     "line": 8,
     "signature": "def __init__(self, capacity: int):",
     "parameters": [],
@@ -807,7 +707,7 @@
     "name": "get",
     "type": "method",
     "language": "python",
-    "file": "examples/code/cache.py",
+    "file": "backend/algorithms/cache.py",
     "line": 12,
     "signature": "def get(self, key: int) -> int:",
     "parameters": [],
@@ -824,7 +724,7 @@
     "name": "put",
     "type": "method",
     "language": "python",
-    "file": "examples/code/cache.py",
+    "file": "backend/algorithms/cache.py",
     "line": 21,
     "signature": "def put(self, key: int, value: int) -> None:",
     "parameters": [],
@@ -841,7 +741,7 @@
     "name": "LFUCache",
     "type": "class",
     "language": "python",
-    "file": "examples/code/cache.py",
+    "file": "backend/algorithms/cache.py",
     "line": 33,
     "signature": "class LFUCache:",
     "parameters": [],
@@ -857,7 +757,7 @@
     "name": "__init__",
     "type": "method",
     "language": "python",
-    "file": "examples/code/cache.py",
+    "file": "backend/algorithms/cache.py",
     "line": 37,
     "signature": "def __init__(self, capacity: int):",
     "parameters": [],
@@ -874,7 +774,7 @@
     "name": "_bump",
     "type": "method",
     "language": "python",
-    "file": "examples/code/cache.py",
+    "file": "backend/algorithms/cache.py",
     "line": 44,
     "signature": "def _bump(self, key: int):",
     "parameters": [],
@@ -891,7 +791,7 @@
     "name": "get",
     "type": "method",
     "language": "python",
-    "file": "examples/code/cache.py",
+    "file": "backend/algorithms/cache.py",
     "line": 58,
     "signature": "def get(self, key: int) -> int:",
     "parameters": [],
@@ -908,7 +808,7 @@
     "name": "put",
     "type": "method",
     "language": "python",
-    "file": "examples/code/cache.py",
+    "file": "backend/algorithms/cache.py",
     "line": 67,
     "signature": "def put(self, key: int, value: int) -> None:",
     "parameters": [],
@@ -921,49 +821,11 @@
     "expressions": [],
     "parent": "LFUCache"
   },
-  "test_function": {
-    "name": "test_function",
-    "type": "function",
-    "language": "python",
-    "file": "examples/code/test_expression_tooltip.py",
-    "line": 1,
-    "signature": "def test_function():",
-    "parameters": [],
-    "return_type": "",
-    "return_description": "",
-    "description": "Test function with expression tooltip.",
-    "code": "def test_function():\n    y = 2\n    lo = 0\n    hi = 10\n    mid = (lo + hi) // 2\n    result = x + y\n    return mid, result",
-    "links": [],
-    "variables": [
-      {
-        "name": "x",
-        "description": "test variable",
-        "type": "variable"
-      },
-      {
-        "name": "y",
-        "description": "another variable",
-        "type": "variable"
-      }
-    ],
-    "expressions": [
-      {
-        "expression": "(lo + hi) // 2",
-        "description": "round down to the nearest integer",
-        "type": "expression"
-      },
-      {
-        "expression": "x + y",
-        "description": "add two variables together",
-        "type": "expression"
-      }
-    ]
-  },
   "Solution": {
     "name": "Solution",
     "type": "class",
     "language": "python",
-    "file": "examples/code/stack.py",
+    "file": "backend/algorithms/stack.py",
     "line": 1,
     "signature": "class Solution:",
     "parameters": [],
@@ -979,7 +841,7 @@
     "name": "decodeString",
     "type": "method",
     "language": "python",
-    "file": "examples/code/stack.py",
+    "file": "backend/algorithms/stack.py",
     "line": 2,
     "signature": "def decodeString(self, s: str) -> str:",
     "parameters": [],
@@ -996,7 +858,7 @@
     "name": "TreeNode",
     "type": "class",
     "language": "python",
-    "file": "examples/code/bfs.py",
+    "file": "backend/algorithms/bfs.py",
     "line": 4,
     "signature": "class TreeNode:",
     "parameters": [],
@@ -1012,7 +874,7 @@
     "name": "__init__",
     "type": "method",
     "language": "python",
-    "file": "examples/code/bfs.py",
+    "file": "backend/algorithms/bfs.py",
     "line": 5,
     "signature": "def __init__(self, val=0, left=None, right=None):",
     "parameters": [],
@@ -1029,7 +891,7 @@
     "name": "levelOrder",
     "type": "function",
     "language": "python",
-    "file": "examples/code/bfs.py",
+    "file": "backend/algorithms/bfs.py",
     "line": 11,
     "signature": "def levelOrder(root: TreeNode | None) -> list[list[int]]:",
     "parameters": [],
@@ -1045,7 +907,7 @@
     "name": "numIslands",
     "type": "function",
     "language": "python",
-    "file": "examples/code/bfs.py",
+    "file": "backend/algorithms/bfs.py",
     "line": 29,
     "signature": "def numIslands(grid: list[list[str]]) -> int:",
     "parameters": [
@@ -1068,7 +930,7 @@
     "name": "orangesRotting",
     "type": "function",
     "language": "python",
-    "file": "examples/code/bfs.py",
+    "file": "backend/algorithms/bfs.py",
     "line": 60,
     "signature": "def orangesRotting(grid: list[list[int]]) -> int:",
     "parameters": [
@@ -1091,7 +953,7 @@
     "name": "Node",
     "type": "class",
     "language": "python",
-    "file": "examples/code/bfs.py",
+    "file": "backend/algorithms/bfs.py",
     "line": 97,
     "signature": "class Node:",
     "parameters": [],
@@ -1107,7 +969,7 @@
     "name": "__init__",
     "type": "method",
     "language": "python",
-    "file": "examples/code/bfs.py",
+    "file": "backend/algorithms/bfs.py",
     "line": 98,
     "signature": "def __init__(self, val=0, neighbors=None):",
     "parameters": [],
@@ -1124,7 +986,7 @@
     "name": "cloneGraph",
     "type": "function",
     "language": "python",
-    "file": "examples/code/bfs.py",
+    "file": "backend/algorithms/bfs.py",
     "line": 103,
     "signature": "def cloneGraph(node: Node | None) -> Node | None:",
     "parameters": [
@@ -1147,7 +1009,7 @@
     "name": "snakesAndLadders",
     "type": "function",
     "language": "python",
-    "file": "examples/code/bfs.py",
+    "file": "backend/algorithms/bfs.py",
     "line": 127,
     "signature": "def snakesAndLadders(board: list[list[int]]) -> int:",
     "parameters": [
@@ -1170,7 +1032,7 @@
     "name": "updateMatrix",
     "type": "function",
     "language": "python",
-    "file": "examples/code/bfs.py",
+    "file": "backend/algorithms/bfs.py",
     "line": 157,
     "signature": "def updateMatrix(mat : list[list[int]]) -> list[list[int]]:",
     "parameters": [],
@@ -1186,7 +1048,7 @@
     "name": "shortestPath",
     "type": "function",
     "language": "python",
-    "file": "examples/code/bfs.py",
+    "file": "backend/algorithms/bfs.py",
     "line": 180,
     "signature": "def shortestPath(grid: list[list[int]], k: int) -> int:",
     "parameters": [
@@ -1246,7 +1108,7 @@
     "name": "ladderLength",
     "type": "function",
     "language": "python",
-    "file": "examples/code/bfs.py",
+    "file": "backend/algorithms/bfs.py",
     "line": 224,
     "signature": "def ladderLength(beginWord: str, endWord: str, wordList: list[str]) -> int:",
     "parameters": [],
@@ -1262,7 +1124,7 @@
     "name": "mod",
     "type": "function",
     "language": "python",
-    "file": "examples/code/modular-arithmetic.py",
+    "file": "backend/algorithms/modular-arithmetic.py",
     "line": 1,
     "signature": "def mod(a: int, b: int) -> int:",
     "parameters": [
@@ -1291,7 +1153,7 @@
     "name": "congruent1",
     "type": "function",
     "language": "python",
-    "file": "examples/code/modular-arithmetic.py",
+    "file": "backend/algorithms/modular-arithmetic.py",
     "line": 14,
     "signature": "def congruent1(a: int, b: int, n: int) -> bool:",
     "parameters": [
@@ -1326,7 +1188,7 @@
     "name": "congruent2",
     "type": "function",
     "language": "python",
-    "file": "examples/code/modular-arithmetic.py",
+    "file": "backend/algorithms/modular-arithmetic.py",
     "line": 27,
     "signature": "def congruent2(a: int, b: int, n: int) -> bool:",
     "parameters": [
@@ -1361,7 +1223,7 @@
     "name": "maxSubArrayLen",
     "type": "function",
     "language": "python",
-    "file": "examples/code/prefix_sum.py",
+    "file": "backend/algorithms/prefix_sum.py",
     "line": 3,
     "signature": "def maxSubArrayLen(segments: list[int], k: int) -> int:",
     "parameters": [
@@ -1390,7 +1252,7 @@
     "name": "subarraySum",
     "type": "function",
     "language": "python",
-    "file": "examples/code/prefix_sum.py",
+    "file": "backend/algorithms/prefix_sum.py",
     "line": 30,
     "signature": "def subarraySum(segments: list[int], k: int) -> int:",
     "parameters": [
@@ -1419,7 +1281,7 @@
     "name": "findMaxLength",
     "type": "function",
     "language": "python",
-    "file": "examples/code/prefix_sum.py",
+    "file": "backend/algorithms/prefix_sum.py",
     "line": 52,
     "signature": "def findMaxLength(segments: list[int]) -> int:",
     "parameters": [
@@ -1442,7 +1304,7 @@
     "name": "checkSubarraySum",
     "type": "function",
     "language": "python",
-    "file": "examples/code/prefix_sum.py",
+    "file": "backend/algorithms/prefix_sum.py",
     "line": 65,
     "signature": "def checkSubarraySum(segments: list[int], k: int) -> bool:",
     "parameters": [
@@ -1471,7 +1333,7 @@
     "name": "subarraysDivByK",
     "type": "function",
     "language": "python",
-    "file": "examples/code/prefix_sum.py",
+    "file": "backend/algorithms/prefix_sum.py",
     "line": 89,
     "signature": "def subarraysDivByK(segments: list[int], k: int) -> int:",
     "parameters": [
@@ -1500,7 +1362,7 @@
     "name": "minSubarray",
     "type": "function",
     "language": "python",
-    "file": "examples/code/prefix_sum.py",
+    "file": "backend/algorithms/prefix_sum.py",
     "line": 110,
     "signature": "def minSubarray(segments: list[int], p: int) -> int:",
     "parameters": [
@@ -1529,7 +1391,7 @@
     "name": "getModifiedArray",
     "type": "function",
     "language": "python",
-    "file": "examples/code/prefix_sum.py",
+    "file": "backend/algorithms/prefix_sum.py",
     "line": 138,
     "signature": "def getModifiedArray(length: int, updates: list[list[int]]) -> list[int]:",
     "parameters": [
@@ -1558,7 +1420,7 @@
     "name": "numberOfArrays",
     "type": "function",
     "language": "python",
-    "file": "examples/code/prefix_sum.py",
+    "file": "backend/algorithms/prefix_sum.py",
     "line": 159,
     "signature": "def numberOfArrays(differences: list[int], lower: int, upper: int) -> int:",
     "parameters": [

@@ -18,7 +18,7 @@ $\delta(s, v),\ \forall v \in V$.
 
 ### Code Snippet (Binary Heap)
 
-```python file=examples/code/dijkstra.py#func:dijkstra 
+```python file=backend/algorithms/dijkstra.py#func:dijkstra 
 ```
 
 ---
@@ -79,7 +79,7 @@ to reach *all* nodes. If impossible, return -1*
 
 
 
-```python file=examples/code/dijkstra.py#func:networkDelayTime   
+```python file=backend/algorithms/dijkstra.py#func:networkDelayTime   
 ```
 
 > [!insight:collapse]
@@ -105,7 +105,7 @@ to reach *all* nodes. If impossible, return -1*
  Effort is the single largest height difference between any two adjacent cells on the path.*
 
 
-```python file=examples/code/dijkstra.py#func:minimumEffortPath   
+```python file=backend/algorithms/dijkstra.py#func:minimumEffortPath   
 ```
 
 
@@ -160,7 +160,7 @@ to reach *all* nodes. If impossible, return -1*
   *You are given an `N x N` grid of elevations. Find the minimum "time" `t` to travel from `(0, 0)` to `(N-1, N-1)`. 
     You can only move between adjacent cells if their elevation is less than or equal to the time `t`*
 
-    ```python file=examples/code/dijkstra.py#func:swimInWater   meta="/[2:]grid[0][0]/"
+    ```python file=backend/algorithms/dijkstra.py#func:swimInWater   meta="/[2:]grid[0][0]/"
     ```
 
   > [!insight:collapse]
@@ -205,7 +205,7 @@ to reach *all* nodes. If impossible, return -1*
 > `k` = number of stops
 >  While this Dijkstra approach works, with *Bellman-Ford* we can achieve **$O(Ek)$** which is faster than our modified Dijkstra's $O(Ek\log(Nk))$ by a logarithmic term.   
 
-```python file=examples/code/dijkstra.py#func:findCheapestPriceDijkstra  
+```python file=backend/algorithms/dijkstra.py#func:findCheapestPriceDijkstra  
 ```
 
 > [!insight:collapse]
@@ -239,7 +239,7 @@ to the bottom-right `(m-1, n-1)`. Each move (up, down, left, right) costs one st
 > [!warning:collapse] 
 > in practice, [*A\* Search*](./a-star#1-shortest-path-in-a-grid-with-obstacles-elimination) is faster.
 
-```python file=examples/code/dijkstra.py#func:dijkstraShortestPath  
+```python file=backend/algorithms/dijkstra.py#func:dijkstraShortestPath  
 ```
 
 

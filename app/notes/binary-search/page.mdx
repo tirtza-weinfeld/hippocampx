@@ -41,7 +41,7 @@ Binary search finds `$\alpha = \min\{x\in D\mid P(x)=\mathsf{true}\}$` in `$O(\l
 *Given a sorted list `a` and a target `x`, return the index at which `x` should be inserted to maintain order.
 (i.e. **first** position `i` where `a[i] >= x`)*
 
-```python file=examples/code/binary_search.py#func:simple_bisect_left 
+```python file=backend/algorithms/binary_search.py#func:simple_bisect_left 
 ```
 
 >[!tip] 
@@ -56,7 +56,7 @@ Binary search finds `$\alpha = \min\{x\in D\mid P(x)=\mathsf{true}\}$` in `$O(\l
 *Given a sorted list `a` and a target `x`, return the index at which `x` should be inserted to maintain order.
 (i.e. **first** position `i` where `a[i] > x`)*
 
-```python file=examples/code/binary_search.py#func:simple_bisect_right
+```python file=backend/algorithms/binary_search.py#func:simple_bisect_right
 ```
 
 >[!tip] 
@@ -74,7 +74,7 @@ Binary search finds `$\alpha = \min\{x\in D\mid P(x)=\mathsf{true}\}$` in `$O(\l
 *Given a sorted array of distinct integers and a target value, find the index of the target.
 If absent, return the index where it would be inserted to maintain order.*
 
-```python file=examples/code/binary_search.py#func:searchInsert
+```python file=backend/algorithms/binary_search.py#func:searchInsert
 ```
 
   >[!tip] 
@@ -91,7 +91,7 @@ If absent, return the index where it would be inserted to maintain order.*
 *Given a sorted array of integers `nums` that may contain duplicates, 
 find the starting and ending indices of a given `target`. If the target is not in the array, return `[-1, -1]`.*
 
-```python file=examples/code/binary_search.py#func:searchRange
+```python file=backend/algorithms/binary_search.py#func:searchRange
 ```
   >[!tip] 
    [bisect_left](#simple_bisect_left) finds the first position where `target` could be inserted, and
@@ -104,7 +104,7 @@ find the starting and ending indices of a given `target`. If the target is not i
 
 *Given a unique-element sorted array that has been rotated at an unknown pivot, find its minimum value.*
 
-```python file=examples/code/binary_search.py#func:findMin
+```python file=backend/algorithms/binary_search.py#func:findMin
 ```
 
 > [!intuition:collapse] 
@@ -137,7 +137,7 @@ find the minimum eating speed `$k∈ℕ$` such that
 where each hour Koko eats up to `$k$` bananas from one pile
 (any leftover hour is wasted)*
 
-```python file=examples/code/binary_search.py#func:minEatingSpeed
+```python file=backend/algorithms/binary_search.py#func:minEatingSpeed
 ```
 > [\!intuition:collapse] *binary searching the answer space, (the eating speed `k`)*
 >
@@ -162,7 +162,7 @@ where each hour Koko eats up to `$k$` bananas from one pile
 
 
 
-```python file=examples/code/binary_search.py#func:shipWithinDays
+```python file=backend/algorithms/binary_search.py#func:shipWithinDays
 ```
 
 
