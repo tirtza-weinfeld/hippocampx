@@ -1,0 +1,140 @@
+# Tic Tac Toe
+
+## Resizable Table Of Contents
+
+
+This tutorial will guide you through creating an unbeatable Tic-Tac-Toe AI. We'll start with the core logic called **Minimax** and then optimize it with a technique called **Alpha-Beta Pruning**.
+
+-----
+
+## The Goal: Adversarial Search
+
+In a two-player game like Tic-Tac-Toe, each player's goal is contrary to their opponent's.
+ `$X$` wants to win, and `$O$` wants to win. This is an *adversarial* setting. Our goal is to write an AI that can look ahead at all possible moves and choose the one that leads to the best possible outcome for itself, assuming the opponent also plays perfectly. This process is called **adversarial search**.
+
+The provided Python code gives us all the tools we need:
+  * `[python:]initial_state()`: Creates a new, empty board.
+  * `[python:]player(board)`: Tells us whose turn it is ('X' or 'O').
+  * `[python:]actions(board)`: Gives us all legal moves (empty squares).
+  * `[python:]result(board, action)`: Shows the board *after* a move is made.
+  * `[python:]terminal(board)`: Checks if the game is over (win, lose, or tie).
+  * `[python:]utility(board)`: Assigns a score to a finished game: `1` for an X win, `-1` for an O win, and `0` for a tie. This function is crucial, as it defines what "good" and "bad" outcomes are for our AI.
+
+-----
+
+## Minimax: Finding the Optimal Move
+
+The Minimax algorithm is a decision-making algorithm that explores every possible move to find the optimal one. It operates on two key principles:
+
+1.  **The Maximizer:** Player `$X$` is the **maximizer**. Their goal is to pick the move that leads to a game state with the highest possible `[python:utility(board):]utility` score.
+2.  **The Minimizer:** Player `$O$` is the **minimizer**. Their goal is to pick the move that leads to a game state with the lowest possible
+ `[tooltip:utility(board):]utility` score.
+
+### How It Works
+
+Imagine the game as a tree. The current board state is the root. Each possible action branches out to a new state (a child node). This continues until we reach terminal states (leaves), where the game is over.
+
+The algorithm works by recursively calculating the "minimax value" of each state in the tree:
+
+  * For a **terminal state**, the value is simply its utility (`1`, `-1`, or `0`).
+  * For a state where it's **X's turn (Maximizer)**, its value is the *maximum* value of all the states it can move to.
+  * For a state where it's **O's turn (Minimizer)**, its value is the *minimum* value of all the states it can move to.
+
+The AI then simply chooses the action that leads to the state with the best value (max for X, min for O).
+
+The problem? Exploring this entire tree, even for Tic-Tac-Toe, is computationally expensive. For more complex games like chess, it's impossible. This brings us to a much-needed optimization.
+
+-----
+
+## Alpha-Beta Pruning: Making Minimax Smarter 🧠
+
+Alpha-Beta Pruning is an optimization technique for the Minimax algorithm that allows us to disregard, or **"prune"**, large parts of the game tree. It returns the exact same move as Minimax but does so much faster by not exploring branches that it knows can't influence the final decision.
+
+To do this, we introduce two new values:
+
+  * **Alpha ($\alpha$)**: The best score (highest value) found so far 
+for the **Maximizer**. The Maximizer will always aim for a score of *at least* $\alpha$. It starts at $-\infty$.
+  * **Beta ($\beta$)**: The best score (lowest value) found so far for the **Minimizer**.
+ The Minimizer will always aim for a score of *at most* $\beta$. It starts at $+\infty$.
+
+### The Pruning Logic
+
+As the algorithm explores the tree, it constantly updates $\alpha$ and $\beta$. The key insight is this:
+
+> We can stop evaluating a branch as soon as **$\alpha \ge \beta$**.
+
+Let's see why:
+
+  * **Maximizer's Pruning:** The Maximizer is exploring a move. If it finds that this path leads to a score that is greater than or equal to $\beta$ (the best the Minimizer can currently hope for), the Maximizer can stop looking down this path. Why? Because the parent Minimizer (who is trying to get the *lowest* score) will never let the game proceed down this branch, as they already have a better option available that results in a score of $\beta$ or less.
+  * **Minimizer's Pruning:** The same logic applies in reverse. If the Minimizer finds a path leading to a score less than or equal to $\alpha$, it can stop. The parent Maximizer already has a better option guaranteeing them a score of $\alpha$ or more.
+
+### Code Implementation
+
+Now, let's analyze the provided `minimax` function, which brilliantly implements Alpha-Beta Pruning.
+
+```python
+def minimax(board):
+    """
+    Returns the optimal action for the current player on the board.
+    """
+    
+    # Base case: if game is over, no moves are possible
+    if terminal(board):
+        return None
+
+    # The Maximizer wants to find the action 'a' that maximizes the score
+    def max_value(b, α, β):
+        if terminal(b):
+            return utility(b), None
+        
+        v, mv = float("-inf"), None
+        for a in actions(b):
+            # Get the score from the minimizer's perspective
+            val, _ = min_value(result(b, a), α, β)
+            if val > v:
+                v, mv = val, a
+                # Update alpha: we found a better path for the maximizer
+                α = max(α, v)
+            
+            # The Pruning Step!
+            if α >= β:
+                break # Stop searching this branch
+        return v, mv
+
+    # The Minimizer wants to find the action 'a' that minimizes the score
+    def min_value(b, α, β):
+        if terminal(b):
+            return utility(b), None
+
+        v, mv = float("inf"), None
+        for a in actions(b):
+            # Get the score from the maximizer's perspective
+            val, _ = max_value(result(b, a), α, β)
+            if val < v:
+                v, mv = val, a
+                # Update beta: we found a better path for the minimizer
+                β = min(β, v)
+            
+            # The Pruning Step!
+            if α >= β:
+                break # Stop searching this branch
+        return v, mv
+
+    # Initial call: determine if the current player is X or O
+    # and start the appropriate recursive chain with initial alpha and beta.
+    _, move = (
+        max_value(board, float("-inf"), float("inf"))
+        if player(board) == X
+        else min_value(board, float("-inf"), float("inf"))
+    )
+    return move
+```
+
+**Key parts of the code:**
+
+1.  **`max_value` and `min_value`:** These two functions call each other recursively, simulating the alternating turns of the Maximizer and Minimizer.
+2.  **Passing `α` and `β`:** Notice how `α` and `β` are passed down through each recursive call. This ensures that the "best-so-far" scores are known at every level of the tree.
+3.  **Updating `α` and `β`:** In `max_value`, `α` is updated whenever a better move for the Maximizer is found (`α = max(α, v)`). In `min_value`, `β` is updated for the Minimizer (`β = min(β, v)`).
+4.  **The Pruning Condition:** The line `if α >= β: break` is the heart of the optimization. It saves a massive amount of computation by cutting off branches that are guaranteed to be worse than a move that has already been found.
+
+By using this algorithm, our Tic-Tac-Toe AI can quickly and efficiently determine the mathematically optimal move from any given board state, making it an unbeatable opponent.

@@ -32,7 +32,6 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
-examples/venv/
 
 # vercel
 .vercel
@@ -47,3 +46,7 @@ TODO.md
 # /.cursor
 
 /logs
+
+__pycache__/
+venv/
+.venv/
