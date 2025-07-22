@@ -897,13 +897,13 @@
     "type": "class",
     "language": "python",
     "file": "backend/algorithms/dp.py",
-    "line": 3,
+    "line": 1,
     "signature": "class DP:",
     "parameters": [],
     "return_type": "",
     "return_description": "",
     "description": "",
-    "code": "class DP:\n    def minimumTotal(self, triangle: list[list[int]]) -> int:\n        memo, n = {}, len(triangle)\n        def dp(r, c):\n            if r >= n or c > r:\n                return 0\n            if (r, c) not in memo:\n                memo[(r, c)] = min(\n                    triangle[r][c] + dp(r + 1, c), \n                    triangle[r][c] + dp(r + 1, c + 1)\n                )\n            return memo[(r, c)]\n        return dp(0, 0)",
+    "code": "class DP:\n    def minimumTotal(self, triangle: list[list[int]]) -> int:\n        def dp(r, c):\n            if r == n - 1:\n                return triangle[r][c]\n            if (r, c) not in memo:\n                memo[(r, c)] = triangle[r][c] + min(dp(r + 1, c), dp(r + 1, c + 1))\n            return memo[(r, c)]\n        return dp(0, 0)\n    def canPartition(self, nums: list[int]) -> bool:\n        if (total_sum := sum(nums)) % 2 != 0:\n            return False\n        subset_sum = total_sum // 2\n        dp = [True] + [False] * (subset_sum)\n        for num in nums:\n            for j in reversed(range(num, subset_sum + 1)):\n                dp[j] = dp[j] or dp[j - num]\n        return dp[subset_sum]",
     "links": [],
     "variables": [],
     "expressions": []
@@ -913,16 +913,35 @@
     "type": "method",
     "language": "python",
     "file": "backend/algorithms/dp.py",
-    "line": 4,
+    "line": 3,
     "signature": "def minimumTotal(self, triangle: list[list[int]]) -> int:",
-    "parameters": [],
+    "parameters": [
+      {
+        "name": "triangle",
+        "type": "list[list[int]]",
+        "description": "list of list of integers",
+        "default": null
+      }
+    ],
     "return_type": "int",
-    "return_description": "",
-    "description": "",
-    "code": "def minimumTotal(self, triangle: list[list[int]]) -> int:\n        memo, n = {}, len(triangle)\n        def dp(r, c):\n            if r >= n or c > r:\n                return 0\n            if (r, c) not in memo:\n                memo[(r, c)] = min(\n                    triangle[r][c] + dp(r + 1, c), \n                    triangle[r][c] + dp(r + 1, c + 1)\n                )\n            return memo[(r, c)]\n        return dp(0, 0)",
+    "return_description": "int: The minimum path sum of the triangle.",
+    "description": "Given a triangle (list of lists), find the minimum path sum from top to bottom.",
+    "code": "def minimumTotal(self, triangle: list[list[int]]) -> int:\n        def dp(r, c):\n            if r == n - 1:\n                return triangle[r][c]\n            if (r, c) not in memo:\n                memo[(r, c)] = triangle[r][c] + min(dp(r + 1, c), dp(r + 1, c + 1))\n            return memo[(r, c)]\n        return dp(0, 0)",
     "links": [],
-    "variables": [],
-    "expressions": [],
+    "variables": [
+      {
+        "name": "memo",
+        "description": "a dictionary to store the minimum path sum for each cell",
+        "type": "variable"
+      }
+    ],
+    "expressions": [
+      {
+        "expression": "r == n - 1",
+        "description": "bottom row",
+        "type": "expression"
+      }
+    ],
     "parent": "DP"
   },
   "DP.minimumTotal.dp": {
@@ -930,17 +949,81 @@
     "type": "method",
     "language": "python",
     "file": "backend/algorithms/dp.py",
-    "line": 8,
+    "line": 22,
     "signature": "def dp(r, c):",
     "parameters": [],
     "return_type": "",
     "return_description": "",
     "description": "",
-    "code": "def dp(r, c):\n            if r >= n or c > r:\n                return 0\n            if (r, c) not in memo:\n                memo[(r, c)] = min(\n                    triangle[r][c] + dp(r + 1, c), \n                    triangle[r][c] + dp(r + 1, c + 1)\n                )\n            return memo[(r, c)]",
+    "code": "def dp(r, c):\n            if r == n - 1:\n                return triangle[r][c]\n            if (r, c) not in memo:\n                memo[(r, c)] = triangle[r][c] + min(dp(r + 1, c), dp(r + 1, c + 1))\n            return memo[(r, c)]",
     "links": [],
     "variables": [],
     "expressions": [],
     "parent": "DP.minimumTotal"
+  },
+  "DP.canPartition": {
+    "name": "canPartition",
+    "type": "method",
+    "language": "python",
+    "file": "backend/algorithms/dp.py",
+    "line": 31,
+    "signature": "def canPartition(self, nums: list[int]) -> bool:",
+    "parameters": [],
+    "return_type": "bool",
+    "return_description": "",
+    "description": "",
+    "code": "def canPartition(self, nums: list[int]) -> bool:\n        if (total_sum := sum(nums)) % 2 != 0:\n            return False\n        subset_sum = total_sum // 2\n        dp = [True] + [False] * (subset_sum)\n        for num in nums:\n            for j in reversed(range(num, subset_sum + 1)):\n                dp[j] = dp[j] or dp[j - num]\n        return dp[subset_sum]",
+    "links": [],
+    "variables": [],
+    "expressions": [],
+    "parent": "DP"
+  },
+  "fib": {
+    "name": "fib",
+    "type": "function",
+    "language": "python",
+    "file": "backend/algorithms/dp.py",
+    "line": 41,
+    "signature": "def fib(n: int) -> int:",
+    "parameters": [
+      {
+        "name": "n",
+        "type": "int",
+        "description": "the index of the Fibonacci number to return",
+        "default": null
+      }
+    ],
+    "return_type": "int",
+    "return_description": "int: The `n`-th Fibonacci number.",
+    "description": "Given an integer `n`, return the `n`-th Fibonacci number.",
+    "code": "def fib(n: int) -> int:\n            return 1\n        return n * fib_helper(n - 1)\n    return fib_helper(n)",
+    "links": [],
+    "variables": [],
+    "expressions": []
+  },
+  "fib.fib_helper": {
+    "name": "fib_helper",
+    "type": "method",
+    "language": "python",
+    "file": "backend/algorithms/dp.py",
+    "line": 51,
+    "signature": "def fib_helper(n: int) -> int:",
+    "parameters": [
+      {
+        "name": "n",
+        "type": "int",
+        "description": "integer",
+        "default": null
+      }
+    ],
+    "return_type": "int",
+    "return_description": "int: The `n`-th Fibonacci number.",
+    "description": "Given an integer `n`, return the `n`-th Fibonacci number.",
+    "code": "def fib_helper(n: int) -> int:\n            return 1\n        return n * fib_helper(n - 1)",
+    "links": [],
+    "variables": [],
+    "expressions": [],
+    "parent": "fib"
   },
   "LRUCache": {
     "name": "LRUCache",
@@ -1093,23 +1176,23 @@
     "expressions": [],
     "parent": "LFUCache"
   },
-  "Solution": {
-    "name": "Solution",
+  "Stack": {
+    "name": "Stack",
     "type": "class",
     "language": "python",
     "file": "backend/algorithms/stack.py",
     "line": 1,
-    "signature": "class Solution:",
+    "signature": "class Stack:",
     "parameters": [],
     "return_type": "",
     "return_description": "",
     "description": "",
-    "code": "class Solution:\n    def decodeString(self, s: str) -> str:\n        stack, s = [], \"1[\" + s + \"]\"\n        for c in s:\n            if c == \"]\":\n                curr = []\n                while stack[-1] != \"[\":\n                    curr.append(stack.pop())\n                stack.pop()  \n                num = []\n                while stack and stack[-1].isdigit():\n                    num.append(stack.pop())\n                stack.append(\"\".join(reversed(curr)) * int(\"\".join(reversed(num))))\n            else:\n                stack.append(c)\n        return stack[0]",
+    "code": "class Stack:\n    def decodeString(self, s: str) -> str:\n        stack, s = [], \"1[\" + s + \"]\"\n        for c in s:\n            if c == \"]\":\n                curr = []\n                while stack[-1] != \"[\":\n                    curr.append(stack.pop())\n                stack.pop()  \n                num = []\n                while stack and stack[-1].isdigit():\n                    num.append(stack.pop())\n                stack.append(\"\".join(reversed(curr)) * int(\"\".join(reversed(num))))\n            else:\n                stack.append(c)\n        return stack[0]",
     "links": [],
     "variables": [],
     "expressions": []
   },
-  "Solution.decodeString": {
+  "Stack.decodeString": {
     "name": "decodeString",
     "type": "method",
     "language": "python",
@@ -1124,7 +1207,7 @@
     "links": [],
     "variables": [],
     "expressions": [],
-    "parent": "Solution"
+    "parent": "Stack"
   },
   "TreeNode": {
     "name": "TreeNode",

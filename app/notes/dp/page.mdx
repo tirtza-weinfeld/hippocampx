@@ -7,6 +7,9 @@ Dynamic Programming is a powerful technique for solving optimization and countin
 
 -----
 
+```python file=./backend/algorithms/dp.py#func:fib
+```
+
 ##  Examples
 
 ### 1. Triangle
@@ -15,29 +18,12 @@ Dynamic Programming is a powerful technique for solving optimization and countin
 
 [120. Triangle](https://leetcode.com/problems/triangle/)
 
-```python
-class Solution:
-    def minimumTotal(self, triangle: list[list[int]]) -> int:
-        memo, n = {}, len(triangle)
-        def dp(r, c):
-            if r >= n or c > r:
-                return 0
-            if (r, c) not in memo:
-                memo[(r, c)] = min(
-                    triangle[r][c] + dp(r + 1, c), 
-                    triangle[r][c] + dp(r + 1, c + 1)
-                )
-            return memo[(r, c)]
-        return dp(0, 0)
+```python file=./backend/algorithms/dp.py#method:DP.minimumTotal
 ```
-
-> [\!Intuition:collapse]
->
-> The core insight is that the minimum path to any cell must come from one of the two cells directly below it. The function `dp(r, c)` leverages this by recursively finding the best path from the bottom up. By starting at the top and asking for the solution to the subproblems below (`dp(r+1, ...)`), we find the optimal path. Memoization ensures that the path from any given cell is computed only once.
 
 > [\!timecomplexity:collapse] **$O(n^2)$**
 >
-> **$O(n^2)$**: where `n` is the number of rows in the triangle. Each state `(r, c)` is computed once.
+> where `n` is the number of rows in the triangle. Each state `(r, c)` is computed once.
 
 -----
 
@@ -47,16 +33,7 @@ class Solution:
 
 [416. Partition Equal Subset Sum](https://leetcode.com/problems/partition-equal-subset-sum/)
 
-```python
-def canPartition(self, nums: list[int]) -> bool:
-    if (total_sum := sum(nums)) % 2 != 0:
-        return False
-    subset_sum = total_sum // 2
-    dp = [True] + [False] * (subset_sum)
-    for num in nums:
-        for j in reversed(range(num, subset_sum + 1)):
-            dp[j] = dp[j] or dp[j - num]
-    return dp[subset_sum]
+```python file=./backend/algorithms/dp.py#method:DP.canPartition
 ```
 
 > [\!Intuition:collapse]
@@ -74,7 +51,7 @@ def canPartition(self, nums: list[int]) -> bool:
 *Given an array of coin denominations and a total amount, return the number of combinations of coins that make up that amount. You can assume an infinite number of each coin.*
 
 [518. Coin Change II](https://leetcode.com/problems/coin-change-ii/)
-
+s
 ```python
 def change_bottom_up_1d(self, amount: int, coins: list[int]) -> int:
     dp = [1] + [0] * amount

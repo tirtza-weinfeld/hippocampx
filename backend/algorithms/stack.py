@@ -1,4 +1,4 @@
-class Solution:
+class Stack:
     def decodeString(self, s: str) -> str:
         stack, s = [], "1[" + s + "]"
         for c in s:
