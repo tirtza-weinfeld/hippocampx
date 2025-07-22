@@ -903,7 +903,7 @@
     "return_type": "",
     "return_description": "",
     "description": "",
-    "code": "class DP:\n    def minimumTotal(self, triangle: list[list[int]]) -> int:\n        def dp(r, c):\n            if r == n - 1:\n                return triangle[r][c]\n            if (r, c) not in memo:\n                memo[(r, c)] = triangle[r][c] + min(dp(r + 1, c), dp(r + 1, c + 1))\n            return memo[(r, c)]\n        return dp(0, 0)\n    def canPartition(self, nums: list[int]) -> bool:\n        if (total_sum := sum(nums)) % 2 != 0:\n            return False\n        subset_sum = total_sum // 2\n        dp = [True] + [False] * (subset_sum)\n        for num in nums:\n            for j in reversed(range(num, subset_sum + 1)):\n                dp[j] = dp[j] or dp[j - num]\n        return dp[subset_sum]",
+    "code": "class DP:\n    def minimumTotal(self, triangle: list[list[int]]) -> int:\n        n, memo = len(triangle), {}\n        def dp(r, c):\n            if r == n - 1:\n                return triangle[r][c]\n            if (r, c) not in memo:\n                memo[(r, c)] = triangle[r][c] + min(dp(r + 1, c), dp(r + 1, c + 1))\n            return memo[(r, c)]\n        return dp(0, 0)\n    def canPartitionTopDown(self, nums: list[int]) -> bool:\n        memo, n = {}, len(nums)\n        def dp(i, s):\n            if i == n or s < 0:\n                return False\n            if s == 0:\n                return True\n            if (i, s) not in memo:\n                memo[i, s] = dp(i + 1, s) or dp(i + 1, s - nums[i])\n            return memo[(i, s)]\n        return False if ((total := sum(nums)) & 1) else dp(0, total / 2)\n    def canPartitionBottomUp(self, nums: list[int]) -> bool:\n        if (total := sum(nums)) & 1:\n            return False\n        target ,reachable = total / 2 ,{0} \n        for num in nums:\n            new_sums = {s + num for s in reachable if s + num <= target}\n            reachable |= new_sums\n            if target in reachable:\n                return True\n        return False",
     "links": [],
     "variables": [],
     "expressions": []
@@ -915,26 +915,13 @@
     "file": "backend/algorithms/dp.py",
     "line": 3,
     "signature": "def minimumTotal(self, triangle: list[list[int]]) -> int:",
-    "parameters": [
-      {
-        "name": "triangle",
-        "type": "list[list[int]]",
-        "description": "list of list of integers",
-        "default": null
-      }
-    ],
+    "parameters": [],
     "return_type": "int",
-    "return_description": "int: The minimum path sum of the triangle.",
+    "return_description": "",
     "description": "Given a triangle (list of lists), find the minimum path sum from top to bottom.",
-    "code": "def minimumTotal(self, triangle: list[list[int]]) -> int:\n        def dp(r, c):\n            if r == n - 1:\n                return triangle[r][c]\n            if (r, c) not in memo:\n                memo[(r, c)] = triangle[r][c] + min(dp(r + 1, c), dp(r + 1, c + 1))\n            return memo[(r, c)]\n        return dp(0, 0)",
+    "code": "def minimumTotal(self, triangle: list[list[int]]) -> int:\n        n, memo = len(triangle), {}\n        def dp(r, c):\n            if r == n - 1:\n                return triangle[r][c]\n            if (r, c) not in memo:\n                memo[(r, c)] = triangle[r][c] + min(dp(r + 1, c), dp(r + 1, c + 1))\n            return memo[(r, c)]\n        return dp(0, 0)",
     "links": [],
-    "variables": [
-      {
-        "name": "memo",
-        "description": "a dictionary to store the minimum path sum for each cell",
-        "type": "variable"
-      }
-    ],
+    "variables": [],
     "expressions": [
       {
         "expression": "r == n - 1",
@@ -949,7 +936,7 @@
     "type": "method",
     "language": "python",
     "file": "backend/algorithms/dp.py",
-    "line": 22,
+    "line": 14,
     "signature": "def dp(r, c):",
     "parameters": [],
     "return_type": "",
@@ -961,69 +948,99 @@
     "expressions": [],
     "parent": "DP.minimumTotal"
   },
-  "DP.canPartition": {
-    "name": "canPartition",
+  "DP.canPartitionTopDown": {
+    "name": "canPartitionTopDown",
     "type": "method",
     "language": "python",
     "file": "backend/algorithms/dp.py",
-    "line": 31,
-    "signature": "def canPartition(self, nums: list[int]) -> bool:",
+    "line": 26,
+    "signature": "def canPartitionTopDown(self, nums: list[int]) -> bool:",
     "parameters": [],
     "return_type": "bool",
     "return_description": "",
     "description": "",
-    "code": "def canPartition(self, nums: list[int]) -> bool:\n        if (total_sum := sum(nums)) % 2 != 0:\n            return False\n        subset_sum = total_sum // 2\n        dp = [True] + [False] * (subset_sum)\n        for num in nums:\n            for j in reversed(range(num, subset_sum + 1)):\n                dp[j] = dp[j] or dp[j - num]\n        return dp[subset_sum]",
+    "code": "def canPartitionTopDown(self, nums: list[int]) -> bool:\n        memo, n = {}, len(nums)\n        def dp(i, s):\n            if i == n or s < 0:\n                return False\n            if s == 0:\n                return True\n            if (i, s) not in memo:\n                memo[i, s] = dp(i + 1, s) or dp(i + 1, s - nums[i])\n            return memo[(i, s)]\n        return False if ((total := sum(nums)) & 1) else dp(0, total / 2)",
     "links": [],
     "variables": [],
     "expressions": [],
     "parent": "DP"
   },
-  "fib": {
-    "name": "fib",
-    "type": "function",
-    "language": "python",
-    "file": "backend/algorithms/dp.py",
-    "line": 41,
-    "signature": "def fib(n: int) -> int:",
-    "parameters": [
-      {
-        "name": "n",
-        "type": "int",
-        "description": "the index of the Fibonacci number to return",
-        "default": null
-      }
-    ],
-    "return_type": "int",
-    "return_description": "int: The `n`-th Fibonacci number.",
-    "description": "Given an integer `n`, return the `n`-th Fibonacci number.",
-    "code": "def fib(n: int) -> int:\n            return 1\n        return n * fib_helper(n - 1)\n    return fib_helper(n)",
-    "links": [],
-    "variables": [],
-    "expressions": []
-  },
-  "fib.fib_helper": {
-    "name": "fib_helper",
+  "DP.canPartitionTopDown.dp": {
+    "name": "dp",
     "type": "method",
     "language": "python",
     "file": "backend/algorithms/dp.py",
-    "line": 51,
-    "signature": "def fib_helper(n: int) -> int:",
-    "parameters": [
-      {
-        "name": "n",
-        "type": "int",
-        "description": "integer",
-        "default": null
-      }
-    ],
-    "return_type": "int",
-    "return_description": "int: The `n`-th Fibonacci number.",
-    "description": "Given an integer `n`, return the `n`-th Fibonacci number.",
-    "code": "def fib_helper(n: int) -> int:\n            return 1\n        return n * fib_helper(n - 1)",
+    "line": 30,
+    "signature": "def dp(i, s):",
+    "parameters": [],
+    "return_type": "",
+    "return_description": "",
+    "description": "Expressions:",
+    "code": "def dp(i, s):\n            if i == n or s < 0:\n                return False\n            if s == 0:\n                return True\n            if (i, s) not in memo:\n                memo[i, s] = dp(i + 1, s) or dp(i + 1, s - nums[i])\n            return memo[(i, s)]",
     "links": [],
     "variables": [],
-    "expressions": [],
-    "parent": "fib"
+    "expressions": [
+      {
+        "expression": "(total := sum(nums)) & 1",
+        "description": "odd sum",
+        "type": "expression"
+      }
+    ],
+    "parent": "DP.canPartitionTopDown"
+  },
+  "DP.canPartitionBottomUp": {
+    "name": "canPartitionBottomUp",
+    "type": "method",
+    "language": "python",
+    "file": "backend/algorithms/dp.py",
+    "line": 48,
+    "signature": "def canPartitionBottomUp(self, nums: list[int]) -> bool:",
+    "parameters": [],
+    "return_type": "bool",
+    "return_description": "",
+    "description": "Expressions:",
+    "code": "def canPartitionBottomUp(self, nums: list[int]) -> bool:\n        if (total := sum(nums)) & 1:\n            return False\n        target ,reachable = total / 2 ,{0} \n        for num in nums:\n            new_sums = {s + num for s in reachable if s + num <= target}\n            reachable |= new_sums\n            if target in reachable:\n                return True\n        return False",
+    "links": [],
+    "variables": [
+      {
+        "name": "target",
+        "description": "the sum each subset needs to reach",
+        "type": "variable"
+      },
+      {
+        "name": "reachable",
+        "description": "all subset-sums achievable so far",
+        "type": "variable"
+      }
+    ],
+    "expressions": [
+      {
+        "expression": "if (total := sum(nums)) & 1",
+        "description": "# if the total is odd, you can’t split into two equal subsets",
+        "type": "expression"
+      },
+      {
+        "expression": "new_sums = {s + num for s in reachable if s + num <= target}",
+        "description": "form new sums by adding current number to existing ones (but don’t exceed target)",
+        "type": "expression"
+      },
+      {
+        "expression": "reachable |= new_sums",
+        "description": "update reachable sums",
+        "type": "expression"
+      },
+      {
+        "expression": "if target in reachable:",
+        "description": "early exit if we’ve hit the target",
+        "type": "expression"
+      },
+      {
+        "expression": "return False",
+        "description": "couldn’t reach the exact half-sum",
+        "type": "expression"
+      }
+    ],
+    "parent": "DP"
   },
   "LRUCache": {
     "name": "LRUCache",

@@ -5,18 +5,10 @@ class DP:
         Given a triangle (list of lists), find the minimum path sum from top to bottom.
         From index `i` in a row, you may move to index `i` or `i + 1` in the next row.
 
-        Args:
-            triangle: list of list of integers
-
-        Returns:
-            int: The minimum path sum of the triangle.
-        Variables:
-            - memo: a dictionary to store the minimum path sum for each cell
-
         Expressions:
             - 'r == n - 1': bottom row
-
         """
+
         n, memo = len(triangle), {}
 
         def dp(r, c):
@@ -28,39 +20,55 @@ class DP:
 
         return dp(0, 0)
 
-    def canPartition(self, nums: list[int]) -> bool:
-        if (total_sum := sum(nums)) % 2 != 0:
-            return False
-        subset_sum = total_sum // 2
-        dp = [True] + [False] * (subset_sum)
-        for num in nums:
-            for j in reversed(range(num, subset_sum + 1)):
-                dp[j] = dp[j] or dp[j - num]
-        return dp[subset_sum]
-    
-def fib(n: int) -> int:
-    """
-    Given an integer `n`, return the `n`-th Fibonacci number.
 
-    Args:
-        n: the index of the Fibonacci number to return
 
-    Returns:
-        int: The `n`-th Fibonacci number.
-    """
-    def fib_helper(n: int) -> int:
+
+    def canPartitionTopDown(self, nums: list[int]) -> bool:
+
+        memo, n = {}, len(nums)
+
+        def dp(i, s):
+            """
+            Expressions:
+                - '(total := sum(nums)) & 1': odd sum
+            """
+
+            if i == n or s < 0:
+                return False
+            if s == 0:
+                return True
+
+            if (i, s) not in memo:
+                memo[i, s] = dp(i + 1, s) or dp(i + 1, s - nums[i])
+
+            return memo[(i, s)]
+
+        return False if ((total := sum(nums)) & 1) else dp(0, total / 2)
+
+    def canPartitionBottomUp(self, nums: list[int]) -> bool:
         """
-        Given an integer `n`, return the `n`-th Fibonacci number.
-
-        Args:
-            n: integer
-
-        Returns:
-            int: The `n`-th Fibonacci number.
-        """
-        if n == 1:
-            return 1
-        return n * fib_helper(n - 1)
-    
-    return fib_helper(n)
+        Expressions:
+            - 'if (total := sum(nums)) & 1':  # if the total is odd, you can’t split into two equal subsets
+            - 'new_sums = {s + num for s in reachable if s + num <= target}': form new sums by adding current number to existing ones (but don’t exceed target)
+            - 'reachable |= new_sums': update reachable sums
+            - 'if target in reachable:': early exit if we’ve hit the target
+            - 'return False': couldn’t reach the exact half-sum
         
+        Variables:
+            - target: the sum each subset needs to reach
+            - reachable:  all subset-sums achievable so far
+
+        """
+
+        if (total := sum(nums)) & 1:
+            return False
+        
+        target ,reachable = total / 2 ,{0} 
+
+        for num in nums:
+            new_sums = {s + num for s in reachable if s + num <= target}
+            reachable |= new_sums
+            if target in reachable:
+                return True
+        return False  
+    

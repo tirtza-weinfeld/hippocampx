@@ -1,0 +1,67 @@
+# Python
+
+## Resizable Table Of contents
+
+
+## Bitwise Operators
+
+### Odd/Even Check
+
+In binary, every integer is represented as a sequence of bits. The very least significant bit (LSB) encodes whether a number is odd or even:
+	•	…​0 (in binary) → even
+	•	…​1 (in binary) → odd
+
+The literal 1 in binary is …0001. When you do a bitwise AND:
+
+total & 1
+
+you’re effectively “masking out” all bits except the LSB:
+	•	If total is even, its LSB is 0, so
+
+```
+…xxxx0
+& …0001
+= …0000  → 0
+```
+
+	•	If total is odd, its LSB is 1, so
+```
+…xxxx1
+& …0001
+= …0001  → 1
+```
+
+
+Thus total & 1 evaluates to 0 for even totals and 1 for odd totals. In an if-statement, 0 is treated as False and any non-zero (here 1) is True, making if total & 1: a concise check for “is this number odd?”
+
+---
+
+## Division
+
+### True division \`/`:  always returns a float
+
+```bash
+>>> 7   / 3
+2.3333333333333335
+>>> 6   / 3
+2.0
+>>> -7  / 3
+-2.3333333333333335
+>>> 7.0 / 3
+2.3333333333333335
+```
+
+### Floor division \`//`: rounds down toward –∞
+
+```bash
+>>> 7   // 3
+2
+>>> 6   // 3
+2
+>>> -7  // 3
+-3        # because -7/3 ≈ -2.33, flooring gives -3
+>>> 7.0 // 3
+2.0
+>>> 7   // 3.0
+2.0
+```
