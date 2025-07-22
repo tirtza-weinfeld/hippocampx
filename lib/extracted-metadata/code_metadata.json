@@ -903,7 +903,7 @@
     "return_type": "",
     "return_description": "",
     "description": "",
-    "code": "class DP:\n    def minimumTotal(self, triangle: list[list[int]]) -> int:\n        n, memo = len(triangle), {}\n        def dp(r, c):\n            if r == n - 1:\n                return triangle[r][c]\n            if (r, c) not in memo:\n                memo[(r, c)] = triangle[r][c] + min(dp(r + 1, c), dp(r + 1, c + 1))\n            return memo[(r, c)]\n        return dp(0, 0)\n    def canPartitionTopDown(self, nums: list[int]) -> bool:\n        memo, n = {}, len(nums)\n        def dp(i, s):\n            if i == n or s < 0:\n                return False\n            if s == 0:\n                return True\n            if (i, s) not in memo:\n                memo[i, s] = dp(i + 1, s) or dp(i + 1, s - nums[i])\n            return memo[(i, s)]\n        return False if ((total := sum(nums)) & 1) else dp(0, total / 2)\n    def canPartitionBottomUp(self, nums: list[int]) -> bool:\n        if (total := sum(nums)) & 1:\n            return False\n        target ,reachable = total / 2 ,{0} \n        for num in nums:\n            new_sums = {s + num for s in reachable if s + num <= target}\n            reachable |= new_sums\n            if target in reachable:\n                return True\n        return False",
+    "code": "class DP:\n    def minimumTotal(self, triangle: list[list[int]]) -> int:\n        n, memo = len(triangle), {}\n        def dp(r, c):\n            if r == n - 1:\n                return triangle[r][c]\n            if (r, c) not in memo:\n                memo[(r, c)] = triangle[r][c] + min(dp(r + 1, c), dp(r + 1, c + 1))\n            return memo[(r, c)]\n        return dp(0, 0)\n    def canPartition(self, nums: list[int]) -> bool:\n        memo, n = {}, len(nums)\n        def dp(i, s):\n                return False\n            if s == 0:\n                return True\n            if (i, s) not in memo:\n                memo[i, s] = dp(i + 1, s) or dp(i + 1, s - nums[i])\n            return memo[(i, s)]\n        return False if ((total := sum(nums)) & 1) else dp(0, total / 2)\n    def change(self, amount: int, coins: list[int]) -> int:\n        memo, n = {}, len(coins)\n        def dp(c, amount):\n            if amount == 0:\n                return 1\n            if amount < 0 or c == n:\n                return 0\n            if (c, amount) not in memo:\n                memo[c, amount] = dp(c, amount - coins[c]) + dp(c + 1, amount)\n            return memo[c, amount]\n        return dp(0, amount)\n    def winnerSquareGame(self, n: int) -> bool:\n        memo = {0: False}\n        def dp(n):\n            if n not in memo:\n                memo[n] = any(not dp(n - i**2) for i in range(int(n**0.5), 0, -1))\n            return memo[n]\n        return dp(n)\n    def mostPoints(self, questions: list[list[int]]) -> int:\n        memo, n = {}, len(questions)\n        def dp(i):\n            if i >= n:\n                return 0\n            if i not in memo:\n                memo[i] = max(dp(i + 1), (q:=questions[i])[0] + dp(i + 1 + q[1]))\n            return memo[i]\n        return dp(0)",
     "links": [],
     "variables": [],
     "expressions": []
@@ -948,35 +948,35 @@
     "expressions": [],
     "parent": "DP.minimumTotal"
   },
-  "DP.canPartitionTopDown": {
-    "name": "canPartitionTopDown",
+  "DP.canPartition": {
+    "name": "canPartition",
     "type": "method",
     "language": "python",
     "file": "backend/algorithms/dp.py",
-    "line": 26,
-    "signature": "def canPartitionTopDown(self, nums: list[int]) -> bool:",
+    "line": 23,
+    "signature": "def canPartition(self, nums: list[int]) -> bool:",
     "parameters": [],
     "return_type": "bool",
     "return_description": "",
     "description": "",
-    "code": "def canPartitionTopDown(self, nums: list[int]) -> bool:\n        memo, n = {}, len(nums)\n        def dp(i, s):\n            if i == n or s < 0:\n                return False\n            if s == 0:\n                return True\n            if (i, s) not in memo:\n                memo[i, s] = dp(i + 1, s) or dp(i + 1, s - nums[i])\n            return memo[(i, s)]\n        return False if ((total := sum(nums)) & 1) else dp(0, total / 2)",
+    "code": "def canPartition(self, nums: list[int]) -> bool:\n        memo, n = {}, len(nums)\n        def dp(i, s):\n                return False\n            if s == 0:\n                return True\n            if (i, s) not in memo:\n                memo[i, s] = dp(i + 1, s) or dp(i + 1, s - nums[i])\n            return memo[(i, s)]\n        return False if ((total := sum(nums)) & 1) else dp(0, total / 2)",
     "links": [],
     "variables": [],
     "expressions": [],
     "parent": "DP"
   },
-  "DP.canPartitionTopDown.dp": {
+  "DP.canPartition.dp": {
     "name": "dp",
     "type": "method",
     "language": "python",
     "file": "backend/algorithms/dp.py",
-    "line": 30,
+    "line": 27,
     "signature": "def dp(i, s):",
     "parameters": [],
     "return_type": "",
     "return_description": "",
     "description": "Expressions:",
-    "code": "def dp(i, s):\n            if i == n or s < 0:\n                return False\n            if s == 0:\n                return True\n            if (i, s) not in memo:\n                memo[i, s] = dp(i + 1, s) or dp(i + 1, s - nums[i])\n            return memo[(i, s)]",
+    "code": "def dp(i, s):\n                return False\n            if s == 0:\n                return True\n            if (i, s) not in memo:\n                memo[i, s] = dp(i + 1, s) or dp(i + 1, s - nums[i])\n            return memo[(i, s)]",
     "links": [],
     "variables": [],
     "expressions": [
@@ -986,61 +986,109 @@
         "type": "expression"
       }
     ],
-    "parent": "DP.canPartitionTopDown"
+    "parent": "DP.canPartition"
   },
-  "DP.canPartitionBottomUp": {
-    "name": "canPartitionBottomUp",
+  "DP.change": {
+    "name": "change",
+    "type": "method",
+    "language": "python",
+    "file": "backend/algorithms/dp.py",
+    "line": 44,
+    "signature": "def change(self, amount: int, coins: list[int]) -> int:",
+    "parameters": [],
+    "return_type": "int",
+    "return_description": "",
+    "description": "",
+    "code": "def change(self, amount: int, coins: list[int]) -> int:\n        memo, n = {}, len(coins)\n        def dp(c, amount):\n            if amount == 0:\n                return 1\n            if amount < 0 or c == n:\n                return 0\n            if (c, amount) not in memo:\n                memo[c, amount] = dp(c, amount - coins[c]) + dp(c + 1, amount)\n            return memo[c, amount]\n        return dp(0, amount)",
+    "links": [],
+    "variables": [],
+    "expressions": [],
+    "parent": "DP"
+  },
+  "DP.change.dp": {
+    "name": "dp",
     "type": "method",
     "language": "python",
     "file": "backend/algorithms/dp.py",
     "line": 48,
-    "signature": "def canPartitionBottomUp(self, nums: list[int]) -> bool:",
+    "signature": "def dp(c, amount):",
+    "parameters": [],
+    "return_type": "",
+    "return_description": "",
+    "description": "",
+    "code": "def dp(c, amount):\n            if amount == 0:\n                return 1\n            if amount < 0 or c == n:\n                return 0\n            if (c, amount) not in memo:\n                memo[c, amount] = dp(c, amount - coins[c]) + dp(c + 1, amount)\n            return memo[c, amount]",
+    "links": [],
+    "variables": [],
+    "expressions": [],
+    "parent": "DP.change"
+  },
+  "DP.winnerSquareGame": {
+    "name": "winnerSquareGame",
+    "type": "method",
+    "language": "python",
+    "file": "backend/algorithms/dp.py",
+    "line": 59,
+    "signature": "def winnerSquareGame(self, n: int) -> bool:",
     "parameters": [],
     "return_type": "bool",
     "return_description": "",
-    "description": "Expressions:",
-    "code": "def canPartitionBottomUp(self, nums: list[int]) -> bool:\n        if (total := sum(nums)) & 1:\n            return False\n        target ,reachable = total / 2 ,{0} \n        for num in nums:\n            new_sums = {s + num for s in reachable if s + num <= target}\n            reachable |= new_sums\n            if target in reachable:\n                return True\n        return False",
+    "description": "",
+    "code": "def winnerSquareGame(self, n: int) -> bool:\n        memo = {0: False}\n        def dp(n):\n            if n not in memo:\n                memo[n] = any(not dp(n - i**2) for i in range(int(n**0.5), 0, -1))\n            return memo[n]\n        return dp(n)",
     "links": [],
-    "variables": [
-      {
-        "name": "target",
-        "description": "the sum each subset needs to reach",
-        "type": "variable"
-      },
-      {
-        "name": "reachable",
-        "description": "all subset-sums achievable so far",
-        "type": "variable"
-      }
-    ],
-    "expressions": [
-      {
-        "expression": "if (total := sum(nums)) & 1",
-        "description": "# if the total is odd, you can’t split into two equal subsets",
-        "type": "expression"
-      },
-      {
-        "expression": "new_sums = {s + num for s in reachable if s + num <= target}",
-        "description": "form new sums by adding current number to existing ones (but don’t exceed target)",
-        "type": "expression"
-      },
-      {
-        "expression": "reachable |= new_sums",
-        "description": "update reachable sums",
-        "type": "expression"
-      },
-      {
-        "expression": "if target in reachable:",
-        "description": "early exit if we’ve hit the target",
-        "type": "expression"
-      },
-      {
-        "expression": "return False",
-        "description": "couldn’t reach the exact half-sum",
-        "type": "expression"
-      }
-    ],
+    "variables": [],
+    "expressions": [],
     "parent": "DP"
+  },
+  "DP.winnerSquareGame.dp": {
+    "name": "dp",
+    "type": "method",
+    "language": "python",
+    "file": "backend/algorithms/dp.py",
+    "line": 63,
+    "signature": "def dp(n):",
+    "parameters": [],
+    "return_type": "",
+    "return_description": "",
+    "description": "",
+    "code": "def dp(n):\n            if n not in memo:\n                memo[n] = any(not dp(n - i**2) for i in range(int(n**0.5), 0, -1))\n            return memo[n]",
+    "links": [],
+    "variables": [],
+    "expressions": [],
+    "parent": "DP.winnerSquareGame"
+  },
+  "DP.mostPoints": {
+    "name": "mostPoints",
+    "type": "method",
+    "language": "python",
+    "file": "backend/algorithms/dp.py",
+    "line": 71,
+    "signature": "def mostPoints(self, questions: list[list[int]]) -> int:",
+    "parameters": [],
+    "return_type": "int",
+    "return_description": "",
+    "description": "",
+    "code": "def mostPoints(self, questions: list[list[int]]) -> int:\n        memo, n = {}, len(questions)\n        def dp(i):\n            if i >= n:\n                return 0\n            if i not in memo:\n                memo[i] = max(dp(i + 1), (q:=questions[i])[0] + dp(i + 1 + q[1]))\n            return memo[i]\n        return dp(0)",
+    "links": [],
+    "variables": [],
+    "expressions": [],
+    "parent": "DP"
+  },
+  "DP.mostPoints.dp": {
+    "name": "dp",
+    "type": "method",
+    "language": "python",
+    "file": "backend/algorithms/dp.py",
+    "line": 75,
+    "signature": "def dp(i):",
+    "parameters": [],
+    "return_type": "",
+    "return_description": "",
+    "description": "",
+    "code": "def dp(i):\n            if i >= n:\n                return 0\n            if i not in memo:\n                memo[i] = max(dp(i + 1), (q:=questions[i])[0] + dp(i + 1 + q[1]))\n            return memo[i]",
+    "links": [],
+    "variables": [],
+    "expressions": [],
+    "parent": "DP.mostPoints"
   },
   "LRUCache": {
     "name": "LRUCache",
