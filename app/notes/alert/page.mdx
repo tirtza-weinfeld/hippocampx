@@ -1,0 +1,16 @@
+> *Algorithm:*
+>
+1. initialize distance estimates, 
+2. **Relax all edges |V|–1 times** to compute shortest paths(*where each relaxation improves distance estimates*).
+3. **Then** do one more pass (the $V$th): 
+      3.1. if any edge is relaxable (i.e., violates the triangle inequality) → *negative-weight cycle exists*.
+      3.2. otherwise, *d(s, v) = δ(s, v) for all v ∈ V*
+
+>[!note] *Algorithm:*
+> 
+> initialize distance estimates, 
+**Relax all edges |V|–1 times** to compute shortest paths(*where each relaxation improves distance estimates*).
+**Then** do one more pass (the $V$th): 
+      3.1. if any edge is relaxable (i.e., violates the triangle inequality) → *negative-weight cycle exists*.
+      3.2. otherwise, *d(s, v) = δ(s, v) for all v ∈ V*
+

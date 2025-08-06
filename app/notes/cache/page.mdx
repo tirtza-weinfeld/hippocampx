@@ -28,18 +28,19 @@ This policy is efficiently implemented using an `OrderedDict` in Python, which i
 
 
   > **The Setup:**
-  > 1. A single shelf *[8:]starts* at a *[8:]reshelving basket* `$🧺  _📘..._📕 👵$` and *[2:]ends* right next to the *[2:]librarian's chair*.
+  > 
+  > A single shelf *[8:]starts* at a *[8:]reshelving basket* `$🧺  _📘..._📕 👵$` and *[2:]ends* right next to the *[2:]librarian's chair*.
 
 
 
   > **The Action:**
-    > 1.  When a book is needed (`get` or `put`), the librarian places it on the shelf right beside her chair—at the very **end** of the line.
-    > 2.  As she adds books, the line gets pushed down the shelf until the book at the far end(the one at the beginning of the shelf) falls into the basket. This evicted book is the one that was least recently used.
-    >
+  > -  When a book is needed (`get` or `put`), the librarian places it on the shelf right beside her chair—at the very **end** of the line.
+  > -  As she adds books, the line gets pushed down the shelf until the book at the far end(the one at the beginning of the shelf) falls into the basket. This evicted book is the one that was least recently used.
+    
 
 > **In Code:**
-  > 1. `cache.move_to_end(key)` places a book at the *[2:]end*, near the *[2:]librarian's chair*.
-  > 2. `cache.popitem(last=False)` drops the book farthest from the librarian(a.k.a. the one at the *[8:]beginning* of the shelf) into the *[8:]basket*.
+  > - `cache.move_to_end(key)` places a book at the *[2:]end*, near the *[2:]librarian's chair*.
+  > - `cache.popitem(last=False)` drops the book farthest from the librarian(a.k.a. the one at the *[8:]beginning* of the shelf) into the *[8:]basket*.
 
 ### Python Implementation
 
@@ -66,14 +67,14 @@ The librarian notices a flaw in her simple system: a popular book can be pushed 
   > **The Setup:** Instead of one shelf, she now has a small bookcase with **multiple shelves**, stacked vertically. This is the **LFU (Least Frequently Used)** system, which tracks a book's **popularity**.
   
   > **The Action:**
-    > 1.  The shelves represent popularity levels. The **bottom shelf (\#1)** is for newcomers (used once), the shelf above it **(\#2)** is for books used twice, and so on.
-    > 2.  When a book on a lower shelf (say, Shelf \#1) is needed again, it gets a **promotion\!** The librarian moves it up to Shelf \#2 and places it in the spot **right next to her chair**—at the end of that new line. It is now the most recently used among all books with a popularity score of two.
-    > 3.  For **eviction**, she always takes from the **bottom shelf (\#1)**, since it holds the least popular books. From that shelf, she removes the book at the far end—the one closest to the basket.
+    > -  The shelves represent popularity levels. The **bottom shelf (\#1)** is for newcomers (used once), the shelf above it **(\#2)** is for books used twice, and so on.
+    > -  When a book on a lower shelf (say, Shelf \#1) is needed again, it gets a **promotion\!** The librarian moves it up to Shelf \#2 and places it in the spot **right next to her chair**—at the end of that new line. It is now the most recently used among all books with a popularity score of two.
+    > -  For **eviction**, she always takes from the **bottom shelf (\#1)**, since it holds the least popular books. From that shelf, she removes the book at the far end—the one closest to the basket.
   > 
   > This protects popular books by moving them up the bookcase, away from the eviction zone on the bottom shelf.
 
 > **In Code:**
-> 1. The `[8:]buckets` dictionary is our *[8:]bookcase*(our *[8:]shelves*); each `[14:]key` is a *[14:]shelf number*.
+> - The `[8:]buckets` dictionary is our *[8:]bookcase*(our *[8:]shelves*); each `[14:]key` is a *[14:]shelf number*.
 
 
 ### Python Implementation

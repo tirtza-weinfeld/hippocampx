@@ -9,7 +9,7 @@ import remarkGfm from 'remark-gfm'
 import remarkInjectToc from "@/plugins/toc-plugin"
 import { remarkGithubAlerts } from "@/plugins/remark-github-alerts"
 import remarkSmartCodeImport from "@/plugins/remark-smart-code-import"
-// import remarkListVariants from "@/plugins/remark-list-variants"
+import remarkListVariants from "@/plugins/remark-list-variants"
 
 const withMDX = createMDX({
   extension: /\.mdx?$/,
@@ -17,7 +17,7 @@ const withMDX = createMDX({
     remarkPlugins: [
       remarkSmartCodeImport, 
       remarkMath, 
-      // remarkListVariants,
+      remarkListVariants, // Single plugin that handles everything correctly
       remarkGfm,
       remarkInjectToc,
       remarkGithubAlerts,

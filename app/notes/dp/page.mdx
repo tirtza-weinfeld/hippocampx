@@ -4,14 +4,14 @@
 
 
 > Dynamic Programming (DP) is an algorithmic technique for **optimization** or **counting** problems that exibit the following properties:
-> 1. **Optimal substructure**: the best solution for the whole problem is formed from optimal solutions to its subproblems.
-> 2. **Overlapping subproblems**: identical subproblems recur multiple times, allowing reuse of results to avoid exponential recomputation.
+> - ~ **Optimal substructure**: the best solution for the whole problem is formed from optimal solutions to its subproblems.
+> - ~ **Overlapping subproblems**: identical subproblems recur multiple times, allowing reuse of results to avoid exponential recomputation.
 
 
 > DP can be implemented in two equivalent ways:
 > 
-> 1. **Top-down (memoization)**: start from the **root state** (the full problem), recursively compute only needed subproblems, cache results, and implicitly traverse the subproblem DAG in **reverse topological order**.
-> 2. **Bottom-up (tabulation)**: explicitly define a **topological order** over all states (e.g., by increasing substring length or decreasing index) and iteratively fill a table from base cases up to the root—eliminating recursion overhead and directly matching the memoized logic.
+> - ~ **Top-down (memoization)**: start from the **root state** (the full problem), recursively compute only needed subproblems, cache results, and implicitly traverse the subproblem DAG in **reverse topological order**.
+> - ~ **Bottom-up (tabulation)**: explicitly define a **topological order** over all states (e.g., by increasing substring length or decreasing index) and iteratively fill a table from base cases up to the root—eliminating recursion overhead and directly matching the memoized logic.
 > 
 > Both methods yield identical results. Top-down is **straightforward to write**, while bottom-up is typically **more efficient in practice** and easy to derive by unrolling memoized recursion in topological order.
 

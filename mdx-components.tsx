@@ -25,14 +25,23 @@ import {
   TableCell, 
   TableCaption 
 } from '@/components/mdx/table';
-import { ListItem, OrderedList, UnorderedList } from '@/components/mdx/list';
+// Import standard list components only
+import { OrderedList } from '@/components/mdx/list/ordered-list';
+import { UnorderedList } from '@/components/mdx/list/unordered-list';
+import { ListItem } from '@/components/mdx/list/list-item';
+import FeatureItem from '@/components/mdx/list/feature-item';
+import { TaskItem } from '@/components/mdx/list/task-item';
 
 export const customComponents = {
   
-  // Lists
+  // Lists - Standard HTML elements only
   ul: UnorderedList,
   ol: OrderedList,
   li: ListItem,
+  
+  // Custom list item components for plugin-generated JSX
+  FeatureItem,
+  TaskItem,
 
   // Typography
   h1: H1,

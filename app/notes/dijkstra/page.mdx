@@ -143,9 +143,9 @@ to reach *all* nodes. If impossible, return -1*
 > 
 > By substituting the grid values back into the general formula, we get the final complexity:
 > 
-> 1.  **Start with the general formula:** $O(E \log V)$
-> 2.  **Substitute E:** $O((R \cdot C) \log V)$
-> 3.  **Substitute V:** $O((R \cdot C) \log(R \cdot C))$
+> - ~ **Start with the general formula:** $O(E \log V)$
+> - ~ **Substitute E:** $O((R \cdot C) \log V)$
+> - ~ **Substitute V:** $O((R \cdot C) \log(R \cdot C))$
 > 
 > So, the complexity $O(R \cdot C \log(R \cdot C))$ represents the cost of visiting each cell's edges ($O(R \cdot C)$) and, for each edge, potentially performing an operation on the priority queue that costs $\log(R \cdot C)$.
 
@@ -178,8 +178,8 @@ to reach *all* nodes. If impossible, return -1*
   > * **E** is the number of edges.
   >  
   > When we apply this to an $N \times N$ grid:
-  > 1.  **Vertices (V):** Each of the cells is a vertex, so $V = N^2$.
-  > 2.  **Edges (E):** Each cell connects to at most 4 neighbors, so the total number of edges is roughly $4 \times N^2$. In Big O notation, this is just $O(N^2)$.
+  > - ~ **Vertices (V):** Each of the cells is a vertex, so $V = N^2$.
+  > - ~ **Edges (E):** Each cell connects to at most 4 neighbors, so the total number of edges is roughly $4 \times N^2$. In Big O notation, this is just $O(N^2)$.
   >
   > Substituting these into the formula gives us:
   > $O(E \log V) \rightarrow O(N^2 \log(N^2))$

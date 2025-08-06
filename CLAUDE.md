@@ -184,3 +184,68 @@ Each learning domain (calculus, AI, binary) has:
 - Interactive assessment tools
 
 Run `pnpm extract-metadata` after modifying code examples to update tooltips and documentation.
+
+## Unified/Remark/MDX TypeScript Best Practices (2025)
+
+### Core Principle
+**TYPES**: Import from `@types/*` packages | **FUNCTIONS**: Import from ecosystem packages
+
+### Dependencies
+```bash
+pnpm add @types/unist @types/mdast
+```
+
+### Correct Import Patterns ✅
+```typescript
+// Types - Use @types/mdast for TypeScript definitions
+import type { Node, Parent, Literal } from '@types/unist'
+import type { Root, List, ListItem, Paragraph, Text } from '@types/mdast'
+
+// Functions - Use ecosystem packages
+import { unified } from 'unified'
+import remarkParse from 'remark-parse'
+import { visit } from 'unist-util-visit'
+import remarkListVariants from '@/plugins/remark-list-variants'
+```
+
+### Plugin Pattern
+```typescript
+import type { Root } from '@types/mdast'
+import type { VFile } from 'vfile'
+
+export function myRemarkPlugin(options?: PluginOptions) {
+  return function (tree: Root, file: VFile): void {
+    // Implementation
+  }
+}
+```
+
+### Special Note for Tests
+In test files, some environments may have different module resolution. If `@types/mdast` imports fail with "Cannot import type declaration files", use:
+```typescript
+// Alternative for test environments with module resolution issues
+import type { Root, List, ListItem, Paragraph, Text } from 'mdast'
+```
+
+### Incorrect Patterns ❌
+```typescript
+// ❌ Using any or @ts-ignore
+const tree: any = processor.parse('# hello')
+// @ts-ignore
+```
+
+### Key Rules
+1. **mdast npm package**: Deprecated (renamed to remark 10 years ago)
+2. **@types/mdast**: Current official source for TypeScript types (v4.0.4, 2025)
+3. **Alternative**: In test environments, `mdast` package may work for type imports
+4. **Never use**: `any` types or `@ts-ignore` comments
+5. **Always use**: `import type` for type definitions
+
+# important-instruction-reminders
+Do what has been asked; nothing more, nothing less.
+NEVER create files unless they're absolutely necessary for achieving your goal.
+ALWAYS prefer editing an existing file to creating a new one.
+NEVER proactively create documentation files (*.md) or README files. Only create documentation files if explicitly requested by the User.
+
+      
+      IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.

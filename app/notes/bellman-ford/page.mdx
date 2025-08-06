@@ -10,16 +10,12 @@
 > [!definition] 
 > Given a directed graph $G = (V, E)$, edge weights $w: E \to \mathbb{R}$, and source node $s$, compute $\delta(s, v)$ for all $v \in V$, or detect a negative-weight cycle reachable from $s$.
 
-
-
-
 > *Algorithm:*
-> 1. initialize distance estimates, 
-> 2. **Relax all edges |V|–1 times** to compute shortest paths(*where each relaxation improves distance estimates*).
-> 3. **Then** do one more pass (the $V$th): 
->       1. if any edge is relaxable (i.e., violates the triangle inequality) → *negative-weight cycle exists*.
->       2. otherwise, *d(s, v) = δ(s, v) for all v ∈ V*
-
+> - ~ initialize distance estimates, 
+> - ~ **Relax all edges |V|–1 times** to compute shortest paths(*where each relaxation improves distance estimates*).
+> - ~ **Then** do one more pass (the $V$th): 
+>   - ~ if any edge is relaxable (i.e., violates the triangle inequality) → *negative-weight cycle exists*.
+>   - ~ otherwise, *d(s, v) = δ(s, v) for all v ∈ V*
 
 
 
@@ -68,7 +64,7 @@ Space: $O(|V| + |E|)$
 > Below we break the function into its five conceptual steps—showing the exact code and explaining how it implements each part of Variant 2:
 > 
 > 
-> 1. **Initialize δ₀ (distance 0 at `source`, ∞ elsewhere)**
+> - ~ **Initialize δ₀ (distance 0 at `source`, ∞ elsewhere)**
 > 
 >    ```python
 >    d = {v: float("inf") for v in vertices}
@@ -78,7 +74,7 @@ Space: $O(|V| + |E|)$
 >    * Builds the initial *layer 0* distances, `$δ_0(s, v)$`.
 >    * `V` is the number of vertices (so we’ll do V relaxation passes next).
 > 
-> 2. **Layered relaxation: compute δ₁…δ_V**
+> - ~ **Layered relaxation: compute δ₁…δ_V**
 > 
 >    ```python
 >    for k in range(V):            # k = 0…V-1
@@ -92,7 +88,7 @@ Space: $O(|V| + |E|)$
 >    * Each iteration reads only from the old `d` ($δ_k$) and writes into $d_k$, so no two relaxations chain in one pass.
 >    * After pass k you get $δ_{k+1}$ in `d`.
 > 
-> 3. **Detect direct witnesses ($δ_V < δ_{V-1}$)**
+> - ~ **Detect direct witnesses ($δ_V < δ_{V-1}$)**
 > 
 >    ```python
 >    witnesses = {
@@ -106,7 +102,7 @@ Space: $O(|V| + |E|)$
 > 
 >    * Any `v` still relaxable on the V-th pass is a **negative-cycle witness**.
 > 
-> 4. **Build successor list for propagation**
+> - ~ **Build successor list for propagation**
 > 
 >    ```python
 >    adj = defaultdict(list)
@@ -116,7 +112,7 @@ Space: $O(|V| + |E|)$
 > 
 >    * `adj[u]` now lists every direct neighbor of `u` in the original graph, ready for a DFS flood-fill.
 > 
-> 5. **Flood-fill −∞ from each witness**
+> - ~ **Flood-fill −∞ from each witness**
 > 
 >    ```python
 >    stack    = list(witnesses)
@@ -187,38 +183,38 @@ Space: $O(|V| + |E|)$
 > return d[dst] if d[dst] < inf else -1
 > ```
 > 
-> 1. **Interpretation as layered DAG**
+> - ~ **Interpretation as layered DAG**
 > 
 >    * Think of a DAG with layers 0…k+1. Layer i holds the best cost to each city using ≤ i flights (edges).
 >    * Before any loop, `d = δ₀` (only the source is 0; others ∞).
 >    * After loop iteration i (0-indexed), `d = δ_{i+1}`: the best cost using ≤ (i+1) edges.
 > 
-> 2. **Why the `tmp` array?**
+> - ~ **Why the `tmp` array?**
 > 
 >    * By writing into a fresh copy `tmp` while reading only from the old `d`, you enforce that every relaxation uses exactly one additional edge.
 >    * If you instead updated `d` in place, a newly decreased `d[x]` could feed into another relaxation in the same pass—letting you string together multiple edges, which breaks the “≤ i edges” guarantee and degenerates to the classic Bellman-Ford.
 > 
-> 3. **Mapping to the variant 2's layered-DAG Bellman-Ford**
+> - ~ **Mapping to the variant 2's layered-DAG Bellman-Ford**
 > 
 >    * **variant 2** builds an explicit |V|+1 layer DAG, where each pass relaxes only edges from layer k−1 → k, so after k passes you have δₖ(s,v).
 >    * **Our Solution** does the same in “software”: each `for _ in range(k+1)` pass reads δₖ from `d` and writes δₖ₊₁ into `tmp`.
 >    * After k+1 passes, `d[v] = δ_{k+1}(s,v)`.
 > 
-> 4. **Classic (in-place) Bellman-Ford vs. layered version**
+> - ~ **Classic (in-place) Bellman-Ford vs. layered version**
 > 
 >    
->    1. *Classic BF*
+>    - ~ *Classic BF*
 >        relaxes all edges in place for V−1 passes → d[v] may already incorporate paths of length > k within pass k.
-        runs in O(V·E) time, O(V) space, and can detect negative cycles by one extra pass—but can’t recover them.
->    2. *Layered BF*
+>        runs in O(V·E) time, O(V) space, and can detect negative cycles by one extra pass—but can’t recover them.
+>    - ~ *Layered BF*
 >        isolates each pass via a tmp copy → d[v] = δₖ exactly after pass k.
 >       * Layered runs in O(V·E) time, O(V·E) space if you build the DAG explicitly (but our code stays O(V+E) space), and can pinpoint witnesses and propagate −∞.
 >
->    3. *Our Solution*
+>    - ~ *Our Solution*
 >        tmp array simulates the variant 2's DAG without building V×V state.
 > 
 > 
-> 5. **Time complexity**
+> - ~ **Time complexity**
 >    Each of the k+1 passes scans all E edges → $O((k+1)E)$
 > 
 > ---

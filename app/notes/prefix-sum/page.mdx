@@ -123,8 +123,8 @@ This is equivalent to finding the longest subarray that sums to zero after conve
 >
 > The logic is based on a core principle of [modular congruence `A ≡ B (mod C)`](./modular-arithmetic#congruence-modulo):
 >
-> 1.  `a % c == b % c` (Two numbers have the same remainder)
-> 2.  `(a - b) % c == 0` (Their difference is a multiple of `c`)
+> - ~ `a % c == b % c` (Two numbers have the same remainder)
+> - ~ `(a - b) % c == 0` (Their difference is a multiple of `c`)
 >
 >
 >
@@ -150,10 +150,10 @@ This is equivalent to finding the longest subarray that sums to zero after conve
 >   * `R = Total's Remainder`
 > 
 > 
-> 1.  **Start with the objective:** We need the subarray's sum (`C - P`) to have the remainder `R`.
+> - ~ **Start with the objective:** We need the subarray's sum (`C - P`) to have the remainder `R`.
 >     `(C - P) % p == R`
 > 
-> 2.  **Isolate the unknown:** We need to find the `Past Prefix Sum` (`P`). Using the rules of modular arithmetic, we can rearrange the equation to solve for `P`.
+> - ~ **Isolate the unknown:** We need to find the `Past Prefix Sum` (`P`). Using the rules of modular arithmetic, we can rearrange the equation to solve for `P`.
 >     `P % p == (C - R) % p`
 > > [!note:collapse] That rearrangement is based on the algebraic rules of **modular congruence**
 > > 
@@ -163,13 +163,13 @@ This is equivalent to finding the longest subarray that sums to zero after conve
 > > 
 > > **Applying the Rule**
 > > 
-> > 1.  **Start with the equation in congruence form:**
+> > - ~ **Start with the equation in congruence form:**
 > >     `(C - P) % p == R` is the same as `C - P ≡ R (mod p)`.
 > > 
-> > 2.  **Rearrange using algebra:** To solve for `P`, you can add `P` to both sides and subtract `R` from both sides.
+> > - ~ **Rearrange using algebra:** To solve for `P`, you can add `P` to both sides and subtract `R` from both sides.
 > >     `C - R ≡ P (mod p)`
 > > 
-> > 3.  **Convert back:** :
+> > - ~ **Convert back:** :
 > >     `P % p == (C - R) % p`
 > >     
 > > Think of `(mod p)` like a unit of measurement, such as "in kilograms" or a currency like "in USD." It's not a number or variable that you move around algebraically.
@@ -184,7 +184,7 @@ This is equivalent to finding the longest subarray that sums to zero after conve
 > > 
 > > Similarly, `(mod p)` tells us the mathematical system we are working in. All the algebra we perform on `C`, `P`, and `R` happens **within that system**. The `(mod p)` at the end simply states that the congruence relationship is true under those specific rules.
 > 
-> 3.  **Define `need`:** The term we solved for, `Past Prefix Sum % p`, is the value the code is looking for. This is what **`need`** represents.
+> - ~ **Define `need`:** The term we solved for, `Past Prefix Sum % p`, is the value the code is looking for. This is what **`need`** represents.
 >     `need = (C - R) % p`
 > 
 > **Why add `+ p`?**
