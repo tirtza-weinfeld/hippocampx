@@ -143,7 +143,9 @@ function extractClass(code: string, className: string, stripDocstring = true): s
   // Find the class start
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i].trim();
-    if (line.startsWith(`class ${className}`)) {
+    // Use regex to match exact class name with word boundary
+    const classRegex = new RegExp(`^class\\s+${className}(?:[:(\\s]|$)`);
+    if (classRegex.test(line)) {
       classStart = i;
       break;
     }
@@ -203,7 +205,9 @@ function extractClassMethod(code: string, className: string, methodName: string,
   // Find the class start
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i].trim();
-    if (line.startsWith(`class ${className}`)) {
+    // Use regex to match exact class name with word boundary
+    const classRegex = new RegExp(`^class\\s+${className}(?:[:(\\s]|$)`);
+    if (classRegex.test(line)) {
       classStart = i;
       break;
     }

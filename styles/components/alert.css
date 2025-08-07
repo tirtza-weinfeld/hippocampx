@@ -17,5 +17,6 @@
   --color-alert-complexity: var(--color-sky-500);
   --color-alert-spacecomplexity: var(--color-sky-500);
   --color-alert-intuition: var(--color-sky-500);
+  --color-alert-walkthrough: var(--color-purple-500);
 }
 

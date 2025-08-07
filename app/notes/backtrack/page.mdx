@@ -1,0 +1,114 @@
+# Backtracking
+
+## Resizable Table of Contents
+
+## Examples
+
+### 1. N-Queens
+
+*Place n queens on an n x n board such that no two queens threaten each other.*
+*[19:]meaning no two queens share the same row, column, or diagonal.*
+
+[51. N-Queens](https://leetcode.com/problems/n-queens/)
+
+```python file=backend/algorithms/backtrack.py#func:solveNQueens
+```
+
+> [!insight:collapse] *Backtrack with State Tracking ♛*
+>
+> * ~ *Place one queen per row. Track blocked columns, diagonals:*
+> 	* Valid placement → recurse to next row
+> 	* Invalid → skip
+> 	* After recursion, remove queen to try next column
+>
+> * ~ *Track state using:*
+> 	* `cols` for columns
+> 	* `diag1` for main diagonal *↘*  `row - col`
+> 	* `diag2` for anti-diagonal *↙* `row + col`
+
+> [!timecomplexity:collapse] $O(N!)$
+>
+> •	First row: `$N$` choices
+> •	Second: `$\leq N-1$`, and so on
+> •	Total permutations = `$N!$`
+> •	Pruning drastically reduces actual recursion tree
+
+---
+
+
+### 2. Word Search
+
+*Determine if a word exists in a 2D board by following adjacent letters without reuse.*
+
+[79. Word Search](https://leetcode.com/problems/word-search/)
+
+> [!insight:collapse] DFS with Early Exit on Mismatch 🔍
+>
+> Start DFS from each cell. At each step:
+	•	Check bounds and character match
+	•	Mark visited cell with a temp symbol (e.g. #)
+	•	Try 4 directions (no revisiting)
+	•	Restore cell after backtracking
+Stop early if the full word is matched.
+
+> [!timecomplexity:collapse] $O(MN · 3^L)$
+>
+> where:
+	•	M, N = board size
+	•	L = word length
+	•	Each step explores at most 3 directions (excluding the one it came from)
+	•	Runtime improves with early mismatches and pruning
+
+
+---
+
+### 3. Permutations
+
+*Return all permutations of a list of unique numbers.*
+
+[46. Permutations](https://leetcode.com/problems/permutations/)
+
+```python file=backend/algorithms/backtrack.py#func:permute
+```
+
+
+
+> [!insight:collapse] Recursive Tree of Choices 🔁
+>
+>  *Build permutations by choosing unused elements:*
+> •	At each level, try each remaining number
+> •	Recurse with updated path
+> •	Backtrack to un-choose
+> 
+> Use used list or boolean flags to track chosen elements.
+> 
+
+> [!timecomplexity:collapse] $O(N!)$
+>
+> •	N levels of recursion
+> •	Each level explores N - depth options
+> •	Total: N! permutations
+
+---
+
+### 4. Combination Sum
+
+*Return all unique combinations where chosen numbers sum to a target. Numbers can be reused.*
+
+[39. Combination Sum](https://leetcode.com/problems/combination-sum/)
+
+```python file=backend/algorithms/backtrack.py#func:combinationSum
+```
+
+
+> [!insight:collapse] DFS with backtracking: 
+>
+> sort `candidates`, try each starting from current index (to allow reuse), prune if number exceeds remaining target, and record the path when `rem == 0`.
+
+> [!timecomplexity:collapse] $O(2^n)$
+>
+> Worst-case exponential — `$O(2^n)$` in number of combinations explored — but pruning (`if c > rem: break`) reduces branches significantly.
+
+
+
+---

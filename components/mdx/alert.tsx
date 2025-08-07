@@ -1,6 +1,7 @@
 "use client"; // Required for Framer Motion components
 
-import { AlertCircle, Info, Lightbulb, Notebook, AlertTriangle, ChevronDown, Clock, Database } from "lucide-react";
+import { AlertCircle, Info, Lightbulb, Notebook, AlertTriangle, ChevronDown, Clock, Database,
+   ListChecks } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
@@ -20,6 +21,7 @@ const ICONS = {
   spacecomplexity: Database,
   insight: Lightbulb,
   intuition: Lightbulb,
+  walkthrough: ListChecks,
 } as const;
 
 const LABELS = {
@@ -37,6 +39,7 @@ const LABELS = {
   spacecomplexity: "Space Complexity",
   insight: "Insight",
   intuition: "Intuition",
+  walkthrough: "Walkthrough",
 } as const; // static mapping of types to labels
 
 // Statically mapping types to full class names ensures Tailwind's JIT compiler
@@ -132,6 +135,12 @@ const STYLES = {
     border: "border-alert-intuition",
     text: "text-alert-intuition",
     iconBg: "bg-alert-intuition/10",
+  },
+  walkthrough: {
+    gradient: "from-white to-alert-walkthrough/5 dark:from-gray-900 dark:to-alert-walkthrough/20",
+    border: "border-alert-walkthrough",
+    text: "text-alert-walkthrough",
+    iconBg: "bg-alert-walkthrough/10",
   },
 
 } as const;
@@ -284,8 +293,10 @@ export default function Alert({ type, children, collapse = false }: AlertProps) 
                   "[&_p]:m-0 [&_a]:font-medium",
                   // `[&_a]:${styles.text} [&_a]:underline [&_a]:underline-offset-2`,
                   
-                  "[&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded-md [&_code]:font-mono [&_code]:text-sm",
-                  "whitespace-pre-wrap w-full bg-transparent mb-0"
+                                    "[&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded-md [&_code]:font-mono [&_code]:text-sm ",
+                
+                    " w-full bg-transparent mb-0",
+                    "[&>*:not(ul):not(ol):not(li)]:whitespace-pre-wrap"
                 )}
               >
                 {details}

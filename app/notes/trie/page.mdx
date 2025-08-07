@@ -1,0 +1,122 @@
+# Trie (Prefix Tree)
+
+## Resizable table of contents
+
+## Problems
+
+
+### 1. Implement Trie (Prefix Tree)
+
+*Design a Trie with `insert`, `search`, and `startsWith` methods. Support only lowercase English letters.*
+
+[208. Implement Trie (Prefix Tree)](https://leetcode.com/problems/implement-trie-prefix-tree/)
+
+```python file=backend/algorithms/trie.py#class:Trie
+```
+
+> [!insight:collapse] **One Node per Character **
+>
+> A Trie is a tree where each node maps a character to its child. Every word is stored by following or creating one node per character. A `is_end` flag marks the end of a valid word. Prefix queries traverse as far as possible; search only succeeds if `is_end` is true at the last node.
+
+> [!timecomplexity:collapse] `$O(L)$` ,where `$L$` is the length of the word. 
+>
+> All operations — insert, search, and startsWith — take time proportional to the word's length.
+
+
+---
+
+### 2. Design Add and Search Words Data Structure
+
+*Implement a Trie that supports adding words and searching with `.` as a wildcard matching any single letter.*
+*[19:]There will be at most 2 dots in word for search queries.*
+
+[211. Design Add and Search Words](https://leetcode.com/problems/design-add-and-search-words-data-structure/)
+
+```python file=backend/algorithms/trie.py#class:WordDictionary
+```
+
+> [!insight:collapse] **DFS on Wildcards `.`**
+>
+> `addWord` is identical to `insert` in a normal Trie. The key difference is in `search`: when encountering a `.`, explore all children recursively. This naturally requires DFS. A match is valid only if any path leads to a terminal `is_end = True`.
+
+> [!timecomplexity:collapse]
+>
+> * `addWord(word)`: `$O(n)$`, where `$n$` = word length
+> * `search(word)`: `$O(26ᵏ · n)$`, where `$k$` = number of wildcards `.` in the query
+>    * If `$k = 0$` ⇒ `$O(n)$`
+>    * Worst‐case `$k = n$` ⇒ `$O(26^n · n)$`
+>    * Since `$k ≤ 2$` by problem constraints, this is effectively `$O(n)$`
+
+---
+
+### 3. Replace Words
+
+*Given a dictionary of root words, replace all words in a sentence with the shortest root that is a prefix of the word.*
+
+[648. Replace Words](https://leetcode.com/problems/replace-words/)
+
+```python file=backend/algorithms/trie.py#func:replaceWords
+```
+
+> [!insight:collapse] *Shortest Prefix Wins*
+>
+> Build a Trie from all root words. For each word in the sentence, scan its prefix in the Trie. Stop as soon as you hit a node with `is_end = True` — that’s the shortest valid replacement.
+
+> \[!timecomplexity\:collapse] `O(D + S)` where `$D$` = total characters in dictionary, `$S$` = total characters in sentence.
+>
+> * Build trie: `$O(\sum_{r\in\text{dictionary}}|r|)$` — you walk each root’s characters, stopping early if you hit a terminal.
+> * Search & replace: `$O(\sum_{w\in\text{sentence}}|w|)$` — for each word, you scan until you hit `is_end = True` or exhaust the word.
+>
+> Overall: `$O(\sum_{r\in\text{dictionary}}|r|\;+\;\sum_{w\in\text{sentence}}|w|)$`
+
+---
+
+### 4. Word Search II
+
+*Find all words in a 2D board that exist in a given word list.*
+
+[212. Word Search II](https://leetcode.com/problems/word-search-ii/)
+
+```python file=backend/algorithms/trie.py#func:findWords
+```
+
+> [!insight:collapse] **Combine a trie with DFS to search for all words in parallel 🚀**
+>
+> The trie lets you instantly abandon any board path that doesn't match a word prefix, so every DFS step is meaningful. You find all possible words in a single board traversal, efficiently pruning dead ends as you go.
+> 
+> > [!walkthrough:collapse]
+> >
+> > * **Optimal Solution:** Build a trie for all words, then DFS from each board cell, following only trie branches. Collect words when reaching `"$"`.
+> > 
+> > * **`node["$"] = word`:** Marks the end of a word and stores the word, so it can be returned immediately during search.
+> >
+> > * **`word = node.pop("$", None)` and `if word: res.append(word)`:** When a word is found, remove its marker to avoid duplicates and append to the result.
+> >
+> > * **`if not node: parent.pop(c)`:** Prunes empty trie nodes after all descendant words are found—keeps trie minimal and speeds up further searches.
+> >
+> > * **Why prune works:** After removing all possible words and branches from a node, it becomes empty; so we clean it up from its parent.
+> >
+> > * **Time Complexity:** `$O(\sum |w| + m n \cdot 4^L)$` (build trie + board DFS), where `$L$` = max word length.
+> >
+> >* **Intuition:** Using trie + DFS lets us check all words in one board scan, abandoning impossible paths early, for much better performance than brute force.
+
+
+
+
+> [!timecomplexity\:collapse]   `$O(\sum |w| + m n \cdot 4^L)$`
+> 
+> * **Trie build:** `$O(\sum |w|)$` for all words (insert each character).
+> * **DFS search:** Worst case `$O(m n \cdot 4^L)$`:
+> 
+>   * `$m, n$` = board size
+>   * `$L$` = max word length
+>   * Each cell could start a DFS exploring up to `$4^L$` paths (in practice, much less due to pruning).
+> * **Total:**
+>   `$O(\sum |w| + m n \cdot 4^L)$`
+> 
+> **Why:**
+> 
+> * The trie lets us skip paths that can’t match any word, but in theory, if the board is full of possible prefixes, DFS could branch up to `$4^L$` from each cell.
+> * Actual runtime is often much better due to early pruning.
+
+

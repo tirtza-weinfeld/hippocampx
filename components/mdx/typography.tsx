@@ -224,7 +224,8 @@ export const Em = ({ children, ...props }: TypographyProps) => {
         className={cn(
           "italic bg-linear-to-r",
           stepGradientClass,
-          "bg-clip-text text-transparent px-1.5 py-0.5 rounded-sm"
+          "bg-clip-text text-transparent px-1.5 py-0.5 rounded-sm",
+          stepOrColor === "gray" || stepOrColor === "19" && "text-sm px-0 "
         )}
         {...props}
       >

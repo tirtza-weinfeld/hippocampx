@@ -1,0 +1,122 @@
+# Trie (Prefix Tree)
+
+
+## Resizable Table of Contents
+
+
+## What is a Trie?
+
+A **trie** (pronounced “try”), or **prefix tree**, is a rooted tree that stores strings by their prefixes, 
+allowing linear-time operations in the length of the string.
+
+- ~ **How nodes work** 
+  Each node holds links to its next letters. Some nodes are specially marked to show where a complete word ends.
+
+- ~ **Why it’s efficient** 
+  Operations touch only as many steps as the word’s length, regardless of how many words are stored.
+
+- ~ **Key actions** 
+  * **Add a word:** Follow or create a branch for each letter; at the last letter, mark the node to record a complete word.
+  * **Look up a word:** Walk along letters; if you finish and the last node is marked, the word is present.
+  * **Find a prefix:** Walk along letters; if you can follow them all, that prefix exists (even if it isn’t a full word).
+
+* ~ **Use cases** 
+  * Autocomplete and spell-check (fast prefix lookup)
+  * Wildcard or pattern matching over dictionaries
+  * Any application requiring efficient, ordered string retrieval
+
+### Why use an end marker?
+
+A boolean `is_end` flag is more efficient than adding a special `*` child because it:
+
+* Avoids extra node allocations and children maps.
+* Ensures lookups only inspect existing path nodes.
+* Keeps characters and word boundaries distinct.
+
+### Example
+
+Below is a small trie containing `be`, `bed` and `bet`:
+
+```text
+     (root)
+       │
+       b
+       │
+      e*       ← “be”
+     ┌┴┐
+    d*  t*     ← “bed”, “bet”
+```
+
+
+ Nodes marked with `*` indicate a complete word end.
+
+---
+
+## Problems
+
+### 1. Implement Trie (Prefix Tree)
+
+*Implement a trie supporting `insert`, `search`, and `startsWith` operations.*  
+[208. Implement Trie (Prefix Tree)](https://leetcode.com/problems/implement-trie-prefix-tree/)
+
+```python file=backend/algorithms/trie.py#class:Trie
+```
+
+>[!insight:collapse] 
+> 
+> Build a tree where each node’s children map letters to sub-tries, and is_end marks complete words. insert walks/creates nodes; search checks full path + end flag; startsWith verifies path exists.
+
+>[!timecomplexity] $O(L)$ per operation, where $L$ is the length of the word or prefix.
+---
+
+### 2. Add and Search Word (with wildcard)
+
+Design a data structure that supports adding new words and searching with . matching any single letter.
+211. Add and Search Word - Data structure design
+
+// ```python file=backend/algorithms/trie.py#class:WordDictionary
+// ```
+
+> [!insight] On wildcard ., recursively explore all children at that depth; otherwise follow the single matching branch. Early pruning keeps average cost near $O(L)$.
+
+> [!timecomplexity] 
+> - addWord: $O(L)$
+> - search: worst-case $O(A^L)$ ($A$ = alphabet size), average $O(L)$.
+
+---
+
+### 3. Replace Words
+
+Replace words in a sentence with the shortest root from a dictionary of roots.
+648. Replace Words
+
+// ```python file=backend/algorithms/trie.py#method:Solution.replaceWords
+// ```
+
+> [!insight]
+> Build a trie of all roots. For each word, traverse until is_end to retrieve the shortest matching root; otherwise keep the original word.
+
+> [!timecomplexity]
+> $O(N \cdot L)$, where $N$ = number of words in the sentence, $L$ = average word length.
+
+---
+
+### 4. Map Sum Pairs
+
+Implement a map with insert(key, val) and sum(prefix) returning the sum of all keys starting with prefix.
+677. Map Sum Pairs
+
+// ```python file=backend/algorithms/trie.py#class:MapSum
+// ```
+
+
+> [!insight]
+> Store cumulative sums at each node. On insert, propagate the delta down the key’s path; sum(prefix) returns the stored score at the prefix node.
+
+> [!timecomplexity]
+> - insert: $O(L)$
+> - sum: $O(P)$, where $P$ = prefix length.
+
+---
+
+

@@ -732,166 +732,6 @@
     "expressions": [],
     "parent": "shipWithinDays"
   },
-  "initial_state": {
-    "name": "initial_state",
-    "type": "function",
-    "language": "python",
-    "file": "backend/algorithms/tic-tac-toe.py",
-    "line": 11,
-    "signature": "def initial_state() -> tuple[str | None, ...]:",
-    "parameters": [],
-    "return_type": "tuple[(str | None, Ellipsis)]",
-    "return_description": "",
-    "description": "Return an empty 3×3 board as a flat 9-tuple.",
-    "code": "def initial_state() -> tuple[str | None, ...]:",
-    "links": [],
-    "variables": [],
-    "expressions": []
-  },
-  "player": {
-    "name": "player",
-    "type": "function",
-    "language": "python",
-    "file": "backend/algorithms/tic-tac-toe.py",
-    "line": 15,
-    "signature": "def player(state: tuple[str | None, ...]) -> str:",
-    "parameters": [],
-    "return_type": "str",
-    "return_description": "",
-    "description": "Next player: X if X has ≤ moves than O, else O.",
-    "code": "def player(state: tuple[str | None, ...]) -> str:",
-    "links": [],
-    "variables": [],
-    "expressions": []
-  },
-  "actions": {
-    "name": "actions",
-    "type": "function",
-    "language": "python",
-    "file": "backend/algorithms/tic-tac-toe.py",
-    "line": 19,
-    "signature": "def actions(state: tuple[str | None, ...]) -> set[int]:",
-    "parameters": [],
-    "return_type": "set[int]",
-    "return_description": "",
-    "description": "All empty positions (0–8) available for play.",
-    "code": "def actions(state: tuple[str | None, ...]) -> set[int]:",
-    "links": [],
-    "variables": [],
-    "expressions": []
-  },
-  "result": {
-    "name": "result",
-    "type": "function",
-    "language": "python",
-    "file": "backend/algorithms/tic-tac-toe.py",
-    "line": 23,
-    "signature": "def result(state: tuple[str | None, ...], move: int) -> tuple[str | None, ...]:",
-    "parameters": [],
-    "return_type": "tuple[(str | None, Ellipsis)]",
-    "return_description": "",
-    "description": "Return new state after current player plays at index move.",
-    "code": "def result(state: tuple[str | None, ...], move: int) -> tuple[str | None, ...]:\n    b[move] = player(state)\n    return tuple(b)",
-    "links": [],
-    "variables": [],
-    "expressions": []
-  },
-  "winner": {
-    "name": "winner",
-    "type": "function",
-    "language": "python",
-    "file": "backend/algorithms/tic-tac-toe.py",
-    "line": 29,
-    "signature": "def winner(state: tuple[str | None, ...]) -> str | None:",
-    "parameters": [],
-    "return_type": "str | None",
-    "return_description": "",
-    "description": "Check for a winner. Uses _winner_cache to avoid re-scanning the same board.",
-    "code": "def winner(state: tuple[str | None, ...]) -> str | None:\n        return _winner_cache[state]\n    for i, j, k in WIN:\n        v = state[i]\n        if v and v == state[j] == state[k]:\n            _winner_cache[state] = v\n            return v\n    _winner_cache[state] = None\n    return None",
-    "links": [],
-    "variables": [],
-    "expressions": []
-  },
-  "terminal": {
-    "name": "terminal",
-    "type": "function",
-    "language": "python",
-    "file": "backend/algorithms/tic-tac-toe.py",
-    "line": 46,
-    "signature": "def terminal(state: tuple[str | None, ...]) -> bool:",
-    "parameters": [],
-    "return_type": "bool",
-    "return_description": "",
-    "description": "Game over if someone won or no empty cells remain.",
-    "code": "def terminal(state: tuple[str | None, ...]) -> bool:",
-    "links": [],
-    "variables": [],
-    "expressions": []
-  },
-  "utility": {
-    "name": "utility",
-    "type": "function",
-    "language": "python",
-    "file": "backend/algorithms/tic-tac-toe.py",
-    "line": 50,
-    "signature": "def utility(state: tuple[str | None, ...]) -> int:",
-    "parameters": [],
-    "return_type": "int",
-    "return_description": "",
-    "description": "Score: +1 if X wins, -1 if O wins, else 0.",
-    "code": "def utility(state: tuple[str | None, ...]) -> int:\n    return 1 if w == \"X\" else -1 if w == \"O\" else 0",
-    "links": [],
-    "variables": [],
-    "expressions": []
-  },
-  "minimax": {
-    "name": "minimax",
-    "type": "function",
-    "language": "python",
-    "file": "backend/algorithms/tic-tac-toe.py",
-    "line": 55,
-    "signature": "def minimax(state: tuple[str | None, ...]) -> int | None:",
-    "parameters": [],
-    "return_type": "int | None",
-    "return_description": "",
-    "description": "Return the optimal move index for the current player.",
-    "code": "def minimax(state: tuple[str | None, ...]) -> int | None:\n        return None\n    turn = player(state)\n    best_val = -INF if turn == \"X\" else INF\n    best_move: int | None = None\n    for m in actions(state):\n        val = (_min_value if turn == \"X\" else _max_value)(result(state, m), -INF, INF)\n        if (turn == \"X\" and val > best_val) or (turn == \"O\" and val < best_val):\n            best_val, best_move = val, m\n    return best_move",
-    "links": [],
-    "variables": [],
-    "expressions": []
-  },
-  "_max_value": {
-    "name": "_max_value",
-    "type": "function",
-    "language": "python",
-    "file": "backend/algorithms/tic-tac-toe.py",
-    "line": 76,
-    "signature": "def _max_value(state: tuple[str | None, ...], α: float, β: float) -> float:",
-    "parameters": [],
-    "return_type": "float",
-    "return_description": "",
-    "description": "Maximizer’s step: try to increase v, prune when α ≥ β.",
-    "code": "def _max_value(state: tuple[str | None, ...], α: float, β: float) -> float:\n        return utility(state)\n    v = -INF\n    for m in actions(state):\n        v = max(v, _min_value(result(state, m), α, β))\n        α = max(α, v)\n        if α >= β:  \n            break\n    return v",
-    "links": [],
-    "variables": [],
-    "expressions": []
-  },
-  "_min_value": {
-    "name": "_min_value",
-    "type": "function",
-    "language": "python",
-    "file": "backend/algorithms/tic-tac-toe.py",
-    "line": 88,
-    "signature": "def _min_value(state: tuple[str | None, ...], α: float, β: float) -> float:",
-    "parameters": [],
-    "return_type": "float",
-    "return_description": "",
-    "description": "Minimizer’s step: try to decrease v, prune when α ≥ β.",
-    "code": "def _min_value(state: tuple[str | None, ...], α: float, β: float) -> float:\n        return utility(state)\n    v = INF\n    for m in actions(state):\n        v = min(v, _max_value(result(state, m), α, β))\n        β = min(β, v)\n        if α >= β:  \n            break\n    return v",
-    "links": [],
-    "variables": [],
-    "expressions": []
-  },
   "DP": {
     "name": "DP",
     "type": "class",
@@ -1240,6 +1080,224 @@
     "variables": [],
     "expressions": [],
     "parent": "LFUCache"
+  },
+  "Backtrack": {
+    "name": "Backtrack",
+    "type": "class",
+    "language": "python",
+    "file": "backend/algorithms/backtrack.py",
+    "line": 1,
+    "signature": "class Backtrack:",
+    "parameters": [],
+    "return_type": "",
+    "return_description": "",
+    "description": "",
+    "code": "class Backtrack:\n    def solveNQueens(self, n: int) -> list[list[str]]:\n        result, board = [], [[\".\"] * n for _ in range(n)]\n        cols, diag1, diag2 = set(), set(), set()\n        def dfs(row: int):\n            if row == n:\n                result.append([\"\".join(r) for r in board])\n                return\n            for col in range(n):\n                if col in cols or (row - col) in diag1 or (row + col) in diag2:\n                    continue\n                board[row][col] = \"Q\"\n                cols.add(col)\n                diag1.add(row - col)\n                diag2.add(row + col)\n                dfs(row + 1)\n                board[row][col] = \".\"\n                cols.remove(col)\n                diag1.remove(row - col)\n                diag2.remove(row + col)\n        dfs(0)\n        return result\n    def exist(self, board: list[list[str]], word: str) -> bool:\n        rows, cols, n = len(board), len(board[0]), len(word)\n        def dfs(r: int, c: int, i: int) -> bool:\n            if i == n:\n                return True\n            if not (0 <= r < rows and 0 <= c < cols and board[r][c] == word[i]):\n                return False\n            tmp, board[r][c] = board[r][c], \"\n            for x, y in ((r + 1, c), (r - 1, c), (r, c + 1), (r, c - 1)):\n                if dfs(x, y, i + 1):\n                    board[r][c] = tmp\n                    return True\n            board[r][c] = tmp\n            return False\n        return any(\n            dfs(r, c, 0)\n            for r in range(rows)\n            for c in range(cols)\n            if board[r][c] == word[0]\n        )\n    def permute(self, nums: list[int]) -> list[list[int]]:\n        result, n = [], len(nums)\n        def dfs(i):\n            if i == n:\n                result.append(nums[:])\n            else:\n                for j in range(i, n):\n                    nums[i], nums[j] = nums[j], nums[i]\n                    dfs(i + 1)\n                    nums[j], nums[i] = nums[i], nums[j]\n        dfs(0)\n        return result\n    def combinationSum(self, candidates: list[int], target: int) -> list[list[int]]:\n        candidates.sort()\n        res, path = [], []\n        def dfs(i: int, rem: int) -> None:\n            if rem == 0:\n                res.append(path.copy())\n                return\n            for j in range(i, len(candidates)):\n                if (c := candidates[j]) > rem:\n                    break\n                path.append(c)\n                dfs(j, rem - c)\n                path.pop()\n        dfs(0, target)\n        return res",
+    "links": [],
+    "variables": [],
+    "expressions": []
+  },
+  "Backtrack.solveNQueens": {
+    "name": "solveNQueens",
+    "type": "method",
+    "language": "python",
+    "file": "backend/algorithms/backtrack.py",
+    "line": 2,
+    "signature": "def solveNQueens(self, n: int) -> list[list[str]]:",
+    "parameters": [],
+    "return_type": "list[list[str]]",
+    "return_description": "",
+    "description": "Variables:",
+    "code": "def solveNQueens(self, n: int) -> list[list[str]]:\n        result, board = [], [[\".\"] * n for _ in range(n)]\n        cols, diag1, diag2 = set(), set(), set()\n        def dfs(row: int):\n            if row == n:\n                result.append([\"\".join(r) for r in board])\n                return\n            for col in range(n):\n                if col in cols or (row - col) in diag1 or (row + col) in diag2:\n                    continue\n                board[row][col] = \"Q\"\n                cols.add(col)\n                diag1.add(row - col)\n                diag2.add(row + col)\n                dfs(row + 1)\n                board[row][col] = \".\"\n                cols.remove(col)\n                diag1.remove(row - col)\n                diag2.remove(row + col)\n        dfs(0)\n        return result",
+    "links": [
+      {
+        "symbol": "row",
+        "display": "[row]",
+        "target": "row",
+        "valid": false,
+        "target_symbol": null
+      },
+      {
+        "symbol": "col",
+        "display": "[col]",
+        "target": "col",
+        "valid": false,
+        "target_symbol": null
+      },
+      {
+        "symbol": "row",
+        "display": "[row]",
+        "target": "row",
+        "valid": false,
+        "target_symbol": null
+      },
+      {
+        "symbol": "col",
+        "display": "[col]",
+        "target": "col",
+        "valid": false,
+        "target_symbol": null
+      }
+    ],
+    "variables": [
+      {
+        "name": "cols",
+        "description": "Columns where queens are placed",
+        "type": "variable"
+      },
+      {
+        "name": "diag1",
+        "description": "The main diagonal where queens are placed (↘) r - c",
+        "type": "variable"
+      },
+      {
+        "name": "diag2",
+        "description": "The anti-diagonal where queens are placed (↙) r + c",
+        "type": "variable"
+      }
+    ],
+    "expressions": [
+      {
+        "expression": "board[row][col] = \".\"",
+        "description": "Remove the queen (backtrack)",
+        "type": "expression"
+      },
+      {
+        "expression": "board[row][col] = \"Q\"",
+        "description": "Place the queen",
+        "type": "expression"
+      },
+      {
+        "expression": "continue",
+        "description": "Skip invalid positions",
+        "type": "expression"
+      },
+      {
+        "expression": "dfs(row + 1)",
+        "description": "Recurse to the next row",
+        "type": "expression"
+      }
+    ],
+    "parent": "Backtrack"
+  },
+  "Backtrack.solveNQueens.dfs": {
+    "name": "dfs",
+    "type": "method",
+    "language": "python",
+    "file": "backend/algorithms/backtrack.py",
+    "line": 20,
+    "signature": "def dfs(row: int):",
+    "parameters": [],
+    "return_type": "",
+    "return_description": "",
+    "description": "",
+    "code": "def dfs(row: int):\n            if row == n:\n                result.append([\"\".join(r) for r in board])\n                return\n            for col in range(n):\n                if col in cols or (row - col) in diag1 or (row + col) in diag2:\n                    continue\n                board[row][col] = \"Q\"\n                cols.add(col)\n                diag1.add(row - col)\n                diag2.add(row + col)\n                dfs(row + 1)\n                board[row][col] = \".\"\n                cols.remove(col)\n                diag1.remove(row - col)\n                diag2.remove(row + col)",
+    "links": [],
+    "variables": [],
+    "expressions": [],
+    "parent": "Backtrack.solveNQueens"
+  },
+  "Backtrack.exist": {
+    "name": "exist",
+    "type": "method",
+    "language": "python",
+    "file": "backend/algorithms/backtrack.py",
+    "line": 45,
+    "signature": "def exist(self, board: list[list[str]], word: str) -> bool:",
+    "parameters": [],
+    "return_type": "bool",
+    "return_description": "",
+    "description": "",
+    "code": "def exist(self, board: list[list[str]], word: str) -> bool:\n        rows, cols, n = len(board), len(board[0]), len(word)\n        def dfs(r: int, c: int, i: int) -> bool:\n            if i == n:\n                return True\n            if not (0 <= r < rows and 0 <= c < cols and board[r][c] == word[i]):\n                return False\n            tmp, board[r][c] = board[r][c], \"\n            for x, y in ((r + 1, c), (r - 1, c), (r, c + 1), (r, c - 1)):\n                if dfs(x, y, i + 1):\n                    board[r][c] = tmp\n                    return True\n            board[r][c] = tmp\n            return False\n        return any(\n            dfs(r, c, 0)\n            for r in range(rows)\n            for c in range(cols)\n            if board[r][c] == word[0]\n        )",
+    "links": [],
+    "variables": [],
+    "expressions": [],
+    "parent": "Backtrack"
+  },
+  "Backtrack.exist.dfs": {
+    "name": "dfs",
+    "type": "method",
+    "language": "python",
+    "file": "backend/algorithms/backtrack.py",
+    "line": 49,
+    "signature": "def dfs(r: int, c: int, i: int) -> bool:",
+    "parameters": [],
+    "return_type": "bool",
+    "return_description": "",
+    "description": "",
+    "code": "def dfs(r: int, c: int, i: int) -> bool:\n            if i == n:\n                return True\n            if not (0 <= r < rows and 0 <= c < cols and board[r][c] == word[i]):\n                return False\n            tmp, board[r][c] = board[r][c], \"\n            for x, y in ((r + 1, c), (r - 1, c), (r, c + 1), (r, c - 1)):\n                if dfs(x, y, i + 1):\n                    board[r][c] = tmp\n                    return True\n            board[r][c] = tmp\n            return False",
+    "links": [],
+    "variables": [],
+    "expressions": [],
+    "parent": "Backtrack.exist"
+  },
+  "Backtrack.permute": {
+    "name": "permute",
+    "type": "method",
+    "language": "python",
+    "file": "backend/algorithms/backtrack.py",
+    "line": 69,
+    "signature": "def permute(self, nums: list[int]) -> list[list[int]]:",
+    "parameters": [],
+    "return_type": "list[list[int]]",
+    "return_description": "",
+    "description": "",
+    "code": "def permute(self, nums: list[int]) -> list[list[int]]:\n        result, n = [], len(nums)\n        def dfs(i):\n            if i == n:\n                result.append(nums[:])\n            else:\n                for j in range(i, n):\n                    nums[i], nums[j] = nums[j], nums[i]\n                    dfs(i + 1)\n                    nums[j], nums[i] = nums[i], nums[j]\n        dfs(0)\n        return result",
+    "links": [],
+    "variables": [],
+    "expressions": [],
+    "parent": "Backtrack"
+  },
+  "Backtrack.permute.dfs": {
+    "name": "dfs",
+    "type": "method",
+    "language": "python",
+    "file": "backend/algorithms/backtrack.py",
+    "line": 73,
+    "signature": "def dfs(i):",
+    "parameters": [],
+    "return_type": "",
+    "return_description": "",
+    "description": "",
+    "code": "def dfs(i):\n            if i == n:\n                result.append(nums[:])\n            else:\n                for j in range(i, n):\n                    nums[i], nums[j] = nums[j], nums[i]\n                    dfs(i + 1)\n                    nums[j], nums[i] = nums[i], nums[j]",
+    "links": [],
+    "variables": [],
+    "expressions": [],
+    "parent": "Backtrack.permute"
+  },
+  "Backtrack.combinationSum": {
+    "name": "combinationSum",
+    "type": "method",
+    "language": "python",
+    "file": "backend/algorithms/backtrack.py",
+    "line": 86,
+    "signature": "def combinationSum(self, candidates: list[int], target: int) -> list[list[int]]:",
+    "parameters": [],
+    "return_type": "list[list[int]]",
+    "return_description": "",
+    "description": "",
+    "code": "def combinationSum(self, candidates: list[int], target: int) -> list[list[int]]:\n        candidates.sort()\n        res, path = [], []\n        def dfs(i: int, rem: int) -> None:\n            if rem == 0:\n                res.append(path.copy())\n                return\n            for j in range(i, len(candidates)):\n                if (c := candidates[j]) > rem:\n                    break\n                path.append(c)\n                dfs(j, rem - c)\n                path.pop()\n        dfs(0, target)\n        return res",
+    "links": [],
+    "variables": [],
+    "expressions": [],
+    "parent": "Backtrack"
+  },
+  "Backtrack.combinationSum.dfs": {
+    "name": "dfs",
+    "type": "method",
+    "language": "python",
+    "file": "backend/algorithms/backtrack.py",
+    "line": 90,
+    "signature": "def dfs(i: int, rem: int) -> None:",
+    "parameters": [],
+    "return_type": "None",
+    "return_description": "",
+    "description": "",
+    "code": "def dfs(i: int, rem: int) -> None:\n            if rem == 0:\n                res.append(path.copy())\n                return\n            for j in range(i, len(candidates)):\n                if (c := candidates[j]) > rem:\n                    break\n                path.append(c)\n                dfs(j, rem - c)\n                path.pop()",
+    "links": [],
+    "variables": [],
+    "expressions": [],
+    "parent": "Backtrack.combinationSum"
   },
   "Stack": {
     "name": "Stack",
@@ -1638,6 +1696,452 @@
     "links": [],
     "variables": [],
     "expressions": []
+  },
+  "TrieNode": {
+    "name": "TrieNode",
+    "type": "class",
+    "language": "python",
+    "file": "backend/algorithms/trie.py",
+    "line": 4,
+    "signature": "class TrieNode:",
+    "parameters": [],
+    "return_type": "",
+    "return_description": "",
+    "description": "A node in the Trie.",
+    "code": "class TrieNode:\n    __slots__ = (\"children\", \"end\")\n    def __init__(self):\n        self.children: defaultdict[str, TrieNode] = defaultdict(TrieNode)\n        self.end = False",
+    "links": [],
+    "variables": [
+      {
+        "name": "children",
+        "description": "maps characters to child TrieNodes, auto-created on first access",
+        "type": "variable"
+      },
+      {
+        "name": "end",
+        "description": "bool flag indicating this node marks the end of a valid word",
+        "type": "variable"
+      },
+      {
+        "name": "__slots__",
+        "description": "restrict instances to only these attributes (no __dict__) to save memory and speed up attribute access",
+        "type": "variable"
+      }
+    ],
+    "expressions": []
+  },
+  "TrieNode.__init__": {
+    "name": "__init__",
+    "type": "method",
+    "language": "python",
+    "file": "backend/algorithms/trie.py",
+    "line": 16,
+    "signature": "def __init__(self):",
+    "parameters": [],
+    "return_type": "",
+    "return_description": "",
+    "description": "",
+    "code": "def __init__(self):\n        self.children: defaultdict[str, TrieNode] = defaultdict(TrieNode)\n        self.end = False",
+    "links": [],
+    "variables": [],
+    "expressions": [],
+    "parent": "TrieNode"
+  },
+  "Trie": {
+    "name": "Trie",
+    "type": "class",
+    "language": "python",
+    "file": "backend/algorithms/trie.py",
+    "line": 22,
+    "signature": "class Trie:",
+    "parameters": [],
+    "return_type": "",
+    "return_description": "",
+    "description": "Trie (prefix tree) for storing strings.",
+    "code": "class Trie:\n    def __init__(self):\n        self.root = TrieNode()\n    def insert(self, word: str) -> None:\n        node = self.root\n        for ch in word:\n            node = node.children[ch]\n        node.end = True\n    def search(self, word: str) -> bool:\n        node = self.root\n        for ch in word:\n            if (node := node.children.get(ch)) is None:\n                return False\n        return node.end\n    def startsWith(self, prefix: str) -> bool:\n        node = self.root\n        for ch in prefix:\n            if (node := node.children.get(ch)) is None:\n                return False\n        return True",
+    "links": [],
+    "variables": [],
+    "expressions": []
+  },
+  "Trie.__init__": {
+    "name": "__init__",
+    "type": "method",
+    "language": "python",
+    "file": "backend/algorithms/trie.py",
+    "line": 27,
+    "signature": "def __init__(self):",
+    "parameters": [],
+    "return_type": "",
+    "return_description": "",
+    "description": "Initializes the Trie with an empty root node.",
+    "code": "def __init__(self):\n        self.root = TrieNode()",
+    "links": [],
+    "variables": [
+      {
+        "name": "root",
+        "description": "the root TrieNode, representing the empty prefix",
+        "type": "variable"
+      }
+    ],
+    "expressions": [],
+    "parent": "Trie"
+  },
+  "Trie.insert": {
+    "name": "insert",
+    "type": "method",
+    "language": "python",
+    "file": "backend/algorithms/trie.py",
+    "line": 37,
+    "signature": "def insert(self, word: str) -> None:",
+    "parameters": [
+      {
+        "name": "word",
+        "type": "str",
+        "description": "string to insert into the Trie",
+        "default": null
+      }
+    ],
+    "return_type": "None",
+    "return_description": "",
+    "description": "Inserts a word into the Trie.",
+    "code": "def insert(self, word: str) -> None:\n        node = self.root\n        for ch in word:\n            node = node.children[ch]\n        node.end = True",
+    "links": [
+      {
+        "symbol": "ch",
+        "display": "[ch]",
+        "target": "ch",
+        "valid": false,
+        "target_symbol": null
+      }
+    ],
+    "variables": [
+      {
+        "name": "node",
+        "description": "current TrieNode during traversal",
+        "type": "variable"
+      }
+    ],
+    "expressions": [
+      {
+        "expression": "node = node.children[ch]",
+        "description": "Traverse to the child node for ch, creating it if missing",
+        "type": "expression"
+      },
+      {
+        "expression": "node.end = True",
+        "description": "Mark this node as terminating a valid word",
+        "type": "expression"
+      }
+    ],
+    "parent": "Trie"
+  },
+  "Trie.search": {
+    "name": "search",
+    "type": "method",
+    "language": "python",
+    "file": "backend/algorithms/trie.py",
+    "line": 61,
+    "signature": "def search(self, word: str) -> bool:",
+    "parameters": [],
+    "return_type": "bool",
+    "return_description": "",
+    "description": "",
+    "code": "def search(self, word: str) -> bool:\n        node = self.root\n        for ch in word:\n            if (node := node.children.get(ch)) is None:\n                return False\n        return node.end",
+    "links": [],
+    "variables": [],
+    "expressions": [],
+    "parent": "Trie"
+  },
+  "Trie.startsWith": {
+    "name": "startsWith",
+    "type": "method",
+    "language": "python",
+    "file": "backend/algorithms/trie.py",
+    "line": 68,
+    "signature": "def startsWith(self, prefix: str) -> bool:",
+    "parameters": [],
+    "return_type": "bool",
+    "return_description": "",
+    "description": "",
+    "code": "def startsWith(self, prefix: str) -> bool:\n        node = self.root\n        for ch in prefix:\n            if (node := node.children.get(ch)) is None:\n                return False\n        return True",
+    "links": [],
+    "variables": [],
+    "expressions": [],
+    "parent": "Trie"
+  },
+  "WordDictionary": {
+    "name": "WordDictionary",
+    "type": "class",
+    "language": "python",
+    "file": "backend/algorithms/trie.py",
+    "line": 76,
+    "signature": "class WordDictionary:",
+    "parameters": [],
+    "return_type": "",
+    "return_description": "",
+    "description": "",
+    "code": "class WordDictionary:\n    def __init__(self):\n        self.trie: dict[str, dict] = {}\n        self.END_MARKER = \"$\"\n    def addWord(self, word: str) -> None:\n        node = self.trie\n        for c in word:\n            node = node.setdefault(c, {})\n        node[self.END_MARKER] = True\n    def search(self, word: str) -> bool:\n        def dfs(node: dict, i: int) -> bool:\n            if i == len(word):\n                return self.END_MARKER in node\n            if (c := word[i]) == \".\":\n                return any(\n                    dfs(child, i + 1)\n                    for k, child in node.items()\n                    if k != self.END_MARKER\n                )\n            child = node.get(c)\n            return bool(child) and dfs(child, i + 1)\n        return dfs(self.trie, 0)",
+    "links": [],
+    "variables": [],
+    "expressions": []
+  },
+  "WordDictionary.__init__": {
+    "name": "__init__",
+    "type": "method",
+    "language": "python",
+    "file": "backend/algorithms/trie.py",
+    "line": 77,
+    "signature": "def __init__(self):",
+    "parameters": [],
+    "return_type": "",
+    "return_description": "",
+    "description": "",
+    "code": "def __init__(self):\n        self.trie: dict[str, dict] = {}\n        self.END_MARKER = \"$\"",
+    "links": [],
+    "variables": [],
+    "expressions": [],
+    "parent": "WordDictionary"
+  },
+  "WordDictionary.addWord": {
+    "name": "addWord",
+    "type": "method",
+    "language": "python",
+    "file": "backend/algorithms/trie.py",
+    "line": 81,
+    "signature": "def addWord(self, word: str) -> None:",
+    "parameters": [],
+    "return_type": "None",
+    "return_description": "",
+    "description": "",
+    "code": "def addWord(self, word: str) -> None:\n        node = self.trie\n        for c in word:\n            node = node.setdefault(c, {})\n        node[self.END_MARKER] = True",
+    "links": [],
+    "variables": [],
+    "expressions": [],
+    "parent": "WordDictionary"
+  },
+  "WordDictionary.search": {
+    "name": "search",
+    "type": "method",
+    "language": "python",
+    "file": "backend/algorithms/trie.py",
+    "line": 87,
+    "signature": "def search(self, word: str) -> bool:",
+    "parameters": [],
+    "return_type": "bool",
+    "return_description": "",
+    "description": "",
+    "code": "def search(self, word: str) -> bool:\n        def dfs(node: dict, i: int) -> bool:\n            if i == len(word):\n                return self.END_MARKER in node\n            if (c := word[i]) == \".\":\n                return any(\n                    dfs(child, i + 1)\n                    for k, child in node.items()\n                    if k != self.END_MARKER\n                )\n            child = node.get(c)\n            return bool(child) and dfs(child, i + 1)\n        return dfs(self.trie, 0)",
+    "links": [],
+    "variables": [],
+    "expressions": [],
+    "parent": "WordDictionary"
+  },
+  "WordDictionary.search.dfs": {
+    "name": "dfs",
+    "type": "method",
+    "language": "python",
+    "file": "backend/algorithms/trie.py",
+    "line": 89,
+    "signature": "def dfs(node: dict, i: int) -> bool:",
+    "parameters": [],
+    "return_type": "bool",
+    "return_description": "",
+    "description": "Expressions:",
+    "code": "def dfs(node: dict, i: int) -> bool:\n            if i == len(word):\n                return self.END_MARKER in node\n            if (c := word[i]) == \".\":\n                return any(\n                    dfs(child, i + 1)\n                    for k, child in node.items()\n                    if k != self.END_MARKER\n                )\n            child = node.get(c)\n            return bool(child) and dfs(child, i + 1)",
+    "links": [],
+    "variables": [],
+    "expressions": [
+      {
+        "expression": "if k != self.END_MARKER",
+        "description": "try every branch except the END_MARKER",
+        "type": "expression"
+      }
+    ],
+    "parent": "WordDictionary.search"
+  },
+  "TrieSolution": {
+    "name": "TrieSolution",
+    "type": "class",
+    "language": "python",
+    "file": "backend/algorithms/trie.py",
+    "line": 111,
+    "signature": "class TrieSolution:",
+    "parameters": [],
+    "return_type": "",
+    "return_description": "",
+    "description": "",
+    "code": "class TrieSolution:\n    def replaceWords(self, dictionary: list[str], sentence: str) -> str:\n        trie = {}\n        for word in dictionary:\n            node = trie\n            for c in word:\n                if \"$\" in node:\n                    break\n                node = node.setdefault(c, {})\n            node[\"$\"] = True\n        def search(word: str) -> str:\n            node = trie\n            for i, c in enumerate(word):\n                if \"$\" in node:\n                    return word[:i]\n                if c not in node:\n                    return word\n                node = node[c]\n            return word\n        return \" \".join(search(word) for word in sentence.split())\n    def findWords(self, board: list[list[str]], words: list[str]) -> list[str]:\n        for word in words:\n            node = trie\n            for c in word:\n                node = node.setdefault(c, {})\n            node[\"$\"] = word\n        m, n, res = len(board), len(board[0]), []\n        def dfs(i, j, parent):\n            if not (0 <= i < m and 0 <= j < n) or (c := board[i][j]) not in parent:\n                return\n            node = parent[c]\n            if \"$\" in node:\n                res.append(node.pop(\"$\"))\n            board[i][j] = \"\n            for x, y in ((i - 1, j), (i + 1, j), (i, j - 1), (i, j + 1)):\n                dfs(x, y, node)\n            board[i][j] = c\n            if not node:\n                parent.pop(c)\n        [dfs(i, j, trie) for i in range(m) for j in range(n) if board[i][j] in trie]\n        return res",
+    "links": [],
+    "variables": [],
+    "expressions": []
+  },
+  "TrieSolution.replaceWords": {
+    "name": "replaceWords",
+    "type": "method",
+    "language": "python",
+    "file": "backend/algorithms/trie.py",
+    "line": 112,
+    "signature": "def replaceWords(self, dictionary: list[str], sentence: str) -> str:",
+    "parameters": [],
+    "return_type": "str",
+    "return_description": "",
+    "description": "",
+    "code": "def replaceWords(self, dictionary: list[str], sentence: str) -> str:\n        trie = {}\n        for word in dictionary:\n            node = trie\n            for c in word:\n                if \"$\" in node:\n                    break\n                node = node.setdefault(c, {})\n            node[\"$\"] = True\n        def search(word: str) -> str:\n            node = trie\n            for i, c in enumerate(word):\n                if \"$\" in node:\n                    return word[:i]\n                if c not in node:\n                    return word\n                node = node[c]\n            return word\n        return \" \".join(search(word) for word in sentence.split())",
+    "links": [],
+    "variables": [],
+    "expressions": [],
+    "parent": "TrieSolution"
+  },
+  "TrieSolution.replaceWords.search": {
+    "name": "search",
+    "type": "method",
+    "language": "python",
+    "file": "backend/algorithms/trie.py",
+    "line": 124,
+    "signature": "def search(word: str) -> str:",
+    "parameters": [],
+    "return_type": "str",
+    "return_description": "",
+    "description": "",
+    "code": "def search(word: str) -> str:\n            node = trie\n            for i, c in enumerate(word):\n                if \"$\" in node:\n                    return word[:i]\n                if c not in node:\n                    return word\n                node = node[c]\n            return word",
+    "links": [],
+    "variables": [],
+    "expressions": [],
+    "parent": "TrieSolution.replaceWords"
+  },
+  "TrieSolution.findWords": {
+    "name": "findWords",
+    "type": "method",
+    "language": "python",
+    "file": "backend/algorithms/trie.py",
+    "line": 138,
+    "signature": "def findWords(self, board: list[list[str]], words: list[str]) -> list[str]:",
+    "parameters": [],
+    "return_type": "list[str]",
+    "return_description": "",
+    "description": "Returns all words from 'words' that can be formed in 'board' by sequentially adjacent cells.",
+    "code": "def findWords(self, board: list[list[str]], words: list[str]) -> list[str]:\n        for word in words:\n            node = trie\n            for c in word:\n                node = node.setdefault(c, {})\n            node[\"$\"] = word\n        m, n, res = len(board), len(board[0]), []\n        def dfs(i, j, parent):\n            if not (0 <= i < m and 0 <= j < n) or (c := board[i][j]) not in parent:\n                return\n            node = parent[c]\n            if \"$\" in node:\n                res.append(node.pop(\"$\"))\n            board[i][j] = \"\n            for x, y in ((i - 1, j), (i + 1, j), (i, j - 1), (i, j + 1)):\n                dfs(x, y, node)\n            board[i][j] = c\n            if not node:\n                parent.pop(c)\n        [dfs(i, j, trie) for i in range(m) for j in range(n) if board[i][j] in trie]\n        return res",
+    "links": [
+      {
+        "symbol": "i",
+        "display": "[i]",
+        "target": "i",
+        "valid": false,
+        "target_symbol": null
+      },
+      {
+        "symbol": "j",
+        "display": "[j]",
+        "target": "j",
+        "valid": false,
+        "target_symbol": null
+      },
+      {
+        "symbol": "i",
+        "display": "[i]",
+        "target": "i",
+        "valid": false,
+        "target_symbol": null
+      },
+      {
+        "symbol": "j",
+        "display": "[j]",
+        "target": "j",
+        "valid": false,
+        "target_symbol": null
+      }
+    ],
+    "variables": [
+      {
+        "name": "trie",
+        "description": "Build trie from **words** list. Each end node gets a `$` key holding the word",
+        "type": "variable"
+      },
+      {
+        "name": "m",
+        "description": "number of rows",
+        "type": "variable"
+      },
+      {
+        "name": "n",
+        "description": "number of columns",
+        "type": "variable"
+      },
+      {
+        "name": "res",
+        "description": "the list of found words",
+        "type": "variable"
+      }
+    ],
+    "expressions": [
+      {
+        "expression": "node = node.setdefault(c, {})",
+        "description": "create a new node for the character if it doesn't exist",
+        "type": "expression"
+      },
+      {
+        "expression": "if \"$\" in node",
+        "description": "if the current node is the end of a word",
+        "type": "expression"
+      },
+      {
+        "expression": "res.append(node.pop(\"$\"))",
+        "description": "add the word to the result list and remove the \"$\" key to prevent duplicates",
+        "type": "expression"
+      },
+      {
+        "expression": "if not node",
+        "description": "prune the trie to remove dead branches.",
+        "type": "expression"
+      },
+      {
+        "expression": "[dfs",
+        "description": ".. Launch DFS from every cell that matches any trie root key",
+        "type": "expression"
+      },
+      {
+        "expression": "board[i][j] = \"#\"",
+        "description": "Mark as visited",
+        "type": "expression"
+      },
+      {
+        "expression": "board[i][j] = c",
+        "description": "Restore cell",
+        "type": "expression"
+      }
+    ],
+    "parent": "TrieSolution"
+  },
+  "TrieSolution.findWords.dfs": {
+    "name": "dfs",
+    "type": "method",
+    "language": "python",
+    "file": "backend/algorithms/trie.py",
+    "line": 170,
+    "signature": "def dfs(i, j, parent):",
+    "parameters": [],
+    "return_type": "",
+    "return_description": "",
+    "description": "DFS from board[i][j], following *parent* trie node.",
+    "code": "def dfs(i, j, parent):\n            if not (0 <= i < m and 0 <= j < n) or (c := board[i][j]) not in parent:\n                return\n            node = parent[c]\n            if \"$\" in node:\n                res.append(node.pop(\"$\"))\n            board[i][j] = \"\n            for x, y in ((i - 1, j), (i + 1, j), (i, j - 1), (i, j + 1)):\n                dfs(x, y, node)\n            board[i][j] = c\n            if not node:\n                parent.pop(c)",
+    "links": [
+      {
+        "symbol": "i",
+        "display": "[i]",
+        "target": "i",
+        "valid": false,
+        "target_symbol": null
+      },
+      {
+        "symbol": "j",
+        "display": "[j]",
+        "target": "j",
+        "valid": false,
+        "target_symbol": null
+      }
+    ],
+    "variables": [],
+    "expressions": [],
+    "parent": "TrieSolution.findWords"
   },
   "maxSubArrayLen": {
     "name": "maxSubArrayLen",

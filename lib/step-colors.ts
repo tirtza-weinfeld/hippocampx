@@ -18,6 +18,7 @@ const TAILWIND_COLORS = [
   'pink',     // 16
   'rose',     // 17
   'brown',     // 18
+  'gray',     // 19
 ];
 
 // Color configurations for each Tailwind color
@@ -111,6 +112,11 @@ const COLOR_CONFIGS = {
     text: 'text-stone-600 dark:text-stone-400 shadow-stone-400/20 dark:shadow-stone-300/20',
     gradient: 'from-stone-500 to-stone-600 via-stone-800 dark:from-stone-200 dark:to-stone-200 dark:via-stone-200',
     background: 'bg-stone-100 dark:bg-stone-900/30 border-stone-300 dark:border-stone-700 text-stone-800 dark:text-stone-200',
+  },
+  gray: {
+    text: 'text-gray-600 dark:text-gray-400 shadow-gray-400/20 dark:shadow-gray-300/20',
+    gradient: 'from-gray-500 to-gray-600 via-gray-800 dark:from-gray-200 dark:to-gray-200 dark:via-gray-200',
+    background: 'bg-gray-100 dark:bg-gray-900/30 border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-200',
   },
 } as const;
 
