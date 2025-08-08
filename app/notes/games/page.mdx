@@ -1,0 +1,69 @@
+# Games
+
+## Resizable Table of Contents
+
+
+## Problems
+
+### 1. Sudoku
+
+#### 1.1 Valid Sudoku
+
+[36. Valid Sudoku](https://leetcode.com/problems/valid-sudoku/)
+
+*Given a partially filled 9×9 board with digits `$1$–$9$` and `$.$` for empty cells, determine if it is valid* 
+*[19:]no duplicates in any row, column, or 3×3 sub-box. You do not need to solve it.*
+
+```python file=backend/algorithms/games/valid_sudoku.py#method:Sudoku.isValidSudoku
+```
+
+> [!insight:collapse] *cube_index and think locally*
+>
+> - `cube_index := (r // 3) * 3 + (c // 3)` treats the 9×9 board as a 3×3 grid of 3×3 boxes:
+>   - `r//3` gives which box-row (0,1,2) you’re in
+>   - `c//3` gives which box-column (0,1,2)
+> 	- Multiplying the box-row by 3 and adding the box-column yields a unique index 0–8 for each 3×3 cube
+>
+> - *Think locally* If a repeated digit is found in a row, column, or cube, instantly stop.
+
+
+> [!timecomplexity:collapse] `$O(81)$` (*[19:]i.e.,* `$O(n^2)$`)
+>
+> Fixed 9×9 boards scan at most 81 cells. Generalized $n×n$ Sudoku validation runs in `$O(n^2)$` time.
+
+
+
+
+
+
+
+
+#### 1.2 Sudoku Solver
+
+[37. Sudoku Solver](https://leetcode.com/problems/sudoku-solver/)
+
+*Given a partially filled 9×9 board with digits `$1$–$9$` and `$.$` for empty cells, solve it.*
+*[19:]It is guaranteed that the input board has only one solution*
+
+```python file=backend/algorithms/games/sudoku_solver.py#method:SudokuSolver.solveSudoku
+```
+
+> [!insight:collapse] *MRV (Minimum Remaining Values)*
+>
+> * Candidates per cell: `{'1'..'9'} − (row $∪$ col $∪$ box)`.
+> * **MRV:** pick the empty cell with the fewest candidates to prune hardest.
+> * Place a digit *tentatively*, update sets, recurse; undo on failure (**backtrack**).
+> * If any cell has **0 candidates**, the branch is impossible → backtrack immediately.
+
+
+
+> [!complexity:collapse] *Sudoku Solver (MRV) — Complexity*
+>
+> Let **k** be the number of empty cells (≤ 81).
+> * **Time:**
+>   * worst case **$O(9^k)$**
+>   * practically $\Theta\!\big(\prod_{t=1}^{k} m_t\big)$ where $m_t$ = MRV-picked cell’s candidate count at step $t$ (usually ≪ 9)
+>   * MRV selection adds $O(k)$ per level (≤ $O(k^2)$ per path), dominated by the search
+> * **Space:**
+>   * board/bookkeeping is constant on fixed 9×9 ⇒ **$O(1)$**
+>   * recursion depth **$O(k)$**
