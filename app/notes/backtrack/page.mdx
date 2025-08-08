@@ -11,7 +11,7 @@
 
 [51. N-Queens](https://leetcode.com/problems/n-queens/)
 
-```python file=backend/algorithms/backtrack.py#func:solveNQueens
+```python file=backend/algorithms/backtrack.py#method:Backtrack.solveNQueens
 ```
 
 > [!insight:collapse] *Backtrack with State Tracking ♛*
@@ -42,7 +42,10 @@
 
 [79. Word Search](https://leetcode.com/problems/word-search/)
 
-> [!insight:collapse] DFS with Early Exit on Mismatch 🔍
+```python file=backend/algorithms/backtrack.py#method:Backtrack.exist
+```
+
+> [!insight:collapse] DFS with Early Exit on Mismatch 
 >
 > Start DFS from each cell. At each step:
 	•	Check bounds and character match
@@ -73,7 +76,7 @@ Stop early if the full word is matched.
 
 
 
-> [!insight:collapse] Recursive Tree of Choices 🔁
+> [!insight:collapse] Recursive Tree of Choices 
 >
 >  *Build permutations by choosing unused elements:*
 > •	At each level, try each remaining number

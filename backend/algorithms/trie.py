@@ -158,37 +158,31 @@ class TrieSolution:
   
         """
         trie = {}  
-
         for word in words:
             node = trie
             for c in word:
                 node = node.setdefault(c, {})
             node["$"] = word
 
-        m, n, res = len(board), len(board[0]), []
 
         def dfs(i, j, parent):
             """
             DFS from board[i][j], following *parent* trie node.
             Collects words, marks visited, prunes used-up trie branches.
-            """
-            
+            """            
             if not (0 <= i < m and 0 <= j < n) or (c := board[i][j]) not in parent:
                 return
-
             node = parent[c]
-
             if "$" in node:
                 res.append(node.pop("$"))
-
             board[i][j] = "#"
             for x, y in ((i - 1, j), (i + 1, j), (i, j - 1), (i, j + 1)):
                 dfs(x, y, node)
             board[i][j] = c
-
             if not node:
                 parent.pop(c)
-
+                
+        m, n, res = len(board), len(board[0]), []
         [dfs(i, j, trie) for i in range(m) for j in range(n) if board[i][j] in trie]
 
         return res
