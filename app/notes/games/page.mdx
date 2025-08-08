@@ -67,3 +67,43 @@
 > * **Space:**
 >   * board/bookkeeping is constant on fixed 9×9 ⇒ **$O(1)$**
 >   * recursion depth **$O(k)$**
+
+### 2. Stone Game
+
+#### 2.1 Stone Game IV
+
+*Alice and Bob start with `n` stones. On each turn, remove a non-zero perfect square. The player with no move loses. Decide if Alice (first) wins under optimal play.*
+
+[1510. Stone Game IV](https://leetcode.com/problems/stone-game-iv/)
+
+```python file=./backend/algorithms/dp.py#method:DP.winnerSquareGame
+```
+
+> [\!Intuition:collapse] *Minimax*
+>
+> **Paradigm**: This is a classic *impartial game* solved using the *Minimax* principle on game states.
+>
+> **Insight**: A position is defined as *winning* if you can make *any* move to a position that you know is *losing* for your opponent. The DP builds this win/loss classification for every number of stones up to `n`, starting from the base case that 0 stones is a losing position.
+
+
+> [!timecomplexity:collapse] ***$O(n√n)$** (try all squares for each `x`)*
+
+#### 2.2 Stone Game III
+
+*Array `stoneValue`; players alternately take `1–3` stones from the left maximizing score difference. Return `"Alice"`, `"Bob"`, or `"Tie"` under optimal play.*
+
+[1406. Stone Game III](https://leetcode.com/problems/stone-game-iii/)
+
+```python file=./backend/algorithms/games/stone_3.py#method:StoneGameIII.stoneGameIII
+```
+
+> [!insight:collapse] *Score-difference DP*
+>
+> Let `dp[i]` = max score difference current player can achieve starting at index `i`.
+> Transition: `dp[i] = max_{k∈{1,2,3}} (sum(i..i+k-1) − dp[i+k])`. Answer from `dp[0]`.
+
+> [!timecomplexity:collapse] **$O(n)$** (constant 3 choices per `i`)
+
+
+
+

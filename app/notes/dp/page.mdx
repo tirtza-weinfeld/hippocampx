@@ -81,30 +81,10 @@
 >
 > where `n` is the number of coins and `amount` is the target.
 
------
-
-### 4. Stone Game IV
-
-*Alice and Bob play a game starting with `n` stones. On each turn, a player removes a non-zero square number of stones. The player who cannot make a move loses. Determine if Alice (the first player) wins if both play optimally.*
-
-[1510. Stone Game IV](https://leetcode.com/problems/stone-game-iv/)
-
-```python file=./backend/algorithms/dp.py#method:DP.winnerSquareGame
-```
-
-> [\!Intuition:collapse]
->
-> **Paradigm**: This is a classic **impartial game** solved using the **Minimax** principle on game states.
->
-> **Insight**: A position is defined as "winning" if you can make *any* move to a position that you know is "losing" for your opponent. The DP builds this win/loss classification for every number of stones up to `n`, starting from the base case that 0 stones is a losing position.
-
-> [\!timecomplexity:collapse] **$O(n\sqrt{n})$**
->
-> The complexity is the sum of work for each subproblem from 1 to `n`, which is approximately $O(n^{1.5})$.
 
 -----
 
-### 5. Solving Questions With Brainpower
+### 4. Solving Questions With Brainpower
 
 *Given a list of `questions` where `questions[i] = [pointsᵢ, brainpowerᵢ]`, you process from i=0 and at each i choose to either solve (gain `pointsᵢ` and jump `brainpowerᵢ + 1`) or skip (move to `i + 1`). Return the maximum points achievable.*
 
@@ -122,3 +102,18 @@
 > [\!timecomplexity:collapse] **$O(n)$**
 >
 > where `n` is the number of questions.
+
+
+
+----
+### See Also
+* [Stone Game IV](./games#21-stone-game-iv)
+* [Stone Game III](./games#22-stone-game-iii)
+
+
+---
+
+
+
+
+
