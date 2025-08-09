@@ -61,7 +61,7 @@ export const H4 = ({ children, ...props }: TypographyProps) => (
   <motion.div {...fadeInUp} className="relative mb-4 mt-8" {...props}>
     <div className="flex items-center gap-2">
       {/* <div className="w-2 h-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full" /> */}
-      <h4 className="text-xl md:text-2xl lg:text-3xl font-semibold tracking-tight text-gray-800 dark:text-gray-200" {...props}>
+      <h4 className="text-lg md:text-xl lg:text-2xl font-extrabold tracking-tight text-gray-800 dark:text-gray-200" {...props}>
         {children}
       </h4>
     </div>

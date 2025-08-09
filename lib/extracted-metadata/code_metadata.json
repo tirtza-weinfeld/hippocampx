@@ -1081,6 +1081,127 @@
     "expressions": [],
     "parent": "LFUCache"
   },
+  "Stock": {
+    "name": "Stock",
+    "type": "class",
+    "language": "python",
+    "file": "backend/algorithms/stock.py",
+    "line": 1,
+    "signature": "class Stock:",
+    "parameters": [],
+    "return_type": "",
+    "return_description": "",
+    "description": "",
+    "code": "class Stock:\n    def maxProfit(self, prices: list[int]) -> int:\n        cost, profit = float(\"inf\"), 0\n        for price in prices:\n            cost = min(cost, price)\n            profit = max(profit, price - cost)\n        return profit\n    def maxProfitII(self, prices: list[int]) -> int:\n        profit = 0\n        for i in range(1, len(prices)):\n            if prices[i] > prices[i - 1]:\n                profit += prices[i] - prices[i - 1]\n        return profit\n    def maxProfitIII_cost_profit_tracking(self, prices: list[int]) -> int:\n        t1_cost = t2_cost = float(\"inf\")\n        t1_profit = t2_profit = 0\n        for p in prices:\n            t1_cost = min(t1_cost, p)\n            t1_profit = max(t1_profit, p - t1_cost)\n            t2_cost = min(t2_cost, p - t1_profit)\n            t2_profit = max(t2_profit, p - t2_cost)\n        return t2_profit\n    def maxProfitIII_hold_sell_states(self, prices: list[int]) -> int:\n        sell1 = sell2 = 0             \n        for p in prices:\n            hold1 = max(hold1, -p)         \n            sell1 = max(sell1, hold1 + p)  \n            hold2 = max(hold2, sell1 - p)  \n            sell2 = max(sell2, hold2 + p)  \n        return sell2",
+    "links": [],
+    "variables": [],
+    "expressions": []
+  },
+  "Stock.maxProfit": {
+    "name": "maxProfit",
+    "type": "method",
+    "language": "python",
+    "file": "backend/algorithms/stock.py",
+    "line": 3,
+    "signature": "def maxProfit(self, prices: list[int]) -> int:",
+    "parameters": [],
+    "return_type": "int",
+    "return_description": "",
+    "description": "",
+    "code": "def maxProfit(self, prices: list[int]) -> int:\n        cost, profit = float(\"inf\"), 0\n        for price in prices:\n            cost = min(cost, price)\n            profit = max(profit, price - cost)\n        return profit",
+    "links": [],
+    "variables": [],
+    "expressions": [],
+    "parent": "Stock"
+  },
+  "Stock.maxProfitII": {
+    "name": "maxProfitII",
+    "type": "method",
+    "language": "python",
+    "file": "backend/algorithms/stock.py",
+    "line": 12,
+    "signature": "def maxProfitII(self, prices: list[int]) -> int:",
+    "parameters": [],
+    "return_type": "int",
+    "return_description": "",
+    "description": "",
+    "code": "def maxProfitII(self, prices: list[int]) -> int:\n        profit = 0\n        for i in range(1, len(prices)):\n            if prices[i] > prices[i - 1]:\n                profit += prices[i] - prices[i - 1]\n        return profit",
+    "links": [],
+    "variables": [],
+    "expressions": [],
+    "parent": "Stock"
+  },
+  "Stock.maxProfitIII_cost_profit_tracking": {
+    "name": "maxProfitIII_cost_profit_tracking",
+    "type": "method",
+    "language": "python",
+    "file": "backend/algorithms/stock.py",
+    "line": 20,
+    "signature": "def maxProfitIII_cost_profit_tracking(self, prices: list[int]) -> int:",
+    "parameters": [],
+    "return_type": "int",
+    "return_description": "",
+    "description": "Expressions:",
+    "code": "def maxProfitIII_cost_profit_tracking(self, prices: list[int]) -> int:\n        t1_cost = t2_cost = float(\"inf\")\n        t1_profit = t2_profit = 0\n        for p in prices:\n            t1_cost = min(t1_cost, p)\n            t1_profit = max(t1_profit, p - t1_cost)\n            t2_cost = min(t2_cost, p - t1_profit)\n            t2_profit = max(t2_profit, p - t2_cost)\n        return t2_profit",
+    "links": [],
+    "variables": [],
+    "expressions": [
+      {
+        "expression": "p - t1_profit",
+        "description": "money you'd need now if earlier profit covered part of this buy",
+        "type": "expression"
+      }
+    ],
+    "parent": "Stock"
+  },
+  "Stock.maxProfitIII_hold_sell_states": {
+    "name": "maxProfitIII_hold_sell_states",
+    "type": "method",
+    "language": "python",
+    "file": "backend/algorithms/stock.py",
+    "line": 43,
+    "signature": "def maxProfitIII_hold_sell_states(self, prices: list[int]) -> int:",
+    "parameters": [],
+    "return_type": "int",
+    "return_description": "",
+    "description": "Expressions:",
+    "code": "def maxProfitIII_hold_sell_states(self, prices: list[int]) -> int:\n        sell1 = sell2 = 0             \n        for p in prices:\n            hold1 = max(hold1, -p)         \n            sell1 = max(sell1, hold1 + p)  \n            hold2 = max(hold2, sell1 - p)  \n            sell2 = max(sell2, hold2 + p)  \n        return sell2",
+    "links": [],
+    "variables": [],
+    "expressions": [
+      {
+        "expression": "hold1 = hold2 = float(\"-inf\")",
+        "description": "money you'd have if holding first stock",
+        "type": "expression"
+      },
+      {
+        "expression": "sell1 = sell2 = 0",
+        "description": "money you'd have if not holding first stock",
+        "type": "expression"
+      },
+      {
+        "expression": "hold1 = max(hold1, -p)",
+        "description": "buy first stock",
+        "type": "expression"
+      },
+      {
+        "expression": "sell1 = max(sell1, hold1 + p)",
+        "description": "sell first stock",
+        "type": "expression"
+      },
+      {
+        "expression": "hold2 = max(hold2, sell1 - p)",
+        "description": "buy second stock",
+        "type": "expression"
+      },
+      {
+        "expression": "sell2 = max(sell2, hold2 + p)",
+        "description": "sell second stock",
+        "type": "expression"
+      }
+    ],
+    "parent": "Stock"
+  },
   "Backtrack": {
     "name": "Backtrack",
     "type": "class",
@@ -2374,6 +2495,39 @@
     "links": [],
     "variables": [],
     "expressions": []
+  },
+  "JumpGameIV": {
+    "name": "JumpGameIV",
+    "type": "class",
+    "language": "python",
+    "file": "backend/algorithms/games/JumpGameIV.py",
+    "line": 4,
+    "signature": "class JumpGameIV:",
+    "parameters": [],
+    "return_type": "",
+    "return_description": "",
+    "description": "",
+    "code": "class JumpGameIV:\n    def minJumps(self, nums: list[int]) -> int:\n        if (n := len(nums)) < 2:\n            return 0\n        indicies = defaultdict(list)\n        for i, num in enumerate(nums):\n            indicies[num].append(i)\n        begin, end = {0}, {n - 1}\n        seen = {0, n - 1}\n        steps = 0\n        while begin:\n            if begin & end:\n                return steps\n            if len(begin) > len(end):\n                begin, end = end, begin\n            next_level = set()\n            for i in begin:\n                for j in indicies[nums[i]]:\n                    if j in end:\n                        return steps + 1\n                    if j not in seen:\n                        seen.add(j)\n                        next_level.add(j)\n                indicies[nums[i]].clear()  \n                for j in (i - 1, i + 1):\n                    if j in end:\n                        return steps + 1\n                    if 0 <= j < n and j not in seen:\n                        seen.add(j)\n                        next_level.add(j)\n            begin = next_level\n            steps += 1\n        return steps",
+    "links": [],
+    "variables": [],
+    "expressions": []
+  },
+  "JumpGameIV.minJumps": {
+    "name": "minJumps",
+    "type": "method",
+    "language": "python",
+    "file": "backend/algorithms/games/JumpGameIV.py",
+    "line": 5,
+    "signature": "def minJumps(self, nums: list[int]) -> int:",
+    "parameters": [],
+    "return_type": "int",
+    "return_description": "",
+    "description": "",
+    "code": "def minJumps(self, nums: list[int]) -> int:\n        if (n := len(nums)) < 2:\n            return 0\n        indicies = defaultdict(list)\n        for i, num in enumerate(nums):\n            indicies[num].append(i)\n        begin, end = {0}, {n - 1}\n        seen = {0, n - 1}\n        steps = 0\n        while begin:\n            if begin & end:\n                return steps\n            if len(begin) > len(end):\n                begin, end = end, begin\n            next_level = set()\n            for i in begin:\n                for j in indicies[nums[i]]:\n                    if j in end:\n                        return steps + 1\n                    if j not in seen:\n                        seen.add(j)\n                        next_level.add(j)\n                indicies[nums[i]].clear()  \n                for j in (i - 1, i + 1):\n                    if j in end:\n                        return steps + 1\n                    if 0 <= j < n and j not in seen:\n                        seen.add(j)\n                        next_level.add(j)\n            begin = next_level\n            steps += 1\n        return steps",
+    "links": [],
+    "variables": [],
+    "expressions": [],
+    "parent": "JumpGameIV"
   },
   "StoneGameIII": {
     "name": "StoneGameIII",

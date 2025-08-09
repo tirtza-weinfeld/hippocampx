@@ -1,0 +1,123 @@
+# Stock
+
+## Resizable Table of Contents
+
+## Problems
+
+### 1. Best Time to Buy and Sell Stock 
+
+*Given a list of daily stock prices `prices`; choose one day to buy and a later day to sell for maximum profit. 
+Return the max profit, or `0` if no profit is possible.*
+
+[121. Best Time to Buy and Sell Stock](https://leetcode.com/problems/best-time-to-buy-and-sell-stock/)
+
+```python file=backend/algorithms/stocks.py#method:Stock.maxProfit
+```
+
+> [!insight:collapse] *Greedy min-price tracking & correctness*
+>
+> - ~ The best profit comes from buying at the lowest price before selling.
+> Tracking the running minimum (`cost`) ensures we always consider the optimal buy price so far.
+> On each day, `price - cost` is the best profit achievable if selling today;
+> taking `max(profit, price - cost)` checks all valid buy–sell pairs in one pass,
+> guaranteeing correctness with a single scan.
+>
+>  - ~ *mental movie:* You’re a treasure hunter crossing a valley.
+> Along the way, you mark the **lowest pit** you’ve descended into, then keep climbing until you find the **highest peak** that comes after it.
+> The tallest climb from that pit to that peak is your profit.
+
+
+> [!timecomplexity:collapse] $O(n)$
+
+
+---
+
+
+### 2. Best Time to Buy and Sell Stock II 
+
+*Given daily prices `prices`; you may complete multiple transactions (buy → sell → buy …) but cannot hold more than one share at a time. 
+Return the maximum total profit.*
+
+[122. Best Time to Buy and Sell Stock II](https://leetcode.com/problems/best-time-to-buy-and-sell-stock-ii/)
+
+```python file=backend/algorithms/stocks.py#method:Stock.maxProfitII
+```
+
+> [!insight:collapse] *Greedy sum of positive deltas & correctness*
+>
+> Add every upward move: for each `i`, if `prices[i] > prices[i-1]` add `prices[i] - prices[i-1]` to profit.
+> Any optimal strategy over an increasing run `[low … high]` yields profit `high - low` , which equals the sum of daily increases in that run.
+> Summing all positive deltas across the array therefore matches the maximum achievable profit in a single pass.
+
+> [!timecomplexity:collapse] $O(n)$ 
+
+---
+
+
+### 3. Best Time to Buy and Sell Stock III
+
+*Given daily prices `prices`; at most **two** transactions are allowed (cannot overlap). Return the maximum total profit.*
+
+[123. Best Time to Buy and Sell Stock III](https://leetcode.com/problems/best-time-to-buy-and-sell-stock-iii/)
+
+#### 3.1 Cost/Profit Tracking
+
+```python file=backend/algorithms/stocks.py#method:Stock.maxProfitIII_cost_profit_tracking
+```
+
+> \[!insight\:collapse] *One pass, two trades*
+>
+> Track the best first trade while also keeping the lowest price to start a second, factoring in the first profit. This links the trades without scanning the list twice.
+
+
+#### 3.2 Hold/Sell States
+
+```python file=backend/algorithms/stocks.py#method:Stock.maxProfitIII_hold_sell_states
+```
+
+> \[!insight\:collapse] *State machine*
+>
+> Keep four running amounts:
+>
+> 1. After buying the first stock
+> 2. After selling the first stock
+> 3. After buying the second stock
+> 4. After selling the second stock
+>
+> At each price, decide whether to stay in the current state or make the trade that moves to the next. The last state is the answer.
+
+---
+
+### 4. Best Time to Buy and Sell Stock IV
+
+*Given daily prices `prices` and an integer `k` (max transactions), return the maximum profit.*
+
+[188. Best Time to Buy and Sell Stock IV](https://leetcode.com/problems/best-time-to-buy-and-sell-stock-iv/description/)
+
+#### 4.1 Reinvested Cost/Profit (DP)
+
+```python file=backend/algorithms/stocks.py#method:Stock.maxProfitIV_dp
+```
+
+> \[!insight\:collapse] *DP Intuition — Net Buy Cost*
+>
+> * **Net buy cost for trade `t`:** `net = price − profit[t−1]` (your earlier profit can subsidize today’s buy).
+> * **Update per day, per `t=1..k`:** first `cost[t] = min(cost[t], net)`, then `profit[t] = max(profit[t], price − cost[t])`.
+> * **Why 1-based `t`:** guarantees `profit[t−1]` is already finalized when computing `net`.
+
+
+> \[!timecomplexity\:collapse] `$O(nk)$` time, `$O(k)$` space
+
+#### 4.2 Buy/Sell State Machine
+
+```python file=backend/algorithms/stocks.py#method:Stock.maxProfitIV_states
+```
+
+> \[!insight\:collapse] *State Intuition — k Laddered Trades*
+>
+> * Maintain `buy[t]` (best cash if holding after `t`-th buy) and `sell[t]` (best cash after `t`-th sell).
+> * Transitions: `buy[t]=max(buy[t], sell[t-1]-p)`, `sell[t]=max(sell[t], buy[t]+p)`.
+> * Answer is `sell[k]`—best cash after up to `k` sells.
+
+> \[!timecomplexity\:collapse] `$O(nk)$` time, `$O(k)$` space
+
