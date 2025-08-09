@@ -1,0 +1,188 @@
+# Kadane's Algorithm
+
+## Resizable Table of Contents
+
+## Problem
+
+### 1. Maximum Subarray
+
+*Given an array of integers, return the maximum sum of any contiguous subarray.*
+
+[53. Maximum Subarray](https://leetcode.com/problems/maximum-subarray/)
+
+```python file=backend/algorithms/kadane.py#method:Kadane.maxSubArray
+```
+
+> [!insight:collapse] *Greedy max-sum tracking & correctness*
+>
+> Kadane’s Algorithm is an $O(n)$ dynamic programming method for finding the maximum subarray sum in a list of integers (contiguous elements).
+> 
+> - ~ Core idea:
+>   -  Keep track of the best sum ending at the current position.
+>   - If adding the current number hurts the sum, start fresh from the current number.
+>   - Track the overall maximum as you go.
+> 
+> - ~ Recurrence:
+>   - `max_ending_here` = `max(num, max_ending_here + num)`
+>   - `max_so_far` = `max(max_so_far, max_ending_here)`
+> - ~ *Example:*
+> For `[-2,1,-3,4,-1,2,1,-5,4]` → `6` (`[4,-1,2,1]`).
+
+
+
+> [!timecomplexity:collapse] $O(n)$
+
+
+### 2. Maximum Product Subarray
+
+*Given an array of integers, return the maximum product of any contiguous subarray.*
+
+[152. Maximum Product Subarray](https://leetcode.com/problems/maximum-product-subarray/)
+
+```python file=backend/algorithms/kadane.py#method:Kadane.maxProduct
+```
+
+> [!insight:collapse] *Dynamic product tracking & correctness*
+>
+> Kadane’s Algorithm can be adapted to track both max and min products, allowing for negative numbers.
+> - ~ We track two states per index:
+>	-	`hi` = max product ending at current index.
+>	-	`lo` = min product ending at current index (could become max if multiplied by a negative).
+> - ~	Why swap on negative:
+>	-	Multiplying by a negative flips sign — the previous max could become the new min and vice versa.
+>	-	So when `x < 0`, `hi` and `lo` swap before the update.
+> - ~	Update step:
+>	-	`hi = max(x, hi * x)` → either start fresh from x or extend previous max.
+>	-	`lo = min(x, lo * x)` → same but for min.
+>  - ~	Track global max:
+>	    -	`max_prod = max(max_prod, hi)` each iteration.
+> - ~ Zeros:
+>	    -	They naturally reset the product because `max(x, hi * x)` will pick `x` when `x == 0`.
+
+
+> [!timecomplexity:collapse] $O(n)$
+
+
+### 3. Maximum Sum of Circular Subarray
+
+*Given a circular array of integers, return the maximum sum of any contiguous subarray.*
+
+[918. Maximum Sum of Circular Subarray](https://leetcode.com/problems/maximum-sum-circular-subarray/)
+
+```python file=backend/algorithms/kadane.py#method:Kadane.maxSubarraySumCircular
+```
+
+> [!insight:collapse] *Kadane Min and Max for Circular Max Sum*
+> 
+> - ~ Run Kadane twice — max for non-wrap and min for worst segment.
+> - ~ Wrap max = total − min (everything except the worst segment).
+> - ~ If `max_sum` < 0 (all-negative), return it; else return `max(max_sum, total − min_sum)`.
+
+
+> [!timecomplexity:collapse] $O(n)$
+
+
+### 4. Max Sum of Rectangle No Larger Than K
+
+*Given a 2D matrix and a target sum, return the maximum sum of any submatrix no larger than K.*
+
+[363. Max Sum of Rectangle No Larger Than K](https://leetcode.com/problems/max-sum-of-rectangle-no-larger-than-k/)
+
+```python file=backend/algorithms/kadane.py#method:Kadane.maxSumSubmatrix
+```
+
+
+
+> [!insight:collapse] *Turn the 2D problem into many 1D problems, then solve each 1D “max subarray ≤ k” optimally.*
+>
+> Uses *column-pair compression*, *Kadane’s algorithm*, and *ordered prefix sums + binary search*.
+>
+>
+> * **1. Column-pair compression → transform 2D into 1D**
+>   * **Technique:** Fix two columns `(l, r)` and sum values row-wise between them.
+>   * **Data:** `row[i]` = sum of `matrix[i][l..r]`.
+>   * **Why:** Any contiguous block in `row` represents a rectangular submatrix between columns `l` and `r`.
+>   * **Example:**
+>      Matrix:
+>   
+>      ```
+>      1  2  3
+>      4  5  6
+>      7  8  9
+>      ```
+>   
+>      Fix `(l=0, r=1)` → take cols 0..1:
+>   
+>      ```
+>      Row sums = [1+2, 4+5, 7+8] = [3, 9, 15]
+>      ```
+>   
+>      Now `[3, 9, 15]` is a 1D problem.
+>    * **Where in code:**
+>       ```python
+>       for r in range(l, n):
+>           for i in range(m):
+>               row[i] += mat[i][r]
+>       ```
+> 
+> * **2. Kadane’s algorithm (fast path)**
+>
+>   * **Technique:** Standard Kadane finds the max subarray sum in O(n) without constraints.
+>   * **Data:** Works on the compressed `row` array.
+>   * **Why:** If Kadane’s result ≤ k, that’s optimal for this `(l, r)`, so skip heavier search.
+>   * **Example:**
+>   For `row = [3, 9, 15]` and `k = 30`:
+>   Kadane = 27 (whole array sum) → ≤ 30, so no binary search needed.
+>   * **Where in code:**
+>      ```python
+>      fast = kadane_leq(row, k)
+>      if fast is not None:
+>          ans = max(ans, fast)
+>          if ans == k: return k
+>          continue
+>      ```
+>
+>
+> * **3. Ordered prefix sums + binary search (constrained Kadane)**
+>
+>   * **Technique:** Maintain sorted list of prefix sums; for running sum `s`, binary search for smallest prefix ≥ `s - k`.
+>   * **Data:** Prefix sums of `row` as we scan.
+>   * **Why:** This ensures `s - prefix ≤ k` and is the closest possible to k. Handles negatives optimally.
+>   * **Example:**
+>   `row = [3, -2, 5]`, `k = 6`:
+>
+>   * Prefix list starts `[0]`, `s = 0`.
+>   * Add 3 → search for ≥ `3-6=-3` → match 0 → sum = 3.
+>   * Add -2 → s=1 → search for ≥ -5 → match 0 → sum = 1.
+>   * Add 5 → s=6 → search for ≥ 0 → match 0 → sum = 6 (best).
+>   * **Where in code:**
+>       ```python
+>       s, pref = 0, [0]
+>       for v in row:
+>           s += v
+>           j = bisect_left(pref, s - k)
+>           if j < len(pref):
+>               ans = max(ans, s - pref[j])
+>               if ans == k: return k
+>           insort(pref, s)
+>       ```
+>
+> * **4. Loop ordering optimization**
+>
+>   * **Technique:** Transpose if `rows > cols` so outer loops iterate over smaller dimension.
+>   * **Data:** The matrix itself.
+>   * **Why:** Reduces number of `(l, r)` pairs → less total work.
+>   * **Example:**
+>     If matrix is 100x1000 → transpose to 1000x100 so `min(m,n)=100` for outer loops.
+>   * **Where in code:**
+>     ```python
+>     if m > n:
+>         mat = [list(r) for r in zip(*mat)]
+>         m, n = n, m
+>     ```
+>
+
+>
+> [!timecomplexity:collapse]
+> $O(\min(m,n)^2 \cdot \max(m,n) \log \max(m,n))$ 
+

@@ -523,6 +523,161 @@
       }
     ]
   },
+  "Stock": {
+    "name": "Stock",
+    "type": "class",
+    "language": "python",
+    "file": "backend/algorithms/stocks.py",
+    "line": 1,
+    "signature": "class Stock:",
+    "parameters": [],
+    "return_type": "",
+    "return_description": "",
+    "description": "",
+    "code": "class Stock:\n    def maxProfit(self, prices: list[int]) -> int:\n        cost, profit = float(\"inf\"), 0\n        for price in prices:\n            cost = min(cost, price)\n            profit = max(profit, price - cost)\n        return profit\n    def maxProfitII(self, prices: list[int]) -> int:\n        profit = 0\n        for i in range(1, len(prices)):\n            if prices[i] > prices[i - 1]:\n                profit += prices[i] - prices[i - 1]\n        return profit\n    def maxProfitIII_cost_profit_tracking(self, prices: list[int]) -> int:\n        t1_cost = t2_cost = float(\"inf\")\n        t1_profit = t2_profit = 0\n        for p in prices:\n            t1_cost = min(t1_cost, p)\n            t1_profit = max(t1_profit, p - t1_cost)\n            t2_cost = min(t2_cost, p - t1_profit)\n            t2_profit = max(t2_profit, p - t2_cost)\n        return t2_profit\n    def maxProfitIII_hold_sell_states(self, prices: list[int]) -> int:\n        sell1 = sell2 = 0             \n        for p in prices:\n            hold1 = max(hold1, -p)         \n            sell1 = max(sell1, hold1 + p)  \n            hold2 = max(hold2, sell1 - p)  \n            sell2 = max(sell2, hold2 + p)  \n        return sell2\n    def maxProfitIV_dp(self, k: int, prices: list[int]) -> int:\n        cost = [float(\"inf\")] * (k + 1)\n        profit = [0] * (k + 1)\n        for p in prices:\n            for t in range(1, k + 1):\n                cost[t] = min(cost[t], p - profit[t - 1])\n                profit[t] = max(profit[t], p - cost[t])\n        return profit[k]\n    def maxProfitIV_states(self, k: int, prices: list[int]) -> int:\n        buy  = [float(\"-inf\")] * (k + 1)\n        sell = [0] * (k + 1)\n        for p in prices:\n            for t in range(1, k + 1):\n                buy[t]  = max(buy[t],  sell[t - 1] - p)\n                sell[t] = max(sell[t], buy[t] + p)\n        return sell[k]",
+    "links": [],
+    "variables": [],
+    "expressions": []
+  },
+  "Stock.maxProfit": {
+    "name": "maxProfit",
+    "type": "method",
+    "language": "python",
+    "file": "backend/algorithms/stocks.py",
+    "line": 3,
+    "signature": "def maxProfit(self, prices: list[int]) -> int:",
+    "parameters": [],
+    "return_type": "int",
+    "return_description": "",
+    "description": "",
+    "code": "def maxProfit(self, prices: list[int]) -> int:\n        cost, profit = float(\"inf\"), 0\n        for price in prices:\n            cost = min(cost, price)\n            profit = max(profit, price - cost)\n        return profit",
+    "links": [],
+    "variables": [],
+    "expressions": [],
+    "parent": "Stock"
+  },
+  "Stock.maxProfitII": {
+    "name": "maxProfitII",
+    "type": "method",
+    "language": "python",
+    "file": "backend/algorithms/stocks.py",
+    "line": 11,
+    "signature": "def maxProfitII(self, prices: list[int]) -> int:",
+    "parameters": [],
+    "return_type": "int",
+    "return_description": "",
+    "description": "",
+    "code": "def maxProfitII(self, prices: list[int]) -> int:\n        profit = 0\n        for i in range(1, len(prices)):\n            if prices[i] > prices[i - 1]:\n                profit += prices[i] - prices[i - 1]\n        return profit",
+    "links": [],
+    "variables": [],
+    "expressions": [],
+    "parent": "Stock"
+  },
+  "Stock.maxProfitIII_cost_profit_tracking": {
+    "name": "maxProfitIII_cost_profit_tracking",
+    "type": "method",
+    "language": "python",
+    "file": "backend/algorithms/stocks.py",
+    "line": 19,
+    "signature": "def maxProfitIII_cost_profit_tracking(self, prices: list[int]) -> int:",
+    "parameters": [],
+    "return_type": "int",
+    "return_description": "",
+    "description": "Expressions:",
+    "code": "def maxProfitIII_cost_profit_tracking(self, prices: list[int]) -> int:\n        t1_cost = t2_cost = float(\"inf\")\n        t1_profit = t2_profit = 0\n        for p in prices:\n            t1_cost = min(t1_cost, p)\n            t1_profit = max(t1_profit, p - t1_cost)\n            t2_cost = min(t2_cost, p - t1_profit)\n            t2_profit = max(t2_profit, p - t2_cost)\n        return t2_profit",
+    "links": [],
+    "variables": [],
+    "expressions": [
+      {
+        "expression": "p - t1_profit",
+        "description": "money you'd need now if earlier profit covered part of this buy",
+        "type": "expression"
+      }
+    ],
+    "parent": "Stock"
+  },
+  "Stock.maxProfitIII_hold_sell_states": {
+    "name": "maxProfitIII_hold_sell_states",
+    "type": "method",
+    "language": "python",
+    "file": "backend/algorithms/stocks.py",
+    "line": 42,
+    "signature": "def maxProfitIII_hold_sell_states(self, prices: list[int]) -> int:",
+    "parameters": [],
+    "return_type": "int",
+    "return_description": "",
+    "description": "Expressions:",
+    "code": "def maxProfitIII_hold_sell_states(self, prices: list[int]) -> int:\n        sell1 = sell2 = 0             \n        for p in prices:\n            hold1 = max(hold1, -p)         \n            sell1 = max(sell1, hold1 + p)  \n            hold2 = max(hold2, sell1 - p)  \n            sell2 = max(sell2, hold2 + p)  \n        return sell2",
+    "links": [],
+    "variables": [],
+    "expressions": [
+      {
+        "expression": "hold1 = hold2 = float(\"-inf\")",
+        "description": "money you'd have if holding first stock",
+        "type": "expression"
+      },
+      {
+        "expression": "sell1 = sell2 = 0",
+        "description": "money you'd have if not holding first stock",
+        "type": "expression"
+      },
+      {
+        "expression": "hold1 = max(hold1, -p)",
+        "description": "buy first stock",
+        "type": "expression"
+      },
+      {
+        "expression": "sell1 = max(sell1, hold1 + p)",
+        "description": "sell first stock",
+        "type": "expression"
+      },
+      {
+        "expression": "hold2 = max(hold2, sell1 - p)",
+        "description": "buy second stock",
+        "type": "expression"
+      },
+      {
+        "expression": "sell2 = max(sell2, hold2 + p)",
+        "description": "sell second stock",
+        "type": "expression"
+      }
+    ],
+    "parent": "Stock"
+  },
+  "Stock.maxProfitIV_dp": {
+    "name": "maxProfitIV_dp",
+    "type": "method",
+    "language": "python",
+    "file": "backend/algorithms/stocks.py",
+    "line": 64,
+    "signature": "def maxProfitIV_dp(self, k: int, prices: list[int]) -> int:",
+    "parameters": [],
+    "return_type": "int",
+    "return_description": "",
+    "description": "",
+    "code": "def maxProfitIV_dp(self, k: int, prices: list[int]) -> int:\n        cost = [float(\"inf\")] * (k + 1)\n        profit = [0] * (k + 1)\n        for p in prices:\n            for t in range(1, k + 1):\n                cost[t] = min(cost[t], p - profit[t - 1])\n                profit[t] = max(profit[t], p - cost[t])\n        return profit[k]",
+    "links": [],
+    "variables": [],
+    "expressions": [],
+    "parent": "Stock"
+  },
+  "Stock.maxProfitIV_states": {
+    "name": "maxProfitIV_states",
+    "type": "method",
+    "language": "python",
+    "file": "backend/algorithms/stocks.py",
+    "line": 73,
+    "signature": "def maxProfitIV_states(self, k: int, prices: list[int]) -> int:",
+    "parameters": [],
+    "return_type": "int",
+    "return_description": "",
+    "description": "",
+    "code": "def maxProfitIV_states(self, k: int, prices: list[int]) -> int:\n        buy  = [float(\"-inf\")] * (k + 1)\n        sell = [0] * (k + 1)\n        for p in prices:\n            for t in range(1, k + 1):\n                buy[t]  = max(buy[t],  sell[t - 1] - p)\n                sell[t] = max(sell[t], buy[t] + p)\n        return sell[k]",
+    "links": [],
+    "variables": [],
+    "expressions": [],
+    "parent": "Stock"
+  },
   "searchInsert": {
     "name": "searchInsert",
     "type": "function",
@@ -731,6 +886,77 @@
     "variables": [],
     "expressions": [],
     "parent": "shipWithinDays"
+  },
+  "SlidingWindow": {
+    "name": "SlidingWindow",
+    "type": "class",
+    "language": "python",
+    "file": "backend/algorithms/sliding_window.py",
+    "line": 1,
+    "signature": "class SlidingWindow:",
+    "parameters": [],
+    "return_type": "",
+    "return_description": "",
+    "description": "",
+    "code": "class SlidingWindow:\n    def numSubarrayProductLessThanK(self, nums: list[int], k: int) -> int:\n        if k <= 1:return 0\n        product, left, count = 1, 0, 0\n        for right, num in enumerate(nums):\n            product *= num\n            while product >= k:\n                product //= nums[left]\n                left += 1\n            count += right - left + 1\n        return count\n    def lengthOfLongestSubstring(self, s: str) -> int:\n        mp, l, max_length = {}, 0, 0\n        for r,c in enumerate(s):\n            if c in mp:\n                l = max(mp[c] + 1, l)\n            mp[c] = r\n            max_length = max(max_length, r - l + 1)\n        return max_length",
+    "links": [],
+    "variables": [],
+    "expressions": []
+  },
+  "SlidingWindow.numSubarrayProductLessThanK": {
+    "name": "numSubarrayProductLessThanK",
+    "type": "method",
+    "language": "python",
+    "file": "backend/algorithms/sliding_window.py",
+    "line": 3,
+    "signature": "def numSubarrayProductLessThanK(self, nums: list[int], k: int) -> int:",
+    "parameters": [],
+    "return_type": "int",
+    "return_description": "",
+    "description": "",
+    "code": "def numSubarrayProductLessThanK(self, nums: list[int], k: int) -> int:\n        if k <= 1:return 0\n        product, left, count = 1, 0, 0\n        for right, num in enumerate(nums):\n            product *= num\n            while product >= k:\n                product //= nums[left]\n                left += 1\n            count += right - left + 1\n        return count",
+    "links": [],
+    "variables": [],
+    "expressions": [],
+    "parent": "SlidingWindow"
+  },
+  "SlidingWindow.lengthOfLongestSubstring": {
+    "name": "lengthOfLongestSubstring",
+    "type": "method",
+    "language": "python",
+    "file": "backend/algorithms/sliding_window.py",
+    "line": 18,
+    "signature": "def lengthOfLongestSubstring(self, s: str) -> int:",
+    "parameters": [],
+    "return_type": "int",
+    "return_description": "",
+    "description": "Expressions:",
+    "code": "def lengthOfLongestSubstring(self, s: str) -> int:\n        mp, l, max_length = {}, 0, 0\n        for r,c in enumerate(s):\n            if c in mp:\n                l = max(mp[c] + 1, l)\n            mp[c] = r\n            max_length = max(max_length, r - l + 1)\n        return max_length",
+    "links": [
+      {
+        "symbol": "c",
+        "display": "[c]",
+        "target": "c",
+        "valid": false,
+        "target_symbol": null
+      },
+      {
+        "symbol": "r",
+        "display": "[r]",
+        "target": "r",
+        "valid": false,
+        "target_symbol": null
+      }
+    ],
+    "variables": [],
+    "expressions": [
+      {
+        "expression": "l = max(mp[c] + 1, l)",
+        "description": "ensures that l does not move backward in cases where the last occurrence of s[r] was before l.",
+        "type": "expression"
+      }
+    ],
+    "parent": "SlidingWindow"
   },
   "DP": {
     "name": "DP",
@@ -1081,126 +1307,89 @@
     "expressions": [],
     "parent": "LFUCache"
   },
-  "Stock": {
-    "name": "Stock",
+  "Kadane": {
+    "name": "Kadane",
     "type": "class",
     "language": "python",
-    "file": "backend/algorithms/stock.py",
+    "file": "backend/algorithms/kadane.py",
     "line": 1,
-    "signature": "class Stock:",
+    "signature": "class Kadane:",
     "parameters": [],
     "return_type": "",
     "return_description": "",
     "description": "",
-    "code": "class Stock:\n    def maxProfit(self, prices: list[int]) -> int:\n        cost, profit = float(\"inf\"), 0\n        for price in prices:\n            cost = min(cost, price)\n            profit = max(profit, price - cost)\n        return profit\n    def maxProfitII(self, prices: list[int]) -> int:\n        profit = 0\n        for i in range(1, len(prices)):\n            if prices[i] > prices[i - 1]:\n                profit += prices[i] - prices[i - 1]\n        return profit\n    def maxProfitIII_cost_profit_tracking(self, prices: list[int]) -> int:\n        t1_cost = t2_cost = float(\"inf\")\n        t1_profit = t2_profit = 0\n        for p in prices:\n            t1_cost = min(t1_cost, p)\n            t1_profit = max(t1_profit, p - t1_cost)\n            t2_cost = min(t2_cost, p - t1_profit)\n            t2_profit = max(t2_profit, p - t2_cost)\n        return t2_profit\n    def maxProfitIII_hold_sell_states(self, prices: list[int]) -> int:\n        sell1 = sell2 = 0             \n        for p in prices:\n            hold1 = max(hold1, -p)         \n            sell1 = max(sell1, hold1 + p)  \n            hold2 = max(hold2, sell1 - p)  \n            sell2 = max(sell2, hold2 + p)  \n        return sell2",
+    "code": "class Kadane:\n    def maxSubArray(self, nums: list[int]) -> int:\n        max_sum = curr_sum = float(\"-inf\")\n        for num in nums:\n            curr_sum = max(num, curr_sum + num)\n            max_sum = max(max_sum, curr_sum)\n        return max_sum\n    def maxProduct(self, nums: list[int]) -> int:\n        hi = lo = max_prod = nums[0]\n        for x in nums[1:]:\n            if x < 0:\n                hi, lo = lo, hi\n            hi = max(x, hi * x)\n            lo = min(x, lo * x)\n            max_prod = max(max_prod, hi)\n        return max_prod\n    def maxSubarraySumCircular(self, nums: list[int]) -> int:\n        total, max_end = min_end = 0\n        max_sum, min_sum = float(\"-inf\"), float(\"inf\")\n        for x in nums:\n            total += x\n            max_end = max(x, max_end + x)\n            max_sum = max(max_sum, max_end)  \n            min_end = min(x, min_end + x)\n            min_sum = min(min_sum, min_end)  \n        return max_sum if max_sum < 0 else max(max_sum, total - min_sum)\n    def maxSumSubmatrix(self, matrix: list[list[int]], k: int) -> int:\n        pass",
     "links": [],
     "variables": [],
     "expressions": []
   },
-  "Stock.maxProfit": {
-    "name": "maxProfit",
+  "Kadane.maxSubArray": {
+    "name": "maxSubArray",
     "type": "method",
     "language": "python",
-    "file": "backend/algorithms/stock.py",
+    "file": "backend/algorithms/kadane.py",
     "line": 3,
-    "signature": "def maxProfit(self, prices: list[int]) -> int:",
+    "signature": "def maxSubArray(self, nums: list[int]) -> int:",
     "parameters": [],
     "return_type": "int",
     "return_description": "",
     "description": "",
-    "code": "def maxProfit(self, prices: list[int]) -> int:\n        cost, profit = float(\"inf\"), 0\n        for price in prices:\n            cost = min(cost, price)\n            profit = max(profit, price - cost)\n        return profit",
+    "code": "def maxSubArray(self, nums: list[int]) -> int:\n        max_sum = curr_sum = float(\"-inf\")\n        for num in nums:\n            curr_sum = max(num, curr_sum + num)\n            max_sum = max(max_sum, curr_sum)\n        return max_sum",
     "links": [],
     "variables": [],
     "expressions": [],
-    "parent": "Stock"
+    "parent": "Kadane"
   },
-  "Stock.maxProfitII": {
-    "name": "maxProfitII",
+  "Kadane.maxProduct": {
+    "name": "maxProduct",
     "type": "method",
     "language": "python",
-    "file": "backend/algorithms/stock.py",
-    "line": 12,
-    "signature": "def maxProfitII(self, prices: list[int]) -> int:",
+    "file": "backend/algorithms/kadane.py",
+    "line": 10,
+    "signature": "def maxProduct(self, nums: list[int]) -> int:",
     "parameters": [],
     "return_type": "int",
     "return_description": "",
     "description": "",
-    "code": "def maxProfitII(self, prices: list[int]) -> int:\n        profit = 0\n        for i in range(1, len(prices)):\n            if prices[i] > prices[i - 1]:\n                profit += prices[i] - prices[i - 1]\n        return profit",
+    "code": "def maxProduct(self, nums: list[int]) -> int:\n        hi = lo = max_prod = nums[0]\n        for x in nums[1:]:\n            if x < 0:\n                hi, lo = lo, hi\n            hi = max(x, hi * x)\n            lo = min(x, lo * x)\n            max_prod = max(max_prod, hi)\n        return max_prod",
     "links": [],
     "variables": [],
     "expressions": [],
-    "parent": "Stock"
+    "parent": "Kadane"
   },
-  "Stock.maxProfitIII_cost_profit_tracking": {
-    "name": "maxProfitIII_cost_profit_tracking",
+  "Kadane.maxSubarraySumCircular": {
+    "name": "maxSubarraySumCircular",
     "type": "method",
     "language": "python",
-    "file": "backend/algorithms/stock.py",
-    "line": 20,
-    "signature": "def maxProfitIII_cost_profit_tracking(self, prices: list[int]) -> int:",
+    "file": "backend/algorithms/kadane.py",
+    "line": 22,
+    "signature": "def maxSubarraySumCircular(self, nums: list[int]) -> int:",
     "parameters": [],
     "return_type": "int",
     "return_description": "",
-    "description": "Expressions:",
-    "code": "def maxProfitIII_cost_profit_tracking(self, prices: list[int]) -> int:\n        t1_cost = t2_cost = float(\"inf\")\n        t1_profit = t2_profit = 0\n        for p in prices:\n            t1_cost = min(t1_cost, p)\n            t1_profit = max(t1_profit, p - t1_cost)\n            t2_cost = min(t2_cost, p - t1_profit)\n            t2_profit = max(t2_profit, p - t2_cost)\n        return t2_profit",
+    "description": "",
+    "code": "def maxSubarraySumCircular(self, nums: list[int]) -> int:\n        total, max_end = min_end = 0\n        max_sum, min_sum = float(\"-inf\"), float(\"inf\")\n        for x in nums:\n            total += x\n            max_end = max(x, max_end + x)\n            max_sum = max(max_sum, max_end)  \n            min_end = min(x, min_end + x)\n            min_sum = min(min_sum, min_end)  \n        return max_sum if max_sum < 0 else max(max_sum, total - min_sum)",
     "links": [],
     "variables": [],
-    "expressions": [
-      {
-        "expression": "p - t1_profit",
-        "description": "money you'd need now if earlier profit covered part of this buy",
-        "type": "expression"
-      }
-    ],
-    "parent": "Stock"
+    "expressions": [],
+    "parent": "Kadane"
   },
-  "Stock.maxProfitIII_hold_sell_states": {
-    "name": "maxProfitIII_hold_sell_states",
+  "Kadane.maxSumSubmatrix": {
+    "name": "maxSumSubmatrix",
     "type": "method",
     "language": "python",
-    "file": "backend/algorithms/stock.py",
-    "line": 43,
-    "signature": "def maxProfitIII_hold_sell_states(self, prices: list[int]) -> int:",
+    "file": "backend/algorithms/kadane.py",
+    "line": 33,
+    "signature": "def maxSumSubmatrix(self, matrix: list[list[int]], k: int) -> int:",
     "parameters": [],
     "return_type": "int",
     "return_description": "",
-    "description": "Expressions:",
-    "code": "def maxProfitIII_hold_sell_states(self, prices: list[int]) -> int:\n        sell1 = sell2 = 0             \n        for p in prices:\n            hold1 = max(hold1, -p)         \n            sell1 = max(sell1, hold1 + p)  \n            hold2 = max(hold2, sell1 - p)  \n            sell2 = max(sell2, hold2 + p)  \n        return sell2",
+    "description": "",
+    "code": "def maxSumSubmatrix(self, matrix: list[list[int]], k: int) -> int:\n        pass",
     "links": [],
     "variables": [],
-    "expressions": [
-      {
-        "expression": "hold1 = hold2 = float(\"-inf\")",
-        "description": "money you'd have if holding first stock",
-        "type": "expression"
-      },
-      {
-        "expression": "sell1 = sell2 = 0",
-        "description": "money you'd have if not holding first stock",
-        "type": "expression"
-      },
-      {
-        "expression": "hold1 = max(hold1, -p)",
-        "description": "buy first stock",
-        "type": "expression"
-      },
-      {
-        "expression": "sell1 = max(sell1, hold1 + p)",
-        "description": "sell first stock",
-        "type": "expression"
-      },
-      {
-        "expression": "hold2 = max(hold2, sell1 - p)",
-        "description": "buy second stock",
-        "type": "expression"
-      },
-      {
-        "expression": "sell2 = max(sell2, hold2 + p)",
-        "description": "sell second stock",
-        "type": "expression"
-      }
-    ],
-    "parent": "Stock"
+    "expressions": [],
+    "parent": "Kadane"
   },
   "Backtrack": {
     "name": "Backtrack",
