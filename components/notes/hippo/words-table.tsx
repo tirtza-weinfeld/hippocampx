@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
-import { Save, Trash2, Search } from "lucide-react"
+import { Save, Trash2, Search, ExternalLink, X } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import {
@@ -41,6 +41,8 @@ function SaveButton() {
 export default function WordsTable({ words, updateAction, deleteAction }: WordsTableProps) {
   const [query, setQuery] = useState("")
   const [result, setResult] = useState<ActionResult | null>(null)
+  const [showPopup, setShowPopup] = useState(false)
+  const [selectedWord, setSelectedWord] = useState("")
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase()
@@ -73,19 +75,33 @@ export default function WordsTable({ words, updateAction, deleteAction }: WordsT
           <TableRow>
             <TableHead className="w-[220px]">Word</TableHead>
             <TableHead>Definition</TableHead>
-            <TableHead className="w-[120px] text-right">Actions</TableHead>
+            <TableHead className="w-[140px] text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {filtered.map((item) => (
             <TableRow key={`${item.id}-${item.word}`}>
               <TableCell colSpan={3}>
-                <form action={async (fd) => setResult(await updateAction(fd))} className="grid grid-cols-1 gap-2 sm:grid-cols-[220px_1fr_auto_auto] sm:items-center">
+                <form action={async (fd) => setResult(await updateAction(fd))} className="grid grid-cols-1 gap-2 sm:grid-cols-[220px_1fr_auto_auto_auto] sm:items-center">
                   <input type="hidden" name="id" value={String(item.id)} />
                   <input type="hidden" name="originalWord" value={item.word} />
                   <Input name="word" defaultValue={item.word} aria-label={`Word ${item.word}`} />
                   <Input name="definition" defaultValue={item.definition} aria-label={`Definition for ${item.word}`} />
                   <div className="flex justify-end gap-2">
+                    <Button
+                      type="button"
+                      size="icon"
+                      variant="outline"
+                      className="h-8 w-8"
+                      onClick={() => {
+                        setSelectedWord(item.word)
+                        setShowPopup(true)
+                      }}
+                      title={`Search Google for definition of "${item.word}"`}
+                    >
+                      <ExternalLink className="size-4" />
+                      <span className="sr-only">Google definition</span>
+                    </Button>
                     <SaveButton />
                     <Button
                       formAction={async (fd) => {
@@ -111,6 +127,36 @@ export default function WordsTable({ words, updateAction, deleteAction }: WordsT
       </Table>
       {/* toast feedback */}
       <ResultToaster result={result} onClear={() => setResult(null)} />
+      
+      {/* Google Definition Popup */}
+      {showPopup && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-2">
+          <div className="absolute inset-0 bg-black/80" onClick={() => setShowPopup(false)} />
+          <div className="relative bg-background w-full h-full max-w-4xl max-h-[95vh] rounded-lg shadow-lg flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between p-3 border-b bg-background">
+              <h3 className="text-lg font-semibold truncate">Google Definition: "{selectedWord}"</h3>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setShowPopup(false)}
+                className="h-8 w-8 flex-shrink-0"
+              >
+                <X className="size-4" />
+                <span className="sr-only">Close</span>
+              </Button>
+            </div>
+            <div className="flex-1 relative bg-white">
+              <iframe
+                src={`https://www.google.com/search?q=${encodeURIComponent(`define ${selectedWord}`)}&igu=1`}
+                className="absolute inset-0 w-full h-full border-0"
+                title={`Google definition search for ${selectedWord}`}
+                sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+                allow="autoplay"
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
