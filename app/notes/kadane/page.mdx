@@ -82,7 +82,27 @@
 > [!timecomplexity:collapse] $O(n)$
 
 
-### 4. Max Sum of Rectangle No Larger Than K
+#### 4. Binary Tree Maximum Path Sum
+*Given a binary tree, find the maximum path sum.*
+
+```python file=backend/algorithms/kadane.py#method:Kadane.maxPathSum
+```
+> [!insight:collapse] *Kadane on Trees*
+>
+> * DFS returns the **best downward path sum** from each node (discarding negatives as 0).
+> * At each node, check `node.val + left_gain + right_gain` for the **best path through this node** (could be root of global max).
+> * Return `node.val + max(left_gain, right_gain)` so parent can extend the higher-gain branch.
+
+> \[!timecomplexity]
+>
+>  $O(n)$ — each node visited once.
+
+
+
+
+
+
+### 5. Max Sum of Rectangle No Larger Than K
 
 *Given a 2D matrix and a target sum, return the maximum sum of any submatrix no larger than K.*
 

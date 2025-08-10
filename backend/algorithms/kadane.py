@@ -1,4 +1,6 @@
 from bisect import bisect_left, insort
+from data_structures.binary_tree_node import BinaryTreeNode as TreeNode
+
 
 class Kadane:
 
@@ -10,7 +12,7 @@ class Kadane:
         return max_sum
 
     def maxProduct(self, nums: list[int]) -> int:
-        
+
         hi = lo = max_prod = nums[0]
         for x in nums[1:]:
             if x < 0:
@@ -19,7 +21,6 @@ class Kadane:
             lo = min(x, lo * x)
             max_prod = max(max_prod, hi)
         return max_prod
-    
 
     def maxSubarraySumCircular(self, nums: list[int]) -> int:
         total, max_end = min_end = 0
@@ -34,43 +35,73 @@ class Kadane:
 
 
 
+    def maxPathSum(self, root: TreeNode | None) -> int:
+    
+        best = float("-inf")
+        def dfs(node):
+            """
+            Variables:
+            - l: left gain
+            - r: right gain
+
+            Expressions:
+            - 'best = max(best, node.val + l + r)'  :  path through node
+            - 'return node.val + max(l, r)'  :  best upward gain
+            """
+            nonlocal best
+            if not node:
+                return 0
+            l = max(dfs(node.left), 0)
+            r = max(dfs(node.right), 0)
+            best = max(best, node.val + l + r)
+            return node.val + max(l, r)
+
+        dfs(root)
+        return best
+
+
+
 
 
     def maxSumSubmatrix(self, mat: list[list[int]], k: int) -> int:
-        
+
         # [Opt Loop Ordering] transpose so outer loops iterate the smaller dim (fewer (l,r) pairs)
         m, n = len(mat), len(mat[0])
         if m > n:
-            mat = [list(r) for r in zip(*mat)]; m, n = n, m
-    
+            mat = [list(r) for r in zip(*mat)]
+            m, n = n, m
+
         # [Kadane Fast-Path] classic Kadane; return value if ≤ k, else None → fall back to constrained step
         def kadane_leq(arr: list[int], K: int) -> int | None:
             best = cur = arr[0]
             for x in arr[1:]:
-                cur = x if cur < 0 else cur + x   # Kadane “extend or restart”
+                cur = x if cur < 0 else cur + x  # Kadane “extend or restart”
                 best = max(best, cur)
-                if best == K: return K            # [Early Exit] cannot beat K
+                if best == K:
+                    return K  # [Early Exit] cannot beat K
             return best if best <= K else None
-    
+
         ans = float("-inf")
-    
+
         # ------------------- Technique 1: Column-Pair Compression (2D → 1D) -------------------
         # Fix left/right columns; accumulate row sums inside this strip → a 1D array `row`.
         # Any contiguous subarray of `row` == some rectangle between columns [l..r].
         for l in range(n):
             row = [0] * m
             for r in range(l, n):
-                for i in range(m): row[i] += mat[i][r]
-    
+                for i in range(m):
+                    row[i] += mat[i][r]
+
                 # Example: if mat = [[1,2,3],[4,5,6],[7,8,9]], (l,r)=(0,1) → row=[1+2,4+5,7+8]=[3,9,15]
-    
+
                 # ------------------- Technique 2: Kadane (fast path, unconstrained) -------------------
                 fast = kadane_leq(row, k)
                 if fast is not None:
                     ans = max(ans, fast)
-                    if ans == k: return k   # [Early Exit]
+                    if ans == k:
+                        return k  # [Early Exit]
                     continue
-    
+
                 # ------------------- Technique 3: Ordered Prefix Sums + Binary Search -------------------
                 # 1D target: max subarray sum ≤ k on `row` with negatives allowed.
                 # Keep sorted prefix sums; for running sum s, find smallest prefix p ≥ s-k → s - p ≤ k and as large as possible.
@@ -82,7 +113,8 @@ class Kadane:
                     j = bisect_left(pref, s - k)  # find smallest prefix ≥ s-k
                     if j < len(pref):
                         ans = max(ans, s - pref[j])
-                        if ans == k: return k     # [Early Exit]
-                    insort(pref, s)               # keep prefixes sorted for future queries
-    
+                        if ans == k:
+                            return k  # [Early Exit]
+                    insort(pref, s)  # keep prefixes sorted for future queries
+
         return ans

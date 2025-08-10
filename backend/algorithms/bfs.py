@@ -1,11 +1,6 @@
 from collections import deque, defaultdict
+from data_structures.binary_tree_node import BinaryTreeNode as TreeNode
 
-
-class TreeNode:
-    def __init__(self, val=0, left=None, right=None):
-        self.val = val
-        self.left = left
-        self.right = right
 
 
 def levelOrder(root: TreeNode | None) -> list[list[int]]:
