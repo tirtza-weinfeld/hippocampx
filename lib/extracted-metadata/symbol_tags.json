@@ -1,0 +1,1911 @@
+{
+  "core.bellman-ford.classic:bellman_ford_classic": {
+    "args": [
+      "edges",
+      "source",
+      "vertices"
+    ],
+    "code": "def bellman_ford_classic(\n    vertices: list[str], edges: list[tuple[str, str, float]], source: str\n) -> dict[str, float]:\n\n    d = [float(\"inf\")] * (V := len(vertices))\n    d[source] = 0\n\n    for _ in range(V - 1):\n        updated = False\n        for u, v, w in edges:\n            if d[u] + w < d[v]:\n                d[v] = d[u] + w\n                updated = True\n        if not updated:\n            return d\n\n    # if we get here, we did all V-1 passes, so still need to check for cycles\n    for u, v, w in edges:\n        if d[u] + w < d[v]:\n            raise Exception(\"Negative-weight cycle\")\n\n    return d",
+    "expressions": {
+      "if not updated": "distances have stabilized—no negative cycles reachable",
+      "range(V - 1)": "relax up to V-1 times, but return early if no update"
+    },
+    "file_path": "backend/algorithms/core/bellman-ford/classic.py",
+    "intuition": "- Classic Bellman-Ford with early exit:\n    - Raises on a reachable negative-weight cycle;\n    - otherwise returns dist[v] = δ(s,v).",
+    "kind": "function",
+    "label": "def bellman_ford_classic(vertices: list[str], edges: list[tuple[str, str, float]], source: str) -> dict[str, float]",
+    "name": "bellman_ford_classic",
+    "returns": {
+      "label": "dict[str, float]"
+    }
+  },
+  "core.bellman-ford.classic:bellman_ford_classic.if not updated": {
+    "kind": "expression",
+    "name": "if not updated",
+    "summary": "distances have stabilized—no negative cycles reachable"
+  },
+  "core.bellman-ford.classic:bellman_ford_classic.range(V - 1)": {
+    "kind": "expression",
+    "name": "range(V - 1)",
+    "summary": "relax up to V-1 times, but return early if no update"
+  },
+  "core.bellman-ford.layered_dag:bellman_ford_layered_dag": {
+    "args": [
+      "edges",
+      "source",
+      "vertices"
+    ],
+    "code": "def bellman_ford_layered_dag(\n    vertices: list[str], edges: list[tuple[str, str, float]], source: str\n) -> dict[str, float]:\n\n    # 1) Initialize\n    d = {v: float(\"inf\") for v in vertices}\n    d[source], V = 0, len(vertices)\n\n    # 2) Layered relaxation: starting from δ₀, do V passes to compute δ₁…δ_V\n    for k in range(V):  # k = 0…V-1\n        d_k = {**d}  # snapshot of δ_k\n        for u, v, w in edges:\n            if d[u] + w < d_k[v]:\n                d_k[v] = d[u] + w\n        d = d_k  # now holds δ_{k+1}\n\n    # 3) Identify \"witnesses\" to negative cycles:\n    #    any v for which an extra relaxation is still possible\n    witnesses = {v for u, v, w in edges if d[u] + w < d[v]}\n\n    if not witnesses:\n        return d\n\n    # 4) Build adjacency list for negative-cycle propagation\n    adj = defaultdict(list)\n    for u, v, _ in edges:\n        adj[u].append(v)\n\n    # 5) DFS to propagate −∞ to all vertices reachable from any witness\n    stack = list(witnesses)\n    reachable = set(witnesses)\n\n    while stack:\n        u = stack.pop()\n        d[u] = float(\"-inf\")\n        for v in adj[u]:\n            if v not in reachable:\n                reachable.add(v)\n                stack.append(v)\n\n    return d",
+    "file_path": "backend/algorithms/core/bellman-ford/layered_dag.py",
+    "intuition": "- Compute k-edge shortest-path distances and detect negative cycles via layered relaxation.\n    - 1. δ₀(s,v): initialize distances (0 at source, ∞ elsewhere).\n    - 2. For i = 1…V: perform one pass of edge-relaxation to compute δᵢ(s,v),\n       - the best cost using ≤ i edges.\n    - 3. Identify any vertex v where δ_V(s,v) < δ_{V−1}(s,v) as a negative-cycle witness.\n    - 4. Flood successors of those witnesses and mark their distances as −∞.",
+    "kind": "function",
+    "label": "def bellman_ford_layered_dag(vertices: list[str], edges: list[tuple[str, str, float]], source: str) -> dict[str, float]",
+    "name": "bellman_ford_layered_dag",
+    "returns": {
+      "label": "dict[str, float]",
+      "summary": "A dict mapping each vertex to its true shortest-path cost from `source`,\n      or float('-inf') if it's reachable from a negative-weight cycle."
+    }
+  },
+  "core.bellman-ford.layered_dag:bellman_ford_layered_dag.edges": {
+    "kind": "parameter",
+    "label": "edges: list[tuple[str, str, float]]",
+    "name": "edges",
+    "summary": "Iterable of (u, v, weight) tuples."
+  },
+  "core.bellman-ford.layered_dag:bellman_ford_layered_dag.source": {
+    "kind": "parameter",
+    "label": "source: str",
+    "name": "source",
+    "summary": "Starting vertex."
+  },
+  "core.bellman-ford.layered_dag:bellman_ford_layered_dag.vertices": {
+    "kind": "parameter",
+    "label": "vertices: list[str]",
+    "name": "vertices",
+    "summary": "All hashable vertex identifiers."
+  },
+  "core.binary-search.bisect_left:simple_bisect_left": {
+    "args": [
+      "x",
+      "a"
+    ],
+    "code": "def simple_bisect_left(a: list[int], x: int):\n\n    l, r = 0, len(a)\n    while l < r:\n        mid = (l + r) // 2\n        if x > a[mid]:\n            l = mid + 1\n        else:\n            r = mid\n    return l",
+    "expressions": {
+      "l = mid + 1": "If the target `x` is greater than the middle element `a[mid]`, the insertion point must be to the right of `mid`.",
+      "r = mid": "If the target `x` is less than or equal to `a[mid]`, then `mid` is a potential answer, so we search the left half including `mid`."
+    },
+    "file_path": "backend/algorithms/core/binary-search/bisect_left.py",
+    "intuition": "Return the index where to insert item x in list a, assuming a is sorted.",
+    "kind": "function",
+    "label": "def simple_bisect_left(a: list[int], x: int)",
+    "name": "simple_bisect_left",
+    "title": "Simple Bisect Left"
+  },
+  "core.binary-search.bisect_left:simple_bisect_left.l = mid + 1": {
+    "kind": "expression",
+    "name": "l = mid + 1",
+    "summary": "If the target `x` is greater than the middle element `a[mid]`, the insertion point must be to the right of `mid`."
+  },
+  "core.binary-search.bisect_left:simple_bisect_left.r = mid": {
+    "kind": "expression",
+    "name": "r = mid",
+    "summary": "If the target `x` is less than or equal to `a[mid]`, then `mid` is a potential answer, so we search the left half including `mid`."
+  },
+  "core.binary-search.bisect_right:simple_bisect_right": {
+    "args": [
+      "a",
+      "x"
+    ],
+    "code": "def simple_bisect_right(a, x):\n\n    l, r = 0, len(a)\n    while l < r:\n        mid = (l + r) // 2\n        if x < a[mid]:\n            r = mid\n        else: \n            l = mid + 1 \n    return l",
+    "expressions": {
+      "l = mid + 1": "If the x is >= middle element, the insertion point must be to the right of `mid`.",
+      "r = mid": "If the x is less than the middle element, the insertion point could be `mid` or to its left. Shrink search space to the left half."
+    },
+    "file_path": "backend/algorithms/core/binary-search/bisect_right.py",
+    "intuition": "Return the index where to insert item x in list a, assuming a is sorted.",
+    "kind": "function",
+    "label": "def simple_bisect_right(a, x)",
+    "name": "simple_bisect_right",
+    "title": "Simple Bisect Right"
+  },
+  "core.binary-search.bisect_right:simple_bisect_right.l = mid + 1": {
+    "kind": "expression",
+    "name": "l = mid + 1",
+    "summary": "If the x is >= middle element, the insertion point must be to the right of `mid`."
+  },
+  "core.binary-search.bisect_right:simple_bisect_right.r = mid": {
+    "kind": "expression",
+    "name": "r = mid",
+    "summary": "If the x is less than the middle element, the insertion point could be `mid` or to its left. Shrink search space to the left half."
+  },
+  "core.dijkstra.algorithm:dijkstra": {
+    "args": [
+      "graph",
+      "s"
+    ],
+    "code": "def dijkstra(graph: dict[str, dict[str, int]], s: str):\n\n    d = {v: float('inf') for v in graph} | {s: 0}\n    p = {v: None for v in graph}\n\n    pq = [(0, s)]\n\n    while pq:\n        d_u, u = heapq.heappop(pq)\n        if d_u > d[u]:\n            continue\n        for v ,w in graph[u]:\n            if (weight := d_u + w) < d[v]:\n                d[v], p[v] = weight, u\n                heapq.heappush(pq, (weight, v))\n\n    return d, p",
+    "file_path": "backend/algorithms/core/dijkstra/algorithm.py",
+    "kind": "function",
+    "label": "def dijkstra(graph: dict[str, dict[str, int]], s: str)",
+    "name": "dijkstra",
+    "time_complexity": "O((V + E) log V)"
+  },
+  "core.dijkstra.algorithm:dijkstra.graph": {
+    "kind": "parameter",
+    "label": "graph: dict[str, dict[str, int]]",
+    "name": "graph",
+    "summary": "A dictionary representing the graph."
+  },
+  "core.dijkstra.algorithm:dijkstra.s": {
+    "kind": "parameter",
+    "label": "s: str",
+    "name": "s",
+    "summary": "The source vertex."
+  },
+  "core.modular-arithmetic.congruent1:congruent1": {
+    "args": [
+      "n",
+      "a",
+      "b"
+    ],
+    "code": "def congruent1(a: int, b: int, n: int) -> bool:\n    return (a - b) % n == 0",
+    "file_path": "backend/algorithms/core/modular-arithmetic/congruent1.py",
+    "kind": "function",
+    "label": "def congruent1(a: int, b: int, n: int) -> bool",
+    "name": "congruent1",
+    "returns": {
+      "label": "bool",
+      "summary": "bool"
+    },
+    "summary": "a ≡ b (mod n)"
+  },
+  "core.modular-arithmetic.congruent1:congruent1.a": {
+    "kind": "parameter",
+    "label": "a: int",
+    "name": "a",
+    "summary": "the first number2"
+  },
+  "core.modular-arithmetic.congruent1:congruent1.b": {
+    "kind": "parameter",
+    "label": "b: int",
+    "name": "b",
+    "summary": "the second number"
+  },
+  "core.modular-arithmetic.congruent1:congruent1.n": {
+    "kind": "parameter",
+    "label": "n: int",
+    "name": "n",
+    "summary": "the modulus, the number by which we are dividing"
+  },
+  "core.modular-arithmetic.congruent2:congruent2": {
+    "args": [
+      "n",
+      "a",
+      "b"
+    ],
+    "code": "def congruent2(a: int, b: int, n: int) -> bool:\n    return a % n == b % n",
+    "file_path": "backend/algorithms/core/modular-arithmetic/congruent2.py",
+    "kind": "function",
+    "label": "def congruent2(a: int, b: int, n: int) -> bool",
+    "name": "congruent2",
+    "returns": {
+      "label": "bool",
+      "summary": "bool"
+    },
+    "summary": "a ≡ b (mod n)"
+  },
+  "core.modular-arithmetic.congruent2:congruent2.a": {
+    "kind": "parameter",
+    "label": "a: int",
+    "name": "a",
+    "summary": "the first number3"
+  },
+  "core.modular-arithmetic.congruent2:congruent2.b": {
+    "kind": "parameter",
+    "label": "b: int",
+    "name": "b",
+    "summary": "the second number"
+  },
+  "core.modular-arithmetic.congruent2:congruent2.n": {
+    "kind": "parameter",
+    "label": "n: int",
+    "name": "n",
+    "summary": "the modulus, the number by which we are dividing"
+  },
+  "core.modular-arithmetic.mod:mod": {
+    "args": [
+      "b",
+      "a"
+    ],
+    "code": "def mod(a: int, b: int) -> int:\n    return a % b",
+    "file_path": "backend/algorithms/core/modular-arithmetic/mod.py",
+    "kind": "function",
+    "label": "def mod(a: int, b: int) -> int",
+    "name": "mod",
+    "returns": {
+      "label": "int",
+      "summary": "int"
+    },
+    "summary": "a mod b"
+  },
+  "core.modular-arithmetic.mod:mod.a": {
+    "kind": "parameter",
+    "label": "a: int",
+    "name": "a",
+    "summary": "the first number1"
+  },
+  "core.modular-arithmetic.mod:mod.b": {
+    "kind": "parameter",
+    "label": "b: int",
+    "name": "b",
+    "summary": "the second number"
+  },
+  "problems.1011-capacity-to-ship-packages-within-d-days.solution:capacity_to_ship_packages_within_d_days": {
+    "args": [
+      "weights",
+      "days"
+    ],
+    "code": "def capacity_to_ship_packages_within_d_days(weights: list[int], days: int) -> int:\n    def days_needed(capacity: int) -> int:\n        d, load = 1, 0\n        for w in weights:\n            if load + w <= capacity:\n                load += w\n            else:\n                d += 1\n                load = w\n        return d\n\n    l, r = max(weights), sum(weights)\n    while l < r:\n        capacity = (l + r) // 2\n        if days_needed(capacity) <= days:\n            r = capacity\n        else:\n            l = capacity + 1\n    return l",
+    "file_path": "backend/algorithms/problems/1011-capacity-to-ship-packages-within-d-days/solution.py",
+    "intuition": "- Binary searching the answer space, (the ship's capacity)\n    - The range of possible capacities is from `max(weights)` to `sum(weights)`.\n    - The problem has a **monotonic property** ideal for binary search. The function `daysNeeded(capacity)` is monotonically non-increasing: as `capacity` grows, the days required can only decrease or stay the same.\n    - This creates a predictable `\\[False, ..., False, True, ..., True\\]` sequence for our condition, `daysNeeded(capacity) <= days`. The goal is to find the leftmost `True`, which represents the minimal valid capacity.\n        - If `daysNeeded(capacity) <= days` is `True`, then `capacity` is a potential answer, and we try for a better (smaller) one in the left half by setting `r = capacity`.\n        - If it is `False`, then `capacity` is too small, and we must search for a larger capacity in the right half by setting `l = capacity + 1`.",
+    "kind": "function",
+    "label": "def capacity_to_ship_packages_within_d_days(weights: list[int], days: int) -> int",
+    "name": "capacity_to_ship_packages_within_d_days",
+    "returns": {
+      "label": "int"
+    }
+  },
+  "problems.102-binary-tree-level-order-traversal.solution:binary_tree_level_order_traversal": {
+    "args": [
+      "root"
+    ],
+    "code": "def binary_tree_level_order_traversal(root) -> list[list[int]]:\n\n    if not root:\n        return []\n    queue, result = deque([root]), []\n    while queue:\n        level = [] \n        for _ in range(len(queue)):  # Process nodes at the current level\n            node = queue.popleft()\n            level.append(node.val)\n            if node.left:\n                queue.append(node.left)\n            if node.right:\n                queue.append(node.right)\n        result.append(level)\n    return result",
+    "file_path": "backend/algorithms/problems/102-binary-tree-level-order-traversal/solution.py",
+    "intuition": "- The core logic hinges on the inner `for` loop\n    - The expression `len(queue)` takes a \"snapshot\" of the number of nodes on the current level before the loop begins. The loop then dequeues and processes exactly that many nodes, ensuring that only nodes from the current level are handled while their children are queued up for the next iteration. This technique is the key to cleanly separating the levels.",
+    "kind": "function",
+    "label": "def binary_tree_level_order_traversal(root) -> list[list[int]]",
+    "name": "binary_tree_level_order_traversal",
+    "returns": {
+      "label": "list[list[int]]",
+      "summary": "List of lists, where each inner list contains values of nodes at the same level"
+    },
+    "time_complexity": "- O(N)\n    - where N is the total number of nodes in the tree. This is optimal as every node must be visited once."
+  },
+  "problems.102-binary-tree-level-order-traversal.solution:binary_tree_level_order_traversal.root": {
+    "kind": "parameter",
+    "label": "root",
+    "name": "root",
+    "summary": "Root node of the binary tree"
+  },
+  "problems.120-triangle.solution:triangle_minimum_path_sum": {
+    "args": [
+      "triangle"
+    ],
+    "code": "def triangle_minimum_path_sum(triangle: list[list[int]]) -> int:\n\n    n, memo = len(triangle), {}\n\n    def dp(r, c):\n        if r == n - 1:\n            return triangle[r][c]\n        if (r, c) not in memo:\n            memo[(r, c)] = triangle[r][c] + min(dp(r + 1, c), dp(r + 1, c + 1))\n        return memo[(r, c)]\n\n    return dp(0, 0)",
+    "file_path": "backend/algorithms/problems/120-triangle/solution.py",
+    "intuition": "- Paradigm: This is a classic bottom-up dynamic programming problem.\n    - Insight: The minimum path to the bottom *from* any cell `(r, c)` is independent of the path taken *to* that cell. This allows us to start at the bottom (where path sums are known) and iteratively compute the optimal path for each cell on the row above by choosing the cheaper of its two children's already-computed optimal paths.",
+    "kind": "function",
+    "label": "def triangle_minimum_path_sum(triangle: list[list[int]]) -> int",
+    "name": "triangle_minimum_path_sum",
+    "returns": {
+      "label": "int"
+    },
+    "time_complexity": "- O(N)\n    - where N is the total number of cells in the triangle. The complexity is the number of subproblems (N), as each is solved once."
+  },
+  "problems.121-best-time-to-buy-and-sell-stock.solution:best_time_to_buy_and_sell_stock": {
+    "args": [
+      "prices"
+    ],
+    "code": "def best_time_to_buy_and_sell_stock(prices: list[int]) -> int:\n    cost, profit = float(\"inf\"), 0\n    for price in prices:\n        cost = min(cost, price)\n        profit = max(profit, price - cost)\n    return profit",
+    "file_path": "backend/algorithms/problems/121-best-time-to-buy-and-sell-stock/solution.py",
+    "kind": "function",
+    "label": "def best_time_to_buy_and_sell_stock(prices: list[int]) -> int",
+    "name": "best_time_to_buy_and_sell_stock",
+    "returns": {
+      "label": "int",
+      "summary": "Maximum profit from buying and selling stock"
+    },
+    "time_complexity": "- O(n)\n    - where n is the length of the prices array. We iterate through the array once."
+  },
+  "problems.121-best-time-to-buy-and-sell-stock.solution:best_time_to_buy_and_sell_stock.prices": {
+    "kind": "parameter",
+    "label": "prices: list[int]",
+    "name": "prices",
+    "summary": "List of stock prices"
+  },
+  "problems.123-best-time-to-buy-and-sell-stock-iii.dp:best_time_to_buy_and_sell_stock_III": {
+    "args": [
+      "prices"
+    ],
+    "code": "def best_time_to_buy_and_sell_stock_III(prices: list[int]) -> int:\n\n    t1_cost = t2_cost = float(\"inf\")\n    t1_profit = t2_profit = 0\n\n    for p in prices:\n\n        # First trade\n        t1_cost = min(t1_cost, p) \n        t1_profit = max(t1_profit, p - t1_cost)\n\n        # Second trade\n        t2_cost = min(t2_cost, p - t1_profit)\n        t2_profit = max(t2_profit, p - t2_cost)\n\n    return t2_profit",
+    "expressions": {
+      "p - t1_profit": "money you'd need now if earlier profit covered part of this buy"
+    },
+    "file_path": "backend/algorithms/problems/123-best-time-to-buy-and-sell-stock-iii/dp.py",
+    "intuition": "- Cost profit tracking\n    - Track the cost and profit for two separate trades, using the profit from the first trade to reduce the cost of the second trade.",
+    "kind": "function",
+    "label": "def best_time_to_buy_and_sell_stock_III(prices: list[int]) -> int",
+    "name": "best_time_to_buy_and_sell_stock_III",
+    "returns": {
+      "label": "int",
+      "summary": "Maximum profit from at most two transactions"
+    },
+    "time_complexity": "- O(n)\n    - where n is the length of the prices array. We iterate through the array once.",
+    "variables": [
+      "t1_cost",
+      "t1_profit",
+      "t2_cost",
+      "t2_profit"
+    ]
+  },
+  "problems.123-best-time-to-buy-and-sell-stock-iii.dp:best_time_to_buy_and_sell_stock_III.p - t1_profit": {
+    "kind": "expression",
+    "name": "p - t1_profit",
+    "summary": "money you'd need now if earlier profit covered part of this buy"
+  },
+  "problems.123-best-time-to-buy-and-sell-stock-iii.dp:best_time_to_buy_and_sell_stock_III.prices": {
+    "kind": "parameter",
+    "label": "prices: list[int]",
+    "name": "prices",
+    "summary": "List of stock prices"
+  },
+  "problems.123-best-time-to-buy-and-sell-stock-iii.dp:best_time_to_buy_and_sell_stock_III.t1_cost": {
+    "kind": "variable",
+    "name": "t1_cost",
+    "summary": "cost of first trade"
+  },
+  "problems.123-best-time-to-buy-and-sell-stock-iii.dp:best_time_to_buy_and_sell_stock_III.t1_profit": {
+    "kind": "variable",
+    "name": "t1_profit",
+    "summary": "profit of first trade"
+  },
+  "problems.123-best-time-to-buy-and-sell-stock-iii.dp:best_time_to_buy_and_sell_stock_III.t2_cost": {
+    "kind": "variable",
+    "name": "t2_cost",
+    "summary": "cost of second trade"
+  },
+  "problems.123-best-time-to-buy-and-sell-stock-iii.dp:best_time_to_buy_and_sell_stock_III.t2_profit": {
+    "kind": "variable",
+    "name": "t2_profit",
+    "summary": "profit of second trade"
+  },
+  "problems.123-best-time-to-buy-and-sell-stock-iii.state:best_time_to_buy_and_sell_stock_III": {
+    "args": [
+      "prices"
+    ],
+    "code": "def best_time_to_buy_and_sell_stock_III(prices: list[int]) -> int:\n    hold1 = hold2 = float(\"-inf\")\n    sell1 = sell2 = 0\n\n    for p in prices:\n        hold1 = max(hold1, -p)\n        sell1 = max(sell1, hold1 + p)\n        hold2 = max(hold2, sell1 - p)\n        sell2 = max(sell2, hold2 + p)\n    return sell2",
+    "expressions": {
+      "hold1 = hold2 = float(\"-inf\")": "money you'd have if holding first stock",
+      "hold1 = max(hold1, -p)": "buy first stock",
+      "hold2 = max(hold2, sell1 - p)": "buy second stock",
+      "sell1 = max(sell1, hold1 + p)": "sell first stock",
+      "sell1 = sell2 = 0": "money you'd have if not holding first stock",
+      "sell2 = max(sell2, hold2 + p)": "sell second stock"
+    },
+    "file_path": "backend/algorithms/problems/123-best-time-to-buy-and-sell-stock-iii/state.py",
+    "intuition": "hold sell states",
+    "kind": "function",
+    "label": "def best_time_to_buy_and_sell_stock_III(prices: list[int]) -> int",
+    "name": "best_time_to_buy_and_sell_stock_III",
+    "returns": {
+      "label": "int"
+    }
+  },
+  "problems.123-best-time-to-buy-and-sell-stock-iii.state:best_time_to_buy_and_sell_stock_III.hold1 = hold2 = float(\"-inf\")": {
+    "kind": "expression",
+    "name": "hold1 = hold2 = float(\"-inf\")",
+    "summary": "money you'd have if holding first stock"
+  },
+  "problems.123-best-time-to-buy-and-sell-stock-iii.state:best_time_to_buy_and_sell_stock_III.hold1 = max(hold1, -p)": {
+    "kind": "expression",
+    "name": "hold1 = max(hold1, -p)",
+    "summary": "buy first stock"
+  },
+  "problems.123-best-time-to-buy-and-sell-stock-iii.state:best_time_to_buy_and_sell_stock_III.hold2 = max(hold2, sell1 - p)": {
+    "kind": "expression",
+    "name": "hold2 = max(hold2, sell1 - p)",
+    "summary": "buy second stock"
+  },
+  "problems.123-best-time-to-buy-and-sell-stock-iii.state:best_time_to_buy_and_sell_stock_III.sell1 = max(sell1, hold1 + p)": {
+    "kind": "expression",
+    "name": "sell1 = max(sell1, hold1 + p)",
+    "summary": "sell first stock"
+  },
+  "problems.123-best-time-to-buy-and-sell-stock-iii.state:best_time_to_buy_and_sell_stock_III.sell1 = sell2 = 0": {
+    "kind": "expression",
+    "name": "sell1 = sell2 = 0",
+    "summary": "money you'd have if not holding first stock"
+  },
+  "problems.123-best-time-to-buy-and-sell-stock-iii.state:best_time_to_buy_and_sell_stock_III.sell2 = max(sell2, hold2 + p)": {
+    "kind": "expression",
+    "name": "sell2 = max(sell2, hold2 + p)",
+    "summary": "sell second stock"
+  },
+  "problems.124-binary-tree-maximum-path-sum.solution:binary_tree_maximum_path_sum.dfs": {
+    "args": [
+      "node"
+    ],
+    "code": "    def dfs(node):\n        nonlocal best\n        if not node:\n            return 0\n        l = max(dfs(node.left), 0)\n        r = max(dfs(node.right), 0)\n        best = max(best, node.val + l + r)\n        return node.val + max(l, r)",
+    "expressions": {
+      "best = max(best, node.val + l + r)": "path through node",
+      "return node.val + max(l, r)": "best upward gain"
+    },
+    "file_path": "backend/algorithms/problems/124-binary-tree-maximum-path-sum/solution.py",
+    "kind": "function",
+    "label": "def dfs(node)",
+    "name": "dfs",
+    "variables": [
+      "l",
+      "r"
+    ]
+  },
+  "problems.124-binary-tree-maximum-path-sum.solution:binary_tree_maximum_path_sum.dfs.best = max(best, node.val + l + r)": {
+    "kind": "expression",
+    "name": "best = max(best, node.val + l + r)",
+    "summary": "path through node"
+  },
+  "problems.124-binary-tree-maximum-path-sum.solution:binary_tree_maximum_path_sum.dfs.l": {
+    "kind": "variable",
+    "name": "l",
+    "summary": "left gain"
+  },
+  "problems.124-binary-tree-maximum-path-sum.solution:binary_tree_maximum_path_sum.dfs.r": {
+    "kind": "variable",
+    "name": "r",
+    "summary": "right gain"
+  },
+  "problems.124-binary-tree-maximum-path-sum.solution:binary_tree_maximum_path_sum.dfs.return node.val + max(l, r)": {
+    "kind": "expression",
+    "name": "return node.val + max(l, r)",
+    "summary": "best upward gain"
+  },
+  "problems.127-word-ladder.solution:word_ladder": {
+    "args": [
+      "wordList",
+      "endWord",
+      "beginWord"
+    ],
+    "code": "def word_ladder(beginWord: str, endWord: str, wordList: list[str]) -> int:\n    if endWord not in wordList:\n        return 0\n\n    L = len(beginWord)\n    combos: dict[str, list[str]] = defaultdict(list)\n    for w in wordList:\n        for i in range(L):\n            combos[w[:i] + \"*\" + w[i+1:]].append(w)\n\n    front, back = {beginWord}, {endWord}\n    dist_front, dist_back = {beginWord: 1}, {endWord: 1}\n\n    while front and back:\n        # expand smaller side to optimize\n        if len(front) > len(back):\n            front, back = back, front\n            dist_front, dist_back = dist_back, dist_front\n\n        next_front = set()\n        for word in front:\n            for i in range(L):\n                for n in combos[word[:i] + \"*\" + word[i+1:]]: # Use pre-computed neighbors\n                    if n in dist_back:\n                        return dist_front[word] + dist_back[n]\n                    if n not in dist_front:\n                        dist_front[n] = dist_front[word] + 1\n                        next_front.add(n)\n        front = next_front\n\n    return 0",
+    "file_path": "backend/algorithms/problems/127-word-ladder/solution.py",
+    "intuition": "- Bidirectional BFS Meets in the Middle 🤝:\n    - This solution uses two  optimizations. First, it **pre-computes all possible generic transformations** (e.g., `h*t`) in a dictionary, allowing for instant lookups of neighboring words instead of generating them on the fly. Second, it performs a **bidirectional BFS**, launching one search from the `beginWord` and another from the `endWord`. By always expanding the smaller of the two frontiers, it drastically reduces the search space. The algorithm finishes when the two searches meet, at which point the shortest path is found.",
+    "kind": "function",
+    "label": "def word_ladder(beginWord: str, endWord: str, wordList: list[str]) -> int",
+    "name": "word_ladder",
+    "returns": {
+      "label": "int"
+    },
+    "time_complexity": "- O(N * L)\n    - where N is the number of words and L is the length of each word. The dominant operation is the initial pre-computation step to build the `combos` dictionary. The subsequent bidirectional search is typically much faster than this initial setup."
+  },
+  "problems.1293-shortest-path-in-a-grid-with-obstacles-elimination.a_star:manhattan_distance": {
+    "args": [
+      "b",
+      "a"
+    ],
+    "code": "def manhattan_distance(a: tuple[int, int], b: tuple[int, int]) -> int:\n    return abs(a[0] - b[0]) + abs(a[1] - b[1])",
+    "file_path": "backend/algorithms/problems/1293-shortest-path-in-a-grid-with-obstacles-elimination/a_star.py",
+    "kind": "function",
+    "label": "def manhattan_distance(a: tuple[int, int], b: tuple[int, int]) -> int",
+    "name": "manhattan_distance",
+    "returns": {
+      "label": "int"
+    },
+    "summary": "Calculate Manhattan distance between two points."
+  },
+  "problems.1293-shortest-path-in-a-grid-with-obstacles-elimination.a_star:shortest_path_in_a_grid_with_obstacles_elimination": {
+    "args": [
+      "k",
+      "grid"
+    ],
+    "code": "def shortest_path_in_a_grid_with_obstacles_elimination(grid: list[list[int]], k: int) -> int:\n\n    rows, cols = len(grid), len(grid[0])\n\n    def h(r: int, c: int) -> int:\n        return manhattan_distance((r, c), (rows - 1, cols - 1))\n\n    if k >= (md:= h(0, 0)) - 1:\n        return md\n\n    pq = [(md, 0, 0, 0, k)]\n\n    max_k = [[-1] * cols for _ in range(rows)]\n    max_k[0][0] = k\n\n    while pq:\n        _, steps, r, c, remaining_k = heapq.heappop(pq)\n\n        if (r, c) == (rows - 1, cols - 1):\n            return steps\n\n        if remaining_k < max_k[r][c]:\n            continue\n\n        for dr, dc in [(0, 1), (0, -1), (1, 0), (-1, 0)]:\n            if 0 <= (nr:= r + dr) < rows and 0 <= (nc:= c + dc) < cols:\n                if (new_remaining_k := remaining_k - grid[nr][nc] ) > max_k[nr][nc]:\n                    max_k[nr][nc] = new_remaining_k\n                    heapq.heappush(pq, ((steps + 1) + h(nr, nc), steps + 1, nr, nc, new_remaining_k))\n\n    return -1",
+    "expressions": {
+      "if remaining_k < max_k[r][c]": "Handle items that are already outdated by the time they are popped.",
+      "new_remaining_k": "= remaining_k - grid[nr][nc], how many obstacle eliminations you will have left **after** moving to the next cell , if the cell is empty grid[nr][nc] is 0, if the cell is an obstacle grid[nr][nc] is 1."
+    },
+    "file_path": "backend/algorithms/problems/1293-shortest-path-in-a-grid-with-obstacles-elimination/a_star.py",
+    "kind": "function",
+    "label": "def shortest_path_in_a_grid_with_obstacles_elimination(grid: list[list[int]], k: int) -> int",
+    "name": "shortest_path_in_a_grid_with_obstacles_elimination",
+    "returns": {
+      "label": "int"
+    },
+    "time_complexity": "O(m * n * k * log(m * n * k))",
+    "topics": [
+      "a-star"
+    ],
+    "variables": [
+      "pq"
+    ]
+  },
+  "problems.1293-shortest-path-in-a-grid-with-obstacles-elimination.a_star:shortest_path_in_a_grid_with_obstacles_elimination.if remaining_k < max_k[r][c]": {
+    "kind": "expression",
+    "name": "if remaining_k < max_k[r][c]",
+    "summary": "Handle items that are already outdated by the time they are popped."
+  },
+  "problems.1293-shortest-path-in-a-grid-with-obstacles-elimination.a_star:shortest_path_in_a_grid_with_obstacles_elimination.new_remaining_k": {
+    "kind": "expression",
+    "name": "new_remaining_k",
+    "summary": "= remaining_k - grid[nr][nc], how many obstacle eliminations you will have left **after** moving to the next cell , if the cell is empty grid[nr][nc] is 0, if the cell is an obstacle grid[nr][nc] is 1."
+  },
+  "problems.1293-shortest-path-in-a-grid-with-obstacles-elimination.a_star:shortest_path_in_a_grid_with_obstacles_elimination.pq": {
+    "kind": "variable",
+    "name": "pq",
+    "summary": "(f_cost, steps, r, c, remaining_k)"
+  },
+  "problems.1293-shortest-path-in-a-grid-with-obstacles-elimination.bfs:shortest_path_in_a_grid_with_obstacles_elimination": {
+    "args": [
+      "k",
+      "grid"
+    ],
+    "code": "def shortest_path_in_a_grid_with_obstacles_elimination(grid: list[list[int]], k: int) -> int:\n\n    rows, cols = len(grid), len(grid[0])\n    min_steps = rows + cols - 3 \n    if k >= min_steps:\n        return min_steps\n\n    max_k = [[-1] * cols for _ in range(rows)]\n    max_k[0][0] = k\n\n    q = deque([(0, 0, 0, k)])\n\n    while q:\n        r, c, steps, remaining_k = q.popleft()\n        for dr, dc in [(1,0), (-1,0), (0,1), (0,-1)]:\n            nr, nc = r + dr, c + dc\n            if 0 <= nr < rows and 0 <= nc < cols:\n                new_remaining_k = remaining_k - grid[nr][nc]\n                if new_remaining_k > max_k[nr][nc]:\n                    if (nr, nc) == (rows - 1, cols - 1):\n                        return steps + 1\n                    max_k[nr][nc] = new_remaining_k\n                    q.append((nr, nc, steps + 1, new_remaining_k))\n    return -1",
+    "file_path": "backend/algorithms/problems/1293-shortest-path-in-a-grid-with-obstacles-elimination/bfs.py",
+    "intuition": "- bfs with State-Budget Pruning 🔍:\n    - The core idea is to perform a standard BFS over `(row, col, steps, remaining_k)` states, but only enqueue a move if it arrives at a cell with **strictly more** `remaining_k` than any prior visit. This pruning significantly reduces the number of states explored, making the algorithm much more efficient.\n    - **Trivial shortcut:** If `k ≥ rows+cols–2`, you can go straight in `rows+cols–2` steps without ever touching an obstacle.\n    - **Correctness guarantee:** Because BFS explores in order of increasing `steps`, the first time you dequeue the goal is the fewest-step path. Pruning by `remaining_k` never discards any shorter-step route—it simply avoids re-exploring dominated states.",
+    "kind": "function",
+    "label": "def shortest_path_in_a_grid_with_obstacles_elimination(grid: list[list[int]], k: int) -> int",
+    "name": "shortest_path_in_a_grid_with_obstacles_elimination",
+    "returns": {
+      "label": "int"
+    },
+    "space_complexity": "O(m * n):\nfor the `max_k` grid plus up to O(m * n * k) queued states in the pathological worst case.",
+    "summary": "Warning:\n    In practice, A* Search O(m * n * k * log(m * n * k)) is faster than this O(m * n * k) .",
+    "time_complexity": "- O(m * n * k):\n    - Worst-case O(m * n * k) (every cell × every possible k), but aggressive pruning usually makes it far faster in practice.",
+    "variables": [
+      "max_k",
+      "q",
+      "min_steps"
+    ]
+  },
+  "problems.1293-shortest-path-in-a-grid-with-obstacles-elimination.bfs:shortest_path_in_a_grid_with_obstacles_elimination.max_k": {
+    "kind": "variable",
+    "name": "max_k",
+    "summary": "max_k[r][c] = maximum eliminations remaining when visiting (r,c)"
+  },
+  "problems.1293-shortest-path-in-a-grid-with-obstacles-elimination.bfs:shortest_path_in_a_grid_with_obstacles_elimination.min_steps": {
+    "kind": "variable",
+    "name": "min_steps",
+    "summary": "Manhattan distance lower bound"
+  },
+  "problems.1293-shortest-path-in-a-grid-with-obstacles-elimination.bfs:shortest_path_in_a_grid_with_obstacles_elimination.q": {
+    "kind": "variable",
+    "name": "q",
+    "summary": "(row, col, steps, remaining_k)"
+  },
+  "problems.1293-shortest-path-in-a-grid-with-obstacles-elimination.dijkstra:shortest_path_in_a_grid_with_obstacles_elimination": {
+    "args": [
+      "k",
+      "grid"
+    ],
+    "code": "def shortest_path_in_a_grid_with_obstacles_elimination(grid: list[list[int]], k: int) -> int:\n\n    rows, cols = len(grid), len(grid[0])\n    if k >= rows + cols - 3:\n        return rows + cols - 2\n\n    pq = [(0, 0, 0, k)]\n\n    max_k = [[-1] * cols for _ in range(rows)]\n    max_k[0][0] = k\n\n    while pq:\n\n        steps, r, c, k_rem = heapq.heappop(pq)\n\n        if (r, c) == (rows - 1, cols - 1):\n            return steps\n\n        if k_rem < max_k[r][c]:\n            continue\n\n        for dr, dc in [(0, 1), (0, -1), (1, 0), (-1, 0)]:\n            if 0 <= (nr:= r + dr) < rows and 0 <= (nc:= c + dc) < cols:\n                if (new_k:= k_rem - grid[nr][nc]) > max_k[nr][nc]:\n                    max_k[nr][nc] = new_k\n                    heapq.heappush(pq, (steps + 1, nr, nc, new_k))\n\n    return -1",
+    "expressions": {
+      "heapq.heappop(pq)": "Pop the path with the lowest g_cost (steps) so far",
+      "heapq.heappush(pq, (steps + 1, nr, nc, new_k))": "The priority is simply the new step count.No heuristic is added, which is the only difference from the A* implementation.",
+      "k_rem < max_k[r][c]": "Prune paths that are suboptimal for a given cell"
+    },
+    "file_path": "backend/algorithms/problems/1293-shortest-path-in-a-grid-with-obstacles-elimination/dijkstra.py",
+    "kind": "function",
+    "label": "def shortest_path_in_a_grid_with_obstacles_elimination(grid: list[list[int]], k: int) -> int",
+    "name": "shortest_path_in_a_grid_with_obstacles_elimination",
+    "returns": {
+      "label": "int"
+    },
+    "summary": "Warning:\n This is less efficient than A* for this problem.",
+    "variables": [
+      "pq",
+      "steps",
+      "max_k"
+    ]
+  },
+  "problems.1293-shortest-path-in-a-grid-with-obstacles-elimination.dijkstra:shortest_path_in_a_grid_with_obstacles_elimination.heapq.heappop(pq)": {
+    "kind": "expression",
+    "name": "heapq.heappop(pq)",
+    "summary": "Pop the path with the lowest g_cost (steps) so far"
+  },
+  "problems.1293-shortest-path-in-a-grid-with-obstacles-elimination.dijkstra:shortest_path_in_a_grid_with_obstacles_elimination.heapq.heappush(pq, (steps + 1, nr, nc, new_k))": {
+    "kind": "expression",
+    "name": "heapq.heappush(pq, (steps + 1, nr, nc, new_k))",
+    "summary": "The priority is simply the new step count.No heuristic is added, which is the only difference from the A* implementation."
+  },
+  "problems.1293-shortest-path-in-a-grid-with-obstacles-elimination.dijkstra:shortest_path_in_a_grid_with_obstacles_elimination.k_rem < max_k[r][c]": {
+    "kind": "expression",
+    "name": "k_rem < max_k[r][c]",
+    "summary": "Prune paths that are suboptimal for a given cell"
+  },
+  "problems.1293-shortest-path-in-a-grid-with-obstacles-elimination.dijkstra:shortest_path_in_a_grid_with_obstacles_elimination.max_k": {
+    "kind": "variable",
+    "name": "max_k",
+    "summary": "max_k[r][c] stores the max eliminations we have at cell (r,c)"
+  },
+  "problems.1293-shortest-path-in-a-grid-with-obstacles-elimination.dijkstra:shortest_path_in_a_grid_with_obstacles_elimination.pq": {
+    "kind": "variable",
+    "name": "pq",
+    "summary": "(g_cost, r, c, k_rem), The priority uses g_cost (steps) itself. No heuristic is used."
+  },
+  "problems.1293-shortest-path-in-a-grid-with-obstacles-elimination.dijkstra:shortest_path_in_a_grid_with_obstacles_elimination.steps": {
+    "kind": "variable",
+    "name": "steps",
+    "summary": "The number of steps taken so far (g_cost)"
+  },
+  "problems.133-clone-graph.solution:clone_graph": {
+    "args": [
+      "node"
+    ],
+    "code": "def clone_graph(node: Node | None) -> Node | None:\n    if not node:\n        return None\n    cloned = {node: Node(node.val)}\n    queue = deque([node])\n    while queue:\n        cur = queue.popleft()\n        for n in cur.neighbors:\n            if n not in cloned:\n                cloned[n] = Node(n.val)\n                queue.append(n)\n            cloned[cur].neighbors.append(cloned[n])\n    return cloned[node]",
+    "expressions": {
+      "cloned[cur].neighbors.append(cloned[n])": "Add the neighbor to the current node's neighbors",
+      "cloned[n] = Node(n.val)": "Create a new node for the neighbor",
+      "if n not in cloned": "Check if the node has not been visited",
+      "queue.append(n)": "Add the neighbor to the queue"
+    },
+    "file_path": "backend/algorithms/problems/133-clone-graph/solution.py",
+    "intuition": "- Hash Map as a Visited Set & Node Cache 🗺️\n    - The key to traversing a potentially cyclic graph is a `visited` set. Here, the `cloned` dictionary serves a dual purpose. It acts as both a **`visited` set** (by checking `if n not in cloned`) and a **cache** that maps an original node to its clone. This ensures each node is cloned exactly once and prevents getting stuck in an infinite loop.",
+    "kind": "function",
+    "label": "def clone_graph(node: Node | None) -> Node | None",
+    "name": "clone_graph",
+    "returns": {
+      "label": "Node | None",
+      "summary": "The cloned graph"
+    },
+    "summary": "Clone a connected undirected graph using BFS traversal.",
+    "time_complexity": "- O(V + E)\n    - where V is the number of vertices (nodes) and E is the number of edges. This is optimal as we must visit every node and traverse every edge to create the full copy.",
+    "variables": [
+      "cloned",
+      "queue",
+      "cur",
+      "n"
+    ]
+  },
+  "problems.133-clone-graph.solution:clone_graph.cloned": {
+    "kind": "variable",
+    "name": "cloned",
+    "summary": "A dictionary that maps an original node to its clone"
+  },
+  "problems.133-clone-graph.solution:clone_graph.cloned[cur].neighbors.append(cloned[n])": {
+    "kind": "expression",
+    "name": "cloned[cur].neighbors.append(cloned[n])",
+    "summary": "Add the neighbor to the current node's neighbors"
+  },
+  "problems.133-clone-graph.solution:clone_graph.cloned[n] = Node(n.val)": {
+    "kind": "expression",
+    "name": "cloned[n] = Node(n.val)",
+    "summary": "Create a new node for the neighbor"
+  },
+  "problems.133-clone-graph.solution:clone_graph.cur": {
+    "kind": "variable",
+    "name": "cur",
+    "summary": "The current node being visited"
+  },
+  "problems.133-clone-graph.solution:clone_graph.if n not in cloned": {
+    "kind": "expression",
+    "name": "if n not in cloned",
+    "summary": "Check if the node has not been visited"
+  },
+  "problems.133-clone-graph.solution:clone_graph.n": {
+    "kind": "variable",
+    "name": "n",
+    "summary": "The neighbor of the current node"
+  },
+  "problems.133-clone-graph.solution:clone_graph.node": {
+    "kind": "parameter",
+    "label": "node: Node | None",
+    "name": "node",
+    "summary": "The node to clone"
+  },
+  "problems.133-clone-graph.solution:clone_graph.queue": {
+    "kind": "variable",
+    "name": "queue",
+    "summary": "A queue that stores the nodes to be visited"
+  },
+  "problems.133-clone-graph.solution:clone_graph.queue.append(n)": {
+    "kind": "expression",
+    "name": "queue.append(n)",
+    "summary": "Add the neighbor to the queue"
+  },
+  "problems.1406-stone-game-iii.solution:stone_game_III": {
+    "args": [
+      "stoneValue"
+    ],
+    "code": "def stone_game_III(stoneValue: list[int]) -> str:\n    memo, n = {}, len(stoneValue)\n    def dp(i):\n        if i >= n:\n            return 0\n        if i not in memo:\n            memo[i] = max(\n                sum(stoneValue[i : i + k]) - dp(i + k) for k in range(1, 4)\n            )\n        return memo[i]\n    return \"Alice\" if dp(0) > 0 else \"Bob\" if dp(0) < 0 else \"Tie\"",
+    "file_path": "backend/algorithms/problems/1406-stone-game-iii/solution.py",
+    "intuition": "- Score-difference DP:\n    - Let `dp[i]` = max score difference current player can achieve starting at index `i`.\n    - Transition: `dp[i] = max_{k∈{1,2,3}} (sum(i..i+k-1) − dp[i+k])`. Answer from `dp[0]`.",
+    "kind": "function",
+    "label": "def stone_game_III(stoneValue: list[int]) -> str",
+    "name": "stone_game_III",
+    "returns": {
+      "label": "str"
+    },
+    "time_complexity": "- O(n)\n    - constant 3 choices per `i`"
+  },
+  "problems.146-lru-cache.solution:LRUCache": {
+    "code": "class LRUCache:\n    def __init__(self, capacity: int):\n        self.cache: OrderedDict[int, int] = OrderedDict()\n        self.capacity = capacity\n\n    def get(self, key: int) -> int:\n        if (val := self.cache.get(key)) is None:\n            return -1\n        self.cache.move_to_end(key)\n        return val\n\n    def put(self, key: int, value: int) -> None:\n        if key in self.cache:\n            self.cache.move_to_end(key)\n        self.cache[key] = value\n        if len(self.cache) > self.capacity:\n            self.cache.popitem(last=False)",
+    "file_path": "backend/algorithms/problems/146-lru-cache/solution.py",
+    "intuition": "The LRU system is simple. It tracks *when* a book was last used.",
+    "kind": "class",
+    "name": "LRUCache"
+  },
+  "problems.146-lru-cache.solution:LRUCache.get": {
+    "args": [
+      "key"
+    ],
+    "code": "    def get(self, key: int) -> int:\n        if (val := self.cache.get(key)) is None:\n            return -1\n        self.cache.move_to_end(key)\n        return val",
+    "file_path": "backend/algorithms/problems/146-lru-cache/solution.py",
+    "kind": "method",
+    "label": "def get(self, key: int) -> int",
+    "name": "get",
+    "returns": {
+      "label": "int"
+    },
+    "summary": "When an item is accessed, it becomes the most recently used. We fetch the item and move it to the end of the `OrderedDict`."
+  },
+  "problems.146-lru-cache.solution:LRUCache.put": {
+    "args": [
+      "key",
+      "value"
+    ],
+    "code": "    def put(self, key: int, value: int) -> None:\n        if key in self.cache:\n            self.cache.move_to_end(key)\n        self.cache[key] = value\n        if len(self.cache) > self.capacity:\n            self.cache.popitem(last=False)",
+    "file_path": "backend/algorithms/problems/146-lru-cache/solution.py",
+    "kind": "method",
+    "label": "def put(self, key: int, value: int) -> None",
+    "name": "put",
+    "returns": {
+      "label": "None"
+    },
+    "summary": "When an item is added or updated, it's also considered the most recently used and is moved to the end. If the cache exceeds its capacity, the item at the front of the OrderedDict (the least recently used) is removed."
+  },
+  "problems.1510-stone-game-iv.solution:stone_game_IV": {
+    "args": [
+      "n"
+    ],
+    "code": "def stone_game_IV(n: int) -> bool:\n\n    memo = {0: False}\n\n    def dp(n):\n        if n not in memo:\n            memo[n] = any(not dp(n - i**2) for i in range(int(n**0.5), 0, -1))\n        return memo[n]\n\n    return dp(n)",
+    "file_path": "backend/algorithms/problems/1510-stone-game-iv/solution.py",
+    "intuition": "- Minimax:\n    - *Paradigm*: This is a classic *impartial game* solved using the *Minimax* principle on game states.\n    - *Insight*: A position is defined as *winning* if you can make *any* move to a position that you know is *losing* for your opponent. The DP builds this win/loss classification for every number of stones up to `n`, starting from the base case that 0 stones is a losing position.",
+    "kind": "function",
+    "label": "def stone_game_IV(n: int) -> bool",
+    "name": "stone_game_IV",
+    "returns": {
+      "label": "bool"
+    },
+    "time_complexity": "- O(n * sqrt(n))\n    - try all squares for each `x`"
+  },
+  "problems.1514-path-with-maximum-probability.solution:path_with_maximum_probability": {
+    "args": [
+      "succProb",
+      "edges",
+      "end",
+      "start",
+      "n"
+    ],
+    "code": "def path_with_maximum_probability(n: int, edges: list[list[int]], succProb: list[float], start: int, end: int) -> float:\n    prob = [0.0] * n # rob[i] stores max probability to reach node i\n    prob[start] = 1.0  # Start with full certainty\n\n    for _ in range(n - 1):  # Perform up to n-1 rounds of relaxation\n        updated = False\n        for (u, v), p in zip(edges, succProb):\n            if prob[u] * p > prob[v]:  # Try to improve v through u\n                prob[v] = prob[u] * p\n                updated = True\n            if prob[v] * p > prob[u]:  # Try to improve u through v (undirected graph)\n                prob[u] = prob[v] * p\n                updated = True\n        if not updated:\n            break  # Early exit if no updates in this round\n\n    return prob[end]",
+    "file_path": "backend/algorithms/problems/1514-path-with-maximum-probability/solution.py",
+    "intuition": "- Bellman-Ford variant to maximize product of probabilities.\n    - Each node tracks the maximum probability to reach it from `start`.",
+    "kind": "function",
+    "label": "def path_with_maximum_probability(n: int, edges: list[list[int]], succProb: list[float], start: int, end: int) -> float",
+    "name": "path_with_maximum_probability",
+    "returns": {
+      "label": "float"
+    }
+  },
+  "problems.1514-path-with-maximum-probability.solution:path_with_maximum_probability.edges": {
+    "kind": "parameter",
+    "label": "edges: list[list[int]]",
+    "name": "edges",
+    "summary": "edges[i] = [u, v] is an undirected edge connecting the nodes u and v with a probability of success of traversing that edge succProb[i]."
+  },
+  "problems.1514-path-with-maximum-probability.solution:path_with_maximum_probability.n": {
+    "kind": "parameter",
+    "label": "n: int",
+    "name": "n",
+    "summary": "number of nodes"
+  },
+  "problems.1514-path-with-maximum-probability.solution:path_with_maximum_probability.succProb": {
+    "kind": "parameter",
+    "label": "succProb: list[float]",
+    "name": "succProb",
+    "summary": "list of probabilities, e.g. [0.5,0.5,0.2],"
+  },
+  "problems.153-find-minimum-in-rotated-sorted-array.solution:find_minimum_in_rotated_sorted_array": {
+    "args": [
+      "nums"
+    ],
+    "code": "def find_minimum_in_rotated_sorted_array(nums: list[int]) -> int:\n\n    l, r = 0, len(nums) - 1\n    while l < r:\n        mid = (l + r) // 2\n        if nums[mid] < nums[r]:\n            r = mid\n        else:\n            l = mid + 1 \n    return nums[l]",
+    "expressions": {
+      "l = mid + 1": "the smallest is on the right",
+      "r = mid": "If nums[mid] is less than nums[r], the minimum is in the left half (inclusive of mid)."
+    },
+    "file_path": "backend/algorithms/problems/153-find-minimum-in-rotated-sorted-array/solution.py",
+    "intuition": "- The goal is to find the *inflection point* in the rotated list (where the numbers switch from high to low) — this point is the minimum element.\n    - We use a modified binary search to home in on this point.\n    - The key is comparing the middle element `nums[mid]` with the rightmost element `nums[r]`. This comparison tells us which part of the array is currently sorted and can be discarded.\n        - **Case 1: `nums[mid] < nums[r]`**\n            - **Example:** In `[4, 5, 1, 2, 3]`, if `mid` points to `1`, `nums[mid]` (`1`) is less than `nums[r]` (`3`).\n            - **Logic:** This indicates that the entire right portion of the array from `mid` to `r` (i.e., `[1, 2, 3]`) is sorted. The minimum element could be `nums[mid]` itself, or it could be to its left. We can safely search the left half (including `mid`) by setting `r = mid`.\n        - **Case 2: `nums[mid] >= nums[r]`**\n            - **Example:** In `[4, 5, 1, 2, 3]`, if `mid` points to `5` in an earlier step, `nums[mid]` (`5`) is greater than `nums[r]` (`3`).\n            - **Logic:** This indicates that the inflection point (the minimum value) must lie to the right of `mid`. The left portion `[4, 5]` is sorted but contains values larger than the true minimum. We discard this left portion by setting `l = mid + 1`.\n    - The loop terminates when `l` and `r` converge, at which point `nums[l]` is the smallest element.",
+    "kind": "function",
+    "label": "def find_minimum_in_rotated_sorted_array(nums: list[int]) -> int",
+    "name": "find_minimum_in_rotated_sorted_array",
+    "returns": {
+      "label": "int"
+    }
+  },
+  "problems.153-find-minimum-in-rotated-sorted-array.solution:find_minimum_in_rotated_sorted_array.l = mid + 1": {
+    "kind": "expression",
+    "name": "l = mid + 1",
+    "summary": "the smallest is on the right"
+  },
+  "problems.153-find-minimum-in-rotated-sorted-array.solution:find_minimum_in_rotated_sorted_array.r = mid": {
+    "kind": "expression",
+    "name": "r = mid",
+    "summary": "If nums[mid] is less than nums[r], the minimum is in the left half (inclusive of mid)."
+  },
+  "problems.1590-make-sum-divisible-by-p.solution:minSubarrayToMakeSumDivisibleByP": {
+    "args": [
+      "segments",
+      "p"
+    ],
+    "code": "def minSubarrayToMakeSumDivisibleByP(segments: list[int], p: int) -> int:\n\n    total_remainder = sum(segments) % p\n    if total_remainder == 0:\n        return 0\n\n    remainder_idx = {0: -1}\n    prefix_remainder, min_length = 0, len(segments)\n\n    for i, segment in enumerate(segments):\n        prefix_remainder = (prefix_remainder + segment) % p\n        need = (prefix_remainder - total_remainder + p) % p\n        if need in remainder_idx:\n            min_length = min(min_length, i - remainder_idx[need])\n        remainder_idx[prefix_remainder] = i\n\n    return min_length if min_length < len(segments) else -1",
+    "file_path": "backend/algorithms/problems/1590-make-sum-divisible-by-p/solution.py",
+    "kind": "function",
+    "label": "def minSubarrayToMakeSumDivisibleByP(segments: list[int], p: int) -> int",
+    "name": "minSubarrayToMakeSumDivisibleByP",
+    "returns": {
+      "label": "int",
+      "summary": "The length of the shortest subarray to remove, or -1 if not possible."
+    }
+  },
+  "problems.1590-make-sum-divisible-by-p.solution:minSubarrayToMakeSumDivisibleByP.p": {
+    "kind": "parameter",
+    "label": "p: int",
+    "name": "p",
+    "summary": "The divisor."
+  },
+  "problems.1590-make-sum-divisible-by-p.solution:minSubarrayToMakeSumDivisibleByP.segments": {
+    "kind": "parameter",
+    "label": "segments: list[int]",
+    "name": "segments",
+    "summary": "List of integers representing trip segments."
+  },
+  "problems.1631-path-with-minimum-effort.solution:path_with_minimum_effort": {
+    "args": [
+      "heights"
+    ],
+    "code": "def path_with_minimum_effort(heights: list[list[int]]) -> int:\n\n    R, C = len(heights), len(heights[0])\n    pq, resolved = [(0, 0, 0)], set()\n\n    while pq:\n        effort, r, c = heapq.heappop(pq)\n        if (r, c) in resolved: continue\n        if (r, c) == (R - 1, C - 1): return effort\n        resolved.add((r, c))\n\n        for nr, nc in [(r, c + 1), (r, c - 1), (r + 1, c), (r - 1, c)]:\n            if 0 <= nr < R and 0 <= nc < C and (nr, nc) not in resolved:\n                neighbor_effort = max(effort, abs(heights[nr][nc] - heights[r][c]))\n                heapq.heappush(pq, (neighbor_effort, nr, nc))",
+    "file_path": "backend/algorithms/problems/1631-path-with-minimum-effort/solution.py",
+    "kind": "function",
+    "label": "def path_with_minimum_effort(heights: list[list[int]]) -> int",
+    "name": "path_with_minimum_effort",
+    "returns": {
+      "label": "int",
+      "summary": "minimum effort to reach the bottom-right cell"
+    },
+    "variables": [
+      "pq",
+      "resolved"
+    ]
+  },
+  "problems.1631-path-with-minimum-effort.solution:path_with_minimum_effort.heights": {
+    "kind": "parameter",
+    "label": "heights: list[list[int]]",
+    "name": "heights",
+    "summary": "2D list of integers representing the heights of the cells"
+  },
+  "problems.1631-path-with-minimum-effort.solution:path_with_minimum_effort.pq": {
+    "kind": "variable",
+    "name": "pq",
+    "summary": "Priority queue stores (max_effort_on_path, r, c)"
+  },
+  "problems.1631-path-with-minimum-effort.solution:path_with_minimum_effort.resolved": {
+    "kind": "variable",
+    "name": "resolved",
+    "summary": "set to store the positions that have been resolved"
+  },
+  "problems.200-number-of-islands.solution:number_of_islands": {
+    "args": [
+      "grid"
+    ],
+    "code": "def number_of_islands(grid: list[list[str]]) -> int:\n    if not grid or not grid[0]:\n        return 0\n    m, n = len(grid), len(grid[0])\n    dirs = ((1,0),(-1,0),(0,1),(0,-1))\n    islands = 0\n\n    for i in range(m):\n        for j in range(n):\n            if grid[i][j] == \"1\":\n                islands += 1\n                grid[i][j] = \"0\" # mark as visited\n                q = deque([(i, j)])\n                while q:\n                    r, c = q.popleft()\n                    for dr, dc in dirs:\n                        nr, nc = r + dr, c + dc\n                        if 0 <= nr < m and 0 <= nc < n and grid[nr][nc] == \"1\":\n                            grid[nr][nc] = \"0\" # mark as visited\n                            q.append((nr, nc)) \n    return islands",
+    "file_path": "backend/algorithms/problems/200-number-of-islands/solution.py",
+    "intuition": "- Find, Count, and Sink 🏝️\n    - The strategy is to scan every cell of the grid. If an unvisited piece of land (`1`) is found, you've discovered a new island, so you increment the `islands` counter. Then, immediately launch a BFS from that cell to find and \"sink\" all connected parts of that same island by changing their value to `0`. This modification of the grid ensures each island group is counted exactly once.",
+    "kind": "function",
+    "label": "def number_of_islands(grid: list[list[str]]) -> int",
+    "name": "number_of_islands",
+    "returns": {
+      "label": "int",
+      "summary": "Number of islands in the grid"
+    },
+    "time_complexity": "- O(m * n)\n    - where m and n are the dimensions of the grid. This is optimal as each cell is visited a constant number of times."
+  },
+  "problems.200-number-of-islands.solution:number_of_islands.grid": {
+    "kind": "parameter",
+    "label": "grid: list[list[str]]",
+    "name": "grid",
+    "summary": "2D grid with '1' representing land and '0' representing water"
+  },
+  "problems.208-implement-trie-prefix-tree.solution:Trie.__init__": {
+    "args": [
+      "self"
+    ],
+    "code": "    def __init__(self):\n\n        self.root = TrieNode()",
+    "file_path": "backend/algorithms/problems/208-implement-trie-prefix-tree/solution.py",
+    "kind": "method",
+    "label": "def __init__(self)",
+    "name": "__init__",
+    "summary": "Initializes the Trie with an empty root node.",
+    "variables": [
+      "root"
+    ]
+  },
+  "problems.208-implement-trie-prefix-tree.solution:Trie.__init__.root": {
+    "kind": "variable",
+    "name": "root",
+    "summary": "the root TrieNode, representing the empty prefix"
+  },
+  "problems.208-implement-trie-prefix-tree.solution:Trie.insert": {
+    "args": [
+      "word"
+    ],
+    "code": "    def insert(self, word: str) -> None:\n\n        node = self.root\n        for ch in word:\n            node = node.children[ch]\n        node.end = True",
+    "expressions": {
+      "node = node.children[ch]": "Traverse to the child node for ch, creating it if missing",
+      "node.end = True": "Mark this node as terminating a valid word"
+    },
+    "file_path": "backend/algorithms/problems/208-implement-trie-prefix-tree/solution.py",
+    "kind": "method",
+    "label": "def insert(self, word: str) -> None",
+    "name": "insert",
+    "returns": {
+      "label": "None"
+    },
+    "summary": "Inserts a word into the Trie.",
+    "time_complexity": "- O(m):\n    - where m is the length of the key.\n    - Each operation involves examining or creating a node until the end of the key.",
+    "variables": [
+      "node"
+    ]
+  },
+  "problems.208-implement-trie-prefix-tree.solution:Trie.insert.node": {
+    "kind": "variable",
+    "name": "node",
+    "summary": "current TrieNode during traversal"
+  },
+  "problems.208-implement-trie-prefix-tree.solution:Trie.insert.node = node.children[ch]": {
+    "kind": "expression",
+    "name": "node = node.children[ch]",
+    "summary": "Traverse to the child node for ch, creating it if missing"
+  },
+  "problems.208-implement-trie-prefix-tree.solution:Trie.insert.node.end = True": {
+    "kind": "expression",
+    "name": "node.end = True",
+    "summary": "Mark this node as terminating a valid word"
+  },
+  "problems.208-implement-trie-prefix-tree.solution:Trie.insert.word": {
+    "kind": "parameter",
+    "label": "word: str",
+    "name": "word",
+    "summary": "string to insert into the Trie"
+  },
+  "problems.208-implement-trie-prefix-tree.solution:TrieNode": {
+    "code": "class TrieNode:\n\n    __slots__ = (\"children\", \"end\")\n\n    def __init__(self):\n\n        self.children: defaultdict[str, TrieNode] = defaultdict(TrieNode)\n        self.end = False",
+    "file_path": "backend/algorithms/problems/208-implement-trie-prefix-tree/solution.py",
+    "kind": "class",
+    "name": "TrieNode",
+    "summary": "A node in the Trie.",
+    "variables": [
+      "children",
+      "end",
+      "__slots__"
+    ]
+  },
+  "problems.208-implement-trie-prefix-tree.solution:TrieNode.__slots__": {
+    "kind": "variable",
+    "name": "__slots__",
+    "summary": "restrict instances to only these attributes (no __dict__) to save memory and speed up attribute access"
+  },
+  "problems.208-implement-trie-prefix-tree.solution:TrieNode.children": {
+    "kind": "variable",
+    "name": "children",
+    "summary": "maps characters to child TrieNodes, auto-created on first access"
+  },
+  "problems.208-implement-trie-prefix-tree.solution:TrieNode.end": {
+    "kind": "variable",
+    "name": "end",
+    "summary": "bool flag indicating this node marks the end of a valid word"
+  },
+  "problems.211-design-add-and-search-words-data-structure.solution:WordDictionary.search.dfs": {
+    "args": [
+      "i",
+      "node"
+    ],
+    "code": "        def dfs(node: dict, i: int) -> bool:\n\n            if i == len(word):\n                return self.END_MARKER in node\n\n            if (c := word[i]) == \".\":\n\n                return any(\n                    dfs(child, i + 1)\n                    for k, child in node.items()\n                    if k != self.END_MARKER\n                )\n            child = node.get(c)\n            return bool(child) and dfs(child, i + 1)",
+    "expressions": {
+      "if k != self.END_MARKER": "try every branch except the END_MARKER"
+    },
+    "file_path": "backend/algorithms/problems/211-design-add-and-search-words-data-structure/solution.py",
+    "kind": "method",
+    "label": "def dfs(node: dict, i: int) -> bool",
+    "name": "dfs",
+    "returns": {
+      "label": "bool"
+    }
+  },
+  "problems.211-design-add-and-search-words-data-structure.solution:WordDictionary.search.dfs.if k != self.END_MARKER": {
+    "kind": "expression",
+    "name": "if k != self.END_MARKER",
+    "summary": "try every branch except the END_MARKER"
+  },
+  "problems.212-word-search-ii.solution:word_search_II": {
+    "args": [
+      "board",
+      "words"
+    ],
+    "code": "def word_search_II(board: list[list[str]], words: list[str]) -> list[str]:\n    trie = {}  \n    for word in words:\n        node = trie\n        for c in word:\n            node = node.setdefault(c, {})\n        node[\"$\"] = word\n\n    def dfs(i, j, parent):\n        if not (0 <= i < m and 0 <= j < n) or (c := board[i][j]) not in parent:\n            return\n        node = parent[c]\n        if \"$\" in node:\n            res.append(node.pop(\"$\"))\n        board[i][j] = \"#\"\n        for x, y in ((i - 1, j), (i + 1, j), (i, j - 1), (i, j + 1)):\n            dfs(x, y, node)\n        board[i][j] = c\n        if not node:\n            parent.pop(c)\n\n    m, n, res = len(board), len(board[0]), []\n    [dfs(i, j, trie) for i in range(m) for j in range(n) if board[i][j] in trie]\n\n    return res",
+    "expressions": {
+      "[dfs": ".. Launch DFS from every cell that matches any trie root key",
+      "board[i][j] = \"#": "Mark as visited",
+      "board[i][j] = c": "Restore cell",
+      "if \"$\" in node": "if the current node is the end of a word",
+      "if not node": "prune the trie to remove dead branches.",
+      "node = node.setdefault(c, {})": "create a new node for the character if it doesn't exist",
+      "res.append(node.pop(\"$\"))": "add the word to the result list and remove the \"$\" key to prevent duplicates"
+    },
+    "file_path": "backend/algorithms/problems/212-word-search-ii/solution.py",
+    "intuition": "- Prefix rails\n    - The trie lays down \"prefix rails\" across the grid: you only move where a rail continues; off‑rail steps end instantly.\n    - A terminal is a station: record the word once, close that spur, and drop empty rails as you pass. In one walk, a cell is used at most once.",
+    "kind": "function",
+    "label": "def word_search_II(board: list[list[str]], words: list[str]) -> list[str]",
+    "name": "word_search_II",
+    "returns": {
+      "label": "list[str]"
+    },
+    "time_complexity": "- O(m n * 4^L)\n    - **Symbols:** m×n board, W=∑(w∈dict)|w|, L=max|w|.\n    - **Build trie:** O(W).\n    - **DFS (worst case):** first step ≤ 4 choices, then ≤ 3 per step ⇒ O(m n * 4 * 3^(L-1)). Coarse bound: O(m n * 4^L).\n    - **Space:** trie O(W); recursion/visited path O(L).",
+    "topics": [
+      "Trie"
+    ],
+    "variables": [
+      "trie",
+      "m",
+      "n",
+      "res"
+    ]
+  },
+  "problems.212-word-search-ii.solution:word_search_II.[dfs": {
+    "kind": "expression",
+    "name": "[dfs",
+    "summary": ".. Launch DFS from every cell that matches any trie root key"
+  },
+  "problems.212-word-search-ii.solution:word_search_II.board[i][j] = \"#": {
+    "kind": "expression",
+    "name": "board[i][j] = \"#",
+    "summary": "Mark as visited"
+  },
+  "problems.212-word-search-ii.solution:word_search_II.board[i][j] = c": {
+    "kind": "expression",
+    "name": "board[i][j] = c",
+    "summary": "Restore cell"
+  },
+  "problems.212-word-search-ii.solution:word_search_II.dfs": {
+    "args": [
+      "i",
+      "j",
+      "parent"
+    ],
+    "code": "    def dfs(i, j, parent):\n        if not (0 <= i < m and 0 <= j < n) or (c := board[i][j]) not in parent:\n            return\n        node = parent[c]\n        if \"$\" in node:\n            res.append(node.pop(\"$\"))\n        board[i][j] = \"\n        for x, y in ((i - 1, j), (i + 1, j), (i, j - 1), (i, j + 1)):\n            dfs(x, y, node)\n        board[i][j] = c\n        if not node:\n            parent.pop(c)",
+    "file_path": "backend/algorithms/problems/212-word-search-ii/solution.py",
+    "kind": "function",
+    "label": "def dfs(i, j, parent)",
+    "name": "dfs",
+    "summary": "DFS from board[i][j], following *parent* trie node.\nCollects words, marks visited, prunes used-up trie branches."
+  },
+  "problems.212-word-search-ii.solution:word_search_II.if \"$\" in node": {
+    "kind": "expression",
+    "name": "if \"$\" in node",
+    "summary": "if the current node is the end of a word"
+  },
+  "problems.212-word-search-ii.solution:word_search_II.if not node": {
+    "kind": "expression",
+    "name": "if not node",
+    "summary": "prune the trie to remove dead branches."
+  },
+  "problems.212-word-search-ii.solution:word_search_II.m": {
+    "kind": "variable",
+    "name": "m",
+    "summary": "number of rows"
+  },
+  "problems.212-word-search-ii.solution:word_search_II.n": {
+    "kind": "variable",
+    "name": "n",
+    "summary": "number of columns"
+  },
+  "problems.212-word-search-ii.solution:word_search_II.node = node.setdefault(c, {})": {
+    "kind": "expression",
+    "name": "node = node.setdefault(c, {})",
+    "summary": "create a new node for the character if it doesn't exist"
+  },
+  "problems.212-word-search-ii.solution:word_search_II.res": {
+    "kind": "variable",
+    "name": "res",
+    "summary": "the list of found words"
+  },
+  "problems.212-word-search-ii.solution:word_search_II.res.append(node.pop(\"$\"))": {
+    "kind": "expression",
+    "name": "res.append(node.pop(\"$\"))",
+    "summary": "add the word to the result list and remove the \"$\" key to prevent duplicates"
+  },
+  "problems.212-word-search-ii.solution:word_search_II.trie": {
+    "kind": "variable",
+    "name": "trie",
+    "summary": "Build trie from **words** list. Each end node gets a `$` key holding the word"
+  },
+  "problems.2140-solving-questions-with-brainpower.solution:most_points_solving_questions_with_brainpower": {
+    "args": [
+      "questions"
+    ],
+    "code": "def most_points_solving_questions_with_brainpower(questions: list[list[int]]) -> int:\n\n    memo, n = {}, len(questions)\n\n    def dp(i):\n        if i >= n:\n            return 0\n\n        if i not in memo:\n            memo[i] = max(dp(i + 1), (q:=questions[i])[0] + dp(i + 1 + q[1]))\n        return memo[i]\n\n    return dp(0)",
+    "file_path": "backend/algorithms/problems/2140-solving-questions-with-brainpower/solution.py",
+    "intuition": "- Paradigm: This is a classic **Longest Path** problem on a Directed Acyclic Graph (DAG).\n    - Insight: The maximum score obtainable *from* any question `i` is a fixed value, regardless of past choices. This allows a backward pass from the end of the exam (where the future score is 0), calculating the optimal future score for each question by simply choosing the `max()` of two pre-computed paths: the one from \"solving\" vs. the one from \"skipping\".",
+    "kind": "function",
+    "label": "def most_points_solving_questions_with_brainpower(questions: list[list[int]]) -> int",
+    "name": "most_points_solving_questions_with_brainpower",
+    "returns": {
+      "label": "int"
+    },
+    "time_complexity": "- O(n)\n    - where `n` is the number of questions."
+  },
+  "problems.2145-count-the-hidden-sequences.solution:numberOfArrays": {
+    "args": [
+      "lower",
+      "upper",
+      "differences"
+    ],
+    "code": "def numberOfArrays(differences: list[int], lower: int, upper: int) -> int:\n\n    prefix_sum = min_marker = max_marker = 0\n\n    for diff in differences:\n        prefix_sum += diff\n        min_marker = min(min_marker, prefix_sum)\n        max_marker = max(max_marker, prefix_sum)\n\n    return max(0, (upper - max_marker) - (lower - min_marker) + 1)",
+    "file_path": "backend/algorithms/problems/2145-count-the-hidden-sequences/solution.py",
+    "kind": "function",
+    "label": "def numberOfArrays(differences: list[int], lower: int, upper: int) -> int",
+    "name": "numberOfArrays",
+    "returns": {
+      "label": "int",
+      "summary": "The number of valid starting values."
+    }
+  },
+  "problems.2145-count-the-hidden-sequences.solution:numberOfArrays.differences": {
+    "kind": "parameter",
+    "label": "differences: list[int]",
+    "name": "differences",
+    "summary": "List of daily changes (trip segments)."
+  },
+  "problems.2145-count-the-hidden-sequences.solution:numberOfArrays.lower": {
+    "kind": "parameter",
+    "label": "lower: int",
+    "name": "lower",
+    "summary": "Lower bound for any marker on the highway."
+  },
+  "problems.2145-count-the-hidden-sequences.solution:numberOfArrays.upper": {
+    "kind": "parameter",
+    "label": "upper: int",
+    "name": "upper",
+    "summary": "Upper bound for any marker on the highway."
+  },
+  "problems.3-longest-substring-without-repeating-characters.solution:longest_substring_without_repeating_characters": {
+    "args": [
+      "s"
+    ],
+    "code": "def longest_substring_without_repeating_characters(s: str) -> int:\n    mp, l, max_length = {}, 0, 0\n    for r, c in enumerate(s):\n        if c in mp:\n            l = max(mp[c] + 1, l)\n        mp[c] = r\n        max_length = max(max_length, r - l + 1)\n    return max_length",
+    "expressions": {
+      "l = max(mp[c] + 1, l)": "ensures that l does not move backward in cases where the last occurrence of s[r] was before l."
+    },
+    "file_path": "backend/algorithms/problems/3-longest-substring-without-repeating-characters/solution.py",
+    "kind": "function",
+    "label": "def longest_substring_without_repeating_characters(s: str) -> int",
+    "name": "longest_substring_without_repeating_characters",
+    "returns": {
+      "label": "int",
+      "summary": "Length of the longest substring without repeating characters"
+    },
+    "time_complexity": "- O(n)\n    - where n is the length of the string. Each character is visited once by the right pointer, and the left pointer only moves forward, so the sliding window expands and contracts at most n times total."
+  },
+  "problems.3-longest-substring-without-repeating-characters.solution:longest_substring_without_repeating_characters.l = max(mp[c] + 1, l)": {
+    "kind": "expression",
+    "name": "l = max(mp[c] + 1, l)",
+    "summary": "ensures that l does not move backward in cases where the last occurrence of s[r] was before l."
+  },
+  "problems.3-longest-substring-without-repeating-characters.solution:longest_substring_without_repeating_characters.s": {
+    "kind": "parameter",
+    "label": "s: str",
+    "name": "s",
+    "summary": "Input string to analyze"
+  },
+  "problems.325-maximum-size-subarray-sum-equals-k.solution:maxSizeSubarraySumEqualsK": {
+    "args": [
+      "segments",
+      "k"
+    ],
+    "code": "def maxSizeSubarraySumEqualsK(segments: list[int], k: int) -> int:\n\n    marker_idx = {0: -1}\n    prefix_sum = max_length = 0\n\n    for i, segment in enumerate(segments):\n\n        prefix_sum += segment\n\n        if (target_marker := prefix_sum - k) in marker_idx:\n            max_length = max(max_length, i - marker_idx[target_marker])\n\n        if prefix_sum not in marker_idx:\n            marker_idx[prefix_sum] = i\n\n    return max_length",
+    "file_path": "backend/algorithms/problems/325-maximum-size-subarray-sum-equals-k/solution.py",
+    "kind": "function",
+    "label": "def maxSizeSubarraySumEqualsK(segments: list[int], k: int) -> int",
+    "name": "maxSizeSubarraySumEqualsK",
+    "returns": {
+      "label": "int",
+      "summary": "The length of the longest subarray with sum == k."
+    }
+  },
+  "problems.325-maximum-size-subarray-sum-equals-k.solution:maxSizeSubarraySumEqualsK.k": {
+    "kind": "parameter",
+    "label": "k: int",
+    "name": "k",
+    "summary": "Target sum."
+  },
+  "problems.325-maximum-size-subarray-sum-equals-k.solution:maxSizeSubarraySumEqualsK.segments": {
+    "kind": "parameter",
+    "label": "segments: list[int]",
+    "name": "segments",
+    "summary": "List of integers representing trip segments."
+  },
+  "problems.36-valid-sudoku.solution:is_valid_sudoku": {
+    "args": [
+      "board"
+    ],
+    "code": "def is_valid_sudoku(board: list[list[str]]) -> bool:\n\n    row = [set() for _ in range(9)]\n    col = [set() for _ in range(9)]\n    cube = [set() for _ in range(9)]\n\n    for r in range(9):\n        for c in range(9):\n            if (num := board[r][c]) != \".\": \n\n                if (\n                    num in col[c]\n                    or num in row[r]\n                    or num in cube[(cube_index := (r // 3) * 3 + (c // 3))]\n                ):\n                    return False\n\n                col[c].add(num)\n                row[r].add(num)\n                cube[cube_index].add(num)\n    return True",
+    "expressions": {
+      "cube_index := (r // 3) * 3 + (c // 3)": "The formula works by treating the *9×9* board as a *3×3* grid of *3×3* boxes:\n         - **[pink!]r//3** gives which *[pink!]box-row* (0,1,2) you're in;\n         - **[purple!]c//3** gives which *[purple!]box-column* (0,1,2).\n         - Multiplying the *[pink!]box-row* by *[pink!]3* and adding the *[purple!]box-column* yields a unique index 0–8 for each *3×3* cube.",
+      "if (": "Check for duplicates",
+      "if (num := board[r][c]) != \".": "Skip empty cells"
+    },
+    "file_path": "backend/algorithms/problems/36-valid-sudoku/solution.py",
+    "intuition": "- Cube index and think locally\n    - **cube_index := **[pink!](r // 3) * 3** + **[purple!](c // 3)**** treats the 9×9 board as a 3×3 grid of 3×3 boxes:\n        - `[pink!]r//3` gives which *[pink!]box-row* (0,1,2) you're in\n        - `[purple!]c//3` gives which *[purple!]box-column* (0,1,2)\n         - multiplying the *[pink!]box-row* by *[pink!]3* and adding the *[purple!]box-column* yields a unique index 0–8 for each 3×3 cube.",
+    "kind": "function",
+    "label": "def is_valid_sudoku(board: list[list[str]]) -> bool",
+    "name": "is_valid_sudoku",
+    "returns": {
+      "label": "bool",
+      "summary": "True if the board is valid, False otherwise"
+    },
+    "time_complexity": "- O(81)\n    - i.e., O(n^2). Fixed 9×9 boards scan at most 81 cells. Generalized n×n Sudoku validation runs in O(n^2) time."
+  },
+  "problems.36-valid-sudoku.solution:is_valid_sudoku.board": {
+    "kind": "parameter",
+    "label": "board: list[list[str]]",
+    "name": "board",
+    "summary": "9x9 Sudoku board with digits 1-9 and '.' for empty cells"
+  },
+  "problems.36-valid-sudoku.solution:is_valid_sudoku.cube_index := (r // 3) * 3 + (c // 3)": {
+    "kind": "expression",
+    "name": "cube_index := (r // 3) * 3 + (c // 3)",
+    "summary": "The formula works by treating the *9×9* board as a *3×3* grid of *3×3* boxes:\n         - **[pink!]r//3** gives which *[pink!]box-row* (0,1,2) you're in;\n         - **[purple!]c//3** gives which *[purple!]box-column* (0,1,2).\n         - Multiplying the *[pink!]box-row* by *[pink!]3* and adding the *[purple!]box-column* yields a unique index 0–8 for each *3×3* cube."
+  },
+  "problems.36-valid-sudoku.solution:is_valid_sudoku.if (": {
+    "kind": "expression",
+    "name": "if (",
+    "summary": "Check for duplicates"
+  },
+  "problems.36-valid-sudoku.solution:is_valid_sudoku.if (num := board[r][c]) != \".": {
+    "kind": "expression",
+    "name": "if (num := board[r][c]) != \".",
+    "summary": "Skip empty cells"
+  },
+  "problems.37-sudoku-solver.solution:solve_sudoku": {
+    "args": [
+      "board"
+    ],
+    "code": "def solve_sudoku(board: list[list[str]]) -> None:\n\n    D = set(\"123456789\")\n    rows = [set() for _ in range(9)]; cols = [set() for _ in range(9)]; boxes = [set() for _ in range(9)]\n    empties: list[tuple[int,int]] = []\n    for i in range(9):\n        for j in range(9):\n            v = board[i][j]\n            if v == '.': empties.append((i, j))\n            else: \n                rows[i].add(v); cols[j].add(v); boxes[i//3*3 + j//3].add(v)\n\n    def dfs() -> bool:\n        if not empties: return True\n        k, (i, j), cand = min(\n            ((t, (i, j), D - (rows[i] | cols[j] | boxes[i//3*3 + j//3])) for t, (i, j) in enumerate(empties)),\n            key=lambda x: len(x[2])\n        )\n\n        empties.pop(k)\n        for d in cand:\n            board[i][j] = d; rows[i].add(d); cols[j].add(d); boxes[(b:=i//3*3 + j//3)].add(d)\n            if dfs(): return True\n            rows[i].remove(d); cols[j].remove(d); boxes[b].remove(d)\n        board[i][j] = '.'; empties.insert(k, (i, j))\n        return False\n\n    dfs()",
+    "file_path": "backend/algorithms/problems/37-sudoku-solver/solution.py",
+    "intuition": "- MRV (Minimum Remaining Values):\n    - Candidates per cell: `{'1'..'9'} − (row ∪ col ∪ box)`.\n    - MRV: pick the empty cell with the fewest candidates to prune hardest.\n    - Place a digit tentatively, update sets, recurse; undo on failure (backtrack).\n    - If any cell has 0 candidates, the branch is impossible → backtrack immediately.",
+    "kind": "function",
+    "label": "def solve_sudoku(board: list[list[str]]) -> None",
+    "name": "solve_sudoku",
+    "returns": {
+      "label": "None"
+    },
+    "time_complexity": "- O(9^k):\n    - Let k be the number of empty cells (≤ 81).\n    - practically Θ(∏(t=1 to k) m_t) where m_t = MRV-picked cell's candidate count at step t (usually ≪ 9)\n    - MRV selection adds O(k) per level (≤ O(k^2) per path), dominated by the search"
+  },
+  "problems.370-range-addition.solution:getModifiedArray": {
+    "args": [
+      "length",
+      "updates"
+    ],
+    "code": "def getModifiedArray(length: int, updates: list[list[int]]) -> list[int]:\n\n    delta = [0] * (length + 1)\n\n    for start_day, end_day, change_in_km in updates:\n        delta[start_day] += change_in_km\n        delta[end_day + 1] -= change_in_km\n\n    prefix_sum = 0\n    return [prefix_sum := prefix_sum + change for change in delta[:-1]]",
+    "file_path": "backend/algorithms/problems/370-range-addition/solution.py",
+    "kind": "function",
+    "label": "def getModifiedArray(length: int, updates: list[list[int]]) -> list[int]",
+    "name": "getModifiedArray",
+    "returns": {
+      "label": "list[int]",
+      "summary": "The final daily travel plan after all updates."
+    }
+  },
+  "problems.370-range-addition.solution:getModifiedArray.length": {
+    "kind": "parameter",
+    "label": "length: int",
+    "name": "length",
+    "summary": "The number of days in the itinerary."
+  },
+  "problems.370-range-addition.solution:getModifiedArray.updates": {
+    "kind": "parameter",
+    "label": "updates: list[list[int]]",
+    "name": "updates",
+    "summary": "List of [start_day, end_day, change_in_km] updates."
+  },
+  "problems.39-combination-sum.solution:combination_sum": {
+    "args": [
+      "candidates",
+      "target"
+    ],
+    "code": "def combination_sum(candidates: list[int], target: int) -> list[list[int]]:\n\n    candidates.sort()\n    res, path = [], []\n\n    def dfs(i: int, rem: int) -> None:\n        if rem == 0:\n            res.append(path.copy())\n            return\n        for j in range(i, len(candidates)):\n            if (c := candidates[j]) > rem:\n                break\n            path.append(c)\n            dfs(j, rem - c)\n            path.pop()\n\n    dfs(0, target)\n    return res",
+    "file_path": "backend/algorithms/problems/39-combination-sum/solution.py",
+    "intuition": "- DFS with backtracking\n    - Sort candidates, try each starting from current index (to allow reuse), prune if number exceeds remaining target, and record the path when rem == 0.",
+    "kind": "function",
+    "label": "def combination_sum(candidates: list[int], target: int) -> list[list[int]]",
+    "name": "combination_sum",
+    "returns": {
+      "label": "list[list[int]]",
+      "summary": "List of all unique combinations that sum to target"
+    },
+    "time_complexity": "- O(2^n)\n    - Worst-case exponential in number of combinations explored, but pruning (if c > rem: break) reduces branches significantly."
+  },
+  "problems.39-combination-sum.solution:combination_sum.candidates": {
+    "kind": "parameter",
+    "label": "candidates: list[int]",
+    "name": "candidates",
+    "summary": "List of candidate numbers"
+  },
+  "problems.39-combination-sum.solution:combination_sum.target": {
+    "kind": "parameter",
+    "label": "target: int",
+    "name": "target",
+    "summary": "Target sum to achieve"
+  },
+  "problems.416-partition-equal-subset-sum.solution:can_partition_into_2_equal_subsets": {
+    "args": [
+      "nums"
+    ],
+    "code": "def can_partition_into_2_equal_subsets(nums: list[int]) -> bool:\n    memo, n = {}, len(nums)\n\n    def dp(i, s):\n        if i == n or s < 0:\n            return False\n        if s == 0:\n            return True\n\n        if (i, s) not in memo:\n            memo[i, s] = dp(i + 1, s) or dp(i + 1, s - nums[i])\n\n        return memo[(i, s)]\n\n    return False if ((total := sum(nums)) & 1) else dp(0, total / 2)",
+    "file_path": "backend/algorithms/problems/416-partition-equal-subset-sum/solution.py",
+    "intuition": "- Paradigm: This is the **0/1 Knapsack** decision problem in disguise.\n\n    - Insight: The problem transforms from partitioning an array into a simpler question: can a subset of \"items\" (`nums`) perfectly fill a \"knapsack\" with capacity `total_sum / 2`? Each item's weight is equal to its value.",
+    "kind": "function",
+    "label": "def can_partition_into_2_equal_subsets(nums: list[int]) -> bool",
+    "name": "can_partition_into_2_equal_subsets",
+    "returns": {
+      "label": "bool"
+    },
+    "time_complexity": "- O(N * Sum):\n    - where N is the number of elements and Sum is the target subset sum."
+  },
+  "problems.416-partition-equal-subset-sum.solution:can_partition_into_2_equal_subsets.dp": {
+    "args": [
+      "i",
+      "s"
+    ],
+    "code": "    def dp(i, s):\n        if i == n or s < 0:\n            return False\n        if s == 0:\n            return True\n\n        if (i, s) not in memo:\n            memo[i, s] = dp(i + 1, s) or dp(i + 1, s - nums[i])\n\n        return memo[(i, s)]",
+    "expressions": {
+      "(total := sum(nums)) & 1": "odd sum"
+    },
+    "file_path": "backend/algorithms/problems/416-partition-equal-subset-sum/solution.py",
+    "kind": "function",
+    "label": "def dp(i, s)",
+    "name": "dp"
+  },
+  "problems.416-partition-equal-subset-sum.solution:can_partition_into_2_equal_subsets.dp.(total := sum(nums)) & 1": {
+    "kind": "expression",
+    "name": "(total := sum(nums)) & 1",
+    "summary": "odd sum"
+  },
+  "problems.46-permutations.solution:permutations": {
+    "args": [
+      "nums"
+    ],
+    "code": "def permutations(nums: list[int]) -> list[list[int]]:\n\n    result, n = [], len(nums)\n\n    def dfs(i):\n\n        if i == n:\n            result.append(nums[:])\n        else:\n            for j in range(i, n):\n                nums[i], nums[j] = nums[j], nums[i]\n                dfs(i + 1)\n                nums[j], nums[i] = nums[i], nums[j]\n\n    dfs(0)\n    return result",
+    "file_path": "backend/algorithms/problems/46-permutations/solution.py",
+    "intuition": "- Recursive Tree of Choices\n    - Build permutations by choosing unused elements: At each level, try each remaining number, recurse with updated path, and backtrack to un-choose. Use used list or boolean flags to track chosen elements.",
+    "kind": "function",
+    "label": "def permutations(nums: list[int]) -> list[list[int]]",
+    "name": "permutations",
+    "returns": {
+      "label": "list[list[int]]",
+      "summary": "List of all possible permutations"
+    },
+    "space_complexity": "O(N)\nRecursion depth is N, and we store the current permutation path.",
+    "time_complexity": "- O(N!)\n    - N levels of recursion, each level explores N - depth options, total N! permutations."
+  },
+  "problems.46-permutations.solution:permutations.nums": {
+    "kind": "parameter",
+    "label": "nums: list[int]",
+    "name": "nums",
+    "summary": "List of integers to permute"
+  },
+  "problems.460-lfu-cache.solution:LFUCache": {
+    "code": "class LFUCache:\n    def __init__(self, capacity: int):\n        self.capacity    = capacity\n        self.cache       = {}  # key → value\n        self.freq        = {}  # key → freq\n        self.buckets     = defaultdict(OrderedDict)  # freq → keys in LRU order\n        self.minfreq     = 0\n\n    def _bump(self, key: int):\n        f = self.freq[key]\n        # remove from old bucket\n        del self.buckets[f][key]\n        if not self.buckets[f]:\n            del self.buckets[f]\n            if self.minfreq == f:\n                self.minfreq += 1\n\n        # Promote the book to the next shelf up, placing it by the chair.\n        self.freq[key] +=1 # self.freq[key] = f + 1\n        self.buckets[f + 1][key] = None\n\n    def get(self, key: int) -> int:\n        if key not in self.cache:\n            return -1\n        self._bump(key)\n        return self.cache[key]\n\n    def put(self, key: int, value: int) -> None:\n        if self.capacity <= 0:\n            return\n\n        if key in self.cache:\n            self.cache[key] = value\n            self._bump(key)\n            return\n\n        # Evict from the far end of the least popular shelf.\n        if len(self.cache) >= self.capacity:\n            old_key, _ = self.buckets[self.minfreq].popitem(last=False)\n            del self.cache[old_key]\n            del self.freq[old_key]\n\n        # A new book starts on the bottom shelf, by the chair.\n        self.cache[key] = value\n        self.freq[key] = 1\n        self.buckets[1][key] = None\n        self.minfreq = 1",
+    "file_path": "backend/algorithms/problems/460-lfu-cache/solution.py",
+    "intuition": "The LFU system is more sophisticated. It tracks not just *when* a book was last used, but also *how often* it has been used.",
+    "kind": "class",
+    "name": "LFUCache"
+  },
+  "problems.460-lfu-cache.solution:LFUCache._bump": {
+    "args": [
+      "key"
+    ],
+    "code": "    def _bump(self, key: int):",
+    "file_path": "backend/algorithms/problems/460-lfu-cache/solution.py",
+    "kind": "method",
+    "label": "def _bump(self, key: int)",
+    "name": "_bump",
+    "summary": "Move key from freq f to f+1."
+  },
+  "problems.460-lfu-cache.solution:LFUCache.get": {
+    "args": [
+      "key"
+    ],
+    "code": "    def get(self, key: int) -> int:\n        if key not in self.cache:\n            return -1\n        self._bump(key)\n        return self.cache[key]",
+    "file_path": "backend/algorithms/problems/460-lfu-cache/solution.py",
+    "kind": "method",
+    "label": "def get(self, key: int) -> int",
+    "name": "get",
+    "returns": {
+      "label": "int"
+    },
+    "summary": "When an item is accessed (get or put), its frequency count is incremented, and it moves from its current frequency bucket to the next, becoming the most recent item in that new bucket. For eviction, we remove the least recently used item from the lowest frequency bucket."
+  },
+  "problems.460-lfu-cache.solution:LFUCache.put": {
+    "args": [
+      "key",
+      "value"
+    ],
+    "code": "    def put(self, key: int, value: int) -> None:\n        if self.capacity <= 0:\n            return\n\n        if key in self.cache:\n            self.cache[key] = value\n            self._bump(key)\n            return\n\n        if len(self.cache) >= self.capacity:\n            old_key, _ = self.buckets[self.minfreq].popitem(last=False)\n            del self.cache[old_key]\n            del self.freq[old_key]\n\n        self.cache[key] = value\n        self.freq[key] = 1\n        self.buckets[1][key] = None\n        self.minfreq = 1",
+    "file_path": "backend/algorithms/problems/460-lfu-cache/solution.py",
+    "kind": "method",
+    "label": "def put(self, key: int, value: int) -> None",
+    "name": "put",
+    "returns": {
+      "label": "None"
+    },
+    "summary": "When an item is added or updated, its frequency count is set to 1, and it's added to the lowest frequency bucket. If the cache exceeds its capacity, the least recently used item from the lowest frequency bucket is removed."
+  },
+  "problems.51-n-queens.solution:n_queens": {
+    "args": [
+      "n"
+    ],
+    "code": "def n_queens(n: int) -> list[list[str]]:\n\n    result, board = [], [[\".\"] * n for _ in range(n)]\n\n    cols, diag1, diag2 = set(), set(), set()\n\n    def dfs(row: int):\n        if row == n:\n            result.append([\"\".join(r) for r in board])\n            return\n\n        for col in range(n):\n            if col in cols or (row - col) in diag1 or (row + col) in diag2:\n                continue\n\n            board[row][col] = \"Q\"\n\n            cols.add(col)\n            diag1.add(row - col)\n            diag2.add(row + col)\n\n            dfs(row + 1)\n\n            board[row][col] = \".\"\n            cols.remove(col)\n            diag1.remove(row - col)\n            diag2.remove(row + col)\n\n    dfs(0)\n    return result",
+    "expressions": {
+      "`board[row][col] = \".\"`": "Remove the queen (backtrack)",
+      "`board[row][col] = \"Q\"`": "Place the queen",
+      "`continue`": "Skip invalid positions",
+      "`dfs(row + 1)`": "Recurse to the next row"
+    },
+    "file_path": "backend/algorithms/problems/51-n-queens/solution.py",
+    "intuition": "- Backtrack with State Tracking ♛\n    - Place one queen per row. Track blocked columns, diagonals: Valid placement → recurse to next row, Invalid → skip, After recursion, remove queen to try next column. Track state using: `cols` for columns, `diag1` for main diagonal *↘* `row - col`, `diag2` for anti-diagonal *↙* `row + col`.",
+    "kind": "function",
+    "label": "def n_queens(n: int) -> list[list[str]]",
+    "name": "n_queens",
+    "returns": {
+      "label": "list[list[str]]",
+      "summary": "List of all valid queen placements"
+    },
+    "time_complexity": "- O(N!)\n    - first row: N choices, second row: N-1 choices, total permutations = N!, pruning drastically reduces actual recursion tree.",
+    "variables": [
+      "cols",
+      "diag1",
+      "diag2"
+    ]
+  },
+  "problems.51-n-queens.solution:n_queens.`board[row][col] = \".\"`": {
+    "kind": "expression",
+    "name": "`board[row][col] = \".\"`",
+    "summary": "Remove the queen (backtrack)"
+  },
+  "problems.51-n-queens.solution:n_queens.`board[row][col] = \"Q\"`": {
+    "kind": "expression",
+    "name": "`board[row][col] = \"Q\"`",
+    "summary": "Place the queen"
+  },
+  "problems.51-n-queens.solution:n_queens.`continue`": {
+    "kind": "expression",
+    "name": "`continue`",
+    "summary": "Skip invalid positions"
+  },
+  "problems.51-n-queens.solution:n_queens.`dfs(row + 1)`": {
+    "kind": "expression",
+    "name": "`dfs(row + 1)`",
+    "summary": "Recurse to the next row"
+  },
+  "problems.51-n-queens.solution:n_queens.cols": {
+    "kind": "variable",
+    "name": "cols",
+    "summary": "Columns where queens are placed"
+  },
+  "problems.51-n-queens.solution:n_queens.diag1": {
+    "kind": "variable",
+    "name": "diag1",
+    "summary": "The main diagonal where queens are placed (↘) `r - c`"
+  },
+  "problems.51-n-queens.solution:n_queens.diag2": {
+    "kind": "variable",
+    "name": "diag2",
+    "summary": "The anti-diagonal where queens are placed (↙) `r + c`"
+  },
+  "problems.51-n-queens.solution:n_queens.n": {
+    "kind": "parameter",
+    "label": "n: int",
+    "name": "n",
+    "summary": "Size of the chessboard (n x n)"
+  },
+  "problems.518-coin-change-ii.solution:coin_change_II": {
+    "args": [
+      "coins",
+      "amount"
+    ],
+    "code": "def coin_change_II(amount: int, coins: list[int]) -> int:\n    memo, n = {}, len(coins)\n\n    def dp(c, amount):\n        if amount == 0:\n            return 1\n        if amount < 0 or c == n:\n            return 0\n        if (c, amount) not in memo:\n            memo[c, amount] = dp(c, amount - coins[c]) + dp(c + 1, amount)\n        return memo[c, amount]\n\n    return dp(0, amount)",
+    "file_path": "backend/algorithms/problems/518-coin-change-ii/solution.py",
+    "intuition": "- Paradigm: This is a classic **Unbounded Knapsack** counting problem.\n\n    - Insight: To count *combinations* without overcounting *permutations* (`1+2` vs `2+1`), the DP imposes a strict processing order on the coins. This ensures that combinations are always built in the same sequence (e.g., using smaller denomination coins before larger ones), elegantly eliminating duplicates.",
+    "kind": "function",
+    "label": "def coin_change_II(amount: int, coins: list[int]) -> int",
+    "name": "coin_change_II",
+    "returns": {
+      "label": "int"
+    },
+    "time_complexity": "- O(n * amount)\n    - where n is the number of coins and amount is the target amount."
+  },
+  "problems.523-continuous-subarray-sum.solution:checkSubarraySumIsMultipleOfK": {
+    "args": [
+      "segments",
+      "k"
+    ],
+    "code": "def checkSubarraySumIsMultipleOfK(segments: list[int], k: int) -> bool:\n\n    remainder_idx = {0: -1}\n    prefix_remainder = 0\n\n    for i, segment in enumerate(segments):\n        prefix_remainder = (prefix_remainder + segment) % k\n        if prefix_remainder in remainder_idx:\n            if i - remainder_idx[prefix_remainder] > 1:\n                return True\n        else:\n            remainder_idx[prefix_remainder] = i\n    return False",
+    "file_path": "backend/algorithms/problems/523-continuous-subarray-sum/solution.py",
+    "kind": "function",
+    "label": "def checkSubarraySumIsMultipleOfK(segments: list[int], k: int) -> bool",
+    "name": "checkSubarraySumIsMultipleOfK",
+    "returns": {
+      "label": "bool",
+      "summary": "True if such a subarray exists, False otherwise."
+    }
+  },
+  "problems.523-continuous-subarray-sum.solution:checkSubarraySumIsMultipleOfK.k": {
+    "kind": "parameter",
+    "label": "k: int",
+    "name": "k",
+    "summary": "The divisor."
+  },
+  "problems.523-continuous-subarray-sum.solution:checkSubarraySumIsMultipleOfK.segments": {
+    "kind": "parameter",
+    "label": "segments: list[int]",
+    "name": "segments",
+    "summary": "List of integers representing trip segments."
+  },
+  "problems.525-contiguous-array.solution:findMaxLengthOfBalancedSubarray": {
+    "args": [
+      "segments"
+    ],
+    "code": "def findMaxLengthOfBalancedSubarray(segments: list[int]) -> int:\n\n    normalized_segments = [1 if num > 0 else -1 for num in segments]\n    return maxSizeSubarraySumEqualsK(normalized_segments, 0)",
+    "file_path": "backend/algorithms/problems/525-contiguous-array/solution.py",
+    "kind": "function",
+    "label": "def findMaxLengthOfBalancedSubarray(segments: list[int]) -> int",
+    "name": "findMaxLengthOfBalancedSubarray",
+    "returns": {
+      "label": "int",
+      "summary": "The length of the longest balanced subarray."
+    }
+  },
+  "problems.525-contiguous-array.solution:findMaxLengthOfBalancedSubarray.segments": {
+    "kind": "parameter",
+    "label": "segments: list[int]",
+    "name": "segments",
+    "summary": "List of integers (positive for forward, negative/zero for backward)."
+  },
+  "problems.53-maximum-subarray.solution:maximum_subarray": {
+    "args": [
+      "nums"
+    ],
+    "code": "def maximum_subarray(nums: list[int]) -> int:\n    max_sum = curr_sum = float(\"-inf\")\n    for num in nums:\n        curr_sum = max(num, curr_sum + num)\n        max_sum = max(max_sum, curr_sum)\n    return max_sum",
+    "file_path": "backend/algorithms/problems/53-maximum-subarray/solution.py",
+    "kind": "function",
+    "label": "def maximum_subarray(nums: list[int]) -> int",
+    "name": "maximum_subarray",
+    "returns": {
+      "label": "int",
+      "summary": "Maximum sum of any contiguous subarray"
+    },
+    "time_complexity": "- O(n)\n    - where n is the length of the array. We iterate through the array once."
+  },
+  "problems.53-maximum-subarray.solution:maximum_subarray.nums": {
+    "kind": "parameter",
+    "label": "nums: list[int]",
+    "name": "nums",
+    "summary": "List of integers"
+  },
+  "problems.542-01-matrix.solution:zero_one_matrix": {
+    "args": [
+      "mat"
+    ],
+    "code": "def zero_one_matrix(mat: list[list[int]]) -> list[list[int]]:\n    m, n = len(mat), len(mat[0])\n    dist = [[-1] * n for _ in range(m)]\n    q = deque()\n    # Initialize queue with all zero-cells\n    for i in range(m):\n        for j in range(n):\n            if mat[i][j] == 0:\n                dist[i][j] = 0\n                q.append((i, j))\n\n    while q:\n        i, j = q.popleft()\n        for di, dj in ((1,0),(-1,0),(0,1),(0,-1)):\n            ni, nj = i + di, j + dj\n            if 0 <= ni < m and 0 <= nj < n and dist[ni][nj] < 0:\n                dist[ni][nj] = dist[i][j] + 1\n                q.append((ni, nj))\n    return dist",
+    "file_path": "backend/algorithms/problems/542-01-matrix/solution.py",
+    "intuition": "- Multi-Source BFS from the Target 🎯:\n    - Instead of starting a separate BFS from every `1` to find the nearest `0` (which would be slow), this approach inverts the problem. It starts a single, **multi-source BFS from all `0`s simultaneously**. The level of the BFS at which a cell is reached is, by definition, its shortest distance to any `0`. This \"start from the answer\" strategy is a powerful technique for shortest path problems.",
+    "kind": "function",
+    "label": "def zero_one_matrix(mat: list[list[int]]) -> list[list[int]]",
+    "name": "zero_one_matrix",
+    "returns": {
+      "label": "list[list[int]]"
+    },
+    "time_complexity": "- O(m * n):\n    - where m and n are the dimensions of the grid.\n    - Every cell is enqueued and processed exactly once, making this the optimal solution."
+  },
+  "problems.560-subarray-sum-equals-k.solution:subarraySumEqualsK": {
+    "args": [
+      "segments",
+      "k"
+    ],
+    "code": "def subarraySumEqualsK(segments: list[int], k: int) -> int:\n\n    marker_frequency = defaultdict(int, {0: 1})\n    prefix_sum = count = 0\n\n    for segment in segments:\n        prefix_sum += segment\n        count += marker_frequency[prefix_sum - k]\n        marker_frequency[prefix_sum] += 1\n\n    return count",
+    "file_path": "backend/algorithms/problems/560-subarray-sum-equals-k/solution.py",
+    "kind": "function",
+    "label": "def subarraySumEqualsK(segments: list[int], k: int) -> int",
+    "name": "subarraySumEqualsK",
+    "returns": {
+      "label": "int",
+      "summary": "The count of subarrays with sum == k."
+    }
+  },
+  "problems.560-subarray-sum-equals-k.solution:subarraySumEqualsK.k": {
+    "kind": "parameter",
+    "label": "k: int",
+    "name": "k",
+    "summary": "Target sum."
+  },
+  "problems.560-subarray-sum-equals-k.solution:subarraySumEqualsK.segments": {
+    "kind": "parameter",
+    "label": "segments: list[int]",
+    "name": "segments",
+    "summary": "List of integers representing trip segments."
+  },
+  "problems.713-subarray-product-less-than-k.solution:num_subarray_product_less_than_k": {
+    "args": [
+      "nums",
+      "k"
+    ],
+    "code": "def num_subarray_product_less_than_k(nums: list[int], k: int) -> int:\n    if k <= 1:\n        return 0\n    product, left, count = 1, 0, 0\n    for right, num in enumerate(nums):\n        product *= num\n        while product >= k:\n            product //= nums[left]\n            left += 1\n        count += right - left + 1\n    return count",
+    "file_path": "backend/algorithms/problems/713-subarray-product-less-than-k/solution.py",
+    "kind": "function",
+    "label": "def num_subarray_product_less_than_k(nums: list[int], k: int) -> int",
+    "name": "num_subarray_product_less_than_k",
+    "returns": {
+      "label": "int"
+    },
+    "time_complexity": "O(n)"
+  },
+  "problems.743-network-delay-time.solution:network_delay_time": {
+    "args": [
+      "times",
+      "n",
+      "k"
+    ],
+    "code": "def network_delay_time(times: list[list[int]], n: int, k: int) -> int:\n\n    adj = defaultdict(list)\n    for u, v, w in times:\n        adj[u].append((v, w))\n    pq, finalized, time = [(0, k)], set(), 0\n    while pq:\n        t, node = heapq.heappop(pq)\n        if node in finalized:\n            continue\n        finalized.add(node)\n        time = t\n        for neighbor, travel_time in adj[node]:\n            if neighbor not in finalized:\n                heapq.heappush(pq, (time + travel_time, neighbor))\n    return time if len(finalized) == n else -1",
+    "file_path": "backend/algorithms/problems/743-network-delay-time/solution.py",
+    "kind": "function",
+    "label": "def network_delay_time(times: list[list[int]], n: int, k: int) -> int",
+    "name": "network_delay_time",
+    "returns": {
+      "label": "int",
+      "summary": "minimum time for a signal starting at node `k` to reach *all* nodes or -1 if impossible"
+    },
+    "time_complexity": "- O(E log V):\n    - E is the number of edges (the length of the input list `times`)\n    - V is the number of vertices (the number of nodes `n`)\n\n    - By substituting these into the standard Dijkstra complexity formula, O(E log V), you get O(len(times) log n)."
+  },
+  "problems.743-network-delay-time.solution:network_delay_time.k": {
+    "kind": "parameter",
+    "label": "k: int",
+    "name": "k",
+    "summary": "starting node"
+  },
+  "problems.743-network-delay-time.solution:network_delay_time.times": {
+    "kind": "parameter",
+    "label": "times: list[list[int]]",
+    "name": "times",
+    "summary": "list of lists of integers representing the edges and their weights"
+  },
+  "problems.778-swim-in-rising-water.solution:swim_in_rising_water": {
+    "args": [
+      "grid"
+    ],
+    "code": "def swim_in_rising_water(grid: list[list[int]]) -> int:\n\n    n=len(grid)\n    pq, resolved = [(grid[0][0], 0, 0)], set()\n\n    while pq:\n        time, r, c = heapq.heappop(pq)\n        if (r, c) in resolved:continue\n        if (r, c) == (n - 1, n - 1):return time\n        resolved.add((r, c))\n\n        for nr, nc in [(r, c + 1), (r, c - 1), (r + 1, c), (r - 1, c)]:\n            if 0 <= nr < n and 0 <= nc < n and (nr, nc) not in resolved:\n                bottleneck_time = max(time, grid[nr][nc])\n                heapq.heappush(pq, (bottleneck_time, nr, nc))",
+    "file_path": "backend/algorithms/problems/778-swim-in-rising-water/solution.py",
+    "kind": "function",
+    "label": "def swim_in_rising_water(grid: list[list[int]]) -> int",
+    "name": "swim_in_rising_water",
+    "returns": {
+      "label": "int",
+      "summary": "minimum time to travel from `(0, 0)` to `(N-1, N-1)`"
+    },
+    "variables": [
+      "pq",
+      "resolved"
+    ]
+  },
+  "problems.778-swim-in-rising-water.solution:swim_in_rising_water.grid": {
+    "kind": "parameter",
+    "label": "grid: list[list[int]]",
+    "name": "grid",
+    "summary": "2D list of integers representing the elevations of the cells"
+  },
+  "problems.778-swim-in-rising-water.solution:swim_in_rising_water.pq": {
+    "kind": "variable",
+    "name": "pq",
+    "summary": "Priority queue stores (max_elevation_on_path, r, c)"
+  },
+  "problems.778-swim-in-rising-water.solution:swim_in_rising_water.resolved": {
+    "kind": "variable",
+    "name": "resolved",
+    "summary": "set to store the cells for which we have found the minimum time required to reach them"
+  },
+  "problems.787-cheapest-flights-within-k-stops.bellman_ford:cheapest_flights_with_at_most_k_stops": {
+    "args": [
+      "dst",
+      "src",
+      "n",
+      "flights",
+      "k"
+    ],
+    "code": "def cheapest_flights_with_at_most_k_stops(\n    n: int, flights: list[list[int]], src: int, dst: int, k: int\n) -> int:\n    d = [float(\"inf\")] * n\n    d[src] = 0\n\n    for _ in range(k + 1):\n        tmp = d[:]\n        for u, v, w in flights:\n            if d[u] + w < tmp[v]:\n                tmp[v] = d[u] + w\n        d = tmp\n\n    return d[dst] if d[dst] < float(\"inf\") else -1",
+    "file_path": "backend/algorithms/problems/787-cheapest-flights-within-k-stops/bellman_ford.py",
+    "kind": "function",
+    "label": "def cheapest_flights_with_at_most_k_stops(n: int, flights: list[list[int]], src: int, dst: int, k: int) -> int",
+    "name": "cheapest_flights_with_at_most_k_stops",
+    "returns": {
+      "label": "int"
+    },
+    "time_complexity": "- O(kE)\n    - where `k` is the number of stops and `E` is the number of flights."
+  },
+  "problems.787-cheapest-flights-within-k-stops.dijkstra:cheapest_flights_with_at_most_k_stops": {
+    "args": [
+      "dst",
+      "flights",
+      "k",
+      "src"
+    ],
+    "code": "def cheapest_flights_with_at_most_k_stops( flights: list[list[int]], src: int, dst: int, k: int) -> int:\n\n    graph = defaultdict(list)\n    for u, v, price in flights:\n        graph[u].append((v, price))\n\n    pq, min_stops = [(0, src, 0)], {}\n\n    while pq:\n        cost, city, stops = heapq.heappop(pq)\n\n        # If we've already found a path to this city using fewer or equal stops, skip.\n        # A path with fewer stops must have been cheaper or equal due to PQ ordering.\n        if stops > min_stops.get(city, float(\"inf\")): continue\n        if city == dst: return cost\n\n        # Record the new minimum stops to reach this city\n        min_stops[city] = stops\n        if stops <= k:\n            for neighbor, price in graph[city]:\n                heapq.heappush(pq, (cost + price, neighbor, stops + 1))\n    return -1",
+    "file_path": "backend/algorithms/problems/787-cheapest-flights-within-k-stops/dijkstra.py",
+    "kind": "function",
+    "label": "def cheapest_flights_with_at_most_k_stops(flights: list[list[int]], src: int, dst: int, k: int) -> int",
+    "name": "cheapest_flights_with_at_most_k_stops",
+    "returns": {
+      "label": "int"
+    },
+    "title": "Cheapest Flights With at Most K Stops Dijkstra",
+    "topics": [
+      "Dijkstra"
+    ],
+    "variables": [
+      "pq",
+      "min_stops"
+    ]
+  },
+  "problems.787-cheapest-flights-within-k-stops.dijkstra:cheapest_flights_with_at_most_k_stops.min_stops": {
+    "kind": "variable",
+    "name": "min_stops",
+    "summary": "Tracks the minimum stops to reach each city"
+  },
+  "problems.787-cheapest-flights-within-k-stops.dijkstra:cheapest_flights_with_at_most_k_stops.pq": {
+    "kind": "variable",
+    "name": "pq",
+    "summary": "Priority queue to store the state (cost, city, stops_taken)"
+  },
+  "problems.79-word-search.solution:word_search": {
+    "args": [
+      "board",
+      "word"
+    ],
+    "code": "def word_search(board: list[list[str]], word: str) -> bool:\n    rows, cols, n = len(board), len(board[0]), len(word)\n    def dfs(r: int, c: int, i: int) -> bool:\n        if i == n:\n            return True\n        if not (0 <= r < rows and 0 <= c < cols and board[r][c] == word[i]):\n            return False\n        tmp, board[r][c] = board[r][c], \"#\"\n        for x, y in ((r + 1, c), (r - 1, c), (r, c + 1), (r, c - 1)):\n            if dfs(x, y, i + 1):\n                board[r][c] = tmp\n                return True\n        board[r][c] = tmp\n        return False\n    return any(\n        dfs(r, c, 0)\n        for r in range(rows)\n        for c in range(cols)\n        if board[r][c] == word[0]\n    )",
+    "file_path": "backend/algorithms/problems/79-word-search/solution.py",
+    "intuition": "- Dfs with early exit on mismatch\n    - Start dfs from each cell\n    - At each step:\n        - Check bounds and character match\n        - Mark visited cell with a temp symbol (e.g. #)\n        - Try 4 directions (no revisiting)\n        - Restore cell after backtracking\n        - Stop early if the full word is matched.",
+    "kind": "function",
+    "label": "def word_search(board: list[list[str]], word: str) -> bool",
+    "name": "word_search",
+    "returns": {
+      "label": "bool"
+    },
+    "time_complexity": "- O(M * N * 3^L)\n    - M, N = board size\n    - L = word length\n    - Each step explores at most 3 directions (excluding the one it came from)\n    - Runtime improves with early mismatches and pruning"
+  },
+  "problems.875-koko-eating-bananas.solution:koko_eating_bananas": {
+    "args": [
+      "piles",
+      "h"
+    ],
+    "code": "def koko_eating_bananas(piles: list[int], h: int) -> int:\n\n    def hours(k:int) -> int:\n        return sum((p + k - 1) // k for p in piles)\n        # return sum(math.ceil(pile / k) for pile in piles)\n\n    l, r = 1, max(piles)\n    while l < r:\n        k = (l + r) // 2\n        if hours(k) <= h:\n            r = k\n        else:\n            l = k + 1\n    return l",
+    "file_path": "backend/algorithms/problems/875-koko-eating-bananas/solution.py",
+    "intuition": "- Binary searching the answer space, (eating speed `k`):\n    - The range of possible speeds is from `1` to `max(piles)`\n    - The key property is that the problem is **monotonic** (if a speed `k` is fast enough, any speed greater than `k` will also be fast enough)\n    - This allows us to binary search for the *minimum* valid speed\n    - We test a mid speed (`k = (l + r) // 2`)\n        - If it's valid (`hours(k) <= h`), we try to find a smaller valid speed by searching the lower half (`r = k`)\n        - If it's too slow, we must increase the speed by searching the upper half (`l = k + 1`)\n    - The loop converges on the smallest `k` that works 🍌",
+    "kind": "function",
+    "label": "def koko_eating_bananas(piles: list[int], h: int) -> int",
+    "name": "koko_eating_bananas",
+    "returns": {
+      "label": "int",
+      "summary": "The minimum eating speed"
+    },
+    "time_complexity": "- O(n log m):\n    - n is the number of piles\n    - m is the maximum pile size",
+    "variables": [
+      "l",
+      "r",
+      "k"
+    ]
+  },
+  "problems.875-koko-eating-bananas.solution:koko_eating_bananas.h": {
+    "kind": "parameter",
+    "label": "h: int",
+    "name": "h",
+    "summary": "The hour limit"
+  },
+  "problems.875-koko-eating-bananas.solution:koko_eating_bananas.hours": {
+    "args": [
+      "k"
+    ],
+    "code": "    def hours(k:int) -> int:\n        return sum((p + k - 1) // k for p in piles)",
+    "file_path": "backend/algorithms/problems/875-koko-eating-bananas/solution.py",
+    "kind": "function",
+    "label": "def hours(k: int) -> int",
+    "name": "hours",
+    "returns": {
+      "label": "int"
+    },
+    "summary": "computes total hours needed at speed k"
+  },
+  "problems.875-koko-eating-bananas.solution:koko_eating_bananas.k": {
+    "kind": "variable",
+    "name": "k",
+    "summary": "The mid pointer of the binary search"
+  },
+  "problems.875-koko-eating-bananas.solution:koko_eating_bananas.l": {
+    "kind": "variable",
+    "name": "l",
+    "summary": "The left pointer of the binary search"
+  },
+  "problems.875-koko-eating-bananas.solution:koko_eating_bananas.piles": {
+    "kind": "parameter",
+    "label": "piles: list[int]",
+    "name": "piles",
+    "summary": "The banana piles"
+  },
+  "problems.875-koko-eating-bananas.solution:koko_eating_bananas.r": {
+    "kind": "variable",
+    "name": "r",
+    "summary": "The right pointer of the binary search"
+  },
+  "problems.909-snakes-and-ladders.solution:snakes_and_ladders": {
+    "args": [
+      "board"
+    ],
+    "code": "def snakes_and_ladders(board: list[list[int]]) -> int:\n\n    flat_board =  [0] # Dummy 0 for 1-based indexing\n    for r, row in enumerate(reversed(board)):\n        flat_board.extend(row[::1 if r % 2 == 0 else -1])\n\n    target =(n:= len(board)) * n \n    moves, queue =  {1: 0}, deque([1])\n\n    while queue:\n        current = queue.popleft()\n        for roll in range(1, 7):\n            nxt = current + roll\n            if nxt > target:\n                break\n            landing = flat_board[nxt] if flat_board[nxt] != -1 else nxt\n            if landing not in moves:\n                moves[landing] = moves[current] + 1\n                if landing == target:\n                    return moves[landing]\n                queue.append(landing)\n    return -1",
+    "file_path": "backend/algorithms/problems/909-snakes-and-ladders/solution.py",
+    "intuition": "- Flatten the Board First 🎲\n    - The key insight here is to **pre-process the 2D `board` into a 1D `flat_board` list**. This powerful first step handles all the complex Boustrophedonical logic upfront. By doing this, the BFS loop becomes exceptionally clean and avoids the need for a coordinate conversion function. The search can then operate on a simple 1D array, treating the board as the simple, linear graph it truly represents.",
+    "kind": "function",
+    "label": "def snakes_and_ladders(board: list[list[int]]) -> int",
+    "name": "snakes_and_ladders",
+    "returns": {
+      "label": "int"
+    },
+    "time_complexity": "- O(n^2)\n    - where n is the dimension of the board. The initial flattening of the board takes O(n^2) time. The subsequent BFS visits each of the n^2 squares at most once."
+  },
+  "problems.974-subarray-sums-divisible-by-k.solution:subarraysSumIsDivisibleByK": {
+    "args": [
+      "segments",
+      "k"
+    ],
+    "code": "def subarraysSumIsDivisibleByK(segments: list[int], k: int) -> int:\n    remainder_frequency = defaultdict(int, {0: 1})\n    prefix_remainder = count = 0\n\n    for segment in segments:\n        prefix_remainder = (prefix_remainder + segment) % k\n        count += remainder_frequency[prefix_remainder]\n        remainder_frequency[prefix_remainder] += 1\n    return count",
+    "file_path": "backend/algorithms/problems/974-subarray-sums-divisible-by-k/solution.py",
+    "kind": "function",
+    "label": "def subarraysSumIsDivisibleByK(segments: list[int], k: int) -> int",
+    "name": "subarraysSumIsDivisibleByK",
+    "returns": {
+      "label": "int",
+      "summary": "The count of subarrays with sum divisible by k."
+    },
+    "summary": "LeetCode:\n      [974. Subarray Sums Divisible by K](https://leetcode.com/problems/subarray-sums-divisible-by-k/)"
+  },
+  "problems.974-subarray-sums-divisible-by-k.solution:subarraysSumIsDivisibleByK.k": {
+    "kind": "parameter",
+    "label": "k: int",
+    "name": "k",
+    "summary": "The divisor."
+  },
+  "problems.974-subarray-sums-divisible-by-k.solution:subarraysSumIsDivisibleByK.segments": {
+    "kind": "parameter",
+    "label": "segments: list[int]",
+    "name": "segments",
+    "summary": "List of integers representing trip segments."
+  },
+  "problems.994-rotting-oranges.solution:rotting_oranges": {
+    "args": [
+      "grid"
+    ],
+    "code": "def rotting_oranges(grid: list[list[int]]) -> int:\n    m, n = len(grid), len(grid[0])\n    q, fresh = deque(), 0\n    dirs = [(0,1),(0,-1),(1,0),(-1,0)]\n\n    for i in range(m):\n        for j in range(n):\n            if grid[i][j] == 2:\n                q.append((i, j))\n            elif grid[i][j] == 1:\n                fresh += 1\n    if fresh == 0:\n        return 0\n\n    minutes = 0\n    while q and fresh:\n        minutes += 1\n        for _ in range(len(q)):\n            x, y = q.popleft()\n            for dx, dy in dirs:\n                nx, ny = x + dx, y + dy\n                if 0 <= nx < m and 0 <= ny < n and grid[nx][ny] == 1:\n                    grid[nx][ny] = 2\n                    fresh -= 1\n                    q.append((nx, ny))\n\n    return minutes if fresh == 0 else -1",
+    "file_path": "backend/algorithms/problems/994-rotting-oranges/solution.py",
+    "intuition": "- Multi-Source BFS 🍊:\n    - The key is to initialize the queue with the coordinates of *all* initially rotten oranges. The BFS then naturally simulates the rotting process in parallel from all sources. Each \"level\" of the BFS corresponds to one minute passing. Finally, you must check if any `fresh_oranges` remain to handle cases where some are unreachable.",
+    "kind": "function",
+    "label": "def rotting_oranges(grid: list[list[int]]) -> int",
+    "name": "rotting_oranges",
+    "returns": {
+      "label": "int"
+    },
+    "time_complexity": "- O(m * n):\n    - where m and n are the dimensions of the grid. Each cell is enqueued and dequeued at most once, making the process highly efficient and optimal."
+  }
+}

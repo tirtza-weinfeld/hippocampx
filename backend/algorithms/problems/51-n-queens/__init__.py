@@ -1,0 +1,7 @@
+"""
+Title: N-Queens
+Definition: Place n queens on an n x n board such that no two queens threaten each other. *[19!]meaning no two queens share the same row, column, or diagonal*.
+Leetcode: https://leetcode.com/problems/n-queens
+Difficulty: hard
+Topics: [backtrack, game]
+"""

@@ -2,7 +2,7 @@
 
 import { InfinityExplorer } from "@/components/infinity/infinity-explorer"
 import { InfinityLogo } from "@/components/infinity/icons/infinity-logo"
-import { motion } from "framer-motion"
+import { motion } from "motion/react"
 
 export default function Home() {
   return (

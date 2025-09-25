@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion, AnimatePresence } from "motion/react"
 import { Check, Type } from "lucide-react"
 import { useTheme } from "@/components/theme/theme-provider"
 import { cn } from "@/lib/utils"

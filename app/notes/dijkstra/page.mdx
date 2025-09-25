@@ -18,7 +18,7 @@ $\delta(s, v),\ \forall v \in V$.
 
 ### Code Snippet (Binary Heap)
 
-```python file=backend/algorithms/dijkstra.py#func:dijkstra 
+```python file=core/dijkstra/algorithm.py
 ```
 
 ---
@@ -79,7 +79,7 @@ to reach *all* nodes. If impossible, return -1*
 
 
 
-```python file=backend/algorithms/dijkstra.py#func:networkDelayTime   
+```python file=problems/743-network-delay-time/solution.py:network_delay_time  
 ```
 
 > [!insight:collapse]
@@ -91,8 +91,8 @@ to reach *all* nodes. If impossible, return -1*
 
 > [!timecomplexity:collapse]**$O(\text{len(times)} \log n)$**
 > 
-> * **V (Vertices):** The number of vertices corresponds to the input **n**, the total number of nodes.
-> * **E (Edges):** The number of edges corresponds to the length of the input list **times**, as each element in `times` defines a single directed edge.
+> * *V (Vertices):* The number of vertices corresponds to the input *n*, the total number of nodes.
+> * *E (Edges):* The number of edges corresponds to the length of the input list *times*, as each element in `times` defines a single directed edge.
 > 
 > By substituting these into the standard Dijkstra complexity formula, $O(E \log V)$, you get $O(\text{len(times)} \log n)$.
 
@@ -105,7 +105,7 @@ to reach *all* nodes. If impossible, return -1*
  Effort is the single largest height difference between any two adjacent cells on the path.*
 
 
-```python file=backend/algorithms/dijkstra.py#func:minimumEffortPath   
+```python file=problems/1631-path-with-minimum-effort/solution.py:path_with_minimum_effort   
 ```
 
 
@@ -113,10 +113,10 @@ to reach *all* nodes. If impossible, return -1*
 >
 > *This problem redefines "cost." It's not the sum of a path's edges but its single most challenging step:*
 > The graph is the grid. The key is redefining path cost. 
-> Instead of a *[13:]sum* of the path, the *[16:]cost is its bottleneck: the max_effort_so_far*.
+> Instead of a *[13!]sum* of the path, the *[16!]cost is its bottleneck: the max_effort_so_far*.
 >
 > Dijkstra's greedy choice to always explore the path with the minimum current max_effort naturally finds the route with the overall minimum bottleneck.
-
+> [!end]
 
 > [!timecomplexity:collapse]**$O(R \cdot C \log(R \cdot C))$** time complexity for Dijkstra's on a grid.
 >
@@ -160,7 +160,7 @@ to reach *all* nodes. If impossible, return -1*
   *You are given an `N x N` grid of elevations. Find the minimum "time" `t` to travel from `(0, 0)` to `(N-1, N-1)`. 
     You can only move between adjacent cells if their elevation is less than or equal to the time `t`*
 
-    ```python file=backend/algorithms/dijkstra.py#func:swimInWater   meta="/[2:]grid[0][0]/"
+    ```python meta=/[pink!]grid[0][0]/ file=problems/778-swim-in-rising-water/solution.py:swim_in_rising_water   
     ```
 
   > [!insight:collapse]
@@ -168,7 +168,7 @@ to reach *all* nodes. If impossible, return -1*
   > This problem elegantly frames a "bottleneck" challenge. (similar to the [Path With Minimum Effort](#2-the-thrifty-hike-path-with-minimum-effort)
   > You must find a path where the highest point is as low as possible.
   > This code uses **Dijkstra's algorithm** where the path "cost" is not a sum, but the **maximum elevation** encountered so far. The priority queue always explores the path requiring the lowest water level (`time`). By doing this, the first time it reaches the destination, it guarantees it has found the path with the absolute minimum water level required.
-  > notice  pq=[(**[6:]grid[0][0]**, 0, 0)]
+  > notice  pq=[(**[6!]grid[0][0]**, 0, 0)]
 
 
   > [!timecomplexity:collapse]**$O(N^2 \log N)$**
@@ -205,7 +205,7 @@ to reach *all* nodes. If impossible, return -1*
 > `k` = number of stops
 >  While this Dijkstra approach works, with *Bellman-Ford* we can achieve **$O(Ek)$** which is faster than our modified Dijkstra's $O(Ek\log(Nk))$ by a logarithmic term.   
 
-```python file=backend/algorithms/dijkstra.py#func:findCheapestPriceDijkstra  
+```python file=problems/787-cheapest-flights-within-k-stops/dijkstra.py:cheapest_flights_with_at_most_k_stops  comments
 ```
 
 > [!insight:collapse]
@@ -239,14 +239,14 @@ to the bottom-right `(m-1, n-1)`. Each move (up, down, left, right) costs one st
 > [!warning:collapse] 
 > in practice, [*A\* Search*](./a-star#1-shortest-path-in-a-grid-with-obstacles-elimination) is faster.
 
-```python file=backend/algorithms/dijkstra.py#func:dijkstraShortestPath  
+```python file=problems/1293-shortest-path-in-a-grid-with-obstacles-elimination/dijkstra.py:shortest_path_in_a_grid_with_obstacles_elimination
 ```
 
 
 > [!timecomplexity:collapse] $O(m \cdot n \cdot k \cdot \log(m \cdot n \cdot k))$
 > 
 > Let:
->`m` be the number of rows.
+>`m` be the number of rows.i
 >`n` be the number of columns.
 >`k` be the maximum number of eliminations.
 >

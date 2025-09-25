@@ -1,0 +1,44 @@
+# Maximum Size Subarray Sum Equals k
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="medium" />
+
+<PillList pills={["prefix_sum"]} />
+
+[325. Maximum Size Subarray Sum Equals k](https://leetcode.com/problems/maximum-size-subarray-sum-equals-k)
+
+## [!ProblemDefinition] Definition
+
+Given an array of integers and a target sum k, return the length of the longest subarray with sum equal to k.
+
+## [!ProblemArguments] Key Arguments
+
+- `segments: list[int]`: List of integers representing trip segments.
+- `k: int`: Target sum.
+
+## [!ProblemReturns] Returns
+
+`int`: The length of the longest subarray with sum == k.
+
+## [!ProblemCodeSnippet] Code Snippet
+
+```python meta="source=problems/325-maximum-size-subarray-sum-equals-k/solution.py"
+def maxSizeSubarraySumEqualsK(segments: list[int], k: int) -> int:
+
+    marker_idx = {0: -1}
+    prefix_sum = max_length = 0
+
+    for i, segment in enumerate(segments):
+
+        prefix_sum += segment
+
+        if (target_marker := prefix_sum - k) in marker_idx:
+            max_length = max(max_length, i - marker_idx[target_marker])
+
+        if prefix_sum not in marker_idx:
+            marker_idx[prefix_sum] = i
+
+    return max_length
+```
+

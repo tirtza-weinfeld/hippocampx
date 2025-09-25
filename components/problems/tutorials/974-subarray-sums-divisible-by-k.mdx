@@ -1,0 +1,39 @@
+# Subarray Sums Divisible by K
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="medium" />
+
+<PillList pills={["prefix_sum"]} />
+
+[974. Subarray Sums Divisible by K](https://leetcode.com/problems/subarray-sums-divisible-by-k)
+
+## [!ProblemDefinition] Definition
+
+Given an array of integers and an integer k, return the number of non-empty subarrays that have a sum divisible by k.
+
+## [!ProblemArguments] Key Arguments
+
+- `segments: list[int]`: List of integers representing trip segments.
+- `k: int`: The divisor.
+
+## [!ProblemReturns] Returns
+
+`int`: The count of subarrays with sum divisible by k.
+
+## [!ProblemCodeSnippet] Code Snippet
+
+```python meta="source=problems/974-subarray-sums-divisible-by-k/solution.py"
+from collections import defaultdict
+
+def subarraysSumIsDivisibleByK(segments: list[int], k: int) -> int:
+    remainder_frequency = defaultdict(int, {0: 1})
+    prefix_remainder = count = 0
+
+    for segment in segments:
+        prefix_remainder = (prefix_remainder + segment) % k
+        count += remainder_frequency[prefix_remainder]
+        remainder_frequency[prefix_remainder] += 1
+    return count
+```
+

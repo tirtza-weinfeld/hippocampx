@@ -1,0 +1,34 @@
+# Number of Subarrays with Product Less Than K
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="medium" />
+
+<PillList pills={["sliding_window"]} />
+
+[713. Number of Subarrays with Product Less Than K](https://leetcode.com/problems/subarray-product-less-than-k)
+
+## [!ProblemDefinition] Definition
+
+Given an array of integers nums and an integer k, return the number of contiguous subarrays where the product of all the elements in the subarray is less than k.
+
+## [!ProblemTimeComplexity] Time Complexity
+
+- O(n)
+
+## [!ProblemCodeSnippet] Code Snippet
+
+```python meta="source=problems/713-subarray-product-less-than-k/solution.py"
+def num_subarray_product_less_than_k(nums: list[int], k: int) -> int:
+    if k <= 1:
+        return 0
+    product, left, count = 1, 0, 0
+    for right, num in enumerate(nums):
+        product *= num
+        while product >= k:
+            product //= nums[left]
+            left += 1
+        count += right - left + 1
+    return count
+```
+

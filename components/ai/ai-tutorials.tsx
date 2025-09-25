@@ -4,7 +4,7 @@ import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Sparkles, Network, CheckCircle, ArrowRight, ArrowLeft, Lightbulb, Zap, Puzzle } from "lucide-react"
-import { motion } from "framer-motion"
+import { motion } from "motion/react"
 import Image from "next/image"
 export default function AITutorials() {
   const [activeTab, setActiveTab] = useState("decision-trees")

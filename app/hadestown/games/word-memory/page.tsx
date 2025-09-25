@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 // Import the new CardFlip component
 import { Card, CardFlip } from "@/components/hadestown/card"
 import { RefreshCwIcon, TimerIcon, TrophyIcon, BookOpenIcon } from "lucide-react"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion, AnimatePresence } from "motion/react"
 import confetti from "canvas-confetti"
 
 // Game vocabulary words and definitions

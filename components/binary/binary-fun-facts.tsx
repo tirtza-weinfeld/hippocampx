@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion, AnimatePresence } from "motion/react"
 import BinaryMascot, { type MascotEmotion } from "./binary-mascot"
 import { ChevronLeft, ChevronRight, Lightbulb, Share2, Copy } from "lucide-react"
 import confetti from "canvas-confetti"

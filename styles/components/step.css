@@ -1,0 +1,786 @@
+:root {
+  /* Step 1 - Red */
+  :is([data-step="red"]) {
+    --step: var(--color-red-600);
+    /* --step: var(--color-red-600); */
+    /* --step-shadow: --alpha(var(--color-red-400) / 20%); */
+    --step-gradient: linear-gradient(
+      to right,
+      --alpha(var(--color-red-500) / 60%),
+      --alpha(var(--color-red-800) / 80%) 50%,
+      --alpha(var(--color-red-600) / 60%)
+    );
+    --step-background: linear-gradient(
+      to left,
+      --alpha(var(--color-red-500) / 20%),
+      --alpha(var(--color-red-800) / 30%) 50%,
+      --alpha(var(--color-red-600) / 20%)
+    );
+    /* --step-border: var(--color-red-300); */
+  }
+
+  /* Step 2 - Orange */
+  :is([data-step="orange"]) {
+    --step: var(--color-orange-600);
+    /* --step: var(--color-orange-600); */
+    /* --step-shadow: --alpha(var(--color-orange-400) / 20%); */
+    --step-gradient: linear-gradient(
+      to right,
+      --alpha(var(--color-orange-500) / 60%),
+      --alpha(var(--color-orange-800) / 80%) 50%,
+      --alpha(var(--color-orange-600) / 60%)
+    );
+    --step-background: linear-gradient(
+      to left,
+      --alpha(var(--color-orange-500) / 10%),
+      --alpha(var(--color-orange-800) / 30%) 50%,
+      --alpha(var(--color-orange-600) / 10%)
+    );
+    /* --step-border: var(--color-orange-300); */
+  }
+
+  /* Step 3 - Amber */
+  :is([data-step="amber"]) {
+    --step: var(--color-amber-600);
+    /* --step: var(--color-amber-600); */
+    /* --step-shadow: --alpha(var(--color-amber-400) / 20%); */
+    --step-gradient: linear-gradient(
+      to right,
+      --alpha(var(--color-amber-500) / 60%),
+      --alpha(var(--color-amber-800) / 80%) 50%,
+      --alpha(var(--color-amber-600) / 60%)
+    );
+    --step-background: linear-gradient(
+      to left,
+      --alpha(var(--color-amber-500) / 10%),
+      --alpha(var(--color-amber-800) / 30%) 50%,
+      --alpha(var(--color-amber-600) / 10%)
+    );
+    /* --step-border: var(--color-amber-300); */
+  }
+
+  /* Step 4 - Yellow */
+  :is([data-step="yellow"]) {
+    --step: var(--color-yellow-500);
+    /* --step: var(--color-yellow-600); */
+    /* --step-shadow: --alpha(var(--color-yellow-400) / 20%); */
+    --step-gradient: linear-gradient(
+      to right,
+      --alpha(var(--color-yellow-500) / 60%),
+      --alpha(var(--color-yellow-800) / 80%) 50%,
+      --alpha(var(--color-yellow-600) / 60%)
+    );
+    --step-background: linear-gradient(
+      to left,
+      --alpha(var(--color-yellow-500) / 10%),
+      --alpha(var(--color-yellow-800) / 30%) 50%,
+      --alpha(var(--color-yellow-600) / 10%)
+    );
+    /* --step-border: var(--color-yellow-300); */
+  }
+
+  /* Step 5 - Lime */
+  :is([data-step="lime"]) {
+    --step: var(--color-lime-600);
+    /* --step-shadow: --alpha(var(--color-lime-400) / 20%); */
+    --step-gradient: linear-gradient(
+      to right,
+      --alpha(var(--color-lime-500) / 60%),
+      --alpha(var(--color-lime-800) / 80%) 50%,
+      --alpha(var(--color-lime-600) / 60%)
+    );
+    --step-background: linear-gradient(
+      to left,
+      --alpha(var(--color-lime-500) / 10%),
+      --alpha(var(--color-lime-800) / 30%) 50%,
+      --alpha(var(--color-lime-600) / 10%)
+    );
+    /* --step-border: var(--color-lime-300); */
+  }
+
+  /* Step 6 - Green */
+  :is([data-step="green"]) {
+    --step: var(--color-green-600);
+    /* --step-shadow: --alpha(var(--color-green-400) / 20%); */
+    --step-gradient: linear-gradient(
+      to right,
+      --alpha(var(--color-green-500) / 60%),
+      --alpha(var(--color-green-800) / 80%) 50%,
+      --alpha(var(--color-green-600) / 60%)
+    );
+    --step-background: linear-gradient(
+      to left,
+      --alpha(var(--color-green-500) / 10%),
+      --alpha(var(--color-green-800) / 30%) 50%,
+      --alpha(var(--color-green-600) / 10%)
+    );
+    /* --step-border: var(--color-green-300); */
+  }
+
+  /* Step 7 - Emerald */
+  :is([data-step="emerald"]) {
+    --step: var(--color-emerald-600);
+    /* --step-shadow: --alpha(var(--color-emerald-400) / 20%); */
+    --step-gradient: linear-gradient(
+      to right,
+      --alpha(var(--color-emerald-500) / 60%),
+      --alpha(var(--color-emerald-800) / 80%) 50%,
+      --alpha(var(--color-emerald-600) / 60%)
+    );
+    --step-background: linear-gradient(
+      to left,
+      --alpha(var(--color-emerald-500) / 10%),
+      --alpha(var(--color-emerald-800) / 30%) 50%,
+      --alpha(var(--color-emerald-600) / 10%)
+    );
+    /* --step-border: var(--color-emerald-300); */
+  }
+
+  /* Step 8 - Teal */
+  :is([data-step="teal"]) {
+    --step: var(--color-teal-600);
+    /* --step-shadow: --alpha(var(--color-teal-400) / 20%); */
+    --step-gradient: linear-gradient(
+      to right,
+      --alpha(var(--color-teal-500) / 60%),
+      --alpha(var(--color-teal-800) / 80%) 50%,
+      --alpha(var(--color-teal-600) / 60%)
+    );
+    --step-background: linear-gradient(
+      to left,
+      --alpha(var(--color-teal-500) / 10%),
+      --alpha(var(--color-teal-800) / 30%) 50%,
+      --alpha(var(--color-teal-600) / 10%)
+    );
+    /* --step-border: var(--color-teal-300); */
+  }
+
+  /* Step 9 - Cyan */
+  :is([data-step="cyan"]) {
+    --step: var(--color-cyan-600);
+    /* --step-shadow: --alpha(var(--color-cyan-400) / 20%); */
+    --step-gradient: linear-gradient(
+      to right,
+      --alpha(var(--color-cyan-500) / 60%),
+      --alpha(var(--color-cyan-800) / 80%) 50%,
+      --alpha(var(--color-cyan-600) / 60%)
+    );
+    --step-background: linear-gradient(
+      to left,
+      --alpha(var(--color-cyan-500) / 10%),
+      --alpha(var(--color-cyan-800) / 30%) 50%,
+      --alpha(var(--color-cyan-600) / 10%)
+    );
+    /* --step-border: var(--color-cyan-300); */
+  }
+
+  /* Step 10 - Sky */
+  :is([data-step="sky"]) {
+    --step: var(--color-sky-600);
+    /* --step-shadow: --alpha(var(--color-sky-400) / 20%); */
+    --step-gradient: linear-gradient(
+      to right,
+      --alpha(var(--color-sky-500) / 60%),
+      --alpha(var(--color-sky-800) / 80%) 50%,
+      --alpha(var(--color-sky-600) / 60%)
+    );
+    --step-background: linear-gradient(
+      to left,
+      --alpha(var(--color-sky-500) / 10%),
+      --alpha(var(--color-sky-800) / 30%) 50%,
+      --alpha(var(--color-sky-600) / 10%)
+    );
+    /* --step-border: var(--color-sky-300); */
+  }
+
+  /* Step 11 - Blue */
+  :is([data-step="blue"]) {
+    --step: var(--color-blue-600);
+    /* --step-shadow: --alpha(var(--color-blue-400) / 20%); */
+    --step-gradient: linear-gradient(
+      to right,
+      --alpha(var(--color-blue-500) / 60%),
+      --alpha(var(--color-blue-800) / 80%) 50%,
+      --alpha(var(--color-blue-600) / 60%)
+    );
+    --step-background: linear-gradient(
+      to left,
+      --alpha(var(--color-blue-500) / 10%),
+      --alpha(var(--color-blue-800) / 30%) 50%,
+      --alpha(var(--color-blue-600) / 10%)
+    );
+    /* --step-border: var(--color-blue-300); */
+  }
+
+  /* Step 12 - Indigo */
+  :is([data-step="indigo"]) {
+    --step: var(--color-indigo-600);
+    /* --step-shadow: --alpha(var(--color-indigo-400) / 20%); */
+    --step-gradient: linear-gradient(
+      to right,
+      --alpha(var(--color-indigo-500) / 60%),
+      --alpha(var(--color-indigo-800) / 80%) 50%,
+      --alpha(var(--color-indigo-600) / 60%)
+    );
+    --step-background: linear-gradient(
+      to left,
+      --alpha(var(--color-indigo-500) / 10%),
+      --alpha(var(--color-indigo-800) / 30%) 50%,
+      --alpha(var(--color-indigo-600) / 10%)
+    );
+    /* --step-border: var(--color-indigo-300); */
+  }
+
+  /* Step 13 - Violet */
+  :is([data-step="violet"]) {
+    --step: var(--color-violet-600);
+    /* --step-shadow: --alpha(var(--color-violet-400) / 20%); */
+    --step-gradient: linear-gradient(
+      to right,
+      --alpha(var(--color-violet-500) / 60%),
+      --alpha(var(--color-violet-800) / 80%) 50%,
+      --alpha(var(--color-violet-600) / 60%)
+    );
+    --step-background: linear-gradient(
+      to left,
+      --alpha(var(--color-violet-500) / 10%),
+      --alpha(var(--color-violet-800) / 30%) 50%,
+      --alpha(var(--color-violet-600) / 10%)
+    );
+    /* --step-border: var(--color-violet-300); */
+  }
+
+  /* Step 14 - Purple */
+  :is([data-step="purple"]) {
+    --step: var(--color-purple-600);
+    /* --step-shadow: --alpha(var(--color-purple-400) / 20%); */
+    --step-gradient: linear-gradient(
+      to right,
+      --alpha(var(--color-purple-500) / 60%),
+      --alpha(var(--color-purple-800) / 80%) 50%,
+      --alpha(var(--color-purple-600) / 60%)
+    );
+    --step-background: linear-gradient(
+      to left,
+      --alpha(var(--color-purple-500) / 10%),
+      --alpha(var(--color-purple-800) / 30%) 50%,
+      --alpha(var(--color-purple-600) / 10%)
+    );
+    /* --step-border: var(--color-purple-300); */
+  }
+
+  /* Step 15 - Fuchsia */
+  :is([data-step="fuchsia"]) {
+    --step: var(--color-fuchsia-600);
+    /* --step-shadow: --alpha(var(--color-fuchsia-400) / 20%); */
+    --step-gradient: linear-gradient(
+      to right,
+      --alpha(var(--color-fuchsia-500) / 60%),
+      --alpha(var(--color-fuchsia-800) / 80%) 50%,
+      --alpha(var(--color-fuchsia-600) / 60%)
+    );
+    --step-background: linear-gradient(
+      to left,
+      --alpha(var(--color-fuchsia-500) / 10%),
+      --alpha(var(--color-fuchsia-800) / 30%) 50%,
+      --alpha(var(--color-fuchsia-600) / 10%)
+    );
+    /* --step-border: var(--color-fuchsia-300); */
+  }
+
+  /* Step 16 - Pink */
+  :is([data-step="pink"]) {
+    --step: var(--color-pink-600);
+    /* --step: var(--color-pink-600); */
+    /* --step-shadow: --alpha(var(--color-pink-400) / 20%); */
+    --step-gradient: linear-gradient(
+      to right,
+      --alpha(var(--color-pink-500) / 60%),
+      --alpha(var(--color-pink-800) / 80%) 50%,
+      --alpha(var(--color-pink-600) / 60%)
+    );
+    --step-background: linear-gradient(
+      to left,
+      --alpha(var(--color-pink-500) / 10%),
+      --alpha(var(--color-yellow-500) / 10%) 50%,
+      --alpha(var(--color-pink-400) / 10%)
+    );
+    /* --step-border: var(--color-pink-300); */
+  }
+
+  /* Step 17 - Rose */
+  :is([data-step="rose"]) {
+    --step: var(--color-rose-600);
+    /* --step: var(--color-rose-600); */
+    /* --step-shadow: --alpha(var(--color-rose-400) / 20%); */
+    --step-gradient: linear-gradient(
+      to right,
+      --alpha(var(--color-rose-500) / 60%),
+      --alpha(var(--color-rose-800) / 80%) 50%,
+      --alpha(var(--color-rose-600) / 60%)
+    );
+    --step-background: linear-gradient(
+      to left,
+      --alpha(var(--color-rose-500) / 10%),
+      --alpha(var(--color-rose-800) / 30%) 50%,
+      --alpha(var(--color-rose-600) / 10%)
+    );
+    /* --step-border: var(--color-rose-300); */
+  }
+
+  /* Step 18 - Slate */
+  :is([data-step="slate"]) {
+    --step: var(--color-slate-600);
+    /* --step: var(--color-slate-600); */
+    /* --step-shadow: --alpha(var(--color-slate-400) / 20%); */
+    --step-gradient: linear-gradient(
+      to right,
+      --alpha(var(--color-slate-500) / 60%),
+      --alpha(var(--color-slate-800) / 80%) 50%,
+      --alpha(var(--color-slate-600) / 60%)
+    );
+    --step-background: linear-gradient(
+      to left,
+      --alpha(var(--color-slate-500) / 10%),
+      --alpha(var(--color-slate-800) / 30%) 50%,
+      --alpha(var(--color-slate-600) / 10%)
+    );
+    /* --step-border: var(--color-slate-300); */
+  }
+
+  /* Step 19 - Gray */
+  :is([data-step="gray"]) {
+    --step: var(--color-gray-600);
+    /* --step: var(--color-gray-600); */
+    /* --step-shadow: --alpha(var(--color-gray-400) / 20%); */
+    --step-gradient: linear-gradient(
+      to right,
+      --alpha(var(--color-gray-500) / 60%),
+      --alpha(var(--color-gray-800) / 80%) 50%,
+      --alpha(var(--color-gray-600) / 60%)
+    );
+    --step-background: linear-gradient(
+      to left,
+      --alpha(var(--color-gray-500) / 10%),
+      --alpha(var(--color-gray-800) / 30%) 50%,
+      --alpha(var(--color-gray-600) / 10%)
+    );
+    /* --step-border: var(--color-gray-300); */
+  }
+
+  /* Step 20 - Zinc */
+  :is([data-step="zinc"]) {
+    --step: var(--color-zinc-600);
+    /* --step: var(--color-zinc-600); */
+    /* --step-shadow: --alpha(var(--color-zinc-400) / 20%); */
+    --step-gradient: linear-gradient(
+      to right,
+      --alpha(var(--color-zinc-500) / 60%),
+      --alpha(var(--color-zinc-800) / 80%) 50%,
+      --alpha(var(--color-zinc-600) / 60%)
+    );
+    --step-background: linear-gradient(
+      to left,
+      --alpha(var(--color-zinc-500) / 10%),
+      --alpha(var(--color-zinc-800) / 30%) 50%,
+      --alpha(var(--color-zinc-600) / 10%)
+    );
+    /* --step-border: var(--color-zinc-300); */
+  }
+
+  /* Step 21 - Neutral */
+  :is([data-step="neutral"]) {
+    --step: var(--color-neutral-600);
+    /* --step: var(--color-neutral-600); */
+    /* --step-shadow: --alpha(var(--color-neutral-400) / 20%); */
+    --step-gradient: linear-gradient(
+      to right,
+      --alpha(var(--color-neutral-500) / 60%),
+      --alpha(var(--color-neutral-800) / 80%) 50%,
+      --alpha(var(--color-neutral-600) / 60%)
+    );
+    --step-background: linear-gradient(
+      to left,
+      --alpha(var(--color-neutral-500) / 10%),
+      --alpha(var(--color-neutral-800) / 30%) 50%,
+      --alpha(var(--color-neutral-600) / 10%)
+    );
+    /* --step-border: var(--color-neutral-300); */
+  }
+
+  /* Step 22 - Stone */
+  :is([data-step="stone"]) {
+    --step: var(--color-stone-600);
+    /* --step: var(--color-stone-600); */
+    /* --step-shadow: --alpha(var(--color-stone-400) / 20%); */
+    --step-gradient: linear-gradient(
+      to right,
+      --alpha(var(--color-stone-500) / 60%),
+      --alpha(var(--color-stone-800) / 80%) 50%,
+      --alpha(var(--color-stone-600) / 60%)
+    );
+    --step-background: linear-gradient(
+      to left,
+      --alpha(var(--color-stone-500) / 10%),
+      --alpha(var(--color-stone-800) / 30%) 50%,
+      --alpha(var(--color-stone-600) / 10%)
+    );
+    /* --step-border: var(--color-stone-300); */
+  }
+}
+
+.dark {
+  /* Step 1 - Red Dark */
+  :is([data-step="red"]) {
+    --step: var(--color-red-600);
+    --step-gradient: linear-gradient(
+      to right,
+      --alpha(var(--color-red-300) / 60%),
+      --alpha(var(--color-red-400) / 80%) 50%,
+      --alpha(var(--color-red-200) / 60%)
+    );
+    --step-background: linear-gradient(
+      to left,
+      --alpha(var(--color-red-500) / 10%),
+      --alpha(var(--color-red-800) / 30%) 50%,
+      --alpha(var(--color-red-600) / 10%)
+    );
+  }
+
+  /* Step 2 - Orange Dark */
+  :is([data-step="orange"]) {
+    --step: var(--color-orange-600);
+    --step-gradient: linear-gradient(
+      to right,
+      --alpha(var(--color-orange-300) / 60%),
+      --alpha(var(--color-orange-400) / 80%) 50%,
+      --alpha(var(--color-orange-200) / 60%)
+    );
+  }
+
+  /* Step 3 - Amber Dark */
+  :is([data-step="amber"]) {
+    --step-gradient: linear-gradient(
+      to right,
+      --alpha(var(--color-amber-300) / 60%),
+      --alpha(var(--color-amber-400) / 80%) 50%,
+      --alpha(var(--color-amber-200) / 60%)
+    );
+    --step-background: linear-gradient(
+      to left,
+      --alpha(var(--color-orange-500) / 10%),
+      --alpha(var(--color-orange-800) / 30%) 50%,
+      --alpha(var(--color-orange-600) / 10%)
+    );
+  }
+
+  /* Step 4 - Yellow Dark */
+  :is([data-step="yellow"]) {
+    --step: var(--color-yellow-600);
+    --step-gradient: linear-gradient(
+      to right,
+      --alpha(var(--color-yellow-300) / 60%),
+      --alpha(var(--color-yellow-400) / 80%) 50%,
+      --alpha(var(--color-yellow-200) / 60%)
+    );
+    --step-background: linear-gradient(
+      to left,
+      --alpha(var(--color-yellow-500) / 10%),
+      --alpha(var(--color-yellow-800) / 30%) 50%,
+      --alpha(var(--color-yellow-600) / 10%)
+    );
+  }
+
+  /* Step 5 - Lime Dark */
+  :is([data-step="lime"]) {
+    --step: var(--color-lime-600);
+    --step-gradient: linear-gradient(
+      to right,
+      --alpha(var(--color-lime-300) / 60%),
+      --alpha(var(--color-lime-400) / 80%) 50%,
+      --alpha(var(--color-lime-200) / 60%)
+    );
+    --step-background: linear-gradient(
+      to left,
+      --alpha(var(--color-lime-500) / 10%),
+      --alpha(var(--color-lime-800) / 30%) 50%,
+      --alpha(var(--color-lime-600) / 10%)
+    );
+  }
+
+  /* Step 6 - Green Dark */
+  :is([data-step="green"]) {
+    --step: var(--color-green-600);
+    --step-gradient: linear-gradient(
+      to right,
+      --alpha(var(--color-green-300) / 80%),
+      --alpha(var(--color-green-400) / 80%) 50%,
+      --alpha(var(--color-green-200) / 80%)
+    );
+    --step-background: linear-gradient(
+      to left,
+      --alpha(var(--color-lime-500) / 10%),
+      --alpha(var(--color-lime-800) / 30%) 50%,
+      --alpha(var(--color-lime-600) / 10%)
+    );
+  }
+
+  /* Step 7 - Emerald Dark */
+  :is([data-step="emerald"]) {
+    --step: var(--color-emerald-600);
+    --step-gradient: linear-gradient(
+      to right,
+      --alpha(var(--color-emerald-300) / 80%),
+      --alpha(var(--color-emerald-400) / 80%) 50%,
+      --alpha(var(--color-emerald-200) / 80%)
+    );
+    --step-background: linear-gradient(
+      to left,
+      --alpha(var(--color-green-500) / 10%),
+      --alpha(var(--color-green-800) / 30%) 50%,
+      --alpha(var(--color-green-600) / 10%)
+    );
+  }
+
+  /* Step 8 - Teal Dark */
+  :is([data-step="teal"]) {
+    --step: var(--color-teal-600);
+    --step-gradient: linear-gradient(
+      to right,
+      --alpha(var(--color-teal-300) / 60%),
+      --alpha(var(--color-teal-400) / 80%) 50%,
+      --alpha(var(--color-teal-200) / 80%)
+    );
+    --step-background: linear-gradient(
+      to left,
+      --alpha(var(--color-emerald-500) / 10%),
+      --alpha(var(--color-emerald-800) / 30%) 50%,
+      --alpha(var(--color-emerald-600) / 10%)
+    );
+  }
+
+  /* Step 9 - Cyan Dark */
+  :is([data-step="cyan"]) {
+    --step: var(--color-cyan-600);
+    --step-gradient: linear-gradient(
+      to right,
+      --alpha(var(--color-cyan-300) / 80%),
+      --alpha(var(--color-cyan-400) / 80%) 50%,
+      --alpha(var(--color-cyan-200) / 80%)
+    );
+    --step-background: linear-gradient(
+      to left,
+      --alpha(var(--color-teal-500) / 10%),
+      --alpha(var(--color-teal-800) / 30%) 50%,
+      --alpha(var(--color-teal-600) / 10%)
+    );
+  }
+
+  /* Step 10 - Sky Dark */
+  :is([data-step="sky"]) {
+    --step: var(--color-sky-600);
+    --step-gradient: linear-gradient(
+      to right,
+      --alpha(var(--color-sky-300) / 80%),
+      --alpha(var(--color-sky-400) / 80%) 50%,
+      --alpha(var(--color-sky-200) / 80%)
+    );
+    --step-background: linear-gradient(
+      to left,
+      --alpha(var(--color-cyan-500) / 10%),
+      --alpha(var(--color-cyan-800) / 30%) 50%,
+      --alpha(var(--color-cyan-600) / 10%)
+    );
+  }
+
+  /* Step 11 - Blue Dark */
+  :is([data-step="blue"]) {
+    --step: var(--color-blue-600);
+    --step-gradient: linear-gradient(
+      to right,
+      --alpha(var(--color-blue-200) / 80%),
+      --alpha(var(--color-blue-200) / 80%) 50%,
+      --alpha(var(--color-blue-200) / 80%)
+    );
+  }
+
+  /* Step 12 - Indigo Dark */
+  :is([data-step="indigo"]) {
+    --step: var(--color-indigo-600);
+    --step-gradient: linear-gradient(
+      to right,
+      --alpha(var(--color-indigo-300) / 80%),
+      --alpha(var(--color-indigo-400) / 80%) 50%,
+      --alpha(var(--color-indigo-200) / 80%)
+    );
+    --step-background: linear-gradient(
+      to left,
+      --alpha(var(--color-blue-500) / 10%),
+      --alpha(var(--color-blue-800) / 30%) 50%,
+      --alpha(var(--color-blue-600) / 10%)
+    );
+  }
+
+  /* Step 13 - Violet Dark */
+  :is([data-step="violet"]) {
+    --step: var(--color-violet-600);
+    --step-gradient: linear-gradient(
+      to right,
+      --alpha(var(--color-violet-300) / 80%),
+      --alpha(var(--color-violet-400) / 80%) 50%,
+      --alpha(var(--color-violet-200) / 80%)
+    );
+    --step-background: linear-gradient(
+      to left,
+      --alpha(var(--color-violet-500) / 10%),
+      --alpha(var(--color-violet-800) / 30%) 50%,
+      --alpha(var(--color-violet-600) / 10%)
+    );
+  }
+
+  /* Step 14 - Purple Dark */
+  :is([data-step="purple"]) {
+    --step: var(--color-purple-400);
+    --step-gradient: linear-gradient(
+      to right,
+      --alpha(var(--color-purple-300) / 80%),
+      --alpha(var(--color-purple-400) / 80%) 50%,
+      --alpha(var(--color-purple-200) / 80%)
+    );
+    --step-background: linear-gradient(
+      to left,
+      --alpha(var(--color-indigo-500) / 10%),
+      --alpha(var(--color-indigo-800) / 30%) 50%,
+      --alpha(var(--color-indigo-600) / 10%)
+    );
+  }
+
+  /* Step 15 - Fuchsia Dark */
+  :is([data-step="fuchsia"]) {
+    --step: var(--color-fuchsia-600);
+    --step-gradient: linear-gradient(
+      to right,
+      --alpha(var(--color-fuchsia-200) / 80%),
+      --alpha(var(--color-fuchsia-200) / 80%) 50%,
+      --alpha(var(--color-fuchsia-200) / 80%)
+    );
+  }
+
+  /* Step 16 - Pink Dark */
+  :is([data-step="pink"]) {
+    --step: var(--color-pink-600);
+    --step-gradient: linear-gradient(
+      to right,
+      --alpha(var(--color-pink-400) / 80%),
+      --alpha(var(--color-fuchsia-500) / 90%) 50%,
+      --alpha(var(--color-pink-600) / 80%)
+    );
+    --step-background: linear-gradient(
+      to left,
+      --alpha(var(--color-pink-500) / 10%),
+      --alpha(var(--color-rose-500) / 10%) 50%,
+      --alpha(var(--color-fuchsia-500) / 10%)
+    );
+  }
+
+  /* Step 17 - Rose Dark */
+  :is([data-step="rose"]) {
+    --step: var(--color-rose-600);
+    --step-gradient: linear-gradient(
+      to right,
+      --alpha(var(--color-rose-400) / 80%),
+      --alpha(var(--color-fuchsia-500) / 80%) 50%,
+      --alpha(var(--color-rose-600) / 80%)
+    );
+    --step-background: linear-gradient(
+      to left,
+      --alpha(var(--color-rose-500) / 10%),
+      --alpha(var(--color-rose-800) / 10%) 50%,
+      --alpha(var(--color-fuchsia-600) / 10%)
+    );
+  }
+
+  /* Step 18 - Slate Dark */
+  :is([data-step="slate"]) {
+    --step: var(--color-slate-600);
+    --step-gradient: linear-gradient(
+      to right,
+      --alpha(var(--color-slate-300) / 80%),
+      --alpha(var(--color-slate-400) / 80%) 50%,
+      --alpha(var(--color-slate-200) / 80%)
+    );
+  }
+
+  /* Step 19 - Gray Dark */
+  :is([data-step="gray"]) {
+    --step: var(--color-gray-600);
+    --step-gradient: linear-gradient(
+      to right,
+      --alpha(var(--color-gray-300) / 80%),
+      --alpha(var(--color-gray-400) / 80%) 50%,
+      --alpha(var(--color-gray-200) / 80%)
+    );
+    --step-background: linear-gradient(
+      to left,
+      --alpha(var(--color-gray-500) / 10%),
+      --alpha(var(--color-gray-800) / 30%) 50%,
+      --alpha(var(--color-gray-600) / 10%)
+    );
+  }
+
+  /* Step 20 - Zinc Dark */
+  :is([data-step="zinc"]) {
+    --step: var(--color-zinc-600);
+    --step-gradient: linear-gradient(
+      to right,
+      --alpha(var(--color-zinc-300) / 80%),
+      --alpha(var(--color-zinc-400) / 80%) 50%,
+      --alpha(var(--color-zinc-200) / 80%)
+    );
+    --step-background: linear-gradient(
+      to left,
+      --alpha(var(--color-gray-500) / 10%),
+      --alpha(var(--color-gray-800) / 30%) 50%,
+      --alpha(var(--color-gray-600) / 10%)
+    );
+  }
+
+  /* Step 21 - Neutral Dark */
+  :is([data-step="neutral"]) {
+    --step: var(--color-neutral-600);
+    --step-gradient: linear-gradient(
+      to right,
+      --alpha(var(--color-neutral-300) / 80%),
+      --alpha(var(--color-neutral-400) / 80%) 50%,
+      --alpha(var(--color-neutral-200) / 80%)
+    );
+    --step-background: linear-gradient(
+      to left,
+      --alpha(var(--color-neutral-500) / 10%),
+      --alpha(var(--color-neutral-800) / 30%) 50%,
+      --alpha(var(--color-neutral-600) / 10%)
+    );
+  }
+
+  /* Step 22 - Stone Dark */
+  :is([data-step="stone"]) {
+    --step: var(--color-stone-600);
+    --step-gradient: linear-gradient(
+      to right,
+      --alpha(var(--color-stone-300) / 80%),
+      --alpha(var(--color-stone-400) / 80%) 50%,
+      --alpha(var(--color-stone-200) / 80%)
+    );
+    --step-background: linear-gradient(
+      to left,
+      --alpha(var(--color-neutral-500) / 10%),
+      --alpha(var(--color-neutral-800) / 30%) 50%,
+      --alpha(var(--color-neutral-600) / 10%)
+    );
+  }
+  }
+
+  [data-step] {
+    color: var(--step) !important;
+  }
+  

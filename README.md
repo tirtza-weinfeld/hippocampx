@@ -73,7 +73,6 @@ The project uses several configuration files:
 - `tsconfig.json` - TypeScript configuration
 - `postcss.config.mjs` - PostCSS configuration
 - `eslint.config.mjs` - ESLint configuration
-- `tailwind.config.js` - Tailwind CSS configuration
 
 ## 🤝 Contributing
 

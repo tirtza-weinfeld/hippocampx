@@ -1,236 +1,519 @@
-import { describe, it, expect } from 'vitest'
 import { unified } from 'unified'
 import remarkParse from 'remark-parse'
-import remarkListVariants from '@/plugins/remark-list-variants'
+import remarkMdx from 'remark-mdx'
 import type { Root } from 'mdast'
+import remarkListVariants from '@/plugins/remark-list-variants'
 import { VFile } from 'vfile'
+import { describe, it, expect } from 'vitest'
 
-describe('remark-list-variants plugin', () => {
+// Test helper to process MDX content with VFile
+const processMarkdown = async (content: string) => {
   const processor = unified()
     .use(remarkParse)
+    .use(remarkMdx)
     .use(remarkListVariants)
-    
-  // Helper to process markdown with proper file context
-  const processMarkdown = (markdown: string) => {
-    const tree = processor.parse(markdown)
-    // Create a VFile with the markdown content so the plugin can access it
-    const file = { value: markdown }
-    return processor.runSync(tree, file as any)
+  
+  const file = new VFile({ value: content })
+  const tree = processor.parse(file) as Root
+  return processor.run(tree, file) as Promise<Root>
+}
+
+// Helper to find JSX elements in AST
+const findJSXElements = (tree: Root, name?: string): any[] => {
+  const elements: any[] = []
+  
+  const visit = (node: any) => {
+    if (node.type === 'mdxJsxFlowElement' && (!name || node.name === name)) {
+      elements.push(node)
+    }
+    if (node.children) {
+      node.children.forEach(visit)
+    }
   }
+  
+  visit(tree)
+  return elements
+}
 
-  describe('Feature list pattern detection', () => {
-    it('should detect unordered feature pattern "- ~ Feature"', () => {
-      const markdown = `- ~ Feature one
-- ~ Feature two`
+// Helper to get attribute value from JSX element
+const getAttributeValue = (element: any, attrName: string): any => {
+  const attr = element.attributes?.find((a: any) => a.name === attrName)
+  if (attr?.value?.type === 'mdxJsxAttributeValueExpression') {
+    return attr.value.data?.estree?.body?.[0]?.expression?.value
+  }
+  return attr?.value
+}
 
-      const tree = processor.parse(markdown)
-      const result = processor.runSync(tree) as Root
-      
-      console.log('Unordered feature AST:', JSON.stringify(result, null, 2))
-      
-      // Should have list with FeatureItem elements
-      const list = result.children[0] as any
-      expect(list.type).toBe('list')
-      expect(list.ordered).toBe(false)
-      
-      // Check if first item was transformed to FeatureItem JSX
-      const firstItem = list.children[0]
-      expect(firstItem.type).toBe('mdxJsxFlowElement')
-      expect(firstItem.name).toBe('FeatureItem')
-    })
-
-    it('should detect ordered feature pattern "1. ~ Feature"', () => {
-      const markdown = `1. ~ Feature one
-2. ~ Feature two`
-
-      const tree = processor.parse(markdown)
-      const result = processor.runSync(tree) as Root
-      
-      console.log('Ordered feature AST:', JSON.stringify(result, null, 2))
-      
-      // Should have ordered list with FeatureItem elements
-      const list = result.children[0] as any
-      expect(list.type).toBe('list')
-      expect(list.ordered).toBe(true)
-      
-      // Check if first item was transformed to FeatureItem JSX
-      const firstItem = list.children[0]
-      expect(firstItem.type).toBe('mdxJsxFlowElement')
-      expect(firstItem.name).toBe('FeatureItem')
-    })
-
-    it('should detect task pattern "- [ ] Task"', () => {
-      const markdown = `- [ ] Unchecked task
-- [x] Checked task`
-
-      const tree = processor.parse(markdown)
-      const result = processor.runSync(tree) as Root
-      
-      console.log('Task list AST:', JSON.stringify(result, null, 2))
-      
-      const list = result.children[0] as any
-      expect(list.type).toBe('list')
-      
-      // Check first task item
-      const firstItem = list.children[0]
-      expect(firstItem.type).toBe('mdxJsxFlowElement')
-      expect(firstItem.name).toBe('TaskItem')
-      
-      // Check checked attribute for unchecked task
-      const checkedAttr = firstItem.attributes.find((attr: any) => attr.name === 'checked')
-      expect(checkedAttr.value.value).toBe('false')
-      
-      // Check second task item is checked
-      const secondItem = list.children[1]
-      const secondCheckedAttr = secondItem.attributes.find((attr: any) => attr.name === 'checked')
-      expect(secondCheckedAttr.value.value).toBe('true')
-    })
-
-    it('should preserve regular list items unchanged', () => {
-      const markdown = `- Regular item
-- Another regular item`
-
-      const tree = processor.parse(markdown)
-      const result = processor.runSync(tree) as Root
-      
-      const list = result.children[0] as any
-      expect(list.type).toBe('list')
-      
-      // Should remain as regular listItem, not transformed
-      const firstItem = list.children[0]
-      expect(firstItem.type).toBe('listItem')
-    })
-  })
-
-  describe('Real-world MDX content from page.mdx', () => {
-    it('should handle nested feature items correctly', () => {
-      const markdown = `- ~ Feature one
-- ~ Feature two
-  - ~ Feature two.one
-- ~ Feature three`
-
-      const tree = processor.parse(markdown)
-      const result = processor.runSync(tree) as Root
-      
-      console.log('Nested feature AST:', JSON.stringify(result, null, 2))
-      
-      const list = result.children[0] as any
-      expect(list.type).toBe('list')
-      expect(list.ordered).toBe(false)
-      
-      // Should have 3 top-level items
-      expect(list.children.length).toBe(3)
-      
-      // All top-level items should be FeatureItem
-      expect(list.children[0].type).toBe('mdxJsxFlowElement')
-      expect(list.children[0].name).toBe('FeatureItem')
-      
-      expect(list.children[1].type).toBe('mdxJsxFlowElement')
-      expect(list.children[1].name).toBe('FeatureItem')
-      
-      expect(list.children[2].type).toBe('mdxJsxFlowElement') 
-      expect(list.children[2].name).toBe('FeatureItem')
-      
-      // The second item should have nested content including a list
-      const secondItem = list.children[1]
-      console.log('Second item children:', secondItem.children)
-      
-      // Should have: paragraph + nested list
-      expect(secondItem.children.length).toBe(2)
-      expect(secondItem.children[0].type).toBe('paragraph')
-      expect(secondItem.children[1].type).toBe('list')
-      
-      // The nested list should also have its FeatureItem transformed
-      const nestedList = secondItem.children[1]
-      expect(nestedList.children.length).toBe(1)
-      expect(nestedList.children[0].type).toBe('mdxJsxFlowElement')
-      expect(nestedList.children[0].name).toBe('FeatureItem')
-      
-      console.log('Nested FeatureItem:', nestedList.children[0])
-    })
-  })
-
-  describe('List restart detection by number sequence', () => {
-    it('should detect when "1." appears after higher numbers in a single list and mark restart items', () => {
-      const markdown = `1. First item
+describe('remark-list-variants plugin', () => {
+  describe('ordered lists', () => {
+    it('should transform ordered list to OrderedList JSX with ListItem components', async () => {
+      const content = `1. First item
 2. Second item
-1. This should restart (1 after 2)
-2. This continues the restart`
-
-      // Check what the raw parser produces (before plugins)
-      const rawProcessor = unified().use(remarkParse)
-      const rawTree = rawProcessor.parse(markdown)
-      const result = processMarkdown(markdown) as Root
-      console.log('Result tree (after plugin):', JSON.stringify(result, null, 2))
+3. Third item`
       
-      // Should have one list (markdown parser combines them)
-      expect(result.children.length).toBe(1)
+      const tree = await processMarkdown(content)
+      const orderedLists = findJSXElements(tree, 'OrderedList')
       
-      const list = result.children[0] as any
-      expect(list.type).toBe('list')
+      expect(orderedLists).toHaveLength(1)
       
-      // Third item (index 2) should be marked as restart since it's "1." after "2."
-      const thirdItem = list.children[2]
-      expect(thirdItem.data?.hProperties?.['data-restart-numbering']).toBe('true')
-      expect(thirdItem.data?.hProperties?.['data-item-number']).toBe('1')
+      const listItems = orderedLists[0].children
+      expect(listItems).toHaveLength(3)
       
-      const fourthItem = list.children[3]
-      expect(fourthItem.data?.hProperties?.['data-item-number']).toBe('2')
+      listItems.forEach((item: any, index: number) => {
+        expect(item.name).toBe('ListItem')
+        expect(getAttributeValue(item, 'level')).toBe(1)
+        expect(getAttributeValue(item, 'displayNumber')).toBe((index + 1).toString())
+      })
     })
 
-    it('should handle complex sequence: 1,2 then 1,2 then 5,6 then 1,2', () => {
-      const markdown = `1. First sequence item 1
-2. First sequence item 2
-
-1. Second sequence item 1 (restart)
-2. Second sequence item 2
-
-5. Third sequence item 5 (continues)
-6. Third sequence item 6
-
-1. Fourth sequence item 1 (restart after 6)
-2. Fourth sequence item 2`
-
-      const tree = processor.parse(markdown)
-      const result = processor.runSync(tree) as Root
+    it('should handle restart numbering correctly', async () => {
+      const content = `1. First item
+2. Second item
+1. Restart at one
+2. Continue from restart`
       
-      // Should have 4 lists
-      expect(result.children.length).toBe(4)
+      const tree = await processMarkdown(content)
+      const orderedLists = findJSXElements(tree, 'OrderedList')
       
-      // Second list should be marked as restart (1 after 2)
-      const secondList = result.children[1] as any
-      const secondListFirstItem = secondList.children[0]
-      expect(secondListFirstItem.data?.hProperties?.['data-restart-numbering']).toBe('true')
+      expect(orderedLists).toHaveLength(1)
       
-      // Third list should NOT be marked as restart (5 continues sequence)
-      const thirdList = result.children[2] as any
-      const thirdListFirstItem = thirdList.children[0]
-      expect(thirdListFirstItem.data?.hProperties?.['data-restart-numbering']).toBeUndefined()
+      const listItems = orderedLists[0].children
+      expect(listItems).toHaveLength(4)
       
-      // Fourth list should be marked as restart (1 after 6)
-      const fourthList = result.children[3] as any
-      const fourthListFirstItem = fourthList.children[0]
-      expect(fourthListFirstItem.data?.hProperties?.['data-restart-numbering']).toBe('true')
+      expect(getAttributeValue(listItems[0], 'displayNumber')).toBe('1')
+      expect(getAttributeValue(listItems[1], 'displayNumber')).toBe('2')
+      expect(getAttributeValue(listItems[2], 'displayNumber')).toBe('1') // Restart
+      expect(getAttributeValue(listItems[3], 'displayNumber')).toBe('2') // Continue from restart
     })
-    
-    it('should work with feature items that have number restarts', () => {
-      const markdown = `1. ~ Feature one
-2. ~ Feature two
 
-1. ~ This feature should restart numbering
-2. ~ This feature continues restart`
+    it('should handle decimal numbering for nested levels', async () => {
+      const content = `1. First item
+1.1. Sub item
+1.2. Another sub item
+2. Second item`
+      
+      const tree = await processMarkdown(content)
+      const orderedLists = findJSXElements(tree, 'OrderedList')
+      
+      expect(orderedLists).toHaveLength(1)
+      
+      const listItems = orderedLists[0].children
+      // Markdown parser only recognizes 2 actual list items: "1." and "2."  
+      // The "1.1." and "1.2." are treated as paragraph content within the first item
+      expect(listItems).toHaveLength(2)
+      
+      expect(getAttributeValue(listItems[0], 'level')).toBe(1)
+      expect(getAttributeValue(listItems[0], 'displayNumber')).toBe('1')
+      
+      expect(getAttributeValue(listItems[1], 'level')).toBe(1)
+      expect(getAttributeValue(listItems[1], 'displayNumber')).toBe('2')
+    })
 
-      const tree = processor.parse(markdown)
-      const result = processor.runSync(tree) as Root
+    it('should handle explicit start numbers', async () => {
+      const content = `5. Start at five
+6. Continue normally
+7. Keep going`
       
-      const secondList = result.children[1] as any
-      const firstFeatureItem = secondList.children[0]
+      const tree = await processMarkdown(content)
+      const orderedLists = findJSXElements(tree, 'OrderedList')
       
-      // Should be FeatureItem JSX with restart data
-      expect(firstFeatureItem.type).toBe('mdxJsxFlowElement')
-      expect(firstFeatureItem.name).toBe('FeatureItem')
-      expect(firstFeatureItem.data?.hProperties?.['data-restart-numbering']).toBe('true')
-      expect(firstFeatureItem.data?.hProperties?.['data-item-number']).toBe('1')
+      expect(orderedLists).toHaveLength(1)
+      
+      const listItems = orderedLists[0].children
+      expect(listItems).toHaveLength(3)
+      
+      expect(getAttributeValue(listItems[0], 'displayNumber')).toBe('5')
+      expect(getAttributeValue(listItems[1], 'displayNumber')).toBe('6')
+      expect(getAttributeValue(listItems[2], 'displayNumber')).toBe('7')
+    })
+
+    it('should clean number prefixes from text content', async () => {
+      const content = `1. First item with text
+2. Second item with more text`
+      
+      const tree = await processMarkdown(content)
+      const orderedLists = findJSXElements(tree, 'OrderedList')
+      
+      expect(orderedLists).toHaveLength(1)
+      
+      const listItems = orderedLists[0].children
+      expect(listItems).toHaveLength(2)
+      
+      // Check that the text content has been cleaned of number prefixes
+      const firstItemText = listItems[0].children[0]?.children[0]?.value
+      const secondItemText = listItems[1].children[0]?.children[0]?.value
+      
+      expect(firstItemText).toBe('First item with text')
+      expect(secondItemText).toBe('Second item with more text')
+    })
+  })
+
+  describe('unordered lists', () => {
+    it('should calculate correct levels for unordered list items', async () => {
+      const content = `- Item one
+- Item two
+- Item three`
+      
+      const tree = await processMarkdown(content)
+      const unorderedLists = findJSXElements(tree, 'UnorderedList')
+      
+      expect(unorderedLists).toHaveLength(1)
+      const listItems = unorderedLists[0].children
+      expect(listItems).toHaveLength(3)
+      
+      // All items should be level 1
+      expect(getAttributeValue(listItems[0], 'level')).toBe(1)
+      expect(getAttributeValue(listItems[1], 'level')).toBe(1) 
+      expect(getAttributeValue(listItems[2], 'level')).toBe(1)
+    })
+
+    it('should calculate correct levels for nested unordered list items', async () => {
+      // This test will fail because plugin hardcodes level=1 for all unordered items
+      const content = `- Level 1 item
+  - Level 2 item  
+    - Level 3 item
+- Another level 1 item`
+      
+      const tree = await processMarkdown(content)
+      const unorderedLists = findJSXElements(tree, 'UnorderedList')
+      
+      // Find all list items across all nested lists
+      const allListItems: any[] = []
+      const collectItems = (lists: any[]) => {
+        lists.forEach(list => {
+          list.children.forEach((item: any) => {
+            allListItems.push(item)
+          })
+        })
+      }
+      collectItems(unorderedLists)
+      
+      // Plugin should calculate levels based on nesting depth - THIS WILL FAIL
+      expect(getAttributeValue(allListItems[0], 'level')).toBe(1) // "Level 1 item"
+      expect(getAttributeValue(allListItems[1], 'level')).toBe(2) // "Level 2 item" - FAILS
+      expect(getAttributeValue(allListItems[2], 'level')).toBe(3) // "Level 3 item" - FAILS
+      expect(getAttributeValue(allListItems[3], 'level')).toBe(1) // "Another level 1 item"
+    })
+
+    it('should calculate correct levels for ordered list items', async () => {
+      const content = `1. Item one
+2. Item two  
+3. Item three`
+      
+      const tree = await processMarkdown(content)
+      const orderedLists = findJSXElements(tree, 'OrderedList')
+      
+      expect(orderedLists).toHaveLength(1)
+      const listItems = orderedLists[0].children
+      expect(listItems).toHaveLength(3)
+      
+      // All items should be level 1
+      expect(getAttributeValue(listItems[0], 'level')).toBe(1)
+      expect(getAttributeValue(listItems[1], 'level')).toBe(1)
+      expect(getAttributeValue(listItems[2], 'level')).toBe(1)
+    })
+
+    it('should calculate correct levels for nested ordered list items', async () => {
+      const content = `1. Level 1 item
+1.1. Level 2 item
+1.2. Another level 2 item
+2. Another level 1 item`
+      
+      const tree = await processMarkdown(content)
+      const orderedLists = findJSXElements(tree, 'OrderedList')
+      
+      expect(orderedLists).toHaveLength(1)
+      const listItems = orderedLists[0].children
+      
+      // Plugin should calculate levels based on decimal numbering
+      expect(getAttributeValue(listItems[0], 'level')).toBe(1) // "1. Level 1 item"
+      expect(getAttributeValue(listItems[1], 'level')).toBe(2) // "1.1. Level 2 item"
+    })
+
+    it('should calculate correct displayNumber for ordered list items', async () => {
+      const content = `1. Item one
+2. Item two
+3. Item three`
+      
+      const tree = await processMarkdown(content)
+      const orderedLists = findJSXElements(tree, 'OrderedList')
+      
+      expect(orderedLists).toHaveLength(1)
+      const listItems = orderedLists[0].children
+      expect(listItems).toHaveLength(3)
+      
+      // Should have correct display numbers
+      expect(getAttributeValue(listItems[0], 'displayNumber')).toBe('1')
+      expect(getAttributeValue(listItems[1], 'displayNumber')).toBe('2')
+      expect(getAttributeValue(listItems[2], 'displayNumber')).toBe('3')
+    })
+
+    it('should calculate correct displayNumber for nested ordered list items', async () => {
+      const content = `1. Level 1 item
+1.1. Level 2 item
+1.2. Another level 2 item
+2. Another level 1 item`
+      
+      const tree = await processMarkdown(content)
+      const orderedLists = findJSXElements(tree, 'OrderedList')
+      
+      expect(orderedLists).toHaveLength(1)
+      const listItems = orderedLists[0].children
+      
+      // Should preserve decimal numbering in display numbers
+      expect(getAttributeValue(listItems[0], 'displayNumber')).toBe('1')    // "1."
+      expect(getAttributeValue(listItems[1], 'displayNumber')).toBe('1.1')  // "1.1."
+    })
+
+    it('should transform unordered list to UnorderedList JSX with ListItem components', async () => {
+      const content = `- First item
+- Second item
+- Third item`
+      
+      const tree = await processMarkdown(content)
+      const unorderedLists = findJSXElements(tree, 'UnorderedList')
+      
+      expect(unorderedLists).toHaveLength(1)
+      
+      const listItems = unorderedLists[0].children
+      expect(listItems).toHaveLength(3)
+      
+      listItems.forEach((item: any) => {
+        expect(item.name).toBe('ListItem')
+        expect(getAttributeValue(item, 'level')).toBe(1)
+        // Unordered lists should not have displayNumber
+        expect(item.attributes.find((a: any) => a.name === 'displayNumber')).toBeUndefined()
+      })
+    })
+
+    it('should use special item components based on data-item-type', async () => {
+      const content = `- Regular item
+- Problem intuition item
+- Feature item`
+      
+      // Mock items with data attributes
+      const mockContent = {
+        type: 'root',
+        children: [{
+          type: 'list',
+          ordered: false,
+          children: [
+            {
+              type: 'listItem',
+              position: {
+                start: { line: 1, column: 1, offset: 0 },
+                end: { line: 1, column: 14, offset: 13 }
+              },
+              children: [{ type: 'paragraph', children: [{ type: 'text', value: 'Regular item' }] }]
+            },
+            {
+              type: 'listItem',
+              position: {
+                start: { line: 2, column: 1, offset: 14 },
+                end: { line: 2, column: 26, offset: 39 }
+              },
+              data: { hProperties: { 'data-item-type': 'problem-intuition' } },
+              children: [{ type: 'paragraph', children: [{ type: 'text', value: 'Problem intuition item' }] }]
+            },
+            {
+              type: 'listItem',
+              position: {
+                start: { line: 3, column: 1, offset: 40 },
+                end: { line: 3, column: 15, offset: 54 }
+              }, 
+              data: { hProperties: { 'data-item-type': 'feature' } },
+              children: [{ type: 'paragraph', children: [{ type: 'text', value: 'Feature item' }] }]
+            }
+          ]
+        }]
+      }
+      
+      const processor = unified().use(remarkListVariants)
+      const file = new VFile({ value: content })
+      const tree = await processor.run(mockContent as any, file) as Root
+      
+      const unorderedLists = findJSXElements(tree, 'UnorderedList')
+      expect(unorderedLists).toHaveLength(1)
+      
+      const listItems = unorderedLists[0].children
+      expect(listItems).toHaveLength(3)
+      
+      expect(listItems[0].name).toBe('ListItem')
+      expect(listItems[1].name).toBe('ProblemIntuitionItem')
+      expect(listItems[2].name).toBe('FeatureItem')
+    })
+  })
+
+  describe('special item components for ordered lists', () => {
+    it('should use special components for ordered lists with data attributes', async () => {
+      const content = `1. Regular step
+2. Problem intuition step  
+3. Feature step`
+      
+      // Mock ordered list with data attributes
+      const mockContent = {
+        type: 'root',
+        children: [{
+          type: 'list',
+          ordered: true,
+          children: [
+            {
+              type: 'listItem',
+              position: { 
+                start: { line: 1, column: 1, offset: 0 },
+                end: { line: 1, column: 17, offset: 16 }
+              },
+              children: [{ type: 'paragraph', children: [{ type: 'text', value: '1. Regular step' }] }]
+            },
+            {
+              type: 'listItem',
+              position: { 
+                start: { line: 2, column: 1, offset: 17 },
+                end: { line: 2, column: 27, offset: 43 }
+              },
+              data: { hProperties: { 'data-item-type': 'problem-intuition' } },
+              children: [{ type: 'paragraph', children: [{ type: 'text', value: '2. Problem intuition step' }] }]
+            },
+            {
+              type: 'listItem',
+              position: { 
+                start: { line: 3, column: 1, offset: 44 },
+                end: { line: 3, column: 15, offset: 58 }
+              },
+              data: { hProperties: { 'data-item-type': 'feature' } },
+              children: [{ type: 'paragraph', children: [{ type: 'text', value: '3. Feature step' }] }]
+            }
+          ]
+        }]
+      }
+      
+      const processor = unified().use(remarkListVariants)
+      const file = new VFile({ value: content })
+      const tree = await processor.run(mockContent as any, file) as Root
+      
+      const orderedLists = findJSXElements(tree, 'OrderedList')
+      expect(orderedLists).toHaveLength(1)
+      
+      const listItems = orderedLists[0].children
+      expect(listItems).toHaveLength(3)
+      
+      expect(listItems[0].name).toBe('ListItem')
+      expect(listItems[1].name).toBe('ProblemIntuitionItem')
+      expect(listItems[2].name).toBe('FeatureItem')
+      
+      // All should have displayNumber for ordered lists
+      expect(getAttributeValue(listItems[0], 'displayNumber')).toBe('1')
+      expect(getAttributeValue(listItems[1], 'displayNumber')).toBe('2')
+      expect(getAttributeValue(listItems[2], 'displayNumber')).toBe('3')
+    })
+  })
+
+  describe('debug output verification', () => {
+    it('should output correct JSX structure for simple unordered list', async () => {
+      const content = `- First item
+- Second item`
+      
+      const tree = await processMarkdown(content)
+      
+      // Debug: Log the actual structure
+      console.log('=== UNORDERED LIST PLUGIN OUTPUT ===')
+      console.log(JSON.stringify(tree, null, 2))
+      
+      const unorderedLists = findJSXElements(tree, 'UnorderedList')
+      expect(unorderedLists).toHaveLength(1)
+      
+      const listItems = unorderedLists[0].children
+      expect(listItems).toHaveLength(2)
+      
+      // Verify first item - should have level but NO displayNumber
+      expect(listItems[0].name).toBe('ListItem')
+      expect(getAttributeValue(listItems[0], 'level')).toBe(1)
+      expect(listItems[0].attributes.find((a: any) => a.name === 'displayNumber')).toBeUndefined()
+      
+      // Verify second item
+      expect(listItems[1].name).toBe('ListItem') 
+      expect(getAttributeValue(listItems[1], 'level')).toBe(1)
+      expect(listItems[1].attributes.find((a: any) => a.name === 'displayNumber')).toBeUndefined()
+    })
+
+    it('should output correct JSX structure for simple ordered list', async () => {
+      const content = `1. First item
+2. Second item`
+      
+      const tree = await processMarkdown(content)
+      
+      // Debug: Log the actual structure
+      console.log('=== PLUGIN OUTPUT ===')
+      console.log(JSON.stringify(tree, null, 2))
+      
+      const orderedLists = findJSXElements(tree, 'OrderedList')
+      expect(orderedLists).toHaveLength(1)
+      
+      const listItems = orderedLists[0].children
+      expect(listItems).toHaveLength(2)
+      
+      // Verify first item
+      expect(listItems[0].name).toBe('ListItem')
+      expect(getAttributeValue(listItems[0], 'level')).toBe(1)
+      expect(getAttributeValue(listItems[0], 'displayNumber')).toBe('1')
+      
+      // Verify second item
+      expect(listItems[1].name).toBe('ListItem') 
+      expect(getAttributeValue(listItems[1], 'level')).toBe(1)
+      expect(getAttributeValue(listItems[1], 'displayNumber')).toBe('2')
+    })
+  })
+
+  describe('edge cases', () => {
+    it('should handle empty lists', async () => {
+      const content = ``
+      
+      const tree = await processMarkdown(content)
+      const lists = findJSXElements(tree)
+      
+      expect(lists).toHaveLength(0)
+    })
+
+    it('should handle lists without position information', async () => {
+      const mockContent = {
+        type: 'root',
+        children: [{
+          type: 'list',
+          ordered: true,
+          children: [
+            {
+              type: 'listItem',
+              // No position property - this is the test case
+              children: [{ type: 'paragraph', children: [{ type: 'text', value: 'Item without position' }] }]
+            }
+          ]
+        }]
+      }
+      
+      const processor = unified().use(remarkListVariants)
+      const file = new VFile({ value: '1. Item without position' })
+      const tree = await processor.run(mockContent as any, file) as Root
+      
+      const orderedLists = findJSXElements(tree, 'OrderedList')
+      expect(orderedLists).toHaveLength(1)
+      
+      const listItems = orderedLists[0].children
+      expect(listItems).toHaveLength(1)
+      expect(getAttributeValue(listItems[0], 'displayNumber')).toBe('1') // Should fallback to sequential
+    })
+
+    it('should handle malformed number patterns gracefully', async () => {
+      const content = `not a number. But still a list item
+another. Item without proper numbering`
+      
+      const tree = await processMarkdown(content)
+      const unorderedLists = findJSXElements(tree, 'UnorderedList')
+      const orderedLists = findJSXElements(tree, 'OrderedList')
+      
+      // Markdown parser doesn't recognize this as a list at all - it's just paragraphs
+      // So no list elements should be created
+      expect(unorderedLists).toHaveLength(0)
+      expect(orderedLists).toHaveLength(0)
     })
   })
 })

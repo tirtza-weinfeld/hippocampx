@@ -1,0 +1,293 @@
+---
+description: Nextjs Rules
+alwaysApply: false
+---
+# Next.js Rules
+
+**Essential patterns for Next.js 15+ App Router**
+
+## MDX INTEGRATION
+
+```js
+// next.config.mjs
+import createMDX from '@next/mdx'
+
+export default createMDX({ options: { remarkPlugins: [], rehypePlugins: [] } })({
+  pageExtensions: ['md', 'mdx', 'ts', 'tsx'],
+  experimental: { mdxRs: true }
+})
+```
+
+```tsx
+// mdx-components.tsx
+import type { MDXComponents } from 'mdx/types'
+
+export function useMDXComponents(components: MDXComponents): MDXComponents {
+  return {
+    h1: ({ children }) => <h1 className="text-4xl font-bold">{children}</h1>,
+    ...components
+  }
+}
+```
+
+## PARTIAL PRERENDERING
+
+Combines static shell with streamed dynamic content for optimal performance.
+
+```ts
+// next.config.ts
+export default { experimental: { ppr: 'incremental' } }
+```
+
+```tsx
+// app/page.tsx
+export const experimental_ppr = true
+
+export default function Page() {
+  return (
+    <>
+      <StaticHeader />
+      <Suspense fallback={<Skeleton />}>
+        <DynamicContent />
+      </Suspense>
+    </>
+  )
+}
+```
+
+## COOKIES
+
+Server-side HTTP cookie management for authentication and user preferences.
+
+```tsx
+import { cookies } from 'next/headers'
+
+// Server Component
+export default async function Page() {
+  const cookieStore = await cookies()
+  const theme = cookieStore.get('theme')?.value
+  return <div className={theme} />
+}
+
+// Server Action
+async function updateTheme(theme: string) {
+  'use server'
+  const cookieStore = await cookies()
+  cookieStore.set('theme', theme, {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'strict',
+    maxAge: 60 * 60 * 24 * 30
+  })
+}
+```
+
+## LAYOUTS, ERRORS & NOT FOUND
+
+Layouts wrap pages and preserve state. Handle errors and missing routes gracefully.
+
+```tsx
+// app/layout.tsx - Root layout (required)
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="en">
+      <body>{children}</body>
+    </html>
+  )
+}
+
+// app/dashboard/layout.tsx - Nested layout
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <div>
+      <nav>Dashboard Nav</nav>
+      {children}
+    </div>
+  )
+}
+
+// Error handling
+'use client'
+export default function Error({ error, reset }: { error: Error; reset: () => void }) {
+  return (
+    <div>
+      <h2>Something went wrong!</h2>
+      <button onClick={reset}>Try again</button>
+    </div>
+  )
+}
+
+// Not found handling
+import { notFound } from 'next/navigation'
+
+export default async function Page({ params }: { params: { id: string } }) {
+  const data = await getData(params.id)
+  if (!data) notFound() // Renders nearest not-found.js
+  return <div>{data.title}</div>
+}
+
+// File structure
+app/
+├── layout.tsx          # Wraps everything
+├── page.tsx           # /
+├── error.tsx          # Error boundary
+├── not-found.tsx      # 404 page
+├── global-error.tsx   # Global error handler
+└── dashboard/
+    ├── layout.tsx     # Wraps dashboard/*
+    ├── page.tsx       # /dashboard
+    ├── error.tsx      # Dashboard errors
+    └── settings/
+        └── page.tsx   # /dashboard/settings
+```
+
+## SITEMAPS
+
+XML files that list all URLs on your site for search engines to crawl and index.
+
+```tsx
+// app/sitemap.ts - Static sitemap
+export default function sitemap() {
+  return [
+    { url: 'https://acme.com', lastModified: new Date() },
+    { url: 'https://acme.com/about', lastModified: new Date() }
+  ]
+}
+
+// Dynamic sitemaps for large datasets
+export async function generateSitemaps() {
+  return [{ id: 0 }, { id: 1 }] // Split into multiple files
+}
+
+export default async function sitemap({ id }: { id: number }) {
+  const posts = await getPosts(id * 50000) // 50k URL limit per sitemap
+  return posts.map(post => ({
+    url: `https://acme.com/posts/${post.slug}`,
+    lastModified: post.updatedAt
+  }))
+}
+```
+
+## METADATA
+
+SEO and social sharing metadata generation.
+
+```tsx
+// Static
+export const metadata = {
+  title: 'My App',
+  description: 'The best app ever'
+}
+
+// Dynamic
+export async function generateMetadata({ params }: { params: { id: string } }) {
+  const post = await getPost(params.id)
+  return {
+    title: post.title,
+    openGraph: { images: [post.coverImage] }
+  }
+}
+
+// Dynamic images - app/og/route.tsx
+export async function generateImageMetadata() {
+  return [{ id: 'home' }, { id: 'about' }]
+}
+
+export default function Image({ params }: { params: { id: string } }) {
+  return new ImageResponse(
+    <div style={{ fontSize: 64, background: 'white', width: '100%', height: '100%' }}>
+      {params.id}
+    </div>
+  )
+}
+
+// File-based metadata
+app/favicon.ico
+app/robots.txt
+app/sitemap.xml
+app/opengraph-image.png
+```
+
+## IMAGES
+
+Optimized image component with automatic resizing and lazy loading.
+
+```tsx
+import Image from 'next/image'
+
+// Basic usage
+<Image
+  src="/hero.jpg"
+  alt="Hero image"
+  width={800}
+  height={600}
+  priority // Above the fold
+/>
+
+// Responsive with fill
+<div style={{ position: 'relative', width: '100%', height: '400px' }}>
+  <Image
+    src="/background.jpg"
+    alt="Background"
+    fill
+    style={{ objectFit: 'cover' }}
+  />
+</div>
+
+// External images
+<Image
+  src="https://example.com/image.jpg"
+  alt="External image"
+  width={500}
+  height={300}
+/>
+
+// Configuration - next.config.js
+export default {
+  images: {
+    remotePatterns: [
+      { protocol: 'https', hostname: 'example.com' }
+    ],
+    formats: ['image/webp', 'image/avif']
+  }
+}
+```
+
+## NAVIGATION
+
+Client-side routing with automatic prefetching and optimization.
+
+```tsx
+import Link from 'next/link'
+
+// Basic linking
+<Link href="/dashboard">Dashboard</Link>
+<Link href={`/posts/${slug}`}>Read more</Link>
+
+// Programmatic navigation
+'use client'
+import { useRouter, usePathname } from 'next/navigation'
+
+export default function Navigation() {
+  const router = useRouter()
+  const pathname = usePathname()
+
+  return (
+    <nav>
+      <Link
+        href="/dashboard"
+        className={pathname === '/dashboard' ? 'active' : ''}
+      >
+        Dashboard
+      </Link>
+      <button onClick={() => router.push('/settings')}>
+        Go to Settings
+      </button>
+      <button onClick={() => router.back()}>
+        Back
+      </button>
+    </nav>
+  )
+}
+```
+

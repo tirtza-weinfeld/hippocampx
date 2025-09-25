@@ -1,0 +1,27 @@
+# Find First and Last Position of Element in Sorted Array
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="medium" />
+
+<PillList pills={["binary_search"]} />
+
+[34. Find First and Last Position of Element in Sorted Array](https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array)
+
+## [!ProblemDefinition] Definition
+
+Given a sorted array of integers `nums` that may contain duplicates, find the starting and ending indices of a given `target`. If the target is not in the array, return `[-1, -1]`.
+
+## [!ProblemCodeSnippet] Code Snippet
+
+```python meta="source=problems/34-find-first-and-last-position-of-element-in-sorted-array/solution.py"
+from bisect import bisect_left, bisect_right
+
+def find_first_and_last_position_of_element_in_sorted_array(nums: list[int], target: int) -> list[int]:
+
+    start = bisect_left(nums, target)
+    if start < len(nums) and nums[start] == target:
+        return start, bisect_right(nums, target) - 1
+    return -1, -1
+```
+

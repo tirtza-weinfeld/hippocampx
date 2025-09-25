@@ -1,4 +1,4 @@
-import { Brain, Binary, Sparkles, InfinityIcon, ChartNoAxesCombinedIcon, Home, Calculator, BookOpen, HelpCircle, Dumbbell, Lightbulb, Gamepad2 } from "lucide-react"
+import { Brain, Binary, Sparkles, InfinityIcon, ChartNoAxesCombinedIcon, Home, Calculator, BookOpen, HelpCircle, Dumbbell, Lightbulb, Gamepad2, SquareFunction } from "lucide-react"
 
 export type NavigationItem = {
     title: string
@@ -11,6 +11,8 @@ export type NavigationItem = {
 export const routes: NavigationItem[] = [
     { title: 'Home', href: '/', icon: Home, color: "text-blue-500", bgColor: "bg-purple-500/10", },
     // { title: 'Tic Tac Toe', href: '/tic-tac-toe', icon: Gamepad2, color: "text-rose-500", bgColor: "bg-rose-500/10", },
+
+
 
     {
         title: 'Binary',
@@ -97,7 +99,13 @@ export const routes: NavigationItem[] = [
             { title: "Lab", href: "/calculus/lab", icon: ChartNoAxesCombinedIcon, color: "text-blue-500", bgColor: "bg-blue-500/10" },
         ],
     },
-
+    {
+        title: 'Problems',
+        href: '/problems',
+        icon: SquareFunction,
+        color: "text-yellow-500",
+        bgColor: "bg-yellow-500/10",
+    },
     {
         title: 'Notes',
         href: '/notes',
@@ -105,20 +113,20 @@ export const routes: NavigationItem[] = [
         color: "text-blue-500",
         bgColor: "bg-blue-500/10",
         children: [
-            {title:'sliding-window', href:'/notes/sliding-window', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10"},
-            {title:'kadane', href:'/notes/kadane', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10"},
-            {title:'stocks', href:'/notes/stocks', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10"},
-            {title:'games', href:'/notes/games', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10"},
-            {title:'backtrack', href:'/notes/backtrack', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10"},
-            {title:'trie', href:'/notes/trie', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10"},
-            {title:'dp', href:'/notes/dp', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10"},
+            { title: 'sliding-window', href: '/notes/sliding-window', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10" },
+            { title: 'kadane', href: '/notes/kadane', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10" },
+            { title: 'stocks', href: '/notes/stocks', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10" },
+            { title: 'games', href: '/notes/games', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10" },
+            { title: 'backtrack', href: '/notes/backtrack', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10" },
+            { title: 'trie', href: '/notes/trie', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10" },
+            { title: 'dp', href: '/notes/dp', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10" },
             // { title: 'Tic Tac Toe', href: '/notes/tic-tac-toe', icon: Gamepad2, color: "text-rose-500", bgColor: "bg-rose-500/10" },
             // {title:'stack', href:'/notes/stack', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10"},    
-            {title:'binary-search', href:'/notes/binary-search', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10"},    
-            {title:'bfs', href:'/notes/bfs', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10"},    
+            { title: 'binary-search', href: '/notes/binary-search', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10" },
+            { title: 'bfs', href: '/notes/bfs', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10" },
             // {title:'dfs', href:'/notes/dfs', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10"},    
             { title: 'Dijkstra', href: '/notes/dijkstra', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10" },
-            {title:'A*', href:'/notes/a-star', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10"},   
+            { title: 'A*', href: '/notes/a-star', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10" },
             { title: 'Bellman-Ford', href: '/notes/bellman-ford', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10" },
             { title: 'Cache', href: '/notes/cache', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10" },
             { title: 'Prefix Sum', href: '/notes/prefix-sum', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10" },

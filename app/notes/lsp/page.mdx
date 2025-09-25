@@ -1,0 +1,149 @@
+# VS Code LSP 
+
+## resizable table of contents
+
+## LSP, JSON Responses, Memory Model..
+
+1. LSP (Language Server Protocol)
+	•	A protocol (JSON-RPC) used by editors ↔️ language servers.
+	•	Client (VS Code) sends requests like textDocument/hover, textDocument/completion, textDocument/signatureHelp.
+	•	Server (Pylance, Jedi, Pyright, etc.) responds with structured JSON.
+	•	Each request = a message, not a file, sent over a persistent connection.
+
+⸻
+
+2. JSON Responses
+	•	Hover → markdown with signature + docstring.
+	•	Completion → list of possible symbols/snippets.
+	•	SignatureHelp → array of parameters[] with per-param docs.
+	•	Each response is formatted for the editor UI (tooltips, popups, snippets).
+
+⸻
+
+3. Memory Model (inside server)
+	•	Before responding, the server keeps a live in-memory model of your code:
+	    1.	AST (syntax tree for each file).
+	    2.	Symbol table (functions, classes, variables, imports).
+	    3.	Types (inferred from annotations, assignments, libraries).
+	    4.	Docstrings (parsed and mapped to params/returns).
+	    5.	Graphs (call graph, control-flow, references).
+	•	Updated incrementally as you type; that’s why responses are fast.
+
+⸻
+
+4. When + Where
+	•	When you type a dot (obj.) → VS Code sends completion; server looks in memory model, replies with possible members.
+	•	When you type a ( → VS Code sends signatureHelp; server matches the function symbol, pulls its params + docstring, replies with structured JSON.
+	•	When you hover → VS Code sends hover; server pulls docstring + type info, formats markdown JSON.
+	•	Where → All this happens in VS Code’s extension host. The in-memory model lives inside the server process (e.g. Pylance). The client only ever sees the JSON response, never the internal model.
+
+⸻
+
+👉 So:
+	•	Memory model = how the server understands your code internally (AST + symbols + types).
+	•	JSON responses = what the server sends back, tailored to the UI.
+	•	When = triggered by typing or hovering.
+	•	Where = inside the language server process, with VS Code just acting as the front-end.
+
+
+## Here’s the flow sketched out as a step-by-step diagram:
+
+    ┌─────────────┐
+    │   VS Code   │
+    │ (the client)│
+    └──────┬──────┘
+           │
+           │   JSON-RPC request
+           │   (e.g. hover, completion, signatureHelp)
+           ▼
+    ┌─────────────┐
+    │  Language   │
+    │  Server     │
+    │ (Pylance)   │
+    └──────┬──────┘
+           │
+           │ consults live memory model
+           │
+           ▼
+┌─────────────────────────────┐
+│   In-Memory Model (server)  │
+│  • AST (syntax trees)       │
+│  • Symbols (funcs, vars)    │
+│  • Types (inferred + hints) │
+│  • Docstrings (parsed)      │
+│  • Graphs (call / CFG)      │
+└───────────┬─────────────────┘
+           │
+           │ packages results
+           ▼
+    ┌─────────────┐
+    │ JSON Result │
+    │ (Hover → md │
+    │ Completion  │
+    │ Signature   │
+    └──────┬──────┘
+           │
+           │ sent back over RPC
+           ▼
+    ┌─────────────┐
+    │   VS Code   │
+    │  shows UI   │
+    │  (tooltip,  │
+    │  popup)     │
+    └─────────────┘
+
+
+⸻
+
+✨ Summary of flow
+•	Editor action: hover / type / call →
+•	Client sends LSP request →
+•	Server uses in-memory model (AST + types + docs) →
+•	Server replies JSON →
+•	Editor renders UI (tooltips, completions, sig help).
+
+
+
+## here’s the timeline-enhanced flow with “when each request happens” marked:
+
+   USER ACTION (Timeline)                 LSP REQUEST          SERVER RESPONSE
+─────────────────────────────────────────────────────────────────────────────
+
+1. Type `obj.`   (dot) ──────────▶ textDocument/completion ─▶ Completion JSON
+                                     (list of symbols,       (labels, snippets,
+                                     docs if available)       insertText, docs)
+─────────────────────────────────────────────────────────────────────────────
+
+2. Type `(` after a function ────▶ textDocument/signatureHelp ─▶ SignatureHelp JSON
+                                     (signature + param docs)   (params[], activeParam,
+                                                                 returns docs)
+─────────────────────────────────────────────────────────────────────────────
+
+3. Hover mouse over symbol ──────▶ textDocument/hover ────────▶ Hover JSON
+                                     (docstring, types,          (markdown signature +
+                                     annotations, range)         args/returns summary)
+─────────────────────────────────────────────────────────────────────────────
+
+And all of these pass through the same memory model inside Pylance:
+
+   ┌─────────────────────────────┐
+   │   In-Memory Model           │
+   │  • AST (syntax trees)       │
+   │  • Symbols (funcs, vars)    │
+   │  • Types (annotations + infer)
+   │  • Docstrings (parsed)      │
+   │  • Graphs (call/CFG)        │
+   └─────────────────────────────┘
+
+
+⸻
+
+✨ So in timeline form:
+	•	Completion → when you type a dot.
+	•	SignatureHelp → when you open parens in a call.
+	•	Hover → when you mouse over a symbol.
+
+Each request → LSP JSON built from the server’s live in-memory model → VS Code shows tooltip/snippet/help popup.
+
+⸻
+

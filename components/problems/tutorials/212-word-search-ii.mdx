@@ -1,0 +1,75 @@
+# Word Search II
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="hard" />
+
+<PillList pills={["trie", "backtrack"]} />
+
+[212. Word Search II](https://leetcode.com/problems/word-search-ii)
+
+## [!ProblemDefinition] Definition
+
+Given a board and a list of words, find all words in the board.
+
+## [!ProblemIntuition] Intuition
+
+- Prefix rails:
+    - The trie lays down "prefix rails" across the grid: you only move where a rail continues; off‑rail steps end instantly.
+    - A terminal is a station: record the word once, close that spur, and drop empty rails as you pass. In one walk, a cell is used at most once.
+
+## [!ProblemTimeComplexity] Time Complexity
+
+- O(m n * 4^L):
+    - **Symbols:** m×n board, W=∑(w∈dict)|w|, L=max|w|.
+    - **Build trie:** O(W).
+    - **DFS (worst case):** first step ≤ 4 choices, then ≤ 3 per step ⇒ O(m n * 4 * 3^(L-1)). Coarse bound: O(m n * 4^L).
+    - **Space:** trie O(W); recursion/visited path O(L).
+
+## [!ProblemKeyVariables] Key Variables
+
+- `trie`: Build trie from **words** list. Each end node gets a `$` key holding the word
+- `m`: number of rows
+- `n`: number of columns
+- `res`: the list of found words
+
+## [!ProblemKeyExpressions] Key Expressions
+
+- `node = node.setdefault(c, {})`: create a new node for the character if it doesn't exist
+- `if "$" in node`: if the current node is the end of a word
+- `res.append(node.pop("$"))`: add the word to the result list and remove the "$" key to prevent duplicates
+- `if not node`: prune the trie to remove dead branches.
+- `[dfs`: .. Launch DFS from every cell that matches any trie root key
+- `board[i][j] = "#"`: Mark as visited
+- `board[i][j] = c`: Restore cell
+
+## [!ProblemCodeSnippet] Code Snippet
+
+```python meta="source=problems/212-word-search-ii/solution.py"
+def word_search_II(board: list[list[str]], words: list[str]) -> list[str]:
+    trie = {}  
+    for word in words:
+        node = trie
+        for c in word:
+            node = node.setdefault(c, {})
+        node["$"] = word
+
+    def dfs(i, j, parent):
+        if not (0 <= i < m and 0 <= j < n) or (c := board[i][j]) not in parent:
+            return
+        node = parent[c]
+        if "$" in node:
+            res.append(node.pop("$"))
+        board[i][j] = "#"
+        for x, y in ((i - 1, j), (i + 1, j), (i, j - 1), (i, j + 1)):
+            dfs(x, y, node)
+        board[i][j] = c
+        if not node:
+            parent.pop(c)
+
+    m, n, res = len(board), len(board[0]), []
+    [dfs(i, j, trie) for i in range(m) for j in range(n) if board[i][j] in trie]
+
+    return res
+```
+

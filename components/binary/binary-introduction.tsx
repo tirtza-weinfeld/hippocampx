@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useTransition, useOptimistic, useCallback } from "react"
 import { Card, CardContent } from "@/components/ui/card"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion, AnimatePresence } from "motion/react"
 import { ArrowLeft, ArrowRight } from "lucide-react"
 import BinaryMascot, { type MascotEmotion } from "./binary-mascot"
 import confetti from "canvas-confetti"

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Slider } from "@/components/ui/slider"
 import { Sparkles, Network, Bot, Lightbulb, CheckCircle } from "lucide-react"
-import { motion } from "framer-motion"
+import { motion } from "motion/react"
 import Image from "next/image"
 export default function AIGames() {
   const [activeGame, setActiveGame] = useState("pattern-finder")

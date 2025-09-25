@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Brain, Image as ImageIcon, MessageSquare, Music, Sparkles, Zap, Lightbulb, Cpu, Globe } from "lucide-react"
-import { motion } from "framer-motion"
+import { motion } from "motion/react"
 import SwipeContainer from "./swipe-container"
 
 export default function AIExplorer() {
@@ -53,7 +53,7 @@ export default function AIExplorer() {
       y: 0,
       opacity: 1,
       transition: {
-        type: "spring",
+        type: "spring" as const,
         stiffness: 300,
         damping: 24,
       },
@@ -179,7 +179,7 @@ export default function AIExplorer() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ type: "spring", stiffness: 300, damping: 25 }}
+            transition={{ type: "spring" as const, stiffness: 300, damping: 25 }}
             className="mt-6 p-6 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-100 dark:border-blue-800"
           >
             <p className="text-lg dark:text-gray-300">{examples.find((e) => e.id === selectedExample)?.explanation}</p>

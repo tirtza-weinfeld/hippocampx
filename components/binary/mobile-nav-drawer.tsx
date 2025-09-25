@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect } from "react"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion, AnimatePresence } from "motion/react"
 import { BookOpen, Calculator, HelpCircle, Dumbbell, Lightbulb, Gamepad2, X } from "lucide-react"
 import BinaryMascot, { type MascotEmotion } from "./binary-mascot"
 import { FunButton } from "./fun-button"
@@ -90,7 +90,7 @@ export function MobileNavDrawer({ isOpen, onClose, activeTab, setActiveTab }: Mo
 
   const item = {
     hidden: { opacity: 0, x: 20 },
-    show: { opacity: 1, x: 0, transition: { type: "spring", stiffness: 300 } },
+    show: { opacity: 1, x: 0, transition: { type: "spring" as const, stiffness: 300 } },
   }
 
   return (

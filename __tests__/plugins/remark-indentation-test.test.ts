@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest'
 import { unified } from 'unified'
 import remarkParse from 'remark-parse'
 import remarkListVariants from '@/plugins/remark-list-variants'
-import type { Root, Paragraph, Text } from '@types/mdast'
+import type { Root, Paragraph, Text } from 'mdast'
 
 describe('indentation preservation test', () => {
   const processor = unified()

@@ -11,14 +11,14 @@
 
 [208. Implement Trie (Prefix Tree)](https://leetcode.com/problems/implement-trie-prefix-tree/)
 
-```python file=backend/algorithms/trie.py#class:Trie
+```python file=problems/208-implement-trie-prefix-tree/solution.py 
 ```
 
 > [!insight:collapse] *One Node per Character*
 >
 > A Trie is a tree where each node maps a character to its child. Every word is stored by following or creating one node per character. A `is_end` flag marks the end of a valid word. Prefix queries traverse as far as possible; search only succeeds if `is_end` is true at the last node.
 
-> [!timecomplexity:collapse] `$O(L)$` ,where `$L$` is the length of the word. 
+> [!timecomplexity:collapse] *$O(L)$* ,where *$L$* is the length of the word. 
 >
 > All operations — insert, search, and startsWith — take time proportional to the word's length.
 
@@ -28,11 +28,11 @@
 ### 2. Design Add and Search Words Data Structure
 
 *Implement a Trie that supports adding words and searching with `.` as a wildcard matching any single letter.*
-*[19:]There will be at most 2 dots in word for search queries.*
+*[19!]There will be at most 2 dots in word for search queries.*
 
 [211. Design Add and Search Words](https://leetcode.com/problems/design-add-and-search-words-data-structure/)
 
-```python file=backend/algorithms/trie.py#class:WordDictionary
+```python file=problems/211-design-add-and-search-words-data-structure/solution.py
 ```
 
 > [!insight:collapse] *DFS on Wildcards `.`*
@@ -41,11 +41,11 @@
 
 > [!timecomplexity:collapse]
 >
-> * `addWord(word)`: `$O(n)$`, where `$n$` = word length
-> * `search(word)`: `$O(26ᵏ · n)$`, where `$k$` = number of wildcards `.` in the query
->    * If `$k = 0$` ⇒ `$O(n)$`
->    * Worst‐case `$k = n$` ⇒ `$O(26^n · n)$`
->    * Since `$k ≤ 2$` by problem constraints, this is effectively `$O(n)$`
+> * `addWord(word)`: *$O(n)$*, where *$n$* = word length
+> * `search(word)`: *$O(26ᵏ · n)$*, where *$k$* = number of wildcards `.` in the query
+>    * If *$k = 0$* ⇒ *$O(n)$*
+>    * Worst‐case *$k = n$* ⇒ *$O(26^n · n)$*
+>    * Since *$k ≤ 2$* by problem constraints, this is effectively *$O(n)$*
 
 ---
 
@@ -55,19 +55,19 @@
 
 [648. Replace Words](https://leetcode.com/problems/replace-words/)
 
-```python file=backend/algorithms/trie.py#func:replaceWords
+```python file=problems/648-replace-words/solution.py
 ```
 
 > [!insight:collapse] *Shortest Prefix Wins*
 >
 > Build a Trie from all root words. For each word in the sentence, scan its prefix in the Trie. Stop as soon as you hit a node with `is_end = True` — that’s the shortest valid replacement.
 
-> \[!timecomplexity\:collapse] `O(D + S)` where `$D$` = total characters in dictionary, `$S$` = total characters in sentence.
+> \[!timecomplexity\:collapse] `O(D + S)` where *$D$* = total characters in dictionary, *$S$* = total characters in sentence.
 >
-> * Build trie: `$O(\sum_{r\in\text{dictionary}}|r|)$` — you walk each root’s characters, stopping early if you hit a terminal.
-> * Search & replace: `$O(\sum_{w\in\text{sentence}}|w|)$` — for each word, you scan until you hit `is_end = True` or exhaust the word.
+> * Build trie: *$O(\sum_{r\in\text{dictionary}}|r|)$* — you walk each root’s characters, stopping early if you hit a terminal.
+> * Search & replace: *$O(\sum_{w\in\text{sentence}}|w|)$* — for each word, you scan until you hit `is_end = True` or exhaust the word.
 >
-> Overall: `$O(\sum_{r\in\text{dictionary}}|r|\;+\;\sum_{w\in\text{sentence}}|w|)$`
+> Overall: *$O(\sum_{r\in\text{dictionary}}|r|\;+\;\sum_{w\in\text{sentence}}|w|)$*
 
 ---
 
@@ -77,7 +77,7 @@
 
 [212. Word Search II](https://leetcode.com/problems/word-search-ii/)
 
-```python file=backend/algorithms/trie.py#func:findWords
+```python file=problems/212-word-search-ii/solution.py
 ```
 
 > [!insight:collapse] Prefix rails
@@ -103,12 +103,12 @@
 > - From `e`: e→a→t forms “eat” → collect once, close that spur.
 > - From `r`: `ra` has no continuing rail nearby → that walk ends immediately.
 
-> [!timecomplexity\:collapse] `$O(m n \cdot 4^{L})$`
+> [!timecomplexity\:collapse] *$O(m n \cdot 4^{L})$*
 >
-> - **Symbols:** `$m\times n$` board, `$W=\sum_{w\in\text{dict}}|w|$`, `$L=\max|w|$`.
-> - **Build trie:** `$O(W)$`.
-> - **DFS (worst case):** first step ≤ 4 choices, then ≤ 3 per step ⇒ `$O(m n \cdot 4 \cdot 3^{L-1})$`. Coarse bound: `$O(m n \cdot 4^{L})$`.
-> - **Space:** trie `$O(W)$`; recursion/visited path `$O(L)$`.
+> - **Symbols:** *$m\times n$* board, *$W=\sum_{w\in\text{dict}}|w|$*, *$L=\max|w|$*.
+> - **Build trie:** *$O(W)$*.
+> - **DFS (worst case):** first step ≤ 4 choices, then ≤ 3 per step ⇒ *$O(m n \cdot 4 \cdot 3^{L-1})$*. Coarse bound: *$O(m n \cdot 4^{L})$*.
+> - **Space:** trie *$O(W)$*; recursion/visited path *$O(L)$*.
 
 
 

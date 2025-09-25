@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion, AnimatePresence } from "motion/react"
 import type { MascotCharacter, MascotPosition, MascotSettings } from "./mascot/mascot-data"
 import { characterImages, characterColors, positionClasses } from "./mascot/mascot-data"
 import { MainView } from "./mascot/main-view"

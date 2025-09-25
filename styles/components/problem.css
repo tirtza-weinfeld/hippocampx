@@ -1,0 +1,33 @@
+/* :root{
+  :is([data-section-type="problem-difficulty"]){
+    --link: linear-gradient(to right, var(--color-red-500), var(--color-sky-400), var(--color-red-400), var(--color-red-300), var(--color-red-600));
+  }
+
+  :is([data-section-type="problem-intuition"]) {
+    --link: linear-gradient(to right, var(--color-yellow-500), var(--color-sky-400), var(--color-yellow-400), var(--color-yellow-300), var(--color-yellow-600));
+  }
+
+  :is([data-section-type="problem-key-expressions"]) {
+    --link: linear-gradient(to right, var(--color-amber-500), var(--color-sky-400), var(--color-amber-400), var(--color-amber-300), var(--color-amber-600));
+  }
+
+  :is([data-section-type="problem-definition"]) {
+    --link: linear-gradient(to right, var(--color-teal-600), var(--color-sky-400), 
+    var(--color-sky-400), var(--color-sky-300), var(--color-sky-600));
+
+  }
+  :is([data-section-type="problem-key-variables"]) {
+    --link: linear-gradient(to right, var(--color-emerald-600), var(--color-sky-400), var(--color-emerald-400), var(--color-emerald-300), var(--color-emerald-600));
+  }
+  :is([data-section-type="problem-time-complexity"]) {
+    --link: linear-gradient(to right, var(--color-emerald-600), var(--color-sky-400), var(--color-emerald-400), var(--color-emerald-300), var(--color-emerald-600));
+  }
+  :is([data-section-type="problem-topics"]) {
+    --link: linear-gradient(to right, var(--color-sky-600), var(--color-sky-400), var(--color-sky-400), var(--color-sky-300), var(--color-sky-600));
+  }
+  :is([data-section-type="problem-code-snippet"]) {
+    --link: linear-gradient(to right, var(--color-sky-600), var(--color-sky-400), var(--color-sky-400), var(--color-sky-300), var(--color-sky-600));
+  }
+
+  
+} */

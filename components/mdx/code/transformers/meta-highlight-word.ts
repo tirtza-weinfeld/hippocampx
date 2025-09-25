@@ -1,23 +1,45 @@
 import type { ShikiTransformer } from '@shikijs/types'
+import { getStepColor, isValidColorName, type ColorName } from '@/lib/step-colors'
 
 interface HighlightedWord {
   word: string
   step?: number
+  color?: ColorName
 }
 
 export function parseMetaHighlightWords(meta: string): HighlightedWord[] {
   if (!meta)
     return []
 
-  // Match both formats: /[step:]word/ and /word/
-  // https://regex101.com/r/BHS5fd/1 (updated for new format)
-  const match = Array.from(meta.matchAll(/\/(?:\[(\d+):\])?((?:\\.|[^/])+)\//g))
+  // Match formats: /[step!]word/, /[color!]word/, and /word/
+  // Updated regex to use ! instead of :
+  const match = Array.from(meta.matchAll(/\/(?:\[([^!\]]+)!\])?((?:\\.|[^/])+)\//g))
 
   return match
-    .map(v => ({
-      step: v[1] ? parseInt(v[1], 10) : undefined,
-      word: v[2].replace(/\\(.)/g, '$1'), // Escape backslashes
-    }))
+    .map(v => {
+      const stepOrColor = v[1]
+      const word = v[2].replace(/\\(.)/g, '$1') // Escape backslashes
+      
+      let step: number | undefined
+      let color: ColorName | undefined
+      
+      if (stepOrColor) {
+        // Check if it's a number (step) or color name
+        const stepNumber = parseInt(stepOrColor, 10)
+        if (!isNaN(stepNumber)) {
+          step = stepNumber
+          color = getStepColor(stepNumber)
+        } else if (isValidColorName(stepOrColor)) {
+          color = stepOrColor
+        }
+      }
+       else {
+        // Default color for /word/ syntax
+        color = 'blue'
+      }
+      
+      return { word, step, color }
+    })
 }
 
 export interface TransformerMetaWordHighlightOptions {
@@ -30,8 +52,8 @@ export interface TransformerMetaWordHighlightOptions {
 }
 
 /**
- * Allow using `/word/` or `/[step:]word/` in the code snippet meta to mark highlighted words.
- * When step is provided, the class will be `{className}-{step}`.
+ * Allow using `/word/`, `/[step!]word/`, or `/[color!]word/` in the code snippet meta to mark highlighted words.
+ * Uses data-step attribute with color name for styling consistency with typography.
  */
 export function transformerMetaWordHighlight(
   options: TransformerMetaWordHighlightOptions = {},
@@ -48,15 +70,17 @@ export function transformerMetaWordHighlight(
 
       const highlightedWords = parseMetaHighlightWords(this.options.meta.__raw)
       options.decorations ||= []
-      for (const { word, step } of highlightedWords) {
+      for (const { word, color } of highlightedWords) {
         const indexes = findAllSubstringIndexes(code, word)
         for (const index of indexes) {
-          const classWithStep = step !== undefined ? `${className} step-${step}` : className
           options.decorations.push({
             start: index,
             end: index + word.length,
             properties: {
-              class: ` ${classWithStep}`,
+              class: ` ${className}`,
+              'data-step': color,
+              // ...(color !== undefined && { 'data-step': color }),
+
             },
           })
         }
@@ -67,15 +91,20 @@ export function transformerMetaWordHighlight(
 
 export function findAllSubstringIndexes(str: string, substr: string): number[] {
   const indexes: number[] = []
-  let cursor = 0
-  while (true) {
-    const index = str.indexOf(substr, cursor)
-    if (index === -1 || index >= str.length)
-      break
-    if (index < cursor)
-      break
-    indexes.push(index)
-    cursor = index + substr.length
+  
+  // Create regex with word boundaries to match whole words only
+  // Escape special regex characters in the substring
+  const escapedSubstr = substr.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  const regex = new RegExp(`\\b${escapedSubstr}\\b`, 'g')
+  
+  let match: RegExpExecArray | null
+  while ((match = regex.exec(str)) !== null) {
+    indexes.push(match.index)
+    // Prevent infinite loop on zero-length matches
+    if (match.index === regex.lastIndex) {
+      regex.lastIndex++
+    }
   }
+  
   return indexes
 }

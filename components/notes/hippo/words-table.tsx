@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
+import { useMemo, useState } from "react"
 import { Save, Trash2, Search, ExternalLink, X } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -40,7 +40,7 @@ function SaveButton() {
 
 export default function WordsTable({ words, updateAction, deleteAction }: WordsTableProps) {
   const [query, setQuery] = useState("")
-  const [result, setResult] = useState<ActionResult | null>(null)
+  const [, setResult] = useState<ActionResult | null>(null)
   const [showPopup, setShowPopup] = useState(false)
   const [selectedWord, setSelectedWord] = useState("")
 
@@ -125,16 +125,14 @@ export default function WordsTable({ words, updateAction, deleteAction }: WordsT
           ))}
         </TableBody>
       </Table>
-      {/* toast feedback */}
-      <ResultToaster result={result} onClear={() => setResult(null)} />
-      
+    
       {/* Google Definition Popup */}
       {showPopup && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center p-2">
           <div className="absolute inset-0 bg-black/80" onClick={() => setShowPopup(false)} />
           <div className="relative bg-background w-full h-full max-w-4xl max-h-[95vh] rounded-lg shadow-lg flex flex-col overflow-hidden">
             <div className="flex items-center justify-between p-3 border-b bg-background">
-              <h3 className="text-lg font-semibold truncate">Google Definition: "{selectedWord}"</h3>
+              <h3 className="text-lg font-semibold truncate">Google Definition: &quot;{selectedWord}&quot;</h3>
               <Button
                 variant="ghost"
                 size="icon"
@@ -161,15 +159,6 @@ export default function WordsTable({ words, updateAction, deleteAction }: WordsT
   )
 }
 
-function ResultToaster({ result, onClear }: { result: ActionResult | null; onClear: () => void }) {
-  useEffect(() => {
-    if (!result) return
-    const { toast } = require('sonner') as typeof import('sonner')
-    if (result.ok) toast.success(result.message ?? 'Saved')
-    else toast.error(result.message ?? 'Something went wrong')
-    onClear()
-  }, [result, onClear])
-  return null
-}
+
 
 

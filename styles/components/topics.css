@@ -1,0 +1,119 @@
+:root{
+    /* Default topic styling */
+    --topic:var(--color-sky-500);
+    --pill:linear-gradient(to right, var(--color-sky-500), var(--color-sky-400), var(--color-sky-600));
+    
+    /* Game theory */
+    .game{
+        --topic:var(--color-purple-500);
+        --pill:linear-gradient(to right, var(--color-purple-500), var(--color-purple-400), var(--color-purple-600));
+    }
+    
+    /* Graph algorithms - Dijkstra */
+    .dijkstra{
+        --topic:var(--color-emerald-500);
+        --pill:linear-gradient(to right, var(--color-emerald-500), var(--color-emerald-400), var(--color-emerald-600));
+    }
+    
+    /* Breadth-First Search */
+    .bfs{
+        --topic:var(--color-blue-500);
+        --pill:linear-gradient(to right, var(--color-blue-500), var(--color-blue-400), var(--color-blue-600));
+    }
+    
+    /* Dynamic Programming */
+    .dynamic_programming{
+        --topic:var(--color-orange-500);
+        --pill:linear-gradient(to right, var(--color-orange-500), var(--color-orange-400), var(--color-orange-600));
+    }
+    
+    /* Trie data structure */
+    .trie{
+        --topic:var(--color-teal-500);
+        --pill:linear-gradient(to right, var(--color-teal-500), var(--color-teal-400), var(--color-teal-600));
+    }
+    
+    /* Stack operations */
+    .stack{
+        --topic:var(--color-indigo-500) ;
+        --pill:linear-gradient(to right, var(--color-indigo-500), var(--color-indigo-400), var(--color-indigo-600));
+    }
+    
+    /* Binary Search */
+    .binary_search{
+        --topic:var(--color-rose-500);
+        --pill:linear-gradient(to right, var(--color-rose-500), var(--color-rose-400), var(--color-rose-600));
+    }
+    
+    /* Binary Search on Answer */
+    .binary_search_on_answer{
+        --topic:var(--color-pink-500);
+        --pill:linear-gradient(to right, var(--color-pink-500), var(--color-pink-400), var(--color-pink-600));
+    }
+    
+    /* Cache algorithms */
+    .cache{
+        --topic:var(--color-amber-500);
+        --pill:linear-gradient(to right, var(--color-amber-500), var(--color-amber-400), var(--color-amber-600));
+    }
+    
+    /* Prefix Sum */
+    .prefix_sum{
+        --topic:var(--color-cyan-500);
+        --pill:linear-gradient(to right, var(--color-cyan-500), var(--color-cyan-400), var(--color-cyan-600));
+    }
+    
+    /* Knapsack problems */
+    .knapsack{
+        --topic:var(--color-lime-500);
+        --pill:linear-gradient(to right, var(--color-lime-500), var(--color-lime-400), var(--color-lime-600));
+    }
+    
+    /* Kadane's algorithm */
+    .kadane{
+        --topic:var(--color-red-500);
+        --pill:linear-gradient(to right, var(--color-red-500), var(--color-red-400), var(--color-red-600));
+    }
+    
+    /* Sliding Window */
+    .sliding_window{
+        --topic:var(--color-violet-500);
+        --pill:linear-gradient(to right, var(--color-violet-500), var(--color-violet-400), var(--color-violet-600));
+    }
+    
+    /* Backtracking */
+    .backtrack{
+        --topic:var(--color-emerald-500);
+        --pill:linear-gradient(to right, var(--color-emerald-600), var(--color-emerald-500), var(--color-emerald-700));
+    }
+    
+    /* Greedy algorithms */
+    .greedy{
+        --topic:var(--color-yellow-500);
+        --pill:linear-gradient(to right, var(--color-yellow-500), var(--color-yellow-400), var(--color-yellow-600));
+    }
+    
+    /* Bellman-Ford algorithm */
+    .bellman_ford{
+        --topic:var(--color-slate-500);
+        --pill:linear-gradient(to right, var(--color-slate-500), var(--color-slate-400), var(--color-slate-600));
+    }
+    
+    /* Array manipulation */
+    .array{
+        --topic:var(--color-sky-500);
+        --pill:linear-gradient(to right, var(--color-sky-600), var(--color-sky-500), var(--color-sky-700));
+    }
+    
+    /* Permutation problems */
+    .permutation{
+        --topic:var(--color-fuchsia-500)    ;
+        --pill:linear-gradient(to right, var(--color-fuchsia-500), var(--color-fuchsia-400), var(--color-fuchsia-600));
+    }
+    
+    /* Depth-First Search */
+    .dfs{
+        --topic:var(--color-green-500);
+        --pill:linear-gradient(to right, var(--color-green-500), var(--color-green-400), var(--color-green-600));
+    }
+}

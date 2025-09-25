@@ -1,23 +1,109 @@
 // plugins/toc-plugin.ts
 import type { Plugin } from 'unified'
-import type { Parent, Literal } from 'unist'
+import type { Parent, Node } from 'unist'
+import type { Heading, Text, Strong, Emphasis } from 'mdast'
 import { visit } from 'unist-util-visit'
 import GithubSlugger from 'github-slugger'
-
-interface HeadingNode extends Parent {
-  type: 'heading'
-  depth: number
-  children: Array<Literal>
-}
+import { extractTextFromHeading, extractDisplayTextFromHeading } from '../lib/mdx-text-extraction'
+import { isValidColorName, getStepColor } from '../lib/step-colors'
 
 interface TocHeading {
   text: string
   id: string
   level: number
+  richContent?: TocRichContent[] // New: structured content for rendering
+}
+
+interface TocRichContent {
+  type: 'text' | 'math' | 'styled-math'
+  content: string
+  stepColor?: string // For styled content
+}
+
+interface InlineMathNode {
+  type: 'inlineMath'
+  value: string
 }
 
 const TOC_HEADING = 'Table of Contents'
 const RESIZABLE_TOC_HEADING = 'Resizable Table of Contents'
+
+/**
+ * Extract step color from styled node using the same logic as remarkTypography
+ */
+function extractStepColorFromStyledNode(node: Parent): string | undefined {
+  if (!node.children || node.children.length === 0) return undefined
+  
+  const firstChild = node.children[0]
+  if (firstChild.type !== 'text') return undefined
+  
+  const textNode = firstChild as Text
+  const text = textNode.value as string
+  const stepMatch = text.match(/^\[([^!]+)!\](.*)$/)
+  if (!stepMatch) return undefined
+  
+  const [, stepOrColor] = stepMatch
+  
+  // Determine step value
+  if (/^\d+$/.test(stepOrColor)) {
+    const stepNumber = parseInt(stepOrColor, 10)
+    return getStepColor(stepNumber)
+  } else if (isValidColorName(stepOrColor)) {
+    return stepOrColor
+  }
+  
+  return undefined
+}
+
+/**
+ * Extract rich content from a heading node for TOC rendering
+ * Applies typography processing inline to ensure consistency
+ */
+function extractRichContentFromHeading(node: Heading): TocRichContent[] {
+  const richContent: TocRichContent[] = []
+  
+  function processNode(node: Node, parentStepColor?: string) {
+    if (node.type === 'text') {
+      const textNode = node as Text
+      let text = (textNode.value || '').trim()
+      // Clean up step syntax from text content
+      text = text.replace(/^\[([^!]+)!\]/, '').trim()
+      if (text) {
+        richContent.push({ type: 'text', content: text })
+      }
+    } else if (node.type === 'inlineMath') {
+      const mathNode = node as InlineMathNode
+      const mathContent = (mathNode.value || '').trim()
+      if (mathContent) {
+        if (parentStepColor) {
+          richContent.push({
+            type: 'styled-math',
+            content: mathContent,
+            stepColor: parentStepColor
+          })
+        } else {
+          richContent.push({ type: 'math', content: mathContent })
+        }
+      }
+    } else if (node.type === 'strong' || node.type === 'emphasis') {
+      const styledNode = node as Strong | Emphasis
+      // Extract step color using the same logic as remarkTypography
+      const stepColor = (styledNode.data?.hProperties?.['data-step'] as string) ||
+                       extractStepColorFromStyledNode(styledNode)
+
+      if (styledNode.children && Array.isArray(styledNode.children)) {
+        styledNode.children.forEach((child: Node) => processNode(child, stepColor))
+      }
+    } else if ('children' in node && Array.isArray(node.children)) {
+      const parentNode = node as Parent
+      parentNode.children.forEach((child: Node) => processNode(child, parentStepColor))
+    }
+  }
+  
+  node.children.forEach((child: Node) => processNode(child))
+  return richContent
+}
+
 
 const remarkInjectToc: Plugin<[], Parent> = () => (tree) => {
   // console.log('--- TOC Plugin Start ---')
@@ -33,17 +119,14 @@ const remarkInjectToc: Plugin<[], Parent> = () => (tree) => {
   // console.log('TOC Plugin starting...')
 
   // First pass: collect all headings and find the TOC heading
-  visit(tree, 'heading', (node: HeadingNode, index, parent) => {
-    // Extract text from heading
-    let text = ''
-    for (const child of node.children) {
-      if (child.type === 'text') {
-        text += child.value
-      }
-    }
-    text = text.trim()
+  visit(tree, 'heading', (node: Heading, index, parent) => {
+    // Extract text for display (preserves math notation) and for slug generation
+    const displayText = extractDisplayTextFromHeading(node)
+    const slugText = extractTextFromHeading(node)
+    const richContent = extractRichContentFromHeading(node)
     
-    if (!text) return
+    
+    if (!displayText || !slugText) return
 
     // Find and store the H1 index
     if (node.depth === 1 && h1Index === -1) {
@@ -51,14 +134,14 @@ const remarkInjectToc: Plugin<[], Parent> = () => (tree) => {
     }
 
     // Check if this is the TOC heading (regular or resizable)
-    if (text.toLowerCase() === TOC_HEADING.toLowerCase() && node.depth === 2) {
+    if (displayText.toLowerCase() === TOC_HEADING.toLowerCase() && node.depth === 2) {
       tocHeadingIndex = index
       tocParent = parent
       isResizableLayout = false
       return
     }
 
-    if (text.toLowerCase() === RESIZABLE_TOC_HEADING.toLowerCase() && node.depth === 2) {
+    if (displayText.toLowerCase() === RESIZABLE_TOC_HEADING.toLowerCase() && node.depth === 2) {
       tocHeadingIndex = index
       tocParent = parent
       isResizableLayout = true
@@ -66,10 +149,12 @@ const remarkInjectToc: Plugin<[], Parent> = () => (tree) => {
     }
 
     // Collect other headings (skip the TOC heading itself)
+    // Use displayText for TOC display (preserves math notation) and slugText for URL generation
     headings.push({
-      text,
-      id: slugger.slug(text),
-      level: node.depth
+      text: displayText, // Display text with original math notation
+      id: slugger.slug(slugText), // Slug from cleaned text
+      level: node.depth,
+      richContent: richContent // Rich content for proper rendering
     })
   })
 

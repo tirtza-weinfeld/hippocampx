@@ -1,38 +1,50 @@
 "use client"
 
-import { motion } from "framer-motion"
+import { motion, useReducedMotion } from "motion/react"
 import type { ReactNode } from "react"
 import { cn } from "@/lib/utils"
 
-// Animation variants for table elements
-const tableVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { 
-    opacity: 1, 
-    y: 0,
-    transition: { 
-      duration: 0.6, 
-      ease: "easeOut",
-      staggerChildren: 0.1
+// Animation variants for table elements following motion.mdc patterns
+function getTableVariants(shouldReduceMotion: boolean) {
+  return {
+    hidden: { opacity: 0, y: shouldReduceMotion ? 0 : 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: shouldReduceMotion ? 0 : 0.3,
+        ease: [0.4, 0, 0.2, 1] as const,
+        staggerChildren: shouldReduceMotion ? 0 : 0.05
+      }
     }
   }
 }
 
-const rowVariants = {
-  hidden: { opacity: 0, x: -20 },
-  visible: { 
-    opacity: 1, 
-    x: 0,
-    transition: { duration: 0.4, ease: "easeOut" }
+function getRowVariants(shouldReduceMotion: boolean) {
+  return {
+    hidden: { opacity: 0, x: shouldReduceMotion ? 0 : -20 },
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: {
+        duration: shouldReduceMotion ? 0 : 0.2,
+        ease: [0.4, 0, 0.2, 1] as const
+      }
+    }
   }
 }
 
-const cellVariants = {
-  hidden: { opacity: 0, scale: 0.95 },
-  visible: { 
-    opacity: 1, 
-    scale: 1,
-    transition: { duration: 0.3, ease: "easeOut" }
+function getCellVariants(shouldReduceMotion: boolean) {
+  return {
+    hidden: { opacity: 0, scale: shouldReduceMotion ? 1 : 0.95 },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      transition: {
+        duration: shouldReduceMotion ? 0 : 0.15,
+        ease: [0.4, 0, 0.2, 1] as const
+      }
+    }
   }
 }
 
@@ -42,11 +54,13 @@ interface TableProps {
 }
 
 export function Table({ className, children }: TableProps) {
+  const shouldReduceMotion = useReducedMotion() ?? false
+
   return (
     <motion.div
       initial="hidden"
       animate="visible"
-      variants={tableVariants}
+      variants={getTableVariants(shouldReduceMotion)}
       className="relative w-full my-8"
     >
       <div className="overflow-x-auto rounded-lg border border-sky-500/20 dark:border-sky-400/20 shadow-sm">
@@ -70,9 +84,11 @@ interface TableHeaderProps {
 }
 
 export function TableHeader({ className, children }: TableHeaderProps) {
+  const shouldReduceMotion = useReducedMotion() ?? false
+
   return (
     <motion.thead
-      variants={rowVariants}
+      variants={getRowVariants(shouldReduceMotion)}
       className={cn(
         "bg-sky-50/50 dark:bg-sky-900/20",
         "[&_tr]:border-b [&_tr]:border-sky-500/20 dark:[&_tr]:border-sky-400/20",
@@ -90,9 +106,11 @@ interface TableBodyProps {
 }
 
 export function TableBody({ className, children }: TableBodyProps) {
+  const shouldReduceMotion = useReducedMotion() ?? false
+
   return (
     <motion.tbody
-      variants={rowVariants}
+      variants={getRowVariants(shouldReduceMotion)}
       className={cn(
         "divide-y divide-sky-500/20 dark:divide-sky-400/20",
         "[&_tr:last-child]:border-0",
@@ -110,9 +128,11 @@ interface TableFooterProps {
 }
 
 export function TableFooter({ className, children }: TableFooterProps) {
+  const shouldReduceMotion = useReducedMotion() ?? false
+
   return (
     <motion.tfoot
-      variants={rowVariants}
+      variants={getRowVariants(shouldReduceMotion)}
       className={cn(
         "bg-sky-50/50 dark:bg-sky-800/50",
         "border-t border-sky-500/20 dark:border-sky-400/20",
@@ -132,9 +152,11 @@ interface TableRowProps {
 }
 
 export function TableRow({ className, children }: TableRowProps) {
+  const shouldReduceMotion = useReducedMotion() ?? false
+
   return (
     <motion.tr
-      variants={cellVariants}
+      variants={getCellVariants(shouldReduceMotion)}
       className={cn(
         "hover:bg-sky-50/50 dark:hover:bg-sky-800/50",
         "data-[state=selected]:bg-blue-50 dark:data-[state=selected]:bg-blue-900/20",
@@ -154,9 +176,11 @@ interface TableHeadProps {
 }
 
 export function TableHead({ className, children }: TableHeadProps) {
+  const shouldReduceMotion = useReducedMotion() ?? false
+
   return (
     <motion.th
-      variants={cellVariants}
+      variants={getCellVariants(shouldReduceMotion)}
       className={cn(
         "h-12 px-4 text-left align-middle",
         "font-semibold text-sky-900 dark:text-sky-100",
@@ -176,9 +200,11 @@ interface TableCellProps {
 }
 
 export function TableCell({ className, children }: TableCellProps) {
+  const shouldReduceMotion = useReducedMotion() ?? false
+
   return (
     <motion.td
-      variants={cellVariants}
+      variants={getCellVariants(shouldReduceMotion)}
       className={cn(
         "p-4 align-middle",
         "text-sky-700 dark:text-sky-300",
@@ -198,11 +224,17 @@ interface TableCaptionProps {
 }
 
 export function TableCaption({ className, children }: TableCaptionProps) {
+  const shouldReduceMotion = useReducedMotion() ?? false
+
   return (
     <motion.caption
-      initial={{ opacity: 0, y: 10 }}
+      initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, delay: 0.2 }}
+      transition={{
+        duration: shouldReduceMotion ? 0 : 0.3,
+        delay: shouldReduceMotion ? 0 : 0.1,
+        ease: [0.4, 0, 0.2, 1] as const
+      }}
       className={cn(
         "mt-4 text-sm text-sky-500 dark:text-sky-400",
         "text-center italic",

@@ -1,0 +1,39 @@
+# Count the Hidden Sequences
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="medium" />
+
+<PillList pills={["array"]} />
+
+[2145. Count the Hidden Sequences](https://leetcode.com/problems/count-the-hidden-sequences)
+
+## [!ProblemDefinition] Definition
+
+Given differences array representing daily changes, lower and upper bounds, return the number of valid starting values for the sequence.
+
+## [!ProblemArguments] Key Arguments
+
+- `differences: list[int]`: List of daily changes (trip segments).
+- `lower: int`: Lower bound for any marker on the highway.
+- `upper: int`: Upper bound for any marker on the highway.
+
+## [!ProblemReturns] Returns
+
+`int`: The number of valid starting values.
+
+## [!ProblemCodeSnippet] Code Snippet
+
+```python meta="source=problems/2145-count-the-hidden-sequences/solution.py"
+def numberOfArrays(differences: list[int], lower: int, upper: int) -> int:
+
+    prefix_sum = min_marker = max_marker = 0
+
+    for diff in differences:
+        prefix_sum += diff
+        min_marker = min(min_marker, prefix_sum)
+        max_marker = max(max_marker, prefix_sum)
+
+    return max(0, (upper - max_marker) - (lower - min_marker) + 1)
+```
+

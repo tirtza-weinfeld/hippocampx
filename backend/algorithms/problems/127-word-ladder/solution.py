@@ -1,0 +1,42 @@
+from collections import defaultdict
+
+def word_ladder(beginWord: str, endWord: str, wordList: list[str]) -> int:
+    """
+    Intuition:    
+        Bidirectional BFS Meets in the Middle 🤝:
+        This solution uses two  optimizations. First, it **pre-computes all possible generic transformations** (e.g., `h*t`) in a dictionary, allowing for instant lookups of neighboring words instead of generating them on the fly. Second, it performs a **bidirectional BFS**, launching one search from the `beginWord` and another from the `endWord`. By always expanding the smaller of the two frontiers, it drastically reduces the search space. The algorithm finishes when the two searches meet, at which point the shortest path is found.
+
+    Time Complexity:
+        O(N * L)
+        where N is the number of words and L is the length of each word. The dominant operation is the initial pre-computation step to build the `combos` dictionary. The subsequent bidirectional search is typically much faster than this initial setup.
+    """
+    if endWord not in wordList:
+        return 0
+
+    L = len(beginWord)
+    combos: dict[str, list[str]] = defaultdict(list)
+    for w in wordList:
+        for i in range(L):
+            combos[w[:i] + "*" + w[i+1:]].append(w)
+
+    front, back = {beginWord}, {endWord}
+    dist_front, dist_back = {beginWord: 1}, {endWord: 1}
+
+    while front and back:
+        # expand smaller side to optimize
+        if len(front) > len(back):
+            front, back = back, front
+            dist_front, dist_back = dist_back, dist_front
+
+        next_front = set()
+        for word in front:
+            for i in range(L):
+                for n in combos[word[:i] + "*" + word[i+1:]]: # Use pre-computed neighbors
+                    if n in dist_back:
+                        return dist_front[word] + dist_back[n]
+                    if n not in dist_front:
+                        dist_front[n] = dist_front[word] + 1
+                        next_front.add(n)
+        front = next_front
+
+    return 0

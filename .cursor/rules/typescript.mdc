@@ -1,0 +1,637 @@
+---
+description: TypeScript Rules
+alwaysApply: false
+---
+# TypeScript Rules
+
+This guide covers modern bleeding-edge TypeScript patterns based on TypeScript 5.7+, 5.8, and 5.9 features from official documentation.
+
+## 🚀 Latest TypeScript Features (5.7 - 5.9)
+
+### TypeScript 5.9 Features
+- **Minimal `tsc --init`**: Streamlined `tsconfig.json` with prescriptive defaults
+- **Import Defer**: `import defer * as feature from "./module.js"` for deferred module evaluation
+- **Node.js v20 Module Resolution**: `--module node20` with stable Node.js behavior
+- **Expandable Hovers**: Enhanced editor tooltips with expandable type information
+
+### TypeScript 5.8 Features
+- **Granular Return Expression Checks**: Enhanced type checking for conditional returns
+- **ESM Require Support**: `require()` of ECMAScript Modules in `--module nodenext`
+- **`--erasableSyntaxOnly`**: Prevents TypeScript-specific runtime syntax
+- **Preserved Computed Properties**: Better declaration file generation
+
+### TypeScript 5.7 Features
+- **Never-Initialized Variable Checks**: Detects uninitialized variables
+- **ES2024 Support**: `Object.groupBy`, `Map.groupBy`, `Promise.withResolvers`
+- **Generic TypedArrays**: All TypedArrays now have generic type parameters
+- **V8 Compile Caching**: 2.5x speedup with Node.js 22
+
+## 🎯 Core Type System Patterns
+
+### 1. Const Assertions (Advanced Usage)
+```typescript
+// Immutable configuration objects
+const API_CONFIG = {
+  endpoints: {
+    users: '/api/users',
+    posts: '/api/posts'
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE']
+} as const
+
+type ApiEndpoint = typeof API_CONFIG.endpoints[keyof typeof API_CONFIG.endpoints]
+type HttpMethod = typeof API_CONFIG.methods[number]
+
+// Tuple types with const assertions
+const THEME_COLORS = ['primary', 'secondary', 'accent'] as const
+type ThemeColor = typeof THEME_COLORS[number]
+
+// Deeply readonly structures
+const STATE_MACHINE = {
+  states: {
+    idle: { canTransitionTo: ['loading'] },
+    loading: { canTransitionTo: ['success', 'error'] },
+    success: { canTransitionTo: ['idle'] },
+    error: { canTransitionTo: ['idle', 'loading'] }
+  }
+} as const satisfies Record<string, { canTransitionTo: readonly string[] }>
+```
+
+### 2. Satisfies Operator (Type Constraint Validation)
+```typescript
+// Constrain while preserving narrow types
+type ColorConfig = {
+  primary: string
+  secondary: string
+  accent?: string
+}
+
+const colors = {
+  primary: '#007acc',
+  secondary: '#ff6b35',
+  accent: '#4ecdc4'
+} satisfies ColorConfig
+// Type is inferred as literal types, not string
+
+// API response validation
+type UserResponse = {
+  id: number
+  name: string
+  email: string
+  metadata?: Record<string, unknown>
+}
+
+const mockUser = {
+  id: 1,
+  name: 'John Doe',
+  email: 'john@example.com',
+  metadata: { lastLogin: '2024-01-01' }
+} satisfies UserResponse
+// Preserves exact structure while ensuring type compliance
+
+// Complex object constraints
+type DatabaseSchema = Record<string, {
+  columns: Record<string, 'string' | 'number' | 'boolean'>
+  relations?: string[]
+}>
+
+const schema = {
+  users: {
+    columns: { id: 'number', name: 'string', active: 'boolean' },
+    relations: ['posts', 'comments']
+  },
+  posts: {
+    columns: { id: 'number', title: 'string', userId: 'number' }
+  }
+} satisfies DatabaseSchema
+```
+
+### 3. Branded Types (Nominal Typing)
+```typescript
+// Brand utility type
+declare const __brand: unique symbol
+type Brand<T, B> = T & { readonly [__brand]: B }
+
+// Domain-specific types
+type UserId = Brand<string, 'UserId'>
+type Email = Brand<string, 'Email'>
+type Password = Brand<string, 'Password'>
+type JWT = Brand<string, 'JWT'>
+
+// Creation functions with validation
+function createUserId(value: string): UserId {
+  if (!value.match(/^usr_[a-zA-Z0-9]{16}$/)) {
+    throw new Error('Invalid user ID format')
+  }
+  return value as UserId
+}
+
+function createEmail(value: string): Email {
+  if (!value.includes('@')) {
+    throw new Error('Invalid email format')
+  }
+  return value as Email
+}
+
+// Numeric brands for measurements
+type Pixels = Brand<number, 'Pixels'>
+type Percentage = Brand<number, 'Percentage'>
+type Milliseconds = Brand<number, 'Milliseconds'>
+
+function px(value: number): Pixels {
+  return value as Pixels
+}
+
+function ms(value: number): Milliseconds {
+  return value as Milliseconds
+}
+
+// Usage prevents mixing incompatible types
+function setWidth(width: Pixels): void { /* ... */ }
+function setTimeout(delay: Milliseconds): void { /* ... */ }
+
+setWidth(px(100)) // Works
+setTimeout(ms(1000)) // Works
+// setWidth(ms(100)) // Type error - can't mix measurements
+```
+
+### 4. Template Literal Types (Advanced Patterns)
+```typescript
+// Dynamic key generation
+type EventName<T extends string> = `on${Capitalize<T>}`
+type EventHandler<T extends string> = `handle${Capitalize<T>}`
+
+type ButtonEvents = EventName<'click' | 'hover' | 'focus'>
+// Result: "onClick" | "onHover" | "onFocus"
+
+// URL path building
+type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE'
+type ApiPath = `/api/${string}`
+type ApiEndpoint<M extends HttpMethod, P extends ApiPath> = `${M} ${P}`
+
+type UserEndpoints =
+  | ApiEndpoint<'GET', '/api/users'>
+  | ApiEndpoint<'POST', '/api/users'>
+  | ApiEndpoint<'PUT', '/api/users/[id]'>
+  | ApiEndpoint<'DELETE', '/api/users/[id]'>
+
+// CSS property generation
+type CSSUnit = 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw'
+type CSSValue<T extends string, U extends CSSUnit> = `${T}${U}`
+
+type Spacing = CSSValue<'0' | '4' | '8' | '16' | '32', 'px'>
+type FontSize = CSSValue<'0.75' | '1' | '1.25' | '1.5', 'rem'>
+
+// SQL query building
+type SqlOperator = '=' | '!=' | '>' | '<' | '>=' | '<='
+type SqlCondition<T extends string> = `${T} ${SqlOperator} ?`
+
+type UserConditions =
+  | SqlCondition<'id'>
+  | SqlCondition<'email'>
+  | SqlCondition<'created_at'>
+
+// State machine transitions
+type StateName = 'idle' | 'loading' | 'success' | 'error'
+type StateTransition<From extends StateName, To extends StateName> =
+  `${From} -> ${To}`
+
+type ValidTransitions =
+  | StateTransition<'idle', 'loading'>
+  | StateTransition<'loading', 'success'>
+  | StateTransition<'loading', 'error'>
+  | StateTransition<'error', 'loading'>
+  | StateTransition<'success', 'idle'>
+  | StateTransition<'error', 'idle'>
+```
+
+## 🔧 Advanced Utility Types
+
+### 1. Deep Readonly & Mutable
+```typescript
+// Deep readonly utility
+type DeepReadonly<T> = {
+  readonly [P in keyof T]: T[P] extends object ? DeepReadonly<T[P]> : T[P]
+}
+
+// Deep mutable utility
+type DeepMutable<T> = {
+  -readonly [P in keyof T]: T[P] extends object ? DeepMutable<T[P]> : T[P]
+}
+
+// Selective readonly
+type ReadonlyKeys<T, K extends keyof T> = Omit<T, K> & {
+  readonly [P in K]: T[P]
+}
+
+type User = {
+  id: string
+  name: string
+  email: string
+  settings: {
+    theme: string
+    notifications: boolean
+  }
+}
+
+type ImmutableUser = ReadonlyKeys<User, 'id'>
+// id is readonly, other properties are mutable
+```
+
+### 2. Conditional Type Patterns
+```typescript
+// Extract function parameters
+type Parameters<T> = T extends (...args: infer P) => any ? P : never
+
+// Extract return type
+type ReturnType<T> = T extends (...args: any[]) => infer R ? R : never
+
+// Extract array element type
+type ArrayElement<T> = T extends readonly (infer U)[] ? U : never
+
+// Extract promise value
+type Awaited<T> = T extends Promise<infer U> ? Awaited<U> : T
+
+// Non-nullable utility
+type NonNullable<T> = T extends null | undefined ? never : T
+
+// Extract object values
+type ValueOf<T> = T[keyof T]
+
+// Filter by type
+type FilterByType<T, U> = {
+  [K in keyof T]: T[K] extends U ? K : never
+}[keyof T]
+
+type User = {
+  id: string
+  name: string
+  age: number
+  isActive: boolean
+}
+
+type StringKeys = FilterByType<User, string> // 'id' | 'name'
+type NumberKeys = FilterByType<User, number> // 'age'
+```
+
+### 3. Mapped Type Patterns
+```typescript
+// Optional keys utility
+type OptionalKeys<T, K extends keyof T> = Omit<T, K> & {
+  [P in K]?: T[P]
+}
+
+// Required keys utility
+type RequiredKeys<T, K extends keyof T> = Omit<T, K> & {
+  [P in K]-?: T[P]
+}
+
+// Rename keys
+type RenameKeys<T, M extends Record<keyof T, string>> = {
+  [K in keyof T as K extends keyof M ? M[K] : K]: T[K]
+}
+
+type ApiUser = {
+  user_id: string
+  user_name: string
+  user_email: string
+}
+
+type User = RenameKeys<ApiUser, {
+  user_id: 'id'
+  user_name: 'name'
+  user_email: 'email'
+}>
+// Result: { id: string, name: string, email: string }
+
+// Transform values
+type TransformValues<T, U> = {
+  [K in keyof T]: U
+}
+
+type UserFlags = TransformValues<User, boolean>
+// All properties become boolean
+```
+
+## 🎭 Function Type Patterns
+
+### 1. Function Overloads & Generics
+```typescript
+// Generic function with constraints
+function process<T extends string | number>(
+  value: T
+): T extends string ? string[] : number[] {
+  if (typeof value === 'string') {
+    return value.split('') as any
+  }
+  return [value] as any
+}
+
+// Conditional return types
+type ApiResponse<T> = T extends 'user'
+  ? { id: string; name: string }
+  : T extends 'post'
+  ? { id: string; title: string; content: string }
+  : never
+
+function fetchData<T extends 'user' | 'post'>(type: T): Promise<ApiResponse<T>> {
+  // Implementation
+  return null as any
+}
+
+// Function composition
+type Compose<F, G> = F extends (arg: any) => infer A
+  ? G extends (arg: A) => infer B
+    ? (arg: Parameters<F>[0]) => B
+    : never
+  : never
+
+declare function compose<F extends Function, G extends Function>(
+  f: F,
+  g: G
+): Compose<F, G>
+
+// Curry function type
+type Curry<T> = T extends (arg: infer A, ...rest: infer R) => infer B
+  ? R extends []
+    ? (arg: A) => B
+    : (arg: A) => Curry<(...args: R) => B>
+  : never
+
+declare function curry<T extends Function>(fn: T): Curry<T>
+```
+
+### 2. Higher-Order Type Functions
+```typescript
+// Type-level arithmetic
+type Length<T extends readonly unknown[]> = T['length']
+
+type Add<A extends number, B extends number> =
+  [...Array<A>, ...Array<B>]['length'] extends number
+    ? [...Array<A>, ...Array<B>]['length']
+    : never
+
+type Subtract<A extends number, B extends number> =
+  Array<A> extends [...Array<B>, ...infer Rest]
+    ? Rest['length']
+    : never
+
+// Type-level string manipulation
+type Split<S extends string, D extends string> =
+  S extends `${infer T}${D}${infer U}`
+    ? [T, ...Split<U, D>]
+    : [S]
+
+type Join<T extends readonly string[], D extends string> =
+  T extends readonly [infer F, ...infer R]
+    ? F extends string
+      ? R extends readonly string[]
+        ? R['length'] extends 0
+          ? F
+          : `${F}${D}${Join<R, D>}`
+        : never
+      : never
+    : ''
+
+// Type-level array operations
+type Head<T extends readonly unknown[]> = T extends readonly [infer H, ...unknown[]] ? H : never
+type Tail<T extends readonly unknown[]> = T extends readonly [unknown, ...infer Rest] ? Rest : []
+type Last<T extends readonly unknown[]> = T extends readonly [...unknown[], infer L] ? L : never
+
+type Reverse<T extends readonly unknown[]> = T extends readonly [...infer Rest, infer L]
+  ? [L, ...Reverse<Rest>]
+  : []
+```
+
+## 🏗️ Design Patterns
+
+### 1. Builder Pattern
+```typescript
+// Type-safe builder
+class QueryBuilder<T = {}> {
+  private _fields: T = {} as T
+
+  select<K extends string>(field: K): QueryBuilder<T & Record<K, unknown>> {
+    return this as any
+  }
+
+  where<K extends keyof T>(field: K, value: T[K]): QueryBuilder<T> {
+    return this
+  }
+
+  build(): T {
+    return this._fields
+  }
+}
+
+// Usage with full type safety
+const query = new QueryBuilder()
+  .select('id')
+  .select('name')
+  .select('email')
+  .where('id', 'user_123') // Type-safe: id exists
+  .build()
+// Type: { id: unknown, name: unknown, email: unknown }
+```
+
+### 2. State Machine Pattern
+```typescript
+// Type-safe state machine
+type StateMachine<S extends string, E extends string> = {
+  [State in S]: {
+    [Event in E]?: S
+  }
+}
+
+type AppState = 'idle' | 'loading' | 'success' | 'error'
+type AppEvent = 'fetch' | 'success' | 'error' | 'reset'
+
+const appStateMachine: StateMachine<AppState, AppEvent> = {
+  idle: {
+    fetch: 'loading'
+  },
+  loading: {
+    success: 'success',
+    error: 'error'
+  },
+  success: {
+    reset: 'idle',
+    fetch: 'loading'
+  },
+  error: {
+    reset: 'idle',
+    fetch: 'loading'
+  }
+}
+
+// Type-safe state transitions
+function transition<S extends AppState, E extends AppEvent>(
+  currentState: S,
+  event: E
+): S extends keyof typeof appStateMachine
+  ? E extends keyof typeof appStateMachine[S]
+    ? typeof appStateMachine[S][E]
+    : S
+  : never {
+  return (appStateMachine[currentState]?.[event] ?? currentState) as any
+}
+```
+
+### 3. Plugin System
+```typescript
+// Type-safe plugin architecture
+interface Plugin<T = any> {
+  name: string
+  install(app: T): void
+}
+
+type PluginType<P> = P extends Plugin<infer T> ? T : never
+
+class App<T extends Record<string, Plugin> = {}> {
+  private plugins: T = {} as T
+
+  use<P extends Plugin>(plugin: P): App<T & Record<P['name'], P>> {
+    return this as any
+  }
+
+  getPlugin<K extends keyof T>(name: K): T[K] {
+    return this.plugins[name]
+  }
+}
+
+// Usage
+const router = { name: 'router', install: (app: any) => {} } as const
+const store = { name: 'store', install: (app: any) => {} } as const
+
+const app = new App()
+  .use(router)
+  .use(store)
+
+app.getPlugin('router') // Type-safe access
+```
+
+## 📋 Best Practices
+
+### 1. Type Organization
+```typescript
+// Namespace types by domain
+namespace User {
+  export type Entity = {
+    id: UserId
+    name: string
+    email: Email
+  }
+
+  export type CreatePayload = Omit<Entity, 'id'>
+  export type UpdatePayload = Partial<CreatePayload>
+  export type Filter = Partial<Pick<Entity, 'name' | 'email'>>
+}
+
+namespace Api {
+  export type Response<T> = {
+    data: T
+    status: number
+    message?: string
+  }
+
+  export type ErrorResponse = {
+    error: string
+    code: number
+    details?: unknown
+  }
+}
+```
+
+### 2. Type Guards & Validation
+```typescript
+// Type predicate functions
+function isString(value: unknown): value is string {
+  return typeof value === 'string'
+}
+
+function isUser(value: unknown): value is User.Entity {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'id' in value &&
+    'name' in value &&
+    'email' in value
+  )
+}
+
+// Assertion functions
+function assertIsUser(value: unknown): asserts value is User.Entity {
+  if (!isUser(value)) {
+    throw new Error('Invalid user object')
+  }
+}
+
+// Runtime type validation with Zod
+import { z } from 'zod'
+
+const UserSchema = z.object({
+  id: z.string().brand<'UserId'>(),
+  name: z.string(),
+  email: z.string().email().brand<'Email'>()
+})
+
+type User = z.infer<typeof UserSchema>
+```
+
+### 3. Error Handling
+```typescript
+// Result type pattern
+type Result<T, E = Error> =
+  | { success: true; data: T }
+  | { success: false; error: E }
+
+// Safe async operations
+async function safeAsync<T>(
+  promise: Promise<T>
+): Promise<Result<T>> {
+  try {
+    const data = await promise
+    return { success: true, data }
+  } catch (error) {
+    return { success: false, error: error as Error }
+  }
+}
+
+// Option type pattern
+type Option<T> = T | null | undefined
+
+function isSome<T>(value: Option<T>): value is T {
+  return value != null
+}
+
+function isNone<T>(value: Option<T>): value is null | undefined {
+  return value == null
+}
+```
+
+## 🚀 Performance Optimization
+
+### 1. Type-Only Imports
+```typescript
+// Use type-only imports for types
+import type { User } from './types'
+import type { ComponentProps } from 'react'
+
+// Mixed imports
+import { createUser, type CreateUserPayload } from './user-service'
+```
+
+### 2. Incremental Compilation
+```typescript
+// tsconfig.json
+{
+  "compilerOptions": {
+    "incremental": true,
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true,
+    "tsBuildInfoFile": ".tsbuildinfo"
+  }
+}
+```
+

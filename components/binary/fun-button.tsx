@@ -4,7 +4,7 @@ import type React from "react"
 
 import { type ButtonHTMLAttributes, forwardRef } from "react"
 import { type VariantProps, cva } from "class-variance-authority"
-import { motion } from "framer-motion"
+import { motion } from "motion/react"
 import { cn } from "@/lib/utils"
 
 // Change the component description to clarify it's not a sound button

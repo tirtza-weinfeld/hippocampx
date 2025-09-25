@@ -1,195 +1,114 @@
 import type { ComponentPropsWithoutRef, ReactNode } from 'react';
 import { InlineCodeClient } from './code-inline-client';
 import highlightCode from './code-highlighter';
-import { isValidColorName } from '@/lib/step-colors';
-import { InlineMath } from '@/components/mdx/inline-math';
-import { getTooltipContent } from './tooltip-content';
-import { renderTooltipContent } from './render-tooltip-content';
 import { tooltipifyJSX } from './tooltipify-jsx';
+import { renderTooltipContent } from './render-tooltip-content';
+import { getTooltipContent } from './tooltip-content';
 
-// Helper: get step/color if present
-function parseStepOrColor(str: string): { step?: number; colorName?: string } {
-  if (/^\d+$/.test(str)) {
-    return { step: parseInt(str, 10) };
-  } else if (isValidColorName(str)) {
-    return { colorName: str };
+
+
+// 1. New attribute syntax:
+// - [language="python", meta="/[red!]k//[green!]for/"]code
+// - [meta="/[red!]k//[green!]for/"]code
+// - [language="python"]code
+// Note: Basic step/color syntax ([1!]code, [red!]code) is now handled by the remark-typography plugin
+
+
+// Helper: parse attributes like language="python", meta="/[red!]k//[green!]for/"
+function parseAttributes(attrStr: string): { language?: string; meta?: string } {
+  const result: { language?: string; meta?: string } = {};
+
+  // Match attribute patterns: key="value" or key='value' with optional spaces and commas
+  const attrMatches = attrStr.matchAll(/(\w+)\s*=\s*["']([^"']*)["']/g);
+
+  for (const match of attrMatches) {
+    const [, key, value] = match;
+    if (key === 'language') {
+      result.language = value;
+    } else if (key === 'meta') {
+      result.meta = value;
+    }
   }
-  return {};
+
+  // Handle shorthand meta syntax: meta="/[red!]k//[green!]for/" (without explicit key=value)
+  if (!result.language && !result.meta && attrStr.startsWith('meta=')) {
+    const metaMatch = attrStr.match(/^meta=["']([^"']*)["']$/);
+    if (metaMatch) {
+      result.meta = metaMatch[1];
+    }
+  }
+
+  return result;
 }
 
-// Helper: extract symbol name from code text (handles function calls, variables, etc.)
-function extractSymbolFromCode(code: string): string | null {
-  // Remove common punctuation and whitespace
-  const cleaned = code.trim();
-  
-  // Handle function calls: function() -> function
-  const funcMatch = cleaned.match(/^([a-zA-Z_][a-zA-Z0-9_]*)\s*\(/);
-  if (funcMatch) {
-    return funcMatch[1];
-  }
-  
-  // Handle simple identifiers (variables, constants, etc.)
-  const identifierMatch = cleaned.match(/^[a-zA-Z_][a-zA-Z0-9_]*$/);
-  if (identifierMatch) {
-    return cleaned;
-  }
-  
-  return null;
-}
 
-
-type InlineCodeProps = ComponentPropsWithoutRef<'code'> & { children: ReactNode };
+type InlineCodeProps = ComponentPropsWithoutRef<'code'> & { children: ReactNode } &{[key: string]: unknown};
 
 export default async function InlineCode({ children, ...restProps }: InlineCodeProps) {
-  const codeText = children as string;
+  const codeText = typeof children === 'string' ? children : String(children || '');
+  const tooltipContent = await getTooltipContent();
 
-  // Check for step highlighting syntax: [step:]code or [color:]code
-  const stepOrColorMatch = codeText.match(/^\[([^:\]]+):\](.+)$/);
-  if (stepOrColorMatch) {
-    const [, stepOrColor, code] = stepOrColorMatch;
-    const { step, colorName } = parseStepOrColor(stepOrColor);
-    // If the code is a math expression, render InlineMath with step/color
-    const mathMatch = code.trim().match(/^\$([^$]+)\$$/);
-    if (mathMatch) {
-      const [, mathExpression] = mathMatch;
-      return (
-        <InlineMath className="inline-block" step={step} colorName={colorName}>
-          {mathExpression.trim()}
-        </InlineMath>
-      );
-    }
-    // Otherwise, regular step/color inline code
-    if (step) {
-      return (
-        <InlineCodeClient highlighted={true} step={step} {...restProps}>
-          <span className="inline-block">{code.trim()}</span>
-        </InlineCodeClient>
-      );
-    } else if (colorName) {
-      return (
-        <InlineCodeClient highlighted={true} colorName={colorName} {...restProps}>
-          <span className="inline-block">{code.trim()}</span>
-        </InlineCodeClient>
-      );
-    }
-    // If it doesn't match step or color, fall through to language highlighting
-  }
+  // Check for new attribute syntax: [language="python", meta="/[red!]k//[green!]for/"]code
+  // Use a more sophisticated regex that handles nested brackets in quoted strings
+  const newSyntaxMatch = codeText.match(/^\[((?:[^"\]]+|"[^"]*")*)\](.+)$/);
+  if (newSyntaxMatch && newSyntaxMatch[1].includes('=')) {
+    const [, attrStr, code] = newSyntaxMatch;
+    const { language, meta } = parseAttributes(attrStr);
 
-  // Check for the language highlighting syntax: [meta:]code, [language:meta="..."]code, or [tooltip:]code
-  const metaMatch = codeText.match(/^\[([^\]]+):\](.+)$/);
-  if (metaMatch) {
-    let [, metaStr, code] = metaMatch;
-    
-    // Parse meta attributes like [python:meta="/initial/"] or [language:highlight="1,3-5"]
-    let language = metaStr;
-    let meta: string | undefined;
-    
-    const metaAttributeMatch = metaStr.match(/^([^:]+):(.+)$/);
-    if (metaAttributeMatch) {
-      const [, lang, metaAttrs] = metaAttributeMatch;
-      language = lang;
-      meta = metaAttrs;
-    }
-    
-    // Handle tooltip-specific syntax
-    if (language === 'tooltip') {
-      // Extract symbol for tooltip support
-      const symbol = extractSymbolFromCode(code.trim());
-      
-      if (symbol) {
-        const tooltipData = await getTooltipContent();
-        if (tooltipData[symbol]) {
-          // Create a span with tooltip attributes that tooltipifyJSX can process
-          const codeWithAttributes = (
-            <span 
-              data-tooltip-symbol={symbol}
-              data-tooltip-type={tooltipData[symbol].type}
-              className="tooltip-symbol"
-            >
-              <InlineCodeClient highlighted={false} {...restProps}>
-                <span className="inline-block">{code.trim()}</span>
-              </InlineCodeClient>
-            </span>
-          );
-          
-          // Apply tooltipify to add popover functionality, same as code blocks
-          const codeWithTooltips = tooltipifyJSX(
-            codeWithAttributes,
-            (symbol, parent, path) =>
-              renderTooltipContent(symbol, parent, tooltipData, path)
-          );
-          
-          return codeWithTooltips;
-        }
-      }
-      
-      // Fallback: no tooltip data found, just return regular inline code
+    // Handle language with optional meta, or just meta without language
+    if (language || meta) {
+      // Handle language highlighting (python, javascript, etc.) or just meta highlighting
+      const highlighted = await highlightCode(code.trim(), language ||
+        'text', meta, true, true);
+
+ 
+   
+      // Use tooltipifyJSX which internally handles both tooltips and highlighting
+      const highlightedWithTooltips = tooltipifyJSX(
+        highlighted,
+        (qname) => renderTooltipContent(qname, tooltipContent)
+      );
+
+
       return (
-        <InlineCodeClient highlighted={false} {...restProps}>
-          {code.trim()}
+        <InlineCodeClient highlighted={true} {...restProps}>
+          <span className="inline-block">{highlightedWithTooltips}</span>
         </InlineCodeClient>
       );
     }
-    
-    // Handle language highlighting (python, javascript, etc.)
-    const highlighted = await highlightCode(code.trim(), language, meta, true, true);
-    
-    // Apply tooltipify to add popover functionality for any symbols found in the highlighted code
-    const tooltipData = await getTooltipContent();
-    const highlightedWithTooltips = tooltipifyJSX(
-      highlighted,
-      (symbol, parent, path) =>
-        renderTooltipContent(symbol, parent, tooltipData, path)
-    );
-    
-    return (
-      <InlineCodeClient highlighted={true} {...restProps}>
-        <span className="inline-block">{highlightedWithTooltips}</span>
-      </InlineCodeClient>
-    );
   }
 
-  // Check if the code contains math expressions (single dollar signs for inline math)
-  const mathMatch = codeText.match(/^\$([^$]+)\$$/);
-  if (mathMatch) {
-    const [, mathExpression] = mathMatch;
-    return (
-      <InlineMath className="inline-block">
-        {mathExpression.trim()}
-      </InlineMath>
-    );
-  }
+  // Check for basic step syntax: [purple!]cols, [1!]code, etc.
+  const stepSyntaxMatch = codeText.match(/^\[([^!]+)!\](.+)$/);
+  if (stepSyntaxMatch) {
+    const [, stepOrColor, code] = stepSyntaxMatch;
+    const { isValidColorName, getStepColor } = await import('@/lib/step-colors');
 
-  // Check if the code contains multiple math expressions that need to be parsed
-  if (codeText.includes('$') && codeText.match(/\$[^$]+\$/)) {
-    // Split the text by math expressions and render each part appropriately
-    const parts = codeText.split(/(\$[^$]+\$)/);
-    
-    return (
-      <InlineCodeClient highlighted={false} {...restProps}>
-        {parts.map((part, index) => {
-          // If part is a math expression, render InlineMath with default text color
-          const mathMatch = part.match(/^\$([^$]+)\$$/);
-          if (mathMatch) {
-            const [, mathExpression] = mathMatch;
-            return (
-              <InlineMath 
-                key={index}
-                className="inline-block"
-              >
-                {mathExpression.trim()}
-              </InlineMath>
-            );
-          }
-          return part;
-        })}
-      </InlineCodeClient>
-    );
+    let stepColor: string | undefined;
+
+    if (/^\d+$/.test(stepOrColor)) {
+      // Numeric step - convert to color
+      const stepNumber = parseInt(stepOrColor, 10);
+      stepColor = getStepColor(stepNumber);
+    } else if (isValidColorName(stepOrColor)) {
+      // Color name
+      stepColor = stepOrColor;
+    }
+
+    if (stepColor) {
+      return (
+        <InlineCodeClient highlighted={true} data-step={stepColor} {...restProps}>
+          {code}
+        </InlineCodeClient>
+      );
+    }
   }
 
   // Default styling for regular inline code (CSS only, no JS overhead)
+  const hasStep = 'data-step' in restProps;
+  // console.log('hasStep', hasStep);
   return (
-    <InlineCodeClient highlighted={false} {...restProps}>
+    <InlineCodeClient highlighted={hasStep} {...restProps}>
       {children}
     </InlineCodeClient>
   );

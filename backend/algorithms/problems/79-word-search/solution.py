@@ -1,0 +1,38 @@
+def word_search(board: list[list[str]], word: str) -> bool:
+    """
+    Intuition:
+        Dfs with early exit on mismatch
+        Start dfs from each cell
+        At each step:
+            Check bounds and character match
+            Mark visited cell with a temp symbol (e.g. #)
+            Try 4 directions (no revisiting)
+            Restore cell after backtracking
+            Stop early if the full word is matched.
+
+    Time Complexity:
+        O(M * N * 3^L)
+        M, N = board size
+        L = word length
+        Each step explores at most 3 directions (excluding the one it came from)
+        Runtime improves with early mismatches and pruning
+    """
+    rows, cols, n = len(board), len(board[0]), len(word)
+    def dfs(r: int, c: int, i: int) -> bool:
+        if i == n:
+            return True
+        if not (0 <= r < rows and 0 <= c < cols and board[r][c] == word[i]):
+            return False
+        tmp, board[r][c] = board[r][c], "#"
+        for x, y in ((r + 1, c), (r - 1, c), (r, c + 1), (r, c - 1)):
+            if dfs(x, y, i + 1):
+                board[r][c] = tmp
+                return True
+        board[r][c] = tmp
+        return False
+    return any(
+        dfs(r, c, 0)
+        for r in range(rows)
+        for c in range(cols)
+        if board[r][c] == word[0]
+    )

@@ -1,0 +1,22 @@
+:root {
+    :is([data-difficulty="easy"]) {
+
+      --difficulty-gradient: linear-gradient(to right, var(--color-green-500), var(--color-green-400), var(--color-green-300), var(--color-green-200), var(--color-green-100));
+      --color-difficulty: var(--color-green-500);
+    }
+    :is([data-difficulty="medium"]) {
+
+      --difficulty-gradient: linear-gradient(to right, var(--color-amber-500), var(--color-amber-400), var(--color-amber-300), var(--color-amber-200), var(--color-amber-100));
+      --color-difficulty: var(--color-amber-500);
+    }
+    :is([data-difficulty="hard"]) {
+
+      --difficulty-gradient: linear-gradient(to right, var(--color-rose-500), var(--color-rose-400), var(--color-rose-300), var(--color-rose-200), var(--color-rose-100));
+      --color-difficulty: var(--color-rose-500);
+    }
+    :is([data-difficulty="all"]) {
+
+      --difficulty-gradient: linear-gradient(to right, var(--color-blue-500), var(--color-blue-400), var(--color-blue-300), var(--color-blue-200), var(--color-blue-100));
+      --color-difficulty: var(--color-blue-500);
+    }
+  }

@@ -1,0 +1,58 @@
+# Permutations
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="medium" />
+
+<PillList pills={["backtrack", "permutation"]} />
+
+[46. Permutations](https://leetcode.com/problems/permutations)
+
+## [!ProblemDefinition] Definition
+
+Return all permutations of a list of unique numbers.
+
+## [!ProblemIntuition] Intuition
+
+- Recursive Tree of Choices:
+    - Build permutations by choosing unused elements: At each level, try each remaining number, recurse with updated path, and backtrack to un-choose. Use used list or boolean flags to track chosen elements.
+
+## [!ProblemTimeComplexity] Time Complexity
+
+- O(N!):
+    - N levels of recursion, each level explores N - depth options, total N! permutations.
+
+## [!ProblemSpaceComplexity] Space Complexity
+
+- O(N):
+    - Recursion depth is N, and we store the current permutation path.
+
+## [!ProblemArguments] Key Arguments
+
+- `nums: list[int]`: List of integers to permute
+
+## [!ProblemReturns] Returns
+
+`list[list[int]]`: List of all possible permutations
+
+## [!ProblemCodeSnippet] Code Snippet
+
+```python meta="source=problems/46-permutations/solution.py"
+def permutations(nums: list[int]) -> list[list[int]]:
+
+    result, n = [], len(nums)
+
+    def dfs(i):
+
+        if i == n:
+            result.append(nums[:])
+        else:
+            for j in range(i, n):
+                nums[i], nums[j] = nums[j], nums[i]
+                dfs(i + 1)
+                nums[j], nums[i] = nums[i], nums[j]
+
+    dfs(0)
+    return result
+```
+

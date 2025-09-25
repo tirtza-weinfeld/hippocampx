@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useRef, useCallback } from "react"
-import { motion, useMotionValue, useTransform, useSpring, useAnimationFrame } from "framer-motion"
+import { motion, useMotionValue, useTransform, useSpring, useAnimationFrame } from "motion/react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Slider } from "@/components/ui/slider"
 import { Button } from "@/components/ui/button"

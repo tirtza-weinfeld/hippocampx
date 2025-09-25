@@ -1,0 +1,41 @@
+# Subarray Sum Equals K
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="medium" />
+
+<PillList pills={["prefix_sum"]} />
+
+[560. Subarray Sum Equals K](https://leetcode.com/problems/subarray-sum-equals-k)
+
+## [!ProblemDefinition] Definition
+
+Given an array of integers and a target sum k, return the total number of continuous subarrays whose sum equals to k.
+
+## [!ProblemArguments] Key Arguments
+
+- `segments: list[int]`: List of integers representing trip segments.
+- `k: int`: Target sum.
+
+## [!ProblemReturns] Returns
+
+`int`: The count of subarrays with sum == k.
+
+## [!ProblemCodeSnippet] Code Snippet
+
+```python meta="source=problems/560-subarray-sum-equals-k/solution.py"
+from collections import defaultdict
+
+def subarraySumEqualsK(segments: list[int], k: int) -> int:
+
+    marker_frequency = defaultdict(int, {0: 1})
+    prefix_sum = count = 0
+
+    for segment in segments:
+        prefix_sum += segment
+        count += marker_frequency[prefix_sum - k]
+        marker_frequency[prefix_sum] += 1
+
+    return count
+```
+

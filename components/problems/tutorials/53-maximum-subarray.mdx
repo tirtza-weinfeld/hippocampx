@@ -1,0 +1,38 @@
+# Maximum Subarray
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="medium" />
+
+<PillList pills={["kadane"]} />
+
+[53. Maximum Subarray](https://leetcode.com/problems/maximum-subarray)
+
+## [!ProblemDefinition] Definition
+
+Given an array of integers, return the maximum sum of any contiguous subarray.
+
+## [!ProblemTimeComplexity] Time Complexity
+
+- O(n):
+    - where n is the length of the array. We iterate through the array once.
+
+## [!ProblemArguments] Key Arguments
+
+- `nums: list[int]`: List of integers
+
+## [!ProblemReturns] Returns
+
+`int`: Maximum sum of any contiguous subarray
+
+## [!ProblemCodeSnippet] Code Snippet
+
+```python meta="source=problems/53-maximum-subarray/solution.py"
+def maximum_subarray(nums: list[int]) -> int:
+    max_sum = curr_sum = float("-inf")
+    for num in nums:
+        curr_sum = max(num, curr_sum + num)
+        max_sum = max(max_sum, curr_sum)
+    return max_sum
+```
+

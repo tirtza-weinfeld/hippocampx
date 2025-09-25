@@ -1,69 +1,7 @@
-:root {
-  --code-step-color-a: var(--color-orange-300);
-  --code-step-color-b: var(--color-orange-500);
-  --code-step-color-c: var(--color-yellow-500);
-}
-
-.step-1 {
-  --code-step-color-a: var(--color-blue-300);
-  --code-step-color-b: var(--color-blue-500);
-  --code-step-color-c: var(--color-blue-500);
-}
-
-.step-2 {
-  --code-step-color-a: var(--color-green-600);
-  --code-step-color-b: var(--color-teal-500);
-  --code-step-color-c: var(--color-green-800);
-}
-.step-3 {
-  --code-step-color-a: var(--color-purple-300);
-  --code-step-color-b: var(--color-purple-500);
-  --code-step-color-c: var(--color-purple-500);
-}
-.step-4 {
-  --code-step-color-a: var(--color-pink-300);
-  --code-step-color-b: var(--color-pink-500);
-  --code-step-color-c: var(--color-pink-500);
-}
-.step-5 {
-  --code-step-color-a: var(--color-orange-700);
-  --code-step-color-b: var(--color-orange-500);
-  --code-step-color-c: var(--color-orange-500);
-}
-
-
-
-
-/* Text color classes for tooltip words */
-.text-step-1 {
-  color: var(--color-blue-700) !important;
-}
-
-.text-step-2 {
-  color: var(--color-teal-700) !important;
-}
-
-.text-step-3 {
-  color: var(--color-purple-700) !important;
-}
-
-.text-step-4 {
-  color: var(--color-pink-700) !important;
-}
-.text-step-5 {
-  color: var(--color-orange-300) !important;
-}
-
-
-
-
-
-
-
 :is(.line-highlight) {
   display: inline-block;
   width: 100%;
-  /* background-color: --alpha(var(--color-gray-950) / 10%); */
+  /* Default background for lines without step colors */
   background: linear-gradient(
     to right,
     transparent 0%,
@@ -73,73 +11,61 @@
     --alpha(var(--color-teal-500) / 10%),
     transparent 100%
   );
-  /* border-left: 3px solid var(--color-teal-500);
-  padding-left: 10px;
-  margin-left: -10px; */
-  /* padding: 0.1rem; */
 }
 
+/* Line highlighting with step colors */
+:is(.line-highlight[data-step]) {
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    --alpha(var(--step-background) / 30%),
+    --alpha(var(--step-border) / 20%),
+    --alpha(var(--step-background) / 30%),
+    transparent 100%
+  );
+  border-left: 3px solid var(--step-border);
+  padding-left: 10px;
+  margin-left: -10px;
+}
 
-/* 
 /* styles/components/code-block.css or similar */
 pre .line {
-
   line-height: 1.5rem;
   /* background-color: red; */
 }
 
+
+
+pre .line:is(.line-numbers *):not(:is(::before)) {
+  margin-left: 2rem;
+  /* background-color: blue; */
+}
 pre .line:is(.line-numbers *)::before {
   content: counter(line);
   counter-increment: line;
-  /* position: absolute; */
+  position: absolute;
   left: 0;
-  width: 2em;
+  width: 3rem;
   text-align: left;
+  /* width: 3em;
+  text-align: right; */
   color: var(--color-gray-400);
   user-select: none;
   font-size: 0.9em;
   opacity: 0.7;
-  padding-right: 1em;
+  /* padding-right: 1em; */
+  /* background-color: blue; */
+  line-height: 1rem;
+  place-self: center;
 }
-
 /* Reset the counter at the start of each code block */
 pre {
   counter-reset: line;
-} 
-
-
-.popover-keyword-step-1 {
-  color: var(--color-blue-700) !important;
-}
-.dark .popover-keyword-step-1 {
-  color: var(--color-blue-300) !important;
 }
 
-.popover-keyword-step-2 {
-  color: var(--color-teal-700) !important;
-}
-.dark .popover-keyword-step-2 {
-  color: var(--color-teal-300) !important;
-}
-
-.popover-keyword-step-3 {
-  color: var(--color-purple-700) !important;
-}
-.dark .popover-keyword-step-3 {
-  color: var(--color-purple-300) !important;
-}
-
-.popover-keyword-step-4 {
-  color: var(--color-pink-700) !important;
-}
-.dark .popover-keyword-step-4 {
-  color: var(--color-pink-300) !important;
-}
-.popover-keyword-step-5 {
-  color: var(--color-orange-300) !important;
-}
-.dark .popover-keyword-step-5 {
-  color: var(--color-orange-700) !important;
+/* Popover keywords use unified step system */
+.popover-keyword[data-step] {
+  color: var(--step-text) !important;
 }
 
 /* Default popover and highlight (no step) use a calm green/teal gradient */
@@ -152,16 +78,21 @@ pre {
 
 /* Default popover background (no step) */
 .popover-default-bg {
-  background: linear-gradient(135deg, var(--color-sky-200) 0%, var(--color-sky-400) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--color-sky-200) 0%,
+    var(--color-sky-400) 100%
+  );
   color: #111;
-  
 }
 .dark .popover-default-bg {
-  background: linear-gradient(135deg, var(--color-sky-700) 0%, var(--color-sky-900) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--color-sky-700) 0%,
+    var(--color-sky-900) 100%
+  );
   color: #fff;
 }
-
-
 
 /* Code tooltip styling */
 .code-tooltip {
@@ -216,104 +147,80 @@ pre {
 }
 
 
-.tooltip-symbol{
+/* Word highlighting uses unified step system */
+.word-highlight,
+.word-highlight > * {
+  color: var(--step) !important;
 
-}
-
-/* Tooltip symbol styling */
-.tooltip-symbol{
-  cursor: pointer;
-  text-underline-offset: 2px;
-  transition: all 0.2s ease-in-out;
-  border-radius: 2rem;
-  border-bottom: 2px dotted ;
-  &[data-tooltip-type="expression"]{
-    border-color: var(--color-cyan-500);
-
+  background-image: var(--step-background);
+  background-size: 200% 100%;
+  background-position: 0% 50%;
+  &:hover {
+    background-position: 100% 50%;
   }
-  .dark &[data-tooltip-type="expression"]{
-    border-color: var(--color-cyan-600);
-  }
-  &[data-tooltip-type="parameter"]{
-    border-color: var(--color-blue-600);
-  }
-  &[data-tooltip-type="variable"]{
-   border-color: var(--color-purple-600);
-  }
-
-  .dark &[data-tooltip-type="variable"]{
-    border-color: var(--color-blue-200);
-  }
-  
-  .dark &[data-tooltip-type="variable"]{
-    border-color: var(--color-purple-200);
-  }
-  &[data-tooltip-type="function"]{
-    border-color: var(--color-yellow-500);
-
-  }
-  .dark &[data-tooltip-type="function"]{
-    border-color: var(--color-yellow-600);
-  }
-  &[data-tooltip-type="method"]{
-    border-color: var(--color-orange-500);
-  }
-  .dark &[data-tooltip-type="method"]{
-    border-color: var(--color-orange-600);
-  }
-  &[data-tooltip-type="class"]{
-    border-color: var(--color-purple-500);
-  }
-  .dark &[data-tooltip-type="class"]{
-    border-color: var(--color-purple-600);
-  }
-
-
-  /* &:not([data-tooltip-type="expression"]){
-  } */
-
-}
-
-
-
-
-.word-highlight ,.word-highlight>  *{
-
-  color: var(--code-step-color-a) !important;
-  background:linear-gradient(to right,
-    --alpha(var(--code-step-color-a) / 10%),
-    --alpha(var(--code-step-color-b) / 10%),
-    --alpha(var(--code-step-color-c) / 10%),
-    transparent 100%
-  );
-  /* border-bottom: 1px solid --alpha(var(--code-step-color-a) / 60%); */
   border-radius: 0.8rem;
   font-weight: 600;
   padding-inline: 0.2rem;
 }
-/* 
-.tooltip-symbol:hover {
-  text-decoration-color: rgb(59, 130, 246);
-  background-color: rgba(59, 130, 246, 0.1);
-  text-decoration-thickness: 2px;
+
+
+:root {
+  --symbol-color: var(--color-blue-600);
+  .parameter-symbol {
+    --symbol-color: var(--color-blue-600);
+    .dark & {
+      --symbol-color: var(--color-blue-400);
+    }
+  }
+  .variable-symbol {
+    --symbol-color: var(--color-purple-600);
+    .dark & {
+      --symbol-color: var(--color-purple-400);
+    }
+  }
+  .function-symbol {
+    --symbol-color: var(--color-yellow-500);
+    .dark & {
+      --symbol-color: var(--color-yellow-400);
+    }
+  }
+  .method-symbol {
+    --symbol-color: var(--color-orange-500);
+    .dark & {
+      --symbol-color: var(--color-orange-400);
+    }
+  }
+  .class-symbol {
+    --symbol-color: var(--color-teal-500);
+    .dark & {
+      --symbol-color: var(--color-teal-400);
+    }
+  }
+  .expression-symbol {
+    --symbol-color: var(--color-cyan-500);
+    .dark & {
+      --symbol-color: var(--color-cyan-400);
+    }
+  }
 }
 
-.tooltip-symbol:focus {
-  outline: 2px solid rgb(59, 130, 246);
-  outline-offset: 1px;
-  background-color: rgba(59, 130, 246, 0.15);
-}
+/* Tooltip symbol styling */
+.tooltip-symbol {
+  cursor: pointer;
+  text-underline-offset: 2px;
+  transition: all 0.2s ease-in-out;
+  border-radius: 2rem;
+  border-bottom: 2px dotted;
 
-.dark .tooltip-symbol {
-  text-decoration-color: rgba(96, 165, 250, 0.6);
+  border-color:var(--symbol-color) ;
+  &:hover {
+    background-color: --alpha(var(--symbol-color) / 50%);
+  }
 }
+/* Inline code with step highlighting */
+/* code[data-step] {
 
-.dark .tooltip-symbol:hover {
-  text-decoration-color: rgb(96, 165, 250);
-  background-color: rgba(96, 165, 250, 0.1);
-}
-
-.dark .tooltip-symbol:focus {
-  outline-color: rgb(96, 165, 250);
-  background-color: rgba(96, 165, 250, 0.15);
+  color: var(--step-text) !important;
+  background: --alpha(var(--step-background) / 50%) !important;
+  font-weight: 600;
 } */

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion, AnimatePresence } from "motion/react"
 import { HashIcon } from "../icons/tab-icons"
 import { useReducedMotion } from "@/hooks/use-reduced-motion"
 

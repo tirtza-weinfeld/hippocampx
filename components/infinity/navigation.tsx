@@ -4,7 +4,7 @@ import type React from "react"
 import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { AnimatePresence, motion, type Variants } from "framer-motion"
+import { AnimatePresence, motion, type Variants } from "motion/react"
 import {
   BookOpen,
   Calculator,

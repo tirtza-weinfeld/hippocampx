@@ -1,6 +1,6 @@
 'use client'
 
-import { motion, useAnimation, useInView } from 'framer-motion'
+import { motion, useAnimation, useInView } from 'motion/react'
 import { useEffect, useRef } from 'react'
 import { Card } from '@/components/ui/card'
 import { Brain, BookOpen, Target, Award } from 'lucide-react'

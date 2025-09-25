@@ -1,17 +1,16 @@
 "use client"
 
-import { motion } from "framer-motion"
+import { motion } from "motion/react"
 import type { ReactNode } from "react"
-import { useContext } from "react"
 import { cn } from "@/lib/utils"
-import { ListContext } from './list-context'
 
 interface FeatureItemProps {
   children: ReactNode
   className?: string
   onClick?: () => void
-  itemNumber?: number
-  customNumber?: string
+  displayNumber?: string
+  headerItem?: boolean
+  isOrdered?: boolean
 }
 
 // Animation variants for feature items
@@ -22,25 +21,21 @@ const featureItemVariants = {
     x: 0,
     scale: 1,
     transition: {
-      type: "spring",
+      type: "spring" as const,
       stiffness: 300,
       damping: 25,
     },
   },
 }
 
-export default function FeatureItem({ 
-  children, 
-  className = "", 
-  itemNumber, 
-  customNumber,
-  ...props 
+export default function FeatureItem({
+  children,
+  className = "",
+  displayNumber,
+  headerItem,
+  isOrdered = false,
+  ...props
 }: FeatureItemProps) {
-  const { type: listType, level } = useContext(ListContext)
-  const isInOrderedList = listType === 'ordered'
-  
-  // For ordered lists, determine the display number (same logic as ListItem)
-  const displayNumber = customNumber || itemNumber?.toString() || "1"
 
   return (
     <motion.li
@@ -75,7 +70,7 @@ export default function FeatureItem({
     >
      
       {
-        isInOrderedList && (
+        isOrdered && displayNumber && (
 
           <motion.div
             whileHover={{ scale: 1.3, rotate: 15 }}

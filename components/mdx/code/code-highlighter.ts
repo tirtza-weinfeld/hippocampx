@@ -1,14 +1,50 @@
 import { codeToHast } from 'shiki'
-import { transformerCodeTooltipWords } from './transformers/meta-tooltip';
+import { transformerCodeTooltipSource } from './transformers/meta-tooltip';
+import { transformerExpressionTooltips } from './transformers/meta-tooltip-expressions';
+// import { transformerAddIds } from './transformers/meta-add-ids';
 import { hastToJSX } from './hast-to-tsx';
-import { getTooltipContent } from './tooltip-content';
+// import { getTooltipContent } from './tooltip-content';
 import { transformerMetaHighlight } from './transformers/meta-highlight';
 import { transformerMetaWordHighlight } from './transformers/meta-highlight-word';
-import { transformerMetaAddIds } from './transformers/meta-auto-link';
+// import { transformerMetaAddIds } from './transformers/meta-auto-link';
+import usesData from '@/lib/extracted-metadata/uses.json';
+import expressionsData from '@/lib/extracted-metadata/expressions.json';
+import lspData from '@/lib/extracted-metadata/lsp_index.json';
+import symbolTags from '@/lib/extracted-metadata/symbol_tags.json';
+import type { UsesData, LspData, ExpressionsData, SymbolTagsData } from './transformers/types';
 
 
+/**
+ * Applies syntax highlighting and tooltip data attributes to code using Shiki and custom transformers.
+ * 
+ * This function is the core of the tooltip system's highlighting pipeline:
+ * 1. **Shiki Processing**: Converts code to HAST (Hyperscript Abstract Syntax Tree) with syntax highlighting
+ * 2. **Transformer Chain**: Applies custom transformers that add tooltip data attributes to matching symbols
+ * 3. **JSX Conversion**: Converts HAST to JSX elements for React rendering
+ * 
+ * The transformer chain runs in priority order:
+ * - Line/word highlighting (visual effects)
+ * - Expression tooltips (lower priority - complex expressions)
+ * - Symbol tooltips (higher priority - functions, variables, parameters)
+ * 
+ * @param code - Raw source code to highlight
+ * @param lang - Programming language for syntax highlighting
+ * @param meta - Optional meta attributes (e.g., "source=file.py:function highlight=3-5")
+ * @param transformers - Whether to apply tooltip transformers (default: true)
+ * @param isInline - Whether this is inline code (affects JSX conversion)
+ * @returns JSX elements with syntax highlighting and tooltip data attributes
+ * 
+ * @example
+ * ```typescript
+ * const highlighted = await highlightCode(
+ *   'def binary_search(arr, target): pass',
+ *   'python',
+ *   'source=algorithm.py:binary_search'
+ * );
+ * ```
+ */
 export default async function highlightCode(code: string, lang: string, meta?: string, transformers: boolean = true, isInline: boolean = false) {
-  const tooltipContent = await getTooltipContent()
+  // const tooltipContent = await getTooltipContent()
 
   const hast = await codeToHast(code as string, {
     lang: lang,
@@ -26,25 +62,17 @@ export default async function highlightCode(code: string, lang: string, meta?: s
     },
     defaultColor: 'light-dark()',
     transformers: transformers ? [
+  
+      transformerExpressionTooltips(expressionsData as ExpressionsData, lspData as LspData),
+      transformerCodeTooltipSource(usesData as UsesData, lspData as LspData, symbolTags as SymbolTagsData),
       transformerMetaHighlight({className: 'line-highlight'}),
       transformerMetaWordHighlight({className: 'word-highlight'}),
-      transformerCodeTooltipWords({
-        ...tooltipContent
-      }),
-      transformerMetaAddIds({
-        ...tooltipContent
-      }, {
-        className: 'auto-link-target'
-      }),
-      // transformerMetaAddHrefs({
-      //   ...tooltipContent
-      // }, {
-      //   className: 'auto-link'
-      // }),
     ] : [],
+    
   })
 
-  return hastToJSX(hast, isInline)
+  return hastToJSX(hast, isInline) 
+ 
 
 }
 

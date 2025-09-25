@@ -19,7 +19,7 @@ without having to measure the road yourself. This is the core idea behind **pref
 * **For an array of numbers representing sequential trip segments:** 
   * `segment = [120, -30, 200, -50, 150]`
   * This represents the change in position each day: 120km east, then 30km west, 200km east, etc.
-* **Its *[13:]prefix_sum* array is the set of highway *[13:]markers*:** 
+* **Its *[13!]prefix_sum* array is the set of highway *[13!]markers*:** 
   * `marker = [120, 90, 290, 240, 390]`
   * This is the mile marker you're at after each day's travel.
   * `marker[i]` = `segment[0]` + `segment[1]` + ... + `segment[i]`.
@@ -28,10 +28,6 @@ without having to measure the road yourself. This is the core idea behind **pref
   * $$\sum_{k=i}^{j} segment_k = marker_j - marker_{i-1}$$
     * **Note:** For a range starting at index `0`, the formula is just $marker_j$, since $marker_{-1}$ would be 0.
   * This allows us to answer any range query(*sum of any continuous segment from index `i` to `j`*) in constant $O(1)$ time after one $O(n)$ pass to build the `Markers` array.
-
-
----
-
    
 
 
@@ -40,59 +36,59 @@ By combining this technique with a hash map to remember past marker locations, w
 
 -----
 
-## 1\. Longest Streak Covering Exactly k Kilometers
+## 1. Longest Streak Covering Exactly k Kilometers
 
 **[LeetCode 325: Maximum Size Subarray Sum Equals k](https://leetcode.com/problems/maximum-size-subarray-sum-equals-k/)**
 
 *find the longest continuous sequence of trip segments whose combined length is exactly **k km**.*
 
-```python file=backend/algorithms/prefix_sum.py#func:maxSubArrayLen 
+```python file=problems/325-maximum-size-subarray-sum-equals-k/solution.py
 ```
 
 -----
 
-## 2\. Count of Streaks Covering k Kilometers
+## 2. Count of Streaks Covering k Kilometers
 
 **[LeetCode 560: Subarray Sum Equals K](https://leetcode.com/problems/subarray-sum-equals-k/)**
 
 *How many distinct, continuous sequences of trip segments have a total length of exactly **k km**?*
 
-```python file=backend/algorithms/prefix_sum.py#func:subarraySum 
+```python file=problems/560-subarray-sum-equals-k/solution.py
 ```
 
 -----
 
-## 3\. Longest Balanced Forward/Backward Day-Count 
+## 3. Longest Balanced Forward/Backward Day-Count 
 
 **[LeetCode 525: Contiguous Array](https://leetcode.com/problems/contiguous-array/)**
 
 *To balance your driving, find the longest stretch of days with an equal number of forward (+) and backward (-) segments.
 This is equivalent to finding the longest subarray that sums to zero after converting forward/backward segments to +/- 1*.
 
-```python file=backend/algorithms/prefix_sum.py#func:findMaxLength 
+```python file=problems/525-contiguous-array/solution.py
 ```
 
 -----
 
-## 4\. Detecting a Segment of k-Multiple Distance
+## 4. Detecting a Segment of k-Multiple Distance
 
 **[LeetCode 523: Continuous Subarray Sum](https://leetcode.com/problems/continuous-subarray-sum/)**
 
 *Did any continuous part of your trip, lasting at least two days, cover a total distance that was an exact **multiple of k km**?*
 
-```python file=backend/algorithms/prefix_sum.py#func:checkSubarraySum 
+```python file=problems/523-continuous-subarray-sum/solution.py
 ```
 
 -----
 
-## 5\. Counting All Spans Divisible by k
+## 5. Counting All Spans Divisible by k
 
 **[LeetCode 974: Subarray Sums Divisible by K](https://leetcode.com/problems/subarray-sums-divisible-by-k/)**
 
 *How many continuous sequences of trip segments have a total length that is perfectly divisible by k?*
 
 
-```python file=backend/algorithms/prefix_sum.py#func:subarraysDivByK 
+```python file=problems/974-subarray-sums-divisible-by-k/solution.py
 ```
 
 > [!deepdive:collapse] 
@@ -110,13 +106,13 @@ This is equivalent to finding the longest subarray that sums to zero after conve
 
 -----
 
-## 6\. Minimal Segment to Skip
+## 6. Minimal Segment to Skip
 
 **[LeetCode 1590: Make Sum Divisible by P](https://leetcode.com/problems/make-sum-divisible-by-p/)**
 
 *Your total trip length (the final highway marker) isn’t divisible by `p`. Find the **shortest continuous trip segment** you can remove from your log, so that the length of the remaining segments *is* divisible by `p`.*
 
-```python file=backend/algorithms/prefix_sum.py#func:minSubarray 
+```python file=problems/1590-make-sum-divisible-by-p/solution.py
 ```
 
 > [\!deepdive:collapse]
@@ -196,29 +192,29 @@ This is equivalent to finding the longest subarray that sums to zero after conve
 > 
 -----
 
-## 7\. Constructing the Itinerary
+## 7. Constructing the Itinerary
 
 **[LeetCode 370: Range Addition](https://leetcode.com/problems/range-addition/)**
 
 
 *You start with a blank itinerary for a trip of length days. 
-Using a list of instructions like *[16:]add 50km/day for days 2-5*, 
+Using a list of instructions like *[16!]add 50km/day for days 2-5*, 
 what is your final daily travel plan?*
 
 
-```python file=backend/algorithms/prefix_sum.py#func:getModifiedArray 
+```python file=problems/370-range-addition/solution.py
 ```
 
 
 -----
 
-## 8\. Counting Valid Starting Points
+## 8. Counting Valid Starting Points
 
 **[LeetCode 2145: Count the Hidden Sequences](https://leetcode.com/problems/count-the-hidden-sequences/)**
 
 *You know your daily travel segments but not your starting mile marker.
 If you always stayed between markers lower and upper, how many starting points could you have had?*
 
-```python file=backend/algorithms/prefix_sum.py#func:numberOfArrays 
+```python file=problems/2145-count-the-hidden-sequences/solution.py
 ```
 

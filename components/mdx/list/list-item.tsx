@@ -1,20 +1,18 @@
 "use client"
 
-import { motion } from "framer-motion"
+import { motion } from "motion/react"
 import type { ReactNode } from "react"
-import { useContext, useMemo, Children } from "react"
 import { cn } from "@/lib/utils"
-import { ListContext } from './list-context'
-import { Minus, Star, Sparkles, ArrowRight, Shapes, Triangle } from "lucide-react"
+import {Spade, Club, Diamond, Heart } from "lucide-react"
 
-interface ListItemProps {
+export interface ListItemProps {
   children: ReactNode
   className?: string
-  itemNumber?: number
-  customNumber?: string
+  level: number
+  displayNumber?: string
+  headerItem?: boolean
 }
 
-// Animation variants for regular list items
 const listItemVariants = {
   hidden: { opacity: 0, x: -20, scale: 0.96 },
   visible: {
@@ -22,167 +20,127 @@ const listItemVariants = {
     x: 0,
     scale: 1,
     transition: {
-      type: "spring",
+      type: "spring" as const,
       stiffness: 350,
       damping: 28,
     },
   },
-}
+} as const
 
-// Icon system for unordered lists (different shapes by nesting level)
-const getUnorderedIcon = (level: number) => {
-  const icons = [
-    { Icon: Shapes, gradient: "from-sky-500 to-cyan-500" },
-    { Icon: Minus, gradient: "from-teal-500 to-emerald-500" },
-    { Icon: ArrowRight, gradient: "from-blue-500 to-indigo-500" },
-    { Icon: Triangle, gradient: "from-purple-500 to-pink-500" },
-    { Icon: Star, gradient: "from-cyan-500 to-blue-500" },
-    { Icon: Sparkles, gradient: "from-emerald-500 to-teal-500" },
+
+const getIconConfig = (level: number) => {
+  const configs = [
+    {
+      Icon: Spade,
+      levelcolor: "teal-500",
+      gradient: "from-sky-500 to-cyan-500 via-cyan-600",
+      background: "from-sky-500/60 to-cyan-500/50 via-cyan-500/50  dark:from-cyan-900/50 dark:via-sky-900/20 dark:to-cyan-900/40"
+    },
+    // Level 1
+    {
+      Icon: Club,
+      levelcolor: "green-500",
+      gradient: "from-blue-500 to-indigo-500 via-indigo-600",
+      background: "from-blue-500/60 to-indigo-500/10 via-indigo-50/10  dark:from-indigo-900/40 dark:via-blue-900/20 dark:to-indigo-900/40"
+    }, // Level 2
+    {
+      Icon: Diamond,
+      levelcolor: "orange-500",
+      gradient: "from-pink-500 to-rose-500 via-rose-600",
+      background: " from-pink-500/60 to-rose-500/10 via-rose-50/10  dark:from-rose-900/40 dark:via-pink-900/20 dark:to-rose-900/40"
+    }, // Level 3
+    {
+      Icon: Heart,
+      levelcolor: "yellow-500",
+      gradient: "from-pink-500 to-rose-500 via-yellow-600",
+      background: "from-pink-500/90 to-rose-500/10 via-rose-50/10  dark:from-rose-900/40 dark:via-pink-900/20 dark:to-rose-900/40"
+    },
   ] as const
-  
-  const safeLevel = Math.max(0, level)
-  return icons[safeLevel % icons.length] || icons[0]
+
+  const normalizedLevel = Math.max(0, level - 1)
+  return configs[normalizedLevel % configs.length] || configs[0]
 }
 
-// Utility to detect if content looks like a header (ends with colon)
-const isHeaderItem = (children: ReactNode): boolean => {
-  if (typeof children === 'string') {
-    return children.trim().endsWith(':') && children.trim().length < 100
-  }
-  
-  if (Array.isArray(children) && children.length === 1) {
-    const child = children[0]
-    if (typeof child === 'string') {
-      return child.trim().endsWith(':') && child.trim().length < 100
-    }
-    
-    // Check for bold text that ends with colon
-    if (child && typeof child === 'object' && 'props' in child && child.props?.children) {
-      const text = child.props.children
-      if (typeof text === 'string') {
-        return text.trim().endsWith(':') && text.trim().length < 100
-      }
-    }
-  }
-  
-  return false
-}
 
-export const ListItem = ({ 
-  children, 
+export default function ListItem({
+  children,
   className = "",
-  itemNumber,
-  customNumber,
-  ...props 
-}: ListItemProps) => {
-  const { type: listType, level } = useContext(ListContext)
-  const isInOrderedList = listType === 'ordered'
-  
-  // For ordered lists, determine the display number
-  const displayNumber = customNumber || itemNumber?.toString() || "1"
-  
-  // For unordered lists, get the appropriate icon
-  const { Icon, gradient } = getUnorderedIcon(level - 1)
-  
-  // Check if this item has nested content for conditional padding
-  const hasNestedContent = useMemo(() => {
-    const childrenArray = Children.toArray(children)
-    return childrenArray.some(child => {
-      if (typeof child === 'object' && child !== null && 'type' in child) {
-        return ['ul', 'ol', 'div', 'blockquote'].includes((child as any).type) ||
-               ((child as any).props?.children && 
-                Array.isArray((child as any).props.children) && 
-                (child as any).props.children.length > 1)
-      }
-      return false
-    })
-  }, [children])
-  
-  // Special styling for header items (text ending with colon)
-  if (isHeaderItem(children)) {
-    return (
-      <motion.li
-        variants={listItemVariants}
-        className={cn(
-          "text-gray-700 dark:text-gray-300",
-          "leading-relaxed",
-          "mb-2",
-          className
-        )}
-        {...props}
-      >
-        <div className="flex items-start gap-3 mb-3">
-          <motion.div
-            whileHover={{ scale: 1.1 }}
-            transition={{ type: "spring", stiffness: 400, damping: 25 }}
-            className={cn(
-              "w-5 h-5 flex items-center justify-center flex-shrink-0 mt-0.5 shadow-md",
-              isInOrderedList
-                ? "rounded-lg bg-gradient-to-br from-sky-500 to-cyan-500"
-                : "rounded-full bg-gradient-to-br " + gradient
-            )}
-          >
-            {isInOrderedList ? (
-              <span className="text-white text-xs font-bold">
-                {displayNumber}
-              </span>
-            ) : (
-              <Icon className="w-2.5 h-2.5 text-white" fill="currentColor" />
-            )}
-          </motion.div>
-          <div className="flex-1 font-medium">{children}</div>
-        </div>
-      </motion.li>
-    )
-  }
+  level,
+  displayNumber,
+  headerItem,
+  ...props
+}: ListItemProps) {
+  const showNumber = displayNumber !== undefined
+  const { Icon, levelcolor } = getIconConfig(level)
 
-  // Regular list item
+// if(headerItem){
+//   console.log("headerItem", headerItem,children)
+// }
+
   return (
     <motion.li
       variants={listItemVariants}
       whileHover={{ x: 3, scale: 1.01 }}
       className={cn(
+        'data-list-item=special',
         "flex items-start gap-3",
         "text-gray-700 dark:text-gray-300",
         "leading-relaxed",
-        hasNestedContent ? "p-3" : "py-2 px-1", // Adaptive padding like OrderedListItem
+        // "p-0 @md:p-3",
+        // "p-0",
+        // "p-3",
+        "p-2",
+
         "rounded-xl",
-        "bg-gradient-to-r from-white/80 via-sky-50/30 to-white/80 dark:from-gray-800/40 dark:via-gray-900/20 dark:to-gray-800/40",
         "border border-gray-200/40 dark:border-gray-700/40",
-        "shadow-sm",
-        "backdrop-blur-sm",
+        "shadow-sm backdrop-blur-sm",
         "transition-all duration-300",
         "hover:shadow-md hover:border-sky-300/50 dark:hover:border-sky-600/50",
-        "hover:bg-gradient-to-r hover:from-white/90 hover:via-sky-50/50 hover:to-white/90 dark:hover:from-gray-800/60 dark:hover:via-gray-900/30 dark:hover:to-gray-800/60",
-        className
+        `hover:bg-linear-to-r hover:from-white/90 hover:via-${levelcolor}-50/50`,
+        ` hover:to-white/90 dark:hover:from-gray-800/60 dark:hover:via-gray-900/30 dark:hover:to-gray-800/60`,
+        className,
+    
       )}
       {...props}
     >
-      {/* Icon/Number - adapts to list type */}
       <motion.div
-        whileHover={{ scale: 1.2, rotate: isInOrderedList ? 0 : 180 }}
+        whileHover={{ scale: 1.2, rotate: showNumber ? 0 : 180 }}
         transition={{ type: "spring", stiffness: 400, damping: 25 }}
         className={cn(
-          "flex items-center justify-center flex-shrink-0 mt-0.5 shadow-lg",
-          isInOrderedList
-            ? "w-6 h-6 rounded-full bg-gradient-to-r from-sky-500 to-cyan-500" // Numbers in circles
-            : "w-6 h-6 rounded-full bg-gradient-to-r " + gradient // Shapes in circles
+          "flex items-center justify-center flex-shrink-0 mt-0.5 ",
+          "w-6 h-6 rounded-full",
+          "shadow-lg ",
+          `shadow-${levelcolor}`,
+          // ` bg-linear-to-r ${background}`
+          // showNumber
+          //   ? "w-6 h-6 rounded-full bg-linear-to-r from-sky-500 to-cyan-500"
+          //   : `w-6 h-6 rounded-full bg-linear-to-r ${gradient}`
         )}
       >
-        {isInOrderedList ? (
-          /* Display number for ordered lists */
-          <span className="text-white text-xs font-bold">
+        {showNumber ? (
+          <span className={cn(" text-xs font-bold",`text-${levelcolor}`)}>
             {displayNumber}
           </span>
         ) : (
-          /* Display shape icon for unordered lists */
-          <Icon className="w-3 h-3 text-white" fill="currentColor" />
+          <Icon className={cn(
+            "w-3 h-3  ",
+            `text-${levelcolor}`
+          )} />
         )}
+        {/* <span className="absolute top-0 right-0 text-em-gradient">level: {level}</span> */}
       </motion.div>
 
-      {/* Content */}
-      <div className="min-w-0 flex-1">
-        {children}
+      <div className={cn(
+        "min-w-0 flex-1",
+       
+        //  headerItem && "[&>*:first-child]:font-semibold [&>*:first-child]:text-em-gradient ",
+      )}>
+ 
+
+          
+          {children}
+
+
       </div>
     </motion.li>
   )

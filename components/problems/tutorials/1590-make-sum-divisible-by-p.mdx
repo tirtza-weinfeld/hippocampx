@@ -1,0 +1,45 @@
+# Make Sum Divisible by P
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="medium" />
+
+<PillList pills={["prefix_sum"]} />
+
+[1590. Make Sum Divisible by P](https://leetcode.com/problems/make-sum-divisible-by-p)
+
+## [!ProblemDefinition] Definition
+
+Given an array of positive integers and a positive integer p, remove the shortest subarray such that the sum of the remaining elements is divisible by p. Return the length of the shortest subarray to remove, or -1 if not possible.
+
+## [!ProblemArguments] Key Arguments
+
+- `segments: list[int]`: List of integers representing trip segments.
+- `p: int`: The divisor.
+
+## [!ProblemReturns] Returns
+
+`int`: The length of the shortest subarray to remove, or -1 if not possible.
+
+## [!ProblemCodeSnippet] Code Snippet
+
+```python meta="source=problems/1590-make-sum-divisible-by-p/solution.py"
+def minSubarrayToMakeSumDivisibleByP(segments: list[int], p: int) -> int:
+
+    total_remainder = sum(segments) % p
+    if total_remainder == 0:
+        return 0
+
+    remainder_idx = {0: -1}
+    prefix_remainder, min_length = 0, len(segments)
+
+    for i, segment in enumerate(segments):
+        prefix_remainder = (prefix_remainder + segment) % p
+        need = (prefix_remainder - total_remainder + p) % p
+        if need in remainder_idx:
+            min_length = min(min_length, i - remainder_idx[need])
+        remainder_idx[prefix_remainder] = i
+
+    return min_length if min_length < len(segments) else -1
+```
+

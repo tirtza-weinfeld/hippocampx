@@ -1,6 +1,6 @@
 "use client"
 
-import { motion } from "framer-motion"
+import { motion } from "motion/react"
 import { BookOpen, Calculator, HelpCircle, Dumbbell, Lightbulb, Gamepad2 } from "lucide-react"
 import BinaryMascot from "./binary-mascot"
 import { FunButton } from "./fun-button"
@@ -33,7 +33,7 @@ export function MobileNav({ activeTab, setActiveTab }: MobileNavProps) {
 
   const item = {
     hidden: { opacity: 0, x: -20 },
-    show: { opacity: 1, x: 0, transition: { type: "spring", stiffness: 300 } },
+    show: { opacity: 1, x: 0, transition: { type: "spring" as const, stiffness: 300 } },
   }
 
   return (
@@ -75,7 +75,7 @@ export function MobileNav({ activeTab, setActiveTab }: MobileNavProps) {
                     className="ml-auto flex-shrink-0"
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
-                    transition={{ duration: 0.2, type: "spring", stiffness: 400 }}
+                    transition={{ duration: 0.2, type: "spring" as const, stiffness: 400 }}
                   >
                     <BinaryMascot emotion="excited" size="sm" />
                   </motion.div>

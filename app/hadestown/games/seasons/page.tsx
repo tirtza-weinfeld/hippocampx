@@ -18,7 +18,7 @@ import {
   ArrowLeftIcon,
   ArrowRightIcon,
 } from "lucide-react"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion, AnimatePresence } from "motion/react"
 import confetti from "canvas-confetti"
 
 // Season data with items that belong to each season

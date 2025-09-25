@@ -1,14 +1,1 @@
-/* Force KaTeX output in inline code to match code style */
-.inline-math-katex,
-.inline-math-katex *,
-.inline-math-katex .mord,
-.inline-math-katex .mord *,
-.inline-math-katex .mtext,
-.inline-math-katex .mtext *,
-.inline-math-katex [style*="color"],
-.inline-math-katex svg,
-.inline-math-katex svg * {
-  color: inherit !important;
-  fill: currentColor !important;
-  stroke: currentColor !important;
-} 
+/* Math styles moved to styles/components/math.css for consolidation */

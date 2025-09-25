@@ -1,29 +1,35 @@
-@import "katex/dist/katex.min.css";
 @import "tailwindcss";
-
-@variant dark (&:where(.dark, .dark *));
-/* @variant hadestown (&:where(.hadestown, .hadestown *)); */
+@import "katex/dist/katex.min.css";
 
 @import "./theme.css";
 
+
+@import "./components/main.css"; /* dev */
+@import "./base/main.css"; /* dev */
+
+
+/* prod
+@layer components {
+  @import "./components/main.css";
+}
+@layer base {
+  @import "./base/main.css";
+} */
+
+@variant dark (&:where(.dark, .dark *));
 @custom-variant dark (&:is(.dark *));
 
-@layer base {
-  @import "./components/main.css";
-  @import "./base/main.css";
 
+@layer base {
   * {
-    @apply border-border;
+    border-color: var(--border);
   }
+
   body {
-    /* @apply bg-background text-foreground; */
     font-feature-settings: "rlig" 1, "calt" 1;
     font-family: var(--font-family);
   }
 }
-
-
-
 
 html {
   transition: color var(--transition-theme),
@@ -35,13 +41,7 @@ html[data-theme-transition="true"] * {
   transition: var(--transition-theme);
 }
 
-h1 {
-  /* font-size: 3.5rem; */
-/* 
-  & ::first-line {
-    line-height: 1.5;
-  } */
-}
+
 
 h1 ::first-letter {
   font-family: "Great Vibes", cursive; /* fancy font just for 1st letter */
@@ -50,4 +50,3 @@ h1 ::first-letter {
   letter-spacing: 0;
   vertical-align: middle;
 }
-

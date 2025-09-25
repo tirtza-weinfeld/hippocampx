@@ -1,0 +1,49 @@
+# Swim in Rising Water
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="hard" />
+
+<PillList pills={["dijkstra"]} />
+
+[778. Swim in Rising Water](https://leetcode.com/problems/swim-in-rising-water)
+
+## [!ProblemDefinition] Definition
+
+You are given an `N x N` grid of elevations. Find the minimum "time" `t` to travel from `(0, 0)` to `(N-1, N-1)`. You can only move between adjacent cells if their elevation is less than or equal to the time `t`
+
+## [!ProblemArguments] Key Arguments
+
+- `grid: list[list[int]]`: 2D list of integers representing the elevations of the cells
+
+## [!ProblemKeyVariables] Key Variables
+
+- `pq`: Priority queue stores (max_elevation_on_path, r, c)
+- `resolved`: set to store the cells for which we have found the minimum time required to reach them
+
+## [!ProblemReturns] Returns
+
+`int`: minimum time to travel from `(0, 0)` to `(N-1, N-1)`
+
+## [!ProblemCodeSnippet] Code Snippet
+
+```python meta="source=problems/778-swim-in-rising-water/solution.py"
+import heapq
+
+def swim_in_rising_water(grid: list[list[int]]) -> int:
+
+    n=len(grid)
+    pq, resolved = [(grid[0][0], 0, 0)], set()
+
+    while pq:
+        time, r, c = heapq.heappop(pq)
+        if (r, c) in resolved:continue
+        if (r, c) == (n - 1, n - 1):return time
+        resolved.add((r, c))
+
+        for nr, nc in [(r, c + 1), (r, c - 1), (r + 1, c), (r - 1, c)]:
+            if 0 <= nr < n and 0 <= nc < n and (nr, nc) not in resolved:
+                bottleneck_time = max(time, grid[nr][nc])
+                heapq.heappush(pq, (bottleneck_time, nr, nc))
+```
+

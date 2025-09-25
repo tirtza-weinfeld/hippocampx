@@ -4,7 +4,7 @@ import { useState, useRef, useEffect, useCallback } from "react"
 import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { ArrowLeftIcon, ArrowRightIcon, MusicIcon, CheckIcon, RefreshCwIcon, HelpCircleIcon } from "lucide-react"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion, AnimatePresence } from "motion/react"
 import { XIcon } from "lucide-react"
 
 const LYRICS = [

@@ -5,7 +5,7 @@ export default function NeuralNetworkLesson() {
 // "use client"
 
 // import { useState, useEffect, useRef } from "react"
-// import { motion, AnimatePresence } from "framer-motion"
+// import { motion, AnimatePresence } from "motion/react"
 // import { Button } from "@/components/ui/button"
 // import { Network, ChevronRight, Lightbulb, ArrowRight, Check, Brain, Zap } from "lucide-react"
 

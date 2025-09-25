@@ -2,7 +2,7 @@
 
 import type React from "react"
 import { useState, useEffect, createContext, useContext, useCallback, useRef } from "react"
-import { motion, AnimatePresence, MotionConfig } from "framer-motion"
+import { motion, AnimatePresence, MotionConfig } from "motion/react"
 import { cn } from "@/lib/utils"
 
 // Context to manage tab state

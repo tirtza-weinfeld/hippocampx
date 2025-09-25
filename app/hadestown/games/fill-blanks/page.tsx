@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { BookIcon, ArrowLeftIcon, ArrowRightIcon, StarIcon } from "lucide-react"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion, AnimatePresence } from "motion/react"
 
 // Fill in the Blanks Game Data
 const FILL_BLANKS_SENTENCES = [

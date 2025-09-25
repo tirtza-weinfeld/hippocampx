@@ -1,54 +1,556 @@
 ---
-description: 
-globs: 
-alwaysApply: false
+description:
+globs:
+alwaysApply: true
 ---
-folders setup partial example:
+# Tests Rules
 
-HippocampX/
-├── .cursor/
-├── .next/
-├── .vscode/
-├── app/
-│   └── …  
+## **🚨 MANDATORY TESTING APPROACH - ZERO TOLERANCE**
+
+### **❌ BANNED TESTING PATTERNS (AUTOMATIC REFUSAL)**
+- `React.FC` in test components → USE function declarations
+- Arrow function test components → USE `export function TestComponent() {}`
+- Jest for new projects → USE Vitest ONLY for React/Next.js
+- Missing async markers → USE `@pytest.mark.asyncio` for Python async tests
+- Silent async test failures → ALWAYS verify async tests actually await
+- Implementation testing → USE user-centric testing patterns
+
+### **✅ REQUIRED TESTING PATTERNS (MANDATORY)**
+- **Test-First Development:** Write each unit test before implementation—tests exist to capture requirements and drive correct code, not merely to increase coverage
+- **User-Centric Testing:** Test what users see and interact with, not implementation details
+- **Async-First:** All async code MUST have proper async test coverage with correct markers
+- **Type-Safe Testing:** All tests MUST be fully typed with TypeScript/Python type hints
+
+---
+
+## **Framework & Library Requirements**
+
+### **React 19 + Next.js 15 (TypeScript)**
+- **Primary:** Vitest + Testing Library (`@testing-library/react`, `@testing-library/jest-dom`, `@testing-library/user-event`)
+- **E2E:** Playwright with multi-browser support (Chromium, Firefox, WebKit)
+- **Coverage:** `@vitest/coverage-v8` for V8-powered coverage reporting
+- **Environment:** `jsdom` for DOM simulation, `happy-dom` for lightweight alternative
+
+### **Python 3.13+**
+- **Primary:** pytest + `pytest-asyncio` + `pytest-cov` + `pytest-mock`
+- **Async:** `pytest-asyncio>=1.2.0` (Python 3.13 compatible)
+- **Type Checking:** mypy integration for type-safe tests
+- **Coverage:** pytest-cov with branch coverage ≥90%
+
+---
+
+## **Directory Structure & Naming (Mirror Source)**
+
+```
+__tests__/
+├── setup/
+│   ├── globals.ts              # Global test setup, mocks, polyfills
+│   └── test-utils.tsx          # Custom render functions with providers
+├── utils/
+│   ├── mock-factories.ts       # Reusable mock component factories
+│   └── test-helpers.ts         # Common test utilities and assertions
+├── fixtures/
+│   └── test-data.ts           # Test data, constants, realistic mock data
 ├── components/
-│   ├── ui/
-│   │   └── Button.tsx
-│   └── mdx/
-│       └── Button.tsx
-├── examples/
-│   └── …
-├── hooks/
-│   └── useAuth.ts
+│   ├── mdx/                   # MDX component tests
+│   │   ├── code/             # Code block component tests
+│   │   │   ├── transformers/ # Shiki transformer tests
+│   │   │   └── *.test.tsx
+│   │   └── *.test.tsx
+│   ├── ai/                   # AI domain component tests
+│   ├── calculus/             # Calculus domain component tests
+│   └── [domain]/             # Other domain-specific tests
 ├── lib/
-│   └── formatDate.ts
+│   ├── db/                   # Database utility tests
+│   ├── mdx/                  # MDX processing tests
+│   └── *.test.ts             # Library/utility function tests
 ├── plugins/
-│   └── myPlugin.ts
-├── public/
-│   └── …
+│   ├── remark-*/             # Remark plugin tests
+│   ├── rehype-*/             # Rehype plugin tests
+│   └── *.test.ts             # Custom plugin tests
+├── app/
+│   ├── api/                  # API route tests (Next.js)
+│   ├── [route]/             # Page component tests
+│   └── *.test.tsx           # App router specific tests
 ├── scripts/
-│   └── generate.ts
-├── styles/
-│   └── global.css
-├── tests/
-│   ├── components/
-│   │   ├── ui/
-│   │   │   └── Button.test.tsx
-│   │   └── mdx/
-│   │       └── Button.test.tsx
-│   ├── hooks/
-│   │   └── useAuth.test.ts
-│   ├── lib/
-│   │   └── formatDate.test.ts
-│   └── plugins/
-│       └── myPlugin.test.ts
+│   └── *.test.ts            # Build/deployment script tests
 ├── e2e/
-│   └── app.spec.ts
-├── test-setup.ts
-├── vite.config.ts
-├── vitest.config.ts
-├── next.config.ts
-├── drizzle.config.ts
-├── package.json
-├── pnpm-lock.yaml
-└── README.md
+│   ├── global-setup.ts      # E2E test setup
+│   ├── global-teardown.ts   # E2E test cleanup
+│   └── *.spec.ts           # End-to-end test specs
+└── backend/                 # Python backend tests
+    ├── conftest.py         # pytest configuration
+    ├── test_*.py           # Python unit tests
+    └── integration/        # Python integration tests
+```
+
+### **Naming Conventions**
+- **React/TypeScript:** `ComponentName.test.tsx` for components, `utility-name.test.ts` for utilities
+- **Python:** `test_module_name.py` for modules, `test_function_name.py` for specific functions
+- **E2E:** `feature-name.spec.ts` for end-to-end test specifications
+- **Co-location:** For special modules outside standard structure: `src/special/thing.ts` → `src/special/thing.test.ts`
+
+---
+
+## **Framework & CI Integration**
+
+### **Vitest Configuration (vitest.config.ts)**
+```typescript
+import { defineConfig } from 'vitest/config'
+import react from '@vitejs/plugin-react'
+import tsconfigPaths from 'vite-tsconfig-paths'
+
+export default defineConfig({
+  plugins: [react(), tsconfigPaths()],
+  test: {
+    environment: 'jsdom',
+    globals: true,
+    setupFiles: ['__tests__/setup/globals.ts'],
+    include: ['**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'json', 'html'],
+      thresholds: {
+        lines: 90,
+        branches: 90,
+        functions: 90,
+        statements: 90
+      }
+    }
+  }
+})
+```
+
+### **Playwright Configuration (playwright.config.ts)**
+```typescript
+import { defineConfig, devices } from '@playwright/test'
+
+export default defineConfig({
+  testDir: '__tests__/e2e',
+  fullyParallel: true,
+  forbidOnly: !!process.env.CI,
+  retries: process.env.CI ? 2 : 0,
+  workers: process.env.CI ? 1 : undefined,
+  reporter: 'html',
+  use: {
+    baseURL: 'http://localhost:3000',
+    trace: 'on-first-retry',
+  },
+  projects: [
+    { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
+    { name: 'firefox', use: { ...devices['Desktop Firefox'] } },
+    { name: 'webkit', use: { ...devices['Desktop Safari'] } },
+  ],
+  webServer: {
+    command: 'pnpm dev',
+    url: 'http://localhost:3000',
+    reuseExistingServer: !process.env.CI,
+  },
+})
+```
+
+### **pytest Configuration (pytest.ini)**
+```ini
+[tool:pytest]
+minversion = 7.0
+addopts =
+    -ra
+    --strict-markers
+    --strict-config
+    --cov=backend
+    --cov-branch
+    --cov-report=term-missing:skip-covered
+    --cov-report=html:htmlcov
+    --cov-report=xml
+    --cov-fail-under=90
+testpaths = backend/tests
+python_files = test_*.py
+python_classes = Test*
+python_functions = test_*
+markers =
+    slow: marks tests as slow (deselect with '-m "not slow"')
+    integration: marks tests as integration tests
+    unit: marks tests as unit tests
+asyncio_mode = auto
+```
+
+---
+
+## **Modern Testing Patterns (2025)**
+
+### **React 19 + Vitest Patterns**
+
+#### **Component Testing (User-Centric)**
+```typescript
+import { render, screen } from '__tests__/utils/test-utils'
+import { userEvent } from '@testing-library/user-event'
+import { expect, test, describe } from 'vitest'
+
+// ✅ CORRECT: Function declaration, user-centric testing
+export function Button({ onClick, children }: ButtonProps) {
+  return <button onClick={onClick}>{children}</button>
+}
+
+describe('Button Component', () => {
+  test('handles user clicks correctly', async () => {
+    const user = userEvent.setup()
+    const handleClick = vi.fn()
+
+    render(<Button onClick={handleClick}>Click me</Button>)
+
+    const button = screen.getByRole('button', { name: /click me/i })
+    await user.click(button)
+
+    expect(handleClick).toHaveBeenCalledOnce()
+  })
+})
+```
+
+#### **Next.js 15 App Router Testing**
+```typescript
+import { render } from '__tests__/utils/test-utils'
+import HomePage from '@/app/page'
+
+// ✅ Testing synchronous server components
+describe('HomePage', () => {
+  test('renders main navigation', () => {
+    render(<HomePage />)
+
+    expect(screen.getByRole('navigation')).toBeInTheDocument()
+    expect(screen.getByText('HippocampX')).toBeInTheDocument()
+  })
+})
+
+// ✅ For async server components, use E2E tests
+test.e2e('async server component behavior', async ({ page }) => {
+  await page.goto('/notes/algorithms')
+  await expect(page.getByText('Loading...')).toBeVisible()
+  await expect(page.getByText('Algorithm Content')).toBeVisible()
+})
+```
+
+#### **Async Testing Patterns**
+```typescript
+import { waitFor } from '@testing-library/react'
+
+test('loads data asynchronously', async () => {
+  render(<AsyncDataComponent />)
+
+  expect(screen.getByText('Loading...')).toBeInTheDocument()
+
+  await waitFor(
+    () => {
+      expect(screen.getByText('Data loaded successfully')).toBeInTheDocument()
+    },
+    { timeout: 5000 }
+  )
+})
+```
+
+### **Python 3.13 + pytest Patterns**
+
+#### **Async Testing with pytest-asyncio**
+```python
+import pytest
+from httpx import AsyncClient
+
+# ✅ MANDATORY: Use asyncio marker for async tests
+@pytest.mark.asyncio
+async def test_async_api_endpoint():
+    async with AsyncClient(app=app) as client:
+        response = await client.get("/api/algorithms")
+        assert response.status_code == 200
+        assert "algorithms" in response.json()
+
+# ✅ Async fixtures for resource management
+@pytest.fixture
+async def async_database():
+    async with create_test_database() as db:
+        yield db
+        # Cleanup handled by context manager
+
+@pytest.mark.asyncio
+async def test_database_operations(async_database):
+    result = await async_database.fetch_algorithm("binary-search")
+    assert result.name == "Binary Search"
+```
+
+#### **Error Handling and ExceptionGroup (Python 3.13)**
+```python
+import pytest
+
+def test_exception_group_handling():
+    with pytest.raises(ExceptionGroup) as exc_info:
+        raise ExceptionGroup("Multiple errors", [
+            ValueError("Invalid input"),
+            TypeError("Wrong type")
+        ])
+
+    exc_group = exc_info.value
+    assert len(exc_group.exceptions) == 2
+    assert any(isinstance(e, ValueError) for e in exc_group.exceptions)
+```
+
+---
+
+## **Test Categories & Requirements**
+
+### **1. Unit Tests (90%+ Coverage Required)**
+- **Component Behavior:** Test user interactions, state changes, prop handling
+- **Pure Functions:** Test edge cases, error conditions, boundary values
+- **Business Logic:** Test algorithms, calculations, data transformations
+- **Async Operations:** Test API calls, database operations, file I/O
+
+### **2. Integration Tests (Critical Paths 100%)**
+- **Component Integration:** Test component interactions and data flow
+- **API Integration:** Test full request/response cycles
+- **Database Integration:** Test queries, transactions, migrations
+- **Plugin Integration:** Test MDX plugins, transformers, processing pipelines
+
+### **3. E2E Tests (User Workflows)**
+- **Navigation Flows:** Test page routing, navigation patterns
+- **Interactive Features:** Test tooltips, modals, form submissions
+- **Performance Metrics:** Monitor Core Web Vitals, loading times
+- **Accessibility:** Test screen reader support, keyboard navigation
+
+---
+
+## **Coverage & Quality Standards**
+
+### **Minimum Coverage Requirements**
+- **Unit Tests:** ≥90% line coverage, ≥90% branch coverage
+- **Critical Paths:** 100% coverage for core functionality (calculations, algorithms, security)
+- **Integration Tests:** ≥80% coverage for API endpoints and data flows
+- **E2E Tests:** 100% coverage for primary user workflows
+
+### **Performance Standards**
+- **Unit Tests:** <100ms per test average
+- **Integration Tests:** <500ms per test average
+- **E2E Tests:** <10s per test average
+- **Coverage Generation:** <30s for full project coverage
+
+### **CI/CD Gate Requirements**
+- All tests must pass before merge
+- Coverage thresholds must be met
+- No new TypeScript/Python type errors
+- E2E tests must pass on all target browsers
+- Performance regression checks must pass
+
+---
+
+## **Modern Development Commands**
+
+### **Frontend Testing**
+```bash
+# Run all unit/integration tests
+pnpm test
+
+# Run with coverage and fail on threshold miss
+pnpm test:coverage
+
+# Run in watch mode with HMR
+pnpm test:watch
+
+# Run specific test pattern
+pnpm test code-block
+
+# Visual test UI (Vitest 3+)
+pnpm test:ui
+
+# Run E2E tests
+pnpm test:e2e
+
+# E2E with visual debugging
+pnpm test:e2e:ui
+
+# E2E with headed browser
+pnpm test:e2e:headed
+
+# E2E debug mode (pauses execution)
+pnpm test:e2e:debug
+
+# Show E2E test reports
+pnpm test:e2e:report
+
+# Run all tests (unit + e2e)
+pnpm test:all
+```
+
+### **Backend Testing**
+```bash
+# Run Python tests with coverage
+pnpm test:py
+
+# Run with verbose output and coverage report
+cd backend && pytest -v --cov --cov-report=html
+
+# Run only fast tests (exclude slow marker)
+cd backend && pytest -m "not slow"
+
+# Run specific test file
+cd backend && pytest tests/test_algorithms.py
+
+# Run with type checking
+cd backend && mypy . && pytest
+```
+
+---
+
+## **Advanced Testing Patterns**
+
+### **Mock Strategies**
+```typescript
+// ✅ Mock Next.js router properly
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: vi.fn(),
+    replace: vi.fn(),
+    pathname: '/test',
+  }),
+  useSearchParams: () => new URLSearchParams(),
+}))
+
+// ✅ Mock heavy components
+vi.mock('@/components/heavy/ChartComponent', () => ({
+  default: ({ data }: any) => <div data-testid="chart-mock">{data.length} items</div>
+}))
+```
+
+### **Fixture Management**
+```typescript
+// ✅ Reusable test data
+export const testAlgorithms = {
+  binarySearch: {
+    name: 'Binary Search',
+    timeComplexity: 'O(log n)',
+    spaceComplexity: 'O(1)',
+  },
+  quickSort: {
+    name: 'Quick Sort',
+    timeComplexity: 'O(n log n)',
+    spaceComplexity: 'O(log n)',
+  },
+} as const
+
+// ✅ Mock factories
+export function createMockUser(overrides: Partial<User> = {}): User {
+  return {
+    id: '1',
+    name: 'Test User',
+    email: 'test@example.com',
+    ...overrides,
+  }
+}
+```
+
+### **Error Boundary Testing**
+```typescript
+test('handles component errors gracefully', () => {
+  const ThrowError = () => {
+    throw new Error('Test error')
+  }
+
+  const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+
+  render(
+    <ErrorBoundary>
+      <ThrowError />
+    </ErrorBoundary>
+  )
+
+  expect(screen.getByText(/something went wrong/i)).toBeInTheDocument()
+
+  consoleSpy.mockRestore()
+})
+```
+
+---
+
+## **Security & Performance Testing**
+
+### **Security Test Patterns**
+```typescript
+test('sanitizes user input', () => {
+  render(<UserContentDisplay content="<script>alert('xss')</script>" />)
+
+  const content = screen.getByTestId('user-content')
+  expect(content.innerHTML).not.toContain('<script>')
+})
+
+test('validates input boundaries', () => {
+  const result = processUserInput('x'.repeat(10000))
+  expect(result).toBe(null) // Should reject oversized input
+})
+```
+
+### **Performance Testing**
+```typescript
+test('renders large lists efficiently', () => {
+  const largeDataset = Array.from({ length: 10000 }, (_, i) => ({
+    id: i,
+    name: `Item ${i}`,
+  }))
+
+  const startTime = performance.now()
+  render(<VirtualizedList items={largeDataset} />)
+  const endTime = performance.now()
+
+  expect(endTime - startTime).toBeLessThan(100) // 100ms threshold
+})
+```
+
+---
+
+## **Debugging & Maintenance**
+
+### **Test Debugging Commands**
+```bash
+# Debug unit tests with inspector
+pnpm test --inspect-brk
+
+# Run single test in debug mode
+pnpm test --inspect-brk code-block.test.tsx
+
+# E2E debugging with trace
+pnpm test:e2e --trace on
+
+# Generate test trace for specific test
+pnpm test:e2e --trace on --grep "tooltip rendering"
+```
+
+### **Test Maintenance Tasks**
+- **Weekly:** Review test coverage reports and identify gaps
+- **Monthly:** Update test data to reflect current feature set
+- **Quarterly:** Audit and remove obsolete tests
+- **Per Release:** Verify all E2E workflows still function correctly
+
+### **Performance Monitoring**
+```bash
+# Monitor test execution time
+pnpm test --reporter=verbose
+
+# Generate bundle size impact report
+pnpm test:coverage && pnpm build:analyze
+
+# Track Core Web Vitals in E2E tests
+pnpm test:e2e --grep "performance"
+```
+
+---
+
+## **Migration & Legacy Support**
+
+### **From Jest to Vitest Migration**
+1. **Replace Jest with Vitest:** Update package.json dependencies
+2. **Update configuration:** Convert jest.config.js to vitest.config.ts
+3. **Update imports:** Change from `jest` globals to `vitest` imports
+4. **Update mocks:** Convert Jest mocks to Vitest vi.mock()
+5. **Test runner:** Update CI/CD scripts to use Vitest
+
+### **Handling Legacy Code**
+- **Gradual migration:** Test new features with modern patterns
+- **Wrapper functions:** Create adapters for legacy components
+- **Documentation:** Clearly mark legacy vs. modern test patterns
+- **Timeline:** Set deprecation schedule for old testing approaches
+
+This comprehensive testing guide ensures robust, maintainable, and performant test suites for the HippocampX project using the latest 2025 best practices for React 19, Next.js 15, and Python 3.13.7

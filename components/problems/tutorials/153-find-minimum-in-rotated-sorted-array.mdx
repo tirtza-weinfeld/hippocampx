@@ -1,0 +1,47 @@
+# Find Minimum in Rotated Sorted Array
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="medium" />
+
+<PillList pills={["binary_search"]} />
+
+[153. Find Minimum in Rotated Sorted Array](https://leetcode.com/problems/find-minimum-in-rotated-sorted-array)
+
+## [!ProblemDefinition] Definition
+
+Given a unique-element sorted array that has been rotated at an unknown pivot, find its minimum value.
+
+## [!ProblemIntuition] Intuition
+
+- The goal is to find the *inflection point* in the rotated list (where the numbers switch from high to low) — this point is the minimum element.:
+    - We use a modified binary search to home in on this point.
+    - The key is comparing the middle element `nums[mid]` with the rightmost element `nums[r]`. This comparison tells us which part of the array is currently sorted and can be discarded.
+        - **Case 1: `nums[mid] < nums[r]`**
+        - **Example:** In `[4, 5, 1, 2, 3]`, if `mid` points to `1`, `nums[mid]` (`1`) is less than `nums[r]` (`3`).
+        - **Logic:** This indicates that the entire right portion of the array from `mid` to `r` (i.e., `[1, 2, 3]`) is sorted. The minimum element could be `nums[mid]` itself, or it could be to its left. We can safely search the left half (including `mid`) by setting `r = mid`.
+        - **Case 2: `nums[mid] >= nums[r]`**
+        - **Example:** In `[4, 5, 1, 2, 3]`, if `mid` points to `5` in an earlier step, `nums[mid]` (`5`) is greater than `nums[r]` (`3`).
+        - **Logic:** This indicates that the inflection point (the minimum value) must lie to the right of `mid`. The left portion `[4, 5]` is sorted but contains values larger than the true minimum. We discard this left portion by setting `l = mid + 1`.
+    - The loop terminates when `l` and `r` converge, at which point `nums[l]` is the smallest element.
+
+## [!ProblemKeyExpressions] Key Expressions
+
+- `r = mid`: If nums[mid] is less than nums[r], the minimum is in the left half (inclusive of mid).
+- `l = mid + 1`: the smallest is on the right
+
+## [!ProblemCodeSnippet] Code Snippet
+
+```python meta="source=problems/153-find-minimum-in-rotated-sorted-array/solution.py"
+def find_minimum_in_rotated_sorted_array(nums: list[int]) -> int:
+
+    l, r = 0, len(nums) - 1
+    while l < r:
+        mid = (l + r) // 2
+        if nums[mid] < nums[r]:
+            r = mid
+        else:
+            l = mid + 1 
+    return nums[l]
+```
+

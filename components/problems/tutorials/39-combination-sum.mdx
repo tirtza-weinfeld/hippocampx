@@ -1,0 +1,56 @@
+# Combination Sum
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="medium" />
+
+<PillList pills={["backtrack"]} />
+
+[39. Combination Sum](https://leetcode.com/problems/combination-sum)
+
+## [!ProblemDefinition] Definition
+
+Return all unique combinations where chosen numbers sum to a target. Numbers can be reused.
+
+## [!ProblemIntuition] Intuition
+
+- DFS with backtracking:
+    - Sort candidates, try each starting from current index (to allow reuse), prune if number exceeds remaining target, and record the path when rem == 0.
+
+## [!ProblemTimeComplexity] Time Complexity
+
+- O(2^n):
+    - Worst-case exponential in number of combinations explored, but pruning (if c > rem: break) reduces branches significantly.
+
+## [!ProblemArguments] Key Arguments
+
+- `candidates: list[int]`: List of candidate numbers
+- `target: int`: Target sum to achieve
+
+## [!ProblemReturns] Returns
+
+`list[list[int]]`: List of all unique combinations that sum to target
+
+## [!ProblemCodeSnippet] Code Snippet
+
+```python meta="source=problems/39-combination-sum/solution.py"
+def combination_sum(candidates: list[int], target: int) -> list[list[int]]:
+
+    candidates.sort()
+    res, path = [], []
+
+    def dfs(i: int, rem: int) -> None:
+        if rem == 0:
+            res.append(path.copy())
+            return
+        for j in range(i, len(candidates)):
+            if (c := candidates[j]) > rem:
+                break
+            path.append(c)
+            dfs(j, rem - c)
+            path.pop()
+
+    dfs(0, target)
+    return res
+```
+

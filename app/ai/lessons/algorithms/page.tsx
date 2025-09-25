@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion, AnimatePresence } from "motion/react"
 import { Button } from "@/components/ui/button"
 import { Code, ChevronRight, Lightbulb, ArrowRight, Check, Shuffle, Search, SortAsc, Sparkles } from "lucide-react"
 

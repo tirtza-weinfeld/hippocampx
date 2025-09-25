@@ -1,0 +1,29 @@
+# Maximum Sum of Circular Subarray
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="medium" />
+
+<PillList pills={["kadane"]} />
+
+[918. Maximum Sum of Circular Subarray](https://leetcode.com/problems/maximum-sum-of-circular-subarray)
+
+## [!ProblemDefinition] Definition
+
+Given a circular array of integers, return the maximum sum of any contiguous subarray.
+
+## [!ProblemCodeSnippet] Code Snippet
+
+```python meta="source=problems/918-maximum-sum-of-circular-subarray/solution.py"
+def maximum_sum_of_circular_subarray(nums: list[int]) -> int:
+    total, max_end = min_end = 0
+    max_sum, min_sum = float("-inf"), float("inf")
+    for x in nums:
+        total += x
+        max_end = max(x, max_end + x)
+        max_sum = max(max_sum, max_end)  # Kadane (max)
+        min_end = min(x, min_end + x)
+        min_sum = min(min_sum, min_end)  # Kadane (min)
+    return max_sum if max_sum < 0 else max(max_sum, total - min_sum)
+```
+

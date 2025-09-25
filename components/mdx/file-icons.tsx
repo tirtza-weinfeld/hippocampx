@@ -1,6 +1,6 @@
 "use client"
 
-import { motion } from "framer-motion"
+import { motion } from "motion/react"
 import React from "react"
 
 // Animated SVG icon components for each file type

@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState, useEffect, useCallback, useRef } from 'react'
-import { motion, useMotionValue, animate, useMotionValueEvent } from 'framer-motion'
+import { motion, useMotionValue, animate, useMotionValueEvent } from 'motion/react'
 import { TableOfContents } from './table-of-contents'
 import { cn } from '@/lib/utils'
 
@@ -233,7 +233,7 @@ export function ResizableWrapper({ headings: headingsJson, children, className }
           paddingRight: isMobile ? 0 : width
         }}
       >
-        <div className='max-w-4xl mx-auto print:w-[600px]'>
+        <div className='max-w-4xl mx-auto print:w-[600px] relative'>
           {children}
 
         </div>

@@ -1,0 +1,272 @@
+/* Line break differentiation styles */
+
+/* Method 1: Advanced line break visualization */
+.preserve-linebreaks,
+div.preserve-linebreaks,
+[class*="preserve-linebreaks"] {
+  white-space: pre-wrap !important; /* Preserves line breaks and allows wrapping */
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
+  
+  /* Visual debugging - remove this later */
+  border-left: 2px solid var(--color-blue-200) !important;
+  padding-left: 8px !important;
+  
+  /* Enhanced line height and spacing */
+  line-height: 1.6 !important;
+  position: relative;
+  
+  /* Use CSS to detect and style wrapped lines vs intentional breaks */
+  text-indent: 0 !important;
+  hanging-indent: 1.5em !important; /* Wrapped lines get indented */
+}
+
+/* Alternative approach: Use CSS counters to track lines */
+.preserve-linebreaks-counter {
+  counter-reset: line-counter;
+  white-space: pre-wrap !important;
+  position: relative;
+}
+
+/* Show line numbers for debugging */
+.preserve-linebreaks-counter::before {
+  counter-increment: line-counter;
+  content: counter(line-counter) " ";
+  position: absolute;
+  left: -30px;
+  color: var(--color-gray-400);
+  font-size: 0.8em;
+  font-family: monospace;
+  opacity: 0.6;
+}
+
+/* Method 2: Distinguish logical lines from wrapped lines */
+.smart-line-breaks {
+  white-space: pre-wrap !important;
+  word-break: normal !important;
+  overflow-wrap: break-word !important;
+  
+  /* Visual debugging */
+  border-left: 2px solid var(--color-green-200) !important;
+  padding-left: 8px !important;
+  
+  /* Key technique: Use text-indent and hanging-indent */
+  text-indent: 0 !important; /* First line of each logical line starts at margin */
+  /* Note: hanging-indent is not widely supported yet, so we'll use a different approach */
+}
+
+/* Advanced approach: Use CSS to style wrapped vs logical lines differently */
+.logical-line-breaks {
+  white-space: pre-wrap !important;
+  position: relative;
+  
+  /* Visual debugging */
+  border-left: 2px solid var(--color-purple-200) !important;
+  padding-left: 8px !important;
+  
+  /* Create visual distinction using pseudo-elements */
+  line-height: 1.6 !important;
+}
+
+/* Style for logical line starts (lines that begin due to \n in source) */
+.logical-line-breaks::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: repeating-linear-gradient(
+    to bottom,
+    var(--color-purple-400) 0px,
+    var(--color-purple-400) 2px,
+    transparent 2px,
+    transparent 1.6em
+  );
+  opacity: 0.6;
+}
+
+/* Alternative: Use margin-left for wrapped lines */
+.hanging-wrap {
+  white-space: pre-wrap !important;
+  
+  /* Visual debugging */
+  border-left: 2px solid var(--color-blue-200) !important;
+  padding-left: 8px !important;
+  
+  /* This is the key: wrapped lines get indented */
+  text-indent: 0 !important;
+  padding-left: 16px !important;
+  text-indent: -8px !important; /* Pull first line back to create hanging effect */
+}
+
+/* Styles for JavaScript-detected line types */
+.line-break-detector {
+  line-height: 1.6 !important;
+}
+
+/* Logical lines (start because of \n in MDX source) */
+.logical-line-start,
+.logical-line.single-line {
+  /* These are lines that start because they're new lines in the source */
+  display: block;
+  margin-left: 0 !important;
+  padding-left: 0 !important;
+  
+  /* Visual indicator for logical line starts */
+  position: relative;
+}
+
+.logical-line-start::before,
+.logical-line.single-line::before {
+  content: "▶" !important;
+  position: absolute;
+  left: -20px;
+  color: var(--color-green-500) !important;
+  font-size: 0.8em !important;
+  opacity: 0.7 !important;
+}
+
+/* Wrapped lines (start because text ran out of space) */
+.wrapped-line {
+  /* These are lines that start because of text wrapping */
+  display: block;
+  margin-left: 16px !important; /* Indent wrapped lines */
+  position: relative;
+}
+
+.wrapped-line::before {
+  content: "↪" !important;
+  position: absolute;
+  left: -20px;
+  color: var(--color-orange-400) !important;
+  font-size: 0.8em !important;
+  opacity: 0.7 !important;
+}
+
+/* Empty lines */
+.logical-line.empty-line {
+  height: 1.6em;
+  background: var(--color-gray-100);
+  opacity: 0.3;
+}
+
+.dark .logical-line.empty-line {
+  background: var(--color-gray-800);
+}
+
+/* Show line break symbols for <br> tags */
+.preserve-linebreaks br::after {
+  content: "↵" !important;
+  color: var(--color-blue-400) !important;
+  opacity: 0.6 !important;
+  font-size: 0.8em !important;
+  margin-left: 2px !important;
+}
+
+/* Alternative: Show subtle background for line boundaries */
+.preserve-linebreaks-subtle {
+  white-space: pre-wrap !important;
+  word-wrap: break-word !important;
+  background-image: linear-gradient(
+    to right,
+    transparent 0%,
+    var(--color-blue-100) 1px,
+    transparent 1px
+  ) !important;
+  background-size: 100% 1.4em !important;
+  background-repeat: repeat-y !important;
+}
+
+/* Method 3: Advanced wrapping detection using CSS Grid */
+.wrap-detector {
+  white-space: pre-wrap !important;
+  display: inline !important;
+  position: relative;
+  
+  /* Visual debugging */
+  border-left: 2px solid var(--color-purple-200) !important;
+  padding-left: 8px !important;
+}
+
+/* Method 4: Use CSS to create visual sentence/clause boundaries */
+.sentence-aware {
+  white-space: pre-wrap !important;
+  
+  /* Visual debugging */
+  border-left: 2px solid var(--color-orange-200) !important;
+  padding-left: 8px !important;
+}
+
+/* Add subtle markers after periods, colons, and other sentence endings */
+.sentence-aware::after {
+  content: "";
+  background-image: 
+    /* Dots after periods */
+    radial-gradient(circle at 2px 50%, var(--color-orange-300) 1px, transparent 1px);
+  background-size: 4px 1.6em;
+  background-repeat: repeat-y;
+  background-position: right center;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 4px;
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+/* Method 5: Hanging punctuation style */
+.hanging-punct {
+  white-space: pre-wrap !important;
+  hanging-punctuation: first last !important;
+  text-indent: -0.5em !important;
+  padding-left: 0.5em !important;
+  
+  /* Visual debugging */
+  border-left: 2px solid var(--color-teal-200) !important;
+  padding-left: 8px !important;
+}
+
+/* Method 3: Subtle background for wrapped portions */
+.highlight-wraps {
+  white-space: pre-wrap;
+  background-image: 
+    repeating-linear-gradient(
+      transparent,
+      transparent 1.4em,
+      var(--color-blue-50) 1.4em,
+      var(--color-blue-50) 1.45em
+    );
+}
+
+.dark .highlight-wraps {
+  background-image: 
+    repeating-linear-gradient(
+      transparent,
+      transparent 1.4em,
+      var(--color-blue-900/20) 1.4em,
+      var(--color-blue-900/20) 1.45em
+    );
+}
+
+/* Method 4: Use CSS counters to show line numbers differently */
+.numbered-lines {
+  counter-reset: logical-line visual-line;
+  white-space: pre-wrap;
+}
+
+.numbered-lines::before {
+  counter-increment: logical-line;
+  content: counter(logical-line) " ";
+  color: var(--color-gray-500);
+  font-family: monospace;
+  margin-right: 1em;
+}
+
+/* Method 5: Poetry/prose style with hanging indents */
+.hanging-indent {
+  white-space: pre-wrap;
+  text-indent: -1.5em;
+  padding-left: 1.5em;
+}

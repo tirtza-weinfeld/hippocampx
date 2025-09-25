@@ -1,12 +1,12 @@
 "use client"
 
-import { motion } from "framer-motion"
+import { motion } from "motion/react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { useState, useEffect } from "react"
 import { Confetti } from "@/components/calculus/confetti"
 import { ArrowRight } from "lucide-react"
-import { useReducedMotion } from "framer-motion"
+import { useReducedMotion } from "motion/react"
 
 export function HomeHero() {
   const [mounted, setMounted] = useState(false)
@@ -45,7 +45,7 @@ export function HomeHero() {
       transition: {
         duration: shouldReduceMotion ? 0.1 : 0.5,
         delay: shouldReduceMotion ? 0 : delay,
-        ease: "easeOut",
+        ease: "easeOut" as const,
       },
     }),
   }
@@ -61,21 +61,21 @@ export function HomeHero() {
       transition: {
         duration: shouldReduceMotion ? 0.1 : 0.5,
         delay: shouldReduceMotion ? 0 : 0.4,
-        ease: "easeOut",
+        ease: "easeOut" as const,
       },
     },
     hover: {
       scale: shouldReduceMotion ? 1 : 1.05,
       transition: {
         duration: 0.2,
-        ease: "easeInOut",
+        ease: "easeInOut" as const,
       },
     },
     tap: {
       scale: shouldReduceMotion ? 1 : 0.95,
       transition: {
         duration: 0.1,
-        ease: "easeInOut",
+        ease: "easeInOut" as const,
       },
     },
   }
@@ -91,7 +91,7 @@ export function HomeHero() {
       transition: {
         duration: shouldReduceMotion ? 0.1 : 0.5,
         delay: shouldReduceMotion ? 0 : 0.6,
-        ease: "easeOut",
+        ease: "easeOut" as const,
       },
     },
   }
@@ -280,7 +280,7 @@ export function HomeHero() {
                     duration: isAnimating ? 2 : shouldReduceMotion ? 0.1 : 1.5,
                     delay: isAnimating ? 0 : shouldReduceMotion ? 0 : 0.7,
                     repeat: isAnimating ? 0 : 0,
-                    ease: "easeInOut",
+                    ease: "easeInOut" as const,
                   }}
                 />
 
@@ -306,7 +306,7 @@ export function HomeHero() {
                       duration: isAnimating ? 2 : shouldReduceMotion ? 0.1 : 1.5,
                       delay: isAnimating ? 0.2 : shouldReduceMotion ? 0 : 1,
                       repeat: isAnimating ? 0 : 0,
-                      ease: "easeInOut",
+                      ease: "easeInOut" as const,
                     }}
                   />
                 )}
@@ -360,7 +360,7 @@ export function HomeHero() {
                 className="absolute text-3xl font-bold text-violet-500 dark:text-violet-400"
                 style={{ top: "10%", left: "20%" }}
                 animate={shouldReduceMotion ? {} : { y: [0, -15, 0] }}
-                transition={{ duration: 3, repeat: Number.POSITIVE_INFINITY, repeatType: "reverse" }}
+                transition={{ duration: 3, repeat: Number.POSITIVE_INFINITY, repeatType: "reverse" as const }}
               >
                 ∫
               </motion.div>
@@ -368,7 +368,7 @@ export function HomeHero() {
                 className="absolute text-3xl font-bold text-indigo-500 dark:text-indigo-400"
                 style={{ top: "30%", right: "15%" }}
                 animate={shouldReduceMotion ? {} : { y: [0, -10, 0] }}
-                transition={{ duration: 2.5, repeat: Number.POSITIVE_INFINITY, repeatType: "reverse", delay: 0.5 }}
+                transition={{ duration: 2.5, repeat: Number.POSITIVE_INFINITY, repeatType: "reverse" as const, delay: 0.5 }}
               >
                 d/dx
               </motion.div>
@@ -376,7 +376,7 @@ export function HomeHero() {
                 className="absolute text-3xl font-bold text-blue-500 dark:text-blue-400"
                 style={{ bottom: "25%", left: "15%" }}
                 animate={shouldReduceMotion ? {} : { y: [0, -12, 0] }}
-                transition={{ duration: 3.2, repeat: Number.POSITIVE_INFINITY, repeatType: "reverse", delay: 0.8 }}
+                transition={{ duration: 3.2, repeat: Number.POSITIVE_INFINITY, repeatType: "reverse" as const, delay: 0.8 }}
               >
                 lim
               </motion.div>
@@ -384,7 +384,7 @@ export function HomeHero() {
                 className="absolute text-3xl font-bold text-sky-500 dark:text-sky-400"
                 style={{ bottom: "15%", right: "25%" }}
                 animate={shouldReduceMotion ? {} : { y: [0, -8, 0] }}
-                transition={{ duration: 2.8, repeat: Number.POSITIVE_INFINITY, repeatType: "reverse", delay: 1.2 }}
+                transition={{ duration: 2.8, repeat: Number.POSITIVE_INFINITY, repeatType: "reverse" as const, delay: 1.2 }}
               >
                 Σ
               </motion.div>

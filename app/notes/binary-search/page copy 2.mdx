@@ -1,0 +1,156 @@
+# Binary search
+
+## Resizable Table of Contents
+
+Binary search is an efficient *$O(\log n)$* algorithm for finding an item in a **sorted** list . 
+ It works by repeatedly dividing the list in half.
+
+The core idea is to compare the target value with the middle element of the list.
+ If they are not equal, the half in which the target cannot lie is eliminated, 
+ and the search continues on the remaining half.
+
+
+---
+## Finding the Leftmost Insertion Point 
+
+*Given a sorted list `a` and a target `x`, return the index at which `x` should be inserted to maintain order.
+(i.e. **first** position `i` where `a[i] >= x`)*
+
+```python file=problems/binary_search.py:simple_bisect_left 
+```
+
+>[!tip] 
+>When `a[mid]` is greater than or equal to `x`, we set `r = mid`.
+ This ensures we keep considering the `mid` index as a potential answer and forces the search to
+  converge on the leftmost possible index.
+
+-----
+
+## Finding the Rightmost Insertion Point 
+
+*Given a sorted list `a` and a target `x`, return the index at which `x` should be inserted to maintain order.
+(i.e. **first** position `i` where `a[i] > x`)*
+
+```python file=problems/binary_search.py:simple_bisect_right
+```
+
+>[!tip] 
+>When `a[mid]` is less than or equal to `x`, we set `l = mid + 1`.
+ This effectively pushes the search past all elements equal to `x`, ensuring the final index is just after the rightmost occurrence.
+
+-----
+## Examples
+
+
+### 1. Search Insert Position
+
+[35. Search Insert Position](https://leetcode.com/problems/search-insert-position/)
+
+*Given a sorted array of distinct integers and a target value, find the index of the target.
+If absent, return the index where it would be inserted to maintain order.*
+
+```python file=problems/35-search-insert-position/solution.py:search_insert_position
+```
+
+  >[!tip] 
+  Python's `bisect` module is the standard for binary search.
+  See [Finding the Leftmost Insertion Point](#finding-the-leftmost-insertion-point) for simplified `bisect_left`.
+
+
+-----
+
+### 2. Find First and Last Position of Element in Sorted Array
+
+[34. Find First and Last Position of Element in Sorted Array](https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/)
+
+*Given a sorted array of integers `nums` that may contain duplicates, 
+find the starting and ending indices of a given `target`. If the target is not in the array, return `[-1, -1]`.*
+
+```python file=problems/34-find-first-and-last-position-of-element-in-sorted-array/solution.py:find_first_and_last_position_of_element_in_sorted_array
+```
+  >[!tip] 
+   [bisect_left](#simple_bisect_left) finds the first position where `target` could be inserted, and
+    [bisect_right](#simple_bisect_right) finds the first position *after* all 
+  existing `target`s. 
+
+-----
+### 3. Find Minimum in Rotated Sorted Array
+[153. Find Minimum in Rotated Sorted Array](https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/)
+
+*Given a unique-element sorted array that has been rotated at an unknown pivot, find its minimum value.*
+
+```python file=problems/153-find-minimum-in-rotated-sorted-array/solution.py:find_minimum_in_rotated_sorted_array
+```
+
+> [!intuition:collapse] 
+> The goal is to find the *inflection point* in the rotated list (where the numbers switch from high to low) — this point is the minimum element. 
+> We use a modified binary search to home in on this point.
+>
+> The key is comparing the middle element `nums[mid]` with the rightmost element `nums[r]`. This comparison tells us which part of the array is currently sorted and can be discarded.
+>
+> -   **Case 1: `nums[mid] < nums[r]`**
+>     -   **Example:** In `[4, 5, 1, 2, 3]`, if `mid` points to `1`, `nums[mid]` (`1`) is less than `nums[r]` (`3`).
+>     -   **Logic:** This indicates that the entire right portion of the array from `mid` to `r` (i.e., `[1, 2, 3]`) is sorted. The minimum element could be `nums[mid]` itself, or it could be to its left. We can safely search the left half (including `mid`) by setting `r = mid`.
+>
+> -   **Case 2: `nums[mid] >= nums[r]`**
+>     -   **Example:** In `[4, 5, 1, 2, 3]`, if `mid` points to `5` in an earlier step, `nums[mid]` (`5`) is greater than `nums[r]` (`3`).
+>     -   **Logic:** This indicates that the inflection point (the minimum value) must lie to the right of `mid`. The left portion `[4, 5]` is sorted but contains values larger than the true minimum. We discard this left portion by setting `l = mid + 1`.
+>
+> The loop terminates when `l` and `r` converge, at which point `nums[l]` is the smallest element.
+
+-----
+
+### 4. Koko Eating Bananas
+
+[875. Koko Eating Bananas](https://leetcode.com/problems/koko-eating-bananas/)
+
+
+
+*Given banana piles `piles` and hour limit `h`, 
+find the minimum eating speed *$k∈ℕ$* such that 
+*$\displaystyle \sum_{i=1}^{|piles|} \left\lceil \frac{p_i}{k} \right\rceil \le h$*
+where each hour Koko eats up to *$k$* bananas from one pile
+(any leftover hour is wasted)*
+
+```python file=problems/875-koko-eating-bananas/solution.py:koko_eating_bananas
+```
+> [\!intuition:collapse] *binary searching the answer space, (the eating speed `k`)*
+>
+> The range of possible speeds is from `1` to `max(piles)`.
+>
+> The key property is that the problem is **monotonic** (if a speed `k` is fast enough, any speed greater than `k` will also be fast enough). This allows us to binary search for the *minimum* valid speed.
+>
+> We test a mid speed (`k = (l + r) // 2`). If it's valid (`hours(k) <= h`), we try to find a smaller valid speed by searching the lower half (`r = k`). If it's too slow, we must increase the speed by searching the upper half (`l = k + 1`). The loop converges on the smallest `k` that works. 🍌
+
+> [\!timecomplexity]
+> $O(n \log m)$, where *$n$* is the number of piles and *$m$* is the maximum pile size.
+
+
+
+-----
+
+### 5. Capacity To Ship Packages Within D Days
+
+[1011. Capacity To Ship Packages Within D Days](https://leetcode.com/problems/capacity-to-ship-packages-within-d-days/)
+
+*Given a list of weights and a number of days, find the minimum capacity of a ship that can ship all the weights within the given number of days.*
+
+
+
+```python file=problems/1011-capacity-to-ship-packages-within-d-days/solution.py:capacity_to_ship_packages_within_d_days
+```
+
+
+
+
+> [!intuition:collapse] Binary Search on the Answer Space *(ship's capacity)*
+>
+> The search space for the answer (the ship's capacity) ranges from a lower bound of `max(weights)`to carry the heaviest item, to an upper bound of `sum(weights)` to ship everything in one day.
+>
+> The problem has a **monotonic property** ideal for binary search. The function `daysNeeded(capacity)` is monotonically non-increasing: as `capacity` grows, the days required can only decrease or stay the same.
+>
+> This creates a predictable `[False, ..., False, True, ..., True]` sequence for our condition, `daysNeeded(capacity) <= days`. The goal is to find the leftmost `True`, which represents the minimal valid capacity.
+>
+> -   If `daysNeeded(capacity) <= days` is `True`, then `capacity` is a potential answer, and we try for a better (smaller) one in the left half by setting `r = capacity`.
+> -   If it is `False`, then `capacity` is too small, and we must search for a larger capacity in the right half by setting `l = capacity + 1`.
+-----

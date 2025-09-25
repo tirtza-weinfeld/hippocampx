@@ -1,47 +1,32 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useMemo } from 'react'
 import katex from 'katex'
 import 'katex/dist/katex.min.css'
-import { isValidColorName, getStepColor, getColorText } from '@/lib/step-colors'
 
 interface InlineMathProps {
   children: string
   className?: string
-  step?: number
-  colorName?: string
+  [key: string]: unknown // For other HTML attributes
 }
 
-export function InlineMath({ children, className = '', step, colorName }: InlineMathProps) {
-  const containerRef = useRef<HTMLElement>(null)
+export function InlineMath({ children, className = '', ...props }: InlineMathProps) {
+  const containerRef = useRef<HTMLSpanElement>(null)
 
-  // Unify with InlineCodeClient
-  let codeClass = '';
-  let textColorClass = '';
-  if (step || colorName) {
-    let colorName_final: string;
-    if (step) {
-      const stepColors = ['red', 'orange', 'amber', 'yellow', 'lime', 'green', 'emerald', 'teal', 'cyan', 'sky', 'blue', 'indigo', 'violet', 'purple', 'fuchsia', 'pink', 'rose'];
-      colorName_final = stepColors[(step - 1) % stepColors.length];
-      textColorClass = getStepColor(step);
-    } else if (colorName && isValidColorName(colorName)) {
-      colorName_final = colorName;
-      textColorClass = getColorText(colorName);
-    } else {
-      colorName_final = 'blue';
-      textColorClass = getColorText('blue');
-    }
-    codeClass = `inline-block bg-linear-to-r from-${colorName_final}-500/10 from-10% via-${colorName_final}-500/10 via-20% to-${colorName_final}-500/10 to-90% dark:from-${colorName_final}-700/20 dark:via-${colorName_final}-800/20 dark:to-${colorName_final}-700/20 px-1.5 py-0.5 rounded text-sm font-mono hover:bg-linear-to-l shadow-sm ${textColorClass} ${className}`;
-  } else {
-    textColorClass = 'text-blue-600 dark:text-blue-400';
-    codeClass = `inline-block bg-linear-to-r from-green-500/10 from-10% via-sky-500/10 via-20% to-blue-500/10 to-90% dark:from-teal-700/20 dark:via-sky-800/20 dark:to-blue-700/20 px-1.5 py-0.5 rounded text-sm font-mono hover:bg-linear-to-l shadow-sm ${textColorClass} ${className}`;
-  }
+  // Memoize processed equation to avoid unnecessary recalculations
+  const processedEquation = useMemo(() => {
+    return children.replace(/\\\\\\\\/g, '\\\\')
+  }, [children])
+
+  // Memoize combined classes
+  const combinedClasses = useMemo(() => {
+    return `inline-math ${className}`.trim()
+  }, [className])
 
   useEffect(() => {
     if (!containerRef.current) return
 
     try {
-      const processedEquation = children.replace(/\\\\/g, '\\')
       katex.render(processedEquation, containerRef.current, {
         throwOnError: false,
         displayMode: false,
@@ -52,6 +37,7 @@ export function InlineMath({ children, className = '', step, colorName }: Inline
         maxExpand: 1000,
         minRuleThickness: 0.04
       })
+      
       // Ensure KaTeX output inherits parent styles
       const katexSpan = containerRef.current.querySelector('.katex')
       if (katexSpan) {
@@ -63,16 +49,13 @@ export function InlineMath({ children, className = '', step, colorName }: Inline
         containerRef.current.textContent = children
       }
     }
-  }, [children])
+  }, [processedEquation, children])
 
   return (
-    <code
+    <span
       ref={containerRef}
-      className={codeClass}
-      style={{
-        display: 'inline-block',
-        verticalAlign: 'middle',
-      }}
+      className={combinedClasses}
+      {...props}
     />
   )
-} 
+}

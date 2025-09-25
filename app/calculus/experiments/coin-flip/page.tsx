@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion, AnimatePresence, useReducedMotion } from "motion/react"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
@@ -22,6 +22,8 @@ export default function CoinFlipPage() {
   const [prediction, setPrediction] = useState<"heads" | "tails" | null>(null)
   const [streak, setStreak] = useState(0)
   const [bestStreak, setBestStreak] = useState(0)
+
+  const shouldReduceMotion = useReducedMotion()
 
   // Calculate statistics
   const totalFlips = flips.length
@@ -120,23 +122,23 @@ export default function CoinFlipPage() {
 
   // Tab change animation variants
   const tabContentVariants = {
-    hidden: { opacity: 0, y: 20 },
+    hidden: {
+      opacity: 0,
+      y: shouldReduceMotion ? 0 : 20
+    },
     visible: {
       opacity: 1,
       y: 0,
-      transition: {
-        duration: 0.3,
-        ease: "easeOut",
-      },
     },
     exit: {
       opacity: 0,
-      y: -20,
-      transition: {
-        duration: 0.2,
-        ease: "easeIn",
-      },
+      y: shouldReduceMotion ? 0 : -20,
     },
+  }
+
+  const tabTransition = {
+    duration: shouldReduceMotion ? 0 : 0.3,
+    type: "tween" as const,
   }
 
   return (
@@ -175,6 +177,7 @@ export default function CoinFlipPage() {
                   initial="hidden"
                   animate="visible"
                   exit="exit"
+                  transition={tabTransition}
                 >
                   <TabsContent value="experiment" className="mt-6" forceMount>
                     <Card className="border-2 bg-background/60 backdrop-blur-sm">
@@ -189,8 +192,8 @@ export default function CoinFlipPage() {
                         <div className="flex justify-center">
                           <motion.div
                             className="relative h-40 w-40 cursor-pointer"
-                            animate={isFlipping ? { rotateY: [0, 180, 360], rotateX: [0, 180, 360] } : {}}
-                            transition={{ duration: 0.5 }}
+                            animate={isFlipping && !shouldReduceMotion ? { rotateY: [0, 180, 360], rotateX: [0, 180, 360] } : {}}
+                            transition={{ duration: shouldReduceMotion ? 0 : 0.5 }}
                             onClick={flipCoin}
                           >
                             <AnimatePresence initial={false}>
@@ -201,10 +204,10 @@ export default function CoinFlipPage() {
                                     ? "bg-gradient-to-r from-violet-500 to-fuchsia-500"
                                     : "bg-gradient-to-r from-amber-500 to-orange-500"
                                 } text-white font-bold shadow-lg border-4 border-white dark:border-gray-800`}
-                                initial={{ opacity: 0, rotateY: -180 }}
+                                initial={{ opacity: 0, rotateY: shouldReduceMotion ? 0 : -180 }}
                                 animate={{ opacity: 1, rotateY: 0 }}
-                                exit={{ opacity: 0, rotateY: 180 }}
-                                transition={{ duration: 0.3 }}
+                                exit={{ opacity: 0, rotateY: shouldReduceMotion ? 0 : 180 }}
+                                transition={{ duration: shouldReduceMotion ? 0 : 0.3 }}
                               >
                                 {currentCoin === "heads" ? "H" : "T"}
                               </motion.div>
@@ -276,13 +279,13 @@ export default function CoinFlipPage() {
                                 className="bg-violet-500"
                                 initial={{ width: 0 }}
                                 animate={{ width: `${headsPercentage}%` }}
-                                transition={{ duration: 0.5 }}
+                                transition={{ duration: shouldReduceMotion ? 0 : 0.5 }}
                               />
                               <motion.div
                                 className="bg-amber-500"
                                 initial={{ width: 0 }}
                                 animate={{ width: `${tailsPercentage}%` }}
-                                transition={{ duration: 0.5 }}
+                                transition={{ duration: shouldReduceMotion ? 0 : 0.5 }}
                               />
                             </div>
                           </div>
@@ -300,9 +303,9 @@ export default function CoinFlipPage() {
                                     ? "bg-gradient-to-r from-violet-500 to-fuchsia-500"
                                     : "bg-gradient-to-r from-amber-500 to-orange-500"
                                 }`}
-                                initial={{ scale: 0, opacity: 0 }}
+                                initial={{ scale: shouldReduceMotion ? 1 : 0, opacity: 0 }}
                                 animate={{ scale: 1, opacity: 1 }}
-                                transition={{ duration: 0.3 }}
+                                transition={{ duration: shouldReduceMotion ? 0 : 0.3 }}
                               >
                                 {flip === "heads" ? "H" : "T"}
                               </motion.div>
@@ -316,7 +319,7 @@ export default function CoinFlipPage() {
               )}
 
               {activeTab === "data" && (
-                <motion.div key="data" variants={tabContentVariants} initial="hidden" animate="visible" exit="exit">
+                <motion.div key="data" variants={tabContentVariants} initial="hidden" animate="visible" exit="exit" transition={tabTransition}>
                   <TabsContent value="data" className="mt-6" forceMount>
                     <Card className="border-2 bg-background/60 backdrop-blur-sm">
                       <CardHeader>
@@ -346,17 +349,17 @@ export default function CoinFlipPage() {
                               <div className="grid grid-cols-2 gap-4">
                                 <motion.div
                                   className="bg-violet-100 dark:bg-violet-900/20 p-4 rounded-lg"
-                                  initial={{ x: -20, opacity: 0 }}
+                                  initial={{ x: shouldReduceMotion ? 0 : -20, opacity: 0 }}
                                   animate={{ x: 0, opacity: 1 }}
-                                  transition={{ duration: 0.5 }}
+                                  transition={{ duration: shouldReduceMotion ? 0 : 0.5 }}
                                 >
                                   <p className="text-sm text-muted-foreground">Heads Probability</p>
                                   <p className="text-2xl font-bold">{headsPercentage.toFixed(1)}%</p>
                                   <p className="text-sm text-muted-foreground">Expected: 50%</p>
                                   <motion.div
-                                    initial={{ scaleX: 0 }}
+                                    initial={{ scaleX: shouldReduceMotion ? 1 : 0 }}
                                     animate={{ scaleX: 1 }}
-                                    transition={{ duration: 0.5, delay: 0.2 }}
+                                    transition={{ duration: shouldReduceMotion ? 0 : 0.5, delay: shouldReduceMotion ? 0 : 0.2 }}
                                     style={{ transformOrigin: "left" }}
                                   >
                                     <Progress value={headsPercentage} className="mt-2" />
@@ -364,17 +367,17 @@ export default function CoinFlipPage() {
                                 </motion.div>
                                 <motion.div
                                   className="bg-amber-100 dark:bg-amber-900/20 p-4 rounded-lg"
-                                  initial={{ x: 20, opacity: 0 }}
+                                  initial={{ x: shouldReduceMotion ? 0 : 20, opacity: 0 }}
                                   animate={{ x: 0, opacity: 1 }}
-                                  transition={{ duration: 0.5, delay: 0.1 }}
+                                  transition={{ duration: shouldReduceMotion ? 0 : 0.5, delay: shouldReduceMotion ? 0 : 0.1 }}
                                 >
                                   <p className="text-sm text-muted-foreground">Tails Probability</p>
                                   <p className="text-2xl font-bold">{tailsPercentage.toFixed(1)}%</p>
                                   <p className="text-sm text-muted-foreground">Expected: 50%</p>
                                   <motion.div
-                                    initial={{ scaleX: 0 }}
+                                    initial={{ scaleX: shouldReduceMotion ? 1 : 0 }}
                                     animate={{ scaleX: 1 }}
-                                    transition={{ duration: 0.5, delay: 0.3 }}
+                                    transition={{ duration: shouldReduceMotion ? 0 : 0.5, delay: shouldReduceMotion ? 0 : 0.3 }}
                                     style={{ transformOrigin: "left" }}
                                   >
                                     <Progress value={tailsPercentage} className="mt-2" />
@@ -385,9 +388,9 @@ export default function CoinFlipPage() {
 
                             <motion.div
                               className="bg-muted p-4 rounded-lg"
-                              initial={{ y: 20, opacity: 0 }}
+                              initial={{ y: shouldReduceMotion ? 0 : 20, opacity: 0 }}
                               animate={{ y: 0, opacity: 1 }}
-                              transition={{ duration: 0.5, delay: 0.2 }}
+                              transition={{ duration: shouldReduceMotion ? 0 : 0.5, delay: shouldReduceMotion ? 0 : 0.2 }}
                             >
                               <h3 className="font-medium mb-2">What&apos;s happening here?</h3>
                               <p className="text-sm">

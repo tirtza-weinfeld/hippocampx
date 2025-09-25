@@ -1,0 +1,62 @@
+# Sudoku Solver
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="hard" />
+
+<PillList pills={["game"]} />
+
+[37. Sudoku Solver](https://leetcode.com/problems/sudoku-solver)
+
+## [!ProblemDefinition] Definition
+
+Given a partially filled *9×9* board with digits *1–9* and *.* for empty cells, solve it. *[19!]It is guaranteed that the input board has only one solution*
+
+## [!ProblemIntuition] Intuition
+
+- MRV (Minimum Remaining Values):
+    - Candidates per cell: `{'1'..'9'} − (row ∪ col ∪ box)`.
+    - MRV: pick the empty cell with the fewest candidates to prune hardest.
+    - Place a digit tentatively, update sets, recurse; undo on failure (backtrack).
+    - If any cell has 0 candidates, the branch is impossible → backtrack immediately.
+
+## [!ProblemTimeComplexity] Time Complexity
+
+- O(9^k):
+    - Let k be the number of empty cells (≤ 81).
+    - practically Θ(∏(t=1 to k) m_t) where m_t = MRV-picked cell's candidate count at step t (usually ≪ 9)
+    - MRV selection adds O(k) per level (≤ O(k^2) per path), dominated by the search
+
+## [!ProblemCodeSnippet] Code Snippet
+
+```python meta="source=problems/37-sudoku-solver/solution.py"
+def solve_sudoku(board: list[list[str]]) -> None:
+
+    D = set("123456789")
+    rows = [set() for _ in range(9)]; cols = [set() for _ in range(9)]; boxes = [set() for _ in range(9)]
+    empties: list[tuple[int,int]] = []
+    for i in range(9):
+        for j in range(9):
+            v = board[i][j]
+            if v == '.': empties.append((i, j))
+            else: 
+                rows[i].add(v); cols[j].add(v); boxes[i//3*3 + j//3].add(v)
+
+    def dfs() -> bool:
+        if not empties: return True
+        k, (i, j), cand = min(
+            ((t, (i, j), D - (rows[i] | cols[j] | boxes[i//3*3 + j//3])) for t, (i, j) in enumerate(empties)),
+            key=lambda x: len(x[2])
+        )
+
+        empties.pop(k)
+        for d in cand:
+            board[i][j] = d; rows[i].add(d); cols[j].add(d); boxes[(b:=i//3*3 + j//3)].add(d)
+            if dfs(): return True
+            rows[i].remove(d); cols[j].remove(d); boxes[b].remove(d)
+        board[i][j] = '.'; empties.insert(k, (i, j))
+        return False
+
+    dfs()
+```
+

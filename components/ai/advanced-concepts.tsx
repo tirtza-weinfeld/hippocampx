@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
@@ -19,55 +19,38 @@ import {
   ChevronRight,
   Info,
 } from "lucide-react"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion, AnimatePresence, useReducedMotion } from "motion/react"
 import SwipeContainer from "./swipe-container"
 
 export default function AdvancedConcepts() {
   const [activeTab, setActiveTab] = useState("generative")
   const [showTooltip, setShowTooltip] = useState<string | null>(null)
   const tooltipTimeoutRef = useRef<NodeJS.Timeout | null>(null)
-  const [isReducedMotion, setIsReducedMotion] = useState(false)
+  const shouldReduceMotion = useReducedMotion()
 
-  // Check for user's motion preference
-  useEffect(() => {
-    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)")
-    setIsReducedMotion(mediaQuery.matches)
-
-    const handleChange = () => setIsReducedMotion(mediaQuery.matches)
-    mediaQuery.addEventListener("change", handleChange)
-    return () => mediaQuery.removeEventListener("change", handleChange)
-  }, [])
-
-  // Animation variants with respect to reduced motion preference
-  const getAnimationVariants = () => {
-    return {
-      container: {
-        hidden: { opacity: 0 },
-        visible: {
-          opacity: 1,
-          transition: {
-            staggerChildren: isReducedMotion ? 0 : 0.1,
-          },
-        },
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: shouldReduceMotion ? 0 : 0.1,
       },
-      item: {
-        hidden: { y: isReducedMotion ? 0 : 20, opacity: 0 },
-        visible: {
-          y: 0,
-          opacity: 1,
-          transition: {
-            type: isReducedMotion ? "tween" : "spring",
-            stiffness: 300,
-            damping: 24,
-            duration: isReducedMotion ? 0.2 : undefined,
-          },
-        },
-      },
-    }
+    },
   }
 
-  const containerVariants = getAnimationVariants().container
-  const itemVariants = getAnimationVariants().item
+  const itemVariants = {
+    hidden: { y: shouldReduceMotion ? 0 : 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        type: shouldReduceMotion ? ("tween" as const) : ("spring" as const),
+        stiffness: 300,
+        damping: 24,
+        duration: shouldReduceMotion ? 0.2 : undefined,
+      },
+    },
+  }
 
   const handleSwipeLeft = () => {
     const tabs = ["generative", "neural", "agents", "future"]
@@ -132,7 +115,7 @@ export default function AdvancedConcepts() {
   return (
     <div className="space-y-8">
       <motion.div
-        initial={{ opacity: 0, y: isReducedMotion ? 0 : 20 }}
+        initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
         className="space-y-4"
@@ -256,7 +239,7 @@ export default function AdvancedConcepts() {
                 </motion.div>
                 <motion.div variants={itemVariants} className="flex-1 space-y-4">
                   <motion.div
-                    whileHover={{ y: isReducedMotion ? 0 : -5 }}
+                    whileHover={{ y: shouldReduceMotion ? 0 : -5 }}
                     transition={{ type: "spring", stiffness: 300 }}
                   >
                     <Card className="overflow-hidden border-purple-100 dark:border-purple-800">
@@ -279,7 +262,7 @@ export default function AdvancedConcepts() {
                             <motion.div
                               className="bg-gradient-to-br from-purple-200 to-pink-200 dark:from-purple-900/40 dark:to-pink-900/40 h-24 rounded flex items-center justify-center"
                               animate={{
-                                background: isReducedMotion
+                                background: shouldReduceMotion
                                   ? undefined
                                   : [
                                       "linear-gradient(to bottom right, rgb(233, 213, 255), rgb(251, 207, 232))",
@@ -291,7 +274,7 @@ export default function AdvancedConcepts() {
                             >
                               <div className="text-center">
                                 <Sparkles
-                                  className={`h-8 w-8 mx-auto text-purple-500 ${isReducedMotion ? "" : "animate-pulse-slow"}`}
+                                  className={`h-8 w-8 mx-auto text-purple-500 ${shouldReduceMotion ? "" : "animate-pulse-slow"}`}
                                   aria-hidden="true"
                                 />
                                 <span className="text-xs text-purple-700 dark:text-purple-300">AI-generated image</span>
@@ -304,7 +287,7 @@ export default function AdvancedConcepts() {
                   </motion.div>
 
                   <motion.div
-                    whileHover={{ y: isReducedMotion ? 0 : -5 }}
+                    whileHover={{ y: shouldReduceMotion ? 0 : -5 }}
                     transition={{ type: "spring", stiffness: 300 }}
                   >
                     <Card className="overflow-hidden border-blue-100 dark:border-blue-800">
@@ -406,7 +389,7 @@ export default function AdvancedConcepts() {
 
                 <motion.div variants={itemVariants} className="flex-1">
                   <motion.div
-                    whileHover={{ y: isReducedMotion ? 0 : -5 }}
+                    whileHover={{ y: shouldReduceMotion ? 0 : -5 }}
                     transition={{ type: "spring", stiffness: 300 }}
                   >
                     <Card className="h-full border-blue-100 dark:border-blue-800">
@@ -424,7 +407,7 @@ export default function AdvancedConcepts() {
                               {[1, 2, 3, 4].map((i) => (
                                 <div
                                   key={i}
-                                  className={`w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs ${isReducedMotion ? "" : "animate-pulse-slow"}`}
+                                  className={`w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs ${shouldReduceMotion ? "" : "animate-pulse-slow"}`}
                                   style={{ animationDelay: `${i * 0.2}s` }}
                                   aria-hidden="true"
                                 >
@@ -440,7 +423,7 @@ export default function AdvancedConcepts() {
                               {[1, 2, 3, 4, 5].map((i) => (
                                 <div
                                   key={i}
-                                  className={`w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center text-white text-xs ${isReducedMotion ? "" : "animate-pulse-slow"}`}
+                                  className={`w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center text-white text-xs ${shouldReduceMotion ? "" : "animate-pulse-slow"}`}
                                   style={{ animationDelay: `${i * 0.15}s` }}
                                   aria-hidden="true"
                                 >
@@ -456,7 +439,7 @@ export default function AdvancedConcepts() {
                               {[1, 2, 3, 4].map((i) => (
                                 <div
                                   key={i}
-                                  className={`w-8 h-8 rounded-full bg-pink-500 flex items-center justify-center text-white text-xs ${isReducedMotion ? "" : "animate-pulse-slow"}`}
+                                  className={`w-8 h-8 rounded-full bg-pink-500 flex items-center justify-center text-white text-xs ${shouldReduceMotion ? "" : "animate-pulse-slow"}`}
                                   style={{ animationDelay: `${i * 0.25}s` }}
                                   aria-hidden="true"
                                 >
@@ -472,7 +455,7 @@ export default function AdvancedConcepts() {
                               {[1, 2, 3].map((i) => (
                                 <div
                                   key={i}
-                                  className={`w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-white text-xs ${isReducedMotion ? "" : "animate-pulse-slow"}`}
+                                  className={`w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-white text-xs ${shouldReduceMotion ? "" : "animate-pulse-slow"}`}
                                   style={{ animationDelay: `${i * 0.3}s` }}
                                   aria-hidden="true"
                                 >
@@ -563,7 +546,7 @@ export default function AdvancedConcepts() {
 
                 <motion.div variants={itemVariants} className="flex-1 space-y-4">
                   <motion.div
-                    whileHover={{ y: isReducedMotion ? 0 : -5 }}
+                    whileHover={{ y: shouldReduceMotion ? 0 : -5 }}
                     transition={{ type: "spring", stiffness: 300 }}
                   >
                     <Card className="overflow-hidden border-green-100 dark:border-green-800">
@@ -700,7 +683,7 @@ export default function AdvancedConcepts() {
 
                   <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <motion.div
-                      whileHover={{ y: isReducedMotion ? 0 : -5 }}
+                      whileHover={{ y: shouldReduceMotion ? 0 : -5 }}
                       transition={{ type: "spring", stiffness: 300 }}
                     >
                       <Card className="h-full border-purple-100 dark:border-purple-800">
@@ -720,7 +703,7 @@ export default function AdvancedConcepts() {
                     </motion.div>
 
                     <motion.div
-                      whileHover={{ y: isReducedMotion ? 0 : -5 }}
+                      whileHover={{ y: shouldReduceMotion ? 0 : -5 }}
                       transition={{ type: "spring", stiffness: 300 }}
                     >
                       <Card className="h-full border-blue-100 dark:border-blue-800">
@@ -740,7 +723,7 @@ export default function AdvancedConcepts() {
                     </motion.div>
 
                     <motion.div
-                      whileHover={{ y: isReducedMotion ? 0 : -5 }}
+                      whileHover={{ y: shouldReduceMotion ? 0 : -5 }}
                       transition={{ type: "spring", stiffness: 300 }}
                     >
                       <Card className="h-full border-green-100 dark:border-green-800">
@@ -760,7 +743,7 @@ export default function AdvancedConcepts() {
                     </motion.div>
 
                     <motion.div
-                      whileHover={{ y: isReducedMotion ? 0 : -5 }}
+                      whileHover={{ y: shouldReduceMotion ? 0 : -5 }}
                       transition={{ type: "spring", stiffness: 300 }}
                     >
                       <Card className="h-full border-red-100 dark:border-red-800">
@@ -783,7 +766,7 @@ export default function AdvancedConcepts() {
 
                 <motion.div variants={itemVariants} className="flex-1">
                   <motion.div
-                    whileHover={{ y: isReducedMotion ? 0 : -5 }}
+                    whileHover={{ y: shouldReduceMotion ? 0 : -5 }}
                     transition={{ type: "spring", stiffness: 300 }}
                   >
                     <Card className="h-full border-purple-100 dark:border-purple-800">
@@ -902,9 +885,13 @@ export default function AdvancedConcepts() {
         </div>
 
         {/* Reduced motion indicator */}
-        {isReducedMotion && (
-          <div className="fixed bottom-4 right-4 bg-white dark:bg-slate-800 rounded-full p-2 shadow-md z-50 text-xs flex items-center">
-            <Info className="h-4 w-4 mr-1 text-blue-500" />
+        {shouldReduceMotion && (
+          <div
+            className="fixed bottom-4 right-4 bg-white dark:bg-slate-800 rounded-full p-2 shadow-md z-50 text-xs flex items-center"
+            role="status"
+            aria-label="Reduced motion mode is enabled for accessibility"
+          >
+            <Info className="h-4 w-4 mr-1 text-blue-500" aria-hidden="true" />
             <span className="text-gray-700 dark:text-gray-300">Reduced motion enabled</span>
           </div>
         )}

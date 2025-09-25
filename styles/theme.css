@@ -1,8 +1,7 @@
 @theme inline {
-
-
+  /* Custom utilities for line break handling */
+  --whitespace-preserve-breaks: pre-wrap;
   
-
   --color-background: var(--background);
   --color-foreground: var(--foreground);
 
@@ -35,8 +34,6 @@
 
   --color-border: var(--border);
 
-
-
   --color-primary-hover: var(--primary-hover);
   --color-primary-focus: var(--primary-focus);
   --color-primary-disabled: var(--primary-disabled);
@@ -50,13 +47,34 @@
   --color-accent-disabled: var(--accent-disabled);
 
   --color-background-gradient: linear-gradient(var(--background), var(--muted));
-  --color-toc-gradient: linear-gradient(to right, var(--color-blue-500), var(--color-sky-400), var(--color-blue-400), var(--color-blue-300), var(--color-blue-600));
-  --color-toc-mix: color-mix(in oklch, var(--color-blue-500) 60%, var(--color-sky-400) 40%);
+  --color-toc-gradient: linear-gradient(
+    to right,
+    var(--color-blue-500),
+    var(--color-sky-400),
+    var(--color-blue-400),
+    var(--color-blue-300),
+    var(--color-blue-600)
+  );
 
-  --color-toc-underline-gradient: linear-gradient(to right, var(--color-blue-500), var(--color-sky-400), var(--color-blue-400), var(--color-blue-300), var(--color-blue-600), var(--color-background));
+  --color-toc-mix: color-mix(
+    in oklch,
+    var(--color-blue-500) 60%,
+    var(--color-sky-400) 40%
+  );
+  --color-toc-underline-gradient: linear-gradient(
+    to right,
+    var(--color-blue-500),
+    var(--color-sky-400),
+    var(--color-blue-400),
+    var(--color-blue-300),
+    var(--color-blue-600),
+    var(--color-background)
+  );
   --color-selection: var(--primary);
   --color-selection-background: var(--primary-foreground);
   --color-focus-ring: var(--ring);
+
+  /* --color-link-gradient: var(--link) */
 
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
   --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -65,9 +83,6 @@
   --color-scrollbar: var(--muted);
   --color-scrollbar-thumb: var(--border);
   --color-overlay: rgba(0, 0, 0, 0.5);
-
-
- 
 
   --animate-accordion-down: accordion-down 0.2s ease-out;
   --animate-accordion-up: accordion-up 0.2s ease-out;
@@ -81,11 +96,36 @@
   --animate-slide-in-right: slide-in-right 0.5s ease-out forwards;
   --animate-slide-in-left: slide-in-left 0.5s ease-out forwards;
   --animate-underline-slide: underline-slide 0.3s ease-out forwards;
+  --animate-mascot-dance: mascot-dance 3s ease-in-out infinite;
 
+  --color-step: var(--step);
   /* --animate-gradient-hover: gradient-hover 0.5s ease-in-out forwards; */
 
+  /* --color-strong-text: var(--step-text); */
+  /* --color-strong-shadow: var(--step-shadow); */
+  /* --color-strong-gradient: var(--step-gradient); */
+  /* --color-strong-background: var(--step-background); */
+  /* --color-strong-border: var(--step-border); */
+  /* 
+  --color-em-text: var(--step-text);
+  --color-em-shadow: var(--step-shadow);
+  --color-em-gradient: var(--step-gradient);
+  --color-em-background: var(--step-background);
+  --color-em-border: var(--step-border); */
 
-  
+  @keyframes mascot-dance {
+    0%,
+    100% {
+      transform: translate(0px, 0px);
+    }
+    50% {
+      transform: translate(-15px, -10px);
+    }
+    70%{
+      transform: translate(5px, 15px);
+    }
+  }
+
   @keyframes pulse {
     0%,
     100% {
@@ -193,7 +233,6 @@
     }
   }
 
-
   @keyframes slide-up {
     0% {
       transform: translateY(20px);
@@ -296,6 +335,17 @@
     }
   }
 
+  @keyframes pulse-rotate {
+    0%,
+    100% {
+      opacity: 1;
+      transform: rotate(0deg);
+    }
+    50% {
+      opacity: 0.8;
+      transform: rotate(180deg);
+    }
+  }
   @keyframes float {
     0% {
       transform: translateY(0px);
@@ -449,23 +499,25 @@
 
 @utility bg-toc-gradient {
   /* background: var(--color-toc-gradient); */
-  background: linear-gradient(to right,transparent -10%, 
-  --alpha(var(--color-blue-500) / 10%), 
-  --alpha(var(--color-sky-400) / 10%),
-   --alpha(var(--color-blue-300) / 10%),
-   --alpha(var(--color-teal-700) / 5%)
-   );
-
+  background: linear-gradient(
+    to right,
+    transparent -10%,
+    --alpha(var(--color-blue-500) / 10%),
+    --alpha(var(--color-sky-400) / 10%),
+    --alpha(var(--color-blue-300) / 10%),
+    --alpha(var(--color-teal-700) / 5%)
+  );
 
   background-size: 200% 100%;
   background-position: 0% 50%;
-
+  &:hover {
+    background-position: 100% 50%;
+  }
 }
 
 @utility bg-toc-underline-gradient {
   background: var(--color-toc-underline-gradient);
-} 
-
+}
 
 @utility text-toc-gradient {
   background: var(--color-toc-gradient);
@@ -479,5 +531,120 @@
   /* transition: background-position 0.3s ease; */
 }
 
+@utility text-link-gradient {
+  background: var(--link);
+  background-size: 200% 100%;
+  background-position: 0% 50%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  display: inline-block;
+  &:hover {
+    background-position: 100% 50%;
+  }
+}
+@utility bg-link-gradient {
+  background: var(--link);
+
+  background-size: 200% 100%;
+  background-position: 0% 50%;
+  &:hover {
+    background-position: 100% 50%;
+  }
+}
 
 
+/* 
+@utility step-gradient {
+  background: var(--step);
+  background-size: 200% 100%;
+  background-position: 0% 50%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  display: inline-block;
+} */
+
+@utility text-em-gradient {
+  background: var(--step-gradient);
+
+  background-size: 200% 100%;
+  background-position: 0% 50%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  display: inline-block;
+
+  &:hover {
+    background-position: 100% 50%;
+  }
+}
+@utility bg-strong-gradient {
+  background: var(--step-gradient);
+  background-size: 200% 100%;
+  background-position: 0% 50%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  display: inline-block;
+  &:hover {
+    background-position: 100% 50%;
+  }
+}
+
+
+
+
+
+@utility text-pill {
+  background: var(--pill);
+  background-size: 200% 100%;
+  background-position: 0% 50%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  display: inline-block;
+  &:hover {
+    background-position: 100% 50%;
+  }
+}
+
+
+@utility bg-strong-background {
+  background: var(--step-background);
+  background-size: 200% 100%;
+  background-position: 0% 50%;
+  display: inline-block;
+  &:hover {
+    background-position: 100% 50%; 
+  }
+}
+
+
+
+
+@utility bg-step-gradient {
+  background: var(--step-gradient);
+  background-size: 200% 100%;
+  background-position: 0% 50%;
+  display: inline-block;
+  &:hover {
+    background-position: 100% 50%; 
+  }
+}
+
+/* 
+@utility bg-difficulty-gradient {
+  background: var(--difficulty-gradient);
+  background-size: 200% 100%;
+  background-position: 0% 50%;
+  display: inline-block;
+  &:hover {
+    background-position: 100% 50%; 
+  }
+} */

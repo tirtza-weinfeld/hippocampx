@@ -1,32 +1,52 @@
 :root {
-  --background: var(--color-gray-100); 
-  --foreground: var(--color-teal-900);
-  
-  --muted: var(--color-gray-400); 
-  --muted-foreground: var(--color-gray-700); 
+  --pill:linear-gradient(to right, var(--color-blue-500),var(--color-sky-400), var(--color-blue-600));
 
-  --card: --alpha(var(--color-teal-500) / 10%); 
+  --link: linear-gradient(to right,--alpha(var(--color-teal-700) / 60%),--alpha(var(--color-sky-600) / 80%) 50%,--alpha(var(--color-teal-600) / 60%) );
+  
+  --step: var(--color-sky-500);
+  /* --step-text: var(--color-blue-600); */
+  /* --step-shadow: --alpha(var(--color-blue-400) / 20%); */
+
+  --step-gradient: linear-gradient(to right, var(--color-sky-500),  var(--color-sky-800) 50%, var(--color-teal-600));
+  --step-background: linear-gradient(
+    to left,
+    --alpha(var(--color-blue-500) / 10%),
+    --alpha(var(--color-blue-800) / 30%) 50%,
+    --alpha(var(--color-blue-600) / 10%
+    )
+  );
+  /* --step-border: var(--color-blue-300); */
+
+
+
+  --background: var(--color-gray-100);
+  --foreground: var(--color-teal-900);
+
+  --muted: var(--color-gray-400);
+  --muted-foreground: var(--color-gray-700);
+
+  --card: --alpha(var(--color-teal-500) / 10%);
   /* --card-foreground: var(--color-teal-700);  */
 
-  --popover: var(--color-gray-100); 
-  --popover-foreground: var(--color-gray-900); 
+  --popover: var(--color-gray-100);
+  --popover-foreground: var(--color-gray-900);
 
-  --border: var(--color-gray-200); 
-  --input: var(--color-gray-100); 
+  --border: var(--color-gray-200);
+  --input: var(--color-gray-100);
 
-  --primary: var(--color-teal-600); 
-  --primary-foreground: var(--color-white); 
+  --primary: var(--color-teal-600);
+  --primary-foreground: var(--color-white);
 
   --secondary: var(--color-gray-300);
-  --secondary-foreground: var(--color-gray-900); 
+  --secondary-foreground: var(--color-gray-900);
 
-  --accent: var(--color-teal-600); 
-  --accent-foreground: var(--color-white); 
-  --destructive: var(--color-red-500); 
-  --destructive-foreground: var(--color-white); 
+  --accent: var(--color-teal-600);
+  --accent-foreground: var(--color-white);
+  --destructive: var(--color-red-500);
+  --destructive-foreground: var(--color-white);
 
-  --ring: var(--color-emerald-400); 
-  --radius: 0.5rem; 
+  --ring: var(--color-emerald-400);
+  --radius: 0.5rem;
 
   /* 🔹 New Interactive States */
   --primary-hover: var(--color-teal-500);
@@ -58,37 +78,33 @@
   --color-scrollbar: var(--muted);
   --color-scrollbar-thumb: var(--border);
   --color-overlay: rgba(0, 0, 0, 0.5);
-
-
-
-
 }
 
 .dark {
-  --background: var(--color-gray-900); 
-  --foreground: var(--color-gray-50); 
+  --background: var(--color-gray-900);
+  --foreground: var(--color-gray-50);
 
-  --muted: var(--color-gray-700); 
-  --muted-foreground: var(--color-gray-300); 
+  --muted: var(--color-gray-700);
+  --muted-foreground: var(--color-gray-300);
 
   /* --card: var(--color-teal-950);  */
-  --card: --alpha(var(--color-teal-900) / 20%); 
-  --card-foreground: var(--color-gray-50); 
+  --card: --alpha(var(--color-teal-900) / 20%);
+  --card-foreground: var(--color-gray-50);
 
-  --popover: var(--color-gray-800); 
+  --popover: var(--color-gray-800);
   --popover-foreground: var(--color-gray-50);
 
-  --border: var(--color-gray-700); 
-  --input: var(--color-gray-800); 
+  --border: var(--color-gray-700);
+  --input: var(--color-gray-800);
 
-  --primary: var(--color-teal-300); 
-  --primary-foreground: var(--color-gray-900); 
+  --primary: var(--color-teal-300);
+  --primary-foreground: var(--color-gray-900);
 
   --secondary: var(--color-gray-700); /* Matches dark mode aesthetic */
   --secondary-foreground: var(--color-gray-50); /* Readable contrast */
 
-  --accent: var(--color-teal-600); 
-  --accent-foreground: var(--color-teal-900); 
+  --accent: var(--color-teal-600);
+  --accent-foreground: var(--color-teal-900);
 
   --destructive: var(--color-red-400);
   --destructive-foreground: var(--color-gray-900);
@@ -126,8 +142,33 @@
   --color-scrollbar-thumb: var(--border);
   --color-overlay: rgba(255, 255, 255, 0.1);
 
+  /* Dark mode link gradient */
+  /* --link: linear-gradient(
+    to right,
+    --alpha(var(--color-teal-400) / 80%),
+    --alpha(var(--color-sky-400) / 80%) 50%,
 
+    --alpha(var(--color-sky-600) / 80%)
+  ); */
+  --link: linear-gradient(to right,--alpha(var(--color-teal-500) / 60%)
+  ,--alpha(var(--color-sky-400) / 80%) 50%,--alpha(var(--color-teal-400) / 60%) );
 
-  
+  --pill:linear-gradient(to right, var(--color-blue-500), var(--color-blue-600));
 
+  --step: var(--color-blue-600);
+  /* --step-text: var(--color-blue-600); */
+  /* --step-shadow: --alpha(var(--color-blue-400) / 20%); */
+  --step-gradient: linear-gradient(to right, var(--color-sky-500), 
+   var(--color-teal-500) 50%, 
+   var(--color-blue-500));
+/*   
+  --step-gradient: linear-gradient(to right, 
+  var(--color-sky-200) ,var(--color-sky-300) 50%,var(--color-teal-200) ); */
+  --step-background: linear-gradient(
+    to left,
+    --alpha(var(--color-blue-500) / 10%),
+    --alpha(var(--color-blue-800) / 30%) 50%,
+    --alpha(var(--color-blue-600) / 10%)
+  );
+  /* --step-border: var(--color-blue-300); */
 }

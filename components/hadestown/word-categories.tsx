@@ -3,7 +3,7 @@
 // Add the file with gradient-based buttons using the CSS variables
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { motion } from "framer-motion"
+import { motion } from "motion/react"
 
 const CATEGORIES = [
   {

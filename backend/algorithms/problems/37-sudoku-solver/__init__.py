@@ -1,0 +1,7 @@
+"""
+Title: Sudoku Solver
+Definition: Given a partially filled *9×9* board with digits *1–9* and *.* for empty cells, solve it. *[19!]It is guaranteed that the input board has only one solution*
+Leetcode: https://leetcode.com/problems/sudoku-solver
+Difficulty: hard
+Topics: [game]
+"""

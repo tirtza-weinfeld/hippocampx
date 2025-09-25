@@ -6,7 +6,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
 import { Trophy, ArrowRight, RotateCcw, Brain, Sparkles, Lightbulb, Check, X } from "lucide-react"
-import { motion } from "framer-motion"
+import { motion } from "motion/react"
 
 type Question = {
   id: number

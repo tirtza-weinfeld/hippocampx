@@ -1,0 +1,257 @@
+
+import TransitMapAnimation from '@/components/notes/trip';
+
+# Dijkstra's Algorithm
+
+## Resizable table of contents
+
+
+
+## Description
+
+Given a directed or undirected graph with **non-negative edge weights**  
+($\forall e \in E,\ w(e) \geq 0$), and a source vertex $s$,  
+compute the **shortest path distance** to every vertex:  
+$\delta(s, v),\ \forall v \in V$.
+
+---
+
+### Code Snippet (Binary Heap)
+
+```python file=problems/dijkstra.py:dijkstra
+```
+
+---
+
+### Runtime Analysis
+
+Let $|V|$ be the number of vertices and $|E|$ the number of edges.
+Let $T_i$, $T_e$, and $T_d$ be the costs of insert, extract-min, and decrease-key:
+
+$$
+T_{\text{Dijkstra}} = O(|V| \cdot T_i + |V| \cdot T_e + |E| \cdot T_d)
+$$
+
+| Priority Queue | Build    | Extract-Min   | Decrease-Key  | Total Time           |
+| -------------- | -------- | ------------- | ------------- | -------------------- |
+| Array          | $O(V)$ | $O(V)$      | $O(1)$      | $O(V^2 + E)$       |
+| Binary Heap    | $O(V)$ | $O(\log V)$ | $O(\log V)$ | **$O((V + E)\log V)$** |
+| Fibonacci Heap | $O(V)$ | $O(\log V)$ | $O(1)_a$  | $O(V \log V + E)$  |
+
+
+> In practice, **binary heaps** are preferred: they offer near-optimal performance with simple, efficient implementations.
+> Fibonacci heaps achieve better asymptotic bounds but are rarely used due to large constant factors and implementation complexity.
+
+
+
+---
+
+### Example: Your Personal Transit Map
+
+You're planning the fastest routes from **Home** to various destinations:
+`Work`, the `Gym`, and the nearby transit `Stations`.
+
+**The Map:**
+`Home → Station A: 5`
+`Home → Station B: 12`
+`Station A → Gym: 10`
+`Station B → Gym: 2`
+`Station B → Work: 20`
+
+<TransitMapAnimation />
+
+
+
+
+-----
+
+## Problems
+
+
+
+### 1\. The Classic Broadcast: Network Delay Time
+[743. Network Delay Time](https://leetcode.com/problems/network-delay-time/)
+
+
+*Given `n` nodes labeled `1` through `n` 
+and directed travel times between them, find the minimum time for a signal starting at node `k` 
+to reach *all* nodes. If impossible, return -1*
+
+
+
+```python file=problems/743-network-delay-time/solution.py:network_delay_time  
+```
+
+> [!insight:collapse]
+>
+> This is Dijkstra's canonical use case: finding the shortest time for a signal to reach every node from a single source.
+>
+> This is a direct application where **"distance" is time**. The algorithm finds the shortest time from `k` to every other node. The final answer is the **maximum** of these shortest times, which represents the moment the *last* node receives the signal.
+ 
+
+> [!timecomplexity:collapse]**$O(\text{len(times)} \log n)$**
+> 
+> * *V (Vertices):* The number of vertices corresponds to the input *n*, the total number of nodes.
+> * *E (Edges):* The number of edges corresponds to the length of the input list *times*, as each element in `times` defines a single directed edge.
+> 
+> By substituting these into the standard Dijkstra complexity formula, $O(E \log V)$, you get $O(\text{len(times)} \log n)$.
+
+
+
+### 2. The Thrifty Hike: Path With Minimum Effort
+[1631. Path With Minimum Effort](https://leetcode.com/problems/path-with-minimum-effort/)
+
+*Find a path from the top-left to the bottom-right of a height grid that minimizes the "effort".
+ Effort is the single largest height difference between any two adjacent cells on the path.*
+
+
+```python file=problems/1631-path-with-minimum-effort/solution.py:path_with_minimum_effort   
+```
+
+
+> [!insight:collapse]
+>
+> *This problem redefines "cost." It's not the sum of a path's edges but its single most challenging step:*
+> The graph is the grid. The key is redefining path cost. 
+> Instead of a *[13!]sum* of the path, the *[16!]cost is its bottleneck: the max_effort_so_far*.
+>
+> Dijkstra's greedy choice to always explore the path with the minimum current max_effort naturally finds the route with the overall minimum bottleneck.
+> [!end]
+
+> [!timecomplexity:collapse]**$O(R \cdot C \log(R \cdot C))$** time complexity for Dijkstra's on a grid.
+>
+> **General Dijkstra Complexity**
+> 
+> First, the standard time complexity for Dijkstra's algorithm when using a priority queue (like Python's `heapq`) is $O(E \log V)$.
+> 
+> * **V (Vertices):** The total number of nodes in the graph.
+> * **E (Edges):** The total number of connections between nodes.
+> * **log V:** This part comes from the cost of push and pop operations on the priority queue, which can hold up to all $V$ vertices.
+> 
+> ***
+> 
+> **Applying to a Grid**
+> 
+> Now, let's map the graph terms `V` and `E` to a grid with `R` rows and `C` columns.
+> 
+> * **Vertices (V):** Each cell in the grid is a vertex. So, the total number of vertices is $V = R \cdot C$.
+> * **Edges (E):** Each cell can have an edge connecting to its neighbors (up, down, left, right). At most, each of the $R \cdot C$ cells has 4 edges. Therefore, the total number of edges $E$ is proportional to $R \cdot C$, which we write as $E = O(R \cdot C)$.
+> 
+> ***
+> 
+> **Putting It Together**
+> 
+> By substituting the grid values back into the general formula, we get the final complexity:
+> 
+> - ~ **Start with the general formula:** $O(E \log V)$
+> - ~ **Substitute E:** $O((R \cdot C) \log V)$
+> - ~ **Substitute V:** $O((R \cdot C) \log(R \cdot C))$
+> 
+> So, the complexity $O(R \cdot C \log(R \cdot C))$ represents the cost of visiting each cell's edges ($O(R \cdot C)$) and, for each edge, potentially performing an operation on the priority queue that costs $\log(R \cdot C)$.
+
+
+
+-----
+
+### 3\. Swim in Rising Water
+
+  [778. Swim in Rising Water](https://leetcode.com/problems/swim-in-rising-water/)
+  
+  *You are given an `N x N` grid of elevations. Find the minimum "time" `t` to travel from `(0, 0)` to `(N-1, N-1)`. 
+    You can only move between adjacent cells if their elevation is less than or equal to the time `t`*
+
+    ```python file=problems/778-swim-in-rising-water/solution.py:swim_in_rising_water   meta="/[2!]grid[0][0]/"
+    ```
+
+  > [!insight:collapse]
+  >
+  > This problem elegantly frames a "bottleneck" challenge. (similar to the [Path With Minimum Effort](#2-the-thrifty-hike-path-with-minimum-effort)
+  > You must find a path where the highest point is as low as possible.
+  > This code uses **Dijkstra's algorithm** where the path "cost" is not a sum, but the **maximum elevation** encountered so far. The priority queue always explores the path requiring the lowest water level (`time`). By doing this, the first time it reaches the destination, it guarantees it has found the path with the absolute minimum water level required.
+  > notice  pq=[(**[6!]grid[0][0]**, 0, 0)]
+
+
+  > [!timecomplexity:collapse]**$O(N^2 \log N)$**
+  >
+  > The standard time complexity for Dijkstra's algorithm using a priority queue is $O(E \log V)$, where:
+  > * **V** is the number of vertices (nodes).
+  > * **E** is the number of edges.
+  >  
+  > When we apply this to an $N \times N$ grid:
+  > - ~ **Vertices (V):** Each of the cells is a vertex, so $V = N^2$.
+  > - ~ **Edges (E):** Each cell connects to at most 4 neighbors, so the total number of edges is roughly $4 \times N^2$. In Big O notation, this is just $O(N^2)$.
+  >
+  > Substituting these into the formula gives us:
+  > $O(E \log V) \rightarrow O(N^2 \log(N^2))$
+  >
+  > Using the logarithm property that $\log(x^2) = 2\log(x)$, we can simplify $\log(N^2)$ to $2\log N$. This gives us:
+  > $O(N^2 \cdot 2\log N)$
+  >
+  > Finally, we drop the constant factor `2`, leaving the final time complexity as **$O(N^2 \log N)$**. 
+  > The `log N` part comes directly from the cost of the `heappush` and `heappop` operations on the priority queue.
+
+
+-----
+
+### 4\. Cheapest Flights Within K Stops 
+[787. Cheapest Flights Within K Stops](https://leetcode.com/problems/cheapest-flights-within-k-stops/)
+
+*Find the cheapest flight from a source to a destination with at most `k` stops.*
+
+> [!warning:collapse] Achieve **$O(Ek)$** with [*Bellman-Ford*](./bellman-ford#1-cheapest-flight-within-k-stops),faster than this modified Dijkstra's $O(Ek\log(Nk))$ 
+>  
+> `N` = number of cities
+> `E` = number of flights
+> `k` = number of stops
+>  While this Dijkstra approach works, with *Bellman-Ford* we can achieve **$O(Ek)$** which is faster than our modified Dijkstra's $O(Ek\log(Nk))$ by a logarithmic term.   
+
+```python file=problems/787-cheapest-flights-within-k-stops/dijkstra.py:cheapest_flights_with_at_most_k_stops_dijkstra  
+```
+
+> [!insight:collapse]
+>
+> This problem requires a **modified Dijkstra's algorithm**. 
+> The state in the priority queue is expanded to `(cost, city, stops)` to track the stop count.
+>  To optimize, we prune any path that reaches a city with more stops than a previously found path to that same city. 
+
+
+> [!timecomplexity:collapse] **$O(Ek \log(Nk))$** 
+>
+> 
+> * **Standard Dijkstra:** Complexity is $O(E \log V)$, where `V` is the number of nodes (cities). The priority queue holds at most `V` items.
+> * **Modified Dijkstra (This problem):** The "nodes" in our search aren't just cities, but **states** defined by `(city, stops)`.
+>  
+>   * **`log(Nk)` - The Size of the Priority Queue:**
+>       Since we can visit each of the `N` cities with up to `k` different stop counts, the maximum number of unique states we might store in the priority queue is on the order of `N * k`. This replaces the `V` in the standard `log(V)` term.
+>   
+>   * **`Ek` - The Number of Operations:**
+>       In the worst case, we might explore the outgoing edges (`E`) from a city for each possible stop count up to `k`. This gives a loose upper bound on the number of times we push to the priority queue.
+
+
+
+### 5\. Shortest Path in a Grid with Obstacles Elimination
+[1293. Shortest Path in a Grid with Obstacles Elimination](https://leetcode.com/problems/shortest-path-in-a-grid-with-obstacles-elimination/)
+
+*Given an `m x n` grid where cells are either empty (`0`) or an obstacle (`1`), and an integer `k` 
+representing the maximum number of obstacles you can eliminate, find the minimum number of steps to travel from the top-left corner `(0, 0)`
+to the bottom-right `(m-1, n-1)`. Each move (up, down, left, right) costs one step. If no such path exists, return `-1`.*
+  
+> [!warning:collapse] 
+> in practice, [*A\* Search*](./a-star#1-shortest-path-in-a-grid-with-obstacles-elimination) is faster.
+
+```python file=problems/dijkstra_shortest_path.py:dijkstra_shortest_path  
+```
+
+
+> [!timecomplexity:collapse] $O(m \cdot n \cdot k \cdot \log(m \cdot n \cdot k))$
+> 
+> Let:
+>`m` be the number of rows.
+>`n` be the number of columns.
+>`k` be the maximum number of eliminations.
+>
+> The state in the search is defined by `(row, col, remaining_k)`, leading to a total of `m * n * k` possible states. The time complexity is driven by the priority queue operations (`heappush` and `heappop`), which take logarithmic time relative to the number of items in the queue.
+> 
+> Therefore, the complexity is the total number of states multiplied by the logarithmic cost of the heap operations.
+>
+

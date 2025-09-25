@@ -1,0 +1,1188 @@
+{
+  "problems": {
+    "37-sudoku-solver": {
+      "solutions": {
+        "solution.py": {
+          "intuition": "MRV (Minimum Remaining Values):\nCandidates per cell: `{'1'..'9'} − (row ∪ col ∪ box)`.\nMRV: pick the empty cell with the fewest candidates to prune hardest.\nPlace a digit tentatively, update sets, recurse; undo on failure (backtrack).\nIf any cell has 0 candidates, the branch is impossible → backtrack immediately.",
+          "time_complexity": "O(9^k):\nLet k be the number of empty cells (≤ 81).\npractically Θ(∏(t=1 to k) m_t) where m_t = MRV-picked cell's candidate count at step t (usually ≪ 9)\nMRV selection adds O(k) per level (≤ O(k^2) per path), dominated by the search",
+          "code": "def solve_sudoku(board: list[list[str]]) -> None:\n\n    D = set(\"123456789\")\n    rows = [set() for _ in range(9)]; cols = [set() for _ in range(9)]; boxes = [set() for _ in range(9)]\n    empties: list[tuple[int,int]] = []\n    for i in range(9):\n        for j in range(9):\n            v = board[i][j]\n            if v == '.': empties.append((i, j))\n            else: \n                rows[i].add(v); cols[j].add(v); boxes[i//3*3 + j//3].add(v)\n\n    def dfs() -> bool:\n        if not empties: return True\n        k, (i, j), cand = min(\n            ((t, (i, j), D - (rows[i] | cols[j] | boxes[i//3*3 + j//3])) for t, (i, j) in enumerate(empties)),\n            key=lambda x: len(x[2])\n        )\n        \n        empties.pop(k)\n        for d in cand:\n            board[i][j] = d; rows[i].add(d); cols[j].add(d); boxes[(b:=i//3*3 + j//3)].add(d)\n            if dfs(): return True\n            rows[i].remove(d); cols[j].remove(d); boxes[b].remove(d)\n        board[i][j] = '.'; empties.insert(k, (i, j))\n        return False\n\n    dfs()"
+        }
+      },
+      "title": "Sudoku Solver",
+      "definition": "Given a partially filled *9×9* board with digits *1–9* and *.* for empty cells, solve it. *[19!]It is guaranteed that the input board has only one solution*",
+      "leetcode": "https://leetcode.com/problems/sudoku-solver",
+      "difficulty": "hard",
+      "topics": [
+        "game"
+      ]
+    },
+    "1631-path-with-minimum-effort": {
+      "solutions": {
+        "solution.py": {
+          "args": {
+            "heights: list[list[int]]": "2D list of integers representing the heights of the cells"
+          },
+          "returns": "`int`: minimum effort to reach the bottom-right cell",
+          "variables": {
+            "pq": "Priority queue stores (max_effort_on_path, r, c)",
+            "resolved": "set to store the positions that have been resolved"
+          },
+          "code": "import heapq\n\ndef path_with_minimum_effort(heights: list[list[int]]) -> int:\n\n    R, C = len(heights), len(heights[0])\n    pq, resolved = [(0, 0, 0)], set()\n\n    while pq:\n        effort, r, c = heapq.heappop(pq)\n        if (r, c) in resolved: continue\n        if (r, c) == (R - 1, C - 1): return effort\n        resolved.add((r, c))\n\n        for nr, nc in [(r, c + 1), (r, c - 1), (r + 1, c), (r - 1, c)]:\n            if 0 <= nr < R and 0 <= nc < C and (nr, nc) not in resolved:\n                neighbor_effort = max(effort, abs(heights[nr][nc] - heights[r][c]))\n                heapq.heappush(pq, (neighbor_effort, nr, nc))"
+        }
+      },
+      "title": "Path With Minimum Effort",
+      "definition": "Find a path from the top-left to the bottom-right of a height grid that minimizes the \"effort\". - Effort is the single largest height difference between any two adjacent cells on the path.",
+      "leetcode": "https://leetcode.com/problems/path-with-minimum-effort",
+      "difficulty": "medium",
+      "topics": [
+        "dijkstra"
+      ]
+    },
+    "909-snakes-and-ladders": {
+      "solutions": {
+        "solution.py": {
+          "intuition": "Flatten the Board First 🎲\nThe key insight here is to **pre-process the 2D `board` into a 1D `flat_board` list**. This powerful first step handles all the complex Boustrophedonical logic upfront. By doing this, the BFS loop becomes exceptionally clean and avoids the need for a coordinate conversion function. The search can then operate on a simple 1D array, treating the board as the simple, linear graph it truly represents.",
+          "time_complexity": "O(n^2)\nwhere n is the dimension of the board. The initial flattening of the board takes O(n^2) time. The subsequent BFS visits each of the n^2 squares at most once.",
+          "code": "from collections import deque\n\ndef snakes_and_ladders(board: list[list[int]]) -> int:\n\n    flat_board =  [0] # Dummy 0 for 1-based indexing\n    for r, row in enumerate(reversed(board)):\n        flat_board.extend(row[::1 if r % 2 == 0 else -1])\n        \n    target =(n:= len(board)) * n \n    moves, queue =  {1: 0}, deque([1])\n\n    while queue:\n        current = queue.popleft()\n        for roll in range(1, 7):\n            nxt = current + roll\n            if nxt > target:\n                break\n            landing = flat_board[nxt] if flat_board[nxt] != -1 else nxt\n            if landing not in moves:\n                moves[landing] = moves[current] + 1\n                if landing == target:\n                    return moves[landing]\n                queue.append(landing)\n    return -1"
+        }
+      },
+      "title": "Snakes and Ladders",
+      "definition": "Given an `n × n` integer board where cells are numbered from `1` to `n²` in a Boustrophedonical style. Each cell's value is either **[3!]-1** for a *[3!]normal* square or a **[16!]destination** number for a *[16!]snake/ladder*. Starting from square `1`, return the least number of moves to reach square `n²`. You must take any snake or ladder you land on.",
+      "leetcode": "https://leetcode.com/problems/snakes-and-ladders",
+      "difficulty": "medium",
+      "topics": [
+        "bfs"
+      ]
+    },
+    "152-maximum-product-subarray": {
+      "solutions": {
+        "solution.py": {
+          "code": "def maximum_product_subarray(nums: list[int]) -> int:\n\n    hi = lo = max_prod = nums[0]\n    for x in nums[1:]:\n        if x < 0:\n            hi, lo = lo, hi\n        hi = max(x, hi * x)\n        lo = min(x, lo * x)\n        max_prod = max(max_prod, hi)\n    return max_prod"
+        }
+      },
+      "title": "Maximum Product Subarray",
+      "definition": "Given an array of integers, return the maximum product of any contiguous subarray.",
+      "leetcode": "https://leetcode.com/problems/maximum-product-subarray",
+      "difficulty": "medium",
+      "topics": [
+        "dynamic_programming"
+      ]
+    },
+    "1293-shortest-path-in-a-grid-with-obstacles-elimination": {
+      "solutions": {
+        "dijkstra.py": {
+          "variables": {
+            "pq": "(g_cost, r, c, k_rem), The priority uses g_cost (steps) itself. No heuristic is used.",
+            "steps": "The number of steps taken so far (g_cost)",
+            "max_k": "max_k[r][c] stores the max eliminations we have at cell (r,c)"
+          },
+          "expressions": {
+            "heapq.heappush(pq, (steps + 1, nr, nc, new_k))": "The priority is simply the new step count.No heuristic is added, which is the only difference from the A* implementation.",
+            "heapq.heappop(pq)": "Pop the path with the lowest g_cost (steps) so far",
+            "k_rem < max_k[r][c]": "Prune paths that are suboptimal for a given cell"
+          },
+          "code": "def shortest_path_in_a_grid_with_obstacles_elimination(grid: list[list[int]], k: int) -> int:\n\n    rows, cols = len(grid), len(grid[0])\n    if k >= rows + cols - 3:\n        return rows + cols - 2\n  \n    pq = [(0, 0, 0, k)]\n    \n    max_k = [[-1] * cols for _ in range(rows)]\n    max_k[0][0] = k\n\n    while pq:\n        \n        steps, r, c, k_rem = heapq.heappop(pq)\n        \n        if (r, c) == (rows - 1, cols - 1):\n            return steps\n        \n        if k_rem < max_k[r][c]:\n            continue\n\n        for dr, dc in [(0, 1), (0, -1), (1, 0), (-1, 0)]:\n            if 0 <= (nr:= r + dr) < rows and 0 <= (nc:= c + dc) < cols:\n                if (new_k:= k_rem - grid[nr][nc]) > max_k[nr][nc]:\n                    max_k[nr][nc] = new_k\n                    heapq.heappush(pq, (steps + 1, nr, nc, new_k))\n                    \n    return -1"
+        },
+        "a_star.py": {
+          "code": "import heapq\n\ndef manhattan_distance(a: tuple[int, int], b: tuple[int, int]) -> int:\n    return abs(a[0] - b[0]) + abs(a[1] - b[1])\n\n\n\ndef shortest_path_in_a_grid_with_obstacles_elimination(grid: list[list[int]], k: int) -> int:\n\n    rows, cols = len(grid), len(grid[0])\n\n    def h(r: int, c: int) -> int:\n        return manhattan_distance((r, c), (rows - 1, cols - 1))\n    \n    if k >= (md:= h(0, 0)) - 1:\n        return md\n\n    pq = [(md, 0, 0, 0, k)]\n    \n    max_k = [[-1] * cols for _ in range(rows)]\n    max_k[0][0] = k\n\n\n\n    while pq:\n        _, steps, r, c, remaining_k = heapq.heappop(pq)\n        \n        if (r, c) == (rows - 1, cols - 1):\n            return steps\n        \n        if remaining_k < max_k[r][c]:\n            continue\n\n        for dr, dc in [(0, 1), (0, -1), (1, 0), (-1, 0)]:\n            if 0 <= (nr:= r + dr) < rows and 0 <= (nc:= c + dc) < cols:\n                if (new_remaining_k := remaining_k - grid[nr][nc] ) > max_k[nr][nc]:\n                    max_k[nr][nc] = new_remaining_k\n                    heapq.heappush(pq, ((steps + 1) + h(nr, nc), steps + 1, nr, nc, new_remaining_k))\n                    \n    return -1"
+        },
+        "bfs.py": {
+          "intuition": "bfs with State-Budget Pruning 🔍:\nThe core idea is to perform a standard BFS over `(row, col, steps, remaining_k)` states, but only enqueue a move if it arrives at a cell with **strictly more** `remaining_k` than any prior visit. This pruning significantly reduces the number of states explored, making the algorithm much more efficient.\n**Trivial shortcut:** If `k ≥ rows+cols–2`, you can go straight in `rows+cols–2` steps without ever touching an obstacle.\n**Correctness guarantee:** Because BFS explores in order of increasing `steps`, the first time you dequeue the goal is the fewest-step path. Pruning by `remaining_k` never discards any shorter-step route—it simply avoids re-exploring dominated states.",
+          "time_complexity": "O(m * n * k):\nWorst-case O(m * n * k) (every cell × every possible k), but aggressive pruning usually makes it far faster in practice.",
+          "space_complexity": "O(m * n):\nfor the `max_k` grid plus up to O(m * n * k) queued states in the pathological worst case.",
+          "variables": {
+            "max_k": "max_k[r][c] = maximum eliminations remaining when visiting (r,c)",
+            "q": "(row, col, steps, remaining_k)",
+            "min_steps": "Manhattan distance lower bound"
+          },
+          "code": "from collections import deque\n\ndef shortest_path_in_a_grid_with_obstacles_elimination(grid: list[list[int]], k: int) -> int:\n    \n    rows, cols = len(grid), len(grid[0])\n    min_steps = rows + cols - 3 \n    if k >= min_steps:\n        return min_steps\n   \n    max_k = [[-1] * cols for _ in range(rows)]\n    max_k[0][0] = k\n\n    \n    q = deque([(0, 0, 0, k)])\n\n\n    while q:\n        r, c, steps, remaining_k = q.popleft()\n        for dr, dc in [(1,0), (-1,0), (0,1), (0,-1)]:\n            nr, nc = r + dr, c + dc\n            if 0 <= nr < rows and 0 <= nc < cols:\n                new_remaining_k = remaining_k - grid[nr][nc]\n                if new_remaining_k > max_k[nr][nc]:\n                    if (nr, nc) == (rows - 1, cols - 1):\n                        return steps + 1\n                    max_k[nr][nc] = new_remaining_k\n                    q.append((nr, nc, steps + 1, new_remaining_k))\n    return -1\n"
+        }
+      },
+      "title": "Shortest Path in a Grid with Obstacles Elimination",
+      "definition": "Given an `m x n` grid where cells are either empty (`0`) or an obstacle (`1`), and an integer `k` representing the maximum number of obstacles you can eliminate, find the minimum number of steps to travel from the top-left corner `(0, 0)` to the bottom-right `(m-1, n-1)`. Each move (up, down, left, right) costs one step. If no such path exists, return `-1`.",
+      "leetcode": "https://leetcode.com/problems/shortest-path-in-a-grid-with-obstacles-elimination",
+      "difficulty": "hard",
+      "topics": [
+        "bfs"
+      ]
+    },
+    "648-replace-words": {
+      "solutions": {
+        "solution.py": {
+          "code": "def replace_words(dictionary: list[str], sentence: str) -> str:\n    trie = {}\n\n    for word in dictionary:\n        node = trie\n        for c in word:\n            if \"$\" in node:\n                break\n            node = node.setdefault(c, {})\n        node[\"$\"] = True\n\n    def search(word: str) -> str:\n        node = trie\n        for i, c in enumerate(word):\n            if \"$\" in node:\n                return word[:i]\n            if c not in node:\n                return word\n            node = node[c]\n        return word\n\n    return \" \".join(search(word) for word in sentence.split())"
+        }
+      },
+      "title": "Replace Words",
+      "definition": "Given a list of words and a sentence, replace all words in the sentence with the shortest root that is a prefix of the word.",
+      "leetcode": "https://leetcode.com/problems/replace-words",
+      "difficulty": "medium",
+      "topics": [
+        "trie"
+      ]
+    },
+    "394-decode-string": {
+      "solutions": {
+        "solution.py": {
+          "code": "def decode_string(s: str) -> str:\n    stack, s = [], \"1[\" + s + \"]\"\n    for c in s:\n        if c == \"]\":\n            curr = []\n            while stack[-1] != \"[\":\n                curr.append(stack.pop())\n            stack.pop()  # remove \"[\"\n            num = []\n            while stack and stack[-1].isdigit():\n                num.append(stack.pop())\n            stack.append(\"\".join(reversed(curr)) * int(\"\".join(reversed(num))))\n        else:\n            stack.append(c)\n    return stack[0]"
+        }
+      },
+      "title": "Decode String",
+      "definition": "Given a string `s` that contains digits, letters, and brackets, decode the string.",
+      "leetcode": "https://leetcode.com/problems/decode-string",
+      "difficulty": "medium",
+      "topics": [
+        "stack"
+      ]
+    },
+    "211-design-add-and-search-words-data-structure": {
+      "solutions": {
+        "solution.py": {
+          "code": "\nclass WordDictionary:\n\n    def __init__(self):\n        self.trie: dict[str, dict] = {}\n        self.END_MARKER = \"$\"\n\n    def add_word(self, word: str) -> None:\n        node = self.trie\n        for c in word:\n            node = node.setdefault(c, {})\n        node[self.END_MARKER] = True\n\n    def search(self, word: str) -> bool:\n\n        def dfs(node: dict, i: int) -> bool:\n\n            if i == len(word):\n                return self.END_MARKER in node\n\n            if (c := word[i]) == \".\":\n\n                return any(\n                    dfs(child, i + 1)\n                    for k, child in node.items()\n                    if k != self.END_MARKER\n                )\n            child = node.get(c)\n            return bool(child) and dfs(child, i + 1)\n\n        return dfs(self.trie, 0)"
+        }
+      },
+      "title": "Design Add and Search Words Data Structure",
+      "definition": "Design a data structure that supports adding new words and finding if a string matches any previously added string. Supports '.' as a wildcard character.",
+      "leetcode": "https://leetcode.com/problems/design-add-and-search-words-data-structure",
+      "difficulty": "medium",
+      "topics": [
+        "trie"
+      ]
+    },
+    "1406-stone-game-iii": {
+      "solutions": {
+        "solution.py": {
+          "intuition": "Score-difference DP:\nLet `dp[i]` = max score difference current player can achieve starting at index `i`.\nTransition: `dp[i] = max_{k∈{1,2,3}} (sum(i..i+k-1) − dp[i+k])`. Answer from `dp[0]`.",
+          "time_complexity": "O(n)\nconstant 3 choices per `i`",
+          "code": "def stone_game_III(stoneValue: list[int]) -> str:\n    memo, n = {}, len(stoneValue)\n    def dp(i):\n        if i >= n:\n            return 0\n        if i not in memo:\n            memo[i] = max(\n                sum(stoneValue[i : i + k]) - dp(i + k) for k in range(1, 4)\n            )\n        return memo[i]\n    return \"Alice\" if dp(0) > 0 else \"Bob\" if dp(0) < 0 else \"Tie\""
+        }
+      },
+      "title": "Stone Game III",
+      "definition": "Array stoneValue; players alternately take 1–3 stones from the left maximizing score difference. Return \"Alice\", \"Bob\", or \"Tie\" under optimal play.",
+      "leetcode": "https://leetcode.com/problems/stone-game-iii",
+      "difficulty": "hard",
+      "topics": [
+        "game",
+        "dynamic_programming"
+      ]
+    },
+    "875-koko-eating-bananas": {
+      "solutions": {
+        "solution.py": {
+          "intuition": "Binary searching the answer space, (eating speed `k`):\nThe range of possible speeds is from `1` to `max(piles)`\nThe key property is that the problem is **monotonic** (if a speed `k` is fast enough, any speed greater than `k` will also be fast enough)\nThis allows us to binary search for the *minimum* valid speed\nWe test a mid speed (`k = (l + r) // 2`)\n    If it's valid (`hours(k) <= h`), we try to find a smaller valid speed by searching the lower half (`r = k`)\n    If it's too slow, we must increase the speed by searching the upper half (`l = k + 1`)\nThe loop converges on the smallest `k` that works 🍌",
+          "time_complexity": "O(n log m):\nn is the number of piles\nm is the maximum pile size",
+          "args": {
+            "piles: list[int]": "The banana piles",
+            "h: int": "The hour limit"
+          },
+          "variables": {
+            "l": "The left pointer of the binary search",
+            "r": "The right pointer of the binary search",
+            "k": "The mid pointer of the binary search"
+          },
+          "returns": "`int`: The minimum eating speed",
+          "code": "def koko_eating_bananas(piles: list[int], h: int) -> int:\n\n    def hours(k:int) -> int:\n        return sum((p + k - 1) // k for p in piles)\n        # return sum(math.ceil(pile / k) for pile in piles)\n\n    l, r = 1, max(piles)\n    while l < r:\n        k = (l + r) // 2\n        if hours(k) <= h:\n            r = k\n        else:\n            l = k + 1\n    return l"
+        }
+      },
+      "title": "Koko Eating Bananas",
+      "definition": "Given banana piles `piles` and hour limit `h`, find the minimum eating speed\n**$k\\in\\mathbb{N}$** such that **$\\sum_{i=1}^{|piles|} \\lceil \\frac{p_i}{k} \\rceil \\leq h$** where each hour Koko eats up to `k` bananas from one pile (any leftover hour is wasted)",
+      "leetcode": "https://leetcode.com/problems/koko-eating-bananas",
+      "difficulty": "medium",
+      "topics": [
+        "binary_search",
+        "binary_search_on_answer"
+      ]
+    },
+    "460-lfu-cache": {
+      "solutions": {
+        "solution.py": {
+          "code": "from collections import defaultdict, OrderedDict\n\nclass LFUCache:\n    def __init__(self, capacity: int):\n        self.capacity    = capacity\n        self.cache       = {}  # key → value\n        self.freq        = {}  # key → freq\n        self.buckets     = defaultdict(OrderedDict)  # freq → keys in LRU order\n        self.minfreq     = 0\n\n    def _bump(self, key: int):\n        f = self.freq[key]\n        # remove from old bucket\n        del self.buckets[f][key]\n        if not self.buckets[f]:\n            del self.buckets[f]\n            if self.minfreq == f:\n                self.minfreq += 1\n                \n        # Promote the book to the next shelf up, placing it by the chair.\n        self.freq[key] +=1 # self.freq[key] = f + 1\n        self.buckets[f + 1][key] = None\n\n    def get(self, key: int) -> int:\n        if key not in self.cache:\n            return -1\n        self._bump(key)\n        return self.cache[key]\n\n    def put(self, key: int, value: int) -> None:\n        if self.capacity <= 0:\n            return\n\n        if key in self.cache:\n            self.cache[key] = value\n            self._bump(key)\n            return\n\n        # Evict from the far end of the least popular shelf.\n        if len(self.cache) >= self.capacity:\n            old_key, _ = self.buckets[self.minfreq].popitem(last=False)\n            del self.cache[old_key]\n            del self.freq[old_key]\n\n        # A new book starts on the bottom shelf, by the chair.\n        self.cache[key] = value\n        self.freq[key] = 1\n        self.buckets[1][key] = None\n        self.minfreq = 1"
+        }
+      },
+      "title": "LFU Cache",
+      "definition": "A cache that evicts the least frequently used item when the cache is full.",
+      "leetcode": "https://leetcode.com/problems/lfu-cache",
+      "difficulty": "hard",
+      "topics": [
+        "cache"
+      ]
+    },
+    "133-clone-graph": {
+      "solutions": {
+        "solution.py": {
+          "intuition": "Hash Map as a Visited Set & Node Cache 🗺️\nThe key to traversing a potentially cyclic graph is a `visited` set. Here, the `cloned` dictionary serves a dual purpose. It acts as both a **`visited` set** (by checking `if n not in cloned`) and a **cache** that maps an original node to its clone. This ensures each node is cloned exactly once and prevents getting stuck in an infinite loop.",
+          "time_complexity": "O(V + E)\nwhere V is the number of vertices (nodes) and E is the number of edges. This is optimal as we must visit every node and traverse every edge to create the full copy.",
+          "args": {
+            "node: Node | None": "The node to clone"
+          },
+          "expressions": {
+            "if n not in cloned": "Check if the node has not been visited",
+            "cloned[n] = Node(n.val)": "Create a new node for the neighbor",
+            "queue.append(n)": "Add the neighbor to the queue",
+            "cloned[cur].neighbors.append(cloned[n])": "Add the neighbor to the current node's neighbors"
+          },
+          "variables": {
+            "cloned": "A dictionary that maps an original node to its clone",
+            "queue": "A queue that stores the nodes to be visited",
+            "cur": "The current node being visited",
+            "n": "The neighbor of the current node"
+          },
+          "returns": "`Node | None`: The cloned graph",
+          "code": "from collections import deque\n\nclass Node:\n    def __init__(self, val=0, neighbors=None):\n        self.val = val\n        self.neighbors = neighbors if neighbors is not None else []\n\ndef clone_graph(node: Node | None) -> Node | None:\n    if not node:\n        return None\n    cloned = {node: Node(node.val)}\n    queue = deque([node])\n    while queue:\n        cur = queue.popleft()\n        for n in cur.neighbors:\n            if n not in cloned:\n                cloned[n] = Node(n.val)\n                queue.append(n)\n            cloned[cur].neighbors.append(cloned[n])\n    return cloned[node]"
+        }
+      },
+      "title": "Clone Graph",
+      "definition": "Given a reference to a node in a connected undirected graph, return a deep copy (clone) of the graph.",
+      "leetcode": "https://leetcode.com/problems/clone-graph",
+      "difficulty": "medium",
+      "topics": [
+        "bfs"
+      ]
+    },
+    "523-continuous-subarray-sum": {
+      "solutions": {
+        "solution.py": {
+          "args": {
+            "segments: list[int]": "List of integers representing trip segments.",
+            "k: int": "The divisor."
+          },
+          "returns": "`bool`: True if such a subarray exists, False otherwise.",
+          "code": "def checkSubarraySumIsMultipleOfK(segments: list[int], k: int) -> bool:\n\n    remainder_idx = {0: -1}\n    prefix_remainder = 0\n\n    for i, segment in enumerate(segments):\n        prefix_remainder = (prefix_remainder + segment) % k\n        if prefix_remainder in remainder_idx:\n            if i - remainder_idx[prefix_remainder] > 1:\n                return True\n        else:\n            remainder_idx[prefix_remainder] = i\n    return False"
+        }
+      },
+      "title": "Continuous Subarray Sum",
+      "definition": "Given an array of integers and a target k, determine if there exists a subarray with sum divisible by k.",
+      "leetcode": "https://leetcode.com/problems/continuous-subarray-sum",
+      "difficulty": "medium",
+      "topics": [
+        "prefix_sum"
+      ]
+    },
+    "518-coin-change-ii": {
+      "solutions": {
+        "solution.py": {
+          "intuition": "Paradigm: This is a classic **Unbounded Knapsack** counting problem.\n\nInsight: To count *combinations* without overcounting *permutations* (`1+2` vs `2+1`), the DP imposes a strict processing order on the coins. This ensures that combinations are always built in the same sequence (e.g., using smaller denomination coins before larger ones), elegantly eliminating duplicates.",
+          "time_complexity": "O(n * amount)\nwhere n is the number of coins and amount is the target amount.",
+          "code": "def coin_change_II(amount: int, coins: list[int]) -> int:\n    memo, n = {}, len(coins)\n\n    def dp(c, amount):\n        if amount == 0:\n            return 1\n        if amount < 0 or c == n:\n            return 0\n        if (c, amount) not in memo:\n            memo[c, amount] = dp(c, amount - coins[c]) + dp(c + 1, amount)\n        return memo[c, amount]\n\n    return dp(0, amount)"
+        }
+      },
+      "title": "Coin Change II",
+      "definition": "Given an array of coin denominations and a total amount, return the number of combinations of coins that make up that amount. You can assume an infinite number of each coin.",
+      "leetcode": "https://leetcode.com/problems/coin-change-ii",
+      "difficulty": "medium",
+      "topics": [
+        "dynamic_programming",
+        "knapsack"
+      ]
+    },
+    "416-partition-equal-subset-sum": {
+      "solutions": {
+        "solution.py": {
+          "intuition": "Paradigm: This is the **0/1 Knapsack** decision problem in disguise.\n\nInsight: The problem transforms from partitioning an array into a simpler question: can a subset of \"items\" (`nums`) perfectly fill a \"knapsack\" with capacity `total_sum / 2`? Each item's weight is equal to its value.",
+          "time_complexity": "O(N * Sum):\nwhere N is the number of elements and Sum is the target subset sum.",
+          "code": "def can_partition_into_2_equal_subsets(nums: list[int]) -> bool:\n    memo, n = {}, len(nums)\n\n    def dp(i, s):\n        if i == n or s < 0:\n            return False\n        if s == 0:\n            return True\n\n        if (i, s) not in memo:\n            memo[i, s] = dp(i + 1, s) or dp(i + 1, s - nums[i])\n\n        return memo[(i, s)]\n\n    return False if ((total := sum(nums)) & 1) else dp(0, total / 2)"
+        }
+      },
+      "title": "Partition Equal Subset Sum",
+      "definition": "Given an integer array `nums`, determine if you can partition it into two subsets with an equal sum.",
+      "leetcode": "https://leetcode.com/problems/partition-equal-subset-sum",
+      "difficulty": "medium",
+      "topics": [
+        "dynamic_programming"
+      ]
+    },
+    "188-best-time-to-buy-and-sell-stock-iv": {
+      "solutions": {
+        "dp.py": {
+          "code": "\ndef best_time_to_buy_and_sell_stock_IV(k: int, prices: list[int]) -> int:\n\n    cost = [float(\"inf\")] * (k + 1)\n    profit = [0] * (k + 1)\n    for p in prices:\n        for t in range(1, k + 1):\n            cost[t] = min(cost[t], p - profit[t - 1])\n            profit[t] = max(profit[t], p - cost[t])\n    return profit[k]"
+        },
+        "states.py": {
+          "code": "       \n\ndef best_time_to_buy_and_sell_stock_IV(k: int, prices: list[int]) -> int:\n    buy  = [float(\"-inf\")] * (k + 1)\n    sell = [0] * (k + 1)\n    for p in prices:\n        for t in range(1, k + 1):\n            buy[t]  = max(buy[t],  sell[t - 1] - p)\n            sell[t] = max(sell[t], buy[t] + p)\n    return sell[k]"
+        }
+      },
+      "title": "Best Time to Buy and Sell Stock IV",
+      "definition": "Given a list of daily stock prices `prices` and an integer `k` (max transactions), return the maximum profit.",
+      "leetcode": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock-iv",
+      "difficulty": "hard",
+      "topics": [
+        "dynamic_programming"
+      ]
+    },
+    "370-range-addition": {
+      "solutions": {
+        "solution.py": {
+          "args": {
+            "length: int": "The number of days in the itinerary.",
+            "updates: list[list[int]]": "List of [start_day, end_day, change_in_km] updates."
+          },
+          "returns": "`list[int]`: The final daily travel plan after all updates.",
+          "code": "def getModifiedArray(length: int, updates: list[list[int]]) -> list[int]:\n\n    delta = [0] * (length + 1)\n\n    for start_day, end_day, change_in_km in updates:\n        delta[start_day] += change_in_km\n        delta[end_day + 1] -= change_in_km\n\n    prefix_sum = 0\n    return [prefix_sum := prefix_sum + change for change in delta[:-1]]"
+        }
+      },
+      "title": "Range Addition",
+      "definition": "Given an array and a list of operations, apply range updates and return the final array.",
+      "leetcode": "https://leetcode.com/problems/range-addition",
+      "difficulty": "medium",
+      "topics": [
+        "prefix_sum"
+      ]
+    },
+    "120-triangle": {
+      "solutions": {
+        "solution.py": {
+          "intuition": "Paradigm: This is a classic bottom-up dynamic programming problem.\nInsight: The minimum path to the bottom *from* any cell `(r, c)` is independent of the path taken *to* that cell. This allows us to start at the bottom (where path sums are known) and iteratively compute the optimal path for each cell on the row above by choosing the cheaper of its two children's already-computed optimal paths.",
+          "time_complexity": "O(N)\nwhere N is the total number of cells in the triangle. The complexity is the number of subproblems (N), as each is solved once.",
+          "code": "def triangle_minimum_path_sum(triangle: list[list[int]]) -> int:\n\n    n, memo = len(triangle), {}\n\n    def dp(r, c):\n        if r == n - 1:\n            return triangle[r][c]\n        if (r, c) not in memo:\n            memo[(r, c)] = triangle[r][c] + min(dp(r + 1, c), dp(r + 1, c + 1))\n        return memo[(r, c)]\n\n    return dp(0, 0)"
+        }
+      },
+      "title": "Triangle Minimum Path Sum",
+      "definition": "Given a `triangle` (list of lists), find the minimum path sum from top to bottom. From index `i` in a row, you may move to index `i` or `i + 1` in the next row.",
+      "leetcode": "https://leetcode.com/problems/triangle",
+      "difficulty": "medium",
+      "topics": [
+        "dynamic_programming"
+      ]
+    },
+    "787-cheapest-flights-within-k-stops": {
+      "solutions": {
+        "dijkstra.py": {
+          "variables": {
+            "pq": "Priority queue to store the state (cost, city, stops_taken)",
+            "min_stops": "Tracks the minimum stops to reach each city"
+          },
+          "code": "\nfrom collections import defaultdict\nimport heapq\n\n\ndef cheapest_flights_with_at_most_k_stops( flights: list[list[int]], src: int, dst: int, k: int) -> int:\n\n    graph = defaultdict(list)\n    for u, v, price in flights:\n        graph[u].append((v, price))\n\n    pq, min_stops = [(0, src, 0)], {}\n    \n    while pq:\n        cost, city, stops = heapq.heappop(pq)\n\n        # If we've already found a path to this city using fewer or equal stops, skip.\n        # A path with fewer stops must have been cheaper or equal due to PQ ordering.\n        if stops > min_stops.get(city, float(\"inf\")): continue\n        if city == dst: return cost\n\n        # Record the new minimum stops to reach this city\n        min_stops[city] = stops\n        if stops <= k:\n            for neighbor, price in graph[city]:\n                heapq.heappush(pq, (cost + price, neighbor, stops + 1))\n    return -1\n"
+        },
+        "bellman_ford.py": {
+          "time_complexity": "O(kE)\nwhere `k` is the number of stops and `E` is the number of flights.",
+          "code": "def cheapest_flights_with_at_most_k_stops(\n    n: int, flights: list[list[int]], src: int, dst: int, k: int\n) -> int:\n    d = [float(\"inf\")] * n\n    d[src] = 0\n\n    for _ in range(k + 1):\n        tmp = d[:]\n        for u, v, w in flights:\n            if d[u] + w < tmp[v]:\n                tmp[v] = d[u] + w\n        d = tmp\n\n    return d[dst] if d[dst] < float(\"inf\") else -1"
+        }
+      },
+      "title": "Cheapest Flights Within K Stops",
+      "definition": "Given a list of flights where flights[i] = [from, to, price] represents a flight from city from to city to with a price price, and a starting city src and a destination city dst, your task is to find the cheapest price from src to dst with up to k stops. If there is no such route, return -1.",
+      "leetcode": "https://leetcode.com/problems/cheapest-flights-within-k-stops",
+      "difficulty": "medium",
+      "topics": [
+        "dijkstra",
+        "bfs"
+      ]
+    },
+    "363-max-sum-of-rectangle-no-larger-than-k": {
+      "solutions": {
+        "solution.py": {
+          "code": "from bisect import bisect_left, insort\n\ndef max_sum_of_rectangle_no_larger_than_k(mat: list[list[int]], k: int) -> int:\n    # [Opt Loop Ordering] transpose so outer loops iterate the smaller dim (fewer (l,r) pairs)\n    m, n = len(mat), len(mat[0])\n    if m > n:\n        mat = [list(r) for r in zip(*mat)]\n        m, n = n, m\n\n    # [Kadane Fast-Path] classic Kadane; return value if ≤ k, else None → fall back to constrained step\n    def kadane_leq(arr: list[int], K: int) -> int | None:\n        best = cur = arr[0]\n        for x in arr[1:]:\n            cur = x if cur < 0 else cur + x  # Kadane \"extend or restart\"\n            best = max(best, cur)\n            if best == K:\n                return K  # [Early Exit] cannot beat K\n        return best if best <= K else None\n\n    ans = float(\"-inf\")\n\n    # ------------------- Technique 1: Column-Pair Compression (2D → 1D) -------------------\n    # Fix left/right columns; accumulate row sums inside this strip → a 1D array `row`.\n    # Any contiguous subarray of `row` == some rectangle between columns [l..r].\n    for l in range(n):\n        row = [0] * m\n        for r in range(l, n):\n            for i in range(m):\n                row[i] += mat[i][r]\n\n            # Example: if mat = [[1,2,3],[4,5,6],[7,8,9]], (l,r)=(0,1) → row=[1+2,4+5,7+8]=[3,9,15]\n\n            # ------------------- Technique 2: Kadane (fast path, unconstrained) -------------------\n            fast = kadane_leq(row, k)\n            if fast is not None:\n                ans = max(ans, fast)\n                if ans == k:\n                    return k  # [Early Exit]\n                continue\n\n            # ------------------- Technique 3: Ordered Prefix Sums + Binary Search -------------------\n            # 1D target: max subarray sum ≤ k on `row` with negatives allowed.\n            # Keep sorted prefix sums; for running sum s, find smallest prefix p ≥ s-k → s - p ≤ k and as large as possible.\n            # Example: row=[3,-2,5], k=6:\n            # pref=[0]; s=3→need ≥ -3→pick 0→cand=3; s=1→≥ -5→0→cand=1; s=6→≥ 0→0→cand=6 (best)\n            s, pref = 0, [0]\n            for v in row:\n                s += v\n                j = bisect_left(pref, s - k)  # find smallest prefix ≥ s-k\n                if j < len(pref):\n                    ans = max(ans, s - pref[j])\n                    if ans == k:\n                        return k  # [Early Exit]\n                insort(pref, s)  # keep prefixes sorted for future queries\n\n    return ans"
+        }
+      },
+      "title": "Max Sum of Rectangle No Larger Than K",
+      "definition": "Given a 2D matrix and a target sum, return the maximum sum of any submatrix no larger than K.",
+      "leetcode": "https://leetcode.com/problems/max-sum-of-rectangle-no-larger-than-k",
+      "difficulty": "hard",
+      "topics": [
+        "kadane"
+      ]
+    },
+    "778-swim-in-rising-water": {
+      "solutions": {
+        "solution.py": {
+          "args": {
+            "grid: list[list[int]]": "2D list of integers representing the elevations of the cells"
+          },
+          "returns": "`int`: minimum time to travel from `(0, 0)` to `(N-1, N-1)`",
+          "variables": {
+            "pq": "Priority queue stores (max_elevation_on_path, r, c)",
+            "resolved": "set to store the cells for which we have found the minimum time required to reach them"
+          },
+          "code": "import heapq\n\ndef swim_in_rising_water(grid: list[list[int]]) -> int:\n\n    n=len(grid)\n    pq, resolved = [(grid[0][0], 0, 0)], set()\n\n    while pq:\n        time, r, c = heapq.heappop(pq)\n        if (r, c) in resolved:continue\n        if (r, c) == (n - 1, n - 1):return time\n        resolved.add((r, c))\n\n        for nr, nc in [(r, c + 1), (r, c - 1), (r + 1, c), (r - 1, c)]:\n            if 0 <= nr < n and 0 <= nc < n and (nr, nc) not in resolved:\n                bottleneck_time = max(time, grid[nr][nc])\n                heapq.heappush(pq, (bottleneck_time, nr, nc))"
+        }
+      },
+      "title": "Swim in Rising Water",
+      "definition": "You are given an `N x N` grid of elevations. Find the minimum \"time\" `t` to travel from `(0, 0)` to `(N-1, N-1)`. You can only move between adjacent cells if their elevation is less than or equal to the time `t`",
+      "leetcode": "https://leetcode.com/problems/swim-in-rising-water",
+      "difficulty": "hard",
+      "topics": [
+        "dijkstra"
+      ]
+    },
+    "525-contiguous-array": {
+      "solutions": {
+        "solution.py": {
+          "args": {
+            "segments: list[int]": "List of integers (positive for forward, negative/zero for backward)."
+          },
+          "returns": "`int`: The length of the longest balanced subarray.",
+          "code": "import sys, os\nsys.path.append(os.path.join(os.path.dirname(__file__), '..','325-maximum-size-subarray-sum-equals-k'))\nfrom solution import maxSizeSubarraySumEqualsK\n\n\ndef findMaxLengthOfBalancedSubarray(segments: list[int]) -> int:\n    \n    normalized_segments = [1 if num > 0 else -1 for num in segments]\n    return maxSizeSubarraySumEqualsK(normalized_segments, 0)"
+        }
+      },
+      "title": "Contiguous Array",
+      "definition": "Given a binary array, find the maximum length of a contiguous subarray with equal number of 0 and 1.",
+      "leetcode": "https://leetcode.com/problems/contiguous-array",
+      "difficulty": "medium",
+      "topics": [
+        "prefix_sum"
+      ]
+    },
+    "3-longest-substring-without-repeating-characters": {
+      "solutions": {
+        "solution.py": {
+          "time_complexity": "O(n)\nwhere n is the length of the string. Each character is visited once by the right pointer, and the left pointer only moves forward, so the sliding window expands and contracts at most n times total.",
+          "args": {
+            "s: str": "Input string to analyze"
+          },
+          "expressions": {
+            "l = max(mp[c] + 1, l)": "ensures that l does not move backward in cases where the last occurrence of s[r] was before l."
+          },
+          "returns": "`int`: Length of the longest substring without repeating characters",
+          "code": "def longest_substring_without_repeating_characters(s: str) -> int:\n    mp, l, max_length = {}, 0, 0\n    for r, c in enumerate(s):\n        if c in mp:\n            l = max(mp[c] + 1, l)\n        mp[c] = r\n        max_length = max(max_length, r - l + 1)\n    return max_length"
+        }
+      },
+      "title": "Longest Substring Without Repeating Characters",
+      "definition": "Given a string `s`, find the length of the longest substring without repeating characters.",
+      "leetcode": "https://leetcode.com/problems/longest-substring-without-repeating-characters",
+      "difficulty": "medium",
+      "topics": [
+        "sliding_window"
+      ]
+    },
+    "51-n-queens": {
+      "solutions": {
+        "solution.py": {
+          "intuition": "Backtrack with State Tracking ♛\nPlace one queen per row. Track blocked columns, diagonals: Valid placement → recurse to next row, Invalid → skip, After recursion, remove queen to try next column. Track state using: `cols` for columns, `diag1` for main diagonal *↘* `row - col`, `diag2` for anti-diagonal *↙* `row + col`.",
+          "time_complexity": "O(N!)\nfirst row: N choices, second row: N-1 choices, total permutations = N!, pruning drastically reduces actual recursion tree.",
+          "args": {
+            "n: int": "Size of the chessboard (n x n)"
+          },
+          "variables": {
+            "cols": "Columns where queens are placed",
+            "diag1": "The main diagonal where queens are placed (↘) `r - c`",
+            "diag2": "The anti-diagonal where queens are placed (↙) `r + c`"
+          },
+          "expressions": {
+            "`board[row][col] = \".\"`": "Remove the queen (backtrack)",
+            "`board[row][col] = \"Q\"`": "Place the queen",
+            "`continue`": "Skip invalid positions",
+            "`dfs(row + 1)`": "Recurse to the next row"
+          },
+          "returns": "`list[list[str]]`: List of all valid queen placements",
+          "code": "def n_queens(n: int) -> list[list[str]]:\n\n    result, board = [], [[\".\"] * n for _ in range(n)]\n\n    cols, diag1, diag2 = set(), set(), set()\n\n    def dfs(row: int):\n        if row == n:\n            result.append([\"\".join(r) for r in board])\n            return\n\n        for col in range(n):\n            if col in cols or (row - col) in diag1 or (row + col) in diag2:\n                continue\n\n            board[row][col] = \"Q\"\n\n            cols.add(col)\n            diag1.add(row - col)\n            diag2.add(row + col)\n\n            dfs(row + 1)\n\n            board[row][col] = \".\"\n            cols.remove(col)\n            diag1.remove(row - col)\n            diag2.remove(row + col)\n\n    dfs(0)\n    return result"
+        }
+      },
+      "title": "N-Queens",
+      "definition": "Place n queens on an n x n board such that no two queens threaten each other. *[19!]meaning no two queens share the same row, column, or diagonal*.",
+      "leetcode": "https://leetcode.com/problems/n-queens",
+      "difficulty": "hard",
+      "topics": [
+        "backtrack",
+        "game"
+      ]
+    },
+    "560-subarray-sum-equals-k": {
+      "solutions": {
+        "solution.py": {
+          "args": {
+            "segments: list[int]": "List of integers representing trip segments.",
+            "k: int": "Target sum."
+          },
+          "returns": "`int`: The count of subarrays with sum == k.",
+          "code": "from collections import defaultdict\n\ndef subarraySumEqualsK(segments: list[int], k: int) -> int:\n\n    marker_frequency = defaultdict(int, {0: 1})\n    prefix_sum = count = 0\n\n    for segment in segments:\n        prefix_sum += segment\n        count += marker_frequency[prefix_sum - k]\n        marker_frequency[prefix_sum] += 1\n\n    return count"
+        }
+      },
+      "title": "Subarray Sum Equals K",
+      "definition": "Given an array of integers and a target sum k, return the total number of continuous subarrays whose sum equals to k.",
+      "leetcode": "https://leetcode.com/problems/subarray-sum-equals-k",
+      "difficulty": "medium",
+      "topics": [
+        "prefix_sum"
+      ]
+    },
+    "1590-make-sum-divisible-by-p": {
+      "solutions": {
+        "solution.py": {
+          "args": {
+            "segments: list[int]": "List of integers representing trip segments.",
+            "p: int": "The divisor."
+          },
+          "returns": "`int`: The length of the shortest subarray to remove, or -1 if not possible.",
+          "code": "def minSubarrayToMakeSumDivisibleByP(segments: list[int], p: int) -> int:\n\n    total_remainder = sum(segments) % p\n    if total_remainder == 0:\n        return 0\n\n    remainder_idx = {0: -1}\n    prefix_remainder, min_length = 0, len(segments)\n\n    for i, segment in enumerate(segments):\n        prefix_remainder = (prefix_remainder + segment) % p\n        need = (prefix_remainder - total_remainder + p) % p\n        if need in remainder_idx:\n            min_length = min(min_length, i - remainder_idx[need])\n        remainder_idx[prefix_remainder] = i\n\n    return min_length if min_length < len(segments) else -1"
+        }
+      },
+      "title": "Make Sum Divisible by P",
+      "definition": "Given an array of positive integers and a positive integer p, remove the shortest subarray such that the sum of the remaining elements is divisible by p. Return the length of the shortest subarray to remove, or -1 if not possible.",
+      "leetcode": "https://leetcode.com/problems/make-sum-divisible-by-p",
+      "difficulty": "medium",
+      "topics": [
+        "prefix_sum"
+      ]
+    },
+    "918-maximum-sum-of-circular-subarray": {
+      "solutions": {
+        "solution.py": {
+          "code": "def maximum_sum_of_circular_subarray(nums: list[int]) -> int:\n    total, max_end = min_end = 0\n    max_sum, min_sum = float(\"-inf\"), float(\"inf\")\n    for x in nums:\n        total += x\n        max_end = max(x, max_end + x)\n        max_sum = max(max_sum, max_end)  # Kadane (max)\n        min_end = min(x, min_end + x)\n        min_sum = min(min_sum, min_end)  # Kadane (min)\n    return max_sum if max_sum < 0 else max(max_sum, total - min_sum)"
+        }
+      },
+      "title": "Maximum Sum of Circular Subarray",
+      "definition": "Given a circular array of integers, return the maximum sum of any contiguous subarray.",
+      "leetcode": "https://leetcode.com/problems/maximum-sum-of-circular-subarray",
+      "difficulty": "medium",
+      "topics": [
+        "kadane"
+      ]
+    },
+    "146-lru-cache": {
+      "solutions": {
+        "solution.py": {
+          "code": "from collections import OrderedDict\n\nclass LRUCache:\n    def __init__(self, capacity: int):\n        self.cache: OrderedDict[int, int] = OrderedDict()\n        self.capacity = capacity\n\n    def get(self, key: int) -> int:\n        if (val := self.cache.get(key)) is None:\n            return -1\n        self.cache.move_to_end(key)\n        return val\n\n    def put(self, key: int, value: int) -> None:\n        if key in self.cache:\n            self.cache.move_to_end(key)\n        self.cache[key] = value\n        if len(self.cache) > self.capacity:\n            self.cache.popitem(last=False)"
+        }
+      },
+      "title": "LRU Cache",
+      "definition": "A cache that evicts the least recently used item when the cache is full.",
+      "leetcode": "https://leetcode.com/problems/lru-cache",
+      "difficulty": "medium",
+      "topics": [
+        "cache"
+      ]
+    },
+    "102-binary-tree-level-order-traversal": {
+      "solutions": {
+        "solution.py": {
+          "intuition": "The core logic hinges on the inner `for` loop\nThe expression `len(queue)` takes a \"snapshot\" of the number of nodes on the current level before the loop begins. The loop then dequeues and processes exactly that many nodes, ensuring that only nodes from the current level are handled while their children are queued up for the next iteration. This technique is the key to cleanly separating the levels.",
+          "time_complexity": "O(N)\nwhere N is the total number of nodes in the tree. This is optimal as every node must be visited once.",
+          "args": {
+            "root": "Root node of the binary tree"
+          },
+          "returns": "`list[list[int]]`: List of lists, where each inner list contains values of nodes at the same level",
+          "code": "from collections import deque\n\ndef binary_tree_level_order_traversal(root) -> list[list[int]]:\n    \n    if not root:\n        return []\n    queue, result = deque([root]), []\n    while queue:\n        level = [] \n        for _ in range(len(queue)):  # Process nodes at the current level\n            node = queue.popleft()\n            level.append(node.val)\n            if node.left:\n                queue.append(node.left)\n            if node.right:\n                queue.append(node.right)\n        result.append(level)\n    return result"
+        }
+      },
+      "title": "Binary Tree Level Order Traversal",
+      "definition": "Given the root of a binary tree, return its nodes' values organized by level, from left to right.",
+      "leetcode": "https://leetcode.com/problems/binary-tree-level-order-traversal",
+      "difficulty": "medium"
+    },
+    "974-subarray-sums-divisible-by-k": {
+      "solutions": {
+        "solution.py": {
+          "args": {
+            "segments: list[int]": "List of integers representing trip segments.",
+            "k: int": "The divisor."
+          },
+          "returns": "`int`: The count of subarrays with sum divisible by k.",
+          "code": "from collections import defaultdict\n\ndef subarraysSumIsDivisibleByK(segments: list[int], k: int) -> int:\n    remainder_frequency = defaultdict(int, {0: 1})\n    prefix_remainder = count = 0\n\n    for segment in segments:\n        prefix_remainder = (prefix_remainder + segment) % k\n        count += remainder_frequency[prefix_remainder]\n        remainder_frequency[prefix_remainder] += 1\n    return count"
+        }
+      },
+      "title": "Subarray Sums Divisible by K",
+      "definition": "Given an array of integers and an integer k, return the number of non-empty subarrays that have a sum divisible by k.",
+      "leetcode": "https://leetcode.com/problems/subarray-sums-divisible-by-k",
+      "difficulty": "medium",
+      "topics": [
+        "prefix_sum"
+      ]
+    },
+    "122-best-time-to-buy-and-sell-stock-ii": {
+      "solutions": {
+        "solution.py": {
+          "code": "def best_time_to_buy_and_sell_stock_II(prices: list[int]) -> int:\n    profit = 0\n    for i in range(1, len(prices)):\n        if prices[i] > prices[i - 1]:\n            profit += prices[i] - prices[i - 1]\n    return profit"
+        }
+      },
+      "title": "Best Time to Buy and Sell Stock II",
+      "definition": "Given a list of daily stock prices `prices`; you may complete multiple transactions (buy → sell → buy …) but cannot hold more than one share at a time. Return the maximum total profit.",
+      "leetcode": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock-ii",
+      "difficulty": "medium",
+      "topics": [
+        "greedy"
+      ]
+    },
+    "124-binary-tree-maximum-path-sum": {
+      "solutions": {
+        "solution.py": {
+          "code": "def binary_tree_maximum_path_sum(root) -> int:\n    best = float(\"-inf\")\n    def dfs(node):\n        nonlocal best\n        if not node:\n            return 0\n        l = max(dfs(node.left), 0)\n        r = max(dfs(node.right), 0)\n        best = max(best, node.val + l + r)\n        return node.val + max(l, r)\n\n    dfs(root)\n    return best"
+        }
+      },
+      "title": "Binary Tree Maximum Path Sum",
+      "definition": "Given a binary tree, find the maximum path sum.",
+      "leetcode": "https://leetcode.com/problems/binary-tree-maximum-path-sum",
+      "difficulty": "hard",
+      "topics": [
+        "kadane"
+      ]
+    },
+    "1510-stone-game-iv": {
+      "solutions": {
+        "solution.py": {
+          "intuition": "Minimax:\n*Paradigm*: This is a classic *impartial game* solved using the *Minimax* principle on game states.\n*Insight*: A position is defined as *winning* if you can make *any* move to a position that you know is *losing* for your opponent. The DP builds this win/loss classification for every number of stones up to `n`, starting from the base case that 0 stones is a losing position.",
+          "time_complexity": "O(n * sqrt(n))\ntry all squares for each `x`",
+          "code": "def stone_game_IV(n: int) -> bool:\n\n    memo = {0: False}\n\n    def dp(n):\n        if n not in memo:\n            memo[n] = any(not dp(n - i**2) for i in range(int(n**0.5), 0, -1))\n        return memo[n]\n\n    return dp(n)"
+        }
+      },
+      "title": "Stone Game IV",
+      "definition": "Alice and Bob alternately take turns removing a perfect square from the board. The first player to have no moves loses. Return True if Alice wins, False otherwise.",
+      "leetcode": "https://leetcode.com/problems/stone-game-iv",
+      "difficulty": "hard",
+      "topics": [
+        "dynamic_programming",
+        "game"
+      ]
+    },
+    "153-find-minimum-in-rotated-sorted-array": {
+      "solutions": {
+        "solution.py": {
+          "intuition": "The goal is to find the *inflection point* in the rotated list (where the numbers switch from high to low) — this point is the minimum element.\nWe use a modified binary search to home in on this point.\nThe key is comparing the middle element `nums[mid]` with the rightmost element `nums[r]`. This comparison tells us which part of the array is currently sorted and can be discarded.\n    **Case 1: `nums[mid] < nums[r]`**\n        **Example:** In `[4, 5, 1, 2, 3]`, if `mid` points to `1`, `nums[mid]` (`1`) is less than `nums[r]` (`3`).\n        **Logic:** This indicates that the entire right portion of the array from `mid` to `r` (i.e., `[1, 2, 3]`) is sorted. The minimum element could be `nums[mid]` itself, or it could be to its left. We can safely search the left half (including `mid`) by setting `r = mid`.\n    **Case 2: `nums[mid] >= nums[r]`**\n        **Example:** In `[4, 5, 1, 2, 3]`, if `mid` points to `5` in an earlier step, `nums[mid]` (`5`) is greater than `nums[r]` (`3`).\n        **Logic:** This indicates that the inflection point (the minimum value) must lie to the right of `mid`. The left portion `[4, 5]` is sorted but contains values larger than the true minimum. We discard this left portion by setting `l = mid + 1`.\nThe loop terminates when `l` and `r` converge, at which point `nums[l]` is the smallest element.",
+          "expressions": {
+            "r = mid": "If nums[mid] is less than nums[r], the minimum is in the left half (inclusive of mid).",
+            "l = mid + 1": "the smallest is on the right"
+          },
+          "code": "def find_minimum_in_rotated_sorted_array(nums: list[int]) -> int:\n        \n    l, r = 0, len(nums) - 1\n    while l < r:\n        mid = (l + r) // 2\n        if nums[mid] < nums[r]:\n            r = mid\n        else:\n            l = mid + 1 \n    return nums[l]"
+        }
+      },
+      "title": "Find Minimum in Rotated Sorted Array",
+      "definition": "Given a unique-element sorted array that has been rotated at an unknown pivot, find its minimum value.",
+      "leetcode": "https://leetcode.com/problems/find-minimum-in-rotated-sorted-array",
+      "difficulty": "medium",
+      "topics": [
+        "binary_search"
+      ]
+    },
+    "994-rotting-oranges": {
+      "solutions": {
+        "solution.py": {
+          "intuition": "Multi-Source BFS 🍊:\nThe key is to initialize the queue with the coordinates of *all* initially rotten oranges. The BFS then naturally simulates the rotting process in parallel from all sources. Each \"level\" of the BFS corresponds to one minute passing. Finally, you must check if any `fresh_oranges` remain to handle cases where some are unreachable.",
+          "time_complexity": "O(m * n):\nwhere m and n are the dimensions of the grid. Each cell is enqueued and dequeued at most once, making the process highly efficient and optimal.",
+          "code": "from collections import deque\n\ndef rotting_oranges(grid: list[list[int]]) -> int:\n    m, n = len(grid), len(grid[0])\n    q, fresh = deque(), 0\n    dirs = [(0,1),(0,-1),(1,0),(-1,0)]\n    \n    for i in range(m):\n        for j in range(n):\n            if grid[i][j] == 2:\n                q.append((i, j))\n            elif grid[i][j] == 1:\n                fresh += 1\n    if fresh == 0:\n        return 0\n    \n    minutes = 0\n    while q and fresh:\n        minutes += 1\n        for _ in range(len(q)):\n            x, y = q.popleft()\n            for dx, dy in dirs:\n                nx, ny = x + dx, y + dy\n                if 0 <= nx < m and 0 <= ny < n and grid[nx][ny] == 1:\n                    grid[nx][ny] = 2\n                    fresh -= 1\n                    q.append((nx, ny))\n    \n    return minutes if fresh == 0 else -1"
+        }
+      },
+      "title": "Rotting Oranges",
+      "definition": "Given an `m x n` 2D grid of `0`s (empty), `1`s (fresh), and `2`s (rotten), every minute, any fresh orange adjacent to a rotten one becomes rotten. Return the minimum minutes required until no fresh oranges remain. If it's impossible, return -1.",
+      "leetcode": "https://leetcode.com/problems/rotting-oranges",
+      "difficulty": "medium",
+      "topics": [
+        "bfs"
+      ]
+    },
+    "121-best-time-to-buy-and-sell-stock": {
+      "solutions": {
+        "solution.py": {
+          "time_complexity": "O(n)\nwhere n is the length of the prices array. We iterate through the array once.",
+          "args": {
+            "prices: list[int]": "List of stock prices"
+          },
+          "returns": "`int`: Maximum profit from buying and selling stock",
+          "code": "def best_time_to_buy_and_sell_stock(prices: list[int]) -> int:\n    cost, profit = float(\"inf\"), 0\n    for price in prices:\n        cost = min(cost, price)\n        profit = max(profit, price - cost)\n    return profit"
+        }
+      },
+      "title": "Best Time to Buy and Sell Stock",
+      "definition": "Given a list of daily stock prices `prices`; choose one day to buy and a later day to sell for maximum profit. Return the max profit, or `0` if no profit is possible.",
+      "leetcode": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock",
+      "difficulty": "easy",
+      "topics": [
+        "dynamic_programming"
+      ]
+    },
+    "53-maximum-subarray": {
+      "solutions": {
+        "solution.py": {
+          "time_complexity": "O(n)\nwhere n is the length of the array. We iterate through the array once.",
+          "args": {
+            "nums: list[int]": "List of integers"
+          },
+          "returns": "`int`: Maximum sum of any contiguous subarray",
+          "code": "def maximum_subarray(nums: list[int]) -> int:\n    max_sum = curr_sum = float(\"-inf\")\n    for num in nums:\n        curr_sum = max(num, curr_sum + num)\n        max_sum = max(max_sum, curr_sum)\n    return max_sum"
+        }
+      },
+      "title": "Maximum Subarray",
+      "definition": "Given an array of integers, return the maximum sum of any contiguous subarray.",
+      "leetcode": "https://leetcode.com/problems/maximum-subarray",
+      "difficulty": "medium",
+      "topics": [
+        "kadane"
+      ]
+    },
+    "34-find-first-and-last-position-of-element-in-sorted-array": {
+      "solutions": {
+        "solution.py": {
+          "code": "from bisect import bisect_left, bisect_right\n\ndef find_first_and_last_position_of_element_in_sorted_array(nums: list[int], target: int) -> list[int]:\n\n    start = bisect_left(nums, target)\n    if start < len(nums) and nums[start] == target:\n        return start, bisect_right(nums, target) - 1\n    return -1, -1"
+        }
+      },
+      "title": "Find First and Last Position of Element in Sorted Array",
+      "definition": "Given a sorted array of integers `nums` that may contain duplicates, find the starting and ending indices of a given `target`. If the target is not in the array, return `[-1, -1]`.",
+      "leetcode": "https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array",
+      "difficulty": "medium",
+      "topics": [
+        "binary_search"
+      ]
+    },
+    "1514-path-with-maximum-probability": {
+      "solutions": {
+        "solution.py": {
+          "intuition": "Bellman-Ford variant to maximize product of probabilities.\nEach node tracks the maximum probability to reach it from `start`.",
+          "args": {
+            "n: int": "number of nodes",
+            "edges: list[list[int]]": "edges[i] = [u, v] is an undirected edge connecting the nodes u and v with a probability of success of traversing that edge succProb[i].",
+            "succProb: list[float]": "list of probabilities, e.g. [0.5,0.5,0.2],"
+          },
+          "code": "def path_with_maximum_probability(n: int, edges: list[list[int]], succProb: list[float], start: int, end: int) -> float:\n    prob = [0.0] * n # rob[i] stores max probability to reach node i\n    prob[start] = 1.0  # Start with full certainty\n\n    for _ in range(n - 1):  # Perform up to n-1 rounds of relaxation\n        updated = False\n        for (u, v), p in zip(edges, succProb):\n            if prob[u] * p > prob[v]:  # Try to improve v through u\n                prob[v] = prob[u] * p\n                updated = True\n            if prob[v] * p > prob[u]:  # Try to improve u through v (undirected graph)\n                prob[u] = prob[v] * p\n                updated = True\n        if not updated:\n            break  # Early exit if no updates in this round\n\n    return prob[end]"
+        }
+      },
+      "title": "Path with Maximum Probability",
+      "definition": "Given an undirected graph with edges representing traversal probabilities, find the path from a `start` to an `end` node with the highest success probability.",
+      "leetcode": "https://leetcode.com/problems/path-with-maximum-probability",
+      "difficulty": "medium",
+      "topics": [
+        "bellman_ford"
+      ]
+    },
+    "79-word-search": {
+      "solutions": {
+        "solution.py": {
+          "intuition": "Dfs with early exit on mismatch\nStart dfs from each cell\nAt each step:\n    Check bounds and character match\n    Mark visited cell with a temp symbol (e.g. #)\n    Try 4 directions (no revisiting)\n    Restore cell after backtracking\n    Stop early if the full word is matched.",
+          "time_complexity": "O(M * N * 3^L)\nM, N = board size\nL = word length\nEach step explores at most 3 directions (excluding the one it came from)\nRuntime improves with early mismatches and pruning",
+          "code": "def word_search(board: list[list[str]], word: str) -> bool:\n    rows, cols, n = len(board), len(board[0]), len(word)\n    def dfs(r: int, c: int, i: int) -> bool:\n        if i == n:\n            return True\n        if not (0 <= r < rows and 0 <= c < cols and board[r][c] == word[i]):\n            return False\n        tmp, board[r][c] = board[r][c], \"#\"\n        for x, y in ((r + 1, c), (r - 1, c), (r, c + 1), (r, c - 1)):\n            if dfs(x, y, i + 1):\n                board[r][c] = tmp\n                return True\n        board[r][c] = tmp\n        return False\n    return any(\n        dfs(r, c, 0)\n        for r in range(rows)\n        for c in range(cols)\n        if board[r][c] == word[0]\n    )"
+        }
+      },
+      "title": "Word Search",
+      "definition": "Determine if a word exists in a 2D board by following adjacent letters without reuse.",
+      "leetcode": "https://leetcode.com/problems/word-search",
+      "difficulty": "medium",
+      "topics": [
+        "backtrack"
+      ]
+    },
+    "39-combination-sum": {
+      "solutions": {
+        "solution.py": {
+          "intuition": "DFS with backtracking\nSort candidates, try each starting from current index (to allow reuse), prune if number exceeds remaining target, and record the path when rem == 0.",
+          "time_complexity": "O(2^n)\nWorst-case exponential in number of combinations explored, but pruning (if c > rem: break) reduces branches significantly.",
+          "args": {
+            "candidates: list[int]": "List of candidate numbers",
+            "target: int": "Target sum to achieve"
+          },
+          "returns": "`list[list[int]]`: List of all unique combinations that sum to target",
+          "code": "def combination_sum(candidates: list[int], target: int) -> list[list[int]]:\n\n    candidates.sort()\n    res, path = [], []\n\n    def dfs(i: int, rem: int) -> None:\n        if rem == 0:\n            res.append(path.copy())\n            return\n        for j in range(i, len(candidates)):\n            if (c := candidates[j]) > rem:\n                break\n            path.append(c)\n            dfs(j, rem - c)\n            path.pop()\n\n    dfs(0, target)\n    return res"
+        }
+      },
+      "title": "Combination Sum",
+      "definition": "Return all unique combinations where chosen numbers sum to a target. Numbers can be reused.",
+      "leetcode": "https://leetcode.com/problems/combination-sum",
+      "difficulty": "medium",
+      "topics": [
+        "backtrack"
+      ]
+    },
+    "542-01-matrix": {
+      "solutions": {
+        "solution.py": {
+          "intuition": "Multi-Source BFS from the Target 🎯:\nInstead of starting a separate BFS from every `1` to find the nearest `0` (which would be slow), this approach inverts the problem. It starts a single, **multi-source BFS from all `0`s simultaneously**. The level of the BFS at which a cell is reached is, by definition, its shortest distance to any `0`. This \"start from the answer\" strategy is a powerful technique for shortest path problems.",
+          "time_complexity": "O(m * n):\nwhere m and n are the dimensions of the grid.\nEvery cell is enqueued and processed exactly once, making this the optimal solution.",
+          "code": "from collections import deque\n\ndef zero_one_matrix(mat: list[list[int]]) -> list[list[int]]:\n    m, n = len(mat), len(mat[0])\n    dist = [[-1] * n for _ in range(m)]\n    q = deque()\n    # Initialize queue with all zero-cells\n    for i in range(m):\n        for j in range(n):\n            if mat[i][j] == 0:\n                dist[i][j] = 0\n                q.append((i, j))\n    \n    while q:\n        i, j = q.popleft()\n        for di, dj in ((1,0),(-1,0),(0,1),(0,-1)):\n            ni, nj = i + di, j + dj\n            if 0 <= ni < m and 0 <= nj < n and dist[ni][nj] < 0:\n                dist[ni][nj] = dist[i][j] + 1\n                q.append((ni, nj))\n    return dist"
+        }
+      },
+      "title": "01 Matrix",
+      "definition": "Given a binary matrix `mat`, return the distance of the nearest `0` for each cell. The distance between two adjacent cells is 1.",
+      "leetcode": "https://leetcode.com/problems/01-matrix",
+      "difficulty": "medium",
+      "topics": [
+        "bfs"
+      ]
+    },
+    "1011-capacity-to-ship-packages-within-d-days": {
+      "solutions": {
+        "solution.py": {
+          "intuition": "Binary searching the answer space, (the ship's capacity)\nThe range of possible capacities is from `max(weights)` to `sum(weights)`.\nThe problem has a **monotonic property** ideal for binary search. The function `daysNeeded(capacity)` is monotonically non-increasing: as `capacity` grows, the days required can only decrease or stay the same.\nThis creates a predictable `\\[False, ..., False, True, ..., True\\]` sequence for our condition, `daysNeeded(capacity) <= days`. The goal is to find the leftmost `True`, which represents the minimal valid capacity.\n    If `daysNeeded(capacity) <= days` is `True`, then `capacity` is a potential answer, and we try for a better (smaller) one in the left half by setting `r = capacity`.\n    If it is `False`, then `capacity` is too small, and we must search for a larger capacity in the right half by setting `l = capacity + 1`.",
+          "code": "def capacity_to_ship_packages_within_d_days(weights: list[int], days: int) -> int:\n    def days_needed(capacity: int) -> int:\n        d, load = 1, 0\n        for w in weights:\n            if load + w <= capacity:\n                load += w\n            else:\n                d += 1\n                load = w\n        return d\n    \n\n    l, r = max(weights), sum(weights)\n    while l < r:\n        capacity = (l + r) // 2\n        if days_needed(capacity) <= days:\n            r = capacity\n        else:\n            l = capacity + 1\n    return l"
+        }
+      },
+      "title": "Capacity To Ship Packages Within D Days",
+      "definition": "Given a list of weights and a number of days, find the minimum capacity of a ship that can ship all the weights within the given number of days.",
+      "leetcode": "https://leetcode.com/problems/capacity-to-ship-packages-within-d-days",
+      "difficulty": "medium",
+      "topics": [
+        "binary_search"
+      ]
+    },
+    "208-implement-trie-prefix-tree": {
+      "solutions": {
+        "solution.py": {
+          "code": "from collections import defaultdict\n\n\nclass TrieNode:\n\n    __slots__ = (\"children\", \"end\")\n\n    def __init__(self):\n\n        self.children: defaultdict[str, TrieNode] = defaultdict(TrieNode)\n        self.end = False\n\n\nclass Trie:\n\n    def __init__(self):\n\n        self.root = TrieNode()\n\n    def insert(self, word: str) -> None:\n\n        node = self.root\n        for ch in word:\n            node = node.children[ch]\n        node.end = True\n\n    def search(self, word: str) -> bool:\n        node = self.root\n        for ch in word:\n            if (node := node.children.get(ch)) is None:\n                return False\n        return node.end\n\n    def starts_with(self, prefix: str) -> bool:\n        node = self.root\n        for ch in prefix:\n            if (node := node.children.get(ch)) is None:\n                return False\n        return True\n"
+        }
+      },
+      "title": "Implement Trie (Prefix Tree)",
+      "definition": "Implement a trie (prefix tree) with insert, search, and startsWith methods.",
+      "leetcode": "https://leetcode.com/problems/implement-trie-prefix-tree",
+      "difficulty": "medium",
+      "topics": [
+        "trie"
+      ]
+    },
+    "325-maximum-size-subarray-sum-equals-k": {
+      "solutions": {
+        "solution.py": {
+          "args": {
+            "segments: list[int]": "List of integers representing trip segments.",
+            "k: int": "Target sum."
+          },
+          "returns": "`int`: The length of the longest subarray with sum == k.",
+          "code": "def maxSizeSubarraySumEqualsK(segments: list[int], k: int) -> int:\n\n    marker_idx = {0: -1}\n    prefix_sum = max_length = 0\n\n    for i, segment in enumerate(segments):\n\n        prefix_sum += segment\n\n        if (target_marker := prefix_sum - k) in marker_idx:\n            max_length = max(max_length, i - marker_idx[target_marker])\n\n        if prefix_sum not in marker_idx:\n            marker_idx[prefix_sum] = i\n\n    return max_length"
+        }
+      },
+      "title": "Maximum Size Subarray Sum Equals k",
+      "definition": "Given an array of integers and a target sum k, return the length of the longest subarray with sum equal to k.",
+      "leetcode": "https://leetcode.com/problems/maximum-size-subarray-sum-equals-k",
+      "difficulty": "medium",
+      "topics": [
+        "prefix_sum"
+      ]
+    },
+    "2145-count-the-hidden-sequences": {
+      "solutions": {
+        "solution.py": {
+          "args": {
+            "differences: list[int]": "List of daily changes (trip segments).",
+            "lower: int": "Lower bound for any marker on the highway.",
+            "upper: int": "Upper bound for any marker on the highway."
+          },
+          "returns": "`int`: The number of valid starting values.",
+          "code": "def numberOfArrays(differences: list[int], lower: int, upper: int) -> int:\n\n    prefix_sum = min_marker = max_marker = 0\n\n    for diff in differences:\n        prefix_sum += diff\n        min_marker = min(min_marker, prefix_sum)\n        max_marker = max(max_marker, prefix_sum)\n\n    return max(0, (upper - max_marker) - (lower - min_marker) + 1)"
+        }
+      },
+      "title": "Count the Hidden Sequences",
+      "definition": "Given differences array representing daily changes, lower and upper bounds, return the number of valid starting values for the sequence.",
+      "leetcode": "https://leetcode.com/problems/count-the-hidden-sequences",
+      "difficulty": "medium",
+      "topics": [
+        "array"
+      ]
+    },
+    "35-search-insert-position": {
+      "solutions": {
+        "solution.py": {
+          "code": "from bisect import bisect_left\n\ndef search_insert_position(nums: list[int], target: int) -> int:\n    return bisect_left(nums, target)"
+        }
+      },
+      "title": "Search Insert Position",
+      "definition": "Given a sorted array of distinct integers and a target value, find the index of the target. If absent, return the index where it would be inserted to maintain order.",
+      "leetcode": "https://leetcode.com/problems/search-insert-position",
+      "difficulty": "easy",
+      "topics": [
+        "binary_search"
+      ]
+    },
+    "46-permutations": {
+      "solutions": {
+        "solution.py": {
+          "intuition": "Recursive Tree of Choices\nBuild permutations by choosing unused elements: At each level, try each remaining number, recurse with updated path, and backtrack to un-choose. Use used list or boolean flags to track chosen elements.",
+          "time_complexity": "O(N!)\nN levels of recursion, each level explores N - depth options, total N! permutations.",
+          "space_complexity": "O(N)\nRecursion depth is N, and we store the current permutation path.",
+          "args": {
+            "nums: list[int]": "List of integers to permute"
+          },
+          "returns": "`list[list[int]]`: List of all possible permutations",
+          "code": "def permutations(nums: list[int]) -> list[list[int]]:\n\n    result, n = [], len(nums)\n\n    def dfs(i):\n\n        if i == n:\n            result.append(nums[:])\n        else:\n            for j in range(i, n):\n                nums[i], nums[j] = nums[j], nums[i]\n                dfs(i + 1)\n                nums[j], nums[i] = nums[i], nums[j]\n\n    dfs(0)\n    return result"
+        }
+      },
+      "title": "Permutations",
+      "definition": "Return all permutations of a list of unique numbers.",
+      "leetcode": "https://leetcode.com/problems/permutations",
+      "difficulty": "medium",
+      "topics": [
+        "backtrack",
+        "permutation"
+      ]
+    },
+    "123-best-time-to-buy-and-sell-stock-iii": {
+      "solutions": {
+        "dp.py": {
+          "intuition": "Cost profit tracking\nTrack the cost and profit for two separate trades, using the profit from the first trade to reduce the cost of the second trade.",
+          "time_complexity": "O(n)\nwhere n is the length of the prices array. We iterate through the array once.",
+          "args": {
+            "prices: list[int]": "List of stock prices"
+          },
+          "expressions": {
+            "p - t1_profit": "money you'd need now if earlier profit covered part of this buy"
+          },
+          "variables": {
+            "t1_cost": "cost of first trade",
+            "t1_profit": "profit of first trade",
+            "t2_cost": "cost of second trade",
+            "t2_profit": "profit of second trade"
+          },
+          "returns": "`int`: Maximum profit from at most two transactions",
+          "code": "def best_time_to_buy_and_sell_stock_III(prices: list[int]) -> int:\n\n    t1_cost = t2_cost = float(\"inf\")\n    t1_profit = t2_profit = 0\n\n    for p in prices:\n\n        # First trade\n        t1_cost = min(t1_cost, p) \n        t1_profit = max(t1_profit, p - t1_cost)\n\n        # Second trade\n        t2_cost = min(t2_cost, p - t1_profit)\n        t2_profit = max(t2_profit, p - t2_cost)\n\n    return t2_profit\n\n"
+        },
+        "state.py": {
+          "expressions": {
+            "hold1 = hold2 = float(\"-inf\")": "money you'd have if holding first stock",
+            "sell1 = sell2 = 0": "money you'd have if not holding first stock",
+            "hold1 = max(hold1, -p)": "buy first stock",
+            "sell1 = max(sell1, hold1 + p)": "sell first stock",
+            "hold2 = max(hold2, sell1 - p)": "buy second stock",
+            "sell2 = max(sell2, hold2 + p)": "sell second stock"
+          },
+          "intuition": "hold sell states",
+          "code": "def best_time_to_buy_and_sell_stock_III(prices: list[int]) -> int:\n    hold1 = hold2 = float(\"-inf\")\n    sell1 = sell2 = 0\n\n    for p in prices:\n        hold1 = max(hold1, -p)\n        sell1 = max(sell1, hold1 + p)\n        hold2 = max(hold2, sell1 - p)\n        sell2 = max(sell2, hold2 + p)\n    return sell2"
+        }
+      },
+      "title": "Best Time to Buy and Sell Stock III",
+      "definition": "Given a list of daily stock prices `prices`; at most **two** transactions are allowed (cannot overlap). Return the maximum total profit.",
+      "leetcode": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock-iii",
+      "difficulty": "hard",
+      "topics": [
+        "dynamic_programming",
+        "array"
+      ]
+    },
+    "200-number-of-islands": {
+      "solutions": {
+        "solution.py": {
+          "intuition": "Find, Count, and Sink 🏝️\nThe strategy is to scan every cell of the grid. If an unvisited piece of land (`1`) is found, you've discovered a new island, so you increment the `islands` counter. Then, immediately launch a BFS from that cell to find and \"sink\" all connected parts of that same island by changing their value to `0`. This modification of the grid ensures each island group is counted exactly once.",
+          "time_complexity": "O(m * n)\nwhere m and n are the dimensions of the grid. This is optimal as each cell is visited a constant number of times.",
+          "args": {
+            "grid: list[list[str]]": "2D grid with '1' representing land and '0' representing water"
+          },
+          "returns": "`int`: Number of islands in the grid",
+          "code": "from collections import deque\n\ndef number_of_islands(grid: list[list[str]]) -> int:\n    if not grid or not grid[0]:\n        return 0\n    m, n = len(grid), len(grid[0])\n    dirs = ((1,0),(-1,0),(0,1),(0,-1))\n    islands = 0\n\n    for i in range(m):\n        for j in range(n):\n            if grid[i][j] == \"1\":\n                islands += 1\n                grid[i][j] = \"0\" # mark as visited\n                q = deque([(i, j)])\n                while q:\n                    r, c = q.popleft()\n                    for dr, dc in dirs:\n                        nr, nc = r + dr, c + dc\n                        if 0 <= nr < m and 0 <= nc < n and grid[nr][nc] == \"1\":\n                            grid[nr][nc] = \"0\" # mark as visited\n                            q.append((nr, nc)) \n    return islands"
+        }
+      },
+      "title": "Number of Islands",
+      "definition": "Given an `m x n` 2D grid of '1's (land) and '0's (water), return the number of islands. An island is formed by connecting adjacent lands horizontally or vertically. Assume all four edges of the grid are all surrounded by water.",
+      "leetcode": "https://leetcode.com/problems/number-of-islands",
+      "difficulty": "medium",
+      "topics": [
+        "dfs",
+        "bfs"
+      ]
+    },
+    "2140-solving-questions-with-brainpower": {
+      "solutions": {
+        "solution.py": {
+          "intuition": "Paradigm: This is a classic **Longest Path** problem on a Directed Acyclic Graph (DAG).\nInsight: The maximum score obtainable *from* any question `i` is a fixed value, regardless of past choices. This allows a backward pass from the end of the exam (where the future score is 0), calculating the optimal future score for each question by simply choosing the `max()` of two pre-computed paths: the one from \"solving\" vs. the one from \"skipping\".",
+          "time_complexity": "O(n)\nwhere `n` is the number of questions.",
+          "code": "def most_points_solving_questions_with_brainpower(questions: list[list[int]]) -> int:\n\n\n    memo, n = {}, len(questions)\n\n    def dp(i):\n        if i >= n:\n            return 0\n\n        if i not in memo:\n            memo[i] = max(dp(i + 1), (q:=questions[i])[0] + dp(i + 1 + q[1]))\n        return memo[i]\n\n    return dp(0)"
+        }
+      },
+      "title": "Most Points Solving Questions With Brainpower",
+      "definition": "Given an array of `questions` where `questions[i] = [pointsᵢ, brainpowerᵢ]`, you process from i=0 and at each i choose to either solve (gain `pointsᵢ` and jump `brainpowerᵢ + 1`) or skip (move to `i + 1`). Return the maximum points achievable.",
+      "leetcode": "https://leetcode.com/problems/solving-questions-with-brainpower",
+      "difficulty": "medium",
+      "topics": [
+        "dynamic_programming"
+      ]
+    },
+    "212-word-search-ii": {
+      "solutions": {
+        "solution.py": {
+          "intuition": "Prefix rails\nThe trie lays down \"prefix rails\" across the grid: you only move where a rail continues; off‑rail steps end instantly.\nA terminal is a station: record the word once, close that spur, and drop empty rails as you pass. In one walk, a cell is used at most once.",
+          "time_complexity": "O(m n * 4^L)\n**Symbols:** m×n board, W=∑(w∈dict)|w|, L=max|w|.\n**Build trie:** O(W).\n**DFS (worst case):** first step ≤ 4 choices, then ≤ 3 per step ⇒ O(m n * 4 * 3^(L-1)). Coarse bound: O(m n * 4^L).\n**Space:** trie O(W); recursion/visited path O(L).",
+          "variables": {
+            "trie": "Build trie from **words** list. Each end node gets a `$` key holding the word",
+            "m": "number of rows",
+            "n": "number of columns",
+            "res": "the list of found words"
+          },
+          "expressions": {
+            "node = node.setdefault(c, {})": "create a new node for the character if it doesn't exist",
+            "if \"$\" in node": "if the current node is the end of a word",
+            "res.append(node.pop(\"$\"))": "add the word to the result list and remove the \"$\" key to prevent duplicates",
+            "if not node": "prune the trie to remove dead branches.",
+            "[dfs": ".. Launch DFS from every cell that matches any trie root key",
+            "board[i][j] = \"#\"": "Mark as visited",
+            "board[i][j] = c": "Restore cell"
+          },
+          "code": "def word_search_II(board: list[list[str]], words: list[str]) -> list[str]:\n    trie = {}  \n    for word in words:\n        node = trie\n        for c in word:\n            node = node.setdefault(c, {})\n        node[\"$\"] = word\n\n\n    def dfs(i, j, parent):\n        if not (0 <= i < m and 0 <= j < n) or (c := board[i][j]) not in parent:\n            return\n        node = parent[c]\n        if \"$\" in node:\n            res.append(node.pop(\"$\"))\n        board[i][j] = \"#\"\n        for x, y in ((i - 1, j), (i + 1, j), (i, j - 1), (i, j + 1)):\n            dfs(x, y, node)\n        board[i][j] = c\n        if not node:\n            parent.pop(c)\n            \n    m, n, res = len(board), len(board[0]), []\n    [dfs(i, j, trie) for i in range(m) for j in range(n) if board[i][j] in trie]\n\n    return res"
+        }
+      },
+      "title": "Word Search II",
+      "definition": "Given a board and a list of words, find all words in the board.",
+      "leetcode": "https://leetcode.com/problems/word-search-ii",
+      "difficulty": "hard",
+      "topics": [
+        "trie",
+        "backtrack"
+      ]
+    },
+    "713-subarray-product-less-than-k": {
+      "solutions": {
+        "solution.py": {
+          "time_complexity": "O(n)",
+          "code": "def num_subarray_product_less_than_k(nums: list[int], k: int) -> int:\n    if k <= 1:\n        return 0\n    product, left, count = 1, 0, 0\n    for right, num in enumerate(nums):\n        product *= num\n        while product >= k:\n            product //= nums[left]\n            left += 1\n        count += right - left + 1\n    return count"
+        }
+      },
+      "title": "Number of Subarrays with Product Less Than K",
+      "definition": "Given an array of integers nums and an integer k, return the number of contiguous subarrays where the product of all the elements in the subarray is less than k.",
+      "leetcode": "https://leetcode.com/problems/subarray-product-less-than-k",
+      "difficulty": "medium",
+      "topics": [
+        "sliding_window"
+      ]
+    },
+    "36-valid-sudoku": {
+      "solutions": {
+        "solution.py": {
+          "intuition": "Cube index and think locally\n**cube_index := **[pink!](r // 3) * 3** + **[purple!](c // 3)**** treats the 9×9 board as a 3×3 grid of 3×3 boxes:\n    `[pink!]r//3` gives which *[pink!]box-row* (0,1,2) you're in\n    `[purple!]c//3` gives which *[purple!]box-column* (0,1,2)\n     multiplying the *[pink!]box-row* by *[pink!]3* and adding the *[purple!]box-column* yields a unique index 0–8 for each 3×3 cube.",
+          "time_complexity": "O(81)\ni.e., O(n^2). Fixed 9×9 boards scan at most 81 cells. Generalized n×n Sudoku validation runs in O(n^2) time.",
+          "args": {
+            "board: list[list[str]]": "9x9 Sudoku board with digits 1-9 and '.' for empty cells"
+          },
+          "expressions": {
+            "if (": "Check for duplicates",
+            "if (num := board[r][c]) != \".\"": "Skip empty cells",
+            "cube_index := (r // 3) * 3 + (c // 3)": "The formula works by treating the *9×9* board as a *3×3* grid of *3×3* boxes:\n     - **[pink!]r//3** gives which *[pink!]box-row* (0,1,2) you're in;\n     - **[purple!]c//3** gives which *[purple!]box-column* (0,1,2).\n     - Multiplying the *[pink!]box-row* by *[pink!]3* and adding the *[purple!]box-column* yields a unique index 0–8 for each *3×3* cube."
+          },
+          "returns": "`bool`: True if the board is valid, False otherwise",
+          "code": "def is_valid_sudoku(board: list[list[str]]) -> bool:\n\n    row = [set() for _ in range(9)]\n    col = [set() for _ in range(9)]\n    cube = [set() for _ in range(9)]\n\n    for r in range(9):\n        for c in range(9):\n            if (num := board[r][c]) != \".\": \n\n                if (\n                    num in col[c]\n                    or num in row[r]\n                    or num in cube[(cube_index := (r // 3) * 3 + (c // 3))]\n                ):\n                    return False\n                \n\n                col[c].add(num)\n                row[r].add(num)\n                cube[cube_index].add(num)\n    return True"
+        }
+      },
+      "title": "Valid Sudoku",
+      "definition": "Given a partially filled 9×9 board with digits `1–9` and `.` for empty cells, determine if it is valid - *[gray!]no duplicates in any row, column, or 3×3 sub-box. You do not need to solve it*.",
+      "leetcode": "https://leetcode.com/problems/valid-sudoku",
+      "difficulty": "medium",
+      "topics": [
+        "game"
+      ]
+    },
+    "743-network-delay-time": {
+      "solutions": {
+        "solution.py": {
+          "time_complexity": "O(E log V):\nE is the number of edges (the length of the input list `times`)\nV is the number of vertices (the number of nodes `n`)\n\nBy substituting these into the standard Dijkstra complexity formula, O(E log V), you get O(len(times) log n).",
+          "args": {
+            "times: list[list[int]]": "list of lists of integers representing the edges and their weights",
+            "k: int": "starting node"
+          },
+          "returns": "`int`: minimum time for a signal starting at node `k` to reach *all* nodes or -1 if impossible",
+          "code": "from collections import defaultdict\nimport heapq\n\n\ndef network_delay_time(times: list[list[int]], n: int, k: int) -> int:\n\n    adj = defaultdict(list)\n    for u, v, w in times:\n        adj[u].append((v, w))\n    pq, finalized, time = [(0, k)], set(), 0\n    while pq:\n        t, node = heapq.heappop(pq)\n        if node in finalized:\n            continue\n        finalized.add(node)\n        time = t\n        for neighbor, travel_time in adj[node]:\n            if neighbor not in finalized:\n                heapq.heappush(pq, (time + travel_time, neighbor))\n    return time if len(finalized) == n else -1\n\n"
+        }
+      },
+      "title": "Network Delay Time",
+      "definition": "Given `n` nodes labeled `1` through `n` and directed travel times between them, find the minimum time for a signal starting at node `k` to reach *all* nodes. If impossible, return -1",
+      "leetcode": "https://leetcode.com/problems/network-delay-time",
+      "difficulty": "medium",
+      "topics": [
+        "dijkstra"
+      ]
+    },
+    "127-word-ladder": {
+      "solutions": {
+        "solution.py": {
+          "intuition": "Bidirectional BFS Meets in the Middle 🤝:\nThis solution uses two  optimizations. First, it **pre-computes all possible generic transformations** (e.g., `h*t`) in a dictionary, allowing for instant lookups of neighboring words instead of generating them on the fly. Second, it performs a **bidirectional BFS**, launching one search from the `beginWord` and another from the `endWord`. By always expanding the smaller of the two frontiers, it drastically reduces the search space. The algorithm finishes when the two searches meet, at which point the shortest path is found.",
+          "time_complexity": "O(N * L)\nwhere N is the number of words and L is the length of each word. The dominant operation is the initial pre-computation step to build the `combos` dictionary. The subsequent bidirectional search is typically much faster than this initial setup.",
+          "code": "from collections import defaultdict\n\ndef word_ladder(beginWord: str, endWord: str, wordList: list[str]) -> int:\n    if endWord not in wordList:\n        return 0\n\n    L = len(beginWord)\n    combos: dict[str, list[str]] = defaultdict(list)\n    for w in wordList:\n        for i in range(L):\n            combos[w[:i] + \"*\" + w[i+1:]].append(w)\n\n    front, back = {beginWord}, {endWord}\n    dist_front, dist_back = {beginWord: 1}, {endWord: 1}\n\n    while front and back:\n        # expand smaller side to optimize\n        if len(front) > len(back):\n            front, back = back, front\n            dist_front, dist_back = dist_back, dist_front\n\n        next_front = set()\n        for word in front:\n            for i in range(L):\n                for n in combos[word[:i] + \"*\" + word[i+1:]]: # Use pre-computed neighbors\n                    if n in dist_back:\n                        return dist_front[word] + dist_back[n]\n                    if n not in dist_front:\n                        dist_front[n] = dist_front[word] + 1\n                        next_front.add(n)\n        front = next_front\n\n    return 0"
+        }
+      },
+      "title": "Word Ladder",
+      "definition": "Given a `beginWord`, an `endWord`, and a dictionary `wordList`, find the length of the shortest transformation sequence from `beginWord` to `endWord` such that only one letter is changed at a time and each transformed word exists in the `wordList`.",
+      "leetcode": "https://leetcode.com/problems/word-ladder",
+      "difficulty": "hard",
+      "topics": [
+        "bfs"
+      ]
+    }
+  },
+  "core": {
+    "bellman-ford": {
+      "solutions": {
+        "layered_dag.py": {
+          "intuition": "Compute k-edge shortest-path distances and detect negative cycles via layered relaxation.\n1. δ₀(s,v): initialize distances (0 at source, ∞ elsewhere).\n2. For i = 1…V: perform one pass of edge-relaxation to compute δᵢ(s,v),\n   the best cost using ≤ i edges.\n3. Identify any vertex v where δ_V(s,v) < δ_{V−1}(s,v) as a negative-cycle witness.\n4. Flood successors of those witnesses and mark their distances as −∞.",
+          "args": {
+            "vertices: list[str]": "All hashable vertex identifiers.",
+            "edges: list[tuple[str, str, float]]": "Iterable of (u, v, weight) tuples.",
+            "source: str": "Starting vertex."
+          },
+          "returns": "`dict[str, float]`: A dict mapping each vertex to its true shortest-path cost from `source`,\n  or float('-inf') if it's reachable from a negative-weight cycle.",
+          "code": "\nfrom collections import defaultdict\n\n\ndef bellman_ford_layered_dag(\n    vertices: list[str], edges: list[tuple[str, str, float]], source: str\n) -> dict[str, float]:\n\n    # 1) Initialize\n    d = {v: float(\"inf\") for v in vertices}\n    d[source], V = 0, len(vertices)\n\n    # 2) Layered relaxation: starting from δ₀, do V passes to compute δ₁…δ_V\n    for k in range(V):  # k = 0…V-1\n        d_k = {**d}  # snapshot of δ_k\n        for u, v, w in edges:\n            if d[u] + w < d_k[v]:\n                d_k[v] = d[u] + w\n        d = d_k  # now holds δ_{k+1}\n\n    # 3) Identify \"witnesses\" to negative cycles:\n    #    any v for which an extra relaxation is still possible\n    witnesses = {v for u, v, w in edges if d[u] + w < d[v]}\n\n    if not witnesses:\n        return d\n\n    # 4) Build adjacency list for negative-cycle propagation\n    adj = defaultdict(list)\n    for u, v, _ in edges:\n        adj[u].append(v)\n\n    # 5) DFS to propagate −∞ to all vertices reachable from any witness\n    stack = list(witnesses)\n    reachable = set(witnesses)\n\n    while stack:\n        u = stack.pop()\n        d[u] = float(\"-inf\")\n        for v in adj[u]:\n            if v not in reachable:\n                reachable.add(v)\n                stack.append(v)\n\n    return d"
+        },
+        "classic.py": {
+          "intuition": "Classic Bellman-Ford with early exit:\nRaises on a reachable negative-weight cycle;\notherwise returns dist[v] = δ(s,v).",
+          "expressions": {
+            "range(V - 1)": "relax up to V-1 times, but return early if no update",
+            "if not updated": "distances have stabilized—no negative cycles reachable"
+          },
+          "code": "\n\n\n\ndef bellman_ford_classic(\n    vertices: list[str], edges: list[tuple[str, str, float]], source: str\n) -> dict[str, float]:\n\n    d = [float(\"inf\")] * (V := len(vertices))\n    d[source] = 0\n\n    for _ in range(V - 1):\n        updated = False\n        for u, v, w in edges:\n            if d[u] + w < d[v]:\n                d[v] = d[u] + w\n                updated = True\n        if not updated:\n            return d\n\n    # if we get here, we did all V-1 passes, so still need to check for cycles\n    for u, v, w in edges:\n        if d[u] + w < d[v]:\n            raise Exception(\"Negative-weight cycle\")\n\n    return d"
+        }
+      },
+      "title": "Bellman-Ford Algorithm",
+      "definition": "Bellman-Ford ...",
+      "topics": [
+        "graph_algorithms",
+        "shortest_path",
+        "dynamic_programming"
+      ]
+    },
+    "modular-arithmetic": {
+      "solutions": {
+        "congruent2.py": {
+          "args": {
+            "a: int": "the first number3",
+            "b: int": "the second number",
+            "n: int": "the modulus, the number by which we are dividing"
+          },
+          "returns": "`bool`: bool",
+          "code": "\ndef congruent2(a: int, b: int, n: int) -> bool:\n    return a % n == b % n"
+        },
+        "congruent1.py": {
+          "args": {
+            "a: int": "the first number2",
+            "b: int": "the second number",
+            "n: int": "the modulus, the number by which we are dividing"
+          },
+          "returns": "`bool`: bool",
+          "code": "\n\ndef congruent1(a: int, b: int, n: int) -> bool:\n    return (a - b) % n == 0"
+        },
+        "mod.py": {
+          "args": {
+            "a: int": "the first number1",
+            "b: int": "the second number"
+          },
+          "returns": "`int`: int",
+          "code": "def mod(a: int, b: int) -> int:\n    return a % b"
+        }
+      },
+      "title": "Modular Arithmetic",
+      "definition": "A system of arithmetic for integers where numbers \"wrap around\" after reaching a certain value (the modulus).",
+      "topics": [
+        "number_theory",
+        "modular_arithmetic",
+        "congruence"
+      ]
+    },
+    "dijkstra": {
+      "solutions": {
+        "algorithm.py": {
+          "time_complexity": "O((V + E) log V)",
+          "args": {
+            "graph: dict[str, dict[str, int]]": "A dictionary representing the graph.",
+            "s: str": "The source vertex."
+          },
+          "code": "\nimport heapq\n\ndef dijkstra(graph: dict[str, dict[str, int]], s: str):\n\n    d = {v: float('inf') for v in graph} | {s: 0}\n    p = {v: None for v in graph}\n\n    pq = [(0, s)]\n\n    while pq:\n        d_u, u = heapq.heappop(pq)\n        if d_u > d[u]:\n            continue\n        for v ,w in graph[u]:\n            if (weight := d_u + w) < d[v]:\n                d[v], p[v] = weight, u\n                heapq.heappush(pq, (weight, v))\n\n    return d, p"
+        }
+      },
+      "title": "Dijkstra's Algorithm",
+      "definition": "Dijkstra's Algorithm ...",
+      "topics": [
+        "graph_algorithms",
+        "shortest_path",
+        "greedy"
+      ]
+    },
+    "binary-search": {
+      "solutions": {
+        "bisect_left.py": {
+          "intuition": "Return the index where to insert item x in list a, assuming a is sorted.",
+          "expressions": {
+            "l = mid + 1": "If the target `x` is greater than the middle element `a[mid]`, the insertion point must be to the right of `mid`.",
+            "r = mid": "If the target `x` is less than or equal to `a[mid]`, then `mid` is a potential answer, so we search the left half including `mid`."
+          },
+          "code": "\n\ndef simple_bisect_left(a: list[int], x: int):\n    \n    l, r = 0, len(a)\n    while l < r:\n        mid = (l + r) // 2\n        if x > a[mid]:\n            l = mid + 1\n        else:\n            r = mid\n    return l"
+        },
+        "bisect_right.py": {
+          "intuition": "Return the index where to insert item x in list a, assuming a is sorted.",
+          "expressions": {
+            "r = mid": "If the x is less than the middle element, the insertion point could be `mid` or to its left. Shrink search space to the left half.",
+            "l = mid + 1": "If the x is >= middle element, the insertion point must be to the right of `mid`."
+          },
+          "code": "\n\ndef simple_bisect_right(a, x):\n\n    l, r = 0, len(a)\n    while l < r:\n        mid = (l + r) // 2\n        if x < a[mid]:\n            r = mid\n        else: \n            l = mid + 1 \n    return l"
+        }
+      },
+      "title": "Binary Search Algorithm",
+      "definition": "Binary Search ...",
+      "topics": [
+        "search_algorithm",
+        "divide_and_conquer"
+      ]
+    }
+  }
+}

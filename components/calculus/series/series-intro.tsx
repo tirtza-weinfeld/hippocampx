@@ -1,8 +1,8 @@
 "use client"
 
-import { motion } from "framer-motion"
+import { motion } from "motion/react"
 import { Card, CardContent } from "@/components/ui/card"
-import { useReducedMotion } from "framer-motion"
+import { useReducedMotion } from "motion/react"
 
 export function SeriesIntro() {
   const shouldReduceMotion = useReducedMotion()

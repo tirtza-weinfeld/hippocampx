@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, startTransition } from "react"
 import { Card, CardContent } from "@/components/ui/card"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion, AnimatePresence } from "motion/react"
 import { ArrowRight, ArrowDown, Lightbulb, RefreshCw, ChevronLeft, ChevronRight, Binary } from "lucide-react"
 // Replace the "Show Steps" buttons with FunButton components
 import { FunButton } from "./fun-button"

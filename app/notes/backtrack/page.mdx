@@ -7,11 +7,11 @@
 ### 1. N-Queens
 
 *Place n queens on an n x n board such that no two queens threaten each other.*
-*[19:]meaning no two queens share the same row, column, or diagonal.*
+*[19!]meaning no two queens share the same row, column, or diagonal.*
 
 [51. N-Queens](https://leetcode.com/problems/n-queens/)
 
-```python file=backend/algorithms/backtrack.py#method:Backtrack.solveNQueens
+```python file=problems/51-n-queens/solution.py
 ```
 
 > [!insight:collapse] *Backtrack with State Tracking ♛*
@@ -28,9 +28,9 @@
 
 > [!timecomplexity:collapse] $O(N!)$
 >
-> •	First row: `$N$` choices
-> •	Second: `$\leq N-1$`, and so on
-> •	Total permutations = `$N!$`
+> •	First row: *$N$* choices
+> •	Second: *$\leq N-1$*, and so on
+> •	Total permutations = *$N!$*
 > •	Pruning drastically reduces actual recursion tree
 
 ---
@@ -42,7 +42,7 @@
 
 [79. Word Search](https://leetcode.com/problems/word-search/)
 
-```python file=backend/algorithms/backtrack.py#method:Backtrack.exist
+```python file=problems/79-word-search/solution.py
 ```
 
 > [!insight:collapse] DFS with Early Exit on Mismatch 
@@ -71,7 +71,7 @@ Stop early if the full word is matched.
 
 [46. Permutations](https://leetcode.com/problems/permutations/)
 
-```python file=backend/algorithms/backtrack.py#func:permute
+```python file=problems/46-permutations/solution.py
 ```
 
 
@@ -100,17 +100,18 @@ Stop early if the full word is matched.
 
 [39. Combination Sum](https://leetcode.com/problems/combination-sum/)
 
-```python file=backend/algorithms/backtrack.py#func:combinationSum
+```python file=problems/39-combination-sum/solution.py
 ```
+
 
 
 > [!insight:collapse] DFS with backtracking: 
 >
 > sort `candidates`, try each starting from current index (to allow reuse), prune if number exceeds remaining target, and record the path when `rem == 0`.
 
-> [!timecomplexity:collapse] $O(2^n)$
+> [!timecomplexity:collapse] **$O(2^n)$**
 >
-> Worst-case exponential — `$O(2^n)$` in number of combinations explored — but pruning (`if c > rem: break`) reduces branches significantly.
+> Worst-case exponential — *$O(2^n)$* in number of combinations explored — but pruning (`if c > rem: break`) reduces branches significantly.
 
 
 

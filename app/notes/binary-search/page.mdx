@@ -2,7 +2,7 @@
 
 ## Resizable Table of Contents
 
-Binary search is an efficient `$O(\log n)$` algorithm for finding an item in a **sorted** list . 
+Binary search is an efficient $O(\log n)$ algorithm for finding an item in a **sorted** list . 
  It works by repeatedly dividing the list in half.
 
 The core idea is to compare the target value with the middle element of the list.
@@ -16,7 +16,7 @@ The core idea is to compare the target value with the middle element of the list
 *Given a sorted list `a` and a target `x`, return the index at which `x` should be inserted to maintain order.
 (i.e. **first** position `i` where `a[i] >= x`)*
 
-```python file=backend/algorithms/binary_search.py#func:simple_bisect_left 
+```python file=core/binary-search/bisect_left.py
 ```
 
 >[!tip] 
@@ -31,7 +31,7 @@ The core idea is to compare the target value with the middle element of the list
 *Given a sorted list `a` and a target `x`, return the index at which `x` should be inserted to maintain order.
 (i.e. **first** position `i` where `a[i] > x`)*
 
-```python file=backend/algorithms/binary_search.py#func:simple_bisect_right
+```python file=core/binary-search/bisect_right.py
 ```
 
 >[!tip] 
@@ -49,7 +49,7 @@ The core idea is to compare the target value with the middle element of the list
 *Given a sorted array of distinct integers and a target value, find the index of the target.
 If absent, return the index where it would be inserted to maintain order.*
 
-```python file=backend/algorithms/binary_search.py#func:searchInsert
+```python file=problems/35-search-insert-position/solution.py
 ```
 
   >[!tip] 
@@ -66,7 +66,7 @@ If absent, return the index where it would be inserted to maintain order.*
 *Given a sorted array of integers `nums` that may contain duplicates, 
 find the starting and ending indices of a given `target`. If the target is not in the array, return `[-1, -1]`.*
 
-```python file=backend/algorithms/binary_search.py#func:searchRange
+```python file=problems/34-find-first-and-last-position-of-element-in-sorted-array/solution.py
 ```
   >[!tip] 
    [bisect_left](#simple_bisect_left) finds the first position where `target` could be inserted, and
@@ -79,7 +79,7 @@ find the starting and ending indices of a given `target`. If the target is not i
 
 *Given a unique-element sorted array that has been rotated at an unknown pivot, find its minimum value.*
 
-```python file=backend/algorithms/binary_search.py#func:findMin
+```python file=problems/153-find-minimum-in-rotated-sorted-array/solution.py
 ```
 
 > [!intuition:collapse] 
@@ -107,12 +107,12 @@ find the starting and ending indices of a given `target`. If the target is not i
 
 
 *Given banana piles `piles` and hour limit `h`, 
-find the minimum eating speed `$k∈ℕ$` such that 
-`$\displaystyle \sum_{i=1}^{|piles|} \left\lceil \frac{p_i}{k} \right\rceil \le h$`
-where each hour Koko eats up to `$k$` bananas from one pile
+find the minimum eating speed $k∈ℕ$ such that 
+$\displaystyle \sum_{i=1}^{|piles|} \left\lceil \frac{p_i}{k} \right\rceil \le h$
+where each hour Koko eats up to $k$ bananas from one pile
 (any leftover hour is wasted)*
 
-```python file=backend/algorithms/binary_search.py#func:minEatingSpeed
+```python file=problems/875-koko-eating-bananas/solution.py
 ```
 > [\!intuition:collapse] *binary searching the answer space, (the eating speed `k`)*
 >
@@ -123,7 +123,7 @@ where each hour Koko eats up to `$k$` bananas from one pile
 > We test a mid speed (`k = (l + r) // 2`). If it's valid (`hours(k) <= h`), we try to find a smaller valid speed by searching the lower half (`r = k`). If it's too slow, we must increase the speed by searching the upper half (`l = k + 1`). The loop converges on the smallest `k` that works. 🍌
 
 > [\!timecomplexity]
-> $O(n \log m)$, where `$n$` is the number of piles and `$m$` is the maximum pile size.
+> $O(n \log m)$, where *$n$* is the number of piles and *$m$* is the maximum pile size.
 
 
 
@@ -137,7 +137,7 @@ where each hour Koko eats up to `$k$` bananas from one pile
 
 
 
-```python file=backend/algorithms/binary_search.py#func:shipWithinDays
+```python file=problems/1011-capacity-to-ship-packages-within-d-days/solution.py
 ```
 
 
@@ -149,8 +149,9 @@ where each hour Koko eats up to `$k$` bananas from one pile
 >
 > The problem has a **monotonic property** ideal for binary search. The function `daysNeeded(capacity)` is monotonically non-increasing: as `capacity` grows, the days required can only decrease or stay the same.
 >
-> This creates a predictable `[False, ..., False, True, ..., True]` sequence for our condition, `daysNeeded(capacity) <= days`. The goal is to find the leftmost `True`, which represents the minimal valid capacity.
+> This creates a predictable `\[False, ..., False, True, ..., True\]` sequence for our condition, `daysNeeded(capacity) <= days`. The goal is to find the leftmost `True`, which represents the minimal valid capacity.
 >
 > -   If `daysNeeded(capacity) <= days` is `True`, then `capacity` is a potential answer, and we try for a better (smaller) one in the left half by setting `r = capacity`.
 > -   If it is `False`, then `capacity` is too small, and we must search for a larger capacity in the right half by setting `l = capacity + 1`.
 -----
+

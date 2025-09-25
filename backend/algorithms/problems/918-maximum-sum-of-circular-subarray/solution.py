@@ -1,0 +1,13 @@
+def maximum_sum_of_circular_subarray(nums: list[int]) -> int:
+    """
+
+    """
+    total, max_end = min_end = 0
+    max_sum, min_sum = float("-inf"), float("inf")
+    for x in nums:
+        total += x
+        max_end = max(x, max_end + x)
+        max_sum = max(max_sum, max_end)  # Kadane (max)
+        min_end = min(x, min_end + x)
+        min_sum = min(min_sum, min_end)  # Kadane (min)
+    return max_sum if max_sum < 0 else max(max_sum, total - min_sum)

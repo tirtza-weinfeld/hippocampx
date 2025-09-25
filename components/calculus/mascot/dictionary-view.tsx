@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion, AnimatePresence } from "motion/react"
 import { ChevronLeft, X, ChevronDown, ChevronUp } from "lucide-react"
 import { dictionaryEntries, categoryColors, difficultyColors } from "./mascot-data"
 import { categoryIcons } from "./category-icons"

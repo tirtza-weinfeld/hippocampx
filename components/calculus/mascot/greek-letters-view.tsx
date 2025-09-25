@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import { ChevronLeft, X, Heart, Filter, Volume2, BookOpen, Zap, Target, ArrowLeft, Minimize } from "lucide-react"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion, AnimatePresence } from "motion/react"
 import { greekLetters, type GreekLetter, type GreekLetterUsage, type DifficultyLevel } from "./mascot-data"
 
 interface GreekLettersViewProps {

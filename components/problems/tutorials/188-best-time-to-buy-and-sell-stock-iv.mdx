@@ -1,0 +1,48 @@
+# Best Time to Buy and Sell Stock IV
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="hard" />
+
+<PillList pills={["dynamic_programming"]} />
+
+[188. Best Time to Buy and Sell Stock IV](https://leetcode.com/problems/best-time-to-buy-and-sell-stock-iv)
+
+## [!ProblemDefinition] Definition
+
+Given a list of daily stock prices `prices` and an integer `k` (max transactions), return the maximum profit.
+
+## Dp Solution
+
+### [!ProblemCodeSnippet] Code Snippet
+
+```python meta="source=problems/188-best-time-to-buy-and-sell-stock-iv/dp.py"
+def best_time_to_buy_and_sell_stock_IV(k: int, prices: list[int]) -> int:
+
+    cost = [float("inf")] * (k + 1)
+    profit = [0] * (k + 1)
+    for p in prices:
+        for t in range(1, k + 1):
+            cost[t] = min(cost[t], p - profit[t - 1])
+            profit[t] = max(profit[t], p - cost[t])
+    return profit[k]
+```
+
+
+---
+
+## States Solution
+
+### [!ProblemCodeSnippet] Code Snippet
+
+```python meta="source=problems/188-best-time-to-buy-and-sell-stock-iv/states.py"
+def best_time_to_buy_and_sell_stock_IV(k: int, prices: list[int]) -> int:
+    buy  = [float("-inf")] * (k + 1)
+    sell = [0] * (k + 1)
+    for p in prices:
+        for t in range(1, k + 1):
+            buy[t]  = max(buy[t],  sell[t - 1] - p)
+            sell[t] = max(sell[t], buy[t] + p)
+    return sell[k]
+```
+

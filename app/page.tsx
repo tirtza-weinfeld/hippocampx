@@ -26,9 +26,12 @@ export default function HomePage() {
          "
       >
         HippoCampX
+        
       </h1>
 
-    
+
     </div>
   );
 }
+
+

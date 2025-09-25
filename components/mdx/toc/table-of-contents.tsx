@@ -4,11 +4,19 @@ import React, { useRef, useEffect, useState, useMemo } from 'react'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { ExpandCollapseIcon, ChevronIcon } from '@/components/svgs/toc-icons'
+import { InlineMath } from '../inline-math'
 
 interface TocHeading {
   text: string
   id: string
   level: number
+  richContent?: TocRichContent[] // New: structured content for rendering
+}
+
+interface TocRichContent {
+  type: 'text' | 'math' | 'styled-math'
+  content: string
+  stepColor?: string // For styled content
 }
 
 interface TableOfContentsProps {
@@ -16,6 +24,55 @@ interface TableOfContentsProps {
   className?: string
   maxHeight?: string // Optional prop to control max height
   onHeadingClick?: () => void // Optional callback for mobile close behavior
+}
+
+// Helper function to render rich content with proper styling
+const renderRichContent = (richContent: TocRichContent[]) => {
+  return richContent.map((item, index) => {
+    // Add space before math elements (except at the beginning)
+    const needsSpaceBefore = index > 0 && (item.type === 'math' || item.type === 'styled-math')
+    
+    switch (item.type) {
+      case 'text':
+        return <span key={index}>{item.content}</span>
+      
+      case 'math':
+        return (
+          <span key={index}>
+            {needsSpaceBefore && ' '}
+            <InlineMath>{item.content}</InlineMath>
+          </span>
+        )
+      
+      case 'styled-math':
+        return (
+          <span key={index}>
+            {needsSpaceBefore && ' '}
+            <span data-step={item.stepColor}>
+              <InlineMath>{item.content}</InlineMath>
+            </span>
+          </span>
+        )
+      
+      default:
+        return <span key={index}>{item.content}</span>
+    }
+  })
+}
+
+// Fallback helper function to render text with math expressions (for backwards compatibility)
+const renderTextWithMath = (text: string) => {
+  const parts = text.split(/(\$[^$]+\$)/)
+  
+  return parts.map((part, index) => {
+    if (part.match(/^\$[^$]+\$$/)) {
+      // This is a math expression
+      const mathContent = part.slice(1, -1)
+      return <InlineMath key={index}>{mathContent}</InlineMath>
+    }
+    // Regular text
+    return part
+  })
 }
 
 
@@ -268,7 +325,7 @@ export function TableOfContents({ headings: rawHeadings, className, maxHeight = 
       <div className="flex items-center justify-between mb-2 sm:mb-3 lg:mb-4">
         <h3 className={cn("text-sm sm:text-base lg:text-lg",
           "text-toc-gradient",
-          "hover:animate-gradient-hover"
+          ""
         )}>Table of Contents</h3>
 
         {/* Collapse/Expand All Toggle */}
@@ -283,9 +340,9 @@ export function TableOfContents({ headings: rawHeadings, className, maxHeight = 
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
               "relative overflow-hidden group",
               // Background gradient that animates
-              "bg-gradient-to-r from-blue-500/10 via-sky-400/10 to-sky-300/40",
+              "bg-linear-to-r from-blue-500/10 via-sky-400/10 to-sky-300/40",
               // Animated background position
-              "hover:bg-gradient-to-l",
+              "hover:bg-linear-to-l",
               // Subtle glow effect
               // Border animation
               "[&>*]:text-toc-gradient",
@@ -328,7 +385,7 @@ export function TableOfContents({ headings: rawHeadings, className, maxHeight = 
                     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                     "active:bg-toc-gradient",
                     "relative group",
-                    (isH2Active || isH2Parent) && "bg-toc-gradient  hover:animate-gradient-hover",
+                    (isH2Active || isH2Parent) && "bg-toc-gradient  ",
                     (isH2Active && !isH2Parent) && "border-b-1 border-blue-500/20 border-dashed",
                         !isH2Parent &&  "ml-2",
 
@@ -354,7 +411,7 @@ export function TableOfContents({ headings: rawHeadings, className, maxHeight = 
                         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                         "relative overflow-hidden group",
                         "bg-toc-gradient",
-                        "hover:animate-gradient-hover",
+                        "",
                         "hover:shadow-lg hover:shadow-blue-500/20",
 
                  
@@ -374,16 +431,18 @@ export function TableOfContents({ headings: rawHeadings, className, maxHeight = 
                       "inline-block relative",
                       // Add underline animation for non-active, non-parent headings
                       !isH2Active && !isH2Parent && `group-hover:before:absolute group-hover:before:bottom-0
-                       group-hover:before:left-0 group-hover:before:h-0.5 group-hover:before:w-full
-                       group-hover:before:bg-toc-underline-gradient
-                       group-hover:before:animate-underline-slide`
+                       group-hover:before:left-0 group-hover:before:h-0.5`,
+                       ` group-hover:before:w-full`,
+                       `group-hover:before:bg-toc-underline-gradient`,
+                       `group-hover:before:animate-underline-slide`
                     )}>
                       <span className={cn(
-                    
+                    //[todo:]fix hover transparent in math!
                         isH2Active || isH2Parent ? "text-toc-gradient" : "",
                         "group-hover:text-toc-gradient"
+                        // "text-toc-gradient",
                       )}>
-                        {h2.text}
+                        {h2.richContent ? renderRichContent(h2.richContent) : renderTextWithMath(h2.text)}
                       </span>
                     </span>
                   </span>
@@ -414,10 +473,10 @@ export function TableOfContents({ headings: rawHeadings, className, maxHeight = 
                                 "active:bg-toc-gradient",
                                 "relative",
                                 // Active heading: a soft, glowing, inset pill
-                                // isActive && "bg-toc-gradient text-toc-mix hover:animate-gradient-hover",
-                                isActive && "bg-toc-gradient hover:animate-gradient-hover",
+                                // isActive && "bg-toc-gradient text-toc-mix ",
+                                isActive && "bg-toc-gradient ",
                                 // Parent heading: colored text, no background
-                                isParent && `bg-toc-gradient hover:animate-gradient-hover`,
+                                isParent && `bg-toc-gradient `,
                                 (isActive && !isParent) && "border-b-1 border-sky-500 border-dashed",
                                 `ml-${3+ (child.level-3) * 3}`,
                          
@@ -441,14 +500,14 @@ export function TableOfContents({ headings: rawHeadings, className, maxHeight = 
                                   "inline-block relative",
                                   // Add underline animation for non-active, non-parent headings
                                   !isActive && !isParent && `group-hover:before:absolute group-hover:before:bottom-0 group-hover:before:left-0 group-hover:before:h-0.5 group-hover:before:w-full
-                                   group-hover:before:bg-gradient-to-r group-hover:before:from-blue-500 group-hover:before:via-sky-400 group-hover:before:to-blue-400
+                                   group-hover:before:bg-linear-to-r group-hover:before:from-blue-500 group-hover:before:via-sky-400 group-hover:before:to-blue-400
                                    group-hover:before:animate-underline-slide`
                                 )}>
                                   <span className={cn(
 
                                     isActive && "text-toc-gradient",
                                     "group-hover:text-toc-gradient"
-                                  )}>{child.text}</span>
+                                  )}>{child.richContent ? renderRichContent(child.richContent) : renderTextWithMath(child.text)}</span>
                                 </span>
                               </span>
                             </li>

@@ -1,0 +1,5 @@
+export { CodeEditor } from './code-editor'
+export { EditorTabBar } from './editor-tab-bar'
+export { EditorTab } from './editor-tab'
+export { CodePanel } from './code-panel'
+export type * from './types'

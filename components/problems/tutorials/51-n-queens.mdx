@@ -1,0 +1,80 @@
+# N-Queens
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="hard" />
+
+<PillList pills={["backtrack", "game"]} />
+
+[51. N-Queens](https://leetcode.com/problems/n-queens)
+
+## [!ProblemDefinition] Definition
+
+Place n queens on an n x n board such that no two queens threaten each other. *[19!]meaning no two queens share the same row, column, or diagonal*.
+
+## [!ProblemIntuition] Intuition
+
+- Backtrack with State Tracking ♛:
+    - Place one queen per row. Track blocked columns, diagonals: Valid placement → recurse to next row, Invalid → skip, After recursion, remove queen to try next column. Track state using: `cols` for columns, `diag1` for main diagonal *↘* `row - col`, `diag2` for anti-diagonal *↙* `row + col`.
+
+## [!ProblemTimeComplexity] Time Complexity
+
+- O(N!):
+    - first row: N choices, second row: N-1 choices, total permutations = N!, pruning drastically reduces actual recursion tree.
+
+## [!ProblemArguments] Key Arguments
+
+- `n: int`: Size of the chessboard (n x n)
+
+## [!ProblemKeyVariables] Key Variables
+
+- `cols`: Columns where queens are placed
+- `diag1`: The main diagonal where queens are placed (↘) `r - c`
+- `diag2`: The anti-diagonal where queens are placed (↙) `r + c`
+
+## [!ProblemKeyExpressions] Key Expressions
+
+- ``board[row][col] = "."``: Remove the queen (backtrack)
+- ``board[row][col] = "Q"``: Place the queen
+- ``continue``: Skip invalid positions
+- ``dfs(row + 1)``: Recurse to the next row
+
+## [!ProblemReturns] Returns
+
+`list[list[str]]`: List of all valid queen placements
+
+## [!ProblemCodeSnippet] Code Snippet
+
+```python meta="source=problems/51-n-queens/solution.py"
+def n_queens(n: int) -> list[list[str]]:
+
+    result, board = [], [["."] * n for _ in range(n)]
+
+    cols, diag1, diag2 = set(), set(), set()
+
+    def dfs(row: int):
+        if row == n:
+            result.append(["".join(r) for r in board])
+            return
+
+        for col in range(n):
+            if col in cols or (row - col) in diag1 or (row + col) in diag2:
+                continue
+
+            board[row][col] = "Q"
+
+            cols.add(col)
+            diag1.add(row - col)
+            diag2.add(row + col)
+
+            dfs(row + 1)
+
+            board[row][col] = "."
+            cols.remove(col)
+            diag1.remove(row - col)
+            diag2.remove(row + col)
+
+    dfs(0)
+    return result
+```
+

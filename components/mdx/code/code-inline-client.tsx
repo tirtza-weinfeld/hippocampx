@@ -1,144 +1,77 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { motion } from 'motion/react'
 import { memo } from 'react'
 import type { ReactNode } from 'react'
-import { isValidColorName } from '@/lib/step-colors'
-import { InlineMath } from '@/components/mdx/inline-math'
+import { cn } from '@/lib/utils'
 
 export interface InlineCodeClientProps {
   children: ReactNode
   highlighted: boolean
-  step?: number
-  colorName?: string
+  [key: string]: unknown // For HTML attributes
 }
 
-// Helper function to render mixed content (text + math)
-function renderMixedContent(content: ReactNode): ReactNode {
-  if (typeof content === 'string') {
-    // Check if the string contains math expressions
-    if (content.includes('$') && content.match(/\$[^$]+\$/)) {
-      const parts = content.split(/(\$[^$]+\$)/);
-      
-      return parts.map((part, index) => {
-        const mathMatch = part.match(/^\$([^$]+)\$$/);
-        if (mathMatch) {
-          const [, mathExpression] = mathMatch;
-          return (
-            <InlineMath 
-              key={index}
-              className="inline-block"
-            >
-              {mathExpression.trim()}
-            </InlineMath>
-          );
-        }
-        return part;
-      });
-    }
-  }
-  
+// Helper function to render content (math is handled upstream in code-inline.tsx)
+function renderContent(content: ReactNode): ReactNode {
   return content;
 }
 
-export const InlineCodeClient = memo(function InlineCodeClient({ 
-  children, 
-  highlighted, 
-  step,
-  colorName
+export const InlineCodeClient = memo(function InlineCodeClient({
+  children,
+  highlighted,
+  ...props
 }: InlineCodeClientProps) {
-  // Step or color highlighting styles - use same structure as regular code but with step colors
-  if (step || colorName) {
-    let colorName_final: string;
-    
-    if (step) {
-      // Get color name from step number
-      const stepColors = ['red', 'orange', 'amber', 'yellow', 'lime', 'green', 'emerald', 'teal', 'cyan', 'sky', 'blue', 'indigo', 'violet', 'purple', 'fuchsia', 'pink', 'rose'];
-      colorName_final = stepColors[(step - 1) % stepColors.length];
-    } else if (colorName && isValidColorName(colorName)) {
-      colorName_final = colorName;
-    } else {
-      colorName_final = 'blue'; // fallback
-    }
-
-    return (
-      <motion.code
-        className={`
-         inline-block 
-          bg-linear-to-r 
-          from-${colorName_final}-500/10  from-10%  via-${colorName_final}-500/10 via-20% to-${colorName_final}-500/10 to-90%
-           dark:from-${colorName_final}-700/20  dark:via-${colorName_final}-800/20 dark:to-${colorName_final}-700/20  
-           px-1.5 py-0.5 rounded text-sm font-mono
-           hover:bg-linear-to-l
-           shadow-sm
-        `}
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
-        transition={{ duration: 0.1 }}
-        role="code"
-        aria-label={step ? `Code step ${step}` : `Code color ${colorName}`}
-      >
-        <span className={`
-        
-         bg-linear-to-r 
-          from-${colorName_final}-500  from-10%  via-${colorName_final}-500 via-20% to-${colorName_final}-500 to-90%
-           dark:from-${colorName_final}-700  dark:via-${colorName_final}-500 dark:to-${colorName_final}-500  
-           text-transparent bg-clip-text
-           font-bold
-           hover:bg-linear-to-l
-           `}>
-        {renderMixedContent(children)}
-        </span>
-      </motion.code>
-    )
-  }
 
   // Regular highlighted code with better contrast
   if (highlighted) {
+
     return (
-      <motion.span
-        className="
+      <motion.code
 
-
-       
- text-sm font-mono       
-          "
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          transition={{ duration: 0.1 }}
-          role="code"
+        className="inline-code inline-block  px-1.5 py-0.5 rounded text-sm font-mono shadow-sm bg-linear-to-r 
+       hover:bg-linear-to-l from-step/7 via-step/5 to-step/3 px-1.5 py-0.5 "
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
+        transition={{ duration: 0.1 }}
+        {...props}
       >
-        {renderMixedContent(children)}
-      </motion.span>
+        <span 
+        className=" bg-linear-to-r hover:bg-linear-to-l from-step via-step/50 to-step/90 bg-clip-text text-transparent"
+        >
+          {renderContent(children)}
+        </span>
+      </motion.code>
+
+
     )
   }
 
   // Default inline code with better styling
   return (
     <motion.code
-      className="
-       inline-block 
-        bg-linear-to-r 
-        from-green-500/10  from-10%  via-sky-500/10 via-20% to-blue-500/10 to-90%
-         dark:from-teal-700/20  dark:via-sky-800/20 dark:to-blue-700/20  
-         px-1.5 py-0.5 rounded text-sm font-mono
-         hover:bg-linear-to-l
-         shadow-sm
-      "
+      className={cn(
+        "inline-code inline-block ",
+        "bg-linear-to-r hover:bg-linear-to-l",
+        "from-green-500/10  from-10%  via-sky-500/10 via-20% to-blue-500/10 to-90%",
+        "dark:from-teal-700/20  dark:via-sky-800/20 dark:to-blue-700/20  ",
+        "px-1.5 py-0.5 rounded text-sm font-mono",
+        "shadow-sm",
+      )}
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
       transition={{ duration: 0.1 }}
+      {...props}
     >
-      <span className="
-      
-       bg-linear-to-r 
-        from-teal-500  from-10%  via-sky-500 via-20% to-blue-500 to-90%
-         dark:from-teal-700  dark:via-sky-500 dark:to-blue-500  
-         text-transparent bg-clip-text
-         font-bold
-         hover:bg-linear-to-l
-         ">
-      {renderMixedContent(children)}
+      <span className={cn(
+
+        "bg-linear-to-r hover:bg-linear-to-l",
+        "from-teal-500  from-10%  via-sky-500 via-20% to-blue-500 to-90%",
+        "dark:from-teal-700  dark:via-sky-500 dark:to-blue-500  ",
+        "text-transparent bg-clip-text",
+        "font-bold",
+
+
+      )}>      {renderContent(children)}
       </span>
     </motion.code>
   )

@@ -46,7 +46,7 @@ representing the maximum number of obstacles you can eliminate, find the minimum
 to the bottom-right `(m-1, n-1)`. Each move (up, down, left, right) costs one step. If no such path exists, return `-1`.*
     
 
-```python file=backend/algorithms/a-star.py#func:aStarShortestPath
+```python file=problems/1293-shortest-path-in-a-grid-with-obstacles-elimination/a_star.py:shortest_path_in_a_grid_with_obstacles_elimination 
 ```
 
 
@@ -98,6 +98,6 @@ to the bottom-right `(m-1, n-1)`. Each move (up, down, left, right) costs one st
 >
 >> **Why This Matters for Performance**
 >> 
->> This leads to a crucial trade-off. A\*'s worst-case time complexity of `$O(m \cdot n \cdot k \cdot \log(m \cdot n \cdot k))$` looks slower on paper than BFS's `$O(m \cdot n \cdot k)$` due to the logarithmic factor from the priority queue.
+>> This leads to a crucial trade-off. A\*'s worst-case time complexity of *$O(m \cdot n \cdot k \cdot \log(m \cdot n \cdot k))$* looks slower on paper than BFS's *$O(m \cdot n \cdot k)$* due to the logarithmic factor from the priority queue.
 >> 
 >> However, this is misleading. In practice, the number of states A\* actually needs to visit is so dramatically smaller than for BFS or Dijkstra that the savings from exploring fewer states far outweigh the small additional cost per node, resulting in a much faster solution.

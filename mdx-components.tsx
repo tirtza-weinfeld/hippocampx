@@ -1,13 +1,15 @@
 import React from 'react';
 import type { ComponentPropsWithoutRef } from 'react';
 import type { MDXComponents } from 'mdx/types';
-
+import { DifficultyBadge } from '@/components/mdx/difficulty-badge';
 import CodeBlock from '@/components/mdx/code/code-block';
 import InlineCode from '@/components/mdx/code/code-inline';
+// import { ProblemCodeBlock } from '@/components/mdx/problem/code/problem-code-block';
 // import TabbedCodeBlock from '@/components/mdx/code/tabbed-code-block';
 
 import { H1, H2, H3, H4, H5, H6, Paragraph, Strong, Em } from '@/components/mdx/typography';
 import { Link } from '@/components/mdx/links';
+// import { ProblemLinkPreview } from '@/components/mdx/problem-link-preview';
 import { HorizontalRule } from '@/components/mdx/dividers';
 import Blockquote from '@/components/mdx/blockquotes';
 import ContentPopover from '@/components/mdx/content-popover';
@@ -28,21 +30,35 @@ import {
 // Import standard list components only
 import { OrderedList } from '@/components/mdx/list/ordered-list';
 import { UnorderedList } from '@/components/mdx/list/unordered-list';
-import { ListItem } from '@/components/mdx/list/list-item';
+import ListItem from '@/components/mdx/list/list-item';
 import FeatureItem from '@/components/mdx/list/feature-item';
 import { TaskItem } from '@/components/mdx/list/task-item';
+import { ProblemComponents, ProblemHeaders, ProblemItems } from '@/components/mdx/problem';
+// All Problems Components
+import { CodeEditor } from '@/components/editor'
+
+import { CustomLists } from '@/components/mdx/custom/list'
+import { PillList } from '@/components/mdx/list/pill-list';
+// Header Components (using existing typography components)
+
 
 export const customComponents = {
-  
+  PillList,
   // Lists - Standard HTML elements only
   ul: UnorderedList,
   ol: OrderedList,
   li: ListItem,
+
+  UnorderedList,
+ OrderedList,
+ ListItem,
+  ...CustomLists,
   
   // Custom list item components for plugin-generated JSX
   FeatureItem,
   TaskItem,
-
+  ...ProblemItems,
+  
   // Typography
   h1: H1,
   h2: H2,
@@ -57,8 +73,17 @@ export const customComponents = {
   blockquote: Blockquote,
   Alert,
 
-  // Links
-  a: Link,
+  // Links with automatic problem preview enhancement
+  a: ({ href, children, ...props }: ComponentPropsWithoutRef<'a'>) => {
+    // if (href && /\/problems\/[^\/]+\/?$/.test(href)) {
+    //   return (
+    //     <ProblemLinkPreview href={href}>
+    //       {children}
+    //     </ProblemLinkPreview>
+    //   )
+    // }
+    return <Link href={href} {...props}>{children}</Link>
+  },
 
   // Table components
   table: Table,
@@ -70,18 +95,24 @@ export const customComponents = {
   td: TableCell,
   caption: TableCaption,
 
+  CodeEditor,
   // Code components with proper handling
   code: ({ children, className, ...props }: ComponentPropsWithoutRef<'code'>) => {
     // Handle code blocks (with language specification)
     if (className?.includes('language-')) {
+      // console.log(`language-${className}, ${JSON.stringify(children)}`)
       return (
         <CodeBlock className={className} {...props}>
           {children}
         </CodeBlock>
+        // <ProblemCodeBlock className={className} {...props} code={children as string} />
+       
       );
     }
-    
+
+    // console.log(`inline-${className}, ${JSON.stringify(children)}`)
     // Handle inline code
+    // console.log('props', props);
     return (
       <InlineCode {...props}>
         {children}
@@ -110,6 +141,14 @@ export const customComponents = {
   // TOC Components
   TableOfContents,
   ResizableWrapper,
+
+  // Problem Components
+  ...ProblemComponents,
+  ...ProblemHeaders,
+  DifficultyBadge,
+
+  // Header Components handled by existing h1-h6 in typography
+
 } as MDXComponents;
 
 export function useMDXComponents(components: MDXComponents): MDXComponents {

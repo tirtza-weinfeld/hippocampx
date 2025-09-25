@@ -19,7 +19,7 @@
 
 
 
-```python file=backend/algorithms/bellman-ford.py#func:bellman_ford_classic  
+```python file=core/bellman-ford/classic.py 
 ```
 
 Time: $O(|V||E|)$
@@ -50,7 +50,7 @@ Space: $O(|V|)$
 
 
 
-```python file=backend/algorithms/bellman-ford.py#func:bellman_ford_layered_dag  
+```python file=core/bellman-ford/layered_dag.py
 ```
 
 Time: $O(|V||E|)$
@@ -71,7 +71,7 @@ Space: $O(|V| + |E|)$
 >    d[source], V = 0, len(vertices)
 >    ```
 > 
->    * Builds the initial *layer 0* distances, `$δ_0(s, v)$`.
+>    * Builds the initial *layer 0* distances, *$δ_0(s, v)$*.
 >    * `V` is the number of vertices (so we’ll do V relaxation passes next).
 > 
 > - ~ **Layered relaxation: compute δ₁…δ_V**
@@ -155,14 +155,14 @@ Space: $O(|V| + |E|)$
 
 
 
-## Problems
+## Examples
 
 ### 1. Cheapest Flight Within K Stops
 [Cheapest Flights With at Most K Stops](https://leetcode.com/problems/cheapest-flights-within-k-stops/description/)
 
 *Find the cheapest flight from `src` to `dst` using at most `k` stops.*
 
-```python file=backend/algorithms/bellman-ford.py#func:findCheapestPrice  
+```python file=problems/787-cheapest-flights-within-k-stops/bellman_ford.py:cheapest_flights_with_at_most_k_stops 
 ```
 
 > [!deepdive:collapse] 
@@ -235,6 +235,6 @@ Space: $O(|V| + |E|)$
 *In a graph with edges representing traversal probabilities,
  find the path from a `start` to an `end` node with the highest success probability.*
 
-```python file=backend/algorithms/bellman-ford.py#func:maxProbability  
+```python file=problems/1514-path-with-maximum-probability/solution.py:path_with_maximum_probability  
 ```
 

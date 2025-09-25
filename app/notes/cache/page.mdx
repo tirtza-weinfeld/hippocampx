@@ -29,7 +29,7 @@ This policy is efficiently implemented using an `OrderedDict` in Python, which i
 
   > **The Setup:**
   > 
-  > A single shelf *[8:]starts* at a *[8:]reshelving basket* `$🧺  _📘..._📕 👵$` and *[2:]ends* right next to the *[2:]librarian's chair*.
+  > A single shelf *[8!]starts* at a *[8!]reshelving basket* *🧺  _📘..._📕 👵* and *[2!]ends* right next to the *[2!]librarian's chair*.
 
 
 
@@ -39,12 +39,12 @@ This policy is efficiently implemented using an `OrderedDict` in Python, which i
     
 
 > **In Code:**
-  > - `cache.move_to_end(key)` places a book at the *[2:]end*, near the *[2:]librarian's chair*.
-  > - `cache.popitem(last=False)` drops the book farthest from the librarian(a.k.a. the one at the *[8:]beginning* of the shelf) into the *[8:]basket*.
+  > - `cache.move_to_end(key)` places a book at the *[2!]end*, near the *[2!]librarian's chair*.
+  > - `cache.popitem(last=False)` drops the book farthest from the librarian(a.k.a. the one at the *[8!]beginning* of the shelf) into the *[8!]basket*.
 
 ### Python Implementation
 
-```python file=backend/algorithms/cache.py#class:LRUCache  
+```python file=problems/146-lru-cache/solution.py  
 ```
 
 ## LFU Cache: Evicting the Rarest
@@ -74,12 +74,12 @@ The librarian notices a flaw in her simple system: a popular book can be pushed 
   > This protects popular books by moving them up the bookcase, away from the eviction zone on the bottom shelf.
 
 > **In Code:**
-> - The `[8:]buckets` dictionary is our *[8:]bookcase*(our *[8:]shelves*); each `[14:]key` is a *[14:]shelf number*.
+> - The `[8!]buckets` dictionary is our *[8!]bookcase*(our *[8!]shelves*); each `[14!]key` is a *[14!]shelf number*.
 
 
 ### Python Implementation
 
-```python file=backend/algorithms/cache.py#class:LFUCache  
+```python file=problems/460-lfu-cache/solution.py  
 ```
 
 

@@ -1,0 +1,38 @@
+# Range Addition
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="medium" />
+
+<PillList pills={["prefix_sum"]} />
+
+[370. Range Addition](https://leetcode.com/problems/range-addition)
+
+## [!ProblemDefinition] Definition
+
+Given an array and a list of operations, apply range updates and return the final array.
+
+## [!ProblemArguments] Key Arguments
+
+- `length: int`: The number of days in the itinerary.
+- `updates: list[list[int]]`: List of [start_day, end_day, change_in_km] updates.
+
+## [!ProblemReturns] Returns
+
+`list[int]`: The final daily travel plan after all updates.
+
+## [!ProblemCodeSnippet] Code Snippet
+
+```python meta="source=problems/370-range-addition/solution.py"
+def getModifiedArray(length: int, updates: list[list[int]]) -> list[int]:
+
+    delta = [0] * (length + 1)
+
+    for start_day, end_day, change_in_km in updates:
+        delta[start_day] += change_in_km
+        delta[end_day + 1] -= change_in_km
+
+    prefix_sum = 0
+    return [prefix_sum := prefix_sum + change for change in delta[:-1]]
+```
+

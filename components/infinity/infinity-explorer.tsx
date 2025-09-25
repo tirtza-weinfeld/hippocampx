@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion, AnimatePresence } from "motion/react"
 import { LearnSection } from "./sections/learn-section"
 import { CountingGame } from "./sections/counting-game"
 import { HotelGame } from "./sections/hotel-game"

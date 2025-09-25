@@ -1,0 +1,795 @@
+---
+description: React Rules
+alwaysApply: false
+---
+# ReactRules
+
+**Definitive guide for React 19 + Next.js App Router + React Compiler RC**
+
+## Strictly Banned 
+@.cursor/rules/zeroEffect.mdc 
+
+## DECISION TREE: SERVER vs CLIENT
+
+**Use SERVER when:**
+- Fetching data (`await fetch`, database queries)
+- SEO matters (meta tags, initial content)
+- Performance matters (reduce bundle size)
+- Static animations (page load, reveals)
+- No user interaction needed
+
+**Use CLIENT when:**
+- User interaction (clicks, forms, state)
+- Browser APIs (localStorage, geolocation)
+- Real-time updates (websockets)
+- Complex animations (hover, drag, gestures)
+- Third-party widgets
+
+**Data Flow:**
+Server fetches → Client interacts → Server mutates → Client optimistic updates
+
+**Latest Features (Canary):**
+View Transitions for smooth animations, Activity for preserving state
+
+## SERVER PATTERNS
+
+### Server Components + Cache
+```tsx
+import { cache } from 'react'
+import * as motion from 'motion/react-client'
+
+// Cache prevents duplicate API calls across components
+const getProduct = cache(async (id: string) => {
+  return await fetch(`/api/products/${id}`).then(r => r.json())
+})
+
+const getUser = cache(async (userId: string) => {
+  return await fetch(`/api/users/${userId}`).then(r => r.json())
+})
+
+export default async function ProductPage({ id }: { id: string }) {
+  // These calls are cached - won't duplicate if called elsewhere
+  const product = await getProduct(id)
+  const user = await getUser(product.sellerId)
+
+  return (
+    <>
+      <title>{product.name} - sold by {user.name}</title>
+      <meta name="description" content={product.description} />
+
+      {/* Motion works in Server Components via react-client */}
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+        <ProductDisplay product={product} seller={user} />
+      </motion.div>
+
+      <Suspense fallback={<ReviewsLoading />}>
+        <ProductReviews productId={id} />
+      </Suspense>
+    </>
+  )
+}
+
+// This will reuse the cached getProduct call - no duplicate API request
+async function ProductReviews({ productId }: { productId: string }) {
+  const product = await getProduct(productId) // Cache hit!
+  const reviews = await fetch(`/api/reviews/${productId}`).then(r => r.json())
+
+  return (
+    <motion.section initial={{ y: 20 }} animate={{ y: 0 }}>
+      <h2>Reviews for {product.name}</h2>
+      <ReviewsList reviews={reviews} />
+    </motion.section>
+  )
+}
+```
+
+### Server Actions
+```tsx
+// Form actions
+async function createProduct(formData: FormData) {
+  "use server"
+  const product = await ProductSchema.parse({
+    name: formData.get('name'),
+    price: formData.get('price')
+  })
+  await db.insert(products).values(product)
+  revalidatePath('/products')
+}
+
+// Called from client
+async function updateQuantity(productId: string, quantity: number) {
+  "use server"
+  await db.update(cart).set({ quantity }).where(eq(cart.productId, productId))
+  revalidateTag('cart')
+}
+```
+
+## CLIENT PATTERNS
+
+### Client Components
+```tsx
+"use client"
+
+// Interactive component with state
+export default function ProductForm({ createAction }: { createAction: any }) {
+  const [state, formAction] = useActionState(createAction, null)
+  const [optimisticProducts, addOptimistic] = useOptimistic(products, reducer)
+  const { pending } = useFormStatus()
+
+  return (
+    <form action={formAction}>
+      <input name="name" required />
+      <input name="price" type="number" required />
+      <button disabled={pending}>
+        {pending ? "Creating..." : "Create Product"}
+      </button>
+      {state?.error && <p className="text-red-500">{state.error}</p>}
+    </form>
+  )
+}
+
+// Event handling
+function Counter() {
+  const [count, setCount] = useState(0)
+
+  return (
+    <button onClick={() => setCount(c => c + 1)}>
+      Count: {count}
+    </button>
+  )
+}
+```
+
+### Using Promises from Server
+```tsx
+"use client"
+
+// Reading server data in client
+function ProductDetails({ productPromise }: { productPromise: Promise<Product> }) {
+  const product = use(productPromise)
+  const [isExpanded, setExpanded] = useState(false)
+
+  return (
+    <article>
+      <h1>{product.name}</h1>
+      <button onClick={() => setExpanded(!isExpanded)}>
+        {isExpanded ? "Collapse" : "Expand"}
+      </button>
+      {isExpanded && <ProductSpecs product={product} />}
+    </article>
+  )
+}
+```
+
+## DATA FLOW PATTERNS
+
+### Smart Server → Client Streaming
+```tsx
+import { cache } from 'react'
+
+// Cached expensive computation - prevents duplicate work
+const getProductAnalytics = cache(async (productId: string) => {
+  // Complex query that hits multiple tables
+  const analytics = await db.query(`
+    SELECT p.*, AVG(r.rating), COUNT(r.id) as review_count,
+           SUM(o.quantity) as total_sold
+    FROM products p
+    LEFT JOIN reviews r ON r.product_id = p.id
+    LEFT JOIN order_items o ON o.product_id = p.id
+    WHERE p.id = ?
+  `, [productId])
+
+  return processAnalytics(analytics)
+})
+
+export default async function ProductPage({ id }: { id: string }) {
+  // Start multiple fetches in parallel
+  const productPromise = getProduct(id)  // Fast
+  const analyticsPromise = getProductAnalytics(id)  // Slow
+
+  // Render what we can immediately
+  const product = await productPromise
+
+  return (
+    <>
+      <title>{product.name}</title>
+      <ProductHeader product={product} />
+
+      {/* Stream in slow data */}
+      <Suspense fallback={<AnalyticsSkeleton />}>
+        <ProductAnalytics analyticsPromise={analyticsPromise} />
+      </Suspense>
+
+      {/* Interactive client component */}
+      <AddToCartClient productId={id} />
+    </>
+  )
+}
+
+// Client reads promise and adds interactivity
+"use client"
+function ProductAnalytics({ analyticsPromise }: { analyticsPromise: Promise<Analytics> }) {
+  const analytics = use(analyticsPromise)
+  const [view, setView] = useState<'sales' | 'reviews'>('sales')
+
+  return (
+    <div>
+      <div className="flex gap-2">
+        <button
+          onClick={() => setView('sales')}
+          className={view === 'sales' ? 'bg-blue-500 text-white' : ''}
+        >
+          Sales: {analytics.totalSold}
+        </button>
+        <button
+          onClick={() => setView('reviews')}
+          className={view === 'reviews' ? 'bg-blue-500 text-white' : ''}
+        >
+          Reviews: {analytics.reviewCount}
+        </button>
+      </div>
+
+      {view === 'sales' ? <SalesChart data={analytics.sales} /> : <ReviewsChart data={analytics.reviews} />}
+    </div>
+  )
+}
+```
+
+### Form Actions with Optimism
+```tsx
+"use client"
+function TodoList({ todos, addAction }: { todos: Todo[], addAction: any }) {
+  const [optimisticTodos, addOptimistic] = useOptimistic(
+    todos,
+    (state, newTodo: Todo) => [...state, { ...newTodo, pending: true }]
+  )
+
+  async function handleSubmit(formData: FormData) {
+    const newTodo = { id: Date.now(), text: formData.get('text'), pending: false }
+    addOptimistic(newTodo)
+    await addAction(formData)
+  }
+
+  return (
+    <>
+      <form action={handleSubmit}>
+        <input name="text" required />
+        <button>Add Todo</button>
+      </form>
+      <ul>
+        {optimisticTodos.map(todo => (
+          <li key={todo.id} className={todo.pending ? 'opacity-50' : ''}>
+            {todo.text}
+          </li>
+        ))}
+      </ul>
+    </>
+  )
+}
+```
+
+## STATE MANAGEMENT
+
+### Complex State with Reducer
+```tsx
+type GameState = {
+  score: number
+  level: number
+  isPlaying: boolean
+  lives: number
+}
+
+type GameAction =
+  | { type: 'START_GAME' }
+  | { type: 'SCORE_POINT'; points: number }
+  | { type: 'LOSE_LIFE' }
+  | { type: 'LEVEL_UP' }
+
+function gameReducer(state: GameState, action: GameAction): GameState {
+  switch (action.type) {
+    case 'START_GAME':
+      return { ...state, isPlaying: true, lives: 3 }
+    case 'SCORE_POINT':
+      return { ...state, score: state.score + action.points }
+    case 'LOSE_LIFE':
+      const newLives = state.lives - 1
+      return { ...state, lives: newLives, isPlaying: newLives > 0 }
+    case 'LEVEL_UP':
+      return { ...state, level: state.level + 1 }
+    default:
+      return state
+  }
+}
+
+function Game() {
+  const [state, dispatch] = useReducer(gameReducer, {
+    score: 0, level: 1, isPlaying: false, lives: 3
+  })
+
+  return (
+    <div>
+      <div>Score: {state.score} | Level: {state.level} | Lives: {state.lives}</div>
+      {!state.isPlaying ? (
+        <button onClick={() => dispatch({ type: 'START_GAME' })}>
+          Start Game
+        </button>
+      ) : (
+        <GameBoard onScore={(points) => dispatch({ type: 'SCORE_POINT', points })} />
+      )}
+    </div>
+  )
+}
+```
+
+### External Store Subscriptions
+```tsx
+"use client"
+
+// Store wrapper
+function useStore<T>(store: { subscribe: (fn: () => void) => () => void, getSnapshot: () => T }) {
+  return useSyncExternalStore(store.subscribe, store.getSnapshot)
+}
+
+// Usage
+function ThemeToggle() {
+  const theme = useStore(themeStore)
+
+  return (
+    <button onClick={() => themeStore.toggle()}>
+      Current theme: {theme}
+    </button>
+  )
+}
+```
+
+## LOADING & ERROR PATTERNS
+
+### Suspense Boundaries
+```tsx
+export default function ProductPage() {
+  return (
+    <>
+      <ProductHeader />
+      <Suspense fallback={<ProductDetailsSkeleton />}>
+        <ProductDetails />
+      </Suspense>
+      <Suspense fallback={<ReviewsSkeleton />}>
+        <ProductReviews />
+      </Suspense>
+    </>
+  )
+}
+```
+
+### Progressive Loading with Deferred Values
+```tsx
+"use client"
+function SearchResults({ query }: { query: string }) {
+  const deferredQuery = useDeferredValue(query)
+  const results = useSearchResults(deferredQuery)
+
+  return (
+    <div>
+      {query !== deferredQuery && <div className="opacity-50">Searching...</div>}
+      <ResultsList results={results} />
+    </div>
+  )
+}
+```
+
+## ANIMATION PATTERNS
+
+### Server Component Animations (Static)
+```tsx
+import * as motion from 'motion/react-client'
+
+// Server-rendered with initial animation state
+function HeroSection() {
+  return (
+    <motion.section
+      initial={{ opacity: 0, y: 50 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8 }}
+    >
+      <h1>Welcome to our site</h1>
+    </motion.section>
+  )
+}
+
+// Works great for page transitions, loading states
+async function ProductGrid() {
+  const products = await getProducts()
+
+  return (
+    <motion.div className="grid grid-cols-3 gap-4">
+      {products.map((product, i) => (
+        <motion.div
+          key={product.id}
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: i * 0.1 }}
+        >
+          <ProductCard product={product} />
+        </motion.div>
+      ))}
+    </motion.div>
+  )
+}
+```
+
+### Client Component Animations (Interactive)
+```tsx
+"use client"
+import { motion, useReducedMotion, AnimatePresence } from "motion/react"
+
+// Interactive animations need client components
+function InteractiveCard({ children }: { children: React.ReactNode }) {
+  const [isHovered, setHovered] = useState(false)
+  const shouldReduceMotion = useReducedMotion()
+
+  return (
+    <motion.div
+      onHoverStart={() => setHovered(true)}
+      onHoverEnd={() => setHovered(false)}
+      whileHover={shouldReduceMotion ? {} : { scale: 1.02 }}
+      whileTap={shouldReduceMotion ? {} : { scale: 0.98 }}
+    >
+      {children}
+
+      <AnimatePresence>
+        {isHovered && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="absolute top-0 right-0 bg-blue-500 text-white p-2"
+          >
+            Quick Actions
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  )
+}
+
+// Layout animations for dynamic lists
+function TaskManager() {
+  const [tasks, setTasks] = useState<Task[]>([])
+
+  return (
+    <motion.ul layout className="space-y-2">
+      <AnimatePresence>
+        {tasks.map(task => (
+          <motion.li
+            key={task.id}
+            layout
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 20 }}
+            whileHover={{ x: 5 }}
+          >
+            <TaskItem task={task} onComplete={() => removeTask(task.id)} />
+          </motion.li>
+        ))}
+      </AnimatePresence>
+    </motion.ul>
+  )
+}
+```
+
+## REF PATTERNS
+
+### Direct Ref Props (No forwardRef)
+```tsx
+// Modern: ref as prop
+function Input({ ref, ...props }: { ref?: React.Ref<HTMLInputElement> }) {
+  return <input ref={ref} {...props} />
+}
+
+// Usage
+function Form() {
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  return (
+    <form onSubmit={() => inputRef.current?.focus()}>
+      <Input ref={inputRef} autoFocus />
+    </form>
+  )
+}
+```
+
+### Ref Callbacks with Cleanup
+```tsx
+function VideoPlayer() {
+  const videoRef = useCallback((video: HTMLVideoElement | null) => {
+    if (video) {
+      video.play()
+      return () => video.pause() // Cleanup function
+    }
+  }, [])
+
+  return <video ref={videoRef} />
+}
+```
+
+## CONTEXT PATTERNS
+
+### Modern Context (No Provider)
+```tsx
+// Create context
+const ThemeContext = createContext<'light' | 'dark'>('light')
+
+// Provider component
+function App() {
+  const [theme, setTheme] = useState<'light' | 'dark'>('light')
+
+  return (
+    <ThemeContext value={theme}>
+      <Layout />
+    </ThemeContext>
+  )
+}
+
+// Consumer
+function ThemeToggle() {
+  const theme = use(ThemeContext)
+  return <div>Current theme: {theme}</div>
+}
+```
+
+## RESPONSIVE & PERFORMANCE
+
+### Resource Preloading
+```tsx
+export default function ProductPage() {
+  // Preload critical resources
+  preload('/api/product-data', { as: 'fetch' })
+  preinit('/styles/product.css', { as: 'style' })
+
+  return <ProductDisplay />
+}
+```
+
+### View Transitions
+```tsx
+import { ViewTransition } from 'react'
+
+// Page transitions
+function Router({ currentPage }) {
+  return (
+    <ViewTransition>
+      {currentPage === 'home' ? <HomePage /> : <ProductPage />}
+    </ViewTransition>
+  )
+}
+
+// List reordering
+"use client"
+function TaskList({ tasks, onReorder }) {
+  return (
+    <ViewTransition>
+      <ul>
+        {tasks.map(task => (
+          <li key={task.id} style={{ viewTransitionName: `task-${task.id}` }}>
+            {task.title}
+          </li>
+        ))}
+      </ul>
+    </ViewTransition>
+  )
+}
+
+// Shared element transitions
+function ProductCard({ product, isExpanded, onToggle }) {
+  return (
+    <ViewTransition>
+      <div style={{ viewTransitionName: `product-${product.id}` }}>
+        <img src={product.image} />
+        <h3>{product.name}</h3>
+        {isExpanded && <ProductDetails product={product} />}
+      </div>
+    </ViewTransition>
+  )
+}
+```
+
+### Activity Component
+```tsx
+import { Activity } from 'react'
+
+// Preserve state while hiding content
+function TabsContainer({ activeTab }) {
+  return (
+    <div>
+      <Activity mode={activeTab === 'home' ? 'visible' : 'hidden'}>
+        <HomeTab />
+      </Activity>
+      <Activity mode={activeTab === 'profile' ? 'visible' : 'hidden'}>
+        <ProfileTab />
+      </Activity>
+      <Activity mode={activeTab === 'settings' ? 'visible' : 'hidden'}>
+        <SettingsTab />
+      </Activity>
+    </div>
+  )
+}
+
+// Pre-render likely next routes
+function ProductPage({ id, relatedProducts }) {
+  return (
+    <div>
+      <ProductDisplay id={id} />
+
+      {/* Pre-render first related product for instant navigation */}
+      <Activity mode="hidden">
+        <ProductPage id={relatedProducts[0].id} />
+      </Activity>
+    </div>
+  )
+}
+```
+
+### Container Queries with Tailwind
+```tsx
+function ResponsiveCard() {
+  return (
+    <div className="@container">
+      <div className="@sm:flex @md:grid @md:grid-cols-2">
+        <div className="@lg:col-span-1">Content</div>
+      </div>
+    </div>
+  )
+}
+```
+
+## REACT COMPILER PATTERNS
+
+### The Compiler Just Works
+```tsx
+// OLD: Manual optimization hell
+function ProductList({ products, onSelect, filters }) {
+  const filteredProducts = useMemo(() =>
+    products.filter(p => p.category === filters.category),
+    [products, filters.category]
+  )
+
+  const handleSelect = useCallback((id) => {
+    onSelect(id)
+  }, [onSelect])
+
+  return (
+    <div>
+      {filteredProducts.map(product => (
+        <ProductCard
+          key={product.id}
+          product={product}
+          onSelect={handleSelect}
+        />
+      ))}
+    </div>
+  )
+}
+
+// NEW: Just write normal code - compiler optimizes everything
+function ProductList({ products, onSelect, filters }) {
+  // Compiler automatically memoizes this when needed
+  const filteredProducts = products.filter(p => p.category === filters.category)
+
+  // Compiler automatically stabilizes this callback
+  const handleSelect = (id) => onSelect(id)
+
+  return (
+    <div>
+      {filteredProducts.map(product => (
+        <ProductCard
+          key={product.id}
+          product={product}
+          onSelect={handleSelect}
+        />
+      ))}
+    </div>
+  )
+}
+```
+
+### Rare Cases Requiring Manual Optimization
+
+**Stop and rethink first** - hitting these cases often means you made a mistake somewhere.
+
+```tsx
+// External stores (no alternative)
+const theme = useSyncExternalStore(store.subscribe, store.getSnapshot)
+
+// Legacy third-party libraries (check for modern alternatives first)
+const callback = useCallback(fn, deps) // When library requires stable reference
+
+// Manual equality when compiler is too conservative with deep objects
+const processed = useMemo(() => transform(data), [data.id, data.version])
+
+// Proven performance bottleneck (profile first, let compiler try first)
+const expensive = useMemo(() => heavyCalculation(data), [data.id])
+```
+
+### Compiler Configuration
+```tsx
+// babel.config.js - Production setup
+module.exports = {
+  plugins: [
+    ['babel-plugin-react-compiler', {
+      target: '19',
+      compilationMode: 'infer' // Let compiler decide
+    }]
+  ]
+}
+
+// Only use directives for temporary debugging - remove after fixing
+function TemporaryDebugComponent() {
+  "use no memo" // Find root cause, then remove this
+
+  // Fix the actual issue instead of disabling compilation
+  return <ProperlyWrittenComponent />
+}
+```
+
+## FORM PATTERNS
+
+### Modern Form Handling
+```tsx
+async function updateProfileAction(formData: FormData) {
+  "use server"
+  const profile = ProfileSchema.parse({
+    name: formData.get('name'),
+    email: formData.get('email')
+  })
+  await updateProfile(profile)
+  revalidatePath('/profile')
+}
+
+"use client"
+function ProfileForm() {
+  const [state, formAction] = useActionState(updateProfileAction, null)
+
+  return (
+    <form action={formAction}>
+      <input name="name" required />
+      <input name="email" type="email" required />
+      <SubmitButton />
+      {state?.error && <ErrorMessage error={state.error} />}
+    </form>
+  )
+}
+
+function SubmitButton() {
+  const { pending } = useFormStatus()
+  return (
+    <button disabled={pending}>
+      {pending ? "Saving..." : "Save Profile"}
+    </button>
+  )
+}
+```
+
+## DEPLOYMENT PATTERNS
+
+### Metadata in Components
+```tsx
+export default async function BlogPost({ slug }: { slug: string }) {
+  const post = await getPost(slug)
+
+  return (
+    <>
+      <title>{post.title}</title>
+      <meta name="description" content={post.excerpt} />
+      <meta property="og:title" content={post.title} />
+      <meta property="og:image" content={post.coverImage} />
+      <link rel="canonical" href={`https://blog.com/posts/${slug}`} />
+
+      <article>
+        <h1>{post.title}</h1>
+        <PostContent content={post.content} />
+      </article>
+    </>
+  )
+}
+```
+

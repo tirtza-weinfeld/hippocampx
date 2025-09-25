@@ -1,0 +1,149 @@
+@theme inline {
+
+  --color-mascot: var(--mascot);
+
+  --color-mascot-base-from: var(--mascot-base-from);
+  --color-mascot-base-via: var(--mascot-base-via);
+  --color-mascot-base-to: var(--mascot-base-to);
+
+  --color-mascot-hover-from: var(--mascot-hover-from);
+  --color-mascot-hover-via: var(--mascot-hover-via);
+  --color-mascot-hover-to: var(--mascot-hover-to);
+
+  --color-mascot-active-from: var(--mascot-active-from);
+  --color-mascot-active-via: var(--mascot-active-via);
+  --color-mascot-active-to: var(--mascot-active-to);
+
+  --color-mascot-focus-from: var(--mascot-focus-from);
+  --color-mascot-focus-via: var(--mascot-focus-via);
+  --color-mascot-focus-to: var(--mascot-focus-to);
+}
+
+:root{
+  --mascot:var(--color-blue-500);
+
+  --mascot-base-from: oklch(0.7 0.08 220);
+  --mascot-base-via: oklch(0.65 0.1 250);
+  --mascot-base-to: oklch(0.6 0.12 280);
+
+  --mascot-hover-from: oklch(0.7 0.12 220);
+  --mascot-hover-via: oklch(0.65 0.15 250);
+  --mascot-hover-to: oklch(0.6 0.18 280);
+
+  --mascot-active-from: oklch(0.7 0.18 220);
+  --mascot-active-via: oklch(0.65 0.22 250);
+  --mascot-active-to: oklch(0.6 0.25 280);
+
+  --mascot-focus-from: oklch(0.75 0.15 220);
+  --mascot-focus-via: oklch(0.7 0.2 250);
+  --mascot-focus-to: oklch(0.65 0.22 280);
+
+}
+
+
+.hard{
+  --mascot:var(--color-rose-500);
+
+  --mascot-base-from:var(--color-rose-500);
+  --mascot-base-via: var(--color-rose-400);
+  --mascot-base-to: var(--color-rose-300);
+
+  --mascot-hover-from: var(--color-rose-400);
+  --mascot-hover-via: var(--color-rose-300);
+  --mascot-hover-to: var(--color-rose-200);
+
+  --mascot-active-from: var(--color-rose-400);
+  --mascot-active-via: var(--color-rose-300);
+  --mascot-active-to: var(--color-rose-200);
+
+  --mascot-focus-from: var(--color-rose-400);
+  --mascot-focus-via: var(--color-rose-300);
+  --mascot-focus-to: var(--color-rose-200);
+}
+
+.medium{
+  --mascot:var(--color-amber-500);
+
+  --mascot-base-from: var(--color-amber-500);
+  --mascot-base-via: var(--color-amber-400);
+  --mascot-base-to: var(--color-amber-300);
+
+  --mascot-hover-from: var(--color-amber-400);
+  --mascot-hover-via: var(--color-amber-300);
+  --mascot-hover-to: var(--color-amber-200);
+
+  --mascot-active-from: var(--color-amber-400);
+  --mascot-active-via: var(--color-amber-300);
+  --mascot-active-to: var(--color-amber-200);
+
+  --mascot-focus-from: var(--color-amber-400);
+  --mascot-focus-via: var(--color-amber-300);
+  --mascot-focus-to: var(--color-amber-200);
+
+}
+
+.easy{
+  --mascot:var(--color-green-500);
+
+  --mascot-base-from: var(--color-green-500);
+  --mascot-base-via: var(--color-green-400);
+  --mascot-base-to: var(--color-green-300);
+
+  --mascot-hover-from: var(--color-green-400);
+  --mascot-hover-via: var(--color-green-300);
+  --mascot-hover-to: var(--color-green-200);
+
+  --mascot-active-from: var(--color-green-400);
+  --mascot-active-via: var(--color-green-300);
+  --mascot-active-to: var(--color-green-200);
+
+  --mascot-focus-from: var(--color-green-400);
+  --mascot-focus-via: var(--color-green-300);
+  --mascot-focus-to: var(--color-green-200);
+
+}
+
+.all{
+
+  --mascot:var(--color-blue-500);
+
+
+  --mascot-base-from: var(--color-blue-500);
+  --mascot-base-via: var(--color-blue-400);
+  --mascot-base-to: var(--color-blue-300);
+
+  --mascot-hover-from: var(--color-blue-400);
+  --mascot-hover-via: var(--color-blue-300);
+  --mascot-hover-to: var(--color-blue-200);
+  
+  --mascot-active-from: var(--color-blue-400);
+  --mascot-active-via: var(--color-blue-300);
+  --mascot-active-to: var(--color-blue-200);
+
+  --mascot-focus-from: var(--color-blue-400);
+  --mascot-focus-via: var(--color-blue-300);
+  --mascot-focus-to: var(--color-blue-200);
+
+}
+
+
+.topics{
+  --mascot:var(--color-purple-500);
+
+
+  --mascot-base-from: var(--color-purple-500);
+  --mascot-base-via: var(--color-indigo-400);
+  --mascot-base-to: var(--color-pink-300);
+
+  --mascot-hover-from: var(--color-purple-400);
+  --mascot-hover-via: var(--color-indigo-300);
+  --mascot-hover-to: var(--color-pink-200);
+  
+  --mascot-active-from: var(--color-purple-400);
+  --mascot-active-via: var(--color-indigo-300);
+  --mascot-active-to: var(--color-pink-200);
+
+  --mascot-focus-from: var(--color-purple-400);
+  --mascot-focus-via: var(--color-indigo-300);
+  --mascot-focus-to: var(--color-pink-200);
+}

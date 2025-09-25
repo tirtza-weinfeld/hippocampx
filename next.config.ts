@@ -8,19 +8,36 @@ import rehypeAutolinkHeadings from 'rehype-autolink-headings'
 import remarkGfm from 'remark-gfm'
 import remarkInjectToc from "@/plugins/toc-plugin"
 import { remarkGithubAlerts } from "@/plugins/remark-github-alerts"
-import remarkSmartCodeImport from "@/plugins/remark-smart-code-import"
+// import remarkSmartCodeImport from "@/plugins/remark-smart-code-import"
+import remarkCodeCopy from "@/plugins/remark-code-copy"
+import remarkFeatureList from "@/plugins/remark-feature-list"
 import remarkListVariants from "@/plugins/remark-list-variants"
+import { remarkHeaderSection } from "@/plugins/remark-header-section"
+import { remarkTypography } from "@/plugins/remark-typography"
+import { remarkSectionList } from "@/plugins/remark-section-list"
 
 const withMDX = createMDX({
   extension: /\.mdx?$/,
   options: {
     remarkPlugins: [
-      remarkSmartCodeImport, 
       remarkMath, 
-      remarkListVariants, // Single plugin that handles everything correctly
       remarkGfm,
+      remarkTypography,
+
+
+      remarkHeaderSection,
+      remarkSectionList,
+
       remarkInjectToc,
+
       remarkGithubAlerts,
+      remarkCodeCopy,
+      // remarkSmartCodeImport,
+
+      remarkFeatureList,    // Must run before remarkListVariants
+      remarkListVariants, 
+   
+
       ],
     rehypePlugins: [
       rehypeKatex,

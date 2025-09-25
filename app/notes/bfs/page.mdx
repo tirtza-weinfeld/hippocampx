@@ -14,7 +14,7 @@
   
   [102. Binary Tree Level Order Traversal](https://leetcode.com/problems/binary-tree-level-order-traversal/)
 
-    ```python file=backend/algorithms/bfs.py#func:levelOrder  
+    ```python file=problems/102-binary-tree-level-order-traversal/solution.py  
     ```
   > [!insight:collapse] `for _ in range(len(queue))` , `len(queue)` is the level size.
   >
@@ -34,7 +34,7 @@
 
 [200. Number of Islands](https://leetcode.com/problems/number-of-islands/)
 
-```python file=backend/algorithms/bfs.py#func:numIslands   
+```python file=problems/200-number-of-islands/solution.py   
 ```
 > [\!insight:collapse] Find, Count, and Sink 🏝️
 >
@@ -54,7 +54,7 @@
 
 [994. Rotting Oranges](https://leetcode.com/problems/rotting-oranges/)
 
-```python file=backend/algorithms/bfs.py#func:orangesRotting   
+```python file=problems/994-rotting-oranges/solution.py
 ```
 
 > [\!insight:collapse] Multi-Source BFS 🍊
@@ -73,7 +73,7 @@
 
 [133. Clone Graph](https://leetcode.com/problems/clone-graph/)
 
-```python file=backend/algorithms/bfs.py#func:cloneGraph 
+```python file=problems/133-clone-graph/solution.py
 ```
 
 > [\!insight:collapse] Hash Map as a Visited Set & Node Cache 🗺️
@@ -90,10 +90,10 @@
 ### 5. Snakes and Ladders
 
 
- *Given an `$n \times n$` integer board where cells are numbered from `1` to `$n^{2}$` 
+ *Given an $n \times n$ integer board where cells are numbered from $1$ to $n^{2}$ 
  in a Boustrophedonical style.
-  Each cell's value is either **[3:]-1** for a *[3:]normal* square or a **[16:]destination** number for a *[16:]snake/ladder*.
-   Starting from square `1`, return the least number of moves to reach square `$n^{2}$`. You must take any snake or ladder you land on.*
+  Each cell's value is either **[3!]-1** for a *[3!]normal* square or a **[16!]destination** number for a *[16!]snake/ladder*.
+   Starting from square `1`, return the least number of moves to reach square *$n^{2}$*. You must take any snake or ladder you land on.*
 
 [909. Snakes and Ladders](https://leetcode.com/problems/snakes-and-ladders/)
 
@@ -113,7 +113,7 @@
 > ```
 
 
-```python file=backend/algorithms/bfs.py#func:snakesAndLadders  
+```python file=problems/909-snakes-and-ladders/solution.py  
 ```
 
 > [\!insight:collapse] Flatten the Board First 🎲
@@ -132,7 +132,7 @@
 
 [542. 01 Matrix](https://leetcode.com/problems/01-matrix/)
 
-```python file=backend/algorithms/bfs.py#func:updateMatrix  
+```python file=problems/542-01-matrix/solution.py  
 ```
 
 > [\!insight:collapse]  Multi-Source BFS from the Target 🎯
@@ -155,7 +155,7 @@
 > [!warning:collapse] 
 > in practice, [*A\* Search*](./a-star#1-shortest-path-in-a-grid-with-obstacles-elimination) $O(m \cdot n \cdot k \cdot \log(m \cdot n \cdot k))$ is faster than this $O(m \cdot n \cdot k)$ .
 
-```python file=backend/algorithms/bfs.py#func:shortestPath  
+```python file=problems/1293-shortest-path-in-a-grid-with-obstacles-elimination/bfs.py:shortest_path_in_a_grid_with_obstacles_elimination 
 ```
 
 
@@ -189,7 +189,7 @@
 
 [127. Word Ladder](https://leetcode.com/problems/word-ladder/)
 
-```python file=backend/algorithms/bfs.py#func:ladderLength  
+```python file=problems/127-word-ladder/solution.py  
 ```
 
 > [\!insight:collapse] Bidirectional BFS Meets in the Middle 🤝

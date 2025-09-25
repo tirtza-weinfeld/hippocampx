@@ -1,7 +1,7 @@
 // "use client"
 
 // import { useState, useEffect, useRef } from "react"
-// import { motion, AnimatePresence } from "framer-motion"
+// import { motion, AnimatePresence } from "motion/react"
 // import { Award, Star, Trophy, Share } from "lucide-react"
 // import { shareText } from "@/components/calculus/utility/share-utils"
 // import { Button } from "@/components/ui/button"

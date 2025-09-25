@@ -1,6 +1,6 @@
 'use client'
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { Home, Bus, Dumbbell, Briefcase } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 

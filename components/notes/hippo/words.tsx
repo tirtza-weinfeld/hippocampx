@@ -1,8 +1,6 @@
 import { revalidateTag } from "next/cache"
 import { use } from "react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
 import WordsTable from "./words-table"
 import AddWordForm from "./add-word-form"
 

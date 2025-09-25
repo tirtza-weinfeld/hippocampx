@@ -1,0 +1,166 @@
+# Shortest Path in a Grid with Obstacles Elimination
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="hard" />
+
+<PillList pills={["bfs"]} />
+
+[1293. Shortest Path in a Grid with Obstacles Elimination](https://leetcode.com/problems/shortest-path-in-a-grid-with-obstacles-elimination)
+
+## [!ProblemDefinition] Definition
+
+Given an `m x n` grid where cells are either empty (`0`) or an obstacle (`1`), and an integer `k` representing the maximum number of obstacles you can eliminate, find the minimum number of steps to travel from the top-left corner `(0, 0)` to the bottom-right `(m-1, n-1)`. Each move (up, down, left, right) costs one step. If no such path exists, return `-1`.
+
+## Dijkstra Solution
+
+### [!ProblemKeyVariables] Key Variables
+
+- `pq`: (g_cost, r, c, k_rem), The priority uses g_cost (steps) itself. No heuristic is used.
+- `steps`: The number of steps taken so far (g_cost)
+- `max_k`: max_k[r][c] stores the max eliminations we have at cell (r,c)
+
+### [!ProblemKeyExpressions] Key Expressions
+
+- `heapq.heappush(pq, (steps + 1, nr, nc, new_k))`: The priority is simply the new step count.No heuristic is added, which is the only difference from the A* implementation.
+- `heapq.heappop(pq)`: Pop the path with the lowest g_cost (steps) so far
+- `k_rem < max_k[r][c]`: Prune paths that are suboptimal for a given cell
+
+### [!ProblemCodeSnippet] Code Snippet
+
+```python meta="source=problems/1293-shortest-path-in-a-grid-with-obstacles-elimination/dijkstra.py"
+def shortest_path_in_a_grid_with_obstacles_elimination(grid: list[list[int]], k: int) -> int:
+
+    rows, cols = len(grid), len(grid[0])
+    if k >= rows + cols - 3:
+        return rows + cols - 2
+
+    pq = [(0, 0, 0, k)]
+
+    max_k = [[-1] * cols for _ in range(rows)]
+    max_k[0][0] = k
+
+    while pq:
+
+        steps, r, c, k_rem = heapq.heappop(pq)
+
+        if (r, c) == (rows - 1, cols - 1):
+            return steps
+
+        if k_rem < max_k[r][c]:
+            continue
+
+        for dr, dc in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
+            if 0 <= (nr:= r + dr) < rows and 0 <= (nc:= c + dc) < cols:
+                if (new_k:= k_rem - grid[nr][nc]) > max_k[nr][nc]:
+                    max_k[nr][nc] = new_k
+                    heapq.heappush(pq, (steps + 1, nr, nc, new_k))
+
+    return -1
+```
+
+
+---
+
+## A Star Solution
+
+### [!ProblemCodeSnippet] Code Snippet
+
+```python meta="source=problems/1293-shortest-path-in-a-grid-with-obstacles-elimination/a_star.py"
+import heapq
+
+def manhattan_distance(a: tuple[int, int], b: tuple[int, int]) -> int:
+    return abs(a[0] - b[0]) + abs(a[1] - b[1])
+
+def shortest_path_in_a_grid_with_obstacles_elimination(grid: list[list[int]], k: int) -> int:
+
+    rows, cols = len(grid), len(grid[0])
+
+    def h(r: int, c: int) -> int:
+        return manhattan_distance((r, c), (rows - 1, cols - 1))
+
+    if k >= (md:= h(0, 0)) - 1:
+        return md
+
+    pq = [(md, 0, 0, 0, k)]
+
+    max_k = [[-1] * cols for _ in range(rows)]
+    max_k[0][0] = k
+
+    while pq:
+        _, steps, r, c, remaining_k = heapq.heappop(pq)
+
+        if (r, c) == (rows - 1, cols - 1):
+            return steps
+
+        if remaining_k < max_k[r][c]:
+            continue
+
+        for dr, dc in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
+            if 0 <= (nr:= r + dr) < rows and 0 <= (nc:= c + dc) < cols:
+                if (new_remaining_k := remaining_k - grid[nr][nc] ) > max_k[nr][nc]:
+                    max_k[nr][nc] = new_remaining_k
+                    heapq.heappush(pq, ((steps + 1) + h(nr, nc), steps + 1, nr, nc, new_remaining_k))
+
+    return -1
+```
+
+
+---
+
+## Bfs Solution
+
+### [!ProblemIntuition] Intuition
+
+- bfs with State-Budget Pruning 🔍:
+    - The core idea is to perform a standard BFS over `(row, col, steps, remaining_k)` states, but only enqueue a move if it arrives at a cell with **strictly more** `remaining_k` than any prior visit. This pruning significantly reduces the number of states explored, making the algorithm much more efficient.
+    - **Trivial shortcut:** If `k ≥ rows+cols–2`, you can go straight in `rows+cols–2` steps without ever touching an obstacle.
+    - **Correctness guarantee:** Because BFS explores in order of increasing `steps`, the first time you dequeue the goal is the fewest-step path. Pruning by `remaining_k` never discards any shorter-step route—it simply avoids re-exploring dominated states.
+
+### [!ProblemTimeComplexity] Time Complexity
+
+- O(m * n * k):
+    - Worst-case O(m * n * k) (every cell × every possible k), but aggressive pruning usually makes it far faster in practice.
+
+### [!ProblemSpaceComplexity] Space Complexity
+
+- O(m * n):
+    - for the `max_k` grid plus up to O(m * n * k) queued states in the pathological worst case.
+
+### [!ProblemKeyVariables] Key Variables
+
+- `max_k`: max_k[r][c] = maximum eliminations remaining when visiting (r,c)
+- `q`: (row, col, steps, remaining_k)
+- `min_steps`: Manhattan distance lower bound
+
+### [!ProblemCodeSnippet] Code Snippet
+
+```python meta="source=problems/1293-shortest-path-in-a-grid-with-obstacles-elimination/bfs.py"
+from collections import deque
+
+def shortest_path_in_a_grid_with_obstacles_elimination(grid: list[list[int]], k: int) -> int:
+
+    rows, cols = len(grid), len(grid[0])
+    min_steps = rows + cols - 3 
+    if k >= min_steps:
+        return min_steps
+
+    max_k = [[-1] * cols for _ in range(rows)]
+    max_k[0][0] = k
+
+    q = deque([(0, 0, 0, k)])
+
+    while q:
+        r, c, steps, remaining_k = q.popleft()
+        for dr, dc in [(1,0), (-1,0), (0,1), (0,-1)]:
+            nr, nc = r + dr, c + dc
+            if 0 <= nr < rows and 0 <= nc < cols:
+                new_remaining_k = remaining_k - grid[nr][nc]
+                if new_remaining_k > max_k[nr][nc]:
+                    if (nr, nc) == (rows - 1, cols - 1):
+                        return steps + 1
+                    max_k[nr][nc] = new_remaining_k
+                    q.append((nr, nc, steps + 1, new_remaining_k))
+    return -1
+```
+

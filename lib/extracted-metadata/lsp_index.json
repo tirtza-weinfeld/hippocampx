@@ -1,0 +1,2441 @@
+{
+  "documents": [
+    {
+      "uri": "__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "core/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "core/bellman-ford/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "core/bellman-ford/classic.py",
+      "symbols": [
+        {
+          "name": "bellman_ford_classic",
+          "detail": "bellman_ford_classic(vertices: list[str], edges: list[tuple[str, str, float]], source: str) -> dict[str, float]",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 21, "character": 12}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 24
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "core/bellman-ford/layered_dag.py",
+      "symbols": [
+        {
+          "name": "bellman_ford_layered_dag",
+          "detail": "bellman_ford_layered_dag(vertices: list[str], edges: list[tuple[str, str, float]], source: str) -> dict[str, float]",
+          "kind": 12,
+          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 42, "character": 12}},
+          "nameRange": {
+            "start": {
+              "line": 2,
+              "character": 4
+            },
+            "end": {
+              "line": 2,
+              "character": 28
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "core/binary-search/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "core/binary-search/bisect_left.py",
+      "symbols": [
+        {
+          "name": "simple_bisect_left",
+          "detail": "simple_bisect_left(a: list[int], x: int)",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 9, "character": 12}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 22
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "core/binary-search/bisect_right.py",
+      "symbols": [
+        {
+          "name": "simple_bisect_right",
+          "detail": "simple_bisect_right(a, x)",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 9, "character": 12}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 23
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "core/dijkstra/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "core/dijkstra/algorithm.py",
+      "symbols": [
+        {
+          "name": "dijkstra",
+          "detail": "dijkstra(graph: dict[str, dict[str, int]], s: str)",
+          "kind": 12,
+          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 18, "character": 15}},
+          "nameRange": {
+            "start": {
+              "line": 2,
+              "character": 4
+            },
+            "end": {
+              "line": 2,
+              "character": 12
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "core/modular-arithmetic/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "core/modular-arithmetic/congruent1.py",
+      "symbols": [
+        {
+          "name": "congruent1",
+          "detail": "congruent1(a: int, b: int, n: int) -> bool",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 1, "character": 27}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 14
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "core/modular-arithmetic/congruent2.py",
+      "symbols": [
+        {
+          "name": "congruent2",
+          "detail": "congruent2(a: int, b: int, n: int) -> bool",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 1, "character": 25}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 14
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "core/modular-arithmetic/mod.py",
+      "symbols": [
+        {
+          "name": "mod",
+          "detail": "mod(a: int, b: int) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 1, "character": 16}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 7
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/1011-capacity-to-ship-packages-within-d-days/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/1011-capacity-to-ship-packages-within-d-days/solution.py",
+      "symbols": [
+        {
+          "name": "capacity_to_ship_packages_within_d_days",
+          "detail": "capacity_to_ship_packages_within_d_days(weights: list[int], days: int) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 18, "character": 12}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 43
+            }
+          },
+          "children": [
+            {
+              "name": "days_needed",
+              "detail": "days_needed(capacity: int) -> int",
+              "kind": 12,
+              "range": {"start": {"line": 1, "character": 4}, "end": {"line": 9, "character": 16}},
+              "nameRange": {
+                "start": {
+                  "line": 1,
+                  "character": 8
+                },
+                "end": {
+                  "line": 1,
+                  "character": 19
+                }
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "uri": "problems/102-binary-tree-level-order-traversal/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/102-binary-tree-level-order-traversal/solution.py",
+      "symbols": [
+        {
+          "name": "binary_tree_level_order_traversal",
+          "detail": "binary_tree_level_order_traversal(root) -> list[list[int]]",
+          "kind": 12,
+          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 17, "character": 17}},
+          "nameRange": {
+            "start": {
+              "line": 2,
+              "character": 4
+            },
+            "end": {
+              "line": 2,
+              "character": 37
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/120-triangle/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/120-triangle/solution.py",
+      "symbols": [
+        {
+          "name": "triangle_minimum_path_sum",
+          "detail": "triangle_minimum_path_sum(triangle: list[list[int]]) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 11, "character": 19}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 29
+            }
+          },
+          "children": [
+            {
+              "name": "dp",
+              "detail": "dp(r, c)",
+              "kind": 12,
+              "range": {"start": {"line": 4, "character": 4}, "end": {"line": 9, "character": 27}},
+              "nameRange": {
+                "start": {
+                  "line": 4,
+                  "character": 8
+                },
+                "end": {
+                  "line": 4,
+                  "character": 10
+                }
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "uri": "problems/121-best-time-to-buy-and-sell-stock/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/121-best-time-to-buy-and-sell-stock/solution.py",
+      "symbols": [
+        {
+          "name": "best_time_to_buy_and_sell_stock",
+          "detail": "best_time_to_buy_and_sell_stock(prices: list[int]) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 5, "character": 17}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 35
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/122-best-time-to-buy-and-sell-stock-ii/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/122-best-time-to-buy-and-sell-stock-ii/solution.py",
+      "symbols": [
+        {
+          "name": "best_time_to_buy_and_sell_stock_II",
+          "detail": "best_time_to_buy_and_sell_stock_II(prices: list[int]) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 5, "character": 17}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 38
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/123-best-time-to-buy-and-sell-stock-iii/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/123-best-time-to-buy-and-sell-stock-iii/dp.py",
+      "symbols": [
+        {
+          "name": "best_time_to_buy_and_sell_stock_III",
+          "detail": "best_time_to_buy_and_sell_stock_III(prices: list[int]) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 15, "character": 20}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 39
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/123-best-time-to-buy-and-sell-stock-iii/state.py",
+      "symbols": [
+        {
+          "name": "best_time_to_buy_and_sell_stock_III",
+          "detail": "best_time_to_buy_and_sell_stock_III(prices: list[int]) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 9, "character": 16}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 39
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/124-binary-tree-maximum-path-sum/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/124-binary-tree-maximum-path-sum/solution.py",
+      "symbols": [
+        {
+          "name": "binary_tree_maximum_path_sum",
+          "detail": "binary_tree_maximum_path_sum(root) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 12, "character": 15}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 32
+            }
+          },
+          "children": [
+            {
+              "name": "dfs",
+              "detail": "dfs(node)",
+              "kind": 12,
+              "range": {"start": {"line": 2, "character": 4}, "end": {"line": 9, "character": 35}},
+              "nameRange": {
+                "start": {
+                  "line": 2,
+                  "character": 8
+                },
+                "end": {
+                  "line": 2,
+                  "character": 11
+                }
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "uri": "problems/127-word-ladder/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/127-word-ladder/solution.py",
+      "symbols": [
+        {
+          "name": "word_ladder",
+          "detail": "word_ladder(beginWord: str, endWord: str, wordList: list[str]) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 32, "character": 12}},
+          "nameRange": {
+            "start": {
+              "line": 2,
+              "character": 4
+            },
+            "end": {
+              "line": 2,
+              "character": 15
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/1293-shortest-path-in-a-grid-with-obstacles-elimination/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/1293-shortest-path-in-a-grid-with-obstacles-elimination/a_star.py",
+      "symbols": [
+        {
+          "name": "manhattan_distance",
+          "detail": "manhattan_distance(a: tuple[int, int], b: tuple[int, int]) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 3, "character": 46}},
+          "nameRange": {
+            "start": {
+              "line": 2,
+              "character": 4
+            },
+            "end": {
+              "line": 2,
+              "character": 22
+            }
+          },
+          "children": []
+        },
+        {
+          "name": "shortest_path_in_a_grid_with_obstacles_elimination",
+          "detail": "shortest_path_in_a_grid_with_obstacles_elimination(grid: list[list[int]], k: int) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 5, "character": 0}, "end": {"line": 35, "character": 13}},
+          "nameRange": {
+            "start": {
+              "line": 5,
+              "character": 4
+            },
+            "end": {
+              "line": 5,
+              "character": 54
+            }
+          },
+          "children": [
+            {
+              "name": "h",
+              "detail": "h(r: int, c: int) -> int",
+              "kind": 12,
+              "range": {"start": {"line": 9, "character": 4}, "end": {"line": 10, "character": 63}},
+              "nameRange": {
+                "start": {
+                  "line": 9,
+                  "character": 8
+                },
+                "end": {
+                  "line": 9,
+                  "character": 9
+                }
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "uri": "problems/1293-shortest-path-in-a-grid-with-obstacles-elimination/bfs.py",
+      "symbols": [
+        {
+          "name": "shortest_path_in_a_grid_with_obstacles_elimination",
+          "detail": "shortest_path_in_a_grid_with_obstacles_elimination(grid: list[list[int]], k: int) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 25, "character": 13}},
+          "nameRange": {
+            "start": {
+              "line": 2,
+              "character": 4
+            },
+            "end": {
+              "line": 2,
+              "character": 54
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/1293-shortest-path-in-a-grid-with-obstacles-elimination/dijkstra.py",
+      "symbols": [
+        {
+          "name": "shortest_path_in_a_grid_with_obstacles_elimination",
+          "detail": "shortest_path_in_a_grid_with_obstacles_elimination(grid: list[list[int]], k: int) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 27, "character": 13}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 54
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/133-clone-graph/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/133-clone-graph/solution.py",
+      "symbols": [
+        {
+          "name": "Node",
+          "detail": "class Node",
+          "kind": 5,
+          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 5, "character": 67}},
+          "nameRange": {
+            "start": {
+              "line": 2,
+              "character": 6
+            },
+            "end": {
+              "line": 2,
+              "character": 10
+            }
+          },
+          "children": [
+            {
+              "name": "__init__",
+              "detail": "__init__(val, neighbors)",
+              "kind": 6,
+              "range": {"start": {"line": 3, "character": 4}, "end": {"line": 5, "character": 67}},
+              "nameRange": {
+                "start": {
+                  "line": 3,
+                  "character": 8
+                },
+                "end": {
+                  "line": 3,
+                  "character": 16
+                }
+              },
+              "children": []
+            }
+          ]
+        },
+        {
+          "name": "clone_graph",
+          "detail": "clone_graph(node: Node | None) -> Node | None",
+          "kind": 12,
+          "range": {"start": {"line": 7, "character": 0}, "end": {"line": 19, "character": 23}},
+          "nameRange": {
+            "start": {
+              "line": 7,
+              "character": 4
+            },
+            "end": {
+              "line": 7,
+              "character": 15
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/1406-stone-game-iii/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/1406-stone-game-iii/solution.py",
+      "symbols": [
+        {
+          "name": "stone_game_III",
+          "detail": "stone_game_III(stoneValue: list[int]) -> str",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 10, "character": 66}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 18
+            }
+          },
+          "children": [
+            {
+              "name": "dp",
+              "detail": "dp(i)",
+              "kind": 12,
+              "range": {"start": {"line": 2, "character": 4}, "end": {"line": 9, "character": 22}},
+              "nameRange": {
+                "start": {
+                  "line": 2,
+                  "character": 8
+                },
+                "end": {
+                  "line": 2,
+                  "character": 10
+                }
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "uri": "problems/146-lru-cache/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/146-lru-cache/solution.py",
+      "symbols": [
+        {
+          "name": "LRUCache",
+          "detail": "class LRUCache",
+          "kind": 5,
+          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 18, "character": 42}},
+          "nameRange": {
+            "start": {
+              "line": 2,
+              "character": 6
+            },
+            "end": {
+              "line": 2,
+              "character": 14
+            }
+          },
+          "children": [
+            {
+              "name": "__init__",
+              "detail": "__init__(capacity: int)",
+              "kind": 6,
+              "range": {"start": {"line": 3, "character": 4}, "end": {"line": 5, "character": 32}},
+              "nameRange": {
+                "start": {
+                  "line": 3,
+                  "character": 8
+                },
+                "end": {
+                  "line": 3,
+                  "character": 16
+                }
+              },
+              "children": []
+            },
+            {
+              "name": "get",
+              "detail": "get(key: int) -> int",
+              "kind": 6,
+              "range": {"start": {"line": 7, "character": 4}, "end": {"line": 11, "character": 18}},
+              "nameRange": {
+                "start": {
+                  "line": 7,
+                  "character": 8
+                },
+                "end": {
+                  "line": 7,
+                  "character": 11
+                }
+              },
+              "children": []
+            },
+            {
+              "name": "put",
+              "detail": "put(key: int, value: int) -> None",
+              "kind": 6,
+              "range": {"start": {"line": 13, "character": 4}, "end": {"line": 18, "character": 42}},
+              "nameRange": {
+                "start": {
+                  "line": 13,
+                  "character": 8
+                },
+                "end": {
+                  "line": 13,
+                  "character": 11
+                }
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "uri": "problems/1510-stone-game-iv/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/1510-stone-game-iv/solution.py",
+      "symbols": [
+        {
+          "name": "stone_game_IV",
+          "detail": "stone_game_IV(n: int) -> bool",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 9, "character": 16}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 17
+            }
+          },
+          "children": [
+            {
+              "name": "dp",
+              "detail": "dp(n)",
+              "kind": 12,
+              "range": {"start": {"line": 4, "character": 4}, "end": {"line": 7, "character": 22}},
+              "nameRange": {
+                "start": {
+                  "line": 4,
+                  "character": 8
+                },
+                "end": {
+                  "line": 4,
+                  "character": 10
+                }
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "uri": "problems/1514-path-with-maximum-probability/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/1514-path-with-maximum-probability/solution.py",
+      "symbols": [
+        {
+          "name": "path_with_maximum_probability",
+          "detail": "path_with_maximum_probability(n: int, edges: list[list[int]], succProb: list[float], start: int, end: int) -> float",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 16, "character": 20}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 33
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/152-maximum-product-subarray/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/152-maximum-product-subarray/solution.py",
+      "symbols": [
+        {
+          "name": "maximum_product_subarray",
+          "detail": "maximum_product_subarray(nums: list[int]) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 9, "character": 19}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 28
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/153-find-minimum-in-rotated-sorted-array/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/153-find-minimum-in-rotated-sorted-array/solution.py",
+      "symbols": [
+        {
+          "name": "find_minimum_in_rotated_sorted_array",
+          "detail": "find_minimum_in_rotated_sorted_array(nums: list[int]) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 9, "character": 18}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 40
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/1590-make-sum-divisible-by-p/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/1590-make-sum-divisible-by-p/solution.py",
+      "symbols": [
+        {
+          "name": "minSubarrayToMakeSumDivisibleByP",
+          "detail": "minSubarrayToMakeSumDivisibleByP(segments: list[int], p: int) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 16, "character": 59}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 36
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/1631-path-with-minimum-effort/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/1631-path-with-minimum-effort/solution.py",
+      "symbols": [
+        {
+          "name": "path_with_minimum_effort",
+          "detail": "path_with_minimum_effort(heights: list[list[int]]) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 16, "character": 61}},
+          "nameRange": {
+            "start": {
+              "line": 2,
+              "character": 4
+            },
+            "end": {
+              "line": 2,
+              "character": 28
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/188-best-time-to-buy-and-sell-stock-iv/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/188-best-time-to-buy-and-sell-stock-iv/dp.py",
+      "symbols": [
+        {
+          "name": "best_time_to_buy_and_sell_stock_IV",
+          "detail": "best_time_to_buy_and_sell_stock_IV(k: int, prices: list[int]) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 8, "character": 20}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 38
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/188-best-time-to-buy-and-sell-stock-iv/states.py",
+      "symbols": [
+        {
+          "name": "best_time_to_buy_and_sell_stock_IV",
+          "detail": "best_time_to_buy_and_sell_stock_IV(k: int, prices: list[int]) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 7, "character": 18}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 38
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/200-number-of-islands/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/200-number-of-islands/solution.py",
+      "symbols": [
+        {
+          "name": "number_of_islands",
+          "detail": "number_of_islands(grid: list[list[str]]) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 22, "character": 18}},
+          "nameRange": {
+            "start": {
+              "line": 2,
+              "character": 4
+            },
+            "end": {
+              "line": 2,
+              "character": 21
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/208-implement-trie-prefix-tree/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/208-implement-trie-prefix-tree/solution.py",
+      "symbols": [
+        {
+          "name": "TrieNode",
+          "detail": "class TrieNode",
+          "kind": 5,
+          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 9, "character": 24}},
+          "nameRange": {
+            "start": {
+              "line": 2,
+              "character": 6
+            },
+            "end": {
+              "line": 2,
+              "character": 14
+            }
+          },
+          "children": [
+            {
+              "name": "__init__",
+              "detail": "__init__()",
+              "kind": 6,
+              "range": {"start": {"line": 6, "character": 4}, "end": {"line": 9, "character": 24}},
+              "nameRange": {
+                "start": {
+                  "line": 6,
+                  "character": 8
+                },
+                "end": {
+                  "line": 6,
+                  "character": 16
+                }
+              },
+              "children": []
+            }
+          ]
+        },
+        {
+          "name": "Trie",
+          "detail": "class Trie",
+          "kind": 5,
+          "range": {"start": {"line": 11, "character": 0}, "end": {"line": 36, "character": 19}},
+          "nameRange": {
+            "start": {
+              "line": 11,
+              "character": 6
+            },
+            "end": {
+              "line": 11,
+              "character": 10
+            }
+          },
+          "children": [
+            {
+              "name": "__init__",
+              "detail": "__init__()",
+              "kind": 6,
+              "range": {"start": {"line": 13, "character": 4}, "end": {"line": 15, "character": 30}},
+              "nameRange": {
+                "start": {
+                  "line": 13,
+                  "character": 8
+                },
+                "end": {
+                  "line": 13,
+                  "character": 16
+                }
+              },
+              "children": []
+            },
+            {
+              "name": "insert",
+              "detail": "insert(word: str) -> None",
+              "kind": 6,
+              "range": {"start": {"line": 17, "character": 4}, "end": {"line": 22, "character": 23}},
+              "nameRange": {
+                "start": {
+                  "line": 17,
+                  "character": 8
+                },
+                "end": {
+                  "line": 17,
+                  "character": 14
+                }
+              },
+              "children": []
+            },
+            {
+              "name": "search",
+              "detail": "search(word: str) -> bool",
+              "kind": 6,
+              "range": {"start": {"line": 24, "character": 4}, "end": {"line": 29, "character": 23}},
+              "nameRange": {
+                "start": {
+                  "line": 24,
+                  "character": 8
+                },
+                "end": {
+                  "line": 24,
+                  "character": 14
+                }
+              },
+              "children": []
+            },
+            {
+              "name": "starts_with",
+              "detail": "starts_with(prefix: str) -> bool",
+              "kind": 6,
+              "range": {"start": {"line": 31, "character": 4}, "end": {"line": 36, "character": 19}},
+              "nameRange": {
+                "start": {
+                  "line": 31,
+                  "character": 8
+                },
+                "end": {
+                  "line": 31,
+                  "character": 19
+                }
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "uri": "problems/211-design-add-and-search-words-data-structure/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/211-design-add-and-search-words-data-structure/solution.py",
+      "symbols": [
+        {
+          "name": "WordDictionary",
+          "detail": "class WordDictionary",
+          "kind": 5,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 29, "character": 32}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 6
+            },
+            "end": {
+              "line": 0,
+              "character": 20
+            }
+          },
+          "children": [
+            {
+              "name": "__init__",
+              "detail": "__init__()",
+              "kind": 6,
+              "range": {"start": {"line": 2, "character": 4}, "end": {"line": 4, "character": 29}},
+              "nameRange": {
+                "start": {
+                  "line": 2,
+                  "character": 8
+                },
+                "end": {
+                  "line": 2,
+                  "character": 16
+                }
+              },
+              "children": []
+            },
+            {
+              "name": "add_word",
+              "detail": "add_word(word: str) -> None",
+              "kind": 6,
+              "range": {"start": {"line": 6, "character": 4}, "end": {"line": 10, "character": 36}},
+              "nameRange": {
+                "start": {
+                  "line": 6,
+                  "character": 8
+                },
+                "end": {
+                  "line": 6,
+                  "character": 16
+                }
+              },
+              "children": []
+            },
+            {
+              "name": "search",
+              "detail": "search(word: str) -> bool",
+              "kind": 6,
+              "range": {"start": {"line": 12, "character": 4}, "end": {"line": 29, "character": 32}},
+              "nameRange": {
+                "start": {
+                  "line": 12,
+                  "character": 8
+                },
+                "end": {
+                  "line": 12,
+                  "character": 14
+                }
+              },
+              "children": [
+                {
+                  "name": "dfs",
+                  "detail": "dfs(node: dict, i: int) -> bool",
+                  "kind": 12,
+                  "range": {"start": {"line": 14, "character": 8}, "end": {"line": 27, "character": 52}},
+                  "nameRange": {
+                    "start": {
+                      "line": 14,
+                      "character": 12
+                    },
+                    "end": {
+                      "line": 14,
+                      "character": 15
+                    }
+                  },
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "uri": "problems/212-word-search-ii/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/212-word-search-ii/solution.py",
+      "symbols": [
+        {
+          "name": "word_search_II",
+          "detail": "word_search_II(board: list[list[str]], words: list[str]) -> list[str]",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 24, "character": 14}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 18
+            }
+          },
+          "children": [
+            {
+              "name": "dfs",
+              "detail": "dfs(i, j, parent)",
+              "kind": 12,
+              "range": {"start": {"line": 8, "character": 4}, "end": {"line": 19, "character": 25}},
+              "nameRange": {
+                "start": {
+                  "line": 8,
+                  "character": 8
+                },
+                "end": {
+                  "line": 8,
+                  "character": 11
+                }
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "uri": "problems/2140-solving-questions-with-brainpower/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/2140-solving-questions-with-brainpower/solution.py",
+      "symbols": [
+        {
+          "name": "most_points_solving_questions_with_brainpower",
+          "detail": "most_points_solving_questions_with_brainpower(questions: list[list[int]]) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 12, "character": 16}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 49
+            }
+          },
+          "children": [
+            {
+              "name": "dp",
+              "detail": "dp(i)",
+              "kind": 12,
+              "range": {"start": {"line": 4, "character": 4}, "end": {"line": 10, "character": 22}},
+              "nameRange": {
+                "start": {
+                  "line": 4,
+                  "character": 8
+                },
+                "end": {
+                  "line": 4,
+                  "character": 10
+                }
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "uri": "problems/2145-count-the-hidden-sequences/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/2145-count-the-hidden-sequences/solution.py",
+      "symbols": [
+        {
+          "name": "numberOfArrays",
+          "detail": "numberOfArrays(differences: list[int], lower: int, upper: int) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 9, "character": 66}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 18
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/3-longest-substring-without-repeating-characters/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/3-longest-substring-without-repeating-characters/solution.py",
+      "symbols": [
+        {
+          "name": "longest_substring_without_repeating_characters",
+          "detail": "longest_substring_without_repeating_characters(s: str) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 7, "character": 21}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 50
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/325-maximum-size-subarray-sum-equals-k/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/325-maximum-size-subarray-sum-equals-k/solution.py",
+      "symbols": [
+        {
+          "name": "maxSizeSubarraySumEqualsK",
+          "detail": "maxSizeSubarraySumEqualsK(segments: list[int], k: int) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 15, "character": 21}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 29
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/34-find-first-and-last-position-of-element-in-sorted-array/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/34-find-first-and-last-position-of-element-in-sorted-array/solution.py",
+      "symbols": [
+        {
+          "name": "find_first_and_last_position_of_element_in_sorted_array",
+          "detail": "find_first_and_last_position_of_element_in_sorted_array(nums: list[int], target: int) -> list[int]",
+          "kind": 12,
+          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 7, "character": 17}},
+          "nameRange": {
+            "start": {
+              "line": 2,
+              "character": 4
+            },
+            "end": {
+              "line": 2,
+              "character": 59
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/35-search-insert-position/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/35-search-insert-position/solution.py",
+      "symbols": [
+        {
+          "name": "search_insert_position",
+          "detail": "search_insert_position(nums: list[int], target: int) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 3, "character": 36}},
+          "nameRange": {
+            "start": {
+              "line": 2,
+              "character": 4
+            },
+            "end": {
+              "line": 2,
+              "character": 26
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/36-valid-sudoku/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/36-valid-sudoku/solution.py",
+      "symbols": [
+        {
+          "name": "is_valid_sudoku",
+          "detail": "is_valid_sudoku(board: list[list[str]]) -> bool",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 20, "character": 15}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 19
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/363-max-sum-of-rectangle-no-larger-than-k/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/363-max-sum-of-rectangle-no-larger-than-k/solution.py",
+      "symbols": [
+        {
+          "name": "max_sum_of_rectangle_no_larger_than_k",
+          "detail": "max_sum_of_rectangle_no_larger_than_k(mat: list[list[int]], k: int) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 55, "character": 14}},
+          "nameRange": {
+            "start": {
+              "line": 2,
+              "character": 4
+            },
+            "end": {
+              "line": 2,
+              "character": 41
+            }
+          },
+          "children": [
+            {
+              "name": "kadane_leq",
+              "detail": "kadane_leq(arr: list[int], K: int) -> int | None",
+              "kind": 12,
+              "range": {"start": {"line": 10, "character": 4}, "end": {"line": 17, "character": 42}},
+              "nameRange": {
+                "start": {
+                  "line": 10,
+                  "character": 8
+                },
+                "end": {
+                  "line": 10,
+                  "character": 18
+                }
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "uri": "problems/37-sudoku-solver/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/37-sudoku-solver/solution.py",
+      "symbols": [
+        {
+          "name": "solve_sudoku",
+          "detail": "solve_sudoku(board: list[list[str]]) -> None",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 27, "character": 9}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 16
+            }
+          },
+          "children": [
+            {
+              "name": "dfs",
+              "detail": "dfs() -> bool",
+              "kind": 12,
+              "range": {"start": {"line": 12, "character": 4}, "end": {"line": 25, "character": 20}},
+              "nameRange": {
+                "start": {
+                  "line": 12,
+                  "character": 8
+                },
+                "end": {
+                  "line": 12,
+                  "character": 11
+                }
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "uri": "problems/370-range-addition/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/370-range-addition/solution.py",
+      "symbols": [
+        {
+          "name": "getModifiedArray",
+          "detail": "getModifiedArray(length: int, updates: list[list[int]]) -> list[int]",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 9, "character": 71}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 20
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/39-combination-sum/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/39-combination-sum/solution.py",
+      "symbols": [
+        {
+          "name": "combination_sum",
+          "detail": "combination_sum(candidates: list[int], target: int) -> list[list[int]]",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 17, "character": 14}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 19
+            }
+          },
+          "children": [
+            {
+              "name": "dfs",
+              "detail": "dfs(i: int, rem: int) -> None",
+              "kind": 12,
+              "range": {"start": {"line": 5, "character": 4}, "end": {"line": 14, "character": 22}},
+              "nameRange": {
+                "start": {
+                  "line": 5,
+                  "character": 8
+                },
+                "end": {
+                  "line": 5,
+                  "character": 11
+                }
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "uri": "problems/394-decode-string/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/394-decode-string/solution.py",
+      "symbols": [
+        {
+          "name": "decode_string",
+          "detail": "decode_string(s: str) -> str",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 14, "character": 19}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 17
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/416-partition-equal-subset-sum/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/416-partition-equal-subset-sum/solution.py",
+      "symbols": [
+        {
+          "name": "can_partition_into_2_equal_subsets",
+          "detail": "can_partition_into_2_equal_subsets(nums: list[int]) -> bool",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 14, "character": 68}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 38
+            }
+          },
+          "children": [
+            {
+              "name": "dp",
+              "detail": "dp(i, s)",
+              "kind": 12,
+              "range": {"start": {"line": 3, "character": 4}, "end": {"line": 12, "character": 27}},
+              "nameRange": {
+                "start": {
+                  "line": 3,
+                  "character": 8
+                },
+                "end": {
+                  "line": 3,
+                  "character": 10
+                }
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "uri": "problems/46-permutations/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/46-permutations/solution.py",
+      "symbols": [
+        {
+          "name": "permutations",
+          "detail": "permutations(nums: list[int]) -> list[list[int]]",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 15, "character": 17}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 16
+            }
+          },
+          "children": [
+            {
+              "name": "dfs",
+              "detail": "dfs(i)",
+              "kind": 12,
+              "range": {"start": {"line": 4, "character": 4}, "end": {"line": 12, "character": 51}},
+              "nameRange": {
+                "start": {
+                  "line": 4,
+                  "character": 8
+                },
+                "end": {
+                  "line": 4,
+                  "character": 11
+                }
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "uri": "problems/460-lfu-cache/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/460-lfu-cache/solution.py",
+      "symbols": [
+        {
+          "name": "LFUCache",
+          "detail": "class LFUCache",
+          "kind": 5,
+          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 48, "character": 24}},
+          "nameRange": {
+            "start": {
+              "line": 2,
+              "character": 6
+            },
+            "end": {
+              "line": 2,
+              "character": 14
+            }
+          },
+          "children": [
+            {
+              "name": "__init__",
+              "detail": "__init__(capacity: int)",
+              "kind": 6,
+              "range": {"start": {"line": 3, "character": 4}, "end": {"line": 8, "character": 28}},
+              "nameRange": {
+                "start": {
+                  "line": 3,
+                  "character": 8
+                },
+                "end": {
+                  "line": 3,
+                  "character": 16
+                }
+              },
+              "children": []
+            },
+            {
+              "name": "_bump",
+              "detail": "_bump(key: int)",
+              "kind": 6,
+              "range": {"start": {"line": 10, "character": 4}, "end": {"line": 21, "character": 39}},
+              "nameRange": {
+                "start": {
+                  "line": 10,
+                  "character": 8
+                },
+                "end": {
+                  "line": 10,
+                  "character": 13
+                }
+              },
+              "children": []
+            },
+            {
+              "name": "get",
+              "detail": "get(key: int) -> int",
+              "kind": 6,
+              "range": {"start": {"line": 23, "character": 4}, "end": {"line": 27, "character": 30}},
+              "nameRange": {
+                "start": {
+                  "line": 23,
+                  "character": 8
+                },
+                "end": {
+                  "line": 23,
+                  "character": 11
+                }
+              },
+              "children": []
+            },
+            {
+              "name": "put",
+              "detail": "put(key: int, value: int) -> None",
+              "kind": 6,
+              "range": {"start": {"line": 29, "character": 4}, "end": {"line": 48, "character": 24}},
+              "nameRange": {
+                "start": {
+                  "line": 29,
+                  "character": 8
+                },
+                "end": {
+                  "line": 29,
+                  "character": 11
+                }
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "uri": "problems/51-n-queens/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/51-n-queens/solution.py",
+      "symbols": [
+        {
+          "name": "n_queens",
+          "detail": "n_queens(n: int) -> list[list[str]]",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 29, "character": 17}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 12
+            }
+          },
+          "children": [
+            {
+              "name": "dfs",
+              "detail": "dfs(row: int)",
+              "kind": 12,
+              "range": {"start": {"line": 6, "character": 4}, "end": {"line": 26, "character": 35}},
+              "nameRange": {
+                "start": {
+                  "line": 6,
+                  "character": 8
+                },
+                "end": {
+                  "line": 6,
+                  "character": 11
+                }
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "uri": "problems/518-coin-change-ii/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/518-coin-change-ii/solution.py",
+      "symbols": [
+        {
+          "name": "coin_change_II",
+          "detail": "coin_change_II(amount: int, coins: list[int]) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 12, "character": 24}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 18
+            }
+          },
+          "children": [
+            {
+              "name": "dp",
+              "detail": "dp(c, amount)",
+              "kind": 12,
+              "range": {"start": {"line": 3, "character": 4}, "end": {"line": 10, "character": 30}},
+              "nameRange": {
+                "start": {
+                  "line": 3,
+                  "character": 8
+                },
+                "end": {
+                  "line": 3,
+                  "character": 10
+                }
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "uri": "problems/523-continuous-subarray-sum/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/523-continuous-subarray-sum/solution.py",
+      "symbols": [
+        {
+          "name": "checkSubarraySumIsMultipleOfK",
+          "detail": "checkSubarraySumIsMultipleOfK(segments: list[int], k: int) -> bool",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 12, "character": 16}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 33
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/525-contiguous-array/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/525-contiguous-array/solution.py",
+      "symbols": [
+        {
+          "name": "findMaxLengthOfBalancedSubarray",
+          "detail": "findMaxLengthOfBalancedSubarray(segments: list[int]) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 4, "character": 0}, "end": {"line": 7, "character": 60}},
+          "nameRange": {
+            "start": {
+              "line": 4,
+              "character": 4
+            },
+            "end": {
+              "line": 4,
+              "character": 35
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/53-maximum-subarray/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/53-maximum-subarray/solution.py",
+      "symbols": [
+        {
+          "name": "maximum_subarray",
+          "detail": "maximum_subarray(nums: list[int]) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 5, "character": 18}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 20
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/542-01-matrix/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/542-01-matrix/solution.py",
+      "symbols": [
+        {
+          "name": "zero_one_matrix",
+          "detail": "zero_one_matrix(mat: list[list[int]]) -> list[list[int]]",
+          "kind": 12,
+          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 20, "character": 15}},
+          "nameRange": {
+            "start": {
+              "line": 2,
+              "character": 4
+            },
+            "end": {
+              "line": 2,
+              "character": 19
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/560-subarray-sum-equals-k/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/560-subarray-sum-equals-k/solution.py",
+      "symbols": [
+        {
+          "name": "subarraySumEqualsK",
+          "detail": "subarraySumEqualsK(segments: list[int], k: int) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 12, "character": 16}},
+          "nameRange": {
+            "start": {
+              "line": 2,
+              "character": 4
+            },
+            "end": {
+              "line": 2,
+              "character": 22
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/648-replace-words/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/648-replace-words/solution.py",
+      "symbols": [
+        {
+          "name": "replace_words",
+          "detail": "replace_words(dictionary: list[str], sentence: str) -> str",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 21, "character": 62}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 17
+            }
+          },
+          "children": [
+            {
+              "name": "search",
+              "detail": "search(word: str) -> str",
+              "kind": 12,
+              "range": {"start": {"line": 11, "character": 4}, "end": {"line": 19, "character": 19}},
+              "nameRange": {
+                "start": {
+                  "line": 11,
+                  "character": 8
+                },
+                "end": {
+                  "line": 11,
+                  "character": 14
+                }
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "uri": "problems/713-subarray-product-less-than-k/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/713-subarray-product-less-than-k/solution.py",
+      "symbols": [
+        {
+          "name": "num_subarray_product_less_than_k",
+          "detail": "num_subarray_product_less_than_k(nums: list[int], k: int) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 10, "character": 16}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 36
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/743-network-delay-time/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/743-network-delay-time/solution.py",
+      "symbols": [
+        {
+          "name": "network_delay_time",
+          "detail": "network_delay_time(times: list[list[int]], n: int, k: int) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 3, "character": 0}, "end": {"line": 18, "character": 46}},
+          "nameRange": {
+            "start": {
+              "line": 3,
+              "character": 4
+            },
+            "end": {
+              "line": 3,
+              "character": 22
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/778-swim-in-rising-water/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/778-swim-in-rising-water/solution.py",
+      "symbols": [
+        {
+          "name": "swim_in_rising_water",
+          "detail": "swim_in_rising_water(grid: list[list[int]]) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 16, "character": 61}},
+          "nameRange": {
+            "start": {
+              "line": 2,
+              "character": 4
+            },
+            "end": {
+              "line": 2,
+              "character": 24
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/787-cheapest-flights-within-k-stops/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/787-cheapest-flights-within-k-stops/bellman_ford.py",
+      "symbols": [
+        {
+          "name": "cheapest_flights_with_at_most_k_stops",
+          "detail": "cheapest_flights_with_at_most_k_stops(n: int, flights: list[list[int]], src: int, dst: int, k: int) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 13, "character": 50}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 41
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/787-cheapest-flights-within-k-stops/dijkstra.py",
+      "symbols": [
+        {
+          "name": "cheapest_flights_with_at_most_k_stops",
+          "detail": "cheapest_flights_with_at_most_k_stops(flights: list[list[int]], src: int, dst: int, k: int) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 3, "character": 0}, "end": {"line": 24, "character": 13}},
+          "nameRange": {
+            "start": {
+              "line": 3,
+              "character": 4
+            },
+            "end": {
+              "line": 3,
+              "character": 41
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/79-word-search/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/79-word-search/solution.py",
+      "symbols": [
+        {
+          "name": "word_search",
+          "detail": "word_search(board: list[list[str]], word: str) -> bool",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 19, "character": 5}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 15
+            }
+          },
+          "children": [
+            {
+              "name": "dfs",
+              "detail": "dfs(r: int, c: int, i: int) -> bool",
+              "kind": 12,
+              "range": {"start": {"line": 2, "character": 4}, "end": {"line": 13, "character": 20}},
+              "nameRange": {
+                "start": {
+                  "line": 2,
+                  "character": 8
+                },
+                "end": {
+                  "line": 2,
+                  "character": 11
+                }
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "uri": "problems/875-koko-eating-bananas/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/875-koko-eating-bananas/solution.py",
+      "symbols": [
+        {
+          "name": "koko_eating_bananas",
+          "detail": "koko_eating_bananas(piles: list[int], h: int) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 13, "character": 12}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 23
+            }
+          },
+          "children": [
+            {
+              "name": "hours",
+              "detail": "hours(k: int) -> int",
+              "kind": 12,
+              "range": {"start": {"line": 2, "character": 4}, "end": {"line": 3, "character": 51}},
+              "nameRange": {
+                "start": {
+                  "line": 2,
+                  "character": 8
+                },
+                "end": {
+                  "line": 2,
+                  "character": 13
+                }
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "uri": "problems/909-snakes-and-ladders/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/909-snakes-and-ladders/solution.py",
+      "symbols": [
+        {
+          "name": "snakes_and_ladders",
+          "detail": "snakes_and_ladders(board: list[list[int]]) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 23, "character": 13}},
+          "nameRange": {
+            "start": {
+              "line": 2,
+              "character": 4
+            },
+            "end": {
+              "line": 2,
+              "character": 22
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/918-maximum-sum-of-circular-subarray/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/918-maximum-sum-of-circular-subarray/solution.py",
+      "symbols": [
+        {
+          "name": "maximum_sum_of_circular_subarray",
+          "detail": "maximum_sum_of_circular_subarray(nums: list[int]) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 9, "character": 68}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 36
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/974-subarray-sums-divisible-by-k/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/974-subarray-sums-divisible-by-k/solution.py",
+      "symbols": [
+        {
+          "name": "subarraysSumIsDivisibleByK",
+          "detail": "subarraysSumIsDivisibleByK(segments: list[int], k: int) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 10, "character": 16}},
+          "nameRange": {
+            "start": {
+              "line": 2,
+              "character": 4
+            },
+            "end": {
+              "line": 2,
+              "character": 30
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/994-rotting-oranges/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/994-rotting-oranges/solution.py",
+      "symbols": [
+        {
+          "name": "rotting_oranges",
+          "detail": "rotting_oranges(grid: list[list[int]]) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 28, "character": 40}},
+          "nameRange": {
+            "start": {
+              "line": 2,
+              "character": 4
+            },
+            "end": {
+              "line": 2,
+              "character": 19
+            }
+          },
+          "children": []
+        }
+      ]
+    }
+  ]
+}

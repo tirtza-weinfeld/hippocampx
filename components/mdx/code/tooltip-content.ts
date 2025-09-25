@@ -1,13 +1,13 @@
-import type { SymbolMetadata } from '@/lib/types';
 import { cache } from 'react';
-import codeMetadata from '@/lib/extracted-metadata/code_metadata.json';
-import testMetadata from '@/lib/extracted-metadata/test_tooltips_metadata.json';
+import symbolTags from '@/lib/extracted-metadata/symbol_tags.json';
+import type { SymbolTagsData } from './transformers/types';
 
-export const getTooltipContent = cache(async () => {
-    // Use test metadata if we're in a test environment
-    const metadata = process.env.NODE_ENV === 'test' 
-        ? testMetadata
-        : codeMetadata;
-    
-    return metadata as unknown as Record<string, SymbolMetadata>;
+/**
+ * Cached function that loads and returns symbol metadata for tooltip content.
+ * Uses React.cache() for automatic memoization across server-side renders.
+ * 
+ * @returns Promise resolving to symbol metadata indexed by qualified name
+ */
+export const getTooltipContent = cache(async (): Promise<SymbolTagsData> => {
+    return symbolTags as SymbolTagsData;
 });

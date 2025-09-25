@@ -1,6 +1,6 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { motion } from 'motion/react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Calculator, FunctionSquare, ArrowRight } from 'lucide-react'

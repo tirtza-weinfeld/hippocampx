@@ -1,10 +1,9 @@
 "use client"
 
-import { motion } from "framer-motion"
+import { motion } from "motion/react"
 import type { ReactNode } from "react"
-import { useContext, useState } from "react"
+import { useState } from "react"
 import { cn } from "@/lib/utils"
-import { ListContext } from './list-context'
 
 interface TaskItemProps {
   children: ReactNode
@@ -13,6 +12,7 @@ interface TaskItemProps {
   disabled?: boolean
   onChange?: (checked: boolean) => void
   onClick?: () => void
+  isOrdered?: boolean
 }
 
 // Animation variants for task items
@@ -23,23 +23,22 @@ const taskItemVariants = {
     x: 0,
     scale: 1,
     transition: {
-      type: "spring",
+      type: "spring" as const,
       stiffness: 300,
       damping: 25,
     },
   },
 }
 
-export const TaskItem = ({ 
-  children, 
-  className = "", 
-  checked = false, 
+export const TaskItem = ({
+  children,
+  className = "",
+  checked = false,
   disabled = false,
   onChange,
-  ...props 
+  isOrdered = false,
+  ...props
 }: TaskItemProps) => {
-  const { type: listType } = useContext(ListContext)
-  const isInOrderedList = listType === 'ordered'
   
   // Local state for checkbox if no onChange provided
   const [localChecked, setLocalChecked] = useState(checked)
@@ -99,7 +98,7 @@ export const TaskItem = ({
         className={cn(
           "flex items-center justify-center flex-shrink-0 mt-0.5 cursor-pointer",
           disabled && "cursor-not-allowed",
-          isInOrderedList ? "w-7 h-7" : "w-6 h-6" // Slightly larger for ordered lists
+          isOrdered ? "w-7 h-7" : "w-6 h-6" // Slightly larger for ordered lists
         )}
       >
         <input
@@ -124,7 +123,7 @@ export const TaskItem = ({
           transition={{ duration: 0.2 }}
           className={cn(
             "relative flex items-center justify-center border-2 shadow-sm",
-            isInOrderedList 
+            isOrdered
               ? "w-7 h-7 rounded-lg" // Rounded square for ordered lists
               : "w-6 h-6 rounded-md", // Smaller rounded square for unordered lists
             disabled && "opacity-50"

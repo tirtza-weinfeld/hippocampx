@@ -1,0 +1,55 @@
+# Network Delay Time
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="medium" />
+
+<PillList pills={["dijkstra"]} />
+
+[743. Network Delay Time](https://leetcode.com/problems/network-delay-time)
+
+## [!ProblemDefinition] Definition
+
+Given `n` nodes labeled `1` through `n` and directed travel times between them, find the minimum time for a signal starting at node `k` to reach *all* nodes. If impossible, return -1
+
+## [!ProblemTimeComplexity] Time Complexity
+
+- O(E log V):
+    - E is the number of edges (the length of the input list `times`)
+    - V is the number of vertices (the number of nodes `n`)
+
+- By substituting these into the standard Dijkstra complexity formula, O(E log V), you get O(len(times) log n).
+
+## [!ProblemArguments] Key Arguments
+
+- `times: list[list[int]]`: list of lists of integers representing the edges and their weights
+- `k: int`: starting node
+
+## [!ProblemReturns] Returns
+
+`int`: minimum time for a signal starting at node `k` to reach *all* nodes or -1 if impossible
+
+## [!ProblemCodeSnippet] Code Snippet
+
+```python meta="source=problems/743-network-delay-time/solution.py"
+from collections import defaultdict
+import heapq
+
+def network_delay_time(times: list[list[int]], n: int, k: int) -> int:
+
+    adj = defaultdict(list)
+    for u, v, w in times:
+        adj[u].append((v, w))
+    pq, finalized, time = [(0, k)], set(), 0
+    while pq:
+        t, node = heapq.heappop(pq)
+        if node in finalized:
+            continue
+        finalized.add(node)
+        time = t
+        for neighbor, travel_time in adj[node]:
+            if neighbor not in finalized:
+                heapq.heappush(pq, (time + travel_time, neighbor))
+    return time if len(finalized) == n else -1
+```
+

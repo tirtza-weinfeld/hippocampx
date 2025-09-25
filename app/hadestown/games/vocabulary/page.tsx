@@ -19,7 +19,7 @@ import {
   RefreshCwIcon,
   StarIcon,
 } from "lucide-react"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion, AnimatePresence } from "motion/react"
 
 // Vocabulary Quiz Data
 const VOCABULARY_ITEMS = [

@@ -6,7 +6,7 @@ import { useState, useRef, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { MusicIcon, ArrowLeftIcon, ArrowRightIcon } from "lucide-react"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion, AnimatePresence } from "motion/react"
 import { AnimatedTabs, AnimatedTabsList, AnimatedTab, AnimatedTabsContent } from "@/components/hadestown/animated-tabs"
 
 // Sample song data with vocabulary words and sample lyrics (for educational purposes)

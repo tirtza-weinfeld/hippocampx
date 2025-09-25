@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft, ArrowRight } from "lucide-react"
-import { motion } from "framer-motion"
+import { motion } from "motion/react"
 
 // Define the story pages
 const STORY_PAGES = [

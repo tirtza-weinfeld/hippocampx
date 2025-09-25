@@ -1,10 +1,10 @@
 "use client"
 
-import { motion } from "framer-motion"
+import { motion } from "motion/react"
 import Link from "next/link"
 import { ArrowRight, ActivityIcon as Function, Activity, TrendingUp, ArrowDownUp, Layers, Sigma } from "lucide-react"
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { useReducedMotion } from "framer-motion"
+import { useReducedMotion } from "motion/react"
 
 export function LearningPathways() {
   const shouldReduceMotion = useReducedMotion()
@@ -78,7 +78,7 @@ export function LearningPathways() {
       y: 0,
       transition: {
         duration: shouldReduceMotion ? 0.1 : 0.5,
-        ease: "easeOut",
+        ease: "easeOut" as const,
       },
     },
   }

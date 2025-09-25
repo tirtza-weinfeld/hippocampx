@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { Maximize2, Minimize2 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
 import CopyCode from './copy-code';
 
@@ -43,7 +43,7 @@ export function CodeBlockClient({
   };
 
   return (
-    <div className="shadow-2xl rounded-md dark:bg-gray-800 bg-gray-100 p-4 my-4">
+    <div className="shadow-2xl rounded-md dark:bg-gray-800 bg-gray-100 p-4 my-4 ">
       <div className="relative">
         <CopyCode className="absolute top-0 right-0 z-20" code={code} />
         
@@ -134,7 +134,7 @@ export function CodeBlockClient({
             duration: 0.6,
             ease: [0.32, 0.72, 0, 1] // Smooth easing curve
           }}
-          className="overflow-x-auto py-8 line-numbers"
+          className="overflow-x-auto py-8 line-numbers relative"
           style={{
             overflowX: "auto",
             overflowY: shouldShowToggle && !isExpanded ? "auto" : "visible",

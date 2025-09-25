@@ -1,0 +1,43 @@
+# Coin Change II
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="medium" />
+
+<PillList pills={["dynamic_programming", "knapsack"]} />
+
+[518. Coin Change II](https://leetcode.com/problems/coin-change-ii)
+
+## [!ProblemDefinition] Definition
+
+Given an array of coin denominations and a total amount, return the number of combinations of coins that make up that amount. You can assume an infinite number of each coin.
+
+## [!ProblemIntuition] Intuition
+
+- Paradigm: This is a classic **Unbounded Knapsack** counting problem.
+
+- Insight: To count *combinations* without overcounting *permutations* (`1+2` vs `2+1`), the DP imposes a strict processing order on the coins. This ensures that combinations are always built in the same sequence (e.g., using smaller denomination coins before larger ones), elegantly eliminating duplicates.
+
+## [!ProblemTimeComplexity] Time Complexity
+
+- O(n * amount):
+    - where n is the number of coins and amount is the target amount.
+
+## [!ProblemCodeSnippet] Code Snippet
+
+```python meta="source=problems/518-coin-change-ii/solution.py"
+def coin_change_II(amount: int, coins: list[int]) -> int:
+    memo, n = {}, len(coins)
+
+    def dp(c, amount):
+        if amount == 0:
+            return 1
+        if amount < 0 or c == n:
+            return 0
+        if (c, amount) not in memo:
+            memo[c, amount] = dp(c, amount - coins[c]) + dp(c + 1, amount)
+        return memo[c, amount]
+
+    return dp(0, amount)
+```
+

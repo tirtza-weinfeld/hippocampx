@@ -1,0 +1,80 @@
+# Cheapest Flights Within K Stops
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="medium" />
+
+<PillList pills={["dijkstra", "bfs"]} />
+
+[787. Cheapest Flights Within K Stops](https://leetcode.com/problems/cheapest-flights-within-k-stops)
+
+## [!ProblemDefinition] Definition
+
+Given a list of flights where flights[i] = [from, to, price] represents a flight from city from to city to with a price price, and a starting city src and a destination city dst, your task is to find the cheapest price from src to dst with up to k stops. If there is no such route, return -1.
+
+## Dijkstra Solution
+
+### [!ProblemKeyVariables] Key Variables
+
+- `pq`: Priority queue to store the state (cost, city, stops_taken)
+- `min_stops`: Tracks the minimum stops to reach each city
+
+### [!ProblemCodeSnippet] Code Snippet
+
+```python meta="source=problems/787-cheapest-flights-within-k-stops/dijkstra.py"
+from collections import defaultdict
+import heapq
+
+def cheapest_flights_with_at_most_k_stops( flights: list[list[int]], src: int, dst: int, k: int) -> int:
+
+    graph = defaultdict(list)
+    for u, v, price in flights:
+        graph[u].append((v, price))
+
+    pq, min_stops = [(0, src, 0)], {}
+
+    while pq:
+        cost, city, stops = heapq.heappop(pq)
+
+        # If we've already found a path to this city using fewer or equal stops, skip.
+        # A path with fewer stops must have been cheaper or equal due to PQ ordering.
+        if stops > min_stops.get(city, float("inf")): continue
+        if city == dst: return cost
+
+        # Record the new minimum stops to reach this city
+        min_stops[city] = stops
+        if stops <= k:
+            for neighbor, price in graph[city]:
+                heapq.heappush(pq, (cost + price, neighbor, stops + 1))
+    return -1
+```
+
+
+---
+
+## Bellman Ford Solution
+
+### [!ProblemTimeComplexity] Time Complexity
+
+- O(kE):
+    - where `k` is the number of stops and `E` is the number of flights.
+
+### [!ProblemCodeSnippet] Code Snippet
+
+```python meta="source=problems/787-cheapest-flights-within-k-stops/bellman_ford.py"
+def cheapest_flights_with_at_most_k_stops(
+    n: int, flights: list[list[int]], src: int, dst: int, k: int
+) -> int:
+    d = [float("inf")] * n
+    d[src] = 0
+
+    for _ in range(k + 1):
+        tmp = d[:]
+        for u, v, w in flights:
+            if d[u] + w < tmp[v]:
+                tmp[v] = d[u] + w
+        d = tmp
+
+    return d[dst] if d[dst] < float("inf") else -1
+```
+
