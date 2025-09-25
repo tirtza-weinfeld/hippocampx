@@ -154,9 +154,9 @@ function generateSolutionContent(problemId: string, fileName: string, solution: 
     content += formatSection('Time Complexity', solution.time_complexity, 'ProblemTimeComplexity', '###')
   }
 
-  if (solution.space_complexity) {
-    content += formatSection('Space Complexity', solution.space_complexity, 'ProblemSpaceComplexity', '###')
-  }
+  // if (solution.space_complexity) {
+  //   content += formatSection('Space Complexity', solution.space_complexity, 'ProblemSpaceComplexity', '###')
+  // }
 
   // Add variables if available
   if (solution.variables && Object.keys(solution.variables).length > 0) {
@@ -249,9 +249,9 @@ function generateMDXContent(problemId: string, problem: Problem): string {
       content += formatSection('Time Complexity', solution.time_complexity, 'ProblemTimeComplexity')
     }
 
-    if (solution.space_complexity) {
-      content += formatSection('Space Complexity', solution.space_complexity, 'ProblemSpaceComplexity')
-    }
+    // if (solution.space_complexity) {
+    //   content += formatSection('Space Complexity', solution.space_complexity, 'ProblemSpaceComplexity')
+    // }
     
     // Add args if available
     if (solution.args && Object.keys(solution.args).length > 0) {
