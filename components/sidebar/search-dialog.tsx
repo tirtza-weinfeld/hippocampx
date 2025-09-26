@@ -22,7 +22,7 @@ interface SearchDialogProps {
     bgColor: string
     children?: { title: string; href: string }[]
   }[]
-  onNavigate: (href: string, parentHref?: string, isParentWithChildren?: boolean, shouldNavigate?: boolean) => void
+  onNavigate: (href: string, parentHref?: string, shouldNavigate?: boolean) => void
   isMobile?: boolean
   isMobileOpen?: boolean
   setIsMobileOpen?: (open: boolean) => void
@@ -480,15 +480,16 @@ export function SearchDialog({
             href={item.href}
             onClick={() => {
               // Add to recent searches
-              addToRecentSearches({
-                title: item.title,
-                href: item.href,
-                parent: item.parent,
-                parentHref: item.parentHref,
-              })
+              // addToRecentSearches({
+              //   title: item.title,
+              //   href: item.href,
+              //   parent: item.parent,
+              //   parentHref: item.parentHref,
+              // })
 
               // Close the dialog
-              onClose()
+              // onClose()
+              onNavigate(item.href, item.parentHref, true)
             }}
           >
             {itemContent}
