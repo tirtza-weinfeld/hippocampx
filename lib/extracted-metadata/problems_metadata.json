@@ -184,7 +184,7 @@
         }
       },
       "title": "Koko Eating Bananas",
-      "definition": "Given banana piles `piles` and hour limit `h`, find the minimum eating speed\n**$k\\in\\mathbb{N}$** such that **$\\sum_{i=1}^{|piles|} \\lceil \\frac{p_i}{k} \\rceil \\leq h$** where each hour Koko eats up to `k` bananas from one pile (any leftover hour is wasted)",
+      "definition": "Given banana piles `piles` and hour limit `h`, find the minimum eating speed\n**$k\\in\\mathbb{N}$** such that *$\\sum_{i=1}^{|piles|} \\lceil \\frac{p_i}{k} \\rceil \\leq h$* where each hour Koko eats up to `k` bananas from one pile (any leftover hour is wasted)",
       "leetcode": "https://leetcode.com/problems/koko-eating-bananas",
       "difficulty": "medium",
       "topics": [

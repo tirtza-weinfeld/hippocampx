@@ -516,10 +516,16 @@ export function renderTooltipContent(
   // Handle different symbol kinds
   return (
     // <div className="w-[90vw] bg-white/95 dark:bg-gray-900/95 backdrop-blur-md rounded-xl shadow-xl border border-gray-200/60 dark:border-gray-700/60 p-5">
-    <div className="min-w-[280px] max-w-[420px] bg-white/95 dark:bg-gray-900/95 backdrop-blur-md rounded-xl
-    shadow-xl border border-gray-200/60 dark:border-gray-700/60 p-5 @container
-    relative 
-    ">
+    <div
+      className="min-w-[280px] max-w-[420px] bg-white/95 dark:bg-gray-900/95 backdrop-blur-md rounded-xl
+      shadow-xl border border-gray-200/60 dark:border-gray-700/60 p-5 @container
+      relative transition-all duration-200 ease-out
+      "
+      style={{
+        willChange: 'auto',
+        transform: 'translateZ(0)'
+      }}
+    >
       <TooltipHeader meta={meta} />
       <TooltipDescription meta={meta} />
       <TooltipParameters meta={meta} />

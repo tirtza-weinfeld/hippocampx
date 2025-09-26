@@ -14,15 +14,23 @@ export interface ListItemProps {
 }
 
 const listItemVariants = {
-  hidden: { opacity: 0, x: -20, scale: 0.96 },
+  hidden: { opacity: 0, y: 20 },
   visible: {
     opacity: 1,
-    x: 0,
-    scale: 1,
+    y: 0,
     transition: {
       type: "spring" as const,
-      stiffness: 350,
-      damping: 28,
+      stiffness: 300,
+      damping: 25,
+    },
+  },
+  exit: {
+    opacity: 0,
+    y: -10,
+    transition: {
+      type: "spring" as const,
+      stiffness: 300,
+      damping: 25,
     },
   },
 } as const
@@ -80,7 +88,8 @@ export default function ListItem({
   return (
     <motion.li
       variants={listItemVariants}
-      whileHover={{ x: 3, scale: 1.01 }}
+      whileHover={{ scale: 1.01 }}
+      transition={{ type: "spring", stiffness: 400, damping: 30 }}
       className={cn(
         'data-list-item=special',
         "flex items-start gap-3",
@@ -104,7 +113,7 @@ export default function ListItem({
       {...props}
     >
       <motion.div
-        whileHover={{ scale: 1.2, rotate: showNumber ? 0 : 180 }}
+        whileHover={{ scale: 1.15, rotate: showNumber ? 0 : 180 }}
         transition={{ type: "spring", stiffness: 400, damping: 25 }}
         className={cn(
           "flex items-center justify-center flex-shrink-0 mt-0.5 ",

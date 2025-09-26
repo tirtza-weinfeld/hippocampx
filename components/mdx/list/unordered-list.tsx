@@ -16,8 +16,16 @@ const listVariants = {
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.08,
-      delayChildren: 0.15,
+      staggerChildren: 0.05,
+      when: "beforeChildren",
+    },
+  },
+  exit: {
+    opacity: 0,
+    transition: {
+      staggerChildren: 0.02,
+      staggerDirection: -1,
+      when: "afterChildren",
     },
   },
 } as const
@@ -31,6 +39,7 @@ export const UnorderedList = ({ children, className = "", ...props }: ListProps 
       variants={listVariants}
       initial="hidden"
       animate="visible"
+      exit="exit"
       className={cn(
         "mb-6 ml-0 space-y-2 list-none",
         className
