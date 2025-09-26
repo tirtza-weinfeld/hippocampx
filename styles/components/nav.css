@@ -1,0 +1,23 @@
+/* @theme inline {
+    --color-nav-link: var(--color-blue-500);
+}
+:root{
+    --nav-link: var(--color-violet-500);
+
+.binary {
+    --nav-link: var(--color-violet-500);
+}
+
+.infinity {
+    --nav-link: var(--color-blue-500);
+}
+
+.ai {
+    --nav-link: var(--color-blue-500);
+}
+
+.calculus {
+    --nav-link: var(--color-blue-500);
+}
+}
+ */

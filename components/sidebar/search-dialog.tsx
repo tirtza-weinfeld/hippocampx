@@ -1,6 +1,6 @@
 "use client"
 
-import * as React from "react"
+import { useState, useCallback, useEffect, useRef, useMemo, type ElementType } from "react"
 import { Command } from "cmdk"
 import {
   Clock,
@@ -31,7 +31,7 @@ interface SearchDialogProps {
   navigationItems: {
     title: string
     href: string
-    icon: React.ElementType
+    icon: ElementType
     color: string
     bgColor: string
     children?: { title: string; href: string }[]
@@ -61,13 +61,13 @@ export function SearchDialog({
   navigationItems,
   onNavigate,
 }: SearchDialogProps) {
-  const [search, setSearch] = React.useState("")
-  const [category, setCategory] = React.useState<CategoryType>("all")
-  const inputRef = React.useRef<HTMLInputElement>(null)
-  const [selectedIndex, setSelectedIndex] = React.useState(0)
+  const [search, setSearch] = useState("")
+  const [category, setCategory] = useState<CategoryType>("all")
+  const inputRef = useRef<HTMLInputElement>(null)
+  const [selectedIndex, setSelectedIndex] = useState(0)
 
   // Recent searches stored in localStorage
-  const [recentSearches, setRecentSearches] = React.useState<
+  const [recentSearches, setRecentSearches] = useState<
     Array<{
       title: string
       href: string
@@ -77,7 +77,7 @@ export function SearchDialog({
   >([])
 
   // Favorites (would normally be stored in user preferences)
-  const [favorites, setFavorites] = React.useState<
+  const [favorites, setFavorites] = useState<
     Array<{
       title: string
       href: string
@@ -87,13 +87,13 @@ export function SearchDialog({
   >([])
 
   // Flatten navigation items for search
-  const allItems = React.useMemo(() => {
+  const allItems = useMemo(() => {
     const items: {
       title: string
       href: string
       parent?: string
       parentHref?: string
-      icon?: React.ElementType
+      icon?: ElementType
       color?: string
       bgColor?: string
     }[] = []
@@ -143,7 +143,7 @@ export function SearchDialog({
   }, [navigationItems])
 
   // Add validation function before the useEffects
-  const isValidNavigationItem = React.useCallback(
+  const isValidNavigationItem = useCallback(
     (item: { href: string }) => {
       // Check if the href exists in the current navigation structure
       return allItems.some((navItem) => navItem.href === item.href)
@@ -152,7 +152,7 @@ export function SearchDialog({
   )
 
   // Load recent searches from localStorage on mount
-  React.useEffect(() => {
+  useEffect(() => {
     try {
       const storedSearches = localStorage.getItem("recentSearches")
       if (storedSearches) {
@@ -171,7 +171,7 @@ export function SearchDialog({
   }, [isValidNavigationItem])
 
   // Add this useEffect to load favorites from localStorage
-  React.useEffect(() => {
+  useEffect(() => {
     try {
       const storedFavorites = localStorage.getItem("favorites")
       if (storedFavorites) {
@@ -199,7 +199,7 @@ export function SearchDialog({
   }, [isValidNavigationItem])
 
   // Function to add a search to recent searches
-  const addToRecentSearches = React.useCallback(
+  const addToRecentSearches = useCallback(
     (item: {
       title: string
       href: string
@@ -227,7 +227,7 @@ export function SearchDialog({
   )
 
   // Add this function to toggle favorites
-  const toggleFavorite = React.useCallback(
+  const toggleFavorite = useCallback(
     (item: {
       title: string
       href: string
@@ -261,7 +261,7 @@ export function SearchDialog({
   )
 
   // Add this function to check if an item is a favorite
-  const isFavorite = React.useCallback(
+  const isFavorite = useCallback(
     (href: string) => {
       return favorites.some((fav) => fav.href === href)
     },
@@ -269,7 +269,7 @@ export function SearchDialog({
   )
 
   // Filter items based on search and category
-  const filteredItems = React.useMemo(() => {
+  const filteredItems = useMemo(() => {
     if (category === "recent") {
       // For recent searches, we still want to apply the search filter
       return search
@@ -305,7 +305,7 @@ export function SearchDialog({
   }, [allItems, search, category, recentSearches, favorites])
 
   // Focus input when dialog opens
-  React.useEffect(() => {
+  useEffect(() => {
     if (isOpen) {
       setTimeout(() => {
         inputRef.current?.focus()
@@ -318,7 +318,7 @@ export function SearchDialog({
   }, [isOpen])
 
   // Handle keyboard navigation
-  const handleKeyDown = React.useCallback(
+  const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
       if (e.key === "ArrowDown") {
         e.preventDefault()
@@ -468,7 +468,7 @@ export function SearchDialog({
     )
   }
 
-  const clearRecentSearches = React.useCallback(() => {
+  const clearRecentSearches = useCallback(() => {
     setRecentSearches([])
     try {
       localStorage.removeItem("recentSearches")

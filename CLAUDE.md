@@ -10,14 +10,14 @@
 
 **THINK FIRST** about which patterns apply(if multiple apply,go in order), then **ENFORCE** them:
 
-- **Tests**: Follow patterns in `@.cursor/rules/test.md`
-- **TypeScript**: Follow patterns in `@.cursor/rules/typescript.md`
-- **React code**: Follow patterns in `@.cursor/rules/react.md`
-- **Next.js code**: Follow patterns in `@.cursor/rules/nextjs.md`
-- **Animations**: Follow patterns in `@.cursor/rules/motion.md`
-- **Styling**: Follow patterns in `@.cursor/rules/tailwind.md`
-- **Plugins**: Follow patterns in `@.cursor/rules/plugins.md`
-- **Python code**: Follow patterns in `@.cursor/rules/python.md`
+- **Tests**: Follow patterns in `@.cursor/rules/test.mdc`
+- **TypeScript**: Follow patterns in `@.cursor/rules/typescript.mdc`
+- **React code**: Follow patterns in `@.cursor/rules/react.mdc`
+- **Next.js code**: Follow patterns in `@.cursor/rules/nextjs.mdc`
+- **Animations**: Follow patterns in `@.cursor/rules/motion.mdc`
+- **Styling**: Follow patterns in `@.cursor/rules/tailwind.mdc`
+- **Plugins**: Follow patterns in `@.cursor/rules/plugins.mdc`
+- **Python code**: Follow patterns in `@.cursor/rules/python.mdc`
 
 ## CORE MANDATES
 

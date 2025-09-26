@@ -1,8 +1,9 @@
 "use client"
 
-import * as React from "react"
+import { useState, useCallback, useEffect, useRef, useMemo, type ReactNode, type ElementType } from "react"
 import { usePathname, useRouter } from "next/navigation"
-import { ChevronDown,  PanelLeft, Search} from "lucide-react"
+import Link from "next/link"
+import { ChevronDown, PanelLeft, Search } from "lucide-react"
 import { motion, AnimatePresence } from "motion/react"
 
 import { cn } from "@/lib/utils"
@@ -15,29 +16,47 @@ import { ThemeToggle } from "@/components/theme/theme-toggle"
 import { routes, NavigationItem } from "@/lib/routes"
 import { SparklesToggle } from "@/components/calculus/ui/sparkles-toggle"
 
+type SidebarProps = {
+  readonly children: ReactNode
+  readonly defaultOpen: boolean
+}
+
+type NavItemProps = {
+  readonly item: NavigationItem
+  readonly isExpanded: boolean
+  readonly pathname: string
+  readonly onClick: (href: string, parentHref?: string, isParentWithChildren?: boolean, shouldNavigate?: boolean) => void
+  readonly isOpen: boolean
+  readonly onOpenChange: (open: boolean) => void
+  readonly registerRef: (href: string, el: HTMLElement | null) => void
+  readonly isMobile: boolean
+}
+
+type ExpandedItems = Record<string, boolean>
+
 
 const navigationItems = routes
 const SIDEBAR_COOKIE_NAME = "sidebar_state"
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
 
-export function Sidebar({ children ,defaultOpen}: { children: React.ReactNode,defaultOpen:boolean }) {
+export function Sidebar({ children, defaultOpen }: SidebarProps) {
   // State for sidebar
-  const [isExpanded, setIsExpanded] = React.useState(defaultOpen)
-  const [isMobileOpen, setIsMobileOpen] = React.useState(false)
-  const [isSearchOpen, setIsSearchOpen] = React.useState(false)
+  const [isExpanded, setIsExpanded] = useState(defaultOpen)
+  const [isMobileOpen, setIsMobileOpen] = useState(false)
+  const [isSearchOpen, setIsSearchOpen] = useState(false)
   const pathname = usePathname()
   const router = useRouter()
-  const [isMobile, setIsMobile] = React.useState(false)
+  const [isMobile, setIsMobile] = useState(false)
 
   // Refs for navigation items
-  const navRefs = React.useRef<Map<string, HTMLElement>>(new Map())
-  const navContentRef = React.useRef<HTMLElement>(null)
+  const navRefs = useRef<Map<string, HTMLElement>>(new Map())
+  const navContentRef = useRef<HTMLElement>(null)
 
   // State to track which parent items are expanded
-  const [expandedItems, setExpandedItems] = React.useState<Record<string, boolean>>({})
+  const [expandedItems, setExpandedItems] = useState<ExpandedItems>({})
 
   // Set expanded state with cookie persistence
-  const setExpanded = React.useCallback(
+  const setExpanded = useCallback(
     (value: boolean | ((value: boolean) => boolean)) => {
       const expandedState = typeof value === "function" ? value(isExpanded) : value
       setIsExpanded(expandedState)
@@ -49,7 +68,7 @@ export function Sidebar({ children ,defaultOpen}: { children: React.ReactNode,de
   )
 
   // Check if mobile on mount and when window resizes
-  React.useEffect(() => {
+  useEffect(() => {
     const checkIfMobile = () => {
       setIsMobile(window.innerWidth < 768)
     }
@@ -65,7 +84,7 @@ export function Sidebar({ children ,defaultOpen}: { children: React.ReactNode,de
   }, [])
 
   // Add body scroll locking for mobile using Tailwind classes
-  React.useEffect(() => {
+  useEffect(() => {
     if (isMobile && isMobileOpen) {
       document.body.classList.add("overflow-hidden")
       return () => {
@@ -75,9 +94,9 @@ export function Sidebar({ children ,defaultOpen}: { children: React.ReactNode,de
   }, [isMobile, isMobileOpen])
 
   // Add scroll detection for mobile sidebar
-  const navScrollRef = React.useRef<HTMLElement>(null)
+  const navScrollRef = useRef<HTMLElement>(null)
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!isMobile || !navScrollRef.current) return
 
     const handleScroll = () => {
@@ -100,7 +119,7 @@ export function Sidebar({ children ,defaultOpen}: { children: React.ReactNode,de
   }, [isMobile, isMobileOpen])
 
   // Update expandedItems based on current pathname
-  React.useEffect(() => {
+  useEffect(() => {
     navigationItems.forEach((item) => {
       if (item.children) {
         const isChildActive = item.children.some(
@@ -120,22 +139,22 @@ export function Sidebar({ children ,defaultOpen}: { children: React.ReactNode,de
   }, [pathname])
 
   // Toggle sidebar state
-  const toggleSidebar = React.useCallback(() => {
+  const toggleSidebar = useCallback(() => {
     setExpanded((prev) => !prev)
   }, [setExpanded])
 
   // Toggle mobile sidebar
-  const toggleMobileSidebar = React.useCallback(() => {
+  const toggleMobileSidebar = useCallback(() => {
     setIsMobileOpen((prev) => !prev)
   }, [])
 
   // Toggle search dialog
-  const toggleSearch = React.useCallback(() => {
+  const toggleSearch = useCallback(() => {
     setIsSearchOpen((prev) => !prev)
   }, [])
 
   // Function to expand a parent item
-  const expandParentItem = React.useCallback((parentHref: string) => {
+  const expandParentItem = useCallback((parentHref: string) => {
     setExpandedItems((prev) => ({
       ...prev,
       [parentHref]: true,
@@ -143,7 +162,7 @@ export function Sidebar({ children ,defaultOpen}: { children: React.ReactNode,de
   }, [])
 
   // Function to scroll to a navigation item
-  const scrollToNavItem = React.useCallback(
+  const scrollToNavItem = useCallback(
     (href: string, parentHref?: string) => {
       if (parentHref) {
         expandParentItem(parentHref)
@@ -172,7 +191,7 @@ export function Sidebar({ children ,defaultOpen}: { children: React.ReactNode,de
   )
 
   // Handle navigation click
-  const handleNavClick = React.useCallback(
+  const handleNavClick = useCallback(
     (href: string, parentHref?: string, isParentWithChildren = false, shouldNavigate = true) => {
       setIsSearchOpen(false)
 
@@ -210,11 +229,11 @@ export function Sidebar({ children ,defaultOpen}: { children: React.ReactNode,de
         setTimeout(() => scrollToNavItem(href), 200)
       }
     },
-    [isMobile, router, scrollToNavItem, setExpandedItems],
+    [isMobile, router, scrollToNavItem],
   )
 
   // Keyboard shortcuts
-  React.useEffect(() => {
+  useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
         return
@@ -240,7 +259,7 @@ export function Sidebar({ children ,defaultOpen}: { children: React.ReactNode,de
   }, [toggleSidebar, toggleMobileSidebar, toggleSearch, isMobile])
 
   // Register a ref for a navigation item
-  const registerNavRef = React.useCallback((href: string, el: HTMLElement | null) => {
+  const registerNavRef = useCallback((href: string, el: HTMLElement | null) => {
     if (el) {
       navRefs.current.set(href, el)
     }
@@ -276,7 +295,7 @@ export function Sidebar({ children ,defaultOpen}: { children: React.ReactNode,de
           />
         </button>
 
-        {/* Mobile Overlay - Reduced blur and adjusted opacity */}
+        {/* Mobile Overlay - Modern backdrop */}
         <AnimatePresence>
           {isMobileOpen && (
             <motion.div
@@ -295,25 +314,26 @@ export function Sidebar({ children ,defaultOpen}: { children: React.ReactNode,de
                   ease: [0.16, 1, 0.3, 1],
                 },
               }}
-              className="fixed inset-0 z-40 bg-black/40 backdrop-blur-[2px]"
+              className="fixed inset-0 z-40 bg-black/60 backdrop-blur-md"
               onClick={toggleMobileSidebar}
               aria-hidden="true"
               tabIndex={-1}
+              role="presentation"
             />
           )}
         </AnimatePresence>
 
-        {/* Mobile Sidebar - Solid background and improved z-index */}
+        {/* Mobile Sidebar - Enhanced with modern blur */}
         <motion.aside
           id="mobile-sidebar"
-          className="fixed inset-y-0 left-0 z-50 w-[85%] max-w-[320px] bg-background border-r shadow-xl rounded-2xl"
+          className="fixed inset-y-0 left-0 z-50 w-[85%] max-w-[320px] bg-background/98 backdrop-blur-lg border-r shadow-2xl rounded-r-3xl"
           initial={{ x: "-100%" }}
           animate={{ x: isMobileOpen ? 0 : "-100%" }}
           transition={{
             type: "spring",
-            stiffness: 400,
-            damping: 40,
-            mass: 1,
+            stiffness: 280,
+            damping: 30,
+            mass: 0.9,
           }}
           aria-label="Main navigation"
           role="navigation"
@@ -407,14 +427,14 @@ export function Sidebar({ children ,defaultOpen}: { children: React.ReactNode,de
       {/* Desktop Sidebar */}
       <motion.aside
         id="desktop-sidebar"
-        className="fixed inset-y-0 left-1  top-1  bottom-1 z-20 bg-background border rounded-2xl"
+        className="fixed inset-y-0 left-1 top-1 bottom-1 z-20 bg-background/95 backdrop-blur-md border rounded-2xl shadow-lg"
         initial={{ width: isExpanded ? "16rem" : "5rem" }}
         animate={{ width: isExpanded ? "16rem" : "5rem" }}
         transition={{
           type: "spring",
-          stiffness: 400,
-          damping: 40,
-          mass: 1,
+          stiffness: 280,
+          damping: 30,
+          mass: 0.8,
         }}
       >
         <div className="flex flex-col h-full">
@@ -540,9 +560,9 @@ export function Sidebar({ children ,defaultOpen}: { children: React.ReactNode,de
         animate={{ marginLeft: isExpanded ? "16rem" : "5rem" }}
         transition={{
           type: "spring",
-          stiffness: 400,
-          damping: 40,
-          mass: 1,
+          stiffness: 280,
+          damping: 30,
+          mass: 0.8,
         }}
       >
         <div className="@container/content px-6">{children}</div>
@@ -563,22 +583,13 @@ export function Sidebar({ children ,defaultOpen}: { children: React.ReactNode,de
   )
 }
 
-interface NavItemProps {
-  item: NavigationItem
-  isExpanded: boolean
-  pathname: string
-  onClick: (href: string, parentHref?: string, isParentWithChildren?: boolean, shouldNavigate?: boolean) => void
-  isOpen: boolean
-  onOpenChange: (open: boolean) => void
-  registerRef: (href: string, el: HTMLElement | null) => void
-  isMobile: boolean
-}
 
 function NavItem({ item, isExpanded, pathname, onClick, isOpen, onOpenChange, registerRef, isMobile }: NavItemProps) {
-  const itemRef = React.useRef<HTMLLIElement>(null)
+  const itemRef = useRef<HTMLLIElement>(null)
+  const [popoverOpen, setPopoverOpen] = useState(false)
 
   // Register the ref when the component mounts
-  React.useEffect(() => {
+  useEffect(() => {
     if (itemRef.current) {
       registerRef(item.href, itemRef.current)
     }
@@ -588,7 +599,7 @@ function NavItem({ item, isExpanded, pathname, onClick, isOpen, onOpenChange, re
   }, [item.href, registerRef])
 
   // Check if current path is this item or any of its children
-  const isActive = React.useMemo(() => {
+  const isActive = useMemo(() => {
     // Exact match for the item itself
     if (pathname === item.href) return true
 
@@ -672,7 +683,7 @@ function NavItem({ item, isExpanded, pathname, onClick, isOpen, onOpenChange, re
               }}
               style={{ overflow: "hidden" }}
             >
-              {item.children.map((child: { title: string; href: string; icon?: React.ElementType }, index: number) => (
+              {item.children.map((child: { title: string; href: string; icon?: ElementType }, index: number) => (
                 <motion.li
                   key={child.title}
                   ref={(el) => registerRef(child.href, el)}
@@ -688,21 +699,17 @@ function NavItem({ item, isExpanded, pathname, onClick, isOpen, onOpenChange, re
                     },
                   }}
                 >
-                  <a
+                  <Link
                     href={child.href}
                     className={cn(
-                      "flex rounded-lg px-3 py-2 text-sm transition-all",
+                      "flex rounded-lg px-3 py-2 text-sm transition-all duration-200",
                       pathname === child.href
                         ? "bg-primary/15 text-primary font-medium"
                         : "hover:bg-muted/50 hover:translate-x-1",
                     )}
-                    onClick={(e) => {
-                      e.preventDefault()
-                      onClick(child.href, item.href)
-                    }}
                   >
                     {child.title}
-                  </a>
+                  </Link>
                 </motion.li>
               ))}
             </motion.ul>
@@ -716,10 +723,10 @@ function NavItem({ item, isExpanded, pathname, onClick, isOpen, onOpenChange, re
   if (isMobile && !item.children) {
     return (
       <li ref={itemRef} className="relative">
-        <a
+        <Link
           href={item.href}
           className={cn(
-            "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+            "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
             isActive ? "bg-primary/15 text-primary" : "hover:bg-muted/50",
           )}
           onClick={(e) => {
@@ -731,7 +738,7 @@ function NavItem({ item, isExpanded, pathname, onClick, isOpen, onOpenChange, re
             <Icon className={cn("h-5 w-5", isActive ? "text-primary" : item.color)} />
           </div>
           <span>{item.title}</span>
-        </a>
+        </Link>
       </li>
     )
   }
@@ -758,7 +765,7 @@ function NavItem({ item, isExpanded, pathname, onClick, isOpen, onOpenChange, re
         )}
 
         <TooltipProvider>
-          <Popover open={isOpen} onOpenChange={onOpenChange}>
+          <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
             <Tooltip>
               <TooltipTrigger asChild>
                 <PopoverTrigger asChild>
@@ -770,11 +777,6 @@ function NavItem({ item, isExpanded, pathname, onClick, isOpen, onOpenChange, re
                       isActive ? "bg-primary/10" : "",
                     )}
                     aria-label={item.title}
-                    onClick={(e) => {
-                      // Only toggle the popover, don't navigate
-                      e.stopPropagation()
-                      onOpenChange(!isOpen)
-                    }}
                   >
                     <div className="flex h-8 w-8 items-center justify-center">
                       <Icon className={cn("h-5 w-5 transition-transform", isActive ? "text-primary" : item.color)} />
@@ -787,7 +789,6 @@ function NavItem({ item, isExpanded, pathname, onClick, isOpen, onOpenChange, re
             <PopoverContent
               side="right"
               className="w-56 p-3 bg-background border rounded-lg"
-              onInteractOutside={() => onOpenChange(false)}
               align="start"
               alignOffset={-5}
               sideOffset={12}
@@ -812,7 +813,7 @@ function NavItem({ item, isExpanded, pathname, onClick, isOpen, onOpenChange, re
                   </span>
                 </div>
                 <div className="space-y-2">
-                  {item.children.map((child: { title: string; href: string; icon?: React.ElementType }, index: number) => (
+                  {item.children.map((child: { title: string; href: string; icon?: ElementType }, index: number) => (
                     <motion.div
                       key={child.title}
                       initial={{ x: -5, opacity: 0 }}
@@ -827,20 +828,20 @@ function NavItem({ item, isExpanded, pathname, onClick, isOpen, onOpenChange, re
                         },
                       }}
                     >
-                      <Button
+                      <Link
                         ref={(el) => registerRef(child.href, el)}
-                        variant="ghost"
+                        href={child.href}
                         className={cn(
-                          "w-full justify-start px-3 py-2 text-sm rounded-lg transition-all",
+                          "flex w-full justify-start px-3 py-2 text-sm rounded-lg transition-all items-center",
                           pathname === child.href
                             ? "bg-primary/20 text-primary font-medium"
                             : "hover:bg-primary/10 hover:translate-x-1",
                         )}
-                        onClick={() => onClick(child.href, item.href)}
+                        onClick={() => setPopoverOpen(false)}
                         data-href={child.href}
                       >
                         {child.title}
-                      </Button>
+                      </Link>
                     </motion.div>
                   ))}
                 </div>
@@ -864,17 +865,15 @@ function NavItem({ item, isExpanded, pathname, onClick, isOpen, onOpenChange, re
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className={cn("h-10 w-10 justify-center rounded-lg transition-all", isActive ? "bg-primary/10" : "")}
-                onClick={() => onClick(item.href)}
+              <Link
+                href={item.href}
+                className={cn("flex h-10 w-10 justify-center rounded-lg transition-all items-center", isActive ? "bg-primary/10" : "")}
                 aria-label={item.title}
               >
                 <div className="flex h-8 w-8 items-center justify-center">
                   <Icon className={cn("h-5 w-5 transition-transform", isActive ? "text-primary" : item.color)} />
                 </div>
-              </Button>
+              </Link>
             </TooltipTrigger>
             <TooltipContent side="right">{item.title}</TooltipContent>
           </Tooltip>
@@ -892,42 +891,52 @@ function NavItem({ item, isExpanded, pathname, onClick, isOpen, onOpenChange, re
           <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-[70%] bg-gradient-to-b from-primary via-indigo-400  to-accent rounded-r-sm" />
         )}
 
-        {/* Parent item - only toggles dropdown if it has children */}
-        <Button
-          variant="ghost"
-          className={cn(
-            "w-full justify-start gap-3 rounded-lg text-sm font-medium transition-all h-10 px-3",
-            isActive ? "bg-primary/10" : "",
-            !isExpanded && "px-0 justify-center",
-            "hover:translate-x-1",
-          )}
-          onClick={(e) => {
-            // If it has children, only toggle the dropdown
-            if (item.children) {
-              e.preventDefault()
-              onOpenChange(!isOpen)
-            } else {
-              // If no children, navigate to the item's href
-              onClick(item.href)
-            }
-          }}
-        >
-          <div className="flex h-8 w-8 items-center justify-center">
-            <Icon className={cn("h-5 w-5", isActive ? "text-primary" : item.color)} />
-          </div>
-          {isExpanded && (
-            <span className="animate-fade-in animate-slide-in-from-left duration-200 truncate">{item.title}</span>
-          )}
-          {isExpanded && item.children && (
-            <motion.div
-              animate={{ rotate: isOpen ? 180 : 0 }}
-              transition={{ duration: 0.3, ease: "easeInOut" }}
-              className="ml-auto"
-            >
-              <ChevronDown className="h-4 w-4" />
-            </motion.div>
-          )}
-        </Button>
+        {/* Parent item or navigation link */}
+        {item.children ? (
+          <Button
+            variant="ghost"
+            className={cn(
+              "w-full justify-start gap-3 rounded-lg text-sm font-medium transition-all h-10 px-3",
+              isActive ? "bg-primary/10" : "",
+              !isExpanded && "px-0 justify-center",
+              "hover:translate-x-1",
+            )}
+            onClick={() => onOpenChange(!isOpen)}
+          >
+            <div className="flex h-8 w-8 items-center justify-center">
+              <Icon className={cn("h-5 w-5", isActive ? "text-primary" : item.color)} />
+            </div>
+            {isExpanded && (
+              <span className="animate-fade-in animate-slide-in-from-left duration-200 truncate">{item.title}</span>
+            )}
+            {isExpanded && (
+              <motion.div
+                animate={{ rotate: isOpen ? 180 : 0 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+                className="ml-auto"
+              >
+                <ChevronDown className="h-4 w-4" />
+              </motion.div>
+            )}
+          </Button>
+        ) : (
+          <Link
+            href={item.href}
+            className={cn(
+              "flex w-full justify-start gap-3 rounded-lg text-sm font-medium transition-all h-10 px-3 items-center",
+              isActive ? "bg-primary/10" : "",
+              !isExpanded && "px-0 justify-center",
+              "hover:translate-x-1",
+            )}
+          >
+            <div className="flex h-8 w-8 items-center justify-center">
+              <Icon className={cn("h-5 w-5", isActive ? "text-primary" : item.color)} />
+            </div>
+            {isExpanded && (
+              <span className="animate-fade-in animate-slide-in-from-left duration-200 truncate">{item.title}</span>
+            )}
+          </Link>
+        )}
 
         {/* Submenu for expanded state */}
         <AnimatePresence>
@@ -962,7 +971,7 @@ function NavItem({ item, isExpanded, pathname, onClick, isOpen, onOpenChange, re
               style={{ overflow: "hidden" }}
             >
               <ul className="space-y-1">
-                {item.children.map((child: { title: string; href: string; icon?: React.ElementType }, index: number) => (
+                {item.children.map((child: { title: string; href: string; icon?: ElementType }, index: number) => (
                   <motion.li
                     key={child.title}
                     ref={(el) => registerRef(child.href, el)}
@@ -978,7 +987,7 @@ function NavItem({ item, isExpanded, pathname, onClick, isOpen, onOpenChange, re
                       },
                     }}
                   >
-                    <a
+                    <Link
                       href={child.href}
                       className={cn(
                         "flex rounded-lg px-3 py-2 text-sm transition-all",
@@ -987,12 +996,16 @@ function NavItem({ item, isExpanded, pathname, onClick, isOpen, onOpenChange, re
                           : "hover:bg-muted/50 hover:translate-x-1",
                       )}
                       onClick={(e) => {
-                        e.preventDefault()
-                        onClick(child.href, item.href)
+                      e.preventDefault()
+                      onClick(child.href, item.href)
+                    }}
+                      onContextMenu={(e) => {
+                        // Allow right-click context menu
+                        e.stopPropagation()
                       }}
                     >
                       {child.title}
-                    </a>
+                    </Link>
                   </motion.li>
                 ))}
               </ul>
