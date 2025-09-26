@@ -1,8 +1,6 @@
 ---
-description: Animation Rules
-alwaysApply: false
+alwaysApply: true
 ---
-
 # Motion for React Rules 
 
 ## Installation & Setup

@@ -1,6 +1,5 @@
 ---
-description: CSS/styling Rules
-alwaysApply: false
+alwaysApply: true
 ---
 # Tailwind CSS v4.1 Rules 
 

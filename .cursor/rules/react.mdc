@@ -1,6 +1,5 @@
 ---
-description: React Rules
-alwaysApply: false
+alwaysApply: true
 ---
 # ReactRules
 

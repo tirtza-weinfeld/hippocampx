@@ -25,7 +25,7 @@ type NavItemProps = {
   readonly item: NavigationItem
   readonly isExpanded: boolean
   readonly pathname: string
-  readonly onClick: (href: string, parentHref?: string, isParentWithChildren?: boolean, shouldNavigate?: boolean) => void
+  readonly onClick: (href: string, parentHref?: string, shouldNavigate?: boolean) => void
   readonly isOpen: boolean
   readonly onOpenChange: (open: boolean) => void
   readonly registerRef: (href: string, el: HTMLElement | null) => void
@@ -192,18 +192,11 @@ export function Sidebar({ children, defaultOpen }: SidebarProps) {
 
   // Handle navigation click
   const handleNavClick = useCallback(
-    (href: string, parentHref?: string, isParentWithChildren = false, shouldNavigate = true) => {
+    (href: string, parentHref?: string, shouldNavigate = true) => {
       setIsSearchOpen(false)
 
       if (isMobile) {
-        if (isParentWithChildren) {
-          setExpandedItems((prev) => ({
-            ...prev,
-            [href]: !prev[href],
-          }))
-        } else {
-          setIsMobileOpen(false)
-        }
+        setIsMobileOpen(false)
       }
 
       if (shouldNavigate) {
@@ -707,6 +700,10 @@ function NavItem({ item, isExpanded, pathname, onClick, isOpen, onOpenChange, re
                         ? "bg-primary/15 text-primary font-medium"
                         : "hover:bg-muted/50 hover:translate-x-1",
                     )}
+                    onClick={(e) => {
+                      e.preventDefault()
+                      onClick(child.href, item.href)
+                    }}
                   >
                     {child.title}
                   </Link>
@@ -837,7 +834,11 @@ function NavItem({ item, isExpanded, pathname, onClick, isOpen, onOpenChange, re
                             ? "bg-primary/20 text-primary font-medium"
                             : "hover:bg-primary/10 hover:translate-x-1",
                         )}
-                        onClick={() => setPopoverOpen(false)}
+                        onClick={(e) => {
+                          e.preventDefault()
+                          onClick(child.href, item.href)
+                          setPopoverOpen(false)
+                        }}
                         data-href={child.href}
                       >
                         {child.title}

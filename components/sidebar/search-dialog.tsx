@@ -1,29 +1,15 @@
 "use client"
 
 import { useState, useCallback, useEffect, useRef, useMemo, type ElementType } from "react"
+import Link from "next/link"
 import { Command } from "cmdk"
-import {
-  Clock,
-  Compass,
-  FileText,
-  Flame,
-  Home,
-  Search,
-  Star,
-  X,
-  Brain,
-  Binary,
-  Sparkles,
-  Infinity as InfinityIcon,
-  ChartNoAxesCombined as ChartNoAxesCombinedIcon,
-  LucideIcon,
-} from "lucide-react"
-
-import { Dialog, DialogContent } from "@/components/ui/dialog"
+import {Clock, Compass,FileText,Flame,Home,Search,Star,X,Brain,Binary,Sparkles,Infinity as InfinityIcon,ChartNoAxesCombined as ChartNoAxesCombinedIcon,LucideIcon} from "lucide-react"
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { cn } from "@/lib/utils"
 import { SearchCategory } from "./search-dialog/search-category"
 import { SearchEmptyState } from "./search-dialog/search-empty-state"
 import { SearchShortcut } from "./search-dialog/search-shortcut"
+import { routes } from "@/lib/routes"
 
 interface SearchDialogProps {
   isOpen: boolean
@@ -304,6 +290,16 @@ export function SearchDialog({
     return results
   }, [allItems, search, category, recentSearches, favorites])
 
+  // Dynamic suggestions from routes
+  const suggestions = useMemo(() => {
+    return routes.map(route => route.title)
+  }, [])
+
+  // Helper function to determine if an item is a parent category
+  const isParentCategory = useCallback((href: string) => {
+    return routes.some(route => route.href === href && route.children && route.children.length > 0)
+  }, [])
+
   // Focus input when dialog opens
   useEffect(() => {
     if (isOpen) {
@@ -329,26 +325,31 @@ export function SearchDialog({
       } else if (e.key === "Enter" && filteredItems[selectedIndex]) {
         e.preventDefault()
         const selectedItem = filteredItems[selectedIndex]
-        
-        // Add to recent searches first
-        addToRecentSearches({
-          title: selectedItem.title,
-          href: selectedItem.href,
-          parent: selectedItem.parent,
-          parentHref: selectedItem.parentHref,
-        })
+        const isParent = isParentCategory(selectedItem.href)
 
-        // Close the dialog first
-        onClose()
+        if (isParent) {
+          // For parent categories, add to search instead of navigating
+          setSearch(selectedItem.title)
+        } else {
+          // Add to recent searches first
+          addToRecentSearches({
+            title: selectedItem.title,
+            href: selectedItem.href,
+            parent: selectedItem.parent,
+            parentHref: selectedItem.parentHref,
+          })
 
-        // Then navigate with a small delay to ensure the dialog is closed
-        // and the sidebar is ready to scroll
-        setTimeout(() => {
-          onNavigate(selectedItem.href, selectedItem.parentHref, false, true)
-        }, 100)
+          // Close the dialog first
+          onClose()
+
+          // Navigate directly using window.location for keyboard navigation
+          setTimeout(() => {
+            window.location.href = selectedItem.href
+          }, 100)
+        }
       }
     },
-    [filteredItems, selectedIndex, onNavigate, onClose, addToRecentSearches],
+    [filteredItems, selectedIndex, onClose, addToRecentSearches, isParentCategory, setSearch],
   )
 
   // Get icon for result
@@ -398,36 +399,10 @@ export function SearchDialog({
     const Icon = getIconForResult(item)
     const color = getColorForResult(item)
     const bgColor = getBgColorForResult(item)
+    const isParent = isParentCategory(item.href)
 
-    return (
-      <Command.Item
-        key={item.href}
-        value={item.href}
-        onSelect={() => {
-          // Add to recent searches first
-          addToRecentSearches({
-            title: item.title,
-            href: item.href,
-            parent: item.parent,
-            parentHref: item.parentHref,
-          })
-
-          // Close the dialog first
-          onClose()
-
-          // Then navigate with a small delay to ensure the dialog is closed
-          // and the sidebar is ready to scroll
-          setTimeout(() => {
-            onNavigate(item.href, item.parentHref, false, true)
-          }, 100)
-        }}
-        className={cn(
-          "flex items-center gap-3 px-3 py-2 cursor-pointer rounded-lg transition-colors",
-          selectedIndex === index
-            ? "bg-accent text-accent-foreground"
-            : "hover:bg-muted/50"
-        )}
-      >
+    const itemContent = (
+      <>
         <div className={cn("flex h-8 w-8 items-center justify-center rounded-md", bgColor)}>
           <Icon className={cn("h-5 w-5", color)} />
         </div>
@@ -464,8 +439,63 @@ export function SearchDialog({
         >
           <Star className={cn("h-3 w-3", isFavorite(item.href) && "fill-current")} />
         </button>
-      </Command.Item>
+      </>
     )
+
+    if (isParent) {
+      // For parent categories, use a button that adds to search
+      return (
+        <Command.Item
+          key={item.href}
+          value={item.href}
+          onSelect={() => {
+            // Add parent title to search instead of navigating
+            setSearch(item.title)
+          }}
+          className={cn(
+            "flex items-center gap-3 px-3 py-2 cursor-pointer rounded-lg transition-colors",
+            selectedIndex === index
+              ? "bg-accent text-accent-foreground"
+              : "hover:bg-muted/50"
+          )}
+        >
+          {itemContent}
+        </Command.Item>
+      )
+    } else {
+      // For actual pages, use Link with proper navigation
+      return (
+        <Command.Item
+          key={item.href}
+          value={item.href}
+          asChild
+          className={cn(
+            "flex items-center gap-3 px-3 py-2 cursor-pointer rounded-lg transition-colors",
+            selectedIndex === index
+              ? "bg-accent text-accent-foreground"
+              : "hover:bg-muted/50"
+          )}
+        >
+          <Link
+            href={item.href}
+            onClick={() => {
+              // Add to recent searches
+              addToRecentSearches({
+                title: item.title,
+                href: item.href,
+                parent: item.parent,
+                parentHref: item.parentHref,
+              })
+
+              // Close the dialog
+              onClose()
+            }}
+          >
+            {itemContent}
+          </Link>
+        </Command.Item>
+      )
+    }
   }
 
   const clearRecentSearches = useCallback(() => {
@@ -480,7 +510,8 @@ export function SearchDialog({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="p-0 sm:max-w-2xl w-[95vw] max-h-[90vh] overflow-hidden gap-0 border-none shadow-2xl z-[200] rounded-xl">
-        <Command
+       <DialogTitle className="sr-only">Search</DialogTitle>
+       <Command
           className="flex flex-col h-[80vh] max-h-[90vh] md:max-h-[600px] rounded-xl border bg-background shadow-xl overflow-hidden"
           onKeyDown={handleKeyDown}
         >
@@ -557,7 +588,7 @@ export function SearchDialog({
                 <div className="mt-4">
                   <div className="text-xs text-muted-foreground">Try searching for</div>
                   <div className="mt-2 flex flex-wrap justify-center gap-2">
-                    {["Home", "Calculus", "Hadestown", "Infinity", "Binary", "AI"].map((suggestion) => (
+                    {suggestions.map((suggestion) => (
                       <button
                         key={suggestion}
                         className="rounded-full border px-3 py-1 text-xs hover:bg-accent hover:text-accent-foreground transition-colors"
