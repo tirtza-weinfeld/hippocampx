@@ -834,11 +834,7 @@ function NavItem({ item, isExpanded, pathname, onClick, isOpen, onOpenChange, re
                             ? "bg-primary/20 text-primary font-medium"
                             : "hover:bg-primary/10 hover:translate-x-1",
                         )}
-                        onClick={(e) => {
-                          e.preventDefault()
-                          onClick(child.href, item.href)
-                          setPopoverOpen(false)
-                        }}
+                        onClick={() => setPopoverOpen(false)}
                         data-href={child.href}
                       >
                         {child.title}
@@ -901,6 +897,7 @@ function NavItem({ item, isExpanded, pathname, onClick, isOpen, onOpenChange, re
               isActive ? "bg-primary/10" : "",
               !isExpanded && "px-0 justify-center",
               "hover:translate-x-1",
+              "hover:bg-primary/10",
             )}
             onClick={() => onOpenChange(!isOpen)}
           >
@@ -928,6 +925,7 @@ function NavItem({ item, isExpanded, pathname, onClick, isOpen, onOpenChange, re
               isActive ? "bg-primary/10" : "",
               !isExpanded && "px-0 justify-center",
               "hover:translate-x-1",
+              "hover:bg-primary/10",
             )}
           >
             <div className="flex h-8 w-8 items-center justify-center">

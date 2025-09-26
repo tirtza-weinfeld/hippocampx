@@ -2,8 +2,6 @@ from collections import defaultdict
 
 def subarraysSumIsDivisibleByK(segments: list[int], k: int) -> int:
     """
-LeetCode: 
-      [974. Subarray Sums Divisible by K](https://leetcode.com/problems/subarray-sums-divisible-by-k/)
     Args:
         segments: List of integers representing trip segments.
         k: The divisor.

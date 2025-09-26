@@ -689,9 +689,9 @@ export function SearchDialog({
               <div className="flex items-center gap-1">
                 <Flame className="h-4 w-4 text-amber-500" />
                 <span className="hidden sm:inline">
-                  Pro Tip: Press <SearchShortcut keys={["/"]} /> anywhere to open search
+                  Pro Tip: Press <SearchShortcut keys={["⌘", "K"]} /> anywhere to open search
                 </span>
-                <span className="sm:hidden">Press / to search</span>
+                <span className="sm:hidden">Press ⌘K to search</span>
               </div>
             </div>
           </div>
