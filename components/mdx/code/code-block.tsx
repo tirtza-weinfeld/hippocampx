@@ -5,7 +5,7 @@ import { CodeBlockClient } from './code-block-client';
 import { tooltipifyJSX } from './tooltipify-jsx';
 import { renderTooltipContent } from './render-tooltip-content';
 import { getTooltipContent } from './tooltip-content';
-
+import { Skeleton } from '@/components/ui/skeleton';
 /**
  * Props for the CodeBlock server component.
  */
@@ -46,6 +46,7 @@ export type CodeBlockProps = {
  * ```
  */
 export default async function CodeBlock(props: CodeBlockProps) {
+  // await new Promise(resolve => setTimeout(resolve, 3000))
   const { className, meta, children: code } = { ...props }
 
 
@@ -68,3 +69,126 @@ export default async function CodeBlock(props: CodeBlockProps) {
   )
 }
 
+
+export function CodeBlockSkeleton() {
+  return (
+    <div className="shadow-2xl rounded-md dark:bg-gray-800 bg-gray-100 p-4 my-4 transition-all duration-500 ease-in-out">
+      <div className="relative">
+        {/* Copy button skeleton */}
+        <div className="absolute top-0 right-0 z-20">
+          <Skeleton className="h-8 w-8 rounded-lg bg-gray-300 dark:bg-gray-600" />
+        </div>
+        
+        {/* Expand/collapse button skeleton */}
+        <div className="absolute top-0 right-12 z-20">
+          <Skeleton className="h-8 w-8 rounded-lg bg-gray-300 dark:bg-gray-600" />
+        </div>
+
+        {/* Code content skeleton with line numbers */}
+        <div className="overflow-x-auto py-8 line-numbers relative">
+          <div className="space-y-1">
+            {/* Line 1 */}
+            <div className="flex items-center">
+              <div className="w-12 flex-shrink-0 text-right pr-2">
+                <Skeleton className="h-4 w-6 bg-gray-300 dark:bg-gray-600 ml-auto" />
+              </div>
+              <div className="flex-1 ml-2">
+                <Skeleton className="h-4 w-32 bg-blue-200 dark:bg-blue-800" />
+              </div>
+            </div>
+            
+            {/* Line 2 */}
+            <div className="flex items-center">
+              <div className="w-12 flex-shrink-0 text-right pr-2">
+                <Skeleton className="h-4 w-6 bg-gray-300 dark:bg-gray-600 ml-auto" />
+              </div>
+              <div className="flex-1 ml-2">
+                <Skeleton className="h-4 w-24 bg-gray-200 dark:bg-gray-700" />
+              </div>
+            </div>
+            
+            {/* Line 3 */}
+            <div className="flex items-center">
+              <div className="w-12 flex-shrink-0 text-right pr-2">
+                <Skeleton className="h-4 w-6 bg-gray-300 dark:bg-gray-600 ml-auto" />
+              </div>
+              <div className="flex-1 ml-2">
+                <Skeleton className="h-4 w-40 bg-green-200 dark:bg-green-800" />
+              </div>
+            </div>
+            
+            {/* Line 4 */}
+            <div className="flex items-center">
+              <div className="w-12 flex-shrink-0 text-right pr-2">
+                <Skeleton className="h-4 w-6 bg-gray-300 dark:bg-gray-600 ml-auto" />
+              </div>
+              <div className="flex-1 ml-2">
+                <Skeleton className="h-4 w-28 bg-yellow-200 dark:bg-yellow-800" />
+              </div>
+            </div>
+            
+            {/* Line 5 */}
+            <div className="flex items-center">
+              <div className="w-12 flex-shrink-0 text-right pr-2">
+                <Skeleton className="h-4 w-6 bg-gray-300 dark:bg-gray-600 ml-auto" />
+              </div>
+              <div className="flex-1 ml-2">
+                <Skeleton className="h-4 w-36 bg-purple-200 dark:bg-purple-800" />
+              </div>
+            </div>
+            
+            {/* Line 6 */}
+            <div className="flex items-center">
+              <div className="w-12 flex-shrink-0 text-right pr-2">
+                <Skeleton className="h-4 w-6 bg-gray-300 dark:bg-gray-600 ml-auto" />
+              </div>
+              <div className="flex-1 ml-2">
+                <Skeleton className="h-4 w-20 bg-red-200 dark:bg-red-800" />
+              </div>
+            </div>
+            
+            {/* Line 7 */}
+            <div className="flex items-center">
+              <div className="w-12 flex-shrink-0 text-right pr-2">
+                <Skeleton className="h-4 w-6 bg-gray-300 dark:bg-gray-600 ml-auto" />
+              </div>
+              <div className="flex-1 ml-2">
+                <Skeleton className="h-4 w-44 bg-indigo-200 dark:bg-indigo-800" />
+              </div>
+            </div>
+            
+            {/* Line 8 */}
+            <div className="flex items-center">
+              <div className="w-12 flex-shrink-0 text-right pr-2">
+                <Skeleton className="h-4 w-6 bg-gray-300 dark:bg-gray-600 ml-auto" />
+              </div>
+              <div className="flex-1 ml-2">
+                <Skeleton className="h-4 w-32 bg-pink-200 dark:bg-pink-800" />
+              </div>
+            </div>
+            
+            {/* Line 9 */}
+            <div className="flex items-center">
+              <div className="w-12 flex-shrink-0 text-right pr-2">
+                <Skeleton className="h-4 w-6 bg-gray-300 dark:bg-gray-600 ml-auto" />
+              </div>
+              <div className="flex-1 ml-2">
+                <Skeleton className="h-4 w-24 bg-teal-200 dark:bg-teal-800" />
+              </div>
+            </div>
+            
+            {/* Line 10 */}
+            <div className="flex items-center">
+              <div className="w-12 flex-shrink-0 text-right pr-2">
+                <Skeleton className="h-4 w-6 bg-gray-300 dark:bg-gray-600 ml-auto" />
+              </div>
+              <div className="flex-1 ml-2">
+                <Skeleton className="h-4 w-40 bg-orange-200 dark:bg-orange-800" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}

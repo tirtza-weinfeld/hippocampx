@@ -384,6 +384,10 @@ async function main(): Promise<void> {
     await generateProblemsIndexPage(problemsMetadata)
     console.log(`Generated problems index page at app/problems/page.mdx`)
 
+    // Generate the routes file
+    await generateRoutesFile(problemsMetadata)
+    console.log(`Generated routes file at lib/problems-routes.ts`)
+
   } catch (error) {
     console.error('Error generating MDX files:', error)
     process.exit(1)
@@ -419,9 +423,6 @@ function generateProblemsIndexContent(problemsMetadata: ProblemsMetadata): strin
   })
 
   for (const [index, { id: problemId, problem }] of sortedProblems.entries()) {
-    // Extract LeetCode problem number from problemId (e.g., "713-subarray-product-less-than-k" -> "713")
-    const problemNumber = problemId.match(/^(\d+)-/)?.[1]
-
     // Clean title - remove any corrupted content
     let title = problem.title || problemId.split('-').slice(1).join(' ').replace(/\b\w/g, l => l.toUpperCase())
 
@@ -463,6 +464,72 @@ async function generateProblemsIndexPage(problemsMetadata: ProblemsMetadata): Pr
   await ensureDirectoryExists(problemsDir)
 
   await fs.writeFile(indexPath, indexContent, 'utf-8')
+}
+
+function getDifficultyColor(difficulty: string): { color: string; bgColor: string } {
+  const cleanDiff = difficulty?.trim().split(/\s+/)[0].toLowerCase()
+  switch (cleanDiff) {
+    case 'easy':
+      return { color: "text-green-500", bgColor: "bg-green-500/10" }
+    case 'medium':
+      return { color: "text-orange-500", bgColor: "bg-orange-500/10" }
+    case 'hard':
+      return { color: "text-red-500", bgColor: "bg-red-500/10" }
+    default:
+      return { color: "text-orange-500", bgColor: "bg-orange-500/10" }
+  }
+}
+
+function generateRoutesContent(problemsMetadata: ProblemsMetadata): string {
+  let content = `import { Code, SquareFunction } from "lucide-react"\n`
+  content += `import { NavigationItem } from "./routes"\n\n`
+  content += `export const PROBLEMS_ROUTES: NavigationItem[] = [\n`
+  content += `    {\n`
+  content += `        title: 'Problems', href: '/problems', icon: SquareFunction, color: "text-yellow-500", bgColor: "bg-yellow-500/10",\n`
+  content += `        children: [\n`
+
+  // Create a sorted list of problems
+  const sortedProblems = Object.entries(problemsMetadata)
+    .filter(([, problem]) => problem.solutions && Object.keys(problem.solutions).length > 0)
+    .sort((a, b) => {
+      const getNameForSorting = (problem: Problem, id: string) => {
+        if (problem.title) {
+          return problem.title.toLowerCase()
+        }
+        return id.replace(/^\d+-/, '').replace(/-/g, ' ').toLowerCase()
+      }
+
+      const aName = getNameForSorting(a[1], a[0])
+      const bName = getNameForSorting(b[1], b[0])
+      return aName.localeCompare(bName)
+    })
+
+  for (const [problemId, problem] of sortedProblems) {
+    // Clean title
+    let title = problem.title || problemId.split('-').slice(1).join(' ').replace(/\b\w/g, l => l.toUpperCase())
+
+    // If title contains line breaks or strange characters, fall back to problem ID
+    if (title.includes('\n') || title.length > 100) {
+      title = problemId.split('-').slice(1).join(' ').replace(/\b\w/g, l => l.toUpperCase())
+    }
+
+    const { color, bgColor } = getDifficultyColor(problem.difficulty || 'medium')
+
+    content += `            { title: '${title.replace(/'/g, "\\'")}', href: '/problems/${problemId}', icon: Code, color: "${color}", bgColor: "${bgColor}" },\n`
+  }
+
+  content += `        ],\n`
+  content += `    },\n`
+  content += `]\n`
+
+  return content
+}
+
+async function generateRoutesFile(problemsMetadata: ProblemsMetadata): Promise<void> {
+  const routesContent = generateRoutesContent(problemsMetadata)
+  const routesPath = path.join(__dirname, '..', 'lib', 'problems-routes.ts')
+
+  await fs.writeFile(routesPath, routesContent, 'utf-8')
 }
 
 // Run the script

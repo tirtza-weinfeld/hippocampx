@@ -17,6 +17,7 @@ export function ProblemCodeSnippetHeader({ children, className }: ProblemCodeSni
         <Code className="w-4 h-4 text-slate-600 dark:text-slate-400" />
       </div>
       <div className="font-semibold text-sm uppercase tracking-wider text-slate-600 dark:text-slate-400">
+        
         {children}
       </div>
     </div>

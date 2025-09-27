@@ -4,7 +4,8 @@ import { AlertCircle, Info, Lightbulb, Notebook, AlertTriangle, ChevronDown, Clo
    ListChecks } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "motion/react";
-import React, { useState } from "react";
+import React, { use, useState } from "react";
+import { Skeleton } from "../ui/skeleton";
 
 const ICONS = {
   tip: Lightbulb,
@@ -145,7 +146,7 @@ const STYLES = {
 
 } as const;
 
-type AlertProps = {
+export type AlertProps = {
   type: keyof typeof ICONS;
   children: React.ReactNode;
   collapse?: boolean;
@@ -193,7 +194,15 @@ const splitReactChildren = (children: React.ReactNode): { summary: React.ReactNo
   };
 };
 
+// const slowData = new Promise(resolve =>
+//   setTimeout(() => resolve("✅ Data ready from server!"), 5000)
+// )
+
+
 export default function Alert({ type, children, collapse = false }: AlertProps) {
+
+  // const message = use(slowData)
+  // console.log("message", message)
   const Icon = ICONS[type] || Notebook;
   const styles = STYLES[type] || STYLES.example;
 
@@ -376,3 +385,32 @@ export default function Alert({ type, children, collapse = false }: AlertProps) 
 }
 
 
+
+
+export function AlertSuspense() {
+  return (
+    <div className="flex items-start gap-4 rounded-md bg-linear-to-br from-white to-alert-note/10 dark:from-gray-900 dark:to-alert-note/20 border-alert-note shadow-sm mb-3 p-4">
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2 mb-0.5">
+          <div className="flex-shrink-0 rounded-full p-1 bg-alert-note/10">
+            <Skeleton className="w-4 h-4 rounded-full" />
+          </div>
+          <div className="font-semibold text-sm uppercase tracking-wider text-alert-note">
+            <Skeleton className="h-4 w-16" />
+          </div>
+        </div>
+        <div className="text-sm leading-relaxed text-gray-600 dark:text-gray-400 w-full mb-0">
+          <div className="flex flex-col gap-2">
+            <div>
+              <Skeleton className="h-4 w-48 mb-2" />
+            </div>
+            <div>
+              <Skeleton className="h-4 w-40 mb-1" />
+              <Skeleton className="h-4 w-36" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}

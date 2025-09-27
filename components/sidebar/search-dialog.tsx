@@ -3,10 +3,9 @@
 import { useState, useCallback, useEffect, useRef, useMemo, type ElementType } from "react"
 import Link from "next/link"
 import { Command } from "cmdk"
-import {Clock, Compass,FileText,Flame,Home,Search,Star,X,Brain,Binary,Sparkles,Infinity as InfinityIcon,ChartNoAxesCombined as ChartNoAxesCombinedIcon,LucideIcon} from "lucide-react"
+import { Compass, Flame, Search, Star, X } from "lucide-react"
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { cn } from "@/lib/utils"
-import { SearchCategory } from "./search-dialog/search-category"
 import { SearchEmptyState } from "./search-dialog/search-empty-state"
 import { SearchShortcut } from "./search-dialog/search-shortcut"
 import { routes } from "@/lib/routes"
@@ -17,7 +16,7 @@ interface SearchDialogProps {
   navigationItems: {
     title: string
     href: string
-    icon: ElementType
+    icon?: ElementType
     color: string
     bgColor: string
     children?: { title: string; href: string }[]
@@ -29,14 +28,13 @@ interface SearchDialogProps {
   setIsSearchOpen?: (open: boolean) => void
 }
 
-type CategoryType = "all" | "pages" | "recent" | "favorites"
 
 type SearchItem = {
   title: string
   href: string
   parent?: string
   parentHref?: string
-  icon?: LucideIcon
+  icon?: ElementType
   color?: string
   bgColor?: string
 }
@@ -44,13 +42,12 @@ type SearchItem = {
 export function SearchDialog({
   isOpen,
   onClose,
-  navigationItems,
   onNavigate,
 }: SearchDialogProps) {
   const [search, setSearch] = useState("")
-  const [category, setCategory] = useState<CategoryType>("all")
   const inputRef = useRef<HTMLInputElement>(null)
   const [selectedIndex, setSelectedIndex] = useState(0)
+  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false)
 
   // Recent searches stored in localStorage
   const [recentSearches, setRecentSearches] = useState<
@@ -72,61 +69,38 @@ export function SearchDialog({
     }>
   >([])
 
-  // Flatten navigation items for search
+  // Flatten routes for search - use routes.ts data directly
   const allItems = useMemo(() => {
-    const items: {
-      title: string
-      href: string
-      parent?: string
-      parentHref?: string
-      icon?: ElementType
-      color?: string
-      bgColor?: string
-    }[] = []
+    const items: SearchItem[] = []
 
-    navigationItems.forEach((item) => {
-      // Don't add parent items directly since they're just containers now
-      // Instead, add the Overview page which represents the parent section
-      if (item.children) {
-        const overviewPage = item.children.find((child) => child.title === "Overview")
-        if (overviewPage) {
+    routes.forEach((route) => {
+      if (route.children) {
+        // Add all children with parent info
+        route.children.forEach((child) => {
           items.push({
-            title: `${item.title} Overview`,
-            href: overviewPage.href,
-            icon: item.icon,
-            color: item.color,
-            bgColor: item.bgColor,
+            title: child.title,
+            href: child.href,
+            parent: route.title,
+            parentHref: route.href,
+            icon: child.icon,
+            color: child.color,
+            bgColor: child.bgColor,
           })
-        }
-
-        // Add all children (except Overview which we already added)
-        item.children.forEach((child) => {
-          if (child.title !== "Overview") {
-            items.push({
-              title: child.title,
-              href: child.href,
-              parent: item.title,
-              parentHref: item.href,
-              icon: item.icon,
-              color: item.color,
-              bgColor: item.bgColor,
-            })
-          }
         })
       } else {
         // For items without children, add them directly
         items.push({
-          title: item.title,
-          href: item.href,
-          icon: item.icon,
-          color: item.color,
-          bgColor: item.bgColor,
+          title: route.title,
+          href: route.href,
+          icon: route.icon,
+          color: route.color,
+          bgColor: route.bgColor,
         })
       }
     })
 
     return items
-  }, [navigationItems])
+  }, [])
 
   // Add validation function before the useEffects
   const isValidNavigationItem = useCallback(
@@ -254,50 +228,47 @@ export function SearchDialog({
     [favorites],
   )
 
-  // Filter items based on search and category
+  // Modern search: show recent/favorites when empty, filter all items when typing
   const filteredItems = useMemo(() => {
-    if (category === "recent") {
-      // For recent searches, we still want to apply the search filter
-      return search
-        ? recentSearches.filter(
-            (item) =>
-              item.title.toLowerCase().includes(search.toLowerCase()) ||
-              (item.parent && item.parent.toLowerCase().includes(search.toLowerCase())),
-          )
-        : recentSearches
-    }
-
-    if (category === "favorites") {
-      return search
-        ? favorites.filter(
-            (item) =>
-              item.title.toLowerCase().includes(search.toLowerCase()) ||
-              (item.parent && item.parent.toLowerCase().includes(search.toLowerCase())),
-          )
-        : favorites
-    }
-
-    // For "all" and other categories
-    let results = allItems
-    if (search) {
-      results = results.filter(
+    // If showing favorites only
+    if (showFavoritesOnly) {
+      if (!search.trim()) {
+        return favorites
+      }
+      // Filter favorites by search
+      const searchLower = search.toLowerCase()
+      return favorites.filter(
         (item) =>
-          item.title.toLowerCase().includes(search.toLowerCase()) ||
-          (item.parent && item.parent.toLowerCase().includes(search.toLowerCase())),
+          item.title.toLowerCase().includes(searchLower) ||
+          item.href.toLowerCase().includes(searchLower) ||
+          (item.parent && item.parent.toLowerCase().includes(searchLower))
       )
     }
 
-    return results
-  }, [allItems, search, category, recentSearches, favorites])
+    if (!search.trim()) {
+      // When no search, show recent searches if any, otherwise show favorites, otherwise show all
+      if (recentSearches.length > 0) {
+        return recentSearches.slice(0, 5) // Limit recent items
+      }
+      if (favorites.length > 0) {
+        return favorites.slice(0, 8) // Show some favorites
+      }
+      return allItems.slice(0, 10) // Show some top items
+    }
+
+    // When searching, filter all items by title, href, and parent
+    const searchLower = search.toLowerCase()
+    return allItems.filter(
+      (item) =>
+        item.title.toLowerCase().includes(searchLower) ||
+        item.href.toLowerCase().includes(searchLower) ||
+        (item.parent && item.parent.toLowerCase().includes(searchLower))
+    )
+  }, [allItems, search, recentSearches, favorites, showFavoritesOnly])
 
   // Dynamic suggestions from routes
   const suggestions = useMemo(() => {
     return routes.map(route => route.title)
-  }, [])
-
-  // Helper function to determine if an item is a parent category
-  const isParentCategory = useCallback((href: string) => {
-    return routes.some(route => route.href === href && route.children && route.children.length > 0)
   }, [])
 
   // Focus input when dialog opens
@@ -308,8 +279,8 @@ export function SearchDialog({
       }, 100)
     } else {
       setSearch("")
-      setCategory("all")
       setSelectedIndex(0)
+      setShowFavoritesOnly(false)
     }
   }, [isOpen])
 
@@ -325,81 +296,32 @@ export function SearchDialog({
       } else if (e.key === "Enter" && filteredItems[selectedIndex]) {
         e.preventDefault()
         const selectedItem = filteredItems[selectedIndex]
-        const isParent = isParentCategory(selectedItem.href)
+        // Add to recent searches first
+        addToRecentSearches({
+          title: selectedItem.title,
+          href: selectedItem.href,
+          parent: selectedItem.parent,
+          parentHref: selectedItem.parentHref,
+        })
 
-        if (isParent) {
-          // For parent categories, add to search instead of navigating
-          setSearch(selectedItem.title)
-        } else {
-          // Add to recent searches first
-          addToRecentSearches({
-            title: selectedItem.title,
-            href: selectedItem.href,
-            parent: selectedItem.parent,
-            parentHref: selectedItem.parentHref,
-          })
+        // Close the dialog first
+        onClose()
 
-          // Close the dialog first
-          onClose()
-
-          // Navigate directly using window.location for keyboard navigation
-          setTimeout(() => {
-            window.location.href = selectedItem.href
-          }, 100)
-        }
+        // Navigate directly using window.location for keyboard navigation
+        setTimeout(() => {
+          window.location.href = selectedItem.href
+        }, 100)
       }
     },
-    [filteredItems, selectedIndex, onClose, addToRecentSearches, isParentCategory, setSearch],
+    [filteredItems, selectedIndex, onClose, addToRecentSearches],
   )
 
-  // Get icon for result
-  const getIconForResult = (item: SearchItem) => {
-    if (item.icon) {
-      return item.icon
-    }
-
-    if (item.href.includes("home")) return Home
-    if (item.href.includes("calculus")) return ChartNoAxesCombinedIcon
-    if (item.href.includes("hadestown")) return Sparkles
-    if (item.href.includes("infinity")) return InfinityIcon
-    if (item.href.includes("binary")) return Binary
-    if (item.href.includes("ai")) return Brain
-
-    return FileText
-  }
-
-  // Get color for result
-  const getColorForResult = (item: SearchItem) => {
-    if (item.color) return item.color
-
-    if (item.href.includes("calculus")) return "text-blue-500"
-    if (item.href.includes("hadestown")) return "text-green-500"
-    if (item.href.includes("infinity")) return "text-yellow-500"
-    if (item.href.includes("binary")) return "text-violet-500"
-    if (item.href.includes("ai")) return "text-blue-500"
-
-    return "text-gray-500"
-  }
-
-  // Get background color for result
-  const getBgColorForResult = (item: SearchItem) => {
-    if (item.bgColor) return item.bgColor
-
-    if (item.href.includes("calculus")) return "bg-blue-500/10"
-    if (item.href.includes("hadestown")) return "bg-green-500/10"
-    if (item.href.includes("infinity")) return "bg-yellow-500/10"
-    if (item.href.includes("binary")) return "bg-violet-500/10"
-    if (item.href.includes("ai")) return "bg-blue-500/10"
-
-    return "bg-gray-500/10"
-  }
 
   // Define renderSearchItem function before using it
   const renderSearchItem = (item: SearchItem, index: number) => {
-    const Icon = getIconForResult(item)
-    const color = getColorForResult(item)
-    const bgColor = getBgColorForResult(item)
-    const isParent = isParentCategory(item.href)
+    const Icon = item.icon || Compass
+    const color = item.color || "text-teal-500"
+    const bgColor = item.bgColor || "bg-teal-500/10"
 
     const itemContent = (
       <>
@@ -415,7 +337,8 @@ export function SearchDialog({
           </div>
           {item.parent && (
             <p className="text-xs text-muted-foreground truncate">
-              {item.parent}
+              {/* {item.parent} */}
+              {item.href.split("/").slice(1).join("/")}
             </p>
           )}
         </div>
@@ -442,77 +365,43 @@ export function SearchDialog({
       </>
     )
 
-    if (isParent) {
-      // For parent categories, use a button that adds to search
-      return (
-        <Command.Item
-          key={item.href}
-          value={item.href}
-          onSelect={() => {
-            // Add parent title to search instead of navigating
-            setSearch(item.title)
+    // All items navigate consistently - no special parent category behavior
+    return (
+      <Command.Item
+        key={item.href}
+        value={item.href}
+        asChild
+        className={cn(
+          "flex items-center gap-3 px-3 py-2 cursor-pointer rounded-lg transition-colors",
+          selectedIndex === index && "bg-teal-500/10 text-teal-600 ring-teal-500 focus:ring-teal-500",
+          "hover:bg-sky-500/10 translate-x-1 my-1"
+        )}
+      >
+        <Link
+          href={item.href}
+          onClick={() => {
+            // Add to recent searches
+            addToRecentSearches({
+              title: item.title,
+              href: item.href,
+              parent: item.parent,
+              parentHref: item.parentHref,
+            })
+            onNavigate(item.href, item.parentHref, true)
           }}
-          className={cn(
-            "flex items-center gap-3 px-3 py-2 cursor-pointer rounded-lg transition-colors",
-            selectedIndex === index
-              ? "bg-accent text-accent-foreground"
-              : "hover:bg-muted/50"
-          )}
         >
           {itemContent}
-        </Command.Item>
-      )
-    } else {
-      // For actual pages, use Link with proper navigation
-      return (
-        <Command.Item
-          key={item.href}
-          value={item.href}
-          asChild
-          className={cn(
-            "flex items-center gap-3 px-3 py-2 cursor-pointer rounded-lg transition-colors",
-            selectedIndex === index
-              ? "bg-accent text-accent-foreground"
-              : "hover:bg-muted/50"
-          )}
-        >
-          <Link
-            href={item.href}
-            onClick={() => {
-              // Add to recent searches
-              // addToRecentSearches({
-              //   title: item.title,
-              //   href: item.href,
-              //   parent: item.parent,
-              //   parentHref: item.parentHref,
-              // })
-
-              // Close the dialog
-              // onClose()
-              onNavigate(item.href, item.parentHref, true)
-            }}
-          >
-            {itemContent}
-          </Link>
-        </Command.Item>
-      )
-    }
+        </Link>
+      </Command.Item>
+    )
   }
 
-  const clearRecentSearches = useCallback(() => {
-    setRecentSearches([])
-    try {
-      localStorage.removeItem("recentSearches")
-    } catch (error) {
-      console.error("Error clearing recent searches:", error)
-    }
-  }, [])
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="p-0 sm:max-w-2xl w-[95vw] max-h-[90vh] overflow-hidden gap-0 border-none shadow-2xl z-[200] rounded-xl">
-       <DialogTitle className="sr-only">Search</DialogTitle>
-       <Command
+        <DialogTitle className="sr-only">Search</DialogTitle>
+        <Command
           className="flex flex-col h-[80vh] max-h-[90vh] md:max-h-[600px] rounded-xl border bg-background shadow-xl overflow-hidden"
           onKeyDown={handleKeyDown}
         >
@@ -523,12 +412,27 @@ export function SearchDialog({
                 ref={inputRef}
                 value={search}
                 onValueChange={setSearch}
-                placeholder="Search..."
+                placeholder={showFavoritesOnly ? "Search favorites..." : "Search..."}
                 className="flex h-10 w-full rounded-md bg-transparent py-3 text-sm outline-none border-none ring-0 focus:ring-0 focus:outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50"
               />
               <button
+                onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
+                className={cn(
+                  "rounded-full w-8 h-8 flex items-center justify-center transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2",
+                  showFavoritesOnly
+                    ? "bg-yellow-500/20 text-yellow-600 hover:bg-yellow-500/80 ring-yellow-500 focus:ring-yellow-500 "
+                    : "bg-teal-500/10 text-teal-600 hover:bg-teal-500/50 hover:scale-105"
+                )}
+                aria-label={showFavoritesOnly ? "Show all items" : "Show favorites only"}
+              >
+                <Star className={cn("h-4 w-4", showFavoritesOnly && "fill-current")} />
+              </button>
+              <button
                 onClick={onClose}
-                className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full w-8 h-8 flex items-center justify-center bg-muted hover:bg-accent text-muted-foreground hover:text-accent-foreground transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2"
+                className="rounded-full w-8 h-8 flex items-center justify-center 
+                focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2
+                bg-teal-500/10 text-teal-600 hover:bg-teal-500/50 hover:scale-105
+                "
                 aria-label="Close search"
               >
                 <X className="h-4 w-4" />
@@ -536,39 +440,6 @@ export function SearchDialog({
             </div>
           </div>
 
-          {/* Categories */}
-          <div className="border-b px-3 py-2">
-            <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
-              <SearchCategory
-                title="All"
-                count={allItems.length}
-                color="bg-teal-500"
-                isActive={category === "all"}
-                onClick={() => setCategory("all")}
-              />
-              <SearchCategory
-                title="Pages"
-                count={allItems.filter((item) => !item.parent).length}
-                color="bg-violet-500"
-                isActive={category === "pages"}
-                onClick={() => setCategory("pages")}
-              />
-              <SearchCategory
-                title="Recent"
-                count={recentSearches.length}
-                color="bg-blue-500"
-                isActive={category === "recent"}
-                onClick={() => setCategory("recent")}
-              />
-              <SearchCategory
-                title="Favorites"
-                count={favorites.length}
-                color="bg-amber-500"
-                isActive={category === "favorites"}
-                onClick={() => setCategory("favorites")}
-              />
-            </div>
-          </div>
 
           <Command.List className="flex-1 overflow-y-auto p-3">
             {filteredItems.length === 0 && search && (
@@ -580,95 +451,45 @@ export function SearchDialog({
             {filteredItems.length === 0 && !search && (
               <div className="p-4 text-center">
                 <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-muted/70">
-                  <Compass className="h-6 w-6 text-muted-foreground" />
+                  {showFavoritesOnly ? (
+                    <Star className="h-6 w-6 text-muted-foreground" />
+                  ) : (
+                    <Compass className="h-6 w-6 text-muted-foreground" />
+                  )}
                 </div>
-                <h3 className="text-lg font-medium">Search for anything</h3>
+                <h3 className="text-lg font-medium">
+                  {showFavoritesOnly ? "No favorites yet" : "Search for anything"}
+                </h3>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  Start typing to search across pages, settings, and more
+                  {showFavoritesOnly
+                    ? "Star items to add them to your favorites"
+                    : "Start typing to search across pages, settings, and more"
+                  }
                 </p>
-                <div className="mt-4">
-                  <div className="text-xs text-muted-foreground">Try searching for</div>
-                  <div className="mt-2 flex flex-wrap justify-center gap-2">
-                    {suggestions.map((suggestion) => (
-                      <button
-                        key={suggestion}
-                        className="rounded-full border px-3 py-1 text-xs hover:bg-accent hover:text-accent-foreground transition-colors"
-                        onClick={() => setSearch(suggestion)}
-                      >
-                        {suggestion}
-                      </button>
-                    ))}
+                {!showFavoritesOnly && (
+                  <div className="mt-4">
+                    <div className="text-xs text-muted-foreground">Try searching for</div>
+                    <div className="mt-2 flex flex-wrap justify-center gap-2">
+                      {suggestions.map((suggestion) => (
+                        <button
+                          key={suggestion}
+                          className="rounded-full border px-3 py-1 text-xs hover:bg-accent hover:text-accent-foreground transition-colors"
+                          onClick={() => setSearch(suggestion)}
+                        >
+                          {suggestion}
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             )}
 
             {filteredItems.length > 0 && (
               <>
-                {category === "recent" && (
-                  <Command.Group
-                    heading={
-                      <div className="flex items-center justify-between text-sm font-medium text-muted-foreground mb-2">
-                        <div className="flex items-center gap-2">
-                          <Clock className="h-4 w-4" />
-                          <span>Recent Searches</span>
-                        </div>
-                        {recentSearches.length > 0 && (
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              clearRecentSearches()
-                            }}
-                            className="text-xs text-muted-foreground hover:text-foreground"
-                          >
-                            Clear
-                          </button>
-                        )}
-                      </div>
-                    }
-                  >
-                    {filteredItems.length > 0 ? (
-                      filteredItems.map((item, index) => renderSearchItem(item, index))
-                    ) : (
-                      <div className="px-2 py-3 text-sm text-muted-foreground">No recent searches</div>
-                    )}
-                  </Command.Group>
-                )}
-
-                {category === "favorites" && (
-                  <Command.Group
-                    heading={
-                      <div className="flex items-center justify-between text-sm font-medium text-muted-foreground mb-2">
-                        <div className="flex items-center gap-2">
-                          <Star className="h-4 w-4" />
-                          <span>Favorites</span>
-                        </div>
-                        {favorites.length > 0 && (
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              setFavorites([])
-                              try {
-                                localStorage.removeItem("favorites")
-                              } catch (error) {
-                                console.error("Error clearing favorites:", error)
-                              }
-                            }}
-                            className="text-xs text-muted-foreground hover:text-foreground"
-                          >
-                            Clear
-                          </button>
-                        )}
-                      </div>
-                    }
-                  >
-                    {filteredItems.map((item, index) => renderSearchItem(item, index))}
-                  </Command.Group>
-                )}
-
-                {category !== "recent" && category !== "favorites" && (
-                  <Command.Group>{filteredItems.map((item, index) => renderSearchItem(item, index))}</Command.Group>
-                )}
+                <Command.Group>
+                  {filteredItems.map((item, index) => renderSearchItem(item, index))}
+                </Command.Group>
               </>
             )}
           </Command.List>
@@ -688,11 +509,13 @@ export function SearchDialog({
                 </div>
               </div>
               <div className="flex items-center gap-1">
-                <Flame className="h-4 w-4 text-amber-500" />
-                <span className="hidden sm:inline">
-                  Pro Tip: Press <SearchShortcut keys={["⌘", "K"]} /> anywhere to open search
-                </span>
-                <span className="sm:hidden">Press ⌘K to search</span>
+                {/* <span className=""> */}
+                  <span className="flex items-center gap-1">
+                    {/* <Flame className="h-4 w-4 text-amber-500" /> */}
+                    <SearchShortcut keys={["⌘", "K"]} />
+                  </span>
+                  Open Search
+                {/* </span> */}
               </div>
             </div>
           </div>

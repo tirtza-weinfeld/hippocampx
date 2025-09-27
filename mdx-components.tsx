@@ -1,31 +1,30 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import type { ComponentPropsWithoutRef } from 'react';
 import type { MDXComponents } from 'mdx/types';
 import { DifficultyBadge } from '@/components/mdx/difficulty-badge';
-import CodeBlock from '@/components/mdx/code/code-block';
+import CodeBlock, { CodeBlockSkeleton } from '@/components/mdx/code/code-block';
 import InlineCode from '@/components/mdx/code/code-inline';
 // import { ProblemCodeBlock } from '@/components/mdx/problem/code/problem-code-block';
 // import TabbedCodeBlock from '@/components/mdx/code/tabbed-code-block';
-
 import { H1, H2, H3, H4, H5, H6, Paragraph, Strong, Em } from '@/components/mdx/typography';
 import { Link } from '@/components/mdx/links';
 // import { ProblemLinkPreview } from '@/components/mdx/problem-link-preview';
 import { HorizontalRule } from '@/components/mdx/dividers';
 import Blockquote from '@/components/mdx/blockquotes';
 import ContentPopover from '@/components/mdx/content-popover';
-import Alert from '@/components/mdx/alert';
+import Alert, { AlertProps, AlertSuspense } from '@/components/mdx/alert';
 import { TableOfContents } from '@/components/mdx/toc/table-of-contents';
 import { ResizableWrapper } from '@/components/mdx/toc/resizable-wrapper';
 import CodeTooltip from '@/components/mdx/code/code-tooltip';
-import { 
-  Table, 
-  TableHeader, 
-  TableBody, 
-  TableFooter, 
-  TableRow, 
-  TableHead, 
-  TableCell, 
-  TableCaption 
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableFooter,
+  TableRow,
+  TableHead,
+  TableCell,
+  TableCaption
 } from '@/components/mdx/table';
 // Import standard list components only
 import { OrderedList } from '@/components/mdx/list/ordered-list';
@@ -50,15 +49,15 @@ export const customComponents = {
   li: ListItem,
 
   UnorderedList,
- OrderedList,
- ListItem,
+  OrderedList,
+  ListItem,
   ...CustomLists,
-  
+
   // Custom list item components for plugin-generated JSX
   FeatureItem,
   TaskItem,
   ...ProblemItems,
-  
+
   // Typography
   h1: H1,
   h2: H2,
@@ -71,7 +70,15 @@ export const customComponents = {
   em: Em,
   hr: HorizontalRule,
   blockquote: Blockquote,
-  Alert,
+  Alert:({ children, ...props }: ComponentPropsWithoutRef<'div'> & AlertProps) => {
+    return (
+      <Suspense fallback={<AlertSuspense />}>  
+      <Alert {...props}>
+        {children}
+      </Alert>
+      </Suspense>
+    );
+  },
 
   // Links with automatic problem preview enhancement
   a: ({ href, children, ...props }: ComponentPropsWithoutRef<'a'>) => {
@@ -101,13 +108,15 @@ export const customComponents = {
     // Handle code blocks (with language specification)
     if (className?.includes('language-')) {
       // console.log(`language-${className}, ${JSON.stringify(children)}`)
+
       return (
-        <CodeBlock className={className} {...props}>
-          {children}
-        </CodeBlock>
-        // <ProblemCodeBlock className={className} {...props} code={children as string} />
-       
+        <Suspense fallback={<CodeBlockSkeleton />}>
+          <CodeBlock className={className} {...props}>
+            {children}
+          </CodeBlock>
+        </Suspense>
       );
+
     }
 
     // console.log(`inline-${className}, ${JSON.stringify(children)}`)
@@ -137,7 +146,7 @@ export const customComponents = {
   // Content components
   ContentPopover,
   CodeTooltip,
-  
+
   // TOC Components
   TableOfContents,
   ResizableWrapper,
@@ -161,5 +170,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
 export const mdxComponents = {
   ...customComponents,
 };
+
+
 
 
