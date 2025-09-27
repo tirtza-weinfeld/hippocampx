@@ -48,6 +48,7 @@ export function SearchDialog({
   const inputRef = useRef<HTMLInputElement>(null)
   const [selectedIndex, setSelectedIndex] = useState(0)
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false)
+  const [isMac, setIsMac] = useState(false)
 
   // Recent searches stored in localStorage
   const [recentSearches, setRecentSearches] = useState<
@@ -129,6 +130,11 @@ export function SearchDialog({
       console.error("Error loading recent searches:", error)
     }
   }, [isValidNavigationItem])
+
+  // Detect platform
+  useEffect(() => {
+    setIsMac(navigator.userAgent.includes('Mac'))
+  }, [])
 
   // Add this useEffect to load favorites from localStorage
   useEffect(() => {
@@ -495,7 +501,7 @@ export function SearchDialog({
           </Command.List>
 
           {/* Footer with keyboard shortcuts */}
-          <div className="border-t px-4 py-3">
+          <div className="border-t px-4 py-3 hidden sm:block">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between text-xs text-muted-foreground">
               <div className="flex items-center gap-3 mb-2 sm:mb-0">
                 <div className="flex items-center gap-1">
@@ -509,13 +515,10 @@ export function SearchDialog({
                 </div>
               </div>
               <div className="flex items-center gap-1">
-                {/* <span className=""> */}
-                  <span className="flex items-center gap-1">
-                    {/* <Flame className="h-4 w-4 text-amber-500" /> */}
-                    <SearchShortcut keys={["⌘", "K"]} />
-                  </span>
-                  Open Search
-                {/* </span> */}
+                <span className="flex items-center gap-1">
+                  <SearchShortcut keys={isMac ? ["⌘", "K"] : ["Ctrl", "K"]} />
+                </span>
+                Open Search
               </div>
             </div>
           </div>
