@@ -234,6 +234,9 @@ importers:
         specifier: ^6.0.3
         version: 6.0.3
     devDependencies:
+      '@eslint/eslintrc':
+        specifier: ^3.3.1
+        version: 3.3.1
       '@floating-ui/react-dom':
         specifier: ^2.1.5
         version: 2.1.5(react-dom@19.2.0-canary-0bdb9206-20250818(react@19.2.0-canary-0bdb9206-20250818))(react@19.2.0-canary-0bdb9206-20250818)
