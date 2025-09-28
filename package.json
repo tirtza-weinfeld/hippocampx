@@ -8,7 +8,7 @@
     "build": "next build",
     "build:scripts": "pnpm problems:generate",
     "start": "next start",
-    "lint": "eslint .",
+    "lint": "eslint",
     "db:generate": "drizzle-kit generate:pg",
     "db:push": "drizzle-kit push:pg",
     "db:studio": "drizzle-kit studio",

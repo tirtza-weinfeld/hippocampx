@@ -1,9 +1,9 @@
 "use client"
 
-import { useState, useCallback, useEffect, useRef, useMemo, type ElementType } from "react"
+import { useState, useEffect, useRef, type ElementType } from "react"
 import Link from "next/link"
 import { Command } from "cmdk"
-import { Compass, Flame, Search, Star, X } from "lucide-react"
+import { Compass, Search, Star, X } from "lucide-react"
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { cn } from "@/lib/utils"
 import { SearchEmptyState } from "./search-dialog/search-empty-state"
@@ -39,6 +39,7 @@ type SearchItem = {
   bgColor?: string
 }
 
+
 export function SearchDialog({
   isOpen,
   onClose,
@@ -48,30 +49,11 @@ export function SearchDialog({
   const inputRef = useRef<HTMLInputElement>(null)
   const [selectedIndex, setSelectedIndex] = useState(0)
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false)
-  const [isMac, setIsMac] = useState(false)
 
-  // Recent searches stored in localStorage
-  const [recentSearches, setRecentSearches] = useState<
-    Array<{
-      title: string
-      href: string
-      parent?: string
-      parentHref?: string
-    }>
-  >([])
 
-  // Favorites (would normally be stored in user preferences)
-  const [favorites, setFavorites] = useState<
-    Array<{
-      title: string
-      href: string
-      parent?: string
-      parentHref?: string
-    }>
-  >([])
 
   // Flatten routes for search - use routes.ts data directly
-  const allItems = useMemo(() => {
+  function getAllItems(): SearchItem[] {
     const items: SearchItem[] = []
 
     routes.forEach((route) => {
@@ -101,141 +83,138 @@ export function SearchDialog({
     })
 
     return items
-  }, [])
+  }
 
-  // Add validation function before the useEffects
-  const isValidNavigationItem = useCallback(
-    (item: { href: string }) => {
-      // Check if the href exists in the current navigation structure
-      return allItems.some((navItem) => navItem.href === item.href)
-    },
-    [allItems]
-  )
+  const allItems = getAllItems()
+
 
   // Load recent searches from localStorage on mount
-  useEffect(() => {
+  const [recentSearches, setRecentSearches] = useState<
+    Array<{
+      title: string
+      href: string
+      parent?: string
+      parentHref?: string
+    }>
+  >(() => {
+    if (typeof window === 'undefined') return []
+
     try {
       const storedSearches = localStorage.getItem("recentSearches")
       if (storedSearches) {
         const parsedSearches = JSON.parse(storedSearches)
-        // Filter out invalid navigation items
-        const validSearches = parsedSearches.filter(isValidNavigationItem)
-        setRecentSearches(validSearches)
-        // Update localStorage if items were filtered out
-        if (validSearches.length !== parsedSearches.length) {
-          localStorage.setItem("recentSearches", JSON.stringify(validSearches))
-        }
+        return parsedSearches
       }
     } catch (error) {
       console.error("Error loading recent searches:", error)
     }
-  }, [isValidNavigationItem])
+    return []
+  })
 
-  // Detect platform
-  useEffect(() => {
-    setIsMac(navigator.userAgent.includes('Mac'))
-  }, [])
 
-  // Add this useEffect to load favorites from localStorage
-  useEffect(() => {
+  // Detect platform - initialize on mount
+  const [isMac] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return navigator.userAgent.includes('Mac')
+    }
+    return false
+  })
+
+  // Load favorites from localStorage on mount
+  const [favorites, setFavorites] = useState<
+    Array<{
+      title: string
+      href: string
+      parent?: string
+      parentHref?: string
+    }>
+  >(() => {
+    if (typeof window === 'undefined') return []
+
     try {
       const storedFavorites = localStorage.getItem("favorites")
       if (storedFavorites) {
-        const parsedFavorites = JSON.parse(storedFavorites)
-        // Filter out invalid navigation items
-        const validFavorites = parsedFavorites.filter(isValidNavigationItem)
-        setFavorites(validFavorites)
-        // Update localStorage if items were filtered out
-        if (validFavorites.length !== parsedFavorites.length) {
-          localStorage.setItem("favorites", JSON.stringify(validFavorites))
-        }
+        return JSON.parse(storedFavorites)
       } else {
         // Set default favorites if none exist
         const defaultFavorites = [
           { title: "Home", href: "/", parent: "Main", parentHref: "/" },
           { title: "Calculus Overview", href: "/calculus", parent: "Calculus", parentHref: "/calculus" },
           { title: "Hadestown", href: "/hadestown", parent: "Main", parentHref: "/hadestown" },
-        ].filter(isValidNavigationItem) // Also validate default favorites
-        setFavorites(defaultFavorites)
+        ]
         localStorage.setItem("favorites", JSON.stringify(defaultFavorites))
+        return defaultFavorites
       }
     } catch (error) {
       console.error("Error loading favorites:", error)
+      return []
     }
-  }, [isValidNavigationItem])
+  })
+
 
   // Function to add a search to recent searches
-  const addToRecentSearches = useCallback(
-    (item: {
-      title: string
-      href: string
-      parent?: string
-      parentHref?: string
-    }) => {
-      setRecentSearches((prev) => {
-        // Remove the item if it already exists to avoid duplicates
-        const filtered = prev.filter((search) => search.href !== item.href)
+  function addToRecentSearches(item: {
+    title: string
+    href: string
+    parent?: string
+    parentHref?: string
+  }) {
+    setRecentSearches((prev) => {
+      // Remove the item if it already exists to avoid duplicates
+      const filtered = prev.filter((search) => search.href !== item.href)
 
-        // Add the new item at the beginning and limit to 5 items
-        const updated = [item, ...filtered].slice(0, 5)
+      // Add the new item at the beginning and limit to 5 items
+      const updated = [item, ...filtered].slice(0, 5)
 
-        // Save to localStorage
-        try {
-          localStorage.setItem("recentSearches", JSON.stringify(updated))
-        } catch (error) {
-          console.error("Error saving recent searches:", error)
-        }
+      // Save to localStorage
+      try {
+        localStorage.setItem("recentSearches", JSON.stringify(updated))
+      } catch (error) {
+        console.error("Error saving recent searches:", error)
+      }
 
-        return updated
-      })
-    },
-    [],
-  )
+      return updated
+    })
+  }
 
   // Add this function to toggle favorites
-  const toggleFavorite = useCallback(
-    (item: {
-      title: string
-      href: string
-      parent?: string
-      parentHref?: string
-    }) => {
-      setFavorites((prev) => {
-        // Check if the item is already in favorites
-        const isFavorite = prev.some((fav) => fav.href === item.href)
+  function toggleFavorite(item: {
+    title: string
+    href: string
+    parent?: string
+    parentHref?: string
+  }) {
+    setFavorites((prev) => {
+      // Check if the item is already in favorites
+      const isFavorite = prev.some((fav) => fav.href === item.href)
 
-        let updated
-        if (isFavorite) {
-          // Remove from favorites
-          updated = prev.filter((fav) => fav.href !== item.href)
-        } else {
-          // Add to favorites
-          updated = [...prev, item]
-        }
+      let updated
+      if (isFavorite) {
+        // Remove from favorites
+        updated = prev.filter((fav) => fav.href !== item.href)
+      } else {
+        // Add to favorites
+        updated = [...prev, item]
+      }
 
-        // Save to localStorage
-        try {
-          localStorage.setItem("favorites", JSON.stringify(updated))
-        } catch (error) {
-          console.error("Error saving recent searches:", error)
-        }
+      // Save to localStorage
+      try {
+        localStorage.setItem("favorites", JSON.stringify(updated))
+      } catch (error) {
+        console.error("Error saving recent searches:", error)
+      }
 
-        return updated
-      })
-    },
-    [],
-  )
+      return updated
+    })
+  }
 
   // Add this function to check if an item is a favorite
-  const isFavorite = useCallback(
-    (href: string) => {
-      return favorites.some((fav) => fav.href === href)
-    },
-    [favorites],
-  )
+  function isFavorite(href: string) {
+    return favorites.some((fav) => fav.href === href)
+  }
 
   // Modern search: show recent/favorites when empty, filter all items when typing
-  const filteredItems = useMemo(() => {
+  function getFilteredItems() {
     // If showing favorites only
     if (showFavoritesOnly) {
       if (!search.trim()) {
@@ -270,12 +249,12 @@ export function SearchDialog({
         item.href.toLowerCase().includes(searchLower) ||
         (item.parent && item.parent.toLowerCase().includes(searchLower))
     )
-  }, [allItems, search, recentSearches, favorites, showFavoritesOnly])
+  }
+
+  const filteredItems = getFilteredItems()
 
   // Dynamic suggestions from routes
-  const suggestions = useMemo(() => {
-    return routes.map(route => route.title)
-  }, [])
+  const suggestions = routes.map(route => route.title)
 
   // Focus input when dialog opens
   useEffect(() => {
@@ -283,44 +262,52 @@ export function SearchDialog({
       setTimeout(() => {
         inputRef.current?.focus()
       }, 100)
-    } else {
-      setSearch("")
-      setSelectedIndex(0)
-      setShowFavoritesOnly(false)
+    }
+  }, [isOpen])
+
+  // Reset state when dialog closes using previous state pattern
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout
+    if (!isOpen) {
+      timeoutId = setTimeout(() => {
+        setSearch("")
+        setSelectedIndex(0)
+        setShowFavoritesOnly(false)
+      }, 0)
+    }
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId)
     }
   }, [isOpen])
 
   // Handle keyboard navigation
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent) => {
-      if (e.key === "ArrowDown") {
-        e.preventDefault()
-        setSelectedIndex((prev) => (prev < filteredItems.length - 1 ? prev + 1 : prev))
-      } else if (e.key === "ArrowUp") {
-        e.preventDefault()
-        setSelectedIndex((prev) => (prev > 0 ? prev - 1 : 0))
-      } else if (e.key === "Enter" && filteredItems[selectedIndex]) {
-        e.preventDefault()
-        const selectedItem = filteredItems[selectedIndex]
-        // Add to recent searches first
-        addToRecentSearches({
-          title: selectedItem.title,
-          href: selectedItem.href,
-          parent: selectedItem.parent,
-          parentHref: selectedItem.parentHref,
-        })
+  function handleKeyDown(e: React.KeyboardEvent) {
+    if (e.key === "ArrowDown") {
+      e.preventDefault()
+      setSelectedIndex((prev) => (prev < filteredItems.length - 1 ? prev + 1 : prev))
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault()
+      setSelectedIndex((prev) => (prev > 0 ? prev - 1 : 0))
+    } else if (e.key === "Enter" && filteredItems[selectedIndex]) {
+      e.preventDefault()
+      const selectedItem = filteredItems[selectedIndex]
+      // Add to recent searches first
+      addToRecentSearches({
+        title: selectedItem.title,
+        href: selectedItem.href,
+        parent: selectedItem.parent,
+        parentHref: selectedItem.parentHref,
+      })
 
-        // Close the dialog first
-        onClose()
+      // Close the dialog first
+      onClose()
 
-        // Navigate directly using window.location for keyboard navigation
-        setTimeout(() => {
-          window.location.href = selectedItem.href
-        }, 100)
-      }
-    },
-    [filteredItems, selectedIndex, onClose, addToRecentSearches],
-  )
+      // Navigate directly using window.location for keyboard navigation
+      setTimeout(() => {
+        window.location.href = selectedItem.href
+      }, 100)
+    }
+  }
 
 
   // Define renderSearchItem function before using it

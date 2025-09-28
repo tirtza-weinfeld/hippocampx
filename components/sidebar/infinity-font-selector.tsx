@@ -1,6 +1,6 @@
 "use client"
 
-import * as React from "react"
+import { useState, useEffect, useRef } from "react"
 import { motion, AnimatePresence } from "motion/react"
 import { Check, Type } from "lucide-react"
 import { useTheme } from "@/components/theme/theme-provider"
@@ -145,12 +145,12 @@ function getFontFamily(font: string): string {
 }
 
 export function InfinityFontSelector() {
-  const [isOpen, setIsOpen] = React.useState(false)
+  const [isOpen, setIsOpen] = useState(false)
   const { font, setFont } = useTheme()
-  const containerRef = React.useRef<HTMLDivElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
 
   // Close the font selector when clicking outside
-  React.useEffect(() => {
+  useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
         setIsOpen(false)
@@ -166,19 +166,19 @@ export function InfinityFontSelector() {
     }
   }, [isOpen])
 
-  // Add this state for popup position
-  const [popupPosition, setPopupPosition] = React.useState({ bottom: 0, left: 0 })
+  // Add popup position state
+  const [popupPosition, setPopupPosition] = useState({ bottom: 0, left: 0 })
 
-  // Add this useEffect to calculate position when popup opens
-  React.useEffect(() => {
-    if (isOpen && containerRef.current) {
+  // Calculate position only when opening
+  const updatePopupPosition = () => {
+    if (containerRef.current) {
       const rect = containerRef.current.getBoundingClientRect()
       setPopupPosition({
         bottom: window.innerHeight - rect.top + 10,
-        left: rect.left + 100, // Change this from rect.left - 100 to rect.left + 50
+        left: rect.left + 100,
       })
     }
-  }, [isOpen])
+  }
 
   // Get position based on hippo feature
   const getHippoPosition = (fontOption: FontOption) => {
@@ -223,7 +223,12 @@ export function InfinityFontSelector() {
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => setIsOpen(!isOpen)}
+              onClick={() => {
+                if (!isOpen) {
+                  updatePopupPosition()
+                }
+                setIsOpen(!isOpen)
+              }}
               className={cn(
                 "h-9 w-9 rounded-full transition-colors hover:bg-accent",
                 isOpen && "bg-accent text-accent-foreground",

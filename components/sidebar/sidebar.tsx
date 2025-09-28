@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback, useEffect, useRef, useMemo, type ReactNode, type ElementType } from "react"
+import { useState,useCallback, useEffect, useRef, type ReactNode, type ElementType } from "react"
 import { usePathname, useRouter } from "next/navigation"
 import Link from "next/link"
 import { ChevronDown, PanelLeft, Search } from "lucide-react"
@@ -56,16 +56,13 @@ export function Sidebar({ children, defaultOpen }: SidebarProps) {
   const [expandedItems, setExpandedItems] = useState<ExpandedItems>({})
 
   // Set expanded state with cookie persistence
-  const setExpanded = useCallback(
-    (value: boolean | ((value: boolean) => boolean)) => {
-      const expandedState = typeof value === "function" ? value(isExpanded) : value
-      setIsExpanded(expandedState)
-      
-      // This sets the cookie to keep the sidebar state.
-      document.cookie = `${SIDEBAR_COOKIE_NAME}=${expandedState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`
-    },
-    [isExpanded]
-  )
+  const setExpandedWithCookie = useCallback((value: boolean | ((value: boolean) => boolean)) => {
+    const expandedState = typeof value === "function" ? value(isExpanded) : value
+    setIsExpanded(expandedState)
+
+    // This sets the cookie to keep the sidebar state.
+    document.cookie = `${SIDEBAR_COOKIE_NAME}=${expandedState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`
+  }, [isExpanded])
 
   // Check if mobile on mount and when window resizes
   useEffect(() => {
@@ -138,92 +135,84 @@ export function Sidebar({ children, defaultOpen }: SidebarProps) {
     })
   }, [pathname])
 
-  // Toggle sidebar state
+  // Toggle functions - need useCallback since used in useEffect dependencies
   const toggleSidebar = useCallback(() => {
-    setExpanded((prev) => !prev)
-  }, [setExpanded])
+    setExpandedWithCookie((prev) => !prev)
+  }, [setExpandedWithCookie])
 
-  // Toggle mobile sidebar
   const toggleMobileSidebar = useCallback(() => {
     setIsMobileOpen((prev) => !prev)
   }, [])
 
-  // Toggle search dialog
   const toggleSearch = useCallback(() => {
     setIsSearchOpen((prev) => !prev)
   }, [])
 
   // Function to expand a parent item
-  const expandParentItem = useCallback((parentHref: string) => {
+  function expandParentItem(parentHref: string) {
     setExpandedItems((prev) => ({
       ...prev,
       [parentHref]: true,
     }))
-  }, [])
+  }
 
   // Function to scroll to a navigation item
-  const scrollToNavItem = useCallback(
-    (href: string, parentHref?: string) => {
-      if (parentHref) {
-        expandParentItem(parentHref)
-      }
+  function scrollToNavItem(href: string, parentHref?: string) {
+    if (parentHref) {
+      expandParentItem(parentHref)
+    }
 
-      if (!parentHref) {
-        for (const item of navigationItems) {
-          if (item.children) {
-            const childItem = item.children.find((child) => child.href === href)
-            if (childItem) {
-              expandParentItem(item.href)
-              break
-            }
+    if (!parentHref) {
+      for (const item of navigationItems) {
+        if (item.children) {
+          const childItem = item.children.find((child) => child.href === href)
+          if (childItem) {
+            expandParentItem(item.href)
+            break
           }
         }
       }
+    }
 
-      setTimeout(() => {
-        const element = navRefs.current.get(href)
-        if (element && navContentRef.current) {
-          element.scrollIntoView({ behavior: "smooth", block: "center" })
-        }
-      }, 300)
-    },
-    [expandParentItem],
-  )
+    setTimeout(() => {
+      const element = navRefs.current.get(href)
+      if (element && navContentRef.current) {
+        element.scrollIntoView({ behavior: "smooth", block: "center" })
+      }
+    }, 300)
+  }
 
   // Handle navigation click
-  const handleNavClick = useCallback(
-    (href: string, parentHref?: string, shouldNavigate = true) => {
-      setIsSearchOpen(false)
+  function handleNavClick(href: string, parentHref?: string, shouldNavigate = true) {
+    setIsSearchOpen(false)
 
-      if (isMobile) {
-        setIsMobileOpen(false)
-      }
+    if (isMobile) {
+      setIsMobileOpen(false)
+    }
 
-      if (shouldNavigate) {
-        router.push(href)
-      }
+    if (shouldNavigate) {
+      router.push(href)
+    }
 
-      if (parentHref) {
+    if (parentHref) {
+      setExpandedItems((prev) => ({
+        ...prev,
+        [parentHref]: true,
+      }))
+
+      setTimeout(() => scrollToNavItem(href, parentHref), 200)
+    } else {
+      const parentItem = navigationItems.find((item) => item.href === href && item.children)
+      if (parentItem && shouldNavigate) {
         setExpandedItems((prev) => ({
           ...prev,
-          [parentHref]: true,
+          [href]: true,
         }))
-
-        setTimeout(() => scrollToNavItem(href, parentHref), 200)
-      } else {
-        const parentItem = navigationItems.find((item) => item.href === href && item.children)
-        if (parentItem && shouldNavigate) {
-          setExpandedItems((prev) => ({
-            ...prev,
-            [href]: true,
-          }))
-        }
-
-        setTimeout(() => scrollToNavItem(href), 200)
       }
-    },
-    [isMobile, router, scrollToNavItem],
-  )
+
+      setTimeout(() => scrollToNavItem(href), 200)
+    }
+  }
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -252,11 +241,11 @@ export function Sidebar({ children, defaultOpen }: SidebarProps) {
   }, [toggleSidebar, toggleMobileSidebar, toggleSearch, isMobile])
 
   // Register a ref for a navigation item
-  const registerNavRef = useCallback((href: string, el: HTMLElement | null) => {
+  function registerNavRef(href: string, el: HTMLElement | null) {
     if (el) {
       navRefs.current.set(href, el)
     }
-  }, [])
+  }
 
   // MOBILE LAYOUT
   if (isMobile) {
@@ -420,9 +409,9 @@ export function Sidebar({ children, defaultOpen }: SidebarProps) {
       {/* Desktop Sidebar */}
       <motion.aside
         id="desktop-sidebar"
-        className="fixed inset-y-0 left-1 top-1 bottom-1 z-20 bg-background/95 backdrop-blur-md border rounded-2xl shadow-lg 
+        className="fixed inset-y-0 left-1 top-1 bottom-1 z-20 bg-background/95 backdrop-blur-md border rounded-2xl shadow-lg
         shadow-cyan-500/20"
-        initial={{ width: isExpanded ? "16rem" : "5rem" }}
+        style={{ width: isExpanded ? "16rem" : "5rem" }}
         animate={{ width: isExpanded ? "16rem" : "5rem" }}
         transition={{
           type: "spring",
@@ -550,7 +539,7 @@ export function Sidebar({ children, defaultOpen }: SidebarProps) {
       {/* Main content */}
       <motion.main
         className="flex-1"
-        initial={{ marginLeft: isExpanded ? "16rem" : "5rem" }}
+        style={{ marginLeft: isExpanded ? "16rem" : "5rem" }}
         animate={{ marginLeft: isExpanded ? "16rem" : "5rem" }}
         transition={{
           type: "spring",
@@ -593,7 +582,7 @@ function NavItem({ item, isExpanded, pathname, onClick, isOpen, onOpenChange, re
   }, [item.href, registerRef])
 
   // Check if current path is this item or any of its children
-  const isActive = useMemo(() => {
+  function getIsActive() {
     // Exact match for the item itself
     if (pathname === item.href) return true
 
@@ -610,7 +599,9 @@ function NavItem({ item, isExpanded, pathname, onClick, isOpen, onOpenChange, re
     }
 
     return false
-  }, [pathname, item])
+  }
+
+  const isActive = getIsActive()
 
   const Icon = item.icon
 
