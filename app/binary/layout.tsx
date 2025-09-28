@@ -30,7 +30,7 @@ export default function BinaryLayout({ children }: { children: React.ReactNode }
       </header>
       <Suspense fallback={<div>Loading...</div>}>
       <>  
-      s
+      
       {children}
       </>
       

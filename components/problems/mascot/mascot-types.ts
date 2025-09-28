@@ -1,5 +1,6 @@
 export type MascotIcon = "turing" | "lovelace" | "knuth" | "dijkstra" | "hopper" | "berners-lee"
-export type ActiveFeature = "main" | "dictionary" | "settings"
+// export type ActiveFeature = "main" | "snippets" | "settings"
+export type ActiveFeature = "main" | "settings"
 
 // Organized state structure
 export type MascotState = {
@@ -38,12 +39,17 @@ export interface Solution {
   code: string
 }
 
-export type Problems = Record<string, {
+export type Problems = Record<string, Problem>
+
+
+export type Problem = {
   title: string
   definition: string
   difficulty: 'easy' | 'medium' | 'hard'
   leetcode: string
   topics?: string[]
   solutions: Record<string, Solution>
-}>
+}
+
+
 

@@ -23,7 +23,7 @@ import { Problems } from "./mascot-types"
 // import { Problems, Topics } from "./mascot-types"
 import { cn } from "@/lib/utils"
 
-function ProblemsMascotContent(){
+function ProblemsMascotContent() {
   const problems = METADATA.problems
   const stats = STATS
 
@@ -84,20 +84,20 @@ function ProblemsMascotContent(){
                 zIndex: 9999,
               }}
             >
-            {/* Header with close button */}
-            <div className="flex items-center justify-between p-3 border-b border-gray-200 dark:border-gray-700">
-              <div className="flex items-center gap-2">
-                {(() => {
-                  const iconConfig = CS_LEGENDS[selectedIcon]
-                  if (!iconConfig) return null
-                  const IconComponent = iconConfig.icon as React.ComponentType<{className?: string}>
-                  return <IconComponent className="w-5 h-5" />
-                })()}
-                <h2 className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                  Problems Assistant
-                </h2>
-              </div>
-              {/* <div className="flex items-center gap-2">
+              {/* Header with close button */}
+              <div className="flex items-center justify-between p-3 border-b border-gray-200 dark:border-gray-700">
+                <div className="flex items-center gap-2">
+                  {(() => {
+                    const iconConfig = CS_LEGENDS[selectedIcon]
+                    if (!iconConfig) return null
+                    const IconComponent = iconConfig.icon as React.ComponentType<{ className?: string }>
+                    return <IconComponent className="w-5 h-5" />
+                  })()}
+                  <h2 className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                    Problems Assistant
+                  </h2>
+                </div>
+                {/* <div className="flex items-center gap-2">
                 <div className="flex items-center gap-1">
                   <span className="text-xs text-gray-600 dark:text-gray-400">Stay Open</span>
                   <MascotSwitch
@@ -107,45 +107,46 @@ function ProblemsMascotContent(){
                   />
                 </div>
               </div> */}
-              <motion.button
-                onClick={handleCloseClick}
-                className="p-1  rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                aria-label="Close mascot"
-              >
-                <X size={16} />
-              </motion.button>
-            </div>
+                <motion.button
+                  onClick={handleCloseClick}
+                  className="p-1  rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                  aria-label="Close mascot"
+                >
+                  <X size={16} />
+                </motion.button>
+              </div>
 
-            {/* Main Content Area */}
-            <div className="p-2 h-[calc(100%-112px)] overflow-auto flex flex-col" style={{ WebkitOverflowScrolling: 'touch' }}  >
-              {activeFeature === "main" && (
-                <ProblemsView
-                  problems={problems as unknown as Problems}
-                  time_complexities={stats.time_complexity as unknown as Record<string, string>}
-                  topics={stats.topics as unknown as Record<string, string[]>}
-                />
-              )}
+              {/* Main Content Area */}
+              <div className="p-2 h-[calc(100%-112px)] overflow-auto flex flex-col" style={{ WebkitOverflowScrolling: 'touch' }}  >
+                {activeFeature === "main" && (
+                  <ProblemsView
+                    problems={problems as unknown as Problems}
+                    time_complexities={stats.time_complexity as unknown as Record<string, string>}
+                    topics={stats.topics as unknown as Record<string, string[]>}
+                  />
+                )}
 
-              {/* {activeFeature === "dictionary" && (
+                {/* {activeFeature === "dictionary" && (
                 <DictionaryView
                   topics={stats.topics as unknown as Topics}
                 />
               )} */}
+                {/* {activeFeature === "snippets" && (
+                )} */}
+                {activeFeature === "settings" && (
+                  <SettingsView />
+                )}
+              </div>
 
-              {activeFeature === "settings" && (
-                <SettingsView />
-              )}
-            </div>
-
-            {/* Bottom Navigation */}
-            <div className="flex-shrink-0">
-              <BottomNavigation
-                activeFeature={activeFeature}
-                onFeatureChange={setActiveFeature}
-              />
-            </div>
+              {/* Bottom Navigation */}
+              <div className="flex-shrink-0">
+                <BottomNavigation
+                  activeFeature={activeFeature}
+                  onFeatureChange={setActiveFeature}
+                />
+              </div>
             </motion.div>
           </>
         )}
@@ -156,7 +157,7 @@ function ProblemsMascotContent(){
         className={cn(`fixed bottom-4 right-4 w-14 h-14 rounded-full bg-linear-to-r hover:bg-linear-to-l
          text-white flex items-center justify-center shadow-lg border-2
          border-white dark:border-gray-800`,
-        `from-${CS_LEGENDS[selectedIcon].color}-500/80 to-${CS_LEGENDS[selectedIcon].color}-600/50 via-${CS_LEGENDS[selectedIcon].color}-400/80`
+          `from-${CS_LEGENDS[selectedIcon].color}-500/80 to-${CS_LEGENDS[selectedIcon].color}-600/50 via-${CS_LEGENDS[selectedIcon].color}-400/80`
         )}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
@@ -173,7 +174,7 @@ function ProblemsMascotContent(){
         {(() => {
           const iconConfig = CS_LEGENDS[selectedIcon]
           if (!iconConfig) return null
-          const IconComponent = iconConfig.icon as React.ComponentType<{className?: string}>
+          const IconComponent = iconConfig.icon as React.ComponentType<{ className?: string }>
           return <IconComponent className="w-6 h-6" />
         })()}
       </motion.button>
@@ -186,7 +187,7 @@ export function ProblemsMascot() {
   return (
     <MascotSettingsProvider>
       <MascotProvider>
-        <ProblemsMascotContent  />
+        <ProblemsMascotContent />
       </MascotProvider>
     </MascotSettingsProvider>
   )

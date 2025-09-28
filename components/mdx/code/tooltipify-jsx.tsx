@@ -45,15 +45,11 @@ export function tooltipifyJSX(
   }
   if (!isValidElement(node)) return node;
 
-  // Use a more specific ReactElement type
   const element = node as ReactElement<Record<string, unknown>, string | JSXElementConstructor<unknown>>;
   const { children, ...restProps } = element.props;
   const props: Record<string, unknown> = { ...restProps };
   const qname = props['data-tooltip-symbol'] as string | undefined;
 
-  // IMPORTANT: Process children FIRST to allow nested tooltips to work
-  // This ensures that nested symbol tooltips (like triangle, r, c, dp) are processed
-  // before parent expression tooltips, preventing conflicts
   const processedChildren = tooltipifyJSX(children as React.ReactNode, renderContent) as React.ReactNode;
 
   if (qname) {
@@ -67,7 +63,7 @@ export function tooltipifyJSX(
         .join(' ');
     }
 
-    // Regular tooltip - simplified since you don't have expressions with nested tooltips
+   
     return (
       <Popover modal={false}>
         <PopoverTrigger asChild>

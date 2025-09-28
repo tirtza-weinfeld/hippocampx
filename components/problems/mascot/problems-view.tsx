@@ -29,7 +29,7 @@ const DIFFICULTY_COLORS: Record<string, string> = {
 
 
 export function ProblemsView({ problems: problemsData, time_complexities, topics }: { problems: Problems, time_complexities: Record<string, string>, topics: Record<string, string[]> }) {
-  // Use React 19 granular context pattern
+  
   const { stayOpen } = use(MascotSettingsContext)
   const { setIsOpen } = use(MascotActionsContext)
   const {
@@ -272,7 +272,7 @@ export function ProblemsView({ problems: problemsData, time_complexities, topics
           <div className="relative flex-1 ml-1 ">
             {/* <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" /> */}
             <Input
-              placeholder="Search by name, slug, topic, or code..."
+              placeholder="Search by name, code..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className=" h-10 bg-background/80 backdrop-blur-sm border-border/50 

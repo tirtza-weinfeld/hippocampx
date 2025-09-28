@@ -1,8 +1,6 @@
 import React from 'react';
-// import InlineCode from './code-inline';
 import { MarkdownRenderer } from '../parse';
 import type { SymbolMetadata } from './transformers/types';
-// import { TooltipMDXContentSync } from './tooltip-mdx-content';
 type TooltipMeta = SymbolMetadata;
 
 function TooltipHeader({ meta }: { meta: TooltipMeta }) {
