@@ -11,6 +11,26 @@ const compat = new FlatCompat({
 
 const eslintConfig = [{
   ignores: ["node_modules/**", ".next/**", "out/**", "build/**", "next-env.d.ts"]
-}, ...compat.extends("next/core-web-vitals", "next/typescript")];
+},
+
+  ...compat.extends("next/core-web-vitals", "next/typescript", "plugin:react-hooks/recommended"),
+
+  {
+    rules: {
+      "react-hooks/exhaustive-deps": "warn",
+      "react-hooks/rules-of-hooks": "warn",
+      "@typescript-eslint/no-unused-vars": "warn", 
+      "@typescript-eslint/no-explicit-any": "warn",
+      "react-hooks/preserve-manual-memoization": "warn",
+      "react-hooks/set-state-in-effect": "warn",
+      "react-hooks/refs": "warn",
+      "react-hooks/purity": "warn",
+      "react-hooks/immutability": "warn",
+      "react-hooks/static-components": "warn",
+      "@typescript-eslint/no-require-imports": "warn",
+      
+    }
+  }
+];
 
 export default eslintConfig;

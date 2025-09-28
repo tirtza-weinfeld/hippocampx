@@ -58,6 +58,7 @@ const nextConfig: NextConfig = {
   experimental: {
     // ppr: true,
     mdxRs: false,
+    reactCompiler: true,
   },
   pageExtensions: ['ts', 'tsx', 'mdx'],
   // Force CSS updates during development

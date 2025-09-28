@@ -4,7 +4,7 @@ import { AlertCircle, Info, Lightbulb, Notebook, AlertTriangle, ChevronDown, Clo
    ListChecks } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "motion/react";
-import React, { use, useState } from "react";
+import React, {  useState } from "react";
 import { Skeleton } from "../ui/skeleton";
 
 const ICONS = {
