@@ -1,20 +1,21 @@
 import React from 'react';
 import { MarkdownRenderer } from '../parse';
 import type { SymbolMetadata } from './transformers/types';
+import { convertMathToKatex } from '@/lib/utils/math-to-katex';
 type TooltipMeta = SymbolMetadata;
 
 function TooltipHeader({ meta }: { meta: TooltipMeta }) {
   // Handle parameter
   if (meta.kind === 'parameter') {
     return (
-      <div className="mb-4">
+      <div className="mb-4 rounded-lg">
           <div className="
           absolute
           right-3
           top-1.5
           bg-linear-to-r from-blue-50 to-blue-100 dark:from-blue-900/40 dark:to-blue-800/40 text-blue-700 dark:text-blue-300 
           rounded-full text-xs font-semibold 
-          border border-blue-200/60 dark:border-blue-700/60 shadow-sm backdrop-blur-s
+          shadow-sm backdrop-blur-s
            hover:bg-linear-to-l 
            ">
             parameter
@@ -38,7 +39,7 @@ function TooltipHeader({ meta }: { meta: TooltipMeta }) {
   if (meta.kind === 'variable') {
     return (
       <div className=" text-sm mb-3 flex items-center gap-3 ">
-        <div className=" absolute right-3 top-1.5  bg-linear-to-r from-purple-50 to-purple-100 dark:from-purple-900/40 dark:to-purple-800/40 text-purple-700 dark:text-purple-300 rounded-full text-xs font-semibold border border-purple-200/60 dark:border-purple-700/60 shadow-sm backdrop-blur-sm">
+        <div className=" absolute right-3 top-1.5  bg-linear-to-r from-purple-50 to-purple-100 dark:from-purple-900/40 dark:to-purple-800/40 text-purple-700 dark:text-purple-300 rounded-full text-xs font-semibold shadow-sm backdrop-blur-sm">
           variable
         </div>
 
@@ -76,59 +77,40 @@ function TooltipHeader({ meta }: { meta: TooltipMeta }) {
     switch (kind) {
       case 'function':
         return {
-          badge: `
-          from-yellow-50 to-amber-100 
-          dark:from-amber-400/10 dark:to-amber-200/10 
-           border-yellow-200/60 dark:border-yellow-700/60`,
+          badge: `from-yellow-50 to-amber-100  dark:from-amber-400/10 dark:to-amber-200/10 `,
           title: 'from-yellow-700 to-yellow-500  dark:from-yellow-400 dark:to-amber-500',
         };
       case 'method':
         return {
-          badge: ' from-purple-50 to-violet-50 dark:from-purple-900/40 dark:to-violet-900/40 text-purple-700 dark:text-purple-300 border-purple-200/60 dark:border-purple-700/60',
+          badge: ' from-purple-50 to-violet-50 dark:from-purple-900/40 dark:to-violet-900/40 ',
           title: 'from-purple-600 to-violet-600 dark:from-purple-400 dark:to-violet-400'
         };
       case 'class':
         return {
-          badge: 'from-sky-50 to-blue-50 dark:from-sky-900/40 dark:to-blue-900/40 text-sky-700 dark:text-sky-300 border-sky-200/60 dark:border-sky-700/60',
+          badge: 'from-sky-50 to-blue-50 dark:from-sky-900/40 dark:to-blue-900/40 ',
           title: 'from-sky-600 to-blue-600 dark:from-sky-400 dark:to-blue-400'
         };
       default:
         return {
-          badge: 'bg-linear-to-r from-slate-50 to-gray-50 dark:from-slate-900/40 dark:to-gray-900/40 text-slate-700 dark:text-slate-300 border-slate-200/60 dark:border-slate-700/60',
+          badge: 'bg-linear-to-r from-slate-50 to-gray-50 dark:from-slate-900/40 dark:to-gray-900/40 ',
           title: 'from-slate-600 to-gray-600 dark:from-slate-400 dark:to-gray-400'
         };
     }
   };
 
-  const getDifficultyStyles = (difficulty: string) => {
-    switch (difficulty) {
-      case 'easy':
-        return ' from-green-50 to-emerald-100 dark:from-green-900/40 dark:to-emerald-900/40 text-green-700 dark:text-green-300 border-green-200/60 dark:border-green-700/60';
-      case 'medium':
-        return ' from-amber-50 to-orange-100 dark:from-amber-900/40 dark:to-orange-900/40 text-amber-700 dark:text-amber-300 border-amber-200/60 dark:border-amber-700/60';
-      case 'hard':
-        return 'from-red-50 to-rose-100 dark:from-red-900/40 dark:to-rose-900/40 text-red-700 dark:text-red-300 border-red-200/60 dark:border-red-700/60';
-      default:
-        return ' from-slate-50 to-gray-50 dark:from-slate-900/40 dark:to-gray-900/40 text-slate-700 dark:text-slate-300 border-slate-200/60 dark:border-slate-700/60';
-    }
-  };
+
 
   const kindStyles = getKindStyles(meta.kind);
 
   return (
     <div className="mb-4">
       <div className="flex items-center gap-3 mb-3">
-        <div className={` absolute right-3 top-1.5  rounded-full text-xs font-semibold border shadow-sm backdrop-blur-sm ${kindStyles.badge} bg-linear-to-r hover:bg-linear-to-l `}>
+        <div className={` absolute right-3 top-1.5  rounded-full text-xs font-semibold  shadow-sm backdrop-blur-sm ${kindStyles.badge} bg-linear-to-r hover:bg-linear-to-l `}>
           <div className={` font-bold text-xs bg-linear-to-r ${kindStyles.title} bg-clip-text text-transparent  hover:bg-linear-to-l`}>
             {meta.kind}
           </div>
         </div>
-        {meta.difficulty && (
-          <div className={`px-3 py-1.5 rounded-full text-xs font-semibold border shadow-sm backdrop-blur-sm 
-           bg-linear-to-r  ${getDifficultyStyles(meta.difficulty)} hover:bg-linear-to-l `}>
-            {meta.difficulty}
-          </div>
-        )}
+   
       </div>
       {/* <div className={`font-bold text-md
         text-xl bg-linear-to-r ${kindStyles.title} bg-clip-text text-transparent mb-3 hover:bg-linear-to-l `}>
@@ -204,7 +186,7 @@ function TooltipDescription({ meta }: { meta: TooltipMeta }) {
           </div>
         )}
         {meta.definition && (
-          <div className="text-sm p-4 bg-linear-to-r from-blue-50/80 to-sky-50/60 dark:from-blue-900/30 dark:to-sky-900/20 border border-blue-200/60 dark:border-blue-700/40 rounded-xl shadow-sm backdrop-blur-sm">
+          <div className="text-sm p-4 bg-linear-to-r from-blue-50/80 to-sky-50/60 dark:from-blue-900/30 dark:to-sky-900/20  rounded-xl shadow-sm backdrop-blur-sm">
             <div className="flex items-center gap-2 mb-3">
               <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
               <div className="font-semibold text-blue-900 dark:text-blue-100 text-xs uppercase tracking-wider">Definition</div>
@@ -214,7 +196,7 @@ function TooltipDescription({ meta }: { meta: TooltipMeta }) {
             </MarkdownRenderer>
           </div>
         )}
-        {meta.intuition && (
+        {/* {meta.intuition && (
           <div className="
           text-sm 
           bg-linear-to-r hover:bg-linear-to-l from-yellow-50/20 via-yellow-300/10 to-transparent dark:from-yellow-400/5 dark:via-yellow-500/10 
@@ -233,7 +215,7 @@ function TooltipDescription({ meta }: { meta: TooltipMeta }) {
             </MarkdownRenderer>
           </div>
          
-        )}
+        )} */}
       </div>
     );
   }
@@ -277,10 +259,11 @@ function createTooltipParameters(allMetadata: Record<string, SymbolMetadata>) {
             }
 
             return (
-              <div key={arg} className="p-3 bg-linear-to-r from-emerald-50/80 to-emerald-100/60 dark:from-emerald-900/30 dark:to-emerald-800/20 border border-emerald-200/60 dark:border-emerald-700/40 rounded-xl shadow-sm backdrop-blur-sm">
+              <div key={arg} className="p-3 bg-linear-to-r from-emerald-50/80 to-emerald-100/60 dark:from-emerald-900/30 dark:to-emerald-800/20  rounded-xl shadow-sm backdrop-blur-sm">
                 {paramMeta?.label && (
                   <div className="mb-2">
-                    <span className="inline-flex items-center px-2.5 py-1 bg-blue-100/80 dark:bg-blue-900/60 text-blue-800 dark:text-blue-200 rounded-lg text-xs font-medium border border-blue-200/60 dark:border-blue-700/60">
+                    <span className="inline-flex items-center px-2.5 py-1 bg-blue-100/80 dark:bg-blue-900/60 text-blue-800 dark:text-blue-200 rounded-lg text-xs font-medium
+                     ">
                       <MarkdownRenderer>{`[language="python"] ${paramMeta.label}`}</MarkdownRenderer>
                     </span>
                   </div>
@@ -301,7 +284,7 @@ function createTooltipParameters(allMetadata: Record<string, SymbolMetadata>) {
 
 function TooltipReturns({ meta }: { meta: TooltipMeta }) {
   return meta.returns?.summary ? (
-    <div className="relative p-3 text-sm mb-4 mt-3  bg-linear-to-r  hover:bg-linear-to-l
+    <div className="transition-all duration-300 ease-out hover:translate-x-1 relative p-3 text-sm mb-4 mt-3  bg-linear-to-r  hover:bg-linear-to-l
     hover:shadow-sm hover:shadow-indigo-500/50 dark:hover:shadow-indigo-400/50
     
     from-indigo-50/20 via-indigo-300/10 to-transparent dark:from-indigo-900/30 dark:via-indigo-800/20  shadow-sm backdrop-blur-sm">
@@ -313,7 +296,8 @@ function TooltipReturns({ meta }: { meta: TooltipMeta }) {
     
        ">
         {/* <div className="space-y-2 "> */}
-          <span className=" absolute right-3 top-1.5 inline-flex items-center font-mono text-indigo-800 dark:text-indigo-200 font-medium bg-indigo-100/80 dark:bg-indigo-900/60 rounded-lg border border-indigo-200/60 dark:border-indigo-700/60 text-sm">
+          <span className=" absolute right-3 top-1.5 inline-flex items-center font-mono text-indigo-800 dark:text-indigo-200 font-medium bg-indigo-100/80 
+          dark:bg-indigo-900/60 rounded-lg  text-sm">
             {meta.returns.label}
           </span>
           <div className="text-indigo-800 dark:text-indigo-200 leading-relaxed">
@@ -361,9 +345,10 @@ function createTooltipVariables(allMetadata: Record<string, SymbolMetadata>) {
             }
 
             return (
-              <div key={variable} className="p-3 bg-linear-to-r from-purple-50/80 to-purple-100/60 dark:from-purple-900/30 dark:to-purple-800/20 border border-purple-200/60 dark:border-purple-700/40 rounded-xl shadow-sm backdrop-blur-sm">
+              <div key={variable} className="p-3 bg-linear-to-r from-purple-50/80 to-purple-100/60 dark:from-purple-900/30 dark:to-purple-800/20  rounded-xl shadow-sm backdrop-blur-sm">
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="inline-flex items-center font-mono text-purple-800 dark:text-purple-200 font-medium px-3 py-1.5 bg-purple-100/80 dark:bg-purple-900/60 rounded-lg border border-purple-200/60 dark:border-purple-700/60 text-sm">{variable}</span>
+                  <span className="inline-flex items-center font-mono text-purple-800 dark:text-purple-200 font-medium px-3 py-1.5 bg-purple-100/80 dark:bg-purple-900/60 rounded-lg
+                  text-sm">{variable}</span>
                 </div>
                 <div className="text-xs text-purple-800 dark:text-purple-200 leading-relaxed">
                   {/* <TooltipMDXContentSync >{variableMeta.summary}</TooltipMDXContentSync> */}
@@ -382,20 +367,22 @@ function createTooltipVariables(allMetadata: Record<string, SymbolMetadata>) {
 
 function TooltipTimeComplexity({ meta }: { meta: TooltipMeta }) {
   return meta.time_complexity ? (
-    <div className="text-sm mt-3 bg-linear-to-r  hover:bg-linear-to-l from-orange-50/20 via-orange-300/10 to-transparent 
-    hover:shadow-sm hover:shadow-orange-500/50 dark:hover:shadow-orange-400/50
-    dark:from-orange-900/10 dark:via-orange-800/10  p-3
-    ">
+    <div className="text-sm mt-3 bg-linear-to-r  hover:bg-linear-to-l from-sky-50/20 via-sky-300/10 to-transparent 
+    hover:shadow-md hover:shadow-blue-500/50 dark:hover:shadow-blue-400/50
+    dark:from-sky-900/10 dark:via-sky-800/10  p-3  hover:translate-x-1
+    transition-all duration-300 ease-out
+">
       <div className="flex items-center gap-2 mb-3">
-        <div className="w-1.5 h-1.5 bg-orange-500 rounded-full"></div>
-        <div className="font-semibold text-orange-900 dark:text-orange-100 text-xs uppercase tracking-wider">Time Complexity</div>
+        <div className="w-1.5 h-1.5 bg-sky-500 rounded-full"></div>
+        <div className="font-semibold text-sky-900 dark:text-sky-100 text-xs uppercase tracking-wider">Time Complexity</div>
       </div>
-      <div className="">
+      <div className="px-3">
 
        
-        <MarkdownRenderer>
-         {meta.time_complexity}
+        <MarkdownRenderer className="text-sky-800 dark:text-sky-200">
+         {convertMathToKatex(meta.time_complexity.split('\n')[0].replace(/:\s*$/, ''))}
         </MarkdownRenderer>
+        
       </div>
     </div>
   ) : null;
@@ -403,7 +390,7 @@ function TooltipTimeComplexity({ meta }: { meta: TooltipMeta }) {
 
 function TooltipTopics({ meta }: { meta: TooltipMeta }) {
   return meta.topics && Array.isArray(meta.topics) && meta.topics.length > 0 ? (
-    <div className="text-sm mb-4">
+    <div className="text-sm mb-4 ">
       <div className="flex items-center gap-2 mb-3">
         <div className="w-1.5 h-1.5 bg-teal-500 rounded-full"></div>
         <div className="font-semibold text-teal-900 dark:text-teal-100 text-xs uppercase tracking-wider">Topics</div>
@@ -412,7 +399,7 @@ function TooltipTopics({ meta }: { meta: TooltipMeta }) {
         {meta.topics.map((topic, idx) => (
           <span key={topic || idx} className="inline-flex items-center px-3 py-1.5 
           bg-linear-to-r from-teal-50 to-teal-100 dark:from-teal-900/40 dark:to-teal-800/40 text-teal-800 dark:text-teal-200 
-          rounded-full text-xs font-medium border border-teal-200/60 dark:border-teal-700/60 shadow-sm backdrop-blur-sm
+          rounded-full text-xs font-medium  shadow-sm backdrop-blur-sm
           hover:bg-linear-to-l
           ">
             {topic}
@@ -434,8 +421,8 @@ function TooltipLeetcode({ meta }: { meta: TooltipMeta }) {
      
         text-xs uppercase tracking-wider">LeetCode</div>
       </div>
-      <div className="p-3 bg-linear-to-r from-slate-50/80 to-slate-100/60 dark:from-slate-900/30 dark:to-slate-800/20 border
-       border-slate-200/60 dark:border-slate-700/40 rounded-xl shadow-sm backdrop-blur-sm">
+      <div className="p-3 bg-linear-to-r from-slate-50/80 to-slate-100/60 dark:from-slate-900/30 dark:to-slate-800/20 
+       rounded-xl shadow-sm backdrop-blur-sm">
         {/* <TooltipMDXContentSync className="text-slate-800 dark:text-slate-200 text-sm leading-relaxed"> */}
         <MarkdownRenderer>
           {meta.leetcode}
@@ -487,7 +474,7 @@ export function renderTooltipContent(
       .slice(0, 3); // Show first 3 matches for debugging
 
     return (
-      <div className="p-4 bg-linear-to-r from-red-50/80 to-rose-50/60 dark:from-red-900/30 dark:to-rose-900/20 border border-red-200/60 dark:border-red-700/40 rounded-xl shadow-sm backdrop-blur-sm">
+      <div className="p-4 bg-linear-to-r from-red-50/80 to-rose-50/60 dark:from-red-900/30 dark:to-rose-900/20  rounded-xl shadow-sm backdrop-blur-sm">
         <div className="text-red-800 dark:text-red-200 font-medium">
           Symbol <span className="font-mono bg-red-100 dark:bg-red-900/50 px-2 py-0.5 rounded">{qname}</span> not found.
         </div>
@@ -515,8 +502,8 @@ export function renderTooltipContent(
   return (
     // <div className="w-[90vw] bg-white/95 dark:bg-gray-900/95 backdrop-blur-md rounded-xl shadow-xl border border-gray-200/60 dark:border-gray-700/60 p-5">
     <div
-      className="min-w-[280px] max-w-[420px] bg-white/95 dark:bg-gray-900/95 backdrop-blur-md rounded-xl
-      shadow-xl border border-gray-200/60 dark:border-gray-700/60 p-5 @container
+      className="min-w-[280px] max-w-[420px] bg-white/90 dark:bg-gray-900/90 backdrop-blur-md shadow-lg rounded-lg
+      shadow-xl  p-5 @container
       relative transition-all duration-200 ease-out
       "
       style={{

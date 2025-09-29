@@ -23,7 +23,13 @@
       "909-snakes-and-ladders",
       "994-rotting-oranges"
     ],
-    "dynamic_programming": [
+    "hash-table": [
+      "1-two-sum"
+    ],
+    "k-sum": [
+      "1-two-sum"
+    ],
+    "dynamic-programming": [
       "120-triangle",
       "121-best-time-to-buy-and-sell-stock",
       "123-best-time-to-buy-and-sell-stock-iii",
@@ -44,21 +50,27 @@
     "stack": [
       "394-decode-string"
     ],
-    "binary_search": [
+    "binary-search": [
       "1011-capacity-to-ship-packages-within-d-days",
       "153-find-minimum-in-rotated-sorted-array",
       "34-find-first-and-last-position-of-element-in-sorted-array",
       "35-search-insert-position",
       "875-koko-eating-bananas"
     ],
-    "binary_search_on_answer": [
+    "binary-search-answer-space": [
       "875-koko-eating-bananas"
     ],
     "cache": [
       "146-lru-cache",
       "460-lfu-cache"
     ],
-    "prefix_sum": [
+    "prefix-suffix": [
+      "238-product-of-array-except-self"
+    ],
+    "two-pass-scan": [
+      "238-product-of-array-except-self"
+    ],
+    "prefix-sum": [
       "1590-make-sum-divisible-by-p",
       "325-maximum-size-subarray-sum-equals-k",
       "370-range-addition",
@@ -76,7 +88,7 @@
       "53-maximum-subarray",
       "918-maximum-sum-of-circular-subarray"
     ],
-    "sliding_window": [
+    "sliding-window": [
       "3-longest-substring-without-repeating-characters",
       "713-subarray-product-less-than-k"
     ],
@@ -90,7 +102,7 @@
     "greedy": [
       "122-best-time-to-buy-and-sell-stock-ii"
     ],
-    "bellman_ford": [
+    "bellman-ford": [
       "1514-path-with-maximum-probability"
     ],
     "array": [
@@ -137,6 +149,7 @@
       "211-design-add-and-search-words-data-structure",
       "2140-solving-questions-with-brainpower",
       "2145-count-the-hidden-sequences",
+      "238-product-of-array-except-self",
       "3-longest-substring-without-repeating-characters",
       "325-maximum-size-subarray-sum-equals-k",
       "34-find-first-and-last-position-of-element-in-sorted-array",
@@ -164,6 +177,7 @@
       "994-rotting-oranges"
     ],
     "easy": [
+      "1-two-sum",
       "121-best-time-to-buy-and-sell-stock",
       "35-search-insert-position"
     ]
@@ -174,6 +188,9 @@
     ],
     "909-snakes-and-ladders": [
       "$O(n^2)$"
+    ],
+    "1-two-sum": [
+      "$O(n)$"
     ],
     "1293-shortest-path-in-a-grid-with-obstacles-elimination": [
       "$O(m  \\cdot  n  \\cdot  k)$"
@@ -186,6 +203,9 @@
     ],
     "133-clone-graph": [
       "$O(V + E)$"
+    ],
+    "238-product-of-array-except-self": [
+      "$O(n)$"
     ],
     "518-coin-change-ii": [
       "$O(n  \\cdot  amount)$"

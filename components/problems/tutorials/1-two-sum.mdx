@@ -1,0 +1,32 @@
+# Two Sum
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="easy" />
+
+<PillList pills={["hash-table", "k-sum"]} />
+
+[1. Two Sum](https://leetcode.com/problems/two-sum)
+
+## [!ProblemDefinition] Definition
+
+Given an array of integers `nums` and an integer `target`, return indices of the two numbers such that they add up to `target`.
+
+## [!ProblemTimeComplexity] Time Complexity
+
+- $O(n)$:
+    - where n is the length of the nums array. We iterate through the array once.
+
+## [!ProblemCodeSnippet] Code Snippet
+
+```python meta="source=problems/1-two-sum/solution.py"
+def two_sum(nums: list[int], target: int) -> list[int]:
+
+    seen = {}
+
+    for i, num in enumerate(nums):
+        if (x := target - num) in seen:
+            return seen[x], i
+        seen[num] = i
+```
+

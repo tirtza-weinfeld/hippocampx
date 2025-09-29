@@ -54,6 +54,22 @@
         "bfs"
       ]
     },
+    "1-two-sum": {
+      "solutions": {
+        "solution.py": {
+          "time_complexity": "O(n)\nwhere n is the length of the nums array. We iterate through the array once.",
+          "code": "def two_sum(nums: list[int], target: int) -> list[int]:\n\n    seen = {}\n\n    for i, num in enumerate(nums):\n        if (x := target - num) in seen:\n            return seen[x], i\n        seen[num] = i"
+        }
+      },
+      "title": "Two Sum",
+      "definition": "Given an array of integers `nums` and an integer `target`, return indices of the two numbers such that they add up to `target`.",
+      "leetcode": "https://leetcode.com/problems/two-sum",
+      "difficulty": "easy",
+      "topics": [
+        "hash-table",
+        "k-sum"
+      ]
+    },
     "152-maximum-product-subarray": {
       "solutions": {
         "solution.py": {
@@ -65,7 +81,7 @@
       "leetcode": "https://leetcode.com/problems/maximum-product-subarray",
       "difficulty": "medium",
       "topics": [
-        "dynamic_programming"
+        "dynamic-programming"
       ]
     },
     "1293-shortest-path-in-a-grid-with-obstacles-elimination": {
@@ -162,7 +178,7 @@
       "difficulty": "hard",
       "topics": [
         "game",
-        "dynamic_programming"
+        "dynamic-programming"
       ]
     },
     "875-koko-eating-bananas": {
@@ -188,8 +204,8 @@
       "leetcode": "https://leetcode.com/problems/koko-eating-bananas",
       "difficulty": "medium",
       "topics": [
-        "binary_search",
-        "binary_search_on_answer"
+        "binary-search",
+        "binary-search-answer-space"
       ]
     },
     "460-lfu-cache": {
@@ -238,6 +254,23 @@
         "bfs"
       ]
     },
+    "238-product-of-array-except-self": {
+      "solutions": {
+        "solution.py": {
+          "intuition": "Two passes:\n    1.  *[orange!]Prefix* pass → `res[i]` = product of all elements *[orange!]before* `i`.\n    2.  *[purple!]Suffix* pass → multiply each `res[i]` by product of all elements *[purple!]after* `i`.",
+          "time_complexity": "O(n)\nwhere n is the length of the nums array. We iterate through the array twice.",
+          "code": "def product_of_array_except_self(nums: list[int]) -> list[int]:\n\n    pre, res = 1, [1] * (n := len(nums))\n    for i, x in enumerate(nums):\n        res[i], pre = pre, pre * x\n    suf = 1\n    for i in range(n - 1, -1, -1):\n        res[i], suf = res[i] * suf, suf * nums[i]\n    return res"
+        }
+      },
+      "title": "Product of Array Except Self",
+      "definition": "Given an integer array nums, return an array answer such that `answer[i]` is equal to the product of all the elements of `nums` except `nums[i]`,      *[sky!]Achieve $O(n)$ time complexity and without using the division operator.*",
+      "leetcode": "https://leetcode.com/problems/product-of-array-except-self",
+      "difficulty": "medium",
+      "topics": [
+        "prefix-suffix",
+        "two-pass-scan"
+      ]
+    },
     "523-continuous-subarray-sum": {
       "solutions": {
         "solution.py": {
@@ -254,7 +287,7 @@
       "leetcode": "https://leetcode.com/problems/continuous-subarray-sum",
       "difficulty": "medium",
       "topics": [
-        "prefix_sum"
+        "prefix-sum"
       ]
     },
     "518-coin-change-ii": {
@@ -270,7 +303,7 @@
       "leetcode": "https://leetcode.com/problems/coin-change-ii",
       "difficulty": "medium",
       "topics": [
-        "dynamic_programming",
+        "dynamic-programming",
         "knapsack"
       ]
     },
@@ -287,7 +320,7 @@
       "leetcode": "https://leetcode.com/problems/partition-equal-subset-sum",
       "difficulty": "medium",
       "topics": [
-        "dynamic_programming"
+        "dynamic-programming"
       ]
     },
     "188-best-time-to-buy-and-sell-stock-iv": {
@@ -304,7 +337,7 @@
       "leetcode": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock-iv",
       "difficulty": "hard",
       "topics": [
-        "dynamic_programming"
+        "dynamic-programming"
       ]
     },
     "370-range-addition": {
@@ -323,7 +356,7 @@
       "leetcode": "https://leetcode.com/problems/range-addition",
       "difficulty": "medium",
       "topics": [
-        "prefix_sum"
+        "prefix-sum"
       ]
     },
     "120-triangle": {
@@ -339,7 +372,7 @@
       "leetcode": "https://leetcode.com/problems/triangle",
       "difficulty": "medium",
       "topics": [
-        "dynamic_programming"
+        "dynamic-programming"
       ]
     },
     "787-cheapest-flights-within-k-stops": {
@@ -416,7 +449,7 @@
       "leetcode": "https://leetcode.com/problems/contiguous-array",
       "difficulty": "medium",
       "topics": [
-        "prefix_sum"
+        "prefix-sum"
       ]
     },
     "3-longest-substring-without-repeating-characters": {
@@ -438,7 +471,7 @@
       "leetcode": "https://leetcode.com/problems/longest-substring-without-repeating-characters",
       "difficulty": "medium",
       "topics": [
-        "sliding_window"
+        "sliding-window"
       ]
     },
     "51-n-queens": {
@@ -489,7 +522,7 @@
       "leetcode": "https://leetcode.com/problems/subarray-sum-equals-k",
       "difficulty": "medium",
       "topics": [
-        "prefix_sum"
+        "prefix-sum"
       ]
     },
     "1590-make-sum-divisible-by-p": {
@@ -508,7 +541,7 @@
       "leetcode": "https://leetcode.com/problems/make-sum-divisible-by-p",
       "difficulty": "medium",
       "topics": [
-        "prefix_sum"
+        "prefix-sum"
       ]
     },
     "918-maximum-sum-of-circular-subarray": {
@@ -572,7 +605,7 @@
       "leetcode": "https://leetcode.com/problems/subarray-sums-divisible-by-k",
       "difficulty": "medium",
       "topics": [
-        "prefix_sum"
+        "prefix-sum"
       ]
     },
     "122-best-time-to-buy-and-sell-stock-ii": {
@@ -616,7 +649,7 @@
       "leetcode": "https://leetcode.com/problems/stone-game-iv",
       "difficulty": "hard",
       "topics": [
-        "dynamic_programming",
+        "dynamic-programming",
         "game"
       ]
     },
@@ -636,7 +669,7 @@
       "leetcode": "https://leetcode.com/problems/find-minimum-in-rotated-sorted-array",
       "difficulty": "medium",
       "topics": [
-        "binary_search"
+        "binary-search"
       ]
     },
     "994-rotting-oranges": {
@@ -671,7 +704,7 @@
       "leetcode": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock",
       "difficulty": "easy",
       "topics": [
-        "dynamic_programming"
+        "dynamic-programming"
       ]
     },
     "53-maximum-subarray": {
@@ -704,7 +737,7 @@
       "leetcode": "https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array",
       "difficulty": "medium",
       "topics": [
-        "binary_search"
+        "binary-search"
       ]
     },
     "1514-path-with-maximum-probability": {
@@ -724,7 +757,7 @@
       "leetcode": "https://leetcode.com/problems/path-with-maximum-probability",
       "difficulty": "medium",
       "topics": [
-        "bellman_ford"
+        "bellman-ford"
       ]
     },
     "79-word-search": {
@@ -792,7 +825,7 @@
       "leetcode": "https://leetcode.com/problems/capacity-to-ship-packages-within-d-days",
       "difficulty": "medium",
       "topics": [
-        "binary_search"
+        "binary-search"
       ]
     },
     "208-implement-trie-prefix-tree": {
@@ -825,7 +858,7 @@
       "leetcode": "https://leetcode.com/problems/maximum-size-subarray-sum-equals-k",
       "difficulty": "medium",
       "topics": [
-        "prefix_sum"
+        "prefix-sum"
       ]
     },
     "2145-count-the-hidden-sequences": {
@@ -859,7 +892,7 @@
       "leetcode": "https://leetcode.com/problems/search-insert-position",
       "difficulty": "easy",
       "topics": [
-        "binary_search"
+        "binary-search"
       ]
     },
     "46-permutations": {
@@ -922,7 +955,7 @@
       "leetcode": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock-iii",
       "difficulty": "hard",
       "topics": [
-        "dynamic_programming",
+        "dynamic-programming",
         "array"
       ]
     },
@@ -960,7 +993,7 @@
       "leetcode": "https://leetcode.com/problems/solving-questions-with-brainpower",
       "difficulty": "medium",
       "topics": [
-        "dynamic_programming"
+        "dynamic-programming"
       ]
     },
     "212-word-search-ii": {
@@ -1007,7 +1040,7 @@
       "leetcode": "https://leetcode.com/problems/subarray-product-less-than-k",
       "difficulty": "medium",
       "topics": [
-        "sliding_window"
+        "sliding-window"
       ]
     },
     "36-valid-sudoku": {

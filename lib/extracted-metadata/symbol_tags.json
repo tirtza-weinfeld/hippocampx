@@ -2,8 +2,8 @@
   "core.bellman-ford.classic:bellman_ford_classic": {
     "args": [
       "source",
-      "vertices",
-      "edges"
+      "edges",
+      "vertices"
     ],
     "code": "def bellman_ford_classic(\n    vertices: list[str], edges: list[tuple[str, str, float]], source: str\n) -> dict[str, float]:\n\n    d = [float(\"inf\")] * (V := len(vertices))\n    d[source] = 0\n\n    for _ in range(V - 1):\n        updated = False\n        for u, v, w in edges:\n            if d[u] + w < d[v]:\n                d[v] = d[u] + w\n                updated = True\n        if not updated:\n            return d\n\n    # if we get here, we did all V-1 passes, so still need to check for cycles\n    for u, v, w in edges:\n        if d[u] + w < d[v]:\n            raise Exception(\"Negative-weight cycle\")\n\n    return d",
     "expressions": {
@@ -32,8 +32,8 @@
   "core.bellman-ford.layered_dag:bellman_ford_layered_dag": {
     "args": [
       "source",
-      "vertices",
-      "edges"
+      "edges",
+      "vertices"
     ],
     "code": "def bellman_ford_layered_dag(\n    vertices: list[str], edges: list[tuple[str, str, float]], source: str\n) -> dict[str, float]:\n\n    # 1) Initialize\n    d = {v: float(\"inf\") for v in vertices}\n    d[source], V = 0, len(vertices)\n\n    # 2) Layered relaxation: starting from δ₀, do V passes to compute δ₁…δ_V\n    for k in range(V):  # k = 0…V-1\n        d_k = {**d}  # snapshot of δ_k\n        for u, v, w in edges:\n            if d[u] + w < d_k[v]:\n                d_k[v] = d[u] + w\n        d = d_k  # now holds δ_{k+1}\n\n    # 3) Identify \"witnesses\" to negative cycles:\n    #    any v for which an extra relaxation is still possible\n    witnesses = {v for u, v, w in edges if d[u] + w < d[v]}\n\n    if not witnesses:\n        return d\n\n    # 4) Build adjacency list for negative-cycle propagation\n    adj = defaultdict(list)\n    for u, v, _ in edges:\n        adj[u].append(v)\n\n    # 5) DFS to propagate −∞ to all vertices reachable from any witness\n    stack = list(witnesses)\n    reachable = set(witnesses)\n\n    while stack:\n        u = stack.pop()\n        d[u] = float(\"-inf\")\n        for v in adj[u]:\n            if v not in reachable:\n                reachable.add(v)\n                stack.append(v)\n\n    return d",
     "file_path": "backend/algorithms/core/bellman-ford/layered_dag.py",
@@ -66,8 +66,8 @@
   },
   "core.binary-search.bisect_left:simple_bisect_left": {
     "args": [
-      "a",
-      "x"
+      "x",
+      "a"
     ],
     "code": "def simple_bisect_left(a: list[int], x: int):\n\n    l, r = 0, len(a)\n    while l < r:\n        mid = (l + r) // 2\n        if x > a[mid]:\n            l = mid + 1\n        else:\n            r = mid\n    return l",
     "expressions": {
@@ -120,8 +120,8 @@
   },
   "core.dijkstra.algorithm:dijkstra": {
     "args": [
-      "graph",
-      "s"
+      "s",
+      "graph"
     ],
     "code": "def dijkstra(graph: dict[str, dict[str, int]], s: str):\n\n    d = {v: float('inf') for v in graph} | {s: 0}\n    p = {v: None for v in graph}\n\n    pq = [(0, s)]\n\n    while pq:\n        d_u, u = heapq.heappop(pq)\n        if d_u > d[u]:\n            continue\n        for v ,w in graph[u]:\n            if (weight := d_u + w) < d[v]:\n                d[v], p[v] = weight, u\n                heapq.heappush(pq, (weight, v))\n\n    return d, p",
     "file_path": "backend/algorithms/core/dijkstra/algorithm.py",
@@ -144,9 +144,9 @@
   },
   "core.modular-arithmetic.congruent1:congruent1": {
     "args": [
-      "b",
+      "a",
       "n",
-      "a"
+      "b"
     ],
     "code": "def congruent1(a: int, b: int, n: int) -> bool:\n    return (a - b) % n == 0",
     "file_path": "backend/algorithms/core/modular-arithmetic/congruent1.py",
@@ -179,9 +179,9 @@
   },
   "core.modular-arithmetic.congruent2:congruent2": {
     "args": [
-      "b",
+      "a",
       "n",
-      "a"
+      "b"
     ],
     "code": "def congruent2(a: int, b: int, n: int) -> bool:\n    return a % n == b % n",
     "file_path": "backend/algorithms/core/modular-arithmetic/congruent2.py",
@@ -214,8 +214,8 @@
   },
   "core.modular-arithmetic.mod:mod": {
     "args": [
-      "b",
-      "a"
+      "a",
+      "b"
     ],
     "code": "def mod(a: int, b: int) -> int:\n    return a % b",
     "file_path": "backend/algorithms/core/modular-arithmetic/mod.py",
@@ -240,10 +240,25 @@
     "name": "b",
     "summary": "the second number"
   },
+  "problems.1-two-sum.solution:two_sum": {
+    "args": [
+      "nums",
+      "target"
+    ],
+    "code": "def two_sum(nums: list[int], target: int) -> list[int]:\n\n    seen = {}\n\n    for i, num in enumerate(nums):\n        if (x := target - num) in seen:\n            return seen[x], i\n        seen[num] = i",
+    "file_path": "backend/algorithms/problems/1-two-sum/solution.py",
+    "kind": "function",
+    "label": "def two_sum(nums: list[int], target: int) -> list[int]",
+    "name": "two_sum",
+    "returns": {
+      "label": "list[int]"
+    },
+    "time_complexity": "O(n)\nwhere n is the length of the nums array. We iterate through the array once."
+  },
   "problems.1011-capacity-to-ship-packages-within-d-days.solution:capacity_to_ship_packages_within_d_days": {
     "args": [
-      "days",
-      "weights"
+      "weights",
+      "days"
     ],
     "code": "def capacity_to_ship_packages_within_d_days(weights: list[int], days: int) -> int:\n    def days_needed(capacity: int) -> int:\n        d, load = 1, 0\n        for w in weights:\n            if load + w <= capacity:\n                load += w\n            else:\n                d += 1\n                load = w\n        return d\n\n    l, r = max(weights), sum(weights)\n    while l < r:\n        capacity = (l + r) // 2\n        if days_needed(capacity) <= days:\n            r = capacity\n        else:\n            l = capacity + 1\n    return l",
     "file_path": "backend/algorithms/problems/1011-capacity-to-ship-packages-within-d-days/solution.py",
@@ -269,7 +284,7 @@
       "label": "list[list[int]]",
       "summary": "List of lists, where each inner list contains values of nodes at the same level"
     },
-    "time_complexity": "- O(N)\n    - where N is the total number of nodes in the tree. This is optimal as every node must be visited once."
+    "time_complexity": "O(N)\nwhere N is the total number of nodes in the tree. This is optimal as every node must be visited once."
   },
   "problems.102-binary-tree-level-order-traversal.solution:binary_tree_level_order_traversal.root": {
     "kind": "parameter",
@@ -290,7 +305,7 @@
     "returns": {
       "label": "int"
     },
-    "time_complexity": "- O(N)\n    - where N is the total number of cells in the triangle. The complexity is the number of subproblems (N), as each is solved once."
+    "time_complexity": "O(N)\nwhere N is the total number of cells in the triangle. The complexity is the number of subproblems (N), as each is solved once."
   },
   "problems.121-best-time-to-buy-and-sell-stock.solution:best_time_to_buy_and_sell_stock": {
     "args": [
@@ -305,7 +320,7 @@
       "label": "int",
       "summary": "Maximum profit from buying and selling stock"
     },
-    "time_complexity": "- O(n)\n    - where n is the length of the prices array. We iterate through the array once."
+    "time_complexity": "O(n)\nwhere n is the length of the prices array. We iterate through the array once."
   },
   "problems.121-best-time-to-buy-and-sell-stock.solution:best_time_to_buy_and_sell_stock.prices": {
     "kind": "parameter",
@@ -330,7 +345,7 @@
       "label": "int",
       "summary": "Maximum profit from at most two transactions"
     },
-    "time_complexity": "- O(n)\n    - where n is the length of the prices array. We iterate through the array once.",
+    "time_complexity": "O(n)\nwhere n is the length of the prices array. We iterate through the array once.",
     "variables": [
       "t1_cost",
       "t1_profit",
@@ -461,9 +476,9 @@
   },
   "problems.127-word-ladder.solution:word_ladder": {
     "args": [
-      "beginWord",
       "endWord",
-      "wordList"
+      "wordList",
+      "beginWord"
     ],
     "code": "def word_ladder(beginWord: str, endWord: str, wordList: list[str]) -> int:\n    if endWord not in wordList:\n        return 0\n\n    L = len(beginWord)\n    combos: dict[str, list[str]] = defaultdict(list)\n    for w in wordList:\n        for i in range(L):\n            combos[w[:i] + \"*\" + w[i+1:]].append(w)\n\n    front, back = {beginWord}, {endWord}\n    dist_front, dist_back = {beginWord: 1}, {endWord: 1}\n\n    while front and back:\n        # expand smaller side to optimize\n        if len(front) > len(back):\n            front, back = back, front\n            dist_front, dist_back = dist_back, dist_front\n\n        next_front = set()\n        for word in front:\n            for i in range(L):\n                for n in combos[word[:i] + \"*\" + word[i+1:]]: # Use pre-computed neighbors\n                    if n in dist_back:\n                        return dist_front[word] + dist_back[n]\n                    if n not in dist_front:\n                        dist_front[n] = dist_front[word] + 1\n                        next_front.add(n)\n        front = next_front\n\n    return 0",
     "file_path": "backend/algorithms/problems/127-word-ladder/solution.py",
@@ -474,12 +489,12 @@
     "returns": {
       "label": "int"
     },
-    "time_complexity": "- O(N * L)\n    - where N is the number of words and L is the length of each word. The dominant operation is the initial pre-computation step to build the `combos` dictionary. The subsequent bidirectional search is typically much faster than this initial setup."
+    "time_complexity": "O(N * L)\nwhere N is the number of words and L is the length of each word. The dominant operation is the initial pre-computation step to build the `combos` dictionary. The subsequent bidirectional search is typically much faster than this initial setup."
   },
   "problems.1293-shortest-path-in-a-grid-with-obstacles-elimination.a_star:manhattan_distance": {
     "args": [
-      "b",
-      "a"
+      "a",
+      "b"
     ],
     "code": "def manhattan_distance(a: tuple[int, int], b: tuple[int, int]) -> int:\n    return abs(a[0] - b[0]) + abs(a[1] - b[1])",
     "file_path": "backend/algorithms/problems/1293-shortest-path-in-a-grid-with-obstacles-elimination/a_star.py",
@@ -547,7 +562,7 @@
     },
     "space_complexity": "O(m * n):\nfor the `max_k` grid plus up to O(m * n * k) queued states in the pathological worst case.",
     "summary": "Warning:\n    In practice, A* Search O(m * n * k * log(m * n * k)) is faster than this O(m * n * k) .",
-    "time_complexity": "- O(m * n * k):\n    - Worst-case O(m * n * k) (every cell × every possible k), but aggressive pruning usually makes it far faster in practice.",
+    "time_complexity": "O(m * n * k):\nWorst-case O(m * n * k) (every cell × every possible k), but aggressive pruning usually makes it far faster in practice.",
     "variables": [
       "max_k",
       "q",
@@ -645,7 +660,7 @@
       "summary": "The cloned graph"
     },
     "summary": "Clone a connected undirected graph using BFS traversal.",
-    "time_complexity": "- O(V + E)\n    - where V is the number of vertices (nodes) and E is the number of edges. This is optimal as we must visit every node and traverse every edge to create the full copy.",
+    "time_complexity": "O(V + E)\nwhere V is the number of vertices (nodes) and E is the number of edges. This is optimal as we must visit every node and traverse every edge to create the full copy.",
     "variables": [
       "cloned",
       "queue",
@@ -712,7 +727,7 @@
     "returns": {
       "label": "str"
     },
-    "time_complexity": "- O(n)\n    - constant 3 choices per `i`"
+    "time_complexity": "O(n)\nconstant 3 choices per `i`"
   },
   "problems.146-lru-cache.solution:LRUCache": {
     "code": "class LRUCache:\n    def __init__(self, capacity: int):\n        self.cache: OrderedDict[int, int] = OrderedDict()\n        self.capacity = capacity\n\n    def get(self, key: int) -> int:\n        if (val := self.cache.get(key)) is None:\n            return -1\n        self.cache.move_to_end(key)\n        return val\n\n    def put(self, key: int, value: int) -> None:\n        if key in self.cache:\n            self.cache.move_to_end(key)\n        self.cache[key] = value\n        if len(self.cache) > self.capacity:\n            self.cache.popitem(last=False)",
@@ -737,8 +752,8 @@
   },
   "problems.146-lru-cache.solution:LRUCache.put": {
     "args": [
-      "value",
-      "key"
+      "key",
+      "value"
     ],
     "code": "    def put(self, key: int, value: int) -> None:\n        if key in self.cache:\n            self.cache.move_to_end(key)\n        self.cache[key] = value\n        if len(self.cache) > self.capacity:\n            self.cache.popitem(last=False)",
     "file_path": "backend/algorithms/problems/146-lru-cache/solution.py",
@@ -763,15 +778,15 @@
     "returns": {
       "label": "bool"
     },
-    "time_complexity": "- O(n * sqrt(n))\n    - try all squares for each `x`"
+    "time_complexity": "O(n * sqrt(n))\ntry all squares for each `x`"
   },
   "problems.1514-path-with-maximum-probability.solution:path_with_maximum_probability": {
     "args": [
-      "n",
       "edges",
-      "succProb",
       "end",
-      "start"
+      "start",
+      "succProb",
+      "n"
     ],
     "code": "def path_with_maximum_probability(n: int, edges: list[list[int]], succProb: list[float], start: int, end: int) -> float:\n    prob = [0.0] * n # rob[i] stores max probability to reach node i\n    prob[start] = 1.0  # Start with full certainty\n\n    for _ in range(n - 1):  # Perform up to n-1 rounds of relaxation\n        updated = False\n        for (u, v), p in zip(edges, succProb):\n            if prob[u] * p > prob[v]:  # Try to improve v through u\n                prob[v] = prob[u] * p\n                updated = True\n            if prob[v] * p > prob[u]:  # Try to improve u through v (undirected graph)\n                prob[u] = prob[v] * p\n                updated = True\n        if not updated:\n            break  # Early exit if no updates in this round\n\n    return prob[end]",
     "file_path": "backend/algorithms/problems/1514-path-with-maximum-probability/solution.py",
@@ -831,8 +846,8 @@
   },
   "problems.1590-make-sum-divisible-by-p.solution:minSubarrayToMakeSumDivisibleByP": {
     "args": [
-      "p",
-      "segments"
+      "segments",
+      "p"
     ],
     "code": "def minSubarrayToMakeSumDivisibleByP(segments: list[int], p: int) -> int:\n\n    total_remainder = sum(segments) % p\n    if total_remainder == 0:\n        return 0\n\n    remainder_idx = {0: -1}\n    prefix_remainder, min_length = 0, len(segments)\n\n    for i, segment in enumerate(segments):\n        prefix_remainder = (prefix_remainder + segment) % p\n        need = (prefix_remainder - total_remainder + p) % p\n        if need in remainder_idx:\n            min_length = min(min_length, i - remainder_idx[need])\n        remainder_idx[prefix_remainder] = i\n\n    return min_length if min_length < len(segments) else -1",
     "file_path": "backend/algorithms/problems/1590-make-sum-divisible-by-p/solution.py",
@@ -904,7 +919,7 @@
       "label": "int",
       "summary": "Number of islands in the grid"
     },
-    "time_complexity": "- O(m * n)\n    - where m and n are the dimensions of the grid. This is optimal as each cell is visited a constant number of times."
+    "time_complexity": "O(m * n)\nwhere m and n are the dimensions of the grid. This is optimal as each cell is visited a constant number of times."
   },
   "problems.200-number-of-islands.solution:number_of_islands.grid": {
     "kind": "parameter",
@@ -948,7 +963,7 @@
       "label": "None"
     },
     "summary": "Inserts a word into the Trie.",
-    "time_complexity": "- O(m):\n    - where m is the length of the key.\n    - Each operation involves examining or creating a node until the end of the key.",
+    "time_complexity": "O(m):\nwhere m is the length of the key.\nEach operation involves examining or creating a node until the end of the key.",
     "variables": [
       "node"
     ]
@@ -1003,8 +1018,8 @@
   },
   "problems.211-design-add-and-search-words-data-structure.solution:WordDictionary.search.dfs": {
     "args": [
-      "node",
-      "i"
+      "i",
+      "node"
     ],
     "code": "        def dfs(node: dict, i: int) -> bool:\n\n            if i == len(word):\n                return self.END_MARKER in node\n\n            if (c := word[i]) == \".\":\n\n                return any(\n                    dfs(child, i + 1)\n                    for k, child in node.items()\n                    if k != self.END_MARKER\n                )\n            child = node.get(c)\n            return bool(child) and dfs(child, i + 1)",
     "expressions": {
@@ -1025,8 +1040,8 @@
   },
   "problems.212-word-search-ii.solution:word_search_II": {
     "args": [
-      "words",
-      "board"
+      "board",
+      "words"
     ],
     "code": "def word_search_II(board: list[list[str]], words: list[str]) -> list[str]:\n    trie = {}  \n    for word in words:\n        node = trie\n        for c in word:\n            node = node.setdefault(c, {})\n        node[\"$\"] = word\n\n    def dfs(i, j, parent):\n        if not (0 <= i < m and 0 <= j < n) or (c := board[i][j]) not in parent:\n            return\n        node = parent[c]\n        if \"$\" in node:\n            res.append(node.pop(\"$\"))\n        board[i][j] = \"#\"\n        for x, y in ((i - 1, j), (i + 1, j), (i, j - 1), (i, j + 1)):\n            dfs(x, y, node)\n        board[i][j] = c\n        if not node:\n            parent.pop(c)\n\n    m, n, res = len(board), len(board[0]), []\n    [dfs(i, j, trie) for i in range(m) for j in range(n) if board[i][j] in trie]\n\n    return res",
     "expressions": {
@@ -1046,7 +1061,7 @@
     "returns": {
       "label": "list[str]"
     },
-    "time_complexity": "- O(m n * 4^L)\n    - **Symbols:** m×n board, W=∑(w∈dict)|w|, L=max|w|.\n    - **Build trie:** O(W).\n    - **DFS (worst case):** first step ≤ 4 choices, then ≤ 3 per step ⇒ O(m n * 4 * 3^(L-1)). Coarse bound: O(m n * 4^L).\n    - **Space:** trie O(W); recursion/visited path O(L).",
+    "time_complexity": "O(m n * 4^L)\n**Symbols:** m×n board, W=∑(w∈dict)|w|, L=max|w|.\n**Build trie:** O(W).\n**DFS (worst case):** first step ≤ 4 choices, then ≤ 3 per step ⇒ O(m n * 4 * 3^(L-1)). Coarse bound: O(m n * 4^L).\n**Space:** trie O(W); recursion/visited path O(L).",
     "topics": [
       "Trie"
     ],
@@ -1138,13 +1153,13 @@
     "returns": {
       "label": "int"
     },
-    "time_complexity": "- O(n)\n    - where `n` is the number of questions."
+    "time_complexity": "O(n)\nwhere `n` is the number of questions."
   },
   "problems.2145-count-the-hidden-sequences.solution:numberOfArrays": {
     "args": [
-      "upper",
+      "lower",
       "differences",
-      "lower"
+      "upper"
     ],
     "code": "def numberOfArrays(differences: list[int], lower: int, upper: int) -> int:\n\n    prefix_sum = min_marker = max_marker = 0\n\n    for diff in differences:\n        prefix_sum += diff\n        min_marker = min(min_marker, prefix_sum)\n        max_marker = max(max_marker, prefix_sum)\n\n    return max(0, (upper - max_marker) - (lower - min_marker) + 1)",
     "file_path": "backend/algorithms/problems/2145-count-the-hidden-sequences/solution.py",
@@ -1174,6 +1189,21 @@
     "name": "upper",
     "summary": "Upper bound for any marker on the highway."
   },
+  "problems.238-product-of-array-except-self.solution:product_of_array_except_self": {
+    "args": [
+      "nums"
+    ],
+    "code": "def product_of_array_except_self(nums: list[int]) -> list[int]:\n\n    pre, res = 1, [1] * (n := len(nums))\n    for i, x in enumerate(nums):\n        res[i], pre = pre, pre * x\n    suf = 1\n    for i in range(n - 1, -1, -1):\n        res[i], suf = res[i] * suf, suf * nums[i]\n    return res",
+    "file_path": "backend/algorithms/problems/238-product-of-array-except-self/solution.py",
+    "intuition": "- Two passes:\n        - 1.  *[orange!]Prefix* pass → `res[i]` = product of all elements *[orange!]before* `i`.\n        - 2.  *[purple!]Suffix* pass → multiply each `res[i]` by product of all elements *[purple!]after* `i`.",
+    "kind": "function",
+    "label": "def product_of_array_except_self(nums: list[int]) -> list[int]",
+    "name": "product_of_array_except_self",
+    "returns": {
+      "label": "list[int]"
+    },
+    "time_complexity": "O(n)\nwhere n is the length of the nums array. We iterate through the array twice."
+  },
   "problems.3-longest-substring-without-repeating-characters.solution:longest_substring_without_repeating_characters": {
     "args": [
       "s"
@@ -1190,7 +1220,7 @@
       "label": "int",
       "summary": "Length of the longest substring without repeating characters"
     },
-    "time_complexity": "- O(n)\n    - where n is the length of the string. Each character is visited once by the right pointer, and the left pointer only moves forward, so the sliding window expands and contracts at most n times total."
+    "time_complexity": "O(n)\nwhere n is the length of the string. Each character is visited once by the right pointer, and the left pointer only moves forward, so the sliding window expands and contracts at most n times total."
   },
   "problems.3-longest-substring-without-repeating-characters.solution:longest_substring_without_repeating_characters.l = max(mp[c] + 1, l)": {
     "kind": "expression",
@@ -1249,7 +1279,7 @@
       "label": "bool",
       "summary": "True if the board is valid, False otherwise"
     },
-    "time_complexity": "- O(81)\n    - i.e., O(n^2). Fixed 9×9 boards scan at most 81 cells. Generalized n×n Sudoku validation runs in O(n^2) time."
+    "time_complexity": "O(81)\ni.e., O(n^2). Fixed 9×9 boards scan at most 81 cells. Generalized n×n Sudoku validation runs in O(n^2) time."
   },
   "problems.36-valid-sudoku.solution:is_valid_sudoku.board": {
     "kind": "parameter",
@@ -1285,12 +1315,12 @@
     "returns": {
       "label": "None"
     },
-    "time_complexity": "- O(9^k):\n    - Let k be the number of empty cells (≤ 81).\n    - practically Θ(∏(t=1 to k) m_t) where m_t = MRV-picked cell's candidate count at step t (usually ≪ 9)\n    - MRV selection adds O(k) per level (≤ O(k^2) per path), dominated by the search"
+    "time_complexity": "O(9^k):\nLet k be the number of empty cells (≤ 81).\npractically Θ(∏(t=1 to k) m_t) where m_t = MRV-picked cell's candidate count at step t (usually ≪ 9)\nMRV selection adds O(k) per level (≤ O(k^2) per path), dominated by the search"
   },
   "problems.370-range-addition.solution:getModifiedArray": {
     "args": [
-      "updates",
-      "length"
+      "length",
+      "updates"
     ],
     "code": "def getModifiedArray(length: int, updates: list[list[int]]) -> list[int]:\n\n    delta = [0] * (length + 1)\n\n    for start_day, end_day, change_in_km in updates:\n        delta[start_day] += change_in_km\n        delta[end_day + 1] -= change_in_km\n\n    prefix_sum = 0\n    return [prefix_sum := prefix_sum + change for change in delta[:-1]]",
     "file_path": "backend/algorithms/problems/370-range-addition/solution.py",
@@ -1329,7 +1359,7 @@
       "label": "list[list[int]]",
       "summary": "List of all unique combinations that sum to target"
     },
-    "time_complexity": "- O(2^n)\n    - Worst-case exponential in number of combinations explored, but pruning (if c > rem: break) reduces branches significantly."
+    "time_complexity": "O(2^n)\nWorst-case exponential in number of combinations explored, but pruning (if c > rem: break) reduces branches significantly."
   },
   "problems.39-combination-sum.solution:combination_sum.candidates": {
     "kind": "parameter",
@@ -1356,7 +1386,7 @@
     "returns": {
       "label": "bool"
     },
-    "time_complexity": "- O(N * Sum):\n    - where N is the number of elements and Sum is the target subset sum."
+    "time_complexity": "O(N * Sum):\nwhere N is the number of elements and Sum is the target subset sum."
   },
   "problems.416-partition-equal-subset-sum.solution:can_partition_into_2_equal_subsets.dp": {
     "args": [
@@ -1392,7 +1422,7 @@
       "summary": "List of all possible permutations"
     },
     "space_complexity": "O(N)\nRecursion depth is N, and we store the current permutation path.",
-    "time_complexity": "- O(N!)\n    - N levels of recursion, each level explores N - depth options, total N! permutations."
+    "time_complexity": "O(N!)\nN levels of recursion, each level explores N - depth options, total N! permutations."
   },
   "problems.46-permutations.solution:permutations.nums": {
     "kind": "parameter",
@@ -1434,8 +1464,8 @@
   },
   "problems.460-lfu-cache.solution:LFUCache.put": {
     "args": [
-      "value",
-      "key"
+      "key",
+      "value"
     ],
     "code": "    def put(self, key: int, value: int) -> None:\n        if self.capacity <= 0:\n            return\n\n        if key in self.cache:\n            self.cache[key] = value\n            self._bump(key)\n            return\n\n        if len(self.cache) >= self.capacity:\n            old_key, _ = self.buckets[self.minfreq].popitem(last=False)\n            del self.cache[old_key]\n            del self.freq[old_key]\n\n        self.cache[key] = value\n        self.freq[key] = 1\n        self.buckets[1][key] = None\n        self.minfreq = 1",
     "file_path": "backend/algorithms/problems/460-lfu-cache/solution.py",
@@ -1467,7 +1497,7 @@
       "label": "list[list[str]]",
       "summary": "List of all valid queen placements"
     },
-    "time_complexity": "- O(N!)\n    - first row: N choices, second row: N-1 choices, total permutations = N!, pruning drastically reduces actual recursion tree.",
+    "time_complexity": "O(N!)\nfirst row: N choices, second row: N-1 choices, total permutations = N!, pruning drastically reduces actual recursion tree.",
     "variables": [
       "cols",
       "diag1",
@@ -1529,7 +1559,7 @@
     "returns": {
       "label": "int"
     },
-    "time_complexity": "- O(n * amount)\n    - where n is the number of coins and amount is the target amount."
+    "time_complexity": "O(n * amount)\nwhere n is the number of coins and amount is the target amount."
   },
   "problems.523-continuous-subarray-sum.solution:checkSubarraySumIsMultipleOfK": {
     "args": [
@@ -1591,7 +1621,7 @@
       "label": "int",
       "summary": "Maximum sum of any contiguous subarray"
     },
-    "time_complexity": "- O(n)\n    - where n is the length of the array. We iterate through the array once."
+    "time_complexity": "O(n)\nwhere n is the length of the array. We iterate through the array once."
   },
   "problems.53-maximum-subarray.solution:maximum_subarray.nums": {
     "kind": "parameter",
@@ -1612,7 +1642,7 @@
     "returns": {
       "label": "list[list[int]]"
     },
-    "time_complexity": "- O(m * n):\n    - where m and n are the dimensions of the grid.\n    - Every cell is enqueued and processed exactly once, making this the optimal solution."
+    "time_complexity": "O(m * n):\nwhere m and n are the dimensions of the grid.\nEvery cell is enqueued and processed exactly once, making this the optimal solution."
   },
   "problems.560-subarray-sum-equals-k.solution:subarraySumEqualsK": {
     "args": [
@@ -1643,8 +1673,8 @@
   },
   "problems.713-subarray-product-less-than-k.solution:num_subarray_product_less_than_k": {
     "args": [
-      "nums",
-      "k"
+      "k",
+      "nums"
     ],
     "code": "def num_subarray_product_less_than_k(nums: list[int], k: int) -> int:\n    if k <= 1:\n        return 0\n    product, left, count = 1, 0, 0\n    for right, num in enumerate(nums):\n        product *= num\n        while product >= k:\n            product //= nums[left]\n            left += 1\n        count += right - left + 1\n    return count",
     "file_path": "backend/algorithms/problems/713-subarray-product-less-than-k/solution.py",
@@ -1658,9 +1688,9 @@
   },
   "problems.743-network-delay-time.solution:network_delay_time": {
     "args": [
+      "k",
       "n",
-      "times",
-      "k"
+      "times"
     ],
     "code": "def network_delay_time(times: list[list[int]], n: int, k: int) -> int:\n\n    adj = defaultdict(list)\n    for u, v, w in times:\n        adj[u].append((v, w))\n    pq, finalized, time = [(0, k)], set(), 0\n    while pq:\n        t, node = heapq.heappop(pq)\n        if node in finalized:\n            continue\n        finalized.add(node)\n        time = t\n        for neighbor, travel_time in adj[node]:\n            if neighbor not in finalized:\n                heapq.heappush(pq, (time + travel_time, neighbor))\n    return time if len(finalized) == n else -1",
     "file_path": "backend/algorithms/problems/743-network-delay-time/solution.py",
@@ -1671,7 +1701,7 @@
       "label": "int",
       "summary": "minimum time for a signal starting at node `k` to reach *all* nodes or -1 if impossible"
     },
-    "time_complexity": "- O(E log V):\n    - E is the number of edges (the length of the input list `times`)\n    - V is the number of vertices (the number of nodes `n`)\n\n    - By substituting these into the standard Dijkstra complexity formula, O(E log V), you get O(len(times) log n)."
+    "time_complexity": "O(E log V):\nE is the number of edges (the length of the input list `times`)\nV is the number of vertices (the number of nodes `n`)\n\nBy substituting these into the standard Dijkstra complexity formula, O(E log V), you get O(len(times) log n)."
   },
   "problems.743-network-delay-time.solution:network_delay_time.k": {
     "kind": "parameter",
@@ -1722,10 +1752,10 @@
   "problems.787-cheapest-flights-within-k-stops.bellman_ford:cheapest_flights_with_at_most_k_stops": {
     "args": [
       "src",
-      "n",
+      "k",
       "dst",
       "flights",
-      "k"
+      "n"
     ],
     "code": "def cheapest_flights_with_at_most_k_stops(\n    n: int, flights: list[list[int]], src: int, dst: int, k: int\n) -> int:\n    d = [float(\"inf\")] * n\n    d[src] = 0\n\n    for _ in range(k + 1):\n        tmp = d[:]\n        for u, v, w in flights:\n            if d[u] + w < tmp[v]:\n                tmp[v] = d[u] + w\n        d = tmp\n\n    return d[dst] if d[dst] < float(\"inf\") else -1",
     "file_path": "backend/algorithms/problems/787-cheapest-flights-within-k-stops/bellman_ford.py",
@@ -1735,14 +1765,14 @@
     "returns": {
       "label": "int"
     },
-    "time_complexity": "- O(kE)\n    - where `k` is the number of stops and `E` is the number of flights."
+    "time_complexity": "O(kE)\nwhere `k` is the number of stops and `E` is the number of flights."
   },
   "problems.787-cheapest-flights-within-k-stops.dijkstra:cheapest_flights_with_at_most_k_stops": {
     "args": [
-      "src",
-      "flights",
       "dst",
-      "k"
+      "src",
+      "k",
+      "flights"
     ],
     "code": "def cheapest_flights_with_at_most_k_stops( flights: list[list[int]], src: int, dst: int, k: int) -> int:\n\n    graph = defaultdict(list)\n    for u, v, price in flights:\n        graph[u].append((v, price))\n\n    pq, min_stops = [(0, src, 0)], {}\n\n    while pq:\n        cost, city, stops = heapq.heappop(pq)\n\n        # If we've already found a path to this city using fewer or equal stops, skip.\n        # A path with fewer stops must have been cheaper or equal due to PQ ordering.\n        if stops > min_stops.get(city, float(\"inf\")): continue\n        if city == dst: return cost\n\n        # Record the new minimum stops to reach this city\n        min_stops[city] = stops\n        if stops <= k:\n            for neighbor, price in graph[city]:\n                heapq.heappush(pq, (cost + price, neighbor, stops + 1))\n    return -1",
     "file_path": "backend/algorithms/problems/787-cheapest-flights-within-k-stops/dijkstra.py",
@@ -1785,7 +1815,7 @@
     "returns": {
       "label": "bool"
     },
-    "time_complexity": "- O(M * N * 3^L)\n    - M, N = board size\n    - L = word length\n    - Each step explores at most 3 directions (excluding the one it came from)\n    - Runtime improves with early mismatches and pruning"
+    "time_complexity": "O(M * N * 3^L)\nM, N = board size\nL = word length\nEach step explores at most 3 directions (excluding the one it came from)\nRuntime improves with early mismatches and pruning"
   },
   "problems.875-koko-eating-bananas.solution:koko_eating_bananas": {
     "args": [
@@ -1802,7 +1832,7 @@
       "label": "int",
       "summary": "The minimum eating speed"
     },
-    "time_complexity": "- O(n log m):\n    - n is the number of piles\n    - m is the maximum pile size",
+    "time_complexity": "O(n log m):\nn is the number of piles\nm is the maximum pile size",
     "variables": [
       "l",
       "r",
@@ -1863,7 +1893,7 @@
     "returns": {
       "label": "int"
     },
-    "time_complexity": "- O(n^2)\n    - where n is the dimension of the board. The initial flattening of the board takes O(n^2) time. The subsequent BFS visits each of the n^2 squares at most once."
+    "time_complexity": "O(n^2)\nwhere n is the dimension of the board. The initial flattening of the board takes O(n^2) time. The subsequent BFS visits each of the n^2 squares at most once."
   },
   "problems.974-subarray-sums-divisible-by-k.solution:subarraysSumIsDivisibleByK": {
     "args": [
@@ -1905,6 +1935,6 @@
     "returns": {
       "label": "int"
     },
-    "time_complexity": "- O(m * n):\n    - where m and n are the dimensions of the grid. Each cell is enqueued and dequeued at most once, making the process highly efficient and optimal."
+    "time_complexity": "O(m * n):\nwhere m and n are the dimensions of the grid. Each cell is enqueued and dequeued at most once, making the process highly efficient and optimal."
   }
 }

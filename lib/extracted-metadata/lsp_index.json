@@ -201,6 +201,32 @@
       ]
     },
     {
+      "uri": "problems/1-two-sum/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/1-two-sum/solution.py",
+      "symbols": [
+        {
+          "name": "two_sum",
+          "detail": "two_sum(nums: list[int], target: int) -> list[int]",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 7, "character": 21}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 11
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
       "uri": "problems/1011-capacity-to-ship-packages-within-d-days/__init__.py",
       "symbols": []
     },
@@ -1361,6 +1387,32 @@
       ]
     },
     {
+      "uri": "problems/238-product-of-array-except-self/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/238-product-of-array-except-self/solution.py",
+      "symbols": [
+        {
+          "name": "product_of_array_except_self",
+          "detail": "product_of_array_except_self(nums: list[int]) -> list[int]",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 8, "character": 14}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 32
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
       "uri": "problems/3-longest-substring-without-repeating-characters/__init__.py",
       "symbols": []
     },
@@ -2436,6 +2488,14 @@
           "children": []
         }
       ]
+    },
+    {
+      "uri": "template/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "template/solution.py",
+      "symbols": []
     }
   ]
 }
