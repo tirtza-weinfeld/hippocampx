@@ -49,7 +49,7 @@ const remarkListVariants: Plugin<[], Root> = () => {
         if (list.ordered) {
           transformOrderedList(list, file, parent, index, currentLevel)
         } else {
-          transformUnorderedList(list, parent, index, currentLevel)
+          transformUnorderedList(list, file, parent, index, currentLevel)
         }
         
         // Process children with the same level (list items don't increase level)
@@ -92,15 +92,15 @@ const remarkListVariants: Plugin<[], Root> = () => {
   }
 }
 
-// Helper function to extract original numbers from source text
+// Helper function to extract original numbers and markers from source text
 function extractOriginalNumbers(list: List, file: VFile): number[] {
   if (!file.value || typeof file.value !== 'string') {
     return list.children.map((_, i) => i + 1)
   }
-  
+
   const sourceLines = file.value.split('\n')
   const originalNumbers: number[] = []
-  
+
   list.children.forEach((listItem: ListItem) => {
     if (listItem.position) {
       const startLine = listItem.position.start.line - 1
@@ -120,8 +120,51 @@ function extractOriginalNumbers(list: List, file: VFile): number[] {
       originalNumbers.push(0)
     }
   })
-  
+
   return originalNumbers
+}
+
+// Helper function to extract markers from source text
+function extractMarkers(list: List, file: VFile): string[] {
+  if (!file.value || typeof file.value !== 'string') {
+    return list.children.map(() => list.ordered ? '1.' : '-')
+  }
+
+  const sourceLines = file.value.split('\n')
+  const markers: string[] = []
+
+  list.children.forEach((listItem: ListItem) => {
+    if (listItem.position) {
+      const startLine = listItem.position.start.line - 1
+      if (startLine >= 0 && startLine < sourceLines.length) {
+        const sourceLine = sourceLines[startLine]
+
+        if (list.ordered) {
+          // Match ordered list markers: 1., 2), 1), etc.
+          const orderedMatch = sourceLine.match(/^\s*(\d+(?:\.\d+)?[.)])/)
+          if (orderedMatch) {
+            markers.push(orderedMatch[1])
+          } else {
+            markers.push('1.')
+          }
+        } else {
+          // Match unordered list markers: -, +, *
+          const unorderedMatch = sourceLine.match(/^\s*([-+*])/)
+          if (unorderedMatch) {
+            markers.push(unorderedMatch[1])
+          } else {
+            markers.push('-')
+          }
+        }
+      } else {
+        markers.push(list.ordered ? '1.' : '-')
+      }
+    } else {
+      markers.push(list.ordered ? '1.' : '-')
+    }
+  })
+
+  return markers
 }
 
 // Helper function to detect restart points in numbering
@@ -277,30 +320,33 @@ function createJSXAttribute(name: string, value: string | number | boolean) {
 function transformOrderedList(list: List, file: VFile, parent: Parent, index: number, nestingLevel: number) {
   const originalNumbers = extractOriginalNumbers(list, file)
   const restartPoints = detectRestartPoints(originalNumbers)
-  
+  const markers = extractMarkers(list, file)
+
   // Use the provided nesting level
   const level = nestingLevel
-  
+
   const transformedItems = list.children.map((listItem: ListItem, i) => {
     // Clean number prefixes from text content and check for trailing colon
     const { hasTrailingColon } = cleanTextContent(listItem)
-    
+
     // Calculate display properties
     const displayNumber = calculateDisplayNumber(i, originalNumbers, restartPoints)
     const componentName = getComponentType(listItem)
-    
+    const marker = markers[i] || '1.'
+
     // Create attributes
     const attributes = [
       createJSXAttribute('level', level),
-      createJSXAttribute('displayNumber', displayNumber)
+      createJSXAttribute('displayNumber', displayNumber),
+      createJSXAttribute('marker', marker)
     ]
-    
+
     // Add headerItem attribute if there was a trailing colon
     if (hasTrailingColon) {
       attributes.push(createJSXAttribute('headerItem', true))
     }
-    
-    
+
+
     return {
       type: 'mdxJsxFlowElement',
       name: componentName,
@@ -316,30 +362,35 @@ function transformOrderedList(list: List, file: VFile, parent: Parent, index: nu
     attributes: [],
     children: transformedItems
   }
-  
+
   parent.children[index] = orderedListElement as RootContent
 }
 
 // Transform unordered lists to UnorderedList JSX components
-function transformUnorderedList(list: List, parent: Parent, index: number, nestingLevel: number) {
+function transformUnorderedList(list: List, file: VFile, parent: Parent, index: number, nestingLevel: number) {
   // Use the provided nesting level
   const level = nestingLevel
-  
-  const transformedItems = list.children.map((listItem: ListItem) => {
+  const markers = extractMarkers(list, file)
+
+  const transformedItems = list.children.map((listItem: ListItem, i) => {
     // Clean text content and check for trailing colon
     const { hasTrailingColon } = cleanTextContent(listItem)
-    
+
     const componentName = getComponentType(listItem)
-    
-    const attributes = [createJSXAttribute('level', level)]
+    const marker = markers[i] || '-'
+
+    const attributes = [
+      createJSXAttribute('level', level),
+      createJSXAttribute('marker', marker)
+    ]
     // Note: No displayNumber for unordered lists - components will show icons
-    
+
     // Add headerItem attribute if there was a trailing colon
     if (hasTrailingColon) {
       attributes.push(createJSXAttribute('headerItem', true))
     }
-    
-    
+
+
     return {
       type: 'mdxJsxFlowElement',
       name: componentName,
@@ -354,7 +405,7 @@ function transformUnorderedList(list: List, parent: Parent, index: number, nesti
     attributes: [],
     children: transformedItems
   }
-  
+
   parent.children[index] = unorderedListElement as RootContent
 }
 

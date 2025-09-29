@@ -1,0 +1,63 @@
+# Linear Algebra
+
+## Resizable Table of Contents
+
+## What Linear Algebra Is
+
+The math of **numbers arranged in lines** (vectors, matrices, tensors) and how they **combine or transform**.
+It powers **AI**, **machine learning**, **data analysis**, and **geometry** by describing:
+
++ **Data** (as vectors/tensors)
++ **Relationships** (as matrices)
++ **Transformations** (rotations, scaling, projections)
+
+---
+
+## The Building Blocks
+
+| Name       | Example                               | Meaning       | Use in AI                   |
+| ---------- | ------------------------------------- | ------------- | --------------------------- |
+| **Scalar** | `5`                                   | single number | weight, loss, learning rate |
+| **Vector** | $[2, 3]$                              | 1D list       | features of one data point  |
+| **Matrix** | $$\begin{bmatrix}1&2\\3&4\end{bmatrix}$$ | 2D grid       | dataset, transformation     |
+| **Tensor** | e.g. 28×28×3                          | 3D+ array     | images, embeddings, batches |
+
+📌 Both $[2, 3]$ (1×2) and $\begin{bmatrix}2\\3\end{bmatrix}$ (2×1) represent the **same vector** (arrow in 2D),
+but the **orientation** matters for operations.
+
+---
+
+## Core Operations
+
+| Operation           | Idea                    | Example                                                                                                |
+| ------------------- | ----------------------- | ------------------------------------------------------------------------------------------------------ |
+| **Addition**        | add same-shaped objects | $[1,2]+[3,4]=[4,6]$                                                                                    |
+| **Scalar ×**        | scale each entry        | $2 \times [1,2]=[2,4]$                                                                                 |
+| **Matrix × Vector** | transform vector        | $$\begin{bmatrix}1&2\\3&4\end{bmatrix}\begin{bmatrix}5\\6\end{bmatrix}=\begin{bmatrix}17\\39\end{bmatrix}$$ |
+| **Transpose**       | flip rows↔cols          | $[1,2]^T=\begin{bmatrix}1\\2\end{bmatrix}$                                                              |
+| **Dot Product**     | measure alignment       | $[1,2] \cdot [3,4]=11$                                                                                   |
+
+Multiplication rule:
+$$A_{m n} \times B_{n p} = C_{m p}$$
+(Inner sizes must match.)
+
+---
+
+## Why It Matters for AI
+
+Linear algebra is used in:
+
+* **Machine Learning**: datasets, linear regression ($y = Xw + b$)
+* **Optimization**: gradients are vectors; Hessians are matrices
+* **Computer Vision**: images = tensors
+* **Natural Language Processing**: word embeddings = vectors
+* **Dimensionality Reduction**: PCA uses eigenvalues/eigenvectors
+* **Probability**: covariance matrices, multivariate distributions
+
+It's the **language of data** — describing and manipulating high-dimensional spaces.
+
+
+
+
+
+

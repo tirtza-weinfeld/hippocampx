@@ -11,6 +11,7 @@ export interface ListItemProps {
   level: number
   displayNumber?: string
   headerItem?: boolean
+  marker?: string
 }
 
 const listItemVariants = {
@@ -76,11 +77,13 @@ export default function ListItem({
   level,
   displayNumber,
   headerItem,
+  marker,
   ...props
 }: ListItemProps) {
   const showNumber = displayNumber !== undefined
   const { Icon, levelcolor } = getIconConfig(level)
 
+  // console.log("marker", marker)
 // if(headerItem){
 //   console.log("headerItem", headerItem,children)
 // }
@@ -95,6 +98,7 @@ export default function ListItem({
         "flex items-start gap-3",
         "text-gray-700 dark:text-gray-300",
         "leading-relaxed",
+        marker === "+" && "ml-6",
         // "p-0 @md:p-3",
         // "p-0",
         // "p-3",
@@ -112,7 +116,7 @@ export default function ListItem({
       )}
       {...props}
     >
-      <motion.div
+    { marker !== "+" &&   <motion.div
         whileHover={{ scale: 1.15, rotate: showNumber ? 0 : 180 }}
         transition={{ type: "spring", stiffness: 400, damping: 25 }}
         className={cn(
@@ -131,14 +135,14 @@ export default function ListItem({
             {displayNumber}
           </span>
         ) : (
-          <Icon className={cn(
+        <Icon className={cn(
             "w-3 h-3  ",
             `text-${levelcolor}`
           )} />
         )}
         {/* <span className="absolute top-0 right-0 text-em-gradient">level: {level}</span> */}
       </motion.div>
-
+}
       <div className={cn(
         "min-w-0 flex-1",
        

@@ -1,4 +1,4 @@
-import { Brain, Binary, Sparkles, InfinityIcon, ChartNoAxesCombinedIcon, Home, Calculator, BookOpen, HelpCircle, Dumbbell, Lightbulb, Gamepad2, SquareFunction } from "lucide-react"
+import { Brain, Binary, Sparkles, InfinityIcon, ChartNoAxesCombinedIcon, Home, Calculator, BookOpen, HelpCircle, Dumbbell, Lightbulb, Gamepad2, SquareFunction, Code } from "lucide-react"
 import { ElementType } from "react"
 import { PROBLEMS_ROUTES } from "./problems-routes"
 
@@ -13,6 +13,17 @@ export type NavigationItem = {
 
 export const routes: NavigationItem[] = [
     { title: 'Home', href: '/', icon: Home, color: "text-blue-500", bgColor: "bg-purple-500/10", },
+    // {
+    //     title: 'Fundamentals', href: '/fundamentals', icon: ChartNoAxesCombinedIcon, color: "text-blue-500", bgColor: "bg-blue-500/10",
+    //     children: [
+    //         { title: 'Linear Algebra', href: '/fundamentals/linear-algebra', icon: Code, color: "text-blue-500", bgColor: "bg-blue-500/10" },
+    //         { title: 'Set Theory', href: '/fundamentals/set-theory', icon: Code, color: "text-blue-500", bgColor: "bg-blue-500/10" },
+    //         { title: 'Number Sets', href: '/fundamentals/number-sets', icon: Code, color: "text-blue-500", bgColor: "bg-blue-500/10" },
+    //         { title: 'Math', href: '/fundamentals/math', icon: Code, color: "text-blue-500", bgColor: "bg-blue-500/10" },
+    //     ]
+    // },
+
+
     {
         title: 'Binary', href: '/binary', icon: Binary, color: "text-violet-500", bgColor: "bg-violet-500/10",
         children: [
@@ -45,7 +56,7 @@ export const routes: NavigationItem[] = [
             { title: "Lab", href: "/calculus/lab", icon: ChartNoAxesCombinedIcon, color: "text-blue-500", bgColor: "bg-blue-500/10" },
         ],
     },
-   ...PROBLEMS_ROUTES,
+    ...PROBLEMS_ROUTES,
     {
         title: 'Notes', href: '/notes', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10",
         children: [

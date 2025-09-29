@@ -1,0 +1,49 @@
+# Core Number Theory 
+
+## Resizable Table of Contents
+---
+
+## Divisibility & Primes
+
+* **Divides**: `a | b` if ∃ k s.t. b = a·k.
+  *Example:* 3 | 12 ✅, 5 | 12 ❌
+* **GCD**: greatest common divisor — `gcd(12, 18)=6`.
+* **LCM**: `lcm(a,b) = a·b / gcd(a,b)` → scheduling cycles.
+* **Primes**: only 1 & itself → 2,3,5,7…
+  *Used in hashing & secure RNG.*
+
+## Modular Arithmetic
+
+* **Definition**: `a ≡ b (mod m)` ⇔ (a–b) divisible by m.
+  *Example:* 17 ≡ 2 (mod 5)
+* **Addition rule**: `(a+b) mod m = (a mod m + b mod m) mod m`.
+* **Multiplication rule**: `(a·b) mod m = ((a mod m)(b mod m)) mod m`.
+* **Use**: hash buckets, cyclic encodings, RNG.
+
+## Modular Inverse
+
+* `a⁻¹ mod m` exists if `gcd(a, m)=1`.
+  *Example:* 3⁻¹ mod 7 = 5 because 3·5 = 15 ≡ 1 (mod 7).
+* **Use**: solving modular equations, normalization in finite fields.
+
+### **Part 4 – Fast Exponentiation**
+
+* Compute `a^b mod m` efficiently:
+
+  ```
+  pow(a, b, m)  # Python
+  ```
+
+  *Example:* 3¹³ mod 7 → 5
+* **Use**: cryptography, probabilistic algorithms.
+
+## Applications
+
+* **Hashing**: index = key mod m
+* **Pseudo-RNGs**: `xₙ₊₁ = (a·xₙ + c) mod m`
+* **Finite Fields ℤₚ** (p prime): operations wrap mod p → used in embeddings, secure ML.
+
+## (Optional Advanced)
+
+* **Chinese Remainder Theorem**: solve multiple mod equations.
+* **Congruence systems**: combine constraints efficiently.

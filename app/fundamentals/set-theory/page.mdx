@@ -1,0 +1,55 @@
+# Set Theory
+
+## Resizable Table of Contents
+
+
+
+## Core Concepts
+
+| Concept              | Definition                                   | AI Relevance                              |
+| -------------------- | -------------------------------------------- | ----------------------------------------- |
+| **Set**              | A collection of distinct objects (elements). | Represents datasets, feature sets.        |
+| **Element (∈)**      | Membership relation (e.g. $2 \in \{1,2,3\}$).      | Membership in class, label, or feature.   |
+| **Subset (⊆)**       | All elements of A are in B.                  | Feature subsets, decision boundaries.     |
+| **Union (∪)**        | Combine all elements.                        | Merge datasets, combined features.        |
+| **Intersection (∩)** | Common elements.                             | Shared attributes or overlapping classes. |
+| **Difference (−)**   | Elements in one not in another.              | Exclusive features or negative classes.   |
+| **Complement (Aᶜ)**  | Elements not in A (in universal set).        | Negation in logic, missing data.          |
+
+---
+
+## Special Sets
+
+* **Empty Set (∅)** – No elements → null dataset
+* **Universal Set (U)** – All possible elements → domain space
+* **Power Set (𝒫(A))** – All subsets of A → used in combinatorial feature selection
+
+---
+
+## Relations & Functions
+
+* **Relation:** Subset of `A × B` → pairs like `(input, output)`
+* **Function:** Special relation mapping each input to one output
+  → `f: X → Y` is core to ML models
+
+---
+
+## Operations in AI
+
+| Area                  | Application                             |
+| --------------------- | --------------------------------------- |
+| **Logic & Inference** | Rule-based AI uses set operations       |
+| **Clustering**        | Sets of points grouped by similarity    |
+| **Classification**    | Classes as sets; sample membership      |
+| **Feature Selection** | Power sets, intersections               |
+| **Fuzzy Sets**        | Degrees of membership (for uncertainty) |
+
+---
+
+## 5. **Fuzzy Sets (AI Extension)**
+
+* **Classical**: `x ∈ A` or not
+* **Fuzzy**: `x ∈ A` with degree μ(x) ∈ [0,1]
+  Used in **fuzzy logic** and **uncertainty modeling**.
+
+
