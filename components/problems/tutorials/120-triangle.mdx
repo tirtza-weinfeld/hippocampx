@@ -14,12 +14,12 @@ Given a `triangle` (list of lists), find the minimum path sum from top to bottom
 
 ## [!ProblemIntuition] Intuition
 
-- Paradigm: This is a classic bottom-up dynamic programming problem.:
+- Paradigm: This is a classic bottom-up dynamic programming problem.
     - Insight: The minimum path to the bottom *from* any cell `(r, c)` is independent of the path taken *to* that cell. This allows us to start at the bottom (where path sums are known) and iteratively compute the optimal path for each cell on the row above by choosing the cheaper of its two children's already-computed optimal paths.
 
 ## [!ProblemTimeComplexity] Time Complexity
 
-- $O(N)$:
+- $O(N)$
     - where N is the total number of cells in the triangle. The complexity is the number of subproblems (N), as each is solved once.
 
 ## [!ProblemCodeSnippet] Code Snippet

@@ -1984,6 +1984,18 @@
   "problems/34-find-first-and-last-position-of-element-in-sorted-array/__init__.py": [
 
   ],
+  "problems/136-single-number/solution.py": [
+    {"range": {"start": {"line": 0, "character": 0}, "end": {"line": 4, "character": 12}}, "nameRange": {"start": {"line": 0, "character": 4}, "end": {"line": 0, "character": 16}}, "qname": "problems.136-single-number.solution:singleNumber", "kind": "function"},
+    {"range": {"start": {"line": 0, "character": 17}, "end": {"line": 0, "character": 32}}, "nameRange": {"start": {"line": 0, "character": 17}, "end": {"line": 0, "character": 21}}, "qname": "problems.136-single-number.solution:singleNumber.nums", "kind": "parameter"},
+    {"range": {"start": {"line": 1, "character": 4}, "end": {"line": 1, "character": 5}}, "nameRange": {"start": {"line": 1, "character": 4}, "end": {"line": 1, "character": 5}}, "qname": "problems.136-single-number.solution:singleNumber.x", "kind": "variable"},
+    {"range": {"start": {"line": 2, "character": 8}, "end": {"line": 2, "character": 9}}, "nameRange": {"start": {"line": 2, "character": 8}, "end": {"line": 2, "character": 9}}, "qname": "problems.136-single-number.solution:singleNumber.v", "kind": "variable"},
+    {"range": {"start": {"line": 2, "character": 13}, "end": {"line": 2, "character": 17}}, "nameRange": {"start": {"line": 2, "character": 13}, "end": {"line": 2, "character": 17}}, "qname": "problems.136-single-number.solution:singleNumber.nums", "kind": "parameter"},
+    {"range": {"start": {"line": 3, "character": 13}, "end": {"line": 3, "character": 14}}, "nameRange": {"start": {"line": 3, "character": 13}, "end": {"line": 3, "character": 14}}, "qname": "problems.136-single-number.solution:singleNumber.v", "kind": "variable"},
+    {"range": {"start": {"line": 4, "character": 11}, "end": {"line": 4, "character": 12}}, "nameRange": {"start": {"line": 4, "character": 11}, "end": {"line": 4, "character": 12}}, "qname": "problems.136-single-number.solution:singleNumber.x", "kind": "variable"}
+  ],
+  "problems/136-single-number/__init__.py": [
+
+  ],
   "problems/1514-path-with-maximum-probability/solution.py": [
     {"range": {"start": {"line": 0, "character": 0}, "end": {"line": 16, "character": 20}}, "nameRange": {"start": {"line": 0, "character": 4}, "end": {"line": 0, "character": 33}}, "qname": "problems.1514-path-with-maximum-probability.solution:path_with_maximum_probability", "kind": "function"},
     {"range": {"start": {"line": 0, "character": 34}, "end": {"line": 0, "character": 40}}, "nameRange": {"start": {"line": 0, "character": 34}, "end": {"line": 0, "character": 35}}, "qname": "problems.1514-path-with-maximum-probability.solution:path_with_maximum_probability.n", "kind": "parameter"},

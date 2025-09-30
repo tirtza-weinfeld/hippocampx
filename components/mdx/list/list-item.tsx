@@ -14,7 +14,7 @@ export interface ListItemProps {
   marker?: string
 }
 
-const listItemVariants = {
+export const listItemVariants = {
   hidden: { opacity: 0, y: 20 },
   visible: {
     opacity: 1,
@@ -37,7 +37,7 @@ const listItemVariants = {
 } as const
 
 
-const getIconConfig = (level: number) => {
+export const getIconConfig = (level: number) => {
   const configs = [
     {
       Icon: Spade,

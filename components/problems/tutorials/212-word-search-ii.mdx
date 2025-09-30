@@ -14,13 +14,13 @@ Given a board and a list of words, find all words in the board.
 
 ## [!ProblemIntuition] Intuition
 
-- Prefix rails:
+- Prefix rails
     - The trie lays down "prefix rails" across the grid: you only move where a rail continues; off‑rail steps end instantly.
     - A terminal is a station: record the word once, close that spur, and drop empty rails as you pass. In one walk, a cell is used at most once.
 
 ## [!ProblemTimeComplexity] Time Complexity
 
-- $O(m $n \cdot 4$^L)$:
+- $O(m $n \cdot 4$^L)$
     - **Symbols:** m×n board, W=∑(w∈dict)|w|, L=max|w|.
     - **Build trie:** $O(W)$.
     - **DFS (worst case):** first step ≤ 4 choices, then ≤ 3 per step ⇒ $O(m $n \cdot 4$ * 3^(L-1)$). Coarse bound: $O(m $n \cdot 4$^L)$.

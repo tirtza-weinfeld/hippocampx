@@ -8,7 +8,7 @@ solution files using simplified docstring format, and generates a JSON structure
 
 New simplified docstring format:
 - __init__.py: Title:, Definition:, Leetcode:, Difficulty:, Topics:
-- solution.py: Intuition:, Time Complexity:, Args:, Variables:, Returns:, Example:
+- solution.py: Intuition:, Time Complexity:, Args:, Variables:, Returns:
 """
 
 import ast
@@ -129,7 +129,7 @@ def parse_simple_docstring(docstring: str, expected_sections: list[str]) -> dict
 
 
 def _process_section_lines(lines: list[tuple[str, str] | str]) -> str:
-    """Process section lines by normalizing indentation."""
+    """Process section lines and convert to MDX-ready indentation."""
     if not lines:
         return ""
 
@@ -146,25 +146,45 @@ def _process_section_lines(lines: list[tuple[str, str] | str]) -> str:
         else:
             normalized_lines.append(line)
 
-    # Find minimum indentation (ignoring empty lines and same-line content)
-    min_indent = float('inf')
+    # Find base indentation (minimum indentation among non-empty lines)
+    base_indent = float('inf')
     for indent, content in normalized_lines:
-        if content.strip() and indent:  # Only consider indented content lines
-            min_indent = min(min_indent, len(indent))
+        if content.strip() and indent:
+            base_indent = min(base_indent, len(indent))
 
-    # If no indented lines found, set min_indent to 0
-    if min_indent == float('inf'):
-        min_indent = 0
+    if base_indent == float('inf'):
+        base_indent = 0
 
-    # Process all lines
+    # Process all lines, mapping to MDX indentation
     for indent, content in normalized_lines:
         if not content.strip():  # Empty line
             processed_lines.append("")
-        elif not indent:  # Same-line content or no indentation
+            continue
+
+        # Calculate original indentation level
+        original_indent = len(indent) if indent else 0
+
+        # Same-line content (no indent) stays at 0
+        if original_indent == 0:
             processed_lines.append(content)
-        else:  # Indented content - remove common indentation
-            remaining_indent = max(0, len(indent) - min_indent)
-            processed_lines.append(" " * remaining_indent + content)
+            continue
+
+        # Calculate relative indent from base
+        relative_indent = original_indent - base_indent
+
+        # Check if this line is a header (ends with :)
+        is_header = content.strip().endswith(':')
+
+        # Mapping:
+        # - Headers at any level → 4 spaces
+        # - Non-header items at base level (relative 0) → 4 spaces
+        # - Non-header items beyond base (relative 4+) → 8 spaces
+        if is_header or relative_indent == 0:
+            mdx_indent = 4
+        else:
+            mdx_indent = 8
+
+        processed_lines.append(' ' * mdx_indent + content)
 
     return '\n'.join(processed_lines).strip()
 
@@ -206,7 +226,7 @@ def extract_function_metadata(file_path: Path) -> dict[str, str]:
 
                 # Parse the docstring using simplified format
                 expected_sections = ['Intuition', 'Time Complexity', 'Space Complexity',
-                                   'Args', 'Expressions', 'Variables', 'Returns', 'Example']
+                                   'Args', 'Expressions', 'Variables', 'Returns']
                 result = parse_simple_docstring(docstring, expected_sections)
                 # result['code'] = cleaned_code
                 result['code'] = full_file_code

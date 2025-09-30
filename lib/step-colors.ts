@@ -1,28 +1,28 @@
 // Tailwind CSS colors in order (simple tuple)
 export const COLORS = [
-  'red',
-  'orange', 
-  'amber',
-  'yellow',
-  'lime',
-  'green',
-  'emerald',
-  'teal',
-  'cyan',
-  'sky',
-  'blue',
-  'indigo',
-  'violet',
-  'purple',
-  'fuchsia',
-  'pink',
-  'rose',
-  'slate',
-  'gray',
-  'zinc',
-  'neutral',
-  'stone',
-] as const;
+  'red', // 1
+  'orange', // 2
+  'amber', // 3
+  'yellow', // 4
+  'lime', // 5
+  'green', // 6
+  'emerald', // 7
+  'teal', // 8
+  'cyan', // 9
+  'sky', // 10
+  'blue', // 11
+  'indigo', // 12
+  'violet', // 13
+  'purple', // 14
+  'fuchsia', // 15
+  'pink', // 16
+  'rose', // 17
+  'slate', // 18
+  'gray', // 19
+  'zinc', // 20
+  'neutral', // 21
+  'stone', // 22
+] as const; 
 
 // Type for valid color names
 export type ColorName = typeof COLORS[number];

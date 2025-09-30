@@ -15,12 +15,12 @@ Given an integer array nums, return an array answer such that `answer[i]` is equ
 ## [!ProblemIntuition] Intuition
 
 - Two passes:
-        1.  *[orange!]Prefix* pass → `res[i]` = product of all elements *[orange!]before* `i`.
-        2.  *[purple!]Suffix* pass → multiply each `res[i]` by product of all elements *[purple!]after* `i`.
+        - 1.  *[orange!]Prefix* pass → `res[i]` = product of all elements *[orange!]before* `i`.
+        - 2.  *[purple!]Suffix* pass → multiply each `res[i]` by product of all elements *[purple!]after* `i`.
 
 ## [!ProblemTimeComplexity] Time Complexity
 
-- $O(n)$:
+- $O(n)$
     - where n is the length of the nums array. We iterate through the array twice.
 
 ## [!ProblemCodeSnippet] Code Snippet

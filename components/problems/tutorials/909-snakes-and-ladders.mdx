@@ -14,12 +14,12 @@ Given an `n × n` integer board where cells are numbered from `1` to `n²` in a 
 
 ## [!ProblemIntuition] Intuition
 
-- Flatten the Board First 🎲:
+- Flatten the Board First 🎲
     - The key insight here is to **pre-process the 2D `board` into a 1D `flat_board` list**. This powerful first step handles all the complex Boustrophedonical logic upfront. By doing this, the BFS loop becomes exceptionally clean and avoids the need for a coordinate conversion function. The search can then operate on a simple 1D array, treating the board as the simple, linear graph it truly represents.
 
 ## [!ProblemTimeComplexity] Time Complexity
 
-- $O($n^{2}$)$:
+- $O($n^{2}$)$
     - where n is the dimension of the board. The initial flattening of the board takes $O($n^{2}$)$ time. The subsequent BFS visits each of the $n^{2}$ squares at most once.
 
 ## [!ProblemCodeSnippet] Code Snippet

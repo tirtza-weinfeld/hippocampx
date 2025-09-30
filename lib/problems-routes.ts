@@ -50,6 +50,7 @@ export const PROBLEMS_ROUTES: NavigationItem[] = [
             { title: 'Rotting Oranges', href: '/problems/994-rotting-oranges', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
             { title: 'Search Insert Position', href: '/problems/35-search-insert-position', icon: Code, color: "text-green-500", bgColor: "bg-green-500/10" },
             { title: 'Shortest Path in a Grid with Obstacles Elimination', href: '/problems/1293-shortest-path-in-a-grid-with-obstacles-elimination', icon: Code, color: "text-red-500", bgColor: "bg-red-500/10" },
+            { title: 'Single Number', href: '/problems/136-single-number', icon: Code, color: "text-green-500", bgColor: "bg-green-500/10" },
             { title: 'Snakes and Ladders', href: '/problems/909-snakes-and-ladders', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
             { title: 'Stone Game III', href: '/problems/1406-stone-game-iii', icon: Code, color: "text-red-500", bgColor: "bg-red-500/10" },
             { title: 'Stone Game IV', href: '/problems/1510-stone-game-iv', icon: Code, color: "text-red-500", bgColor: "bg-red-500/10" },

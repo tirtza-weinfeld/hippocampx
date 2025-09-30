@@ -14,12 +14,12 @@ Return all unique combinations where chosen numbers sum to a target. Numbers can
 
 ## [!ProblemIntuition] Intuition
 
-- DFS with backtracking:
+- DFS with backtracking
     - Sort candidates, try each starting from current index (to allow reuse), prune if number exceeds remaining target, and record the path when rem == 0.
 
 ## [!ProblemTimeComplexity] Time Complexity
 
-- $O(2^n)$:
+- $O(2^n)$
     - Worst-case exponential in number of combinations explored, but pruning (if c > rem: break) reduces branches significantly.
 
 ## [!ProblemArguments] Key Arguments

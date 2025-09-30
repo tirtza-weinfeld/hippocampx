@@ -14,12 +14,12 @@ Place n queens on an n x n board such that no two queens threaten each other. *[
 
 ## [!ProblemIntuition] Intuition
 
-- Backtrack with State Tracking ♛:
+- Backtrack with State Tracking ♛
     - Place one queen per row. Track blocked columns, diagonals: Valid placement → recurse to next row, Invalid → skip, After recursion, remove queen to try next column. Track state using: `cols` for columns, `diag1` for main diagonal *↘* `row - col`, `diag2` for anti-diagonal *↙* `row + col`.
 
 ## [!ProblemTimeComplexity] Time Complexity
 
-- $O(N!)$:
+- $O(N!)$
     - first row: N choices, second row: N-1 choices, total permutations = N!, pruning drastically reduces actual recursion tree.
 
 ## [!ProblemArguments] Key Arguments

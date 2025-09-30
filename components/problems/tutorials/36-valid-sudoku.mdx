@@ -14,7 +14,7 @@ Given a partially filled 9×9 board with digits `1–9` and `.` for empty cells,
 
 ## [!ProblemIntuition] Intuition
 
-- Cube index and think locally:
+- Cube index and think locally
     - **cube_index := **[pink!](r // 3) * 3** + **[purple!](c // 3)**** treats the 9×9 board as a 3×3 grid of 3×3 boxes:
         - `[pink!]r//3` gives which *[pink!]box-row* (0,1,2) you're in
         - `[purple!]c//3` gives which *[purple!]box-column* (0,1,2)
@@ -22,7 +22,7 @@ Given a partially filled 9×9 board with digits `1–9` and `.` for empty cells,
 
 ## [!ProblemTimeComplexity] Time Complexity
 
-- $O(81)$:
+- $O(81)$
     - i.e., $O($n^{2}$)$. Fixed 9×9 boards scan at most 81 cells. Generalized n×n Sudoku validation runs in $O($n^{2}$)$ time.
 
 ## [!ProblemArguments] Key Arguments
@@ -34,9 +34,9 @@ Given a partially filled 9×9 board with digits `1–9` and `.` for empty cells,
 - `if (`: Check for duplicates
 - `if (num := board[r][c]) != "."`: Skip empty cells
 - `cube_index := (r // 3) * 3 + (c // 3)`: The formula works by treating the *9×9* board as a *3×3* grid of *3×3* boxes:
-     - **[pink!]r//3** gives which *[pink!]box-row* (0,1,2) you're in;
-     - **[purple!]c//3** gives which *[purple!]box-column* (0,1,2).
-     - Multiplying the *[pink!]box-row* by *[pink!]3* and adding the *[purple!]box-column* yields a unique index 0–8 for each *3×3* cube.
+        - **[pink!]r//3** gives which *[pink!]box-row* (0,1,2) you're in;
+        - **[purple!]c//3** gives which *[purple!]box-column* (0,1,2).
+        - Multiplying the *[pink!]box-row* by *[pink!]3* and adding the *[purple!]box-column* yields a unique index 0–8 for each *3×3* cube.
 
 ## [!ProblemReturns] Returns
 

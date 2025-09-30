@@ -677,6 +677,32 @@
       ]
     },
     {
+      "uri": "problems/136-single-number/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/136-single-number/solution.py",
+      "symbols": [
+        {
+          "name": "singleNumber",
+          "detail": "singleNumber(nums: list[int]) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 4, "character": 12}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 16
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
       "uri": "problems/1406-stone-game-iii/__init__.py",
       "symbols": []
     },

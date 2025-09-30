@@ -14,12 +14,12 @@ Given a reference to a node in a connected undirected graph, return a deep copy 
 
 ## [!ProblemIntuition] Intuition
 
-- Hash Map as a Visited Set & Node Cache 🗺️:
+- Hash Map as a Visited Set & Node Cache 🗺️
     - The key to traversing a potentially cyclic graph is a `visited` set. Here, the `cloned` dictionary serves a dual purpose. It acts as both a **`visited` set** (by checking `if n not in cloned`) and a **cache** that maps an original node to its clone. This ensures each node is cloned exactly once and prevents getting stuck in an infinite loop.
 
 ## [!ProblemTimeComplexity] Time Complexity
 
-- $O(V + E)$:
+- $O(V + E)$
     - where V is the number of vertices (nodes) and E is the number of edges. This is optimal as we must visit every node and traverse every edge to create the full copy.
 
 ## [!ProblemArguments] Key Arguments

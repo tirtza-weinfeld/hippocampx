@@ -233,8 +233,35 @@ function calculateDisplayNumber(
   return (itemIndex + 1).toString()
 }
 
+// Helper function to detect "Deep Dive:" prefix and extract title
+function detectDeepDive(listItem: ListItem): { isDeepDive: boolean; title: string | null } {
+  let isDeepDive = false
+  let title: string | null = null
+  let isFirstTextNode = true
+
+  visit(listItem, 'text', (textNode: Text, _index, parent) => {
+    if (!isFirstTextNode) return
+
+    const isInLink = parent && (parent.type === 'link' || parent.type === 'linkReference')
+    if (isInLink) return
+
+    const textContent = textNode.value.trim()
+    const deepDiveMatch = textContent.match(/^Deep Dive:\s*(.+)/)
+
+    if (deepDiveMatch) {
+      isDeepDive = true
+      title = deepDiveMatch[1].trim()
+    }
+
+    isFirstTextNode = false
+  })
+
+  return { isDeepDive, title }
+}
+
 // Helper function to clean text content from number prefixes and handle colons
-function cleanTextContent(listItem: ListItem): { hasTrailingColon: boolean } {
+function cleanTextContent(listItem: ListItem): { hasTrailingColon: boolean; isDeepDive: boolean; deepDiveTitle: string | null } {
+  const { isDeepDive, title: deepDiveTitle } = detectDeepDive(listItem)
   let hasTrailingColon = false
   let isFirstTextNode = true
 
@@ -246,6 +273,16 @@ function cleanTextContent(listItem: ListItem): { hasTrailingColon: boolean } {
     const isInLink = parent && (parent.type === 'link' || parent.type === 'linkReference')
 
     if (isFirstTextNode && !isInLink) {
+      // Check for Deep Dive prefix and remove it entirely
+      if (isDeepDive) {
+        const deepDiveMatch = textContent.match(/^Deep Dive:\s*(.+)/)
+        if (deepDiveMatch) {
+          textNode.value = ''
+          isFirstTextNode = false
+          return
+        }
+      }
+
       // Check for number prefix first - only at the very beginning of the list item
       const numberMatch = textContent.match(/^(\d+(?:\.\d+)?)\.\s+(.*)/)
       if (numberMatch) {
@@ -270,13 +307,18 @@ function cleanTextContent(listItem: ListItem): { hasTrailingColon: boolean } {
     isFirstTextNode = false
   })
 
-  return { hasTrailingColon }
+  return { hasTrailingColon, isDeepDive, deepDiveTitle }
 }
 
 // Helper function to determine component type based on data attributes
-function getComponentType(listItem: ListItem): string {
+function getComponentType(listItem: ListItem, isDeepDive: boolean = false): string {
+  // Deep Dive takes priority
+  if (isDeepDive) {
+    return 'CollapsibleListItem'
+  }
+
   const itemType = listItem.data?.hProperties?.['data-item-type']
-  
+
   switch(itemType) {
     case 'problem-intuition':
       return 'ProblemIntuitionItem'
@@ -327,11 +369,11 @@ function transformOrderedList(list: List, file: VFile, parent: Parent, index: nu
 
   const transformedItems = list.children.map((listItem: ListItem, i) => {
     // Clean number prefixes from text content and check for trailing colon
-    const { hasTrailingColon } = cleanTextContent(listItem)
+    const { hasTrailingColon, isDeepDive, deepDiveTitle } = cleanTextContent(listItem)
 
     // Calculate display properties
     const displayNumber = calculateDisplayNumber(i, originalNumbers, restartPoints)
-    const componentName = getComponentType(listItem)
+    const componentName = getComponentType(listItem, isDeepDive)
     const marker = markers[i] || '1.'
 
     // Create attributes
@@ -340,6 +382,11 @@ function transformOrderedList(list: List, file: VFile, parent: Parent, index: nu
       createJSXAttribute('displayNumber', displayNumber),
       createJSXAttribute('marker', marker)
     ]
+
+    // Add title attribute for Deep Dive items
+    if (isDeepDive && deepDiveTitle) {
+      attributes.push(createJSXAttribute('title', deepDiveTitle))
+    }
 
     // Add headerItem attribute if there was a trailing colon
     if (hasTrailingColon) {
@@ -374,9 +421,9 @@ function transformUnorderedList(list: List, file: VFile, parent: Parent, index: 
 
   const transformedItems = list.children.map((listItem: ListItem, i) => {
     // Clean text content and check for trailing colon
-    const { hasTrailingColon } = cleanTextContent(listItem)
+    const { hasTrailingColon, isDeepDive, deepDiveTitle } = cleanTextContent(listItem)
 
-    const componentName = getComponentType(listItem)
+    const componentName = getComponentType(listItem, isDeepDive)
     const marker = markers[i] || '-'
 
     const attributes = [
@@ -384,6 +431,11 @@ function transformUnorderedList(list: List, file: VFile, parent: Parent, index: 
       createJSXAttribute('marker', marker)
     ]
     // Note: No displayNumber for unordered lists - components will show icons
+
+    // Add title attribute for Deep Dive items
+    if (isDeepDive && deepDiveTitle) {
+      attributes.push(createJSXAttribute('title', deepDiveTitle))
+    }
 
     // Add headerItem attribute if there was a trailing colon
     if (hasTrailingColon) {

@@ -3,8 +3,8 @@
     "37-sudoku-solver": {
       "solutions": {
         "solution.py": {
-          "intuition": "MRV (Minimum Remaining Values):\nCandidates per cell: `{'1'..'9'} − (row ∪ col ∪ box)`.\nMRV: pick the empty cell with the fewest candidates to prune hardest.\nPlace a digit tentatively, update sets, recurse; undo on failure (backtrack).\nIf any cell has 0 candidates, the branch is impossible → backtrack immediately.",
-          "time_complexity": "O(9^k):\nLet k be the number of empty cells (≤ 81).\npractically Θ(∏(t=1 to k) m_t) where m_t = MRV-picked cell's candidate count at step t (usually ≪ 9)\nMRV selection adds O(k) per level (≤ O(k^2) per path), dominated by the search",
+          "intuition": "MRV (Minimum Remaining Values):\n    Candidates per cell: `{'1'..'9'} − (row ∪ col ∪ box)`.\n    MRV: pick the empty cell with the fewest candidates to prune hardest.\n    Place a digit tentatively, update sets, recurse; undo on failure (backtrack).\n    If any cell has 0 candidates, the branch is impossible → backtrack immediately.",
+          "time_complexity": "O(9^k):\n    Let k be the number of empty cells (≤ 81).\n    practically Θ(∏(t=1 to k) m_t) where m_t = MRV-picked cell's candidate count at step t (usually ≪ 9)\n    MRV selection adds O(k) per level (≤ O(k^2) per path), dominated by the search",
           "code": "def solve_sudoku(board: list[list[str]]) -> None:\n\n    D = set(\"123456789\")\n    rows = [set() for _ in range(9)]; cols = [set() for _ in range(9)]; boxes = [set() for _ in range(9)]\n    empties: list[tuple[int,int]] = []\n    for i in range(9):\n        for j in range(9):\n            v = board[i][j]\n            if v == '.': empties.append((i, j))\n            else: \n                rows[i].add(v); cols[j].add(v); boxes[i//3*3 + j//3].add(v)\n\n    def dfs() -> bool:\n        if not empties: return True\n        k, (i, j), cand = min(\n            ((t, (i, j), D - (rows[i] | cols[j] | boxes[i//3*3 + j//3])) for t, (i, j) in enumerate(empties)),\n            key=lambda x: len(x[2])\n        )\n        \n        empties.pop(k)\n        for d in cand:\n            board[i][j] = d; rows[i].add(d); cols[j].add(d); boxes[(b:=i//3*3 + j//3)].add(d)\n            if dfs(): return True\n            rows[i].remove(d); cols[j].remove(d); boxes[b].remove(d)\n        board[i][j] = '.'; empties.insert(k, (i, j))\n        return False\n\n    dfs()"
         }
       },
@@ -41,8 +41,8 @@
     "909-snakes-and-ladders": {
       "solutions": {
         "solution.py": {
-          "intuition": "Flatten the Board First 🎲\nThe key insight here is to **pre-process the 2D `board` into a 1D `flat_board` list**. This powerful first step handles all the complex Boustrophedonical logic upfront. By doing this, the BFS loop becomes exceptionally clean and avoids the need for a coordinate conversion function. The search can then operate on a simple 1D array, treating the board as the simple, linear graph it truly represents.",
-          "time_complexity": "O(n^2)\nwhere n is the dimension of the board. The initial flattening of the board takes O(n^2) time. The subsequent BFS visits each of the n^2 squares at most once.",
+          "intuition": "Flatten the Board First 🎲\n    The key insight here is to **pre-process the 2D `board` into a 1D `flat_board` list**. This powerful first step handles all the complex Boustrophedonical logic upfront. By doing this, the BFS loop becomes exceptionally clean and avoids the need for a coordinate conversion function. The search can then operate on a simple 1D array, treating the board as the simple, linear graph it truly represents.",
+          "time_complexity": "O(n^2)\n    where n is the dimension of the board. The initial flattening of the board takes O(n^2) time. The subsequent BFS visits each of the n^2 squares at most once.",
           "code": "from collections import deque\n\ndef snakes_and_ladders(board: list[list[int]]) -> int:\n\n    flat_board =  [0] # Dummy 0 for 1-based indexing\n    for r, row in enumerate(reversed(board)):\n        flat_board.extend(row[::1 if r % 2 == 0 else -1])\n        \n    target =(n:= len(board)) * n \n    moves, queue =  {1: 0}, deque([1])\n\n    while queue:\n        current = queue.popleft()\n        for roll in range(1, 7):\n            nxt = current + roll\n            if nxt > target:\n                break\n            landing = flat_board[nxt] if flat_board[nxt] != -1 else nxt\n            if landing not in moves:\n                moves[landing] = moves[current] + 1\n                if landing == target:\n                    return moves[landing]\n                queue.append(landing)\n    return -1"
         }
       },
@@ -57,7 +57,7 @@
     "1-two-sum": {
       "solutions": {
         "solution.py": {
-          "time_complexity": "O(n)\nwhere n is the length of the nums array. We iterate through the array once.",
+          "time_complexity": "O(n)\n    where n is the length of the nums array. We iterate through the array once.",
           "code": "def two_sum(nums: list[int], target: int) -> list[int]:\n\n    seen = {}\n\n    for i, num in enumerate(nums):\n        if (x := target - num) in seen:\n            return seen[x], i\n        seen[num] = i"
         }
       },
@@ -93,9 +93,7 @@
             "max_k": "max_k[r][c] stores the max eliminations we have at cell (r,c)"
           },
           "expressions": {
-            "heapq.heappush(pq, (steps + 1, nr, nc, new_k))": "The priority is simply the new step count.No heuristic is added, which is the only difference from the A* implementation.",
-            "heapq.heappop(pq)": "Pop the path with the lowest g_cost (steps) so far",
-            "k_rem < max_k[r][c]": "Prune paths that are suboptimal for a given cell"
+            "heapq.heappush(pq, (steps + 1, nr, nc, new_k))": "The priority is simply the new step count.No heuristic is added, which is the only difference from the A* implementation.\n    'heapq.heappop(pq)': Pop the path with the lowest g_cost (steps) so far\n    'k_rem < max_k[r][c]': Prune paths that are suboptimal for a given cell"
           },
           "code": "def shortest_path_in_a_grid_with_obstacles_elimination(grid: list[list[int]], k: int) -> int:\n\n    rows, cols = len(grid), len(grid[0])\n    if k >= rows + cols - 3:\n        return rows + cols - 2\n  \n    pq = [(0, 0, 0, k)]\n    \n    max_k = [[-1] * cols for _ in range(rows)]\n    max_k[0][0] = k\n\n    while pq:\n        \n        steps, r, c, k_rem = heapq.heappop(pq)\n        \n        if (r, c) == (rows - 1, cols - 1):\n            return steps\n        \n        if k_rem < max_k[r][c]:\n            continue\n\n        for dr, dc in [(0, 1), (0, -1), (1, 0), (-1, 0)]:\n            if 0 <= (nr:= r + dr) < rows and 0 <= (nc:= c + dc) < cols:\n                if (new_k:= k_rem - grid[nr][nc]) > max_k[nr][nc]:\n                    max_k[nr][nc] = new_k\n                    heapq.heappush(pq, (steps + 1, nr, nc, new_k))\n                    \n    return -1"
         },
@@ -103,9 +101,9 @@
           "code": "import heapq\n\ndef manhattan_distance(a: tuple[int, int], b: tuple[int, int]) -> int:\n    return abs(a[0] - b[0]) + abs(a[1] - b[1])\n\n\n\ndef shortest_path_in_a_grid_with_obstacles_elimination(grid: list[list[int]], k: int) -> int:\n\n    rows, cols = len(grid), len(grid[0])\n\n    def h(r: int, c: int) -> int:\n        return manhattan_distance((r, c), (rows - 1, cols - 1))\n    \n    if k >= (md:= h(0, 0)) - 1:\n        return md\n\n    pq = [(md, 0, 0, 0, k)]\n    \n    max_k = [[-1] * cols for _ in range(rows)]\n    max_k[0][0] = k\n\n\n\n    while pq:\n        _, steps, r, c, remaining_k = heapq.heappop(pq)\n        \n        if (r, c) == (rows - 1, cols - 1):\n            return steps\n        \n        if remaining_k < max_k[r][c]:\n            continue\n\n        for dr, dc in [(0, 1), (0, -1), (1, 0), (-1, 0)]:\n            if 0 <= (nr:= r + dr) < rows and 0 <= (nc:= c + dc) < cols:\n                if (new_remaining_k := remaining_k - grid[nr][nc] ) > max_k[nr][nc]:\n                    max_k[nr][nc] = new_remaining_k\n                    heapq.heappush(pq, ((steps + 1) + h(nr, nc), steps + 1, nr, nc, new_remaining_k))\n                    \n    return -1"
         },
         "bfs.py": {
-          "intuition": "bfs with State-Budget Pruning 🔍:\nThe core idea is to perform a standard BFS over `(row, col, steps, remaining_k)` states, but only enqueue a move if it arrives at a cell with **strictly more** `remaining_k` than any prior visit. This pruning significantly reduces the number of states explored, making the algorithm much more efficient.\n**Trivial shortcut:** If `k ≥ rows+cols–2`, you can go straight in `rows+cols–2` steps without ever touching an obstacle.\n**Correctness guarantee:** Because BFS explores in order of increasing `steps`, the first time you dequeue the goal is the fewest-step path. Pruning by `remaining_k` never discards any shorter-step route—it simply avoids re-exploring dominated states.",
-          "time_complexity": "O(m * n * k):\nWorst-case O(m * n * k) (every cell × every possible k), but aggressive pruning usually makes it far faster in practice.",
-          "space_complexity": "O(m * n):\nfor the `max_k` grid plus up to O(m * n * k) queued states in the pathological worst case.",
+          "intuition": "bfs with State-Budget Pruning 🔍:\n    The core idea is to perform a standard BFS over `(row, col, steps, remaining_k)` states, but only enqueue a move if it arrives at a cell with **strictly more** `remaining_k` than any prior visit. This pruning significantly reduces the number of states explored, making the algorithm much more efficient.\n    **Trivial shortcut:** If `k ≥ rows+cols–2`, you can go straight in `rows+cols–2` steps without ever touching an obstacle.\n    **Correctness guarantee:** Because BFS explores in order of increasing `steps`, the first time you dequeue the goal is the fewest-step path. Pruning by `remaining_k` never discards any shorter-step route—it simply avoids re-exploring dominated states.",
+          "time_complexity": "O(m * n * k):\n    Worst-case O(m * n * k) (every cell × every possible k), but aggressive pruning usually makes it far faster in practice.",
+          "space_complexity": "O(m * n):\n    for the `max_k` grid plus up to O(m * n * k) queued states in the pathological worst case.",
           "variables": {
             "max_k": "max_k[r][c] = maximum eliminations remaining when visiting (r,c)",
             "q": "(row, col, steps, remaining_k)",
@@ -167,8 +165,8 @@
     "1406-stone-game-iii": {
       "solutions": {
         "solution.py": {
-          "intuition": "Score-difference DP:\nLet `dp[i]` = max score difference current player can achieve starting at index `i`.\nTransition: `dp[i] = max_{k∈{1,2,3}} (sum(i..i+k-1) − dp[i+k])`. Answer from `dp[0]`.",
-          "time_complexity": "O(n)\nconstant 3 choices per `i`",
+          "intuition": "Score-difference DP:\n    Let `dp[i]` = max score difference current player can achieve starting at index `i`.\n    Transition: `dp[i] = max_{k∈{1,2,3}} (sum(i..i+k-1) − dp[i+k])`. Answer from `dp[0]`.",
+          "time_complexity": "O(n)\n    constant 3 choices per `i`",
           "code": "def stone_game_III(stoneValue: list[int]) -> str:\n    memo, n = {}, len(stoneValue)\n    def dp(i):\n        if i >= n:\n            return 0\n        if i not in memo:\n            memo[i] = max(\n                sum(stoneValue[i : i + k]) - dp(i + k) for k in range(1, 4)\n            )\n        return memo[i]\n    return \"Alice\" if dp(0) > 0 else \"Bob\" if dp(0) < 0 else \"Tie\""
         }
       },
@@ -184,8 +182,8 @@
     "875-koko-eating-bananas": {
       "solutions": {
         "solution.py": {
-          "intuition": "Binary searching the answer space, (eating speed `k`):\nThe range of possible speeds is from `1` to `max(piles)`\nThe key property is that the problem is **monotonic** (if a speed `k` is fast enough, any speed greater than `k` will also be fast enough)\nThis allows us to binary search for the *minimum* valid speed\nWe test a mid speed (`k = (l + r) // 2`)\n    If it's valid (`hours(k) <= h`), we try to find a smaller valid speed by searching the lower half (`r = k`)\n    If it's too slow, we must increase the speed by searching the upper half (`l = k + 1`)\nThe loop converges on the smallest `k` that works 🍌",
-          "time_complexity": "O(n log m):\nn is the number of piles\nm is the maximum pile size",
+          "intuition": "Binary searching the answer space, (eating speed `k`):\n    The range of possible speeds is from `1` to `max(piles)`\n    The key property is that the problem is **monotonic** (if a speed `k` is fast enough, any speed greater than `k` will also be fast enough)\n    This allows us to binary search for the *minimum* valid speed\n    We test a mid speed (`k = (l + r) // 2`)\n        If it's valid (`hours(k) <= h`), we try to find a smaller valid speed by searching the lower half (`r = k`)\n        If it's too slow, we must increase the speed by searching the upper half (`l = k + 1`)\n    The loop converges on the smallest `k` that works 🍌",
+          "time_complexity": "O(n log m):\n    n is the number of piles\n    m is the maximum pile size",
           "args": {
             "piles: list[int]": "The banana piles",
             "h: int": "The hour limit"
@@ -225,8 +223,8 @@
     "133-clone-graph": {
       "solutions": {
         "solution.py": {
-          "intuition": "Hash Map as a Visited Set & Node Cache 🗺️\nThe key to traversing a potentially cyclic graph is a `visited` set. Here, the `cloned` dictionary serves a dual purpose. It acts as both a **`visited` set** (by checking `if n not in cloned`) and a **cache** that maps an original node to its clone. This ensures each node is cloned exactly once and prevents getting stuck in an infinite loop.",
-          "time_complexity": "O(V + E)\nwhere V is the number of vertices (nodes) and E is the number of edges. This is optimal as we must visit every node and traverse every edge to create the full copy.",
+          "intuition": "Hash Map as a Visited Set & Node Cache 🗺️\n    The key to traversing a potentially cyclic graph is a `visited` set. Here, the `cloned` dictionary serves a dual purpose. It acts as both a **`visited` set** (by checking `if n not in cloned`) and a **cache** that maps an original node to its clone. This ensures each node is cloned exactly once and prevents getting stuck in an infinite loop.",
+          "time_complexity": "O(V + E)\n    where V is the number of vertices (nodes) and E is the number of edges. This is optimal as we must visit every node and traverse every edge to create the full copy.",
           "args": {
             "node: Node | None": "The node to clone"
           },
@@ -257,8 +255,8 @@
     "238-product-of-array-except-self": {
       "solutions": {
         "solution.py": {
-          "intuition": "Two passes:\n    1.  *[orange!]Prefix* pass → `res[i]` = product of all elements *[orange!]before* `i`.\n    2.  *[purple!]Suffix* pass → multiply each `res[i]` by product of all elements *[purple!]after* `i`.",
-          "time_complexity": "O(n)\nwhere n is the length of the nums array. We iterate through the array twice.",
+          "intuition": "Two passes:\n        1.  *[orange!]Prefix* pass → `res[i]` = product of all elements *[orange!]before* `i`.\n        2.  *[purple!]Suffix* pass → multiply each `res[i]` by product of all elements *[purple!]after* `i`.",
+          "time_complexity": "O(n)\n    where n is the length of the nums array. We iterate through the array twice.",
           "code": "def product_of_array_except_self(nums: list[int]) -> list[int]:\n\n    pre, res = 1, [1] * (n := len(nums))\n    for i, x in enumerate(nums):\n        res[i], pre = pre, pre * x\n    suf = 1\n    for i in range(n - 1, -1, -1):\n        res[i], suf = res[i] * suf, suf * nums[i]\n    return res"
         }
       },
@@ -293,8 +291,8 @@
     "518-coin-change-ii": {
       "solutions": {
         "solution.py": {
-          "intuition": "Paradigm: This is a classic **Unbounded Knapsack** counting problem.\n\nInsight: To count *combinations* without overcounting *permutations* (`1+2` vs `2+1`), the DP imposes a strict processing order on the coins. This ensures that combinations are always built in the same sequence (e.g., using smaller denomination coins before larger ones), elegantly eliminating duplicates.",
-          "time_complexity": "O(n * amount)\nwhere n is the number of coins and amount is the target amount.",
+          "intuition": "Paradigm: This is a classic **Unbounded Knapsack** counting problem.\n\n    Insight: To count *combinations* without overcounting *permutations* (`1+2` vs `2+1`), the DP imposes a strict processing order on the coins. This ensures that combinations are always built in the same sequence (e.g., using smaller denomination coins before larger ones), elegantly eliminating duplicates.",
+          "time_complexity": "O(n * amount)\n    where n is the number of coins and amount is the target amount.",
           "code": "def coin_change_II(amount: int, coins: list[int]) -> int:\n    memo, n = {}, len(coins)\n\n    def dp(c, amount):\n        if amount == 0:\n            return 1\n        if amount < 0 or c == n:\n            return 0\n        if (c, amount) not in memo:\n            memo[c, amount] = dp(c, amount - coins[c]) + dp(c + 1, amount)\n        return memo[c, amount]\n\n    return dp(0, amount)"
         }
       },
@@ -310,8 +308,8 @@
     "416-partition-equal-subset-sum": {
       "solutions": {
         "solution.py": {
-          "intuition": "Paradigm: This is the **0/1 Knapsack** decision problem in disguise.\n\nInsight: The problem transforms from partitioning an array into a simpler question: can a subset of \"items\" (`nums`) perfectly fill a \"knapsack\" with capacity `total_sum / 2`? Each item's weight is equal to its value.",
-          "time_complexity": "O(N * Sum):\nwhere N is the number of elements and Sum is the target subset sum.",
+          "intuition": "Paradigm: This is the **0/1 Knapsack** decision problem in disguise.\n\n    Insight: The problem transforms from partitioning an array into a simpler question: can a subset of \"items\" (`nums`) perfectly fill a \"knapsack\" with capacity `total_sum / 2`? Each item's weight is equal to its value.",
+          "time_complexity": "O(N * Sum):\n    where N is the number of elements and Sum is the target subset sum.",
           "code": "def can_partition_into_2_equal_subsets(nums: list[int]) -> bool:\n    memo, n = {}, len(nums)\n\n    def dp(i, s):\n        if i == n or s < 0:\n            return False\n        if s == 0:\n            return True\n\n        if (i, s) not in memo:\n            memo[i, s] = dp(i + 1, s) or dp(i + 1, s - nums[i])\n\n        return memo[(i, s)]\n\n    return False if ((total := sum(nums)) & 1) else dp(0, total / 2)"
         }
       },
@@ -362,8 +360,8 @@
     "120-triangle": {
       "solutions": {
         "solution.py": {
-          "intuition": "Paradigm: This is a classic bottom-up dynamic programming problem.\nInsight: The minimum path to the bottom *from* any cell `(r, c)` is independent of the path taken *to* that cell. This allows us to start at the bottom (where path sums are known) and iteratively compute the optimal path for each cell on the row above by choosing the cheaper of its two children's already-computed optimal paths.",
-          "time_complexity": "O(N)\nwhere N is the total number of cells in the triangle. The complexity is the number of subproblems (N), as each is solved once.",
+          "intuition": "Paradigm: This is a classic bottom-up dynamic programming problem.\n    Insight: The minimum path to the bottom *from* any cell `(r, c)` is independent of the path taken *to* that cell. This allows us to start at the bottom (where path sums are known) and iteratively compute the optimal path for each cell on the row above by choosing the cheaper of its two children's already-computed optimal paths.",
+          "time_complexity": "O(N)\n    where N is the total number of cells in the triangle. The complexity is the number of subproblems (N), as each is solved once.",
           "code": "def triangle_minimum_path_sum(triangle: list[list[int]]) -> int:\n\n    n, memo = len(triangle), {}\n\n    def dp(r, c):\n        if r == n - 1:\n            return triangle[r][c]\n        if (r, c) not in memo:\n            memo[(r, c)] = triangle[r][c] + min(dp(r + 1, c), dp(r + 1, c + 1))\n        return memo[(r, c)]\n\n    return dp(0, 0)"
         }
       },
@@ -385,7 +383,7 @@
           "code": "\nfrom collections import defaultdict\nimport heapq\n\n\ndef cheapest_flights_with_at_most_k_stops( flights: list[list[int]], src: int, dst: int, k: int) -> int:\n\n    graph = defaultdict(list)\n    for u, v, price in flights:\n        graph[u].append((v, price))\n\n    pq, min_stops = [(0, src, 0)], {}\n    \n    while pq:\n        cost, city, stops = heapq.heappop(pq)\n\n        # If we've already found a path to this city using fewer or equal stops, skip.\n        # A path with fewer stops must have been cheaper or equal due to PQ ordering.\n        if stops > min_stops.get(city, float(\"inf\")): continue\n        if city == dst: return cost\n\n        # Record the new minimum stops to reach this city\n        min_stops[city] = stops\n        if stops <= k:\n            for neighbor, price in graph[city]:\n                heapq.heappush(pq, (cost + price, neighbor, stops + 1))\n    return -1\n"
         },
         "bellman_ford.py": {
-          "time_complexity": "O(kE)\nwhere `k` is the number of stops and `E` is the number of flights.",
+          "time_complexity": "O(kE)\n    where `k` is the number of stops and `E` is the number of flights.",
           "code": "def cheapest_flights_with_at_most_k_stops(\n    n: int, flights: list[list[int]], src: int, dst: int, k: int\n) -> int:\n    d = [float(\"inf\")] * n\n    d[src] = 0\n\n    for _ in range(k + 1):\n        tmp = d[:]\n        for u, v, w in flights:\n            if d[u] + w < tmp[v]:\n                tmp[v] = d[u] + w\n        d = tmp\n\n    return d[dst] if d[dst] < float(\"inf\") else -1"
         }
       },
@@ -455,7 +453,7 @@
     "3-longest-substring-without-repeating-characters": {
       "solutions": {
         "solution.py": {
-          "time_complexity": "O(n)\nwhere n is the length of the string. Each character is visited once by the right pointer, and the left pointer only moves forward, so the sliding window expands and contracts at most n times total.",
+          "time_complexity": "O(n)\n    where n is the length of the string. Each character is visited once by the right pointer, and the left pointer only moves forward, so the sliding window expands and contracts at most n times total.",
           "args": {
             "s: str": "Input string to analyze"
           },
@@ -477,8 +475,8 @@
     "51-n-queens": {
       "solutions": {
         "solution.py": {
-          "intuition": "Backtrack with State Tracking ♛\nPlace one queen per row. Track blocked columns, diagonals: Valid placement → recurse to next row, Invalid → skip, After recursion, remove queen to try next column. Track state using: `cols` for columns, `diag1` for main diagonal *↘* `row - col`, `diag2` for anti-diagonal *↙* `row + col`.",
-          "time_complexity": "O(N!)\nfirst row: N choices, second row: N-1 choices, total permutations = N!, pruning drastically reduces actual recursion tree.",
+          "intuition": "Backtrack with State Tracking ♛\n    Place one queen per row. Track blocked columns, diagonals: Valid placement → recurse to next row, Invalid → skip, After recursion, remove queen to try next column. Track state using: `cols` for columns, `diag1` for main diagonal *↘* `row - col`, `diag2` for anti-diagonal *↙* `row + col`.",
+          "time_complexity": "O(N!)\n    first row: N choices, second row: N-1 choices, total permutations = N!, pruning drastically reduces actual recursion tree.",
           "args": {
             "n: int": "Size of the chessboard (n x n)"
           },
@@ -575,8 +573,8 @@
     "102-binary-tree-level-order-traversal": {
       "solutions": {
         "solution.py": {
-          "intuition": "The core logic hinges on the inner `for` loop\nThe expression `len(queue)` takes a \"snapshot\" of the number of nodes on the current level before the loop begins. The loop then dequeues and processes exactly that many nodes, ensuring that only nodes from the current level are handled while their children are queued up for the next iteration. This technique is the key to cleanly separating the levels.",
-          "time_complexity": "O(N)\nwhere N is the total number of nodes in the tree. This is optimal as every node must be visited once.",
+          "intuition": "The core logic hinges on the inner `for` loop\n    The expression `len(queue)` takes a \"snapshot\" of the number of nodes on the current level before the loop begins. The loop then dequeues and processes exactly that many nodes, ensuring that only nodes from the current level are handled while their children are queued up for the next iteration. This technique is the key to cleanly separating the levels.",
+          "time_complexity": "O(N)\n    where N is the total number of nodes in the tree. This is optimal as every node must be visited once.",
           "args": {
             "root": "Root node of the binary tree"
           },
@@ -639,8 +637,8 @@
     "1510-stone-game-iv": {
       "solutions": {
         "solution.py": {
-          "intuition": "Minimax:\n*Paradigm*: This is a classic *impartial game* solved using the *Minimax* principle on game states.\n*Insight*: A position is defined as *winning* if you can make *any* move to a position that you know is *losing* for your opponent. The DP builds this win/loss classification for every number of stones up to `n`, starting from the base case that 0 stones is a losing position.",
-          "time_complexity": "O(n * sqrt(n))\ntry all squares for each `x`",
+          "intuition": "Minimax:\n    *Paradigm*: This is a classic *impartial game* solved using the *Minimax* principle on game states.\n    *Insight*: A position is defined as *winning* if you can make *any* move to a position that you know is *losing* for your opponent. The DP builds this win/loss classification for every number of stones up to `n`, starting from the base case that 0 stones is a losing position.",
+          "time_complexity": "O(n * sqrt(n))\n    try all squares for each `x`",
           "code": "def stone_game_IV(n: int) -> bool:\n\n    memo = {0: False}\n\n    def dp(n):\n        if n not in memo:\n            memo[n] = any(not dp(n - i**2) for i in range(int(n**0.5), 0, -1))\n        return memo[n]\n\n    return dp(n)"
         }
       },
@@ -656,7 +654,7 @@
     "153-find-minimum-in-rotated-sorted-array": {
       "solutions": {
         "solution.py": {
-          "intuition": "The goal is to find the *inflection point* in the rotated list (where the numbers switch from high to low) — this point is the minimum element.\nWe use a modified binary search to home in on this point.\nThe key is comparing the middle element `nums[mid]` with the rightmost element `nums[r]`. This comparison tells us which part of the array is currently sorted and can be discarded.\n    **Case 1: `nums[mid] < nums[r]`**\n        **Example:** In `[4, 5, 1, 2, 3]`, if `mid` points to `1`, `nums[mid]` (`1`) is less than `nums[r]` (`3`).\n        **Logic:** This indicates that the entire right portion of the array from `mid` to `r` (i.e., `[1, 2, 3]`) is sorted. The minimum element could be `nums[mid]` itself, or it could be to its left. We can safely search the left half (including `mid`) by setting `r = mid`.\n    **Case 2: `nums[mid] >= nums[r]`**\n        **Example:** In `[4, 5, 1, 2, 3]`, if `mid` points to `5` in an earlier step, `nums[mid]` (`5`) is greater than `nums[r]` (`3`).\n        **Logic:** This indicates that the inflection point (the minimum value) must lie to the right of `mid`. The left portion `[4, 5]` is sorted but contains values larger than the true minimum. We discard this left portion by setting `l = mid + 1`.\nThe loop terminates when `l` and `r` converge, at which point `nums[l]` is the smallest element.",
+          "intuition": "The goal is to find the *inflection point* in the rotated list (where the numbers switch from high to low) — this point is the minimum element.\n    We use a modified binary search to home in on this point.\n    The key is comparing the middle element `nums[mid]` with the rightmost element `nums[r]`. This comparison tells us which part of the array is currently sorted and can be discarded.\n        **Case 1: `nums[mid] < nums[r]`**\n        **Example:** In `[4, 5, 1, 2, 3]`, if `mid` points to `1`, `nums[mid]` (`1`) is less than `nums[r]` (`3`).\n        **Logic:** This indicates that the entire right portion of the array from `mid` to `r` (i.e., `[1, 2, 3]`) is sorted. The minimum element could be `nums[mid]` itself, or it could be to its left. We can safely search the left half (including `mid`) by setting `r = mid`.\n        **Case 2: `nums[mid] >= nums[r]`**\n        **Example:** In `[4, 5, 1, 2, 3]`, if `mid` points to `5` in an earlier step, `nums[mid]` (`5`) is greater than `nums[r]` (`3`).\n        **Logic:** This indicates that the inflection point (the minimum value) must lie to the right of `mid`. The left portion `[4, 5]` is sorted but contains values larger than the true minimum. We discard this left portion by setting `l = mid + 1`.\n    The loop terminates when `l` and `r` converge, at which point `nums[l]` is the smallest element.",
           "expressions": {
             "r = mid": "If nums[mid] is less than nums[r], the minimum is in the left half (inclusive of mid).",
             "l = mid + 1": "the smallest is on the right"
@@ -675,8 +673,8 @@
     "994-rotting-oranges": {
       "solutions": {
         "solution.py": {
-          "intuition": "Multi-Source BFS 🍊:\nThe key is to initialize the queue with the coordinates of *all* initially rotten oranges. The BFS then naturally simulates the rotting process in parallel from all sources. Each \"level\" of the BFS corresponds to one minute passing. Finally, you must check if any `fresh_oranges` remain to handle cases where some are unreachable.",
-          "time_complexity": "O(m * n):\nwhere m and n are the dimensions of the grid. Each cell is enqueued and dequeued at most once, making the process highly efficient and optimal.",
+          "intuition": "Multi-Source BFS 🍊:\n    The key is to initialize the queue with the coordinates of *all* initially rotten oranges. The BFS then naturally simulates the rotting process in parallel from all sources. Each \"level\" of the BFS corresponds to one minute passing. Finally, you must check if any `fresh_oranges` remain to handle cases where some are unreachable.",
+          "time_complexity": "O(m * n):\n    where m and n are the dimensions of the grid. Each cell is enqueued and dequeued at most once, making the process highly efficient and optimal.",
           "code": "from collections import deque\n\ndef rotting_oranges(grid: list[list[int]]) -> int:\n    m, n = len(grid), len(grid[0])\n    q, fresh = deque(), 0\n    dirs = [(0,1),(0,-1),(1,0),(-1,0)]\n    \n    for i in range(m):\n        for j in range(n):\n            if grid[i][j] == 2:\n                q.append((i, j))\n            elif grid[i][j] == 1:\n                fresh += 1\n    if fresh == 0:\n        return 0\n    \n    minutes = 0\n    while q and fresh:\n        minutes += 1\n        for _ in range(len(q)):\n            x, y = q.popleft()\n            for dx, dy in dirs:\n                nx, ny = x + dx, y + dy\n                if 0 <= nx < m and 0 <= ny < n and grid[nx][ny] == 1:\n                    grid[nx][ny] = 2\n                    fresh -= 1\n                    q.append((nx, ny))\n    \n    return minutes if fresh == 0 else -1"
         }
       },
@@ -691,7 +689,7 @@
     "121-best-time-to-buy-and-sell-stock": {
       "solutions": {
         "solution.py": {
-          "time_complexity": "O(n)\nwhere n is the length of the prices array. We iterate through the array once.",
+          "time_complexity": "O(n)\n    where n is the length of the prices array. We iterate through the array once.",
           "args": {
             "prices: list[int]": "List of stock prices"
           },
@@ -710,7 +708,7 @@
     "53-maximum-subarray": {
       "solutions": {
         "solution.py": {
-          "time_complexity": "O(n)\nwhere n is the length of the array. We iterate through the array once.",
+          "time_complexity": "O(n)\n    where n is the length of the array. We iterate through the array once.",
           "args": {
             "nums: list[int]": "List of integers"
           },
@@ -740,10 +738,27 @@
         "binary-search"
       ]
     },
+    "136-single-number": {
+      "solutions": {
+        "solution.py": {
+          "intuition": "Using bitwise XOR to cancel out the duplicates:\n    XOR cancels pairs (a^a=0, a^0=a; associative/commutative), so the lone element remains\n\n    Deep Dive: XOR Reminder\n    XOR properties:\n        a ^ a = 0 (a number XOR itself is zero)\n        a ^ 0 = a (a number XOR zero is itself)\n        Commutative: a ^ b = b ^ a\n        Associative: (a ^ b) ^ c = a ^ (b ^ c)\n    Meaning:\n        Because order and grouping don't matter, you can XOR all numbers in any sequence\n    Cancellation:\n        Each pair of identical numbers a ^ a becomes 0\n        XORing by zero doesn't change the result\n    Result:\n        After all pairs cancel, only the unpaired (single) element remains\n    Example:\n        nums = [**[1!]4**, **[10!]1**, **[14!]2**, **[10!]1**, **[14!]2**]\n        **[1!]4** ^ **[10!]1** ^ **[14!]2** ^ **[10!]1** ^ **[14!]2**\n        **[10!](1 ^ 1)** ^ **[14!](2 ^ 2)** ^ **[1!]4**\n        **[10!]0** ^ **[14!]0** ^ **[1!]4** = **[1!]4**",
+          "time_complexity": "O(n):\n    where n is the number of elements in the nums array",
+          "code": "def singleNumber(nums: list[int]) -> int:\n    x = 0\n    for v in nums:\n        x ^= v\n    return x\n\n        \n        "
+        }
+      },
+      "title": "Single Number",
+      "definition": "Given a non-empty array of integers nums, every element appears twice except for one. Find that single one.    *[sky!]Achieve *linear* time complexity and *constant* space complexity.*",
+      "leetcode": "https://leetcode.com/problems/single-number",
+      "difficulty": "Easy",
+      "topics": [
+        "array",
+        "hash-table"
+      ]
+    },
     "1514-path-with-maximum-probability": {
       "solutions": {
         "solution.py": {
-          "intuition": "Bellman-Ford variant to maximize product of probabilities.\nEach node tracks the maximum probability to reach it from `start`.",
+          "intuition": "Bellman-Ford variant to maximize product of probabilities.\n    Each node tracks the maximum probability to reach it from `start`.",
           "args": {
             "n: int": "number of nodes",
             "edges: list[list[int]]": "edges[i] = [u, v] is an undirected edge connecting the nodes u and v with a probability of success of traversing that edge succProb[i].",
@@ -763,8 +778,8 @@
     "79-word-search": {
       "solutions": {
         "solution.py": {
-          "intuition": "Dfs with early exit on mismatch\nStart dfs from each cell\nAt each step:\n    Check bounds and character match\n    Mark visited cell with a temp symbol (e.g. #)\n    Try 4 directions (no revisiting)\n    Restore cell after backtracking\n    Stop early if the full word is matched.",
-          "time_complexity": "O(M * N * 3^L)\nM, N = board size\nL = word length\nEach step explores at most 3 directions (excluding the one it came from)\nRuntime improves with early mismatches and pruning",
+          "intuition": "Dfs with early exit on mismatch\n    Start dfs from each cell\n    At each step:\n        Check bounds and character match\n        Mark visited cell with a temp symbol (e.g. #)\n        Try 4 directions (no revisiting)\n        Restore cell after backtracking\n        Stop early if the full word is matched.",
+          "time_complexity": "O(M * N * 3^L)\n    M, N = board size\n    L = word length\n    Each step explores at most 3 directions (excluding the one it came from)\n    Runtime improves with early mismatches and pruning",
           "code": "def word_search(board: list[list[str]], word: str) -> bool:\n    rows, cols, n = len(board), len(board[0]), len(word)\n    def dfs(r: int, c: int, i: int) -> bool:\n        if i == n:\n            return True\n        if not (0 <= r < rows and 0 <= c < cols and board[r][c] == word[i]):\n            return False\n        tmp, board[r][c] = board[r][c], \"#\"\n        for x, y in ((r + 1, c), (r - 1, c), (r, c + 1), (r, c - 1)):\n            if dfs(x, y, i + 1):\n                board[r][c] = tmp\n                return True\n        board[r][c] = tmp\n        return False\n    return any(\n        dfs(r, c, 0)\n        for r in range(rows)\n        for c in range(cols)\n        if board[r][c] == word[0]\n    )"
         }
       },
@@ -779,8 +794,8 @@
     "39-combination-sum": {
       "solutions": {
         "solution.py": {
-          "intuition": "DFS with backtracking\nSort candidates, try each starting from current index (to allow reuse), prune if number exceeds remaining target, and record the path when rem == 0.",
-          "time_complexity": "O(2^n)\nWorst-case exponential in number of combinations explored, but pruning (if c > rem: break) reduces branches significantly.",
+          "intuition": "DFS with backtracking\n    Sort candidates, try each starting from current index (to allow reuse), prune if number exceeds remaining target, and record the path when rem == 0.",
+          "time_complexity": "O(2^n)\n    Worst-case exponential in number of combinations explored, but pruning (if c > rem: break) reduces branches significantly.",
           "args": {
             "candidates: list[int]": "List of candidate numbers",
             "target: int": "Target sum to achieve"
@@ -800,8 +815,8 @@
     "542-01-matrix": {
       "solutions": {
         "solution.py": {
-          "intuition": "Multi-Source BFS from the Target 🎯:\nInstead of starting a separate BFS from every `1` to find the nearest `0` (which would be slow), this approach inverts the problem. It starts a single, **multi-source BFS from all `0`s simultaneously**. The level of the BFS at which a cell is reached is, by definition, its shortest distance to any `0`. This \"start from the answer\" strategy is a powerful technique for shortest path problems.",
-          "time_complexity": "O(m * n):\nwhere m and n are the dimensions of the grid.\nEvery cell is enqueued and processed exactly once, making this the optimal solution.",
+          "intuition": "Multi-Source BFS from the Target 🎯:\n    Instead of starting a separate BFS from every `1` to find the nearest `0` (which would be slow), this approach inverts the problem. It starts a single, **multi-source BFS from all `0`s simultaneously**. The level of the BFS at which a cell is reached is, by definition, its shortest distance to any `0`. This \"start from the answer\" strategy is a powerful technique for shortest path problems.",
+          "time_complexity": "O(m * n):\n    where m and n are the dimensions of the grid.\n    Every cell is enqueued and processed exactly once, making this the optimal solution.",
           "code": "from collections import deque\n\ndef zero_one_matrix(mat: list[list[int]]) -> list[list[int]]:\n    m, n = len(mat), len(mat[0])\n    dist = [[-1] * n for _ in range(m)]\n    q = deque()\n    # Initialize queue with all zero-cells\n    for i in range(m):\n        for j in range(n):\n            if mat[i][j] == 0:\n                dist[i][j] = 0\n                q.append((i, j))\n    \n    while q:\n        i, j = q.popleft()\n        for di, dj in ((1,0),(-1,0),(0,1),(0,-1)):\n            ni, nj = i + di, j + dj\n            if 0 <= ni < m and 0 <= nj < n and dist[ni][nj] < 0:\n                dist[ni][nj] = dist[i][j] + 1\n                q.append((ni, nj))\n    return dist"
         }
       },
@@ -816,7 +831,7 @@
     "1011-capacity-to-ship-packages-within-d-days": {
       "solutions": {
         "solution.py": {
-          "intuition": "Binary searching the answer space, (the ship's capacity)\nThe range of possible capacities is from `max(weights)` to `sum(weights)`.\nThe problem has a **monotonic property** ideal for binary search. The function `daysNeeded(capacity)` is monotonically non-increasing: as `capacity` grows, the days required can only decrease or stay the same.\nThis creates a predictable `\\[False, ..., False, True, ..., True\\]` sequence for our condition, `daysNeeded(capacity) <= days`. The goal is to find the leftmost `True`, which represents the minimal valid capacity.\n    If `daysNeeded(capacity) <= days` is `True`, then `capacity` is a potential answer, and we try for a better (smaller) one in the left half by setting `r = capacity`.\n    If it is `False`, then `capacity` is too small, and we must search for a larger capacity in the right half by setting `l = capacity + 1`.",
+          "intuition": "Binary searching the answer space, (the ship's capacity)\n    The range of possible capacities is from `max(weights)` to `sum(weights)`.\n    The problem has a **monotonic property** ideal for binary search. The function `daysNeeded(capacity)` is monotonically non-increasing: as `capacity` grows, the days required can only decrease or stay the same.\n    This creates a predictable `\\[False, ..., False, True, ..., True\\]` sequence for our condition, `daysNeeded(capacity) <= days`. The goal is to find the leftmost `True`, which represents the minimal valid capacity.\n        If `daysNeeded(capacity) <= days` is `True`, then `capacity` is a potential answer, and we try for a better (smaller) one in the left half by setting `r = capacity`.\n        If it is `False`, then `capacity` is too small, and we must search for a larger capacity in the right half by setting `l = capacity + 1`.",
           "code": "def capacity_to_ship_packages_within_d_days(weights: list[int], days: int) -> int:\n    def days_needed(capacity: int) -> int:\n        d, load = 1, 0\n        for w in weights:\n            if load + w <= capacity:\n                load += w\n            else:\n                d += 1\n                load = w\n        return d\n    \n\n    l, r = max(weights), sum(weights)\n    while l < r:\n        capacity = (l + r) // 2\n        if days_needed(capacity) <= days:\n            r = capacity\n        else:\n            l = capacity + 1\n    return l"
         }
       },
@@ -898,9 +913,9 @@
     "46-permutations": {
       "solutions": {
         "solution.py": {
-          "intuition": "Recursive Tree of Choices\nBuild permutations by choosing unused elements: At each level, try each remaining number, recurse with updated path, and backtrack to un-choose. Use used list or boolean flags to track chosen elements.",
-          "time_complexity": "O(N!)\nN levels of recursion, each level explores N - depth options, total N! permutations.",
-          "space_complexity": "O(N)\nRecursion depth is N, and we store the current permutation path.",
+          "intuition": "Recursive Tree of Choices\n    Build permutations by choosing unused elements: At each level, try each remaining number, recurse with updated path, and backtrack to un-choose. Use used list or boolean flags to track chosen elements.",
+          "time_complexity": "O(N!)\n    N levels of recursion, each level explores N - depth options, total N! permutations.",
+          "space_complexity": "O(N)\n    Recursion depth is N, and we store the current permutation path.",
           "args": {
             "nums: list[int]": "List of integers to permute"
           },
@@ -920,8 +935,8 @@
     "123-best-time-to-buy-and-sell-stock-iii": {
       "solutions": {
         "dp.py": {
-          "intuition": "Cost profit tracking\nTrack the cost and profit for two separate trades, using the profit from the first trade to reduce the cost of the second trade.",
-          "time_complexity": "O(n)\nwhere n is the length of the prices array. We iterate through the array once.",
+          "intuition": "Cost profit tracking\n    Track the cost and profit for two separate trades, using the profit from the first trade to reduce the cost of the second trade.",
+          "time_complexity": "O(n)\n    where n is the length of the prices array. We iterate through the array once.",
           "args": {
             "prices: list[int]": "List of stock prices"
           },
@@ -962,8 +977,8 @@
     "200-number-of-islands": {
       "solutions": {
         "solution.py": {
-          "intuition": "Find, Count, and Sink 🏝️\nThe strategy is to scan every cell of the grid. If an unvisited piece of land (`1`) is found, you've discovered a new island, so you increment the `islands` counter. Then, immediately launch a BFS from that cell to find and \"sink\" all connected parts of that same island by changing their value to `0`. This modification of the grid ensures each island group is counted exactly once.",
-          "time_complexity": "O(m * n)\nwhere m and n are the dimensions of the grid. This is optimal as each cell is visited a constant number of times.",
+          "intuition": "Find, Count, and Sink 🏝️\n    The strategy is to scan every cell of the grid. If an unvisited piece of land (`1`) is found, you've discovered a new island, so you increment the `islands` counter. Then, immediately launch a BFS from that cell to find and \"sink\" all connected parts of that same island by changing their value to `0`. This modification of the grid ensures each island group is counted exactly once.",
+          "time_complexity": "O(m * n)\n    where m and n are the dimensions of the grid. This is optimal as each cell is visited a constant number of times.",
           "args": {
             "grid: list[list[str]]": "2D grid with '1' representing land and '0' representing water"
           },
@@ -983,8 +998,8 @@
     "2140-solving-questions-with-brainpower": {
       "solutions": {
         "solution.py": {
-          "intuition": "Paradigm: This is a classic **Longest Path** problem on a Directed Acyclic Graph (DAG).\nInsight: The maximum score obtainable *from* any question `i` is a fixed value, regardless of past choices. This allows a backward pass from the end of the exam (where the future score is 0), calculating the optimal future score for each question by simply choosing the `max()` of two pre-computed paths: the one from \"solving\" vs. the one from \"skipping\".",
-          "time_complexity": "O(n)\nwhere `n` is the number of questions.",
+          "intuition": "Paradigm: This is a classic **Longest Path** problem on a Directed Acyclic Graph (DAG).\n    Insight: The maximum score obtainable *from* any question `i` is a fixed value, regardless of past choices. This allows a backward pass from the end of the exam (where the future score is 0), calculating the optimal future score for each question by simply choosing the `max()` of two pre-computed paths: the one from \"solving\" vs. the one from \"skipping\".",
+          "time_complexity": "O(n)\n    where `n` is the number of questions.",
           "code": "def most_points_solving_questions_with_brainpower(questions: list[list[int]]) -> int:\n\n\n    memo, n = {}, len(questions)\n\n    def dp(i):\n        if i >= n:\n            return 0\n\n        if i not in memo:\n            memo[i] = max(dp(i + 1), (q:=questions[i])[0] + dp(i + 1 + q[1]))\n        return memo[i]\n\n    return dp(0)"
         }
       },
@@ -999,8 +1014,8 @@
     "212-word-search-ii": {
       "solutions": {
         "solution.py": {
-          "intuition": "Prefix rails\nThe trie lays down \"prefix rails\" across the grid: you only move where a rail continues; off‑rail steps end instantly.\nA terminal is a station: record the word once, close that spur, and drop empty rails as you pass. In one walk, a cell is used at most once.",
-          "time_complexity": "O(m n * 4^L)\n**Symbols:** m×n board, W=∑(w∈dict)|w|, L=max|w|.\n**Build trie:** O(W).\n**DFS (worst case):** first step ≤ 4 choices, then ≤ 3 per step ⇒ O(m n * 4 * 3^(L-1)). Coarse bound: O(m n * 4^L).\n**Space:** trie O(W); recursion/visited path O(L).",
+          "intuition": "Prefix rails\n    The trie lays down \"prefix rails\" across the grid: you only move where a rail continues; off‑rail steps end instantly.\n    A terminal is a station: record the word once, close that spur, and drop empty rails as you pass. In one walk, a cell is used at most once.",
+          "time_complexity": "O(m n * 4^L)\n    **Symbols:** m×n board, W=∑(w∈dict)|w|, L=max|w|.\n    **Build trie:** O(W).\n    **DFS (worst case):** first step ≤ 4 choices, then ≤ 3 per step ⇒ O(m n * 4 * 3^(L-1)). Coarse bound: O(m n * 4^L).\n    **Space:** trie O(W); recursion/visited path O(L).",
           "variables": {
             "trie": "Build trie from **words** list. Each end node gets a `$` key holding the word",
             "m": "number of rows",
@@ -1046,15 +1061,15 @@
     "36-valid-sudoku": {
       "solutions": {
         "solution.py": {
-          "intuition": "Cube index and think locally\n**cube_index := **[pink!](r // 3) * 3** + **[purple!](c // 3)**** treats the 9×9 board as a 3×3 grid of 3×3 boxes:\n    `[pink!]r//3` gives which *[pink!]box-row* (0,1,2) you're in\n    `[purple!]c//3` gives which *[purple!]box-column* (0,1,2)\n     multiplying the *[pink!]box-row* by *[pink!]3* and adding the *[purple!]box-column* yields a unique index 0–8 for each 3×3 cube.",
-          "time_complexity": "O(81)\ni.e., O(n^2). Fixed 9×9 boards scan at most 81 cells. Generalized n×n Sudoku validation runs in O(n^2) time.",
+          "intuition": "Cube index and think locally\n    **cube_index := **[pink!](r // 3) * 3** + **[purple!](c // 3)**** treats the 9×9 board as a 3×3 grid of 3×3 boxes:\n        `[pink!]r//3` gives which *[pink!]box-row* (0,1,2) you're in\n        `[purple!]c//3` gives which *[purple!]box-column* (0,1,2)\n        multiplying the *[pink!]box-row* by *[pink!]3* and adding the *[purple!]box-column* yields a unique index 0–8 for each 3×3 cube.",
+          "time_complexity": "O(81)\n    i.e., O(n^2). Fixed 9×9 boards scan at most 81 cells. Generalized n×n Sudoku validation runs in O(n^2) time.",
           "args": {
             "board: list[list[str]]": "9x9 Sudoku board with digits 1-9 and '.' for empty cells"
           },
           "expressions": {
             "if (": "Check for duplicates",
             "if (num := board[r][c]) != \".\"": "Skip empty cells",
-            "cube_index := (r // 3) * 3 + (c // 3)": "The formula works by treating the *9×9* board as a *3×3* grid of *3×3* boxes:\n     - **[pink!]r//3** gives which *[pink!]box-row* (0,1,2) you're in;\n     - **[purple!]c//3** gives which *[purple!]box-column* (0,1,2).\n     - Multiplying the *[pink!]box-row* by *[pink!]3* and adding the *[purple!]box-column* yields a unique index 0–8 for each *3×3* cube."
+            "cube_index := (r // 3) * 3 + (c // 3)": "The formula works by treating the *9×9* board as a *3×3* grid of *3×3* boxes:\n        - **[pink!]r//3** gives which *[pink!]box-row* (0,1,2) you're in;\n        - **[purple!]c//3** gives which *[purple!]box-column* (0,1,2).\n        - Multiplying the *[pink!]box-row* by *[pink!]3* and adding the *[purple!]box-column* yields a unique index 0–8 for each *3×3* cube."
           },
           "returns": "`bool`: True if the board is valid, False otherwise",
           "code": "def is_valid_sudoku(board: list[list[str]]) -> bool:\n\n    row = [set() for _ in range(9)]\n    col = [set() for _ in range(9)]\n    cube = [set() for _ in range(9)]\n\n    for r in range(9):\n        for c in range(9):\n            if (num := board[r][c]) != \".\": \n\n                if (\n                    num in col[c]\n                    or num in row[r]\n                    or num in cube[(cube_index := (r // 3) * 3 + (c // 3))]\n                ):\n                    return False\n                \n\n                col[c].add(num)\n                row[r].add(num)\n                cube[cube_index].add(num)\n    return True"
@@ -1071,7 +1086,7 @@
     "743-network-delay-time": {
       "solutions": {
         "solution.py": {
-          "time_complexity": "O(E log V):\nE is the number of edges (the length of the input list `times`)\nV is the number of vertices (the number of nodes `n`)\n\nBy substituting these into the standard Dijkstra complexity formula, O(E log V), you get O(len(times) log n).",
+          "time_complexity": "O(E log V):\n    E is the number of edges (the length of the input list `times`)\n    V is the number of vertices (the number of nodes `n`)\n\n    By substituting these into the standard Dijkstra complexity formula, O(E log V), you get O(len(times) log n).",
           "args": {
             "times: list[list[int]]": "list of lists of integers representing the edges and their weights",
             "k: int": "starting node"
@@ -1091,8 +1106,8 @@
     "127-word-ladder": {
       "solutions": {
         "solution.py": {
-          "intuition": "Bidirectional BFS Meets in the Middle 🤝:\nThis solution uses two  optimizations. First, it **pre-computes all possible generic transformations** (e.g., `h*t`) in a dictionary, allowing for instant lookups of neighboring words instead of generating them on the fly. Second, it performs a **bidirectional BFS**, launching one search from the `beginWord` and another from the `endWord`. By always expanding the smaller of the two frontiers, it drastically reduces the search space. The algorithm finishes when the two searches meet, at which point the shortest path is found.",
-          "time_complexity": "O(N * L)\nwhere N is the number of words and L is the length of each word. The dominant operation is the initial pre-computation step to build the `combos` dictionary. The subsequent bidirectional search is typically much faster than this initial setup.",
+          "intuition": "Bidirectional BFS Meets in the Middle 🤝:\n    This solution uses two  optimizations. First, it **pre-computes all possible generic transformations** (e.g., `h*t`) in a dictionary, allowing for instant lookups of neighboring words instead of generating them on the fly. Second, it performs a **bidirectional BFS**, launching one search from the `beginWord` and another from the `endWord`. By always expanding the smaller of the two frontiers, it drastically reduces the search space. The algorithm finishes when the two searches meet, at which point the shortest path is found.",
+          "time_complexity": "O(N * L)\n    where N is the number of words and L is the length of each word. The dominant operation is the initial pre-computation step to build the `combos` dictionary. The subsequent bidirectional search is typically much faster than this initial setup.",
           "code": "from collections import defaultdict\n\ndef word_ladder(beginWord: str, endWord: str, wordList: list[str]) -> int:\n    if endWord not in wordList:\n        return 0\n\n    L = len(beginWord)\n    combos: dict[str, list[str]] = defaultdict(list)\n    for w in wordList:\n        for i in range(L):\n            combos[w[:i] + \"*\" + w[i+1:]].append(w)\n\n    front, back = {beginWord}, {endWord}\n    dist_front, dist_back = {beginWord: 1}, {endWord: 1}\n\n    while front and back:\n        # expand smaller side to optimize\n        if len(front) > len(back):\n            front, back = back, front\n            dist_front, dist_back = dist_back, dist_front\n\n        next_front = set()\n        for word in front:\n            for i in range(L):\n                for n in combos[word[:i] + \"*\" + word[i+1:]]: # Use pre-computed neighbors\n                    if n in dist_back:\n                        return dist_front[word] + dist_back[n]\n                    if n not in dist_front:\n                        dist_front[n] = dist_front[word] + 1\n                        next_front.add(n)\n        front = next_front\n\n    return 0"
         }
       },
@@ -1109,20 +1124,19 @@
     "bellman-ford": {
       "solutions": {
         "layered_dag.py": {
-          "intuition": "Compute k-edge shortest-path distances and detect negative cycles via layered relaxation.\n1. δ₀(s,v): initialize distances (0 at source, ∞ elsewhere).\n2. For i = 1…V: perform one pass of edge-relaxation to compute δᵢ(s,v),\n   the best cost using ≤ i edges.\n3. Identify any vertex v where δ_V(s,v) < δ_{V−1}(s,v) as a negative-cycle witness.\n4. Flood successors of those witnesses and mark their distances as −∞.",
+          "intuition": "Compute k-edge shortest-path distances and detect negative cycles via layered relaxation.\n    1. δ₀(s,v): initialize distances (0 at source, ∞ elsewhere).\n    2. For i = 1…V: perform one pass of edge-relaxation to compute δᵢ(s,v),\n        the best cost using ≤ i edges.\n    3. Identify any vertex v where δ_V(s,v) < δ_{V−1}(s,v) as a negative-cycle witness.\n    4. Flood successors of those witnesses and mark their distances as −∞.",
           "args": {
             "vertices: list[str]": "All hashable vertex identifiers.",
             "edges: list[tuple[str, str, float]]": "Iterable of (u, v, weight) tuples.",
             "source: str": "Starting vertex."
           },
-          "returns": "`dict[str, float]`: A dict mapping each vertex to its true shortest-path cost from `source`,\n  or float('-inf') if it's reachable from a negative-weight cycle.",
+          "returns": "`dict[str, float]`: A dict mapping each vertex to its true shortest-path cost from `source`,\n        or float('-inf') if it's reachable from a negative-weight cycle.",
           "code": "\nfrom collections import defaultdict\n\n\ndef bellman_ford_layered_dag(\n    vertices: list[str], edges: list[tuple[str, str, float]], source: str\n) -> dict[str, float]:\n\n    # 1) Initialize\n    d = {v: float(\"inf\") for v in vertices}\n    d[source], V = 0, len(vertices)\n\n    # 2) Layered relaxation: starting from δ₀, do V passes to compute δ₁…δ_V\n    for k in range(V):  # k = 0…V-1\n        d_k = {**d}  # snapshot of δ_k\n        for u, v, w in edges:\n            if d[u] + w < d_k[v]:\n                d_k[v] = d[u] + w\n        d = d_k  # now holds δ_{k+1}\n\n    # 3) Identify \"witnesses\" to negative cycles:\n    #    any v for which an extra relaxation is still possible\n    witnesses = {v for u, v, w in edges if d[u] + w < d[v]}\n\n    if not witnesses:\n        return d\n\n    # 4) Build adjacency list for negative-cycle propagation\n    adj = defaultdict(list)\n    for u, v, _ in edges:\n        adj[u].append(v)\n\n    # 5) DFS to propagate −∞ to all vertices reachable from any witness\n    stack = list(witnesses)\n    reachable = set(witnesses)\n\n    while stack:\n        u = stack.pop()\n        d[u] = float(\"-inf\")\n        for v in adj[u]:\n            if v not in reachable:\n                reachable.add(v)\n                stack.append(v)\n\n    return d"
         },
         "classic.py": {
-          "intuition": "Classic Bellman-Ford with early exit:\nRaises on a reachable negative-weight cycle;\notherwise returns dist[v] = δ(s,v).",
+          "intuition": "Classic Bellman-Ford with early exit:\n    Raises on a reachable negative-weight cycle;\n    otherwise returns dist[v] = δ(s,v).",
           "expressions": {
-            "range(V - 1)": "relax up to V-1 times, but return early if no update",
-            "if not updated": "distances have stabilized—no negative cycles reachable"
+            "range(V - 1)": "relax up to V-1 times, but return early if no update\n    'if not updated':  distances have stabilized—no negative cycles reachable"
           },
           "code": "\n\n\n\ndef bellman_ford_classic(\n    vertices: list[str], edges: list[tuple[str, str, float]], source: str\n) -> dict[str, float]:\n\n    d = [float(\"inf\")] * (V := len(vertices))\n    d[source] = 0\n\n    for _ in range(V - 1):\n        updated = False\n        for u, v, w in edges:\n            if d[u] + w < d[v]:\n                d[v] = d[u] + w\n                updated = True\n        if not updated:\n            return d\n\n    # if we get here, we did all V-1 passes, so still need to check for cycles\n    for u, v, w in edges:\n        if d[u] + w < d[v]:\n            raise Exception(\"Negative-weight cycle\")\n\n    return d"
         }
@@ -1196,16 +1210,14 @@
         "bisect_left.py": {
           "intuition": "Return the index where to insert item x in list a, assuming a is sorted.",
           "expressions": {
-            "l = mid + 1": "If the target `x` is greater than the middle element `a[mid]`, the insertion point must be to the right of `mid`.",
-            "r = mid": "If the target `x` is less than or equal to `a[mid]`, then `mid` is a potential answer, so we search the left half including `mid`."
+            "l = mid + 1": "If the target `x` is greater than the middle element `a[mid]`, the insertion point must be to the right of `mid`.\n    'r = mid': If the target `x` is less than or equal to `a[mid]`, then `mid` is a potential answer, so we search the left half including `mid`."
           },
           "code": "\n\ndef simple_bisect_left(a: list[int], x: int):\n    \n    l, r = 0, len(a)\n    while l < r:\n        mid = (l + r) // 2\n        if x > a[mid]:\n            l = mid + 1\n        else:\n            r = mid\n    return l"
         },
         "bisect_right.py": {
           "intuition": "Return the index where to insert item x in list a, assuming a is sorted.",
           "expressions": {
-            "r = mid": "If the x is less than the middle element, the insertion point could be `mid` or to its left. Shrink search space to the left half.",
-            "l = mid + 1": "If the x is >= middle element, the insertion point must be to the right of `mid`."
+            "r = mid": "If the x is less than the middle element, the insertion point could be `mid` or to its left. Shrink search space to the left half.\n    'l = mid + 1': If the x is >= middle element, the insertion point must be to the right of `mid`."
           },
           "code": "\n\ndef simple_bisect_right(a, x):\n\n    l, r = 0, len(a)\n    while l < r:\n        mid = (l + r) // 2\n        if x < a[mid]:\n            r = mid\n        else: \n            l = mid + 1 \n    return l"
         }

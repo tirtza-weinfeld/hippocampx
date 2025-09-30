@@ -12,12 +12,12 @@ Given the root of a binary tree, return its nodes' values organized by level, fr
 
 ## [!ProblemIntuition] Intuition
 
-- The core logic hinges on the inner `for` loop:
+- The core logic hinges on the inner `for` loop
     - The expression `len(queue)` takes a "snapshot" of the number of nodes on the current level before the loop begins. The loop then dequeues and processes exactly that many nodes, ensuring that only nodes from the current level are handled while their children are queued up for the next iteration. This technique is the key to cleanly separating the levels.
 
 ## [!ProblemTimeComplexity] Time Complexity
 
-- $O(N)$:
+- $O(N)$
     - where N is the total number of nodes in the tree. This is optimal as every node must be visited once.
 
 ## [!ProblemArguments] Key Arguments

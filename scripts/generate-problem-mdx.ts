@@ -73,29 +73,28 @@ function formatIntuitionContent(content: string): string {
     const firstLine = lines[0].trim()
     let result = `- ${firstLine}`
 
-    // If there's a colon at the end, add it if not present
-    if (!result.endsWith(':') && lines.length > 1) {
-      result += ':'
-    }
-
-    // Remaining lines preserve their original structure
+    // Remaining lines use indentation from JSON (already MDX-ready from Python script)
     if (lines.length > 1) {
+      let inCodeBlock = false
       const nestedLines = lines.slice(1).map(line => {
         const trimmed = line.trim()
-        const originalIndent = line.length - line.trimStart().length
+        // Extract indentation from the line (already correct from Python)
+        const indent = line.substring(0, line.length - line.trimStart().length)
 
-        // If line was already indented (4+ spaces), preserve as deeply nested
-        if (originalIndent >= 4) {
-          if (/^\d+\./.test(trimmed)) {
-            return `        ${trimmed}`
-          } else {
-            return `        - ${trimmed}`
-          }
+        // Check if this line starts or ends a code block
+        if (trimmed.startsWith('```')) {
+          inCodeBlock = !inCodeBlock
+          // Code block delimiters don't get list markers
+          return line
         }
-        // Otherwise, make it a regular nested item
-        else {
-          return `    - ${trimmed}`
+
+        // If inside code block, preserve line without list marker
+        if (inCodeBlock) {
+          return line
         }
+
+        // Normal lines get list markers
+        return `${indent}- ${trimmed}`
       })
       result += '\n' + nestedLines.join('\n')
     }

@@ -14,12 +14,12 @@ Return all permutations of a list of unique numbers.
 
 ## [!ProblemIntuition] Intuition
 
-- Recursive Tree of Choices:
+- Recursive Tree of Choices
     - Build permutations by choosing unused elements: At each level, try each remaining number, recurse with updated path, and backtrack to un-choose. Use used list or boolean flags to track chosen elements.
 
 ## [!ProblemTimeComplexity] Time Complexity
 
-- $O(N!)$:
+- $O(N!)$
     - N levels of recursion, each level explores N - depth options, total N! permutations.
 
 ## [!ProblemArguments] Key Arguments

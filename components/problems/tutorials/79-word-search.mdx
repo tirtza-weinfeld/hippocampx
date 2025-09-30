@@ -14,7 +14,7 @@ Determine if a word exists in a 2D board by following adjacent letters without r
 
 ## [!ProblemIntuition] Intuition
 
-- Dfs with early exit on mismatch:
+- Dfs with early exit on mismatch
     - Start dfs from each cell
     - At each step:
         - Check bounds and character match
@@ -25,7 +25,7 @@ Determine if a word exists in a 2D board by following adjacent letters without r
 
 ## [!ProblemTimeComplexity] Time Complexity
 
-- $O(M * N * 3^L)$:
+- $O(M * N * 3^L)$
     - M, N = board size
     - L = word length
     - Each step explores at most 3 directions (excluding the one it came from)

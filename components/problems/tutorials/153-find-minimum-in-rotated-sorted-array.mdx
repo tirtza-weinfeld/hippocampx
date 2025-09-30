@@ -14,7 +14,7 @@ Given a unique-element sorted array that has been rotated at an unknown pivot, f
 
 ## [!ProblemIntuition] Intuition
 
-- The goal is to find the *inflection point* in the rotated list (where the numbers switch from high to low) — this point is the minimum element.:
+- The goal is to find the *inflection point* in the rotated list (where the numbers switch from high to low) — this point is the minimum element.
     - We use a modified binary search to home in on this point.
     - The key is comparing the middle element `nums[mid]` with the rightmost element `nums[r]`. This comparison tells us which part of the array is currently sorted and can be discarded.
         - **Case 1: `nums[mid] < nums[r]`**

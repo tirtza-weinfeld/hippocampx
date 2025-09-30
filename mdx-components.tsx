@@ -36,7 +36,8 @@ import { TaskItem } from '@/components/mdx/list/task-item';
 import { ProblemComponents, ProblemHeaders, ProblemItems } from '@/components/mdx/problem';
 // All Problems Components
 import { CodeEditor } from '@/components/editor'
-
+import { ProblemDeepDive } from "@/components/mdx/problem/problem-deepdive"
+import  CollapsibleListItem from '@/components/mdx/list/collapsible-list-item';
 import { CustomLists } from '@/components/mdx/custom/list'
 import { PillList } from '@/components/mdx/list/pill-list';
 // Header Components (using existing typography components)
@@ -58,7 +59,8 @@ export const customComponents = {
   FeatureItem,
   TaskItem,
   ...ProblemItems,
-
+  ProblemDeepDive,
+  CollapsibleListItem,
   // Typography
   h1: H1,
   h2: H2,
