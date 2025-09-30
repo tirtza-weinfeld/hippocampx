@@ -4,6 +4,7 @@ import type { MDXComponents } from 'mdx/types';
 import { DifficultyBadge } from '@/components/mdx/difficulty-badge';
 import CodeBlock, { CodeBlockSkeleton } from '@/components/mdx/code/code-block';
 import InlineCode from '@/components/mdx/code/code-inline';
+// import { MermaidDiagram } from '@/components/mdx/code/mermaid-diagram';
 // import { ProblemCodeBlock } from '@/components/mdx/problem/code/problem-code-block';
 // import TabbedCodeBlock from '@/components/mdx/code/tabbed-code-block';
 import { H1, H2, H3, H4, H5, H6, Paragraph, Strong, Em } from '@/components/mdx/typography';
@@ -107,6 +108,11 @@ export const customComponents = {
   code: ({ children, className, ...props }: ComponentPropsWithoutRef<'code'>) => {
     // Handle code blocks (with language specification)
     if (className?.includes('language-')) {
+      // Handle mermaid diagrams
+      // if (className === 'language-mermaid') {
+      //   return <MermaidDiagram chart={children as string} />
+      // }
+
       // console.log(`language-${className}, ${JSON.stringify(children)}`)
 
       return (

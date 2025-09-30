@@ -13,6 +13,7 @@ export type NavigationItem = {
 
 export const routes: NavigationItem[] = [
     { title: 'Home', href: '/', icon: Home, color: "text-blue-500", bgColor: "bg-purple-500/10", },
+    // { title: 'Dictionary', href: '/dictionary', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10", },
     // {
     //     title: 'Fundamentals', href: '/fundamentals', icon: ChartNoAxesCombinedIcon, color: "text-blue-500", bgColor: "bg-blue-500/10",
     //     children: [
@@ -22,7 +23,6 @@ export const routes: NavigationItem[] = [
     //         { title: 'Math', href: '/fundamentals/math', icon: Code, color: "text-blue-500", bgColor: "bg-blue-500/10" },
     //     ]
     // },
-
 
     {
         title: 'Binary', href: '/binary', icon: Binary, color: "text-violet-500", bgColor: "bg-violet-500/10",
