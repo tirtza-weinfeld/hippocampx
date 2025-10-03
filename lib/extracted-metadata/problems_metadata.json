@@ -453,15 +453,15 @@
     "3-longest-substring-without-repeating-characters": {
       "solutions": {
         "solution.py": {
-          "time_complexity": "O(n)\n    where n is the length of the string. Each character is visited once by the right pointer, and the left pointer only moves forward, so the sliding window expands and contracts at most n times total.",
+          "time_complexity": "O(n)",
           "args": {
             "s: str": "Input string to analyze"
           },
           "expressions": {
-            "l = max(mp[c] + 1, l)": "ensures that l does not move backward in cases where the last occurrence of s[r] was before l."
+            "l = max(c_idx[c] + 1, l)": "ensures that l does not move backward in cases where the last occurrence of s[r] was before l."
           },
           "returns": "`int`: Length of the longest substring without repeating characters",
-          "code": "def longest_substring_without_repeating_characters(s: str) -> int:\n    mp, l, max_length = {}, 0, 0\n    for r, c in enumerate(s):\n        if c in mp:\n            l = max(mp[c] + 1, l)\n        mp[c] = r\n        max_length = max(max_length, r - l + 1)\n    return max_length"
+          "code": "def longest_substring_without_repeating_characters(s: str) -> int:\n    c_idx, l, max_length = {}, 0, 0\n    for r, c in enumerate(s):\n        if c in c_idx:\n            l = max(c_idx[c] + 1, l)\n        c_idx[c] = r\n        max_length = max(max_length, r - l + 1)\n    return max_length"
         }
       },
       "title": "Longest Substring Without Repeating Characters",
@@ -756,6 +756,15 @@
       "topics": [
         "binary-search"
       ]
+    },
+    "76-minimum-window-substring": {
+      "solutions": {
+        "solution.py": {
+          "code": "",
+          "full_file_code": ""
+        }
+      },
+      "leetcode": "https://leetcode.com/problems/"
     },
     "136-single-number": {
       "solutions": {

@@ -15,7 +15,6 @@ Given a string `s`, find the length of the longest substring without repeating c
 ## [!ProblemTimeComplexity] Time Complexity
 
 - $O(n)$
-    - where n is the length of the string. Each character is visited once by the right pointer, and the left pointer only moves forward, so the sliding window expands and contracts at most n times total.
 
 ## [!ProblemArguments] Key Arguments
 
@@ -23,7 +22,7 @@ Given a string `s`, find the length of the longest substring without repeating c
 
 ## [!ProblemKeyExpressions] Key Expressions
 
-- `l = max(mp[c] + 1, l)`: ensures that l does not move backward in cases where the last occurrence of s[r] was before l.
+- `l = max(c_idx[c] + 1, l)`: ensures that l does not move backward in cases where the last occurrence of s[r] was before l.
 
 ## [!ProblemReturns] Returns
 
@@ -33,11 +32,11 @@ Given a string `s`, find the length of the longest substring without repeating c
 
 ```python meta="source=problems/3-longest-substring-without-repeating-characters/solution.py"
 def longest_substring_without_repeating_characters(s: str) -> int:
-    mp, l, max_length = {}, 0, 0
+    c_idx, l, max_length = {}, 0, 0
     for r, c in enumerate(s):
-        if c in mp:
-            l = max(mp[c] + 1, l)
-        mp[c] = r
+        if c in c_idx:
+            l = max(c_idx[c] + 1, l)
+        c_idx[c] = r
         max_length = max(max_length, r - l + 1)
     return max_length
 ```

@@ -347,6 +347,7 @@ export function SearchDialog({
 
   // Persist showFavoritesOnly to localStorage
   useEffect(() => {
+    if (typeof window === 'undefined') return
     try {
       localStorage.setItem('showFavoritesOnly', String(showFavoritesOnly))
     } catch (error) {
@@ -385,7 +386,7 @@ export function SearchDialog({
 
 
   // Define renderSearchItem function before using it
-  const renderSearchItem = (item: SearchItem, index: number) => {
+  function renderSearchItem(item: SearchItem, index: number) {
     const Icon = item.icon || Compass
     const color = item.color || "text-teal-500"
     const bgColor = item.bgColor || "bg-teal-500/10"
@@ -580,7 +581,7 @@ export function SearchDialog({
 
             {filteredItems.length > 0 && (
               <>
-                {showFavoritesOnly && favoritesSortOrder === 'custom' ? (
+                {showFavoritesOnly && favoritesSortOrder === 'custom' && !search.trim() ? (
                   <SortableList
                     items={filteredItems as FavoriteItem[]}
                     onReorder={handleFavoritesReorder}

@@ -35,6 +35,7 @@ export const PROBLEMS_ROUTES: NavigationItem[] = [
             { title: 'Maximum Size Subarray Sum Equals k', href: '/problems/325-maximum-size-subarray-sum-equals-k', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
             { title: 'Maximum Subarray', href: '/problems/53-maximum-subarray', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
             { title: 'Maximum Sum of Circular Subarray', href: '/problems/918-maximum-sum-of-circular-subarray', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
+            { title: 'Minimum Window Substring', href: '/problems/76-minimum-window-substring', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
             { title: 'Most Points Solving Questions With Brainpower', href: '/problems/2140-solving-questions-with-brainpower', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
             { title: 'N-Queens', href: '/problems/51-n-queens', icon: Code, color: "text-red-500", bgColor: "bg-red-500/10" },
             { title: 'Network Delay Time', href: '/problems/743-network-delay-time', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },

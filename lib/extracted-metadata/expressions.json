@@ -23,7 +23,7 @@
     {"range": {"start": {"line": 14, "character": 21}, "end": {"line": 14, "character": 45}}, "nameRange": {"start": {"line": 14, "character": 21}, "end": {"line": 14, "character": 45}}, "qname": "problems.416-partition-equal-subset-sum.solution:can_partition_into_2_equal_subsets.dp.(total := sum(nums)) & 1", "kind": "expression"}
   ],
   "problems/3-longest-substring-without-repeating-characters/solution.py": [
-    {"range": {"start": {"line": 4, "character": 12}, "end": {"line": 4, "character": 33}}, "nameRange": {"start": {"line": 4, "character": 12}, "end": {"line": 4, "character": 33}}, "qname": "problems.3-longest-substring-without-repeating-characters.solution:longest_substring_without_repeating_characters.l = max(mp[c] + 1, l)", "kind": "expression"}
+    {"range": {"start": {"line": 4, "character": 12}, "end": {"line": 4, "character": 36}}, "nameRange": {"start": {"line": 4, "character": 12}, "end": {"line": 4, "character": 36}}, "qname": "problems.3-longest-substring-without-repeating-characters.solution:longest_substring_without_repeating_characters.l = max(c_idx[c] + 1, l)", "kind": "expression"}
   ],
   "problems/124-binary-tree-maximum-path-sum/solution.py": [
     {"range": {"start": {"line": 8, "character": 8}, "end": {"line": 8, "character": 42}}, "nameRange": {"start": {"line": 8, "character": 8}, "end": {"line": 8, "character": 42}}, "qname": "problems.124-binary-tree-maximum-path-sum.solution:binary_tree_maximum_path_sum.dfs.best = max(best, node.val + l + r)", "kind": "expression"},
