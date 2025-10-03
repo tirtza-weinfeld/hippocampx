@@ -1099,6 +1099,32 @@
       ]
     },
     {
+      "uri": "problems/20-valid-parentheses/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/20-valid-parentheses/solution.py",
+      "symbols": [
+        {
+          "name": "isValid",
+          "detail": "isValid(s: str) -> bool",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 8, "character": 20}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 11
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
       "uri": "problems/200-number-of-islands/__init__.py",
       "symbols": []
     },
@@ -2307,7 +2333,25 @@
     },
     {
       "uri": "problems/76-minimum-window-substring/solution.py",
-      "symbols": []
+      "symbols": [
+        {
+          "name": "minWindow",
+          "detail": "minWindow(s: str, t: str) -> str",
+          "kind": 12,
+          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 16, "character": 64}},
+          "nameRange": {
+            "start": {
+              "line": 2,
+              "character": 4
+            },
+            "end": {
+              "line": 2,
+              "character": 13
+            }
+          },
+          "children": []
+        }
+      ]
     },
     {
       "uri": "problems/778-swim-in-rising-water/__init__.py",
@@ -2424,6 +2468,32 @@
               "children": []
             }
           ]
+        }
+      ]
+    },
+    {
+      "uri": "problems/84-largest-rectangle-in-histogram/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/84-largest-rectangle-in-histogram/solution.py",
+      "symbols": [
+        {
+          "name": "largestRectangleArea",
+          "detail": "largestRectangleArea(heights: list[int]) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 9, "character": 19}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 24
+            }
+          },
+          "children": []
         }
       ]
     },

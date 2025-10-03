@@ -1,0 +1,32 @@
+# Valid Parentheses
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="easy" />
+
+<PillList pills={["stack"]} />
+
+[20. Valid Parentheses](https://leetcode.com/problems/valid-parentheses)
+
+## [!ProblemDefinition] Definition
+
+Given a string `s` containing just the characters `'()', '{}', '[]'`,     determine if the input string is valid
+
+## [!ProblemTimeComplexity] Time Complexity
+
+- $O(n)$
+
+## [!ProblemCodeSnippet] Code Snippet
+
+```python meta="source=problems/20-valid-parentheses/solution.py"
+def isValid(s: str) -> bool:
+    m, stack = {")": "(", "}": "{", "]": "["}, []
+    for b in s:
+        if b in m:
+            if not stack or m[b] != stack.pop():
+                return False
+        else:
+            stack.append(b)
+    return not stack
+```
+
