@@ -1586,6 +1586,23 @@
   "problems/1590-make-sum-divisible-by-p/__init__.py": [
 
   ],
+  "problems/191-number-of-1-bits/__init__.py": [
+
+  ],
+  "problems/191-number-of-1-bits/bit_count.py": [
+    {"range": {"start": {"line": 0, "character": 0}, "end": {"line": 1, "character": 24}}, "nameRange": {"start": {"line": 0, "character": 4}, "end": {"line": 0, "character": 17}}, "qname": "problems.191-number-of-1-bits.bit_count:hammingWeight", "kind": "function"},
+    {"range": {"start": {"line": 0, "character": 19}, "end": {"line": 0, "character": 25}}, "nameRange": {"start": {"line": 0, "character": 19}, "end": {"line": 0, "character": 20}}, "qname": "problems.191-number-of-1-bits.bit_count:hammingWeight.n", "kind": "parameter"},
+    {"range": {"start": {"line": 1, "character": 11}, "end": {"line": 1, "character": 12}}, "nameRange": {"start": {"line": 1, "character": 11}, "end": {"line": 1, "character": 12}}, "qname": "problems.191-number-of-1-bits.bit_count:hammingWeight.n", "kind": "parameter"},
+    {"range": {"start": {"line": 1, "character": 11}, "end": {"line": 1, "character": 22}}, "nameRange": {"start": {"line": 1, "character": 13}, "end": {"line": 1, "character": 22}}, "qname": "problems.191-number-of-1-bits.bit_count:hammingWeight.bit_count", "kind": null}
+  ],
+  "problems/191-number-of-1-bits/brian-kernighan.py": [
+    {"range": {"start": {"line": 0, "character": 0}, "end": {"line": 5, "character": 16}}, "nameRange": {"start": {"line": 0, "character": 4}, "end": {"line": 0, "character": 17}}, "qname": "problems.191-number-of-1-bits.brian-kernighan:hammingWeight", "kind": "function"},
+    {"range": {"start": {"line": 0, "character": 18}, "end": {"line": 0, "character": 24}}, "nameRange": {"start": {"line": 0, "character": 18}, "end": {"line": 0, "character": 19}}, "qname": "problems.191-number-of-1-bits.brian-kernighan:hammingWeight.n", "kind": "parameter"},
+    {"range": {"start": {"line": 1, "character": 4}, "end": {"line": 1, "character": 9}}, "nameRange": {"start": {"line": 1, "character": 4}, "end": {"line": 1, "character": 9}}, "qname": "problems.191-number-of-1-bits.brian-kernighan:hammingWeight.count", "kind": "variable"},
+    {"range": {"start": {"line": 2, "character": 10}, "end": {"line": 2, "character": 11}}, "nameRange": {"start": {"line": 2, "character": 10}, "end": {"line": 2, "character": 11}}, "qname": "problems.191-number-of-1-bits.brian-kernighan:hammingWeight.n", "kind": "parameter"},
+    {"range": {"start": {"line": 3, "character": 13}, "end": {"line": 3, "character": 14}}, "nameRange": {"start": {"line": 3, "character": 13}, "end": {"line": 3, "character": 14}}, "qname": "problems.191-number-of-1-bits.brian-kernighan:hammingWeight.n", "kind": "parameter"},
+    {"range": {"start": {"line": 5, "character": 11}, "end": {"line": 5, "character": 16}}, "nameRange": {"start": {"line": 5, "character": 11}, "end": {"line": 5, "character": 16}}, "qname": "problems.191-number-of-1-bits.brian-kernighan:hammingWeight.count", "kind": "variable"}
+  ],
   "problems/918-maximum-sum-of-circular-subarray/solution.py": [
     {"range": {"start": {"line": 0, "character": 0}, "end": {"line": 9, "character": 68}}, "nameRange": {"start": {"line": 0, "character": 4}, "end": {"line": 0, "character": 36}}, "qname": "problems.918-maximum-sum-of-circular-subarray.solution:maximum_sum_of_circular_subarray", "kind": "function"},
     {"range": {"start": {"line": 0, "character": 37}, "end": {"line": 0, "character": 52}}, "nameRange": {"start": {"line": 0, "character": 37}, "end": {"line": 0, "character": 41}}, "qname": "problems.918-maximum-sum-of-circular-subarray.solution:maximum_sum_of_circular_subarray.nums", "kind": "parameter"},

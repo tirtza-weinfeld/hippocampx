@@ -24,8 +24,7 @@
       "994-rotting-oranges"
     ],
     "hash-table": [
-      "1-two-sum",
-      "136-single-number"
+      "1-two-sum"
     ],
     "k-sum": [
       "1-two-sum"
@@ -100,16 +99,19 @@
       "51-n-queens",
       "79-word-search"
     ],
+    "bit-manipulation": [
+      "136-single-number",
+      "191-number-of-1-bits"
+    ],
     "greedy": [
       "122-best-time-to-buy-and-sell-stock-ii"
     ],
-    "array": [
-      "123-best-time-to-buy-and-sell-stock-iii",
-      "136-single-number",
-      "2145-count-the-hidden-sequences"
-    ],
     "bellman-ford": [
       "1514-path-with-maximum-probability"
+    ],
+    "array": [
+      "123-best-time-to-buy-and-sell-stock-iii",
+      "2145-count-the-hidden-sequences"
     ],
     "permutation": [
       "46-permutations"
@@ -182,6 +184,7 @@
       "1-two-sum",
       "121-best-time-to-buy-and-sell-stock",
       "136-single-number",
+      "191-number-of-1-bits",
       "35-search-insert-position"
     ]
   },
@@ -227,6 +230,9 @@
     ],
     "51-n-queens": [
       "$O(N!)$"
+    ],
+    "191-number-of-1-bits": [
+      "$O(k)$"
     ],
     "102-binary-tree-level-order-traversal": [
       "$O(N)$"

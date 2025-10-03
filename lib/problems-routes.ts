@@ -38,6 +38,7 @@ export const PROBLEMS_ROUTES: NavigationItem[] = [
             { title: 'Most Points Solving Questions With Brainpower', href: '/problems/2140-solving-questions-with-brainpower', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
             { title: 'N-Queens', href: '/problems/51-n-queens', icon: Code, color: "text-red-500", bgColor: "bg-red-500/10" },
             { title: 'Network Delay Time', href: '/problems/743-network-delay-time', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
+            { title: 'Number of 1 Bits', href: '/problems/191-number-of-1-bits', icon: Code, color: "text-green-500", bgColor: "bg-green-500/10" },
             { title: 'Number of Islands', href: '/problems/200-number-of-islands', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
             { title: 'Number of Subarrays with Product Less Than K', href: '/problems/713-subarray-product-less-than-k', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
             { title: 'Partition Equal Subset Sum', href: '/problems/416-partition-equal-subset-sum', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },

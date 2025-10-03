@@ -233,9 +233,15 @@ function calculateDisplayNumber(
   return (itemIndex + 1).toString()
 }
 
-// Helper function to detect "Deep Dive:" prefix and extract title
-function detectDeepDive(listItem: ListItem): { isDeepDive: boolean; title: string | null } {
-  let isDeepDive = false
+// Collapsible item patterns - each with pattern and default title
+const COLLAPSIBLE_PATTERNS = [
+  { pattern: /^(Deep Dive):\s*(.*)/, defaultTitle: 'Deep Dive' },
+  { pattern: /^(Example):\s*(.*)/, defaultTitle: 'Example' }
+]
+
+// Helper function to detect collapsible item prefixes and extract title
+function detectCollapsible(listItem: ListItem): { isCollapsible: boolean; title: string | null } {
+  let isCollapsible = false
   let title: string | null = null
   let isFirstTextNode = true
 
@@ -246,22 +252,27 @@ function detectDeepDive(listItem: ListItem): { isDeepDive: boolean; title: strin
     if (isInLink) return
 
     const textContent = textNode.value.trim()
-    const deepDiveMatch = textContent.match(/^Deep Dive:\s*(.+)/)
 
-    if (deepDiveMatch) {
-      isDeepDive = true
-      title = deepDiveMatch[1].trim()
+    // Check all collapsible patterns
+    for (const { pattern, defaultTitle } of COLLAPSIBLE_PATTERNS) {
+      const match = textContent.match(pattern)
+      if (match) {
+        isCollapsible = true
+        // Use provided text or fallback to default title
+        title = match[2].trim() || defaultTitle
+        break
+      }
     }
 
     isFirstTextNode = false
   })
 
-  return { isDeepDive, title }
+  return { isCollapsible, title }
 }
 
 // Helper function to clean text content from number prefixes and handle colons
-function cleanTextContent(listItem: ListItem): { hasTrailingColon: boolean; isDeepDive: boolean; deepDiveTitle: string | null } {
-  const { isDeepDive, title: deepDiveTitle } = detectDeepDive(listItem)
+function cleanTextContent(listItem: ListItem): { hasTrailingColon: boolean; isCollapsible: boolean; collapsibleTitle: string | null } {
+  const { isCollapsible, title: collapsibleTitle } = detectCollapsible(listItem)
   let hasTrailingColon = false
   let isFirstTextNode = true
 
@@ -273,13 +284,15 @@ function cleanTextContent(listItem: ListItem): { hasTrailingColon: boolean; isDe
     const isInLink = parent && (parent.type === 'link' || parent.type === 'linkReference')
 
     if (isFirstTextNode && !isInLink) {
-      // Check for Deep Dive prefix and remove it entirely
-      if (isDeepDive) {
-        const deepDiveMatch = textContent.match(/^Deep Dive:\s*(.+)/)
-        if (deepDiveMatch) {
-          textNode.value = ''
-          isFirstTextNode = false
-          return
+      // Check for collapsible prefix and remove it entirely
+      if (isCollapsible) {
+        for (const { pattern } of COLLAPSIBLE_PATTERNS) {
+          const match = textContent.match(pattern)
+          if (match) {
+            textNode.value = ''
+            isFirstTextNode = false
+            return
+          }
         }
       }
 
@@ -307,17 +320,20 @@ function cleanTextContent(listItem: ListItem): { hasTrailingColon: boolean; isDe
     isFirstTextNode = false
   })
 
-  return { hasTrailingColon, isDeepDive, deepDiveTitle }
+  return { hasTrailingColon, isCollapsible, collapsibleTitle }
 }
 
 // Helper function to determine component type based on data attributes
-function getComponentType(listItem: ListItem, isDeepDive: boolean = false): string {
-  // Deep Dive takes priority
-  if (isDeepDive) {
+function getComponentType(listItem: ListItem, isCollapsible: boolean = false): string {
+  const itemType = listItem.data?.hProperties?.['data-item-type']
+
+  // Collapsible items take priority, check for special types
+  if (isCollapsible) {
+    if (itemType === 'problem-intuition') {
+      return 'CollapsibleIntuitionListItem'
+    }
     return 'CollapsibleListItem'
   }
-
-  const itemType = listItem.data?.hProperties?.['data-item-type']
 
   switch(itemType) {
     case 'problem-intuition':
@@ -369,11 +385,11 @@ function transformOrderedList(list: List, file: VFile, parent: Parent, index: nu
 
   const transformedItems = list.children.map((listItem: ListItem, i) => {
     // Clean number prefixes from text content and check for trailing colon
-    const { hasTrailingColon, isDeepDive, deepDiveTitle } = cleanTextContent(listItem)
+    const { hasTrailingColon, isCollapsible, collapsibleTitle } = cleanTextContent(listItem)
 
     // Calculate display properties
     const displayNumber = calculateDisplayNumber(i, originalNumbers, restartPoints)
-    const componentName = getComponentType(listItem, isDeepDive)
+    const componentName = getComponentType(listItem, isCollapsible)
     const marker = markers[i] || '1.'
 
     // Create attributes
@@ -383,9 +399,9 @@ function transformOrderedList(list: List, file: VFile, parent: Parent, index: nu
       createJSXAttribute('marker', marker)
     ]
 
-    // Add title attribute for Deep Dive items
-    if (isDeepDive && deepDiveTitle) {
-      attributes.push(createJSXAttribute('title', deepDiveTitle))
+    // Add title attribute for collapsible items
+    if (isCollapsible && collapsibleTitle) {
+      attributes.push(createJSXAttribute('title', collapsibleTitle))
     }
 
     // Add headerItem attribute if there was a trailing colon
@@ -421,9 +437,9 @@ function transformUnorderedList(list: List, file: VFile, parent: Parent, index: 
 
   const transformedItems = list.children.map((listItem: ListItem, i) => {
     // Clean text content and check for trailing colon
-    const { hasTrailingColon, isDeepDive, deepDiveTitle } = cleanTextContent(listItem)
+    const { hasTrailingColon, isCollapsible, collapsibleTitle } = cleanTextContent(listItem)
 
-    const componentName = getComponentType(listItem, isDeepDive)
+    const componentName = getComponentType(listItem, isCollapsible)
     const marker = markers[i] || '-'
 
     const attributes = [
@@ -432,9 +448,9 @@ function transformUnorderedList(list: List, file: VFile, parent: Parent, index: 
     ]
     // Note: No displayNumber for unordered lists - components will show icons
 
-    // Add title attribute for Deep Dive items
-    if (isDeepDive && deepDiveTitle) {
-      attributes.push(createJSXAttribute('title', deepDiveTitle))
+    // Add title attribute for collapsible items
+    if (isCollapsible && collapsibleTitle) {
+      attributes.push(createJSXAttribute('title', collapsibleTitle))
     }
 
     // Add headerItem attribute if there was a trailing colon

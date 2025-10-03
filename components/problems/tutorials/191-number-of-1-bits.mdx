@@ -1,0 +1,85 @@
+# Number of 1 Bits
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="easy" />
+
+<PillList pills={["bit-manipulation"]} />
+
+[191. Number of 1 Bits](https://leetcode.com/problems/number-of-1-bits)
+
+## [!ProblemDefinition] Definition
+
+Given a positive integer, return the number set bits (1s) in it's binary representation
+
+## Bit Count Solution
+
+### [!ProblemCodeSnippet] Code Snippet
+
+```python meta="source=problems/191-number-of-1-bits/bit_count.py"
+def hammingWeight( n: int) -> int:
+    return n.bit_count()
+```
+
+
+---
+
+## Brian Kernighan Solution
+
+### [!ProblemIntuition] Intuition
+
+- Brian Kernighan's algorithm:
+    - counts the number of set bits (1s) in an integer efficiently by             repeatedly clearing the lowest set bit until the number becomes 0.
+
+- Deep Dive: Why this always works
+    - When you subtract 1 from a binary number:
+        - You flip the lowest set bit (1) to 0
+        - And everything to the right of it flips to 1
+
+- Example:
+    - Start
+        ```python
+        n = 13 (1101)
+        count = 0
+        ```
+    - Iteration 1
+        ```python
+        n   = 1101 (13)
+        n-1 = 1100 (12)
+        ---------------- &
+        1100 (12)
+        count = 1
+        ```
+    - Iteration 2
+        ```python
+        n   = 1100 (12)
+        n-1 = 1011 (11)
+        ---------------- &
+        1000 (8)
+        count = 2
+        ```
+    - Iteration 3
+        ```python
+        n   = 1000 (8)
+        n-1 = 0111 (7)
+        ---------------- &
+        0000 (0)
+        count = 3
+        ```
+
+### [!ProblemTimeComplexity] Time Complexity
+
+- $O(k)$:
+    - where k = number of 1s (faster than looping 32 times)
+
+### [!ProblemCodeSnippet] Code Snippet
+
+```python meta="source=problems/191-number-of-1-bits/brian-kernighan.py"
+def hammingWeight(n: int) -> int:
+    count = 0
+    while n:
+        n &= n - 1 # drop the lowest set bit
+        count += 1
+    return count
+```
+

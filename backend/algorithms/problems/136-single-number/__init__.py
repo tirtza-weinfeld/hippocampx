@@ -4,5 +4,5 @@ Definition: Given a non-empty array of integers nums, every element appears twic
     *[sky!]Achieve *linear* time complexity and *constant* space complexity.*
 Leetcode: https://leetcode.com/problems/single-number
 Difficulty: Easy
-Topics: [array, hash-table]
+Topics: [bit-manipulation]
 """

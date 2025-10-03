@@ -542,6 +542,25 @@
         "prefix-sum"
       ]
     },
+    "191-number-of-1-bits": {
+      "solutions": {
+        "bit_count.py": {
+          "code": "def hammingWeight( n: int) -> int:\n    return n.bit_count()"
+        },
+        "brian-kernighan.py": {
+          "intuition": "Brian Kernighan's algorithm:\n    counts the number of set bits (1s) in an integer efficiently by             repeatedly clearing the lowest set bit until the number becomes 0.\n\n    Deep Dive: Why this always works\n    When you subtract 1 from a binary number:\n        You flip the lowest set bit (1) to 0\n        And everything to the right of it flips to 1\n\n    Example:\n    Start\n        ```python\n        n = 13 (1101)\n        count = 0\n        ```\n    Iteration 1\n        ```python\n        n   = 1101 (13)\n        n-1 = 1100 (12)\n        ---------------- &\n        1100 (12)\n        count = 1\n        ```\n    Iteration 2\n        ```python\n        n   = 1100 (12)\n        n-1 = 1011 (11)\n        ---------------- &\n        1000 (8)\n        count = 2\n        ```\n    Iteration 3\n        ```python\n        n   = 1000 (8)\n        n-1 = 0111 (7)\n        ---------------- &\n        0000 (0)\n        count = 3\n        ```",
+          "time_complexity": "O(k):\n    where k = number of 1s (faster than looping 32 times)",
+          "code": "\ndef hammingWeight(n: int) -> int:\n    count = 0\n    while n:\n        n &= n - 1 # drop the lowest set bit\n        count += 1\n    return count\n    "
+        }
+      },
+      "title": "Number of 1 Bits",
+      "definition": "Given a positive integer, return the number set bits (1s) in it's binary representation",
+      "leetcode": "https://leetcode.com/problems/number-of-1-bits",
+      "difficulty": "Easy",
+      "topics": [
+        "bit-manipulation"
+      ]
+    },
     "918-maximum-sum-of-circular-subarray": {
       "solutions": {
         "solution.py": {
@@ -751,8 +770,7 @@
       "leetcode": "https://leetcode.com/problems/single-number",
       "difficulty": "Easy",
       "topics": [
-        "array",
-        "hash-table"
+        "bit-manipulation"
       ]
     },
     "1514-path-with-maximum-probability": {

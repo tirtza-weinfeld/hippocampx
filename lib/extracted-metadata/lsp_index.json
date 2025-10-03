@@ -1047,6 +1047,54 @@
       ]
     },
     {
+      "uri": "problems/191-number-of-1-bits/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/191-number-of-1-bits/bit_count.py",
+      "symbols": [
+        {
+          "name": "hammingWeight",
+          "detail": "hammingWeight(n: int) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 1, "character": 24}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 17
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/191-number-of-1-bits/brian-kernighan.py",
+      "symbols": [
+        {
+          "name": "hammingWeight",
+          "detail": "hammingWeight(n: int) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 5, "character": 16}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 17
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
       "uri": "problems/200-number-of-islands/__init__.py",
       "symbols": []
     },

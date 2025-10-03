@@ -38,6 +38,7 @@ import { ProblemComponents, ProblemHeaders, ProblemItems } from '@/components/md
 import { CodeEditor } from '@/components/editor'
 import { ProblemDeepDive } from "@/components/mdx/problem/problem-deepdive"
 import  CollapsibleListItem from '@/components/mdx/list/collapsible-list-item';
+import CollapsibleIntuitionListItem from '@/components/mdx/list/collapsible-intuition-list-item';
 import { CustomLists } from '@/components/mdx/custom/list'
 import { PillList } from '@/components/mdx/list/pill-list';
 // Header Components (using existing typography components)
@@ -61,6 +62,7 @@ export const customComponents = {
   ...ProblemItems,
   ProblemDeepDive,
   CollapsibleListItem,
+  CollapsibleIntuitionListItem,
   // Typography
   h1: H1,
   h2: H2,
