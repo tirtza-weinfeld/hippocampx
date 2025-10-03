@@ -90,7 +90,8 @@
     ],
     "sliding-window": [
       "3-longest-substring-without-repeating-characters",
-      "713-subarray-product-less-than-k"
+      "713-subarray-product-less-than-k",
+      "76-minimum-window-substring"
     ],
     "backtrack": [
       "212-word-search-ii",
@@ -134,6 +135,7 @@
       "37-sudoku-solver",
       "460-lfu-cache",
       "51-n-queens",
+      "76-minimum-window-substring",
       "778-swim-in-rising-water"
     ],
     "medium": [

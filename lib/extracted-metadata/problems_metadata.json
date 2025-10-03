@@ -764,7 +764,13 @@
           "full_file_code": ""
         }
       },
-      "leetcode": "https://leetcode.com/problems/"
+      "title": "Minimum Window Substring",
+      "definition": "Given two strings `s` and `t` of lengths `m` and `n` respectively,     return the minimum window substring of `s` such that every character in `t` (including duplicates)     is included in the window. If no such window exists, return an empty string `\"\"`,\n    *[19!]solve it in linear time complexity O(m + n)*",
+      "leetcode": "https://leetcode.com/problems/minimum-window-substring",
+      "difficulty": "hard",
+      "topics": [
+        "sliding-window"
+      ]
     },
     "136-single-number": {
       "solutions": {
