@@ -3,12 +3,13 @@
 import { useState, useEffect, useRef, type ElementType } from "react"
 import Link from "next/link"
 import { Command } from "cmdk"
-import { Compass, Search, Star, X } from "lucide-react"
+import { Compass, Search, Star, X, ArrowDownAZ, Clock, GripVertical } from "lucide-react"
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { cn } from "@/lib/utils"
 import { SearchEmptyState } from "./search-dialog/search-empty-state"
 import { SearchShortcut } from "./search-dialog/search-shortcut"
 import { routes } from "@/lib/routes"
+import { SortableList } from "@/components/ui/sortable-list"
 
 interface SearchDialogProps {
   isOpen: boolean
@@ -39,6 +40,13 @@ type SearchItem = {
   bgColor?: string
 }
 
+type FavoriteItem = SearchItem & {
+  addedAt: number
+  customOrder?: number
+}
+
+type FavoritesSortOrder = "date" | "alphabetical" | "custom"
+
 
 export function SearchDialog({
   isOpen,
@@ -48,7 +56,24 @@ export function SearchDialog({
   const [search, setSearch] = useState("")
   const inputRef = useRef<HTMLInputElement>(null)
   const [selectedIndex, setSelectedIndex] = useState(0)
-  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false)
+  const [showFavoritesOnly, setShowFavoritesOnly] = useState(() => {
+    if (typeof window === 'undefined') return false
+    try {
+      const stored = localStorage.getItem('showFavoritesOnly')
+      return stored === 'true'
+    } catch {
+      return false
+    }
+  })
+  const [favoritesSortOrder, setFavoritesSortOrder] = useState<FavoritesSortOrder>(() => {
+    if (typeof window === 'undefined') return 'date'
+    try {
+      const stored = localStorage.getItem('favoritesSortOrder')
+      return (stored as FavoritesSortOrder) || 'date'
+    } catch {
+      return 'date'
+    }
+  })
 
 
 
@@ -121,14 +146,7 @@ export function SearchDialog({
   })
 
   // Load favorites from localStorage on mount
-  const [favorites, setFavorites] = useState<
-    Array<{
-      title: string
-      href: string
-      parent?: string
-      parentHref?: string
-    }>
-  >(() => {
+  const [favorites, setFavorites] = useState<FavoriteItem[]>(() => {
     if (typeof window === 'undefined') return []
 
     try {
@@ -136,11 +154,12 @@ export function SearchDialog({
       if (storedFavorites) {
         return JSON.parse(storedFavorites)
       } else {
-        // Set default favorites if none exist
-        const defaultFavorites = [
-          { title: "Home", href: "/", parent: "Main", parentHref: "/" },
-          { title: "Calculus Overview", href: "/calculus", parent: "Calculus", parentHref: "/calculus" },
-          { title: "Hadestown", href: "/hadestown", parent: "Main", parentHref: "/hadestown" },
+        // Set default favorites if none exist - enrich with full data from routes
+        const now = Date.now()
+        const defaultFavorites: FavoriteItem[] = [
+          { title: "Home", href: "/", parent: "Main", parentHref: "/", addedAt: now, customOrder: 0 },
+          { title: "Calculus Overview", href: "/calculus", parent: "Calculus", parentHref: "/calculus", addedAt: now + 1, customOrder: 1 },
+          { title: "Hadestown", href: "/hadestown", parent: "Main", parentHref: "/hadestown", addedAt: now + 2, customOrder: 2 },
         ]
         localStorage.setItem("favorites", JSON.stringify(defaultFavorites))
         return defaultFavorites
@@ -177,31 +196,42 @@ export function SearchDialog({
     })
   }
 
+  // Helper to enrich item with full data from routes
+  function enrichItemData(item: SearchItem): SearchItem {
+    // Find the item in allItems to get full data including icon, color, bgColor
+    const fullItem = allItems.find((ai) => ai.href === item.href)
+    if (fullItem) {
+      return { ...fullItem }
+    }
+    return item
+  }
+
   // Add this function to toggle favorites
-  function toggleFavorite(item: {
-    title: string
-    href: string
-    parent?: string
-    parentHref?: string
-  }) {
+  function toggleFavorite(item: SearchItem) {
     setFavorites((prev) => {
       // Check if the item is already in favorites
       const isFavorite = prev.some((fav) => fav.href === item.href)
 
-      let updated
+      let updated: FavoriteItem[]
       if (isFavorite) {
         // Remove from favorites
         updated = prev.filter((fav) => fav.href !== item.href)
       } else {
-        // Add to favorites
-        updated = [...prev, item]
+        // Add to favorites with full data enrichment
+        const enrichedItem = enrichItemData(item)
+        const newFavorite: FavoriteItem = {
+          ...enrichedItem,
+          addedAt: Date.now(),
+          customOrder: prev.length,
+        }
+        updated = [...prev, newFavorite]
       }
 
       // Save to localStorage
       try {
         localStorage.setItem("favorites", JSON.stringify(updated))
       } catch (error) {
-        console.error("Error saving recent searches:", error)
+        console.error("Error saving favorites:", error)
       }
 
       return updated
@@ -213,16 +243,51 @@ export function SearchDialog({
     return favorites.some((fav) => fav.href === href)
   }
 
+  // Handle reordering of favorites
+  function handleFavoritesReorder(reorderedItems: FavoriteItem[]) {
+    // Update custom order indices
+    const updatedItems = reorderedItems.map((item, index) => ({
+      ...item,
+      customOrder: index,
+    }))
+
+    setFavorites(updatedItems)
+
+    // Save to localStorage
+    try {
+      localStorage.setItem("favorites", JSON.stringify(updatedItems))
+    } catch (error) {
+      console.error("Error saving reordered favorites:", error)
+    }
+  }
+
+  // Sort favorites based on current sort order
+  function sortFavorites(items: FavoriteItem[]): FavoriteItem[] {
+    const sorted = [...items]
+
+    switch (favoritesSortOrder) {
+      case 'date':
+        return sorted.sort((a, b) => b.addedAt - a.addedAt) // Most recent first
+      case 'alphabetical':
+        return sorted.sort((a, b) => a.title.localeCompare(b.title))
+      case 'custom':
+        return sorted.sort((a, b) => (a.customOrder ?? 0) - (b.customOrder ?? 0))
+      default:
+        return sorted
+    }
+  }
+
   // Modern search: show recent/favorites when empty, filter all items when typing
-  function getFilteredItems() {
+  function getFilteredItems(): SearchItem[] {
     // If showing favorites only
     if (showFavoritesOnly) {
+      const sortedFavorites = sortFavorites(favorites)
       if (!search.trim()) {
-        return favorites
+        return sortedFavorites
       }
       // Filter favorites by search
       const searchLower = search.toLowerCase()
-      return favorites.filter(
+      return sortedFavorites.filter(
         (item) =>
           item.title.toLowerCase().includes(searchLower) ||
           item.href.toLowerCase().includes(searchLower) ||
@@ -236,7 +301,7 @@ export function SearchDialog({
         return recentSearches.slice(0, 5) // Limit recent items
       }
       if (favorites.length > 0) {
-        return favorites.slice(0, 8) // Show some favorites
+        return sortFavorites(favorites).slice(0, 8) // Show some favorites
       }
       return allItems.slice(0, 10) // Show some top items
     }
@@ -272,13 +337,22 @@ export function SearchDialog({
       timeoutId = setTimeout(() => {
         setSearch("")
         setSelectedIndex(0)
-        setShowFavoritesOnly(false)
+        // Don't reset showFavoritesOnly - keep user's preference
       }, 0)
     }
     return () => {
       if (timeoutId) clearTimeout(timeoutId)
     }
   }, [isOpen])
+
+  // Persist showFavoritesOnly to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem('showFavoritesOnly', String(showFavoritesOnly))
+    } catch (error) {
+      console.error("Error saving showFavoritesOnly:", error)
+    }
+  }, [showFavoritesOnly])
 
   // Handle keyboard navigation
   function handleKeyDown(e: React.KeyboardEvent) {
@@ -408,7 +482,33 @@ export function SearchDialog({
                 placeholder={showFavoritesOnly ? "Search favorites..." : "Search..."}
                 className="flex h-10 w-full rounded-md bg-transparent py-3 text-sm outline-none border-none ring-0 focus:ring-0 focus:outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50"
               />
-              <button
+            
+              {showFavoritesOnly && (
+                <button
+                  onClick={() => {
+                    const orders: FavoritesSortOrder[] = ['date', 'alphabetical', 'custom']
+                    const currentIndex = orders.indexOf(favoritesSortOrder)
+                    const nextOrder = orders[(currentIndex + 1) % orders.length]
+                    setFavoritesSortOrder(nextOrder)
+                    try {
+                      localStorage.setItem('favoritesSortOrder', nextOrder)
+                    } catch (error) {
+                      console.error("Error saving sort order:", error)
+                    }
+                  }}
+                  className={cn(
+                    "rounded-full w-8 h-8 flex items-center justify-center transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2",
+                    "bg-teal-500/10 text-teal-600 hover:bg-teal-500/50 hover:scale-105"
+                  )}
+                  aria-label={`Sort by ${favoritesSortOrder}`}
+                  title={`Sort by ${favoritesSortOrder}`}
+                >
+                  {favoritesSortOrder === 'date' && <Clock className="h-4 w-4" />}
+                  {favoritesSortOrder === 'alphabetical' && <ArrowDownAZ className="h-4 w-4" />}
+                  {favoritesSortOrder === 'custom' && <GripVertical className="h-4 w-4" />}
+                </button>
+              )}
+                <button
                 onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
                 className={cn(
                   "rounded-full w-8 h-8 flex items-center justify-center transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2",
@@ -480,9 +580,20 @@ export function SearchDialog({
 
             {filteredItems.length > 0 && (
               <>
-                <Command.Group>
-                  {filteredItems.map((item, index) => renderSearchItem(item, index))}
-                </Command.Group>
+                {showFavoritesOnly && favoritesSortOrder === 'custom' ? (
+                  <SortableList
+                    items={filteredItems as FavoriteItem[]}
+                    onReorder={handleFavoritesReorder}
+                    getItemId={(item) => item.href}
+                    showDragHandle={true}
+                  >
+                    {(item, index) => renderSearchItem(item, index)}
+                  </SortableList>
+                ) : (
+                  <Command.Group>
+                    {filteredItems.map((item, index) => renderSearchItem(item, index))}
+                  </Command.Group>
+                )}
               </>
             )}
           </Command.List>
