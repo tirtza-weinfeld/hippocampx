@@ -36,16 +36,19 @@ def transform_to_nested_list(text: str) -> str:
         stripped_line = line.lstrip()
         existing_indent = line[:len(line) - len(stripped_line)]
 
+        # Check if line is already a numbered list item (e.g., "1.", "2.", etc.)
+        is_numbered_list = re.match(r'^\d+\.', stripped_line) is not None
+
         # First line: add top-level bullet point if needed
         if i == 0:
-            if stripped_line.startswith('- '):
+            if stripped_line.startswith('- ') or is_numbered_list:
                 transformed_lines.append(line)
             else:
                 transformed_lines.append(f"{existing_indent}- {stripped_line}")
         else:
             # Subsequent lines: add one level of indentation
-            if stripped_line.startswith('- '):
-                # Already has bullet, add 4 spaces to existing indentation
+            if stripped_line.startswith('- ') or is_numbered_list:
+                # Already has bullet or is numbered list, add 4 spaces to existing indentation
                 transformed_lines.append(f"{existing_indent}    {stripped_line}")
             else:
                 # Add bullet and 4 spaces to existing indentation

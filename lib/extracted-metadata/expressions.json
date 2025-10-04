@@ -1,4 +1,10 @@
 {
+  "blackboard.py": [
+    {"range": {"start": {"line": 1, "character": 4}, "end": {"line": 1, "character": 21}}, "nameRange": {"start": {"line": 1, "character": 4}, "end": {"line": 1, "character": 21}}, "qname": "blackboard:largestRectangleArea.heights.append(0)", "kind": "expression"},
+    {"range": {"start": {"line": 3, "character": 34}, "end": {"line": 3, "character": 56}}, "nameRange": {"start": {"line": 3, "character": 34}, "end": {"line": 3, "character": 56}}, "qname": "blackboard:largestRectangleArea.heights[stack[-1]] > h", "kind": "expression"},
+    {"range": {"start": {"line": 5, "character": 12}, "end": {"line": 5, "character": 37}}, "nameRange": {"start": {"line": 5, "character": 12}, "end": {"line": 5, "character": 37}}, "qname": "blackboard:largestRectangleArea.width = i - stack[-1] - 1", "kind": "expression"},
+    {"range": {"start": {"line": 8, "character": 4}, "end": {"line": 8, "character": 17}}, "nameRange": {"start": {"line": 8, "character": 4}, "end": {"line": 8, "character": 17}}, "qname": "blackboard:largestRectangleArea.heights.pop()", "kind": "expression"}
+  ],
   "problems/1293-shortest-path-in-a-grid-with-obstacles-elimination/dijkstra.py": [
     {"range": {"start": {"line": 25, "character": 20}, "end": {"line": 25, "character": 66}}, "nameRange": {"start": {"line": 25, "character": 20}, "end": {"line": 25, "character": 66}}, "qname": "problems.1293-shortest-path-in-a-grid-with-obstacles-elimination.dijkstra:shortest_path_in_a_grid_with_obstacles_elimination.heapq.heappush(pq, (steps + 1, nr, nc, new_k))", "kind": "expression"},
     {"range": {"start": {"line": 13, "character": 29}, "end": {"line": 13, "character": 46}}, "nameRange": {"start": {"line": 13, "character": 29}, "end": {"line": 13, "character": 46}}, "qname": "problems.1293-shortest-path-in-a-grid-with-obstacles-elimination.dijkstra:shortest_path_in_a_grid_with_obstacles_elimination.heapq.heappop(pq)", "kind": "expression"},
@@ -35,8 +41,8 @@
   ],
   "problems/84-largest-rectangle-in-histogram/solution.py": [
     {"range": {"start": {"line": 1, "character": 4}, "end": {"line": 1, "character": 21}}, "nameRange": {"start": {"line": 1, "character": 4}, "end": {"line": 1, "character": 21}}, "qname": "problems.84-largest-rectangle-in-histogram.solution:largestRectangleArea.heights.append(0)", "kind": "expression"},
-    {"range": {"start": {"line": 3, "character": 34}, "end": {"line": 3, "character": 56}}, "nameRange": {"start": {"line": 3, "character": 34}, "end": {"line": 3, "character": 56}}, "qname": "problems.84-largest-rectangle-in-histogram.solution:largestRectangleArea.heights[stack[-1]] > h", "kind": "expression"},
-    {"range": {"start": {"line": 5, "character": 12}, "end": {"line": 5, "character": 37}}, "nameRange": {"start": {"line": 5, "character": 12}, "end": {"line": 5, "character": 37}}, "qname": "problems.84-largest-rectangle-in-histogram.solution:largestRectangleArea.width = i - stack[-1] - 1", "kind": "expression"},
+    {"range": {"start": {"line": 2, "character": 4}, "end": {"line": 2, "character": 16}}, "nameRange": {"start": {"line": 2, "character": 4}, "end": {"line": 2, "character": 16}}, "qname": "problems.84-largest-rectangle-in-histogram.solution:largestRectangleArea.stack = [-1]", "kind": "expression"},
+    {"range": {"start": {"line": 4, "character": 34}, "end": {"line": 4, "character": 56}}, "nameRange": {"start": {"line": 4, "character": 34}, "end": {"line": 4, "character": 56}}, "qname": "problems.84-largest-rectangle-in-histogram.solution:largestRectangleArea.heights[stack[-1]] > h", "kind": "expression"},
     {"range": {"start": {"line": 8, "character": 4}, "end": {"line": 8, "character": 17}}, "nameRange": {"start": {"line": 8, "character": 4}, "end": {"line": 8, "character": 17}}, "qname": "problems.84-largest-rectangle-in-histogram.solution:largestRectangleArea.heights.pop()", "kind": "expression"}
   ],
   "problems/208-implement-trie-prefix-tree/solution.py": [

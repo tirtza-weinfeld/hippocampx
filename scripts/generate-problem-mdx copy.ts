@@ -11,6 +11,7 @@
 import fs from 'fs/promises'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import { convertMathToKatex } from '../lib/utils/math-to-katex'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -20,11 +21,10 @@ interface Solution {
   intuition?: string
   time_complexity?: string
   space_complexity?: string
-  args?: string
-  variables?: string
-  expressions?: string
+  args?: Record<string, string>
+  variables?: Record<string, string>
+  expressions?: Record<string, string>
   returns?: string
-  full_file_code?: string
 }
 
 interface Problem {
@@ -41,14 +41,17 @@ type ProblemsMetadata = Record<string, Problem>
 function formatSection(title: string, content: string, component?: string, headerLevel: string = '##'): string {
   if (!content?.trim()) return ''
 
+
   // Clean up content - handle escaped newlines and normalize formatting
   let cleanContent = content.trim()
     .replace(/\\n/g, '\n') // Convert escaped newlines to actual newlines
     .replace(/\n\s*\n/g, '\n\n') // Normalize double newlines
 
   // Special formatting for intuition and complexity sections
-  if (component === 'ProblemIntuition' || component === 'ProblemTimeComplexity' || component === 'ProblemSpaceComplexity') {
+  if (component === 'ProblemIntuition') {
     cleanContent = formatIntuitionContent(cleanContent)
+  } else if (component === 'ProblemTimeComplexity' || component === 'ProblemSpaceComplexity') {
+    cleanContent = convertMathToKatex(formatIntuitionContent(cleanContent))
   } else {
     // Wrap terms before colons in inline code blocks (e.g., "- pq:" becomes "- `pq`:"), but skip if already wrapped
     cleanContent = cleanContent.replace(/^(\s*-\s*)([^`:\s][^:\s]*)(\s*:)/gm, '$1`$2`$3')
@@ -59,46 +62,8 @@ function formatSection(title: string, content: string, component?: string, heade
 }
 
 function formatIntuitionContent(content: string): string {
-  // Split content into paragraphs
-  const paragraphs = content.split(/\n\s*\n/).filter(p => p.trim())
-
-  return paragraphs.map(paragraph => {
-    const lines = paragraph.split('\n').filter(line => line.trim())
-    if (lines.length === 0) return ''
-
-    // First line becomes the main bullet point
-    const firstLine = lines[0].trim()
-    let result = `- ${firstLine}`
-
-    // If there's a colon at the end, add it if not present
-    if (!result.endsWith(':') && lines.length > 1) {
-      result += ':'
-    }
-
-    // Remaining lines preserve their original structure
-    if (lines.length > 1) {
-      const nestedLines = lines.slice(1).map(line => {
-        const trimmed = line.trim()
-        const originalIndent = line.length - line.trimStart().length
-
-        // If line was already indented (4+ spaces), preserve as deeply nested
-        if (originalIndent >= 4) {
-          if (/^\d+\./.test(trimmed)) {
-            return `        ${trimmed}`
-          } else {
-            return `        - ${trimmed}`
-          }
-        }
-        // Otherwise, make it a regular nested item
-        else {
-          return `    - ${trimmed}`
-        }
-      })
-      result += '\n' + nestedLines.join('\n')
-    }
-
-    return result
-  }).join('\n\n')
+  // Content is already properly formatted from Python script - return as-is
+  return content
 }
 
 
@@ -107,27 +72,24 @@ function formatCodeBlock(code: string, language: string = 'python', sourcePath?:
   return `\`\`\`${language}${sourceAttr}\n${code.trim()}\n\`\`\`\n\n`
 }
 
-function formatVariables(variables: string): string {
-  return variables
-    .split('\n')
-    .filter(line => line.trim())
-    .map(line => `- ${line.trim()}`)
+function formatVariables(variables: Record<string, string>): string {
+  return Object.entries(variables)
+    .map(([key, value]) => `- \`${key}\`: ${value}`)
     .join('\n')
 }
 
-function formatArgs(args: string): string {
-  return args
-    .split('\n')
-    .filter(line => line.trim())
-    .map(line => `- ${line.trim()}`)
+function formatArgs(args: Record<string, string>): string {
+  return Object.entries(args)
+    .map(([key, value]) => `- \`${key}\`: ${value}`)
     .join('\n')
 }
 
-function formatExpressions(expressions: string): string {
-  return expressions
-    .split('\n')
-    .filter(line => line.trim())
-    .map(line => `- ${line.trim()}`)
+function formatExpressions(expressions: Record<string, string>): string {
+  return Object.entries(expressions)
+    .map(([key, value]) => {
+      // The key is already the expression, so wrap it in backticks
+      return `- \`${key}\`: ${value}`
+    })
     .join('\n')
 }
 
@@ -157,12 +119,12 @@ function generateSolutionContent(problemId: string, fileName: string, solution: 
     content += formatSection('Time Complexity', solution.time_complexity, 'ProblemTimeComplexity', '###')
   }
 
-  if (solution.space_complexity) {
-    content += formatSection('Space Complexity', solution.space_complexity, 'ProblemSpaceComplexity', '###')
-  }
+  // if (solution.space_complexity) {
+  //   content += formatSection('Space Complexity', solution.space_complexity, 'ProblemSpaceComplexity', '###')
+  // }
 
   // Add variables if available
-  if (solution.variables && solution.variables.trim()) {
+  if (solution.variables && Object.keys(solution.variables).length > 0) {
     const variablesString = formatVariables(solution.variables)
     if (variablesString.trim()) {
       content += formatSection('Key Variables', variablesString, 'ProblemKeyVariables', '###')
@@ -170,7 +132,7 @@ function generateSolutionContent(problemId: string, fileName: string, solution: 
   }
 
   // Add expressions if available
-  if (solution.expressions && solution.expressions.trim()) {
+  if (solution.expressions && Object.keys(solution.expressions).length > 0) {
     const expressionsString = formatExpressions(solution.expressions)
     if (expressionsString.trim()) {
       content += formatSection('Key Expressions', expressionsString, 'ProblemKeyExpressions', '###')
@@ -183,9 +145,9 @@ function generateSolutionContent(problemId: string, fileName: string, solution: 
   }
 
   // Add code implementation
-  if (solution.full_file_code) {
+  if (solution.code) {
     const sourcePath = `${problemId}/${fileName}`
-    content += formatSection('Code Snippet', formatCodeBlock(solution.full_file_code, 'python', sourcePath), 'ProblemCodeSnippet', '###')
+    content += formatSection('Code Snippet', formatCodeBlock(solution.code, 'python', sourcePath), 'ProblemCodeSnippet', '###')
   }
 
   return content
@@ -214,12 +176,15 @@ function generateMDXContent(problemId: string, problem: Problem): string {
     content += `<PillList pills={[${topicsString}]} />\n\n`
   }
   
-  // Add LeetCode link if available
+  // Add LeetCode link
   if (problem.leetcode) {
+    // Extract problem number from problemId (e.g., "713-subarray-product-less-than-k" -> "713")
+    const problemNumber = problemId.match(/^(\d+)-/)?.[1]
+
     // Extract problem number and title from the URL or use the title
     const urlMatch = problem.leetcode.match(/leetcode\.com\/problems\/([^\/]+)/)
     if (urlMatch) {
-      const linkTitle = title // Use the problem title we already have
+      const linkTitle = problemNumber ? `${problemNumber}. ${title}` : title
       content += `[${linkTitle}](${problem.leetcode})\n\n`
     } else {
       // Fallback to plain link if URL doesn't match expected format
@@ -249,12 +214,12 @@ function generateMDXContent(problemId: string, problem: Problem): string {
       content += formatSection('Time Complexity', solution.time_complexity, 'ProblemTimeComplexity')
     }
 
-    if (solution.space_complexity) {
-      content += formatSection('Space Complexity', solution.space_complexity, 'ProblemSpaceComplexity')
-    }
+    // if (solution.space_complexity) {
+    //   content += formatSection('Space Complexity', solution.space_complexity, 'ProblemSpaceComplexity')
+    // }
     
     // Add args if available
-    if (solution.args && solution.args.trim()) {
+    if (solution.args && Object.keys(solution.args).length > 0) {
       const argsString = formatArgs(solution.args)
       if (argsString.trim()) {
         content += formatSection('Key Arguments', argsString, 'ProblemArguments')
@@ -262,7 +227,7 @@ function generateMDXContent(problemId: string, problem: Problem): string {
     }
 
     // Add variables if available
-    if (solution.variables && solution.variables.trim()) {
+    if (solution.variables && Object.keys(solution.variables).length > 0) {
       const variablesString = formatVariables(solution.variables)
       if (variablesString.trim()) {
         content += formatSection('Key Variables', variablesString, 'ProblemKeyVariables')
@@ -270,7 +235,7 @@ function generateMDXContent(problemId: string, problem: Problem): string {
     }
 
     // Add expressions if available
-    if (solution.expressions && solution.expressions.trim()) {
+    if (solution.expressions && Object.keys(solution.expressions).length > 0) {
       const expressionsString = formatExpressions(solution.expressions)
       if (expressionsString.trim()) {
         content += formatSection('Key Expressions', expressionsString, 'ProblemKeyExpressions')
@@ -283,9 +248,9 @@ function generateMDXContent(problemId: string, problem: Problem): string {
     }
     
     // Add code implementation
-    if (solution.full_file_code) {
+    if (solution.code) {
       const sourcePath = `${problemId}/${fileName}`
-      content += formatSection('Code Snippet', formatCodeBlock(solution.full_file_code, 'python', sourcePath), 'ProblemCodeSnippet')
+      content += formatSection('Code Snippet', formatCodeBlock(solution.code, 'python', sourcePath), 'ProblemCodeSnippet')
     }
     // if (solution.code) {
     //   const sourcePath = `${problemId}/${fileName}`
@@ -340,7 +305,7 @@ async function main(): Promise<void> {
     // Read the problems metadata
     const metadataPath = path.join(__dirname, '..', 'lib', 'extracted-metadata', 'problems_metadata.json')
     const metadataContent = await fs.readFile(metadataPath, 'utf-8')
-    const problemsMetadata: ProblemsMetadata = JSON.parse(metadataContent)
+    const problemsMetadata: ProblemsMetadata = JSON.parse(metadataContent).problems
     
     console.log(`Found ${Object.keys(problemsMetadata).length} problems to generate MDX files for`)
     
@@ -384,6 +349,10 @@ async function main(): Promise<void> {
     await generateProblemsIndexPage(problemsMetadata)
     console.log(`Generated problems index page at app/problems/page.mdx`)
 
+    // Generate the routes file
+    await generateRoutesFile(problemsMetadata)
+    console.log(`Generated routes file at lib/problems-routes.ts`)
+
   } catch (error) {
     console.error('Error generating MDX files:', error)
     process.exit(1)
@@ -392,7 +361,7 @@ async function main(): Promise<void> {
 
 function generateProblemsIndexContent(problemsMetadata: ProblemsMetadata): string {
   let content = `# Algorithm Problems\n\n`
-  content += `A comprehensive collection of ${Object.keys(problemsMetadata).length} algorithm problems with detailed explanations and solutions.\n\n`
+  content += `Collection of ${Object.keys(problemsMetadata).length} algorithm problems with explanations and solutions.\n\n`
 
   // Create a single flat list of all problems
   const allProblems: Array<{ id: string; problem: Problem }> = []
@@ -441,6 +410,10 @@ function generateProblemsIndexContent(problemsMetadata: ProblemsMetadata): strin
     // Create difficulty badge
     const difficultyBadge = `<DifficultyBadge difficulty="${difficulty}" size="sm" />`
 
+    // Format link with problem number if available
+    // const linkText = problemNumber ? `${problemNumber}. ${title}` : title
+
+    // content += `${index+1}. [${linkText}](/problems/${slug}) ${difficultyBadge}\n`
     content += `${index+1}. [${title}](/problems/${slug}) ${difficultyBadge}\n`
   }
 
@@ -456,6 +429,72 @@ async function generateProblemsIndexPage(problemsMetadata: ProblemsMetadata): Pr
   await ensureDirectoryExists(problemsDir)
 
   await fs.writeFile(indexPath, indexContent, 'utf-8')
+}
+
+function getDifficultyColor(difficulty: string): { color: string; bgColor: string } {
+  const cleanDiff = difficulty?.trim().split(/\s+/)[0].toLowerCase()
+  switch (cleanDiff) {
+    case 'easy':
+      return { color: "text-green-500", bgColor: "bg-green-500/10" }
+    case 'medium':
+      return { color: "text-orange-500", bgColor: "bg-orange-500/10" }
+    case 'hard':
+      return { color: "text-red-500", bgColor: "bg-red-500/10" }
+    default:
+      return { color: "text-orange-500", bgColor: "bg-orange-500/10" }
+  }
+}
+
+function generateRoutesContent(problemsMetadata: ProblemsMetadata): string {
+  let content = `import { Code, SquareFunction } from "lucide-react"\n`
+  content += `import { NavigationItem } from "./routes"\n\n`
+  content += `export const PROBLEMS_ROUTES: NavigationItem[] = [\n`
+  content += `    {\n`
+  content += `        title: 'Problems', href: '/problems', icon: SquareFunction, color: "text-yellow-500", bgColor: "bg-yellow-500/10",\n`
+  content += `        children: [\n`
+
+  // Create a sorted list of problems
+  const sortedProblems = Object.entries(problemsMetadata)
+    .filter(([, problem]) => problem.solutions && Object.keys(problem.solutions).length > 0)
+    .sort((a, b) => {
+      const getNameForSorting = (problem: Problem, id: string) => {
+        if (problem.title) {
+          return problem.title.toLowerCase()
+        }
+        return id.replace(/^\d+-/, '').replace(/-/g, ' ').toLowerCase()
+      }
+
+      const aName = getNameForSorting(a[1], a[0])
+      const bName = getNameForSorting(b[1], b[0])
+      return aName.localeCompare(bName)
+    })
+
+  for (const [problemId, problem] of sortedProblems) {
+    // Clean title
+    let title = problem.title || problemId.split('-').slice(1).join(' ').replace(/\b\w/g, l => l.toUpperCase())
+
+    // If title contains line breaks or strange characters, fall back to problem ID
+    if (title.includes('\n') || title.length > 100) {
+      title = problemId.split('-').slice(1).join(' ').replace(/\b\w/g, l => l.toUpperCase())
+    }
+
+    const { color, bgColor } = getDifficultyColor(problem.difficulty || 'medium')
+
+    content += `            { title: '${title.replace(/'/g, "\\'")}', href: '/problems/${problemId}', icon: Code, color: "${color}", bgColor: "${bgColor}" },\n`
+  }
+
+  content += `        ],\n`
+  content += `    },\n`
+  content += `]\n`
+
+  return content
+}
+
+async function generateRoutesFile(problemsMetadata: ProblemsMetadata): Promise<void> {
+  const routesContent = generateRoutesContent(problemsMetadata)
+  const routesPath = path.join(__dirname, '..', 'lib', 'problems-routes.ts')
+
+  await fs.writeFile(routesPath, routesContent, 'utf-8')
 }
 
 // Run the script

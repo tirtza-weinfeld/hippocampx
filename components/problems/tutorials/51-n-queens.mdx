@@ -32,13 +32,6 @@ Place n queens on an n x n board such that no two queens threaten each other. *[
 - `diag1`: The main diagonal where queens are placed (↘) `r - c`
 - `diag2`: The anti-diagonal where queens are placed (↙) `r + c`
 
-## [!ProblemKeyExpressions] Key Expressions
-
-- ``board[row][col] = "."``: Remove the queen (backtrack)
-- ``board[row][col] = "Q"``: Place the queen
-- ``continue``: Skip invalid positions
-- ``dfs(row + 1)``: Recurse to the next row
-
 ## [!ProblemReturns] Returns
 
 `list[list[str]]`: List of all valid queen placements

@@ -20,12 +20,6 @@ Given an `m x n` grid where cells are either empty (`0`) or an obstacle (`1`), a
 - `steps`: The number of steps taken so far (g_cost)
 - `max_k`: max_k[r][c] stores the max eliminations we have at cell (r,c)
 
-### [!ProblemKeyExpressions] Key Expressions
-
-- `heapq.heappush(pq, (steps + 1, nr, nc, new_k))`: The priority is simply the new step count.No heuristic is added, which is the only difference from the A* implementation.
-    'heapq.heappop(pq)': Pop the path with the lowest g_cost (steps) so far
-    'k_rem < max_k[r][c]': Prune paths that are suboptimal for a given cell
-
 ### [!ProblemCodeSnippet] Code Snippet
 
 ```python meta="source=problems/1293-shortest-path-in-a-grid-with-obstacles-elimination/dijkstra.py"

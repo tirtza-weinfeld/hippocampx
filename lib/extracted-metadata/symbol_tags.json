@@ -1,9 +1,56 @@
 {
+  "blackboard:largestRectangleArea": {
+    "args": [
+      "heights"
+    ],
+    "code": "def largestRectangleArea( heights: list[int]) -> int:\n    heights.append(0); stack  = [-1]; max_area = 0\n    for i, h in enumerate(heights):\n        while stack[-1] != -1 and heights[stack[-1]] > h:\n            height = heights[stack.pop()]\n            width = i - stack[-1] - 1\n            max_area = max(max_area, height * width)\n        stack.append(i)\n    heights.pop()\n    return max_area",
+    "expressions": {
+      "heights.append(0)": "adds a **right sentinel** bar smaller than all others, forcing the stack to empty and compute all remaining areas at the end (no leftover bars).",
+      "heights.pop()": "restore original list",
+      "heights[stack[-1]] > h": "pop while current bar is lower than stack's top",
+      "stack = [-1]": "adds a **left sentinel** index before the array start, so width computation `i - stack[-1] - 1` always works (never empty stack).",
+      "width = i - stack[-1] - 1": "We subtract 1 because the bar at stack[-1] is strictly smaller and marks the left boundary, which is excluded from the rectangle"
+    },
+    "file_path": "backend/algorithms/blackboard.py",
+    "intuition": "- We treat each bar as the smallest bar in a rectangle:\n    - To find its maximal rectangle, we must know:\n            - The first smaller bar to its left\n            - The first smaller bar to its right\n    - That defines the rectangle's width.\n\n    - Algorithm Logic\n    1.      Sentinel (0) ensures all bars are processed (flush remaining stack).\n    2.      Stack invariant: indices of bars in increasing height order.\n    3.      For each bar:\n        - While current height h is less than top of stack, we found the right boundary for heights[top].\n        - Pop it, compute:\n            - ```python\n            - height = heights[popped]\n            - width = i - stack[-1] - 1\n            - area = height * width\n            - ```\n\n    - because stack[-1] is now the index of the previous smaller bar (left boundary).\n\n            4.      Push current index.\n            5.      Remove sentinel before returning.\n\n    - Correctness\n            - Each bar is pushed and popped once ⇒ O(n)\n            - Stack always maintains increasing heights ⇒ ensures correct left boundary\n            - When popped, i is the first index to the right where height drops ⇒ correct right boundary\n            - All rectangles are considered exactly once ⇒ max area found.",
+    "kind": "function",
+    "label": "def largestRectangleArea(heights: list[int]) -> int",
+    "name": "largestRectangleArea",
+    "returns": {
+      "label": "int"
+    },
+    "time_complexity": "O(n):\nEach index is pushed once and popped once, so the total operations across the loop are linear.\n*[19!]The inner while doesn't make it O(n²) because every pop is matched to one push.*"
+  },
+  "blackboard:largestRectangleArea.heights.append(0)": {
+    "kind": "expression",
+    "name": "heights.append(0)",
+    "summary": "adds a **right sentinel** bar smaller than all others, forcing the stack to empty and compute all remaining areas at the end (no leftover bars)."
+  },
+  "blackboard:largestRectangleArea.heights.pop()": {
+    "kind": "expression",
+    "name": "heights.pop()",
+    "summary": "restore original list"
+  },
+  "blackboard:largestRectangleArea.heights[stack[-1]] > h": {
+    "kind": "expression",
+    "name": "heights[stack[-1]] > h",
+    "summary": "pop while current bar is lower than stack's top"
+  },
+  "blackboard:largestRectangleArea.stack = [-1]": {
+    "kind": "expression",
+    "name": "stack = [-1]",
+    "summary": "adds a **left sentinel** index before the array start, so width computation `i - stack[-1] - 1` always works (never empty stack)."
+  },
+  "blackboard:largestRectangleArea.width = i - stack[-1] - 1": {
+    "kind": "expression",
+    "name": "width = i - stack[-1] - 1",
+    "summary": "We subtract 1 because the bar at stack[-1] is strictly smaller and marks the left boundary, which is excluded from the rectangle"
+  },
   "core.bellman-ford.classic:bellman_ford_classic": {
     "args": [
       "edges",
-      "vertices",
-      "source"
+      "source",
+      "vertices"
     ],
     "code": "def bellman_ford_classic(\n    vertices: list[str], edges: list[tuple[str, str, float]], source: str\n) -> dict[str, float]:\n\n    d = [float(\"inf\")] * (V := len(vertices))\n    d[source] = 0\n\n    for _ in range(V - 1):\n        updated = False\n        for u, v, w in edges:\n            if d[u] + w < d[v]:\n                d[v] = d[u] + w\n                updated = True\n        if not updated:\n            return d\n\n    # if we get here, we did all V-1 passes, so still need to check for cycles\n    for u, v, w in edges:\n        if d[u] + w < d[v]:\n            raise Exception(\"Negative-weight cycle\")\n\n    return d",
     "expressions": {
@@ -31,13 +78,13 @@
   },
   "core.bellman-ford.layered_dag:bellman_ford_layered_dag": {
     "args": [
-      "edges",
       "vertices",
-      "source"
+      "source",
+      "edges"
     ],
     "code": "def bellman_ford_layered_dag(\n    vertices: list[str], edges: list[tuple[str, str, float]], source: str\n) -> dict[str, float]:\n\n    # 1) Initialize\n    d = {v: float(\"inf\") for v in vertices}\n    d[source], V = 0, len(vertices)\n\n    # 2) Layered relaxation: starting from δ₀, do V passes to compute δ₁…δ_V\n    for k in range(V):  # k = 0…V-1\n        d_k = {**d}  # snapshot of δ_k\n        for u, v, w in edges:\n            if d[u] + w < d_k[v]:\n                d_k[v] = d[u] + w\n        d = d_k  # now holds δ_{k+1}\n\n    # 3) Identify \"witnesses\" to negative cycles:\n    #    any v for which an extra relaxation is still possible\n    witnesses = {v for u, v, w in edges if d[u] + w < d[v]}\n\n    if not witnesses:\n        return d\n\n    # 4) Build adjacency list for negative-cycle propagation\n    adj = defaultdict(list)\n    for u, v, _ in edges:\n        adj[u].append(v)\n\n    # 5) DFS to propagate −∞ to all vertices reachable from any witness\n    stack = list(witnesses)\n    reachable = set(witnesses)\n\n    while stack:\n        u = stack.pop()\n        d[u] = float(\"-inf\")\n        for v in adj[u]:\n            if v not in reachable:\n                reachable.add(v)\n                stack.append(v)\n\n    return d",
     "file_path": "backend/algorithms/core/bellman-ford/layered_dag.py",
-    "intuition": "- Compute k-edge shortest-path distances and detect negative cycles via layered relaxation.\n    - 1. δ₀(s,v): initialize distances (0 at source, ∞ elsewhere).\n    - 2. For i = 1…V: perform one pass of edge-relaxation to compute δᵢ(s,v),\n       - the best cost using ≤ i edges.\n    - 3. Identify any vertex v where δ_V(s,v) < δ_{V−1}(s,v) as a negative-cycle witness.\n    - 4. Flood successors of those witnesses and mark their distances as −∞.",
+    "intuition": "- Compute k-edge shortest-path distances and detect negative cycles via layered relaxation.\n    1. δ₀(s,v): initialize distances (0 at source, ∞ elsewhere).\n    2. For i = 1…V: perform one pass of edge-relaxation to compute δᵢ(s,v),\n       - the best cost using ≤ i edges.\n    3. Identify any vertex v where δ_V(s,v) < δ_{V−1}(s,v) as a negative-cycle witness.\n    4. Flood successors of those witnesses and mark their distances as −∞.",
     "kind": "function",
     "label": "def bellman_ford_layered_dag(vertices: list[str], edges: list[tuple[str, str, float]], source: str) -> dict[str, float]",
     "name": "bellman_ford_layered_dag",
@@ -66,8 +113,8 @@
   },
   "core.binary-search.bisect_left:simple_bisect_left": {
     "args": [
-      "a",
-      "x"
+      "x",
+      "a"
     ],
     "code": "def simple_bisect_left(a: list[int], x: int):\n\n    l, r = 0, len(a)\n    while l < r:\n        mid = (l + r) // 2\n        if x > a[mid]:\n            l = mid + 1\n        else:\n            r = mid\n    return l",
     "expressions": {
@@ -120,8 +167,8 @@
   },
   "core.dijkstra.algorithm:dijkstra": {
     "args": [
-      "graph",
-      "s"
+      "s",
+      "graph"
     ],
     "code": "def dijkstra(graph: dict[str, dict[str, int]], s: str):\n\n    d = {v: float('inf') for v in graph} | {s: 0}\n    p = {v: None for v in graph}\n\n    pq = [(0, s)]\n\n    while pq:\n        d_u, u = heapq.heappop(pq)\n        if d_u > d[u]:\n            continue\n        for v ,w in graph[u]:\n            if (weight := d_u + w) < d[v]:\n                d[v], p[v] = weight, u\n                heapq.heappush(pq, (weight, v))\n\n    return d, p",
     "file_path": "backend/algorithms/core/dijkstra/algorithm.py",
@@ -145,8 +192,8 @@
   "core.modular-arithmetic.congruent1:congruent1": {
     "args": [
       "a",
-      "n",
-      "b"
+      "b",
+      "n"
     ],
     "code": "def congruent1(a: int, b: int, n: int) -> bool:\n    return (a - b) % n == 0",
     "file_path": "backend/algorithms/core/modular-arithmetic/congruent1.py",
@@ -180,8 +227,8 @@
   "core.modular-arithmetic.congruent2:congruent2": {
     "args": [
       "a",
-      "n",
-      "b"
+      "b",
+      "n"
     ],
     "code": "def congruent2(a: int, b: int, n: int) -> bool:\n    return a % n == b % n",
     "file_path": "backend/algorithms/core/modular-arithmetic/congruent2.py",
@@ -214,8 +261,8 @@
   },
   "core.modular-arithmetic.mod:mod": {
     "args": [
-      "a",
-      "b"
+      "b",
+      "a"
     ],
     "code": "def mod(a: int, b: int) -> int:\n    return a % b",
     "file_path": "backend/algorithms/core/modular-arithmetic/mod.py",
@@ -242,8 +289,8 @@
   },
   "problems.1-two-sum.solution:two_sum": {
     "args": [
-      "target",
-      "nums"
+      "nums",
+      "target"
     ],
     "code": "def two_sum(nums: list[int], target: int) -> list[int]:\n\n    seen = {}\n\n    for i, num in enumerate(nums):\n        if (x := target - num) in seen:\n            return seen[x], i\n        seen[num] = i",
     "file_path": "backend/algorithms/problems/1-two-sum/solution.py",
@@ -257,8 +304,8 @@
   },
   "problems.1011-capacity-to-ship-packages-within-d-days.solution:capacity_to_ship_packages_within_d_days": {
     "args": [
-      "days",
-      "weights"
+      "weights",
+      "days"
     ],
     "code": "def capacity_to_ship_packages_within_d_days(weights: list[int], days: int) -> int:\n    def days_needed(capacity: int) -> int:\n        d, load = 1, 0\n        for w in weights:\n            if load + w <= capacity:\n                load += w\n            else:\n                d += 1\n                load = w\n        return d\n\n    l, r = max(weights), sum(weights)\n    while l < r:\n        capacity = (l + r) // 2\n        if days_needed(capacity) <= days:\n            r = capacity\n        else:\n            l = capacity + 1\n    return l",
     "file_path": "backend/algorithms/problems/1011-capacity-to-ship-packages-within-d-days/solution.py",
@@ -476,9 +523,9 @@
   },
   "problems.127-word-ladder.solution:word_ladder": {
     "args": [
-      "wordList",
+      "endWord",
       "beginWord",
-      "endWord"
+      "wordList"
     ],
     "code": "def word_ladder(beginWord: str, endWord: str, wordList: list[str]) -> int:\n    if endWord not in wordList:\n        return 0\n\n    L = len(beginWord)\n    combos: dict[str, list[str]] = defaultdict(list)\n    for w in wordList:\n        for i in range(L):\n            combos[w[:i] + \"*\" + w[i+1:]].append(w)\n\n    front, back = {beginWord}, {endWord}\n    dist_front, dist_back = {beginWord: 1}, {endWord: 1}\n\n    while front and back:\n        # expand smaller side to optimize\n        if len(front) > len(back):\n            front, back = back, front\n            dist_front, dist_back = dist_back, dist_front\n\n        next_front = set()\n        for word in front:\n            for i in range(L):\n                for n in combos[word[:i] + \"*\" + word[i+1:]]: # Use pre-computed neighbors\n                    if n in dist_back:\n                        return dist_front[word] + dist_back[n]\n                    if n not in dist_front:\n                        dist_front[n] = dist_front[word] + 1\n                        next_front.add(n)\n        front = next_front\n\n    return 0",
     "file_path": "backend/algorithms/problems/127-word-ladder/solution.py",
@@ -493,8 +540,8 @@
   },
   "problems.1293-shortest-path-in-a-grid-with-obstacles-elimination.a_star:manhattan_distance": {
     "args": [
-      "a",
-      "b"
+      "b",
+      "a"
     ],
     "code": "def manhattan_distance(a: tuple[int, int], b: tuple[int, int]) -> int:\n    return abs(a[0] - b[0]) + abs(a[1] - b[1])",
     "file_path": "backend/algorithms/problems/1293-shortest-path-in-a-grid-with-obstacles-elimination/a_star.py",
@@ -767,8 +814,8 @@
   },
   "problems.146-lru-cache.solution:LRUCache.put": {
     "args": [
-      "value",
-      "key"
+      "key",
+      "value"
     ],
     "code": "    def put(self, key: int, value: int) -> None:\n        if key in self.cache:\n            self.cache.move_to_end(key)\n        self.cache[key] = value\n        if len(self.cache) > self.capacity:\n            self.cache.popitem(last=False)",
     "file_path": "backend/algorithms/problems/146-lru-cache/solution.py",
@@ -797,11 +844,11 @@
   },
   "problems.1514-path-with-maximum-probability.solution:path_with_maximum_probability": {
     "args": [
-      "edges",
+      "end",
       "start",
-      "succProb",
       "n",
-      "end"
+      "edges",
+      "succProb"
     ],
     "code": "def path_with_maximum_probability(n: int, edges: list[list[int]], succProb: list[float], start: int, end: int) -> float:\n    prob = [0.0] * n # rob[i] stores max probability to reach node i\n    prob[start] = 1.0  # Start with full certainty\n\n    for _ in range(n - 1):  # Perform up to n-1 rounds of relaxation\n        updated = False\n        for (u, v), p in zip(edges, succProb):\n            if prob[u] * p > prob[v]:  # Try to improve v through u\n                prob[v] = prob[u] * p\n                updated = True\n            if prob[v] * p > prob[u]:  # Try to improve u through v (undirected graph)\n                prob[u] = prob[v] * p\n                updated = True\n        if not updated:\n            break  # Early exit if no updates in this round\n\n    return prob[end]",
     "file_path": "backend/algorithms/problems/1514-path-with-maximum-probability/solution.py",
@@ -861,8 +908,8 @@
   },
   "problems.1590-make-sum-divisible-by-p.solution:minSubarrayToMakeSumDivisibleByP": {
     "args": [
-      "p",
-      "segments"
+      "segments",
+      "p"
     ],
     "code": "def minSubarrayToMakeSumDivisibleByP(segments: list[int], p: int) -> int:\n\n    total_remainder = sum(segments) % p\n    if total_remainder == 0:\n        return 0\n\n    remainder_idx = {0: -1}\n    prefix_remainder, min_length = 0, len(segments)\n\n    for i, segment in enumerate(segments):\n        prefix_remainder = (prefix_remainder + segment) % p\n        need = (prefix_remainder - total_remainder + p) % p\n        if need in remainder_idx:\n            min_length = min(min_length, i - remainder_idx[need])\n        remainder_idx[prefix_remainder] = i\n\n    return min_length if min_length < len(segments) else -1",
     "file_path": "backend/algorithms/problems/1590-make-sum-divisible-by-p/solution.py",
@@ -1076,8 +1123,8 @@
   },
   "problems.211-design-add-and-search-words-data-structure.solution:WordDictionary.search.dfs": {
     "args": [
-      "node",
-      "i"
+      "i",
+      "node"
     ],
     "code": "        def dfs(node: dict, i: int) -> bool:\n\n            if i == len(word):\n                return self.END_MARKER in node\n\n            if (c := word[i]) == \".\":\n\n                return any(\n                    dfs(child, i + 1)\n                    for k, child in node.items()\n                    if k != self.END_MARKER\n                )\n            child = node.get(c)\n            return bool(child) and dfs(child, i + 1)",
     "expressions": {
@@ -1098,8 +1145,8 @@
   },
   "problems.212-word-search-ii.solution:word_search_II": {
     "args": [
-      "words",
-      "board"
+      "board",
+      "words"
     ],
     "code": "def word_search_II(board: list[list[str]], words: list[str]) -> list[str]:\n    trie = {}  \n    for word in words:\n        node = trie\n        for c in word:\n            node = node.setdefault(c, {})\n        node[\"$\"] = word\n\n    def dfs(i, j, parent):\n        if not (0 <= i < m and 0 <= j < n) or (c := board[i][j]) not in parent:\n            return\n        node = parent[c]\n        if \"$\" in node:\n            res.append(node.pop(\"$\"))\n        board[i][j] = \"#\"\n        for x, y in ((i - 1, j), (i + 1, j), (i, j - 1), (i, j + 1)):\n            dfs(x, y, node)\n        board[i][j] = c\n        if not node:\n            parent.pop(c)\n\n    m, n, res = len(board), len(board[0]), []\n    [dfs(i, j, trie) for i in range(m) for j in range(n) if board[i][j] in trie]\n\n    return res",
     "expressions": {
@@ -1253,7 +1300,7 @@
     ],
     "code": "def product_of_array_except_self(nums: list[int]) -> list[int]:\n\n    pre, res = 1, [1] * (n := len(nums))\n    for i, x in enumerate(nums):\n        res[i], pre = pre, pre * x\n    suf = 1\n    for i in range(n - 1, -1, -1):\n        res[i], suf = res[i] * suf, suf * nums[i]\n    return res",
     "file_path": "backend/algorithms/problems/238-product-of-array-except-self/solution.py",
-    "intuition": "- Two passes:\n        - 1.  *[orange!]Prefix* pass → `res[i]` = product of all elements *[orange!]before* `i`.\n        - 2.  *[purple!]Suffix* pass → multiply each `res[i]` by product of all elements *[purple!]after* `i`.",
+    "intuition": "- Two passes:\n        1.  *[orange!]Prefix* pass → `res[i]` = product of all elements *[orange!]before* `i`.\n        2.  *[purple!]Suffix* pass → multiply each `res[i]` by product of all elements *[purple!]after* `i`.",
     "kind": "function",
     "label": "def product_of_array_except_self(nums: list[int]) -> list[int]",
     "name": "product_of_array_except_self",
@@ -1377,8 +1424,8 @@
   },
   "problems.370-range-addition.solution:getModifiedArray": {
     "args": [
-      "length",
-      "updates"
+      "updates",
+      "length"
     ],
     "code": "def getModifiedArray(length: int, updates: list[list[int]]) -> list[int]:\n\n    delta = [0] * (length + 1)\n\n    for start_day, end_day, change_in_km in updates:\n        delta[start_day] += change_in_km\n        delta[end_day + 1] -= change_in_km\n\n    prefix_sum = 0\n    return [prefix_sum := prefix_sum + change for change in delta[:-1]]",
     "file_path": "backend/algorithms/problems/370-range-addition/solution.py",
@@ -1404,8 +1451,8 @@
   },
   "problems.39-combination-sum.solution:combination_sum": {
     "args": [
-      "target",
-      "candidates"
+      "candidates",
+      "target"
     ],
     "code": "def combination_sum(candidates: list[int], target: int) -> list[list[int]]:\n\n    candidates.sort()\n    res, path = [], []\n\n    def dfs(i: int, rem: int) -> None:\n        if rem == 0:\n            res.append(path.copy())\n            return\n        for j in range(i, len(candidates)):\n            if (c := candidates[j]) > rem:\n                break\n            path.append(c)\n            dfs(j, rem - c)\n            path.pop()\n\n    dfs(0, target)\n    return res",
     "file_path": "backend/algorithms/problems/39-combination-sum/solution.py",
@@ -1522,8 +1569,8 @@
   },
   "problems.460-lfu-cache.solution:LFUCache.put": {
     "args": [
-      "value",
-      "key"
+      "key",
+      "value"
     ],
     "code": "    def put(self, key: int, value: int) -> None:\n        if self.capacity <= 0:\n            return\n\n        if key in self.cache:\n            self.cache[key] = value\n            self._bump(key)\n            return\n\n        if len(self.cache) >= self.capacity:\n            old_key, _ = self.buckets[self.minfreq].popitem(last=False)\n            del self.cache[old_key]\n            del self.freq[old_key]\n\n        self.cache[key] = value\n        self.freq[key] = 1\n        self.buckets[1][key] = None\n        self.minfreq = 1",
     "file_path": "backend/algorithms/problems/460-lfu-cache/solution.py",
@@ -1731,8 +1778,8 @@
   },
   "problems.713-subarray-product-less-than-k.solution:num_subarray_product_less_than_k": {
     "args": [
-      "k",
-      "nums"
+      "nums",
+      "k"
     ],
     "code": "def num_subarray_product_less_than_k(nums: list[int], k: int) -> int:\n    if k <= 1:\n        return 0\n    product, left, count = 1, 0, 0\n    for right, num in enumerate(nums):\n        product *= num\n        while product >= k:\n            product //= nums[left]\n            left += 1\n        count += right - left + 1\n    return count",
     "file_path": "backend/algorithms/problems/713-subarray-product-less-than-k/solution.py",
@@ -1747,8 +1794,8 @@
   "problems.743-network-delay-time.solution:network_delay_time": {
     "args": [
       "times",
-      "n",
-      "k"
+      "k",
+      "n"
     ],
     "code": "def network_delay_time(times: list[list[int]], n: int, k: int) -> int:\n\n    adj = defaultdict(list)\n    for u, v, w in times:\n        adj[u].append((v, w))\n    pq, finalized, time = [(0, k)], set(), 0\n    while pq:\n        t, node = heapq.heappop(pq)\n        if node in finalized:\n            continue\n        finalized.add(node)\n        time = t\n        for neighbor, travel_time in adj[node]:\n            if neighbor not in finalized:\n                heapq.heappush(pq, (time + travel_time, neighbor))\n    return time if len(finalized) == n else -1",
     "file_path": "backend/algorithms/problems/743-network-delay-time/solution.py",
@@ -1775,8 +1822,8 @@
   },
   "problems.76-minimum-window-substring.solution:minWindow": {
     "args": [
-      "t",
-      "s"
+      "s",
+      "t"
     ],
     "code": "def minWindow(s: str, t: str) -> str:\n    t_count, have = Counter(t), defaultdict(int)\n    letters_needed, min_idx, l = len(t_count), None, 0\n    for r, c in enumerate(s):\n        have[c] += 1\n        if have[c] == t_count[c]:\n            letters_needed -= 1\n            while letters_needed == 0:\n                if not min_idx or r - l + 1 < min_idx[1] - min_idx[0]:\n                    min_idx = l, r + 1\n                have[s[l]] -= 1\n                if have[s[l]] < t_count[s[l]]:\n                    letters_needed += 1\n                l += 1\n    return \"\" if min_idx == None else s[min_idx[0] : min_idx[1]]",
     "file_path": "backend/algorithms/problems/76-minimum-window-substring/solution.py",
@@ -1824,11 +1871,11 @@
   },
   "problems.787-cheapest-flights-within-k-stops.bellman_ford:cheapest_flights_with_at_most_k_stops": {
     "args": [
+      "flights",
+      "k",
       "src",
       "dst",
-      "n",
-      "flights",
-      "k"
+      "n"
     ],
     "code": "def cheapest_flights_with_at_most_k_stops(\n    n: int, flights: list[list[int]], src: int, dst: int, k: int\n) -> int:\n    d = [float(\"inf\")] * n\n    d[src] = 0\n\n    for _ in range(k + 1):\n        tmp = d[:]\n        for u, v, w in flights:\n            if d[u] + w < tmp[v]:\n                tmp[v] = d[u] + w\n        d = tmp\n\n    return d[dst] if d[dst] < float(\"inf\") else -1",
     "file_path": "backend/algorithms/problems/787-cheapest-flights-within-k-stops/bellman_ford.py",
@@ -1842,10 +1889,10 @@
   },
   "problems.787-cheapest-flights-within-k-stops.dijkstra:cheapest_flights_with_at_most_k_stops": {
     "args": [
-      "flights",
       "k",
-      "src",
-      "dst"
+      "dst",
+      "flights",
+      "src"
     ],
     "code": "def cheapest_flights_with_at_most_k_stops( flights: list[list[int]], src: int, dst: int, k: int) -> int:\n\n    graph = defaultdict(list)\n    for u, v, price in flights:\n        graph[u].append((v, price))\n\n    pq, min_stops = [(0, src, 0)], {}\n\n    while pq:\n        cost, city, stops = heapq.heappop(pq)\n\n        # If we've already found a path to this city using fewer or equal stops, skip.\n        # A path with fewer stops must have been cheaper or equal due to PQ ordering.\n        if stops > min_stops.get(city, float(\"inf\")): continue\n        if city == dst: return cost\n\n        # Record the new minimum stops to reach this city\n        min_stops[city] = stops\n        if stops <= k:\n            for neighbor, price in graph[city]:\n                heapq.heappush(pq, (cost + price, neighbor, stops + 1))\n    return -1",
     "file_path": "backend/algorithms/problems/787-cheapest-flights-within-k-stops/dijkstra.py",
@@ -1876,8 +1923,8 @@
   },
   "problems.79-word-search.solution:word_search": {
     "args": [
-      "word",
-      "board"
+      "board",
+      "word"
     ],
     "code": "def word_search(board: list[list[str]], word: str) -> bool:\n    rows, cols, n = len(board), len(board[0]), len(word)\n    def dfs(r: int, c: int, i: int) -> bool:\n        if i == n:\n            return True\n        if not (0 <= r < rows and 0 <= c < cols and board[r][c] == word[i]):\n            return False\n        tmp, board[r][c] = board[r][c], \"#\"\n        for x, y in ((r + 1, c), (r - 1, c), (r, c + 1), (r, c - 1)):\n            if dfs(x, y, i + 1):\n                board[r][c] = tmp\n                return True\n        board[r][c] = tmp\n        return False\n    return any(\n        dfs(r, c, 0)\n        for r in range(rows)\n        for c in range(cols)\n        if board[r][c] == word[0]\n    )",
     "file_path": "backend/algorithms/problems/79-word-search/solution.py",
@@ -1894,22 +1941,26 @@
     "args": [
       "heights"
     ],
-    "code": "def largestRectangleArea( heights: list[int]) -> int:\n    heights.append(0); stack  = [-1]; max_area = 0\n    for i, h in enumerate(heights):\n        while stack[-1] != -1 and heights[stack[-1]] > h:\n            height = heights[stack.pop()]\n            width = i - stack[-1] - 1\n            max_area = max(max_area, height * width)\n        stack.append(i)\n    heights.pop()\n    return max_area",
+    "code": "def largestRectangleArea(heights: list[int]) -> int:\n    heights.append(0)\n    stack = [-1]; best = 0\n    for r, h in enumerate(heights):\n        while stack[-1] != -1 and heights[stack[-1]] > h:\n            l = stack.pop()\n            best = max(best, heights[l] * (r - stack[-1] - 1))\n        stack.append(r)\n    heights.pop()\n    return best",
     "expressions": {
       "heights.append(0)": "adds a **right sentinel** bar smaller than all others, forcing the stack to empty and compute all remaining areas at the end (no leftover bars).",
       "heights.pop()": "restore original list",
       "heights[stack[-1]] > h": "pop while current bar is lower than stack's top",
-      "stack = [-1]": "adds a **left sentinel** index before the array start, so width computation `i - stack[-1] - 1` always works (never empty stack).",
-      "width = i - stack[-1] - 1": "We subtract 1 because the bar at stack[-1] is strictly smaller and marks the left boundary, which is excluded from the rectangle"
+      "stack = [-1]": "adds a **left sentinel** index before the array start, so width computation `r - stack[-1] - 1` always works (never empty stack).",
+      "width = r - stack[-1] - 1": "We subtract 1 because the bar at stack[-1] is strictly smaller and marks the left boundary, which is excluded from the rectangle"
     },
     "file_path": "backend/algorithms/problems/84-largest-rectangle-in-histogram/solution.py",
+    "intuition": "- Each bar can form a rectangle where its height is the limiting factor:\n    - That rectangle extends until a strictly shorter bar appears on either side.\n    - Instead of searching both directions explicitly, we discover these bounds on the fly:\n        - when a shorter bar appears at `r`, every taller bar popped from the stack\n        - now knows its right boundary (`r`) and its left boundary (`l = stack.pop()`).\n\n    - Deep Dive: Walkthrough:\n    - Append `0` so every bar eventually meets a shorter right neighbor\n    - Keep *[3!]indices* in strictly increasing heights (stack starts *[3!][-1]*)\n    - For each `r, h`: while top is taller, pop `l` and compute area = `heights[l] * (r - stack[-1] - 1)`\n    - Push `r`; remove the sentinel; return best",
     "kind": "function",
     "label": "def largestRectangleArea(heights: list[int]) -> int",
     "name": "largestRectangleArea",
     "returns": {
       "label": "int"
     },
-    "time_complexity": "O(n):\nEach index is pushed once and popped once, so the total operations across the loop are linear.\nThe inner while doesn't make it O(n²) because every pop is matched to one push."
+    "time_complexity": "O(n):\nEach index is pushed once and popped once, so the total operations across the loop are linear\n*[19!]It remains linear despite the inner while, because every pop is matched to one push*",
+    "variables": [
+      "stack"
+    ]
   },
   "problems.84-largest-rectangle-in-histogram.solution:largestRectangleArea.heights.append(0)": {
     "kind": "expression",
@@ -1926,14 +1977,19 @@
     "name": "heights[stack[-1]] > h",
     "summary": "pop while current bar is lower than stack's top"
   },
+  "problems.84-largest-rectangle-in-histogram.solution:largestRectangleArea.stack": {
+    "kind": "variable",
+    "name": "stack",
+    "summary": "indices with strictly increasing heights"
+  },
   "problems.84-largest-rectangle-in-histogram.solution:largestRectangleArea.stack = [-1]": {
     "kind": "expression",
     "name": "stack = [-1]",
-    "summary": "adds a **left sentinel** index before the array start, so width computation `i - stack[-1] - 1` always works (never empty stack)."
+    "summary": "adds a **left sentinel** index before the array start, so width computation `r - stack[-1] - 1` always works (never empty stack)."
   },
-  "problems.84-largest-rectangle-in-histogram.solution:largestRectangleArea.width = i - stack[-1] - 1": {
+  "problems.84-largest-rectangle-in-histogram.solution:largestRectangleArea.width = r - stack[-1] - 1": {
     "kind": "expression",
-    "name": "width = i - stack[-1] - 1",
+    "name": "width = r - stack[-1] - 1",
     "summary": "We subtract 1 because the bar at stack[-1] is strictly smaller and marks the left boundary, which is excluded from the rectangle"
   },
   "problems.875-koko-eating-bananas.solution:koko_eating_bananas": {

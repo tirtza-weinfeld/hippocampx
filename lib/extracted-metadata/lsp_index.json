@@ -6,7 +6,25 @@
     },
     {
       "uri": "blackboard.py",
-      "symbols": []
+      "symbols": [
+        {
+          "name": "largestRectangleArea",
+          "detail": "largestRectangleArea(heights: list[int]) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 9, "character": 19}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 24
+            }
+          },
+          "children": []
+        }
+      ]
     },
     {
       "uri": "core/__init__.py",
@@ -2482,7 +2500,7 @@
           "name": "largestRectangleArea",
           "detail": "largestRectangleArea(heights: list[int]) -> int",
           "kind": 12,
-          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 9, "character": 19}},
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 9, "character": 15}},
           "nameRange": {
             "start": {
               "line": 0,

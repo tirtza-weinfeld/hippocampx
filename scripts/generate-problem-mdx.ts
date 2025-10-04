@@ -62,6 +62,11 @@ function formatSection(title: string, content: string, component?: string, heade
 }
 
 function formatIntuitionContent(content: string): string {
+  // Check if line already has a numbered list marker (1. 2. etc)
+  function hasNumberedMarker(line: string): boolean {
+    return /^\d+\.\s/.test(line.trim())
+  }
+
   // Split content into paragraphs
   const paragraphs = content.split(/\n\s*\n/).filter(p => p.trim())
 
@@ -69,9 +74,9 @@ function formatIntuitionContent(content: string): string {
     const lines = paragraph.split('\n').filter(line => line.trim())
     if (lines.length === 0) return ''
 
-    // First line becomes the main bullet point
+    // First line becomes the main bullet point (unless it already has a numbered marker)
     const firstLine = lines[0].trim()
-    let result = `- ${firstLine}`
+    let result = hasNumberedMarker(firstLine) ? firstLine : `- ${firstLine}`
 
     // Remaining lines use indentation from JSON (already MDX-ready from Python script)
     if (lines.length > 1) {
@@ -93,7 +98,10 @@ function formatIntuitionContent(content: string): string {
           return line
         }
 
-        // Normal lines get list markers
+        // Normal lines get list markers (unless they already have numbered markers)
+        if (hasNumberedMarker(trimmed)) {
+          return line
+        }
         return `${indent}- ${trimmed}`
       })
       result += '\n' + nestedLines.join('\n')
@@ -121,14 +129,14 @@ function formatArgs(args: Record<string, string>): string {
     .join('\n')
 }
 
-function formatExpressions(expressions: Record<string, string>): string {
-  return Object.entries(expressions)
-    .map(([key, value]) => {
-      // The key is already the expression, so wrap it in backticks
-      return `- \`${key}\`: ${value}`
-    })
-    .join('\n')
-}
+// function formatExpressions(expressions: Record<string, string>): string {
+//   return Object.entries(expressions)
+//     .map(([key, value]) => {
+//       // The key is already the expression, so wrap it in backticks
+//       return `- \`${key}\`: ${value}`
+//     })
+//     .join('\n')
+// }
 
 
 function solutionFileNameToTitle(fileName: string): string {
@@ -169,12 +177,12 @@ function generateSolutionContent(problemId: string, fileName: string, solution: 
   }
 
   // Add expressions if available
-  if (solution.expressions && Object.keys(solution.expressions).length > 0) {
-    const expressionsString = formatExpressions(solution.expressions)
-    if (expressionsString.trim()) {
-      content += formatSection('Key Expressions', expressionsString, 'ProblemKeyExpressions', '###')
-    }
-  }
+  // if (solution.expressions && Object.keys(solution.expressions).length > 0) {
+  //   const expressionsString = formatExpressions(solution.expressions)
+  //   if (expressionsString.trim()) {
+  //     content += formatSection('Key Expressions', expressionsString, 'ProblemKeyExpressions', '###')
+  //   }
+  // }
 
   // Add returns if available
   if (solution.returns && solution.returns.trim()) {
@@ -272,12 +280,12 @@ function generateMDXContent(problemId: string, problem: Problem): string {
     }
 
     // Add expressions if available
-    if (solution.expressions && Object.keys(solution.expressions).length > 0) {
-      const expressionsString = formatExpressions(solution.expressions)
-      if (expressionsString.trim()) {
-        content += formatSection('Key Expressions', expressionsString, 'ProblemKeyExpressions')
-      }
-    }
+    // if (solution.expressions && Object.keys(solution.expressions).length > 0) {
+    //   const expressionsString = formatExpressions(solution.expressions)
+    //   if (expressionsString.trim()) {
+    //     content += formatSection('Key Expressions', expressionsString, 'ProblemKeyExpressions')
+    //   }
+    // }
 
     // Add returns if available
     if (solution.returns && solution.returns.trim()) {
