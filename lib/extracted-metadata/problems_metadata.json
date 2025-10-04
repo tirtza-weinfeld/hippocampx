@@ -593,11 +593,21 @@
     "215-kth-largest-element-in-an-array": {
       "solutions": {
         "solution.py": {
-          "code": "# class Solution:\n#     def findKthLargest(self, nums: list[int], k: int) -> int:",
-          "full_file_code": "# class Solution:\n#     def findKthLargest(self, nums: list[int], k: int) -> int:"
+          "time_complexity": "O(n log k):\n    Deep Dive: one sift (faster constant) vs push+pop\n        heappush does a sift-up → O(log k)\n        heappop does a sift-down → O(log k)\n        total ≈ 2 x O(log k) operations\n        heapreplace does one sift operation, not two\n        removes root, places new element, and does only one sift-down → O(log k)\n        So same asymptotic complexity, but half the work, fewer comparisons and function calls → faster constant factor.",
+          "expressions": {
+            "heapreplace(h, x)": "replaces root with x, performs one sift-down          → O(log k) with ~½ the operations of heappush(sift-up)+heappop(sift-down) (≈ 2 × O(log k))"
+          },
+          "code": "\nimport heapq\n\ndef findKthLargest(nums: list[int], k: int) -> int:\n    h = nums[:k]; heapq.heapify(h)\n    for x in nums[k:]:\n        if x > h[0]:\n            heapq.heapreplace(h, x) \n    return h[0]\n "
         }
       },
-      "leetcode": "https://leetcode.com/problems/"
+      "title": "Kth Largest Element In An Array",
+      "definition": "Given an integer array nums and an integer k, return the kth largest element in the array.",
+      "leetcode": "https://leetcode.com/problems/kth-largest-element-in-an-array",
+      "difficulty": "medium",
+      "topics": [
+        "heap",
+        "min-heap"
+      ]
     },
     "146-lru-cache": {
       "solutions": {
@@ -661,6 +671,21 @@
       "difficulty": "medium",
       "topics": [
         "greedy"
+      ]
+    },
+    "33-search-in-rotated-sorted-array": {
+      "solutions": {
+        "solution.py": {
+          "code": "def search(nums: list[int], target: int) -> int:\n    l, r = 0, len(nums) - 1\n    while l <= r:\n        mid = (l + r) // 2\n        if nums[mid] == target:\n            return mid\n        # left half sorted\n        if nums[l] <= nums[mid]:\n            if nums[l] <= target < nums[mid]:\n                r = mid - 1\n            else:\n                l = mid + 1\n        # right half sorted\n        else:\n            if nums[mid] < target <= nums[r]:\n                l = mid + 1\n            else:\n                r = mid - 1\n    return -1"
+        }
+      },
+      "title": "Search In Rotated Sorted Array",
+      "definition": "Given a sorted array that has been left-rotated at an unknown pivot, return the index of a target value if found, otherwise return -1.\n    *[pink!] time complexity O(logn)*.",
+      "leetcode": "https://leetcode.com/problems/search-in-rotated-sorted-array",
+      "difficulty": "medium",
+      "topics": [
+        "binary-search",
+        "rotated-array"
       ]
     },
     "124-binary-tree-maximum-path-sum": {
@@ -1081,7 +1106,8 @@
       "leetcode": "https://leetcode.com/problems/top-k-frequent-elements",
       "difficulty": "medium",
       "topics": [
-        "heap"
+        "heap",
+        "min-heap"
       ]
     },
     "200-number-of-islands": {

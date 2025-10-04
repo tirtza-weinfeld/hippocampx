@@ -55,6 +55,7 @@
     "binary-search": [
       "1011-capacity-to-ship-packages-within-d-days",
       "153-find-minimum-in-rotated-sorted-array",
+      "33-search-in-rotated-sorted-array",
       "34-find-first-and-last-position-of-element-in-sorted-array",
       "35-search-insert-position",
       "875-koko-eating-bananas"
@@ -106,8 +107,19 @@
       "136-single-number",
       "191-number-of-1-bits"
     ],
+    "heap": [
+      "215-kth-largest-element-in-an-array",
+      "347-top-k-frequent-elements"
+    ],
+    "min-heap": [
+      "215-kth-largest-element-in-an-array",
+      "347-top-k-frequent-elements"
+    ],
     "greedy": [
       "122-best-time-to-buy-and-sell-stock-ii"
+    ],
+    "rotated-array": [
+      "33-search-in-rotated-sorted-array"
     ],
     "bellman-ford": [
       "1514-path-with-maximum-probability"
@@ -118,9 +130,6 @@
     ],
     "permutation": [
       "46-permutations"
-    ],
-    "heap": [
-      "347-top-k-frequent-elements"
     ],
     "dfs": [
       "200-number-of-islands"
@@ -161,9 +170,11 @@
       "211-design-add-and-search-words-data-structure",
       "2140-solving-questions-with-brainpower",
       "2145-count-the-hidden-sequences",
+      "215-kth-largest-element-in-an-array",
       "238-product-of-array-except-self",
       "3-longest-substring-without-repeating-characters",
       "325-maximum-size-subarray-sum-equals-k",
+      "33-search-in-rotated-sorted-array",
       "34-find-first-and-last-position-of-element-in-sorted-array",
       "347-top-k-frequent-elements",
       "36-valid-sudoku",
@@ -246,6 +257,9 @@
     ],
     "191-number-of-1-bits": [
       "$O(k)$"
+    ],
+    "215-kth-largest-element-in-an-array": [
+      "$O(n \\log k)$"
     ],
     "102-binary-tree-level-order-traversal": [
       "$O(N)$"

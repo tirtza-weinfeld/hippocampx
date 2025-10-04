@@ -2,12 +2,37 @@
 
 ## Resizable Table Of contents
 
-https://leetcode.com/problems/
+<DifficultyBadge difficulty="medium" />
+
+<PillList pills={["heap", "min-heap"]} />
+
+[215. Kth Largest Element In An Array](https://leetcode.com/problems/kth-largest-element-in-an-array)
+
+## [!ProblemDefinition] Definition
+
+Given an integer array nums and an integer k, return the kth largest element in the array.
+
+## [!ProblemTimeComplexity] Time Complexity
+
+- $O(n log k)$:
+    - Deep Dive: one sift (faster constant) vs push+pop
+        - heappush does a sift-up → $O(log k)$
+        - heappop does a sift-down → $O(log k)$
+        - total ≈ 2 x $O(log k)$ operations
+        - heapreplace does one sift operation, not two
+        - removes root, places new element, and does only one sift-down → $O(log k)$
+        - So same asymptotic complexity, but half the work, fewer comparisons and function calls → faster constant factor.
 
 ## [!ProblemCodeSnippet] Code Snippet
 
 ```python meta="source=problems/215-kth-largest-element-in-an-array/solution.py"
-# class Solution:
-#     def findKthLargest(self, nums: list[int], k: int) -> int:
+import heapq
+
+def findKthLargest(nums: list[int], k: int) -> int:
+    h = nums[:k]; heapq.heapify(h)
+    for x in nums[k:]:
+        if x > h[0]:
+            heapq.heapreplace(h, x) 
+    return h[0]
 ```
 

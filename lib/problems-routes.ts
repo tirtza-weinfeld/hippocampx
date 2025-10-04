@@ -52,6 +52,7 @@ export const PROBLEMS_ROUTES: NavigationItem[] = [
             { title: 'Range Addition', href: '/problems/370-range-addition', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
             { title: 'Replace Words', href: '/problems/648-replace-words', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
             { title: 'Rotting Oranges', href: '/problems/994-rotting-oranges', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
+            { title: 'Search In Rotated Sorted Array', href: '/problems/33-search-in-rotated-sorted-array', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
             { title: 'Search Insert Position', href: '/problems/35-search-insert-position', icon: Code, color: "text-green-500", bgColor: "bg-green-500/10" },
             { title: 'Shortest Path in a Grid with Obstacles Elimination', href: '/problems/1293-shortest-path-in-a-grid-with-obstacles-elimination', icon: Code, color: "text-red-500", bgColor: "bg-red-500/10" },
             { title: 'Single Number', href: '/problems/136-single-number', icon: Code, color: "text-green-500", bgColor: "bg-green-500/10" },

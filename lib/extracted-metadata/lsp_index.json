@@ -1496,7 +1496,25 @@
     },
     {
       "uri": "problems/215-kth-largest-element-in-an-array/solution.py",
-      "symbols": []
+      "symbols": [
+        {
+          "name": "findKthLargest",
+          "detail": "findKthLargest(nums: list[int], k: int) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 7, "character": 15}},
+          "nameRange": {
+            "start": {
+              "line": 2,
+              "character": 4
+            },
+            "end": {
+              "line": 2,
+              "character": 18
+            }
+          },
+          "children": []
+        }
+      ]
     },
     {
       "uri": "problems/238-product-of-array-except-self/__init__.py",
@@ -1570,6 +1588,32 @@
             "end": {
               "line": 0,
               "character": 29
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/33-search-in-rotated-sorted-array/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/33-search-in-rotated-sorted-array/solution.py",
+      "symbols": [
+        {
+          "name": "search",
+          "detail": "search(nums: list[int], target: int) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 18, "character": 13}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 10
             }
           },
           "children": []

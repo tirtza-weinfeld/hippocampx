@@ -6,5 +6,5 @@ Definition: Given an integer array `nums` and an integer `k`, return the `k` mos
     .
 Leetcode: https://leetcode.com/problems/top-k-frequent-elements
 Difficulty: medium
-Topics: [heap]
+Topics: [heap, min-heap]
 """
