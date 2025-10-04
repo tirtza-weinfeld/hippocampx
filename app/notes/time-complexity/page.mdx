@@ -1,0 +1,47 @@
+# Time Complexity
+
+
+## Resizable Table of Contents
+
+## Summary
+
+> * *$\Omicron$, $\Omega$, $\Theta$* describe the upper, lower, and tight bounds for the *runtime*
+> * *Best, worst,expected* cases describe the $\Omicron$, $\Omega$, $\Theta$ time for particular *inputs or scenarios*.
+> * Big *$\Omicron$* 
+>   * Academically it's any upper bound
+>   * Industry merges $\Omicron$ and $\Theta$ , and so $\Omicron$ is usually used to mean the tightest description of growth.
+
+---
+
+## Academic Definitions
+
+| Symbol | Meaning (Academia) | Analogy | Example |
+|--------|--------------------|---------|---------|
+| $\Omicron(f(n))$ | Upper bound — runtime grows no faster than f(n) | ≤ (less-than-or-equal) | Printing N elements is $\Omicron(N)$, but also $\Omicron(N²)$, $\Omicron(2ⁿ)$ — all are true upper bounds |
+| $\Omega(f(n))$ | Lower bound — runtime grows at least as fast as f(n) | ≥ (greater-than-or-equal) | Printing N elements is $\Omega(N)$, but also $\Omega(1)$ |
+| $\Theta(f(n))$ | Tight bound — both $\Omicron(f(n))$ and $\Omega(f(n))$ | = (asymptotically equal) | Printing N elements is $\Theta(N)$ |
+
+
+---
+
+## Best / Worst / Expected Case (Input-based)
+
+These describe which inputs you analyze:
+
+| Case | Meaning | QuickSort Example |
+|--------|--------------------|---------|
+| Best | Fastest scenario | $\Omicron(N)$ — all elements equal (trivial partitions) |
+| Worst | Slowest scenario | $\Omicron(N²)$ — pivot always worst (e.g., reversed array) |
+| Expected | Average scenario | $\Omicron(N\log N)$ — random pivots |
+
+They do NOT correspond to $\Omicron$ / $\Omega$ / $\Theta$.
+You can have:
+	* Worst case: $\Omicron( N²)$
+	* Best case: $\Omega( N)$
+	* Average: $\Theta( N \log N)$
+
+Best, worst, and expected cases measure scenarios, while $\Omicron$, $\Omega$, $\Theta$ measure bounds.
+
+
+
+---

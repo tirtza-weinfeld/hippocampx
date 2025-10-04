@@ -119,6 +119,9 @@
     "permutation": [
       "46-permutations"
     ],
+    "heap": [
+      "347-top-k-frequent-elements"
+    ],
     "dfs": [
       "200-number-of-islands"
     ]
@@ -162,6 +165,7 @@
       "3-longest-substring-without-repeating-characters",
       "325-maximum-size-subarray-sum-equals-k",
       "34-find-first-and-last-position-of-element-in-sorted-array",
+      "347-top-k-frequent-elements",
       "36-valid-sudoku",
       "370-range-addition",
       "39-combination-sum",
@@ -281,6 +285,11 @@
     ],
     "123-best-time-to-buy-and-sell-stock-iii": [
       "$O(n)$"
+    ],
+    "347-top-k-frequent-elements": [
+      "$O(n \\log k)$",
+      "$O(n)$",
+      "$O(n \\log k)$"
     ],
     "200-number-of-islands": [
       "$O(m  \\cdot  n)$"

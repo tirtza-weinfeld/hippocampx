@@ -1,0 +1,84 @@
+# Top K Frequent Elements
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="medium" />
+
+<PillList pills={["heap"]} />
+
+[347. Top K Frequent Elements](https://leetcode.com/problems/top-k-frequent-elements)
+
+## [!ProblemDefinition] Definition
+
+Given an integer array `nums` and an integer `k`, return the `k` most **frequent** elements     *[19!] You may return the answer in any order*
+    *[pink!] Algorithm complexity must be better than O(nlogn) where `n` is the length of the input array*.
+    .
+
+## Heap Solution
+
+### [!ProblemTimeComplexity] Time Complexity
+
+- $O(n log k)$
+
+### [!ProblemCodeSnippet] Code Snippet
+
+```python meta="source=problems/347-top-k-frequent-elements/heap.py"
+import heapq
+from collections import Counter
+
+def topKFrequent(nums: list[int], k: int) -> list[int]:
+    freq ,h= Counter(nums), []
+    for num, f in freq.items():
+        heapq.heappush(h, (f, num))
+        if len(h) > k:
+            heapq.heappop(h)
+
+    return [num for _, num in h]
+```
+
+
+---
+
+## Sort Frequency Bucketing Solution
+
+### [!ProblemTimeComplexity] Time Complexity
+
+- $O(n)$:
+    - Counter(nums) → $O(n)$
+    - Build buckets → $O(n)$ (each element placed once)
+    - Flatten in reverse until k → $O(n)$
+
+### [!ProblemCodeSnippet] Code Snippet
+
+```python meta="source=problems/347-top-k-frequent-elements/sort-frequency-bucketing.py"
+from collections import Counter
+
+def topKFrequent(nums: list[int], k: int) -> list[int]:
+
+    bucket=[[] for _ in range(len(nums)+1)]
+    for n,f in Counter(nums).items():
+        bucket[f].append(n)
+
+    return [num for f_bucket in reversed(bucket) for num in f_bucket][:k]
+```
+
+
+---
+
+## Heap Nlargets Solution
+
+### [!ProblemTimeComplexity] Time Complexity
+
+- $O(n log k)$
+
+### [!ProblemCodeSnippet] Code Snippet
+
+```python meta="source=problems/347-top-k-frequent-elements/heap-nlargets.py"
+import heapq
+from collections import Counter
+
+def topKFrequent(nums: list[int], k: int) -> list[int]:
+    freq = Counter(nums)
+    return heapq.nlargest(k, freq.keys(), key=freq.get)
+```
+

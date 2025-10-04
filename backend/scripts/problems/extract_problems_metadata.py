@@ -401,9 +401,13 @@ def extract_problem_metadata(problem_dir: Path) -> dict[str, dict]:
         except Exception as e:
             print(f"Error processing {init_file}: {e}")
 
-    # Extract from all .py files (except __init__.py)
+    # Extract from all .py files (except __init__.py and files starting with _)
     for py_file in problem_dir.glob('*.py'):
         if py_file.name == '__init__.py':
+            continue
+
+        # Skip files starting with _ (like _template.py)
+        if py_file.name.startswith('_'):
             continue
 
         solution_data = extract_function_metadata(py_file)

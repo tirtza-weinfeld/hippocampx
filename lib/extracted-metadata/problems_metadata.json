@@ -590,6 +590,15 @@
         "kadane"
       ]
     },
+    "215-kth-largest-element-in-an-array": {
+      "solutions": {
+        "solution.py": {
+          "code": "# class Solution:\n#     def findKthLargest(self, nums: list[int], k: int) -> int:",
+          "full_file_code": "# class Solution:\n#     def findKthLargest(self, nums: list[int], k: int) -> int:"
+        }
+      },
+      "leetcode": "https://leetcode.com/problems/"
+    },
     "146-lru-cache": {
       "solutions": {
         "solution.py": {
@@ -1046,6 +1055,33 @@
       "topics": [
         "dynamic-programming",
         "array"
+      ]
+    },
+    "347-top-k-frequent-elements": {
+      "solutions": {
+        "heap.py": {
+          "time_complexity": "O(n log k)",
+          "code": "import heapq\nfrom collections import Counter\n\n\ndef topKFrequent(nums: list[int], k: int) -> list[int]:\n    freq ,h= Counter(nums), []\n    for num, f in freq.items():\n        heapq.heappush(h, (f, num))\n        if len(h) > k:\n            heapq.heappop(h)\n    \n    return [num for _, num in h]\n\n\n\n"
+        },
+        "sort-frequency-bucketing.py": {
+          "time_complexity": "O(n):\n    Counter(nums) → O(n)\n    Build buckets → O(n) (each element placed once)\n    Flatten in reverse until k → O(n)",
+          "code": "from collections import Counter\n\ndef topKFrequent(nums: list[int], k: int) -> list[int]:\n    \n    bucket=[[] for _ in range(len(nums)+1)]\n    for n,f in Counter(nums).items():\n        bucket[f].append(n)\n        \n    return [num for f_bucket in reversed(bucket) for num in f_bucket][:k]\n        \n\n  "
+        },
+        "heap-nlargets.py": {
+          "expressions": {
+            "freq.keys()": "iterable → here freq.keys(), i.e. all unique numbers.",
+            "key=freq.get": "key → function that gives a value to rank by. freq.get(x) = frequency of x."
+          },
+          "time_complexity": "O(n log k)",
+          "code": "import heapq\nfrom collections import Counter\n\n\ndef topKFrequent(nums: list[int], k: int) -> list[int]:\n    freq = Counter(nums)\n    return heapq.nlargest(k, freq.keys(), key=freq.get)"
+        }
+      },
+      "title": "Top K Frequent Elements",
+      "definition": "Given an integer array `nums` and an integer `k`, return the `k` most **frequent** elements     *[19!] You may return the answer in any order*\n    *[pink!] Algorithm complexity must be better than O(nlogn) where `n` is the length of the input array*.\n    .",
+      "leetcode": "https://leetcode.com/problems/top-k-frequent-elements",
+      "difficulty": "medium",
+      "topics": [
+        "heap"
       ]
     },
     "200-number-of-islands": {

@@ -1,10 +1,4 @@
 {
-  "blackboard.py": [
-    {"range": {"start": {"line": 1, "character": 4}, "end": {"line": 1, "character": 21}}, "nameRange": {"start": {"line": 1, "character": 4}, "end": {"line": 1, "character": 21}}, "qname": "blackboard:largestRectangleArea.heights.append(0)", "kind": "expression"},
-    {"range": {"start": {"line": 3, "character": 34}, "end": {"line": 3, "character": 56}}, "nameRange": {"start": {"line": 3, "character": 34}, "end": {"line": 3, "character": 56}}, "qname": "blackboard:largestRectangleArea.heights[stack[-1]] > h", "kind": "expression"},
-    {"range": {"start": {"line": 5, "character": 12}, "end": {"line": 5, "character": 37}}, "nameRange": {"start": {"line": 5, "character": 12}, "end": {"line": 5, "character": 37}}, "qname": "blackboard:largestRectangleArea.width = i - stack[-1] - 1", "kind": "expression"},
-    {"range": {"start": {"line": 8, "character": 4}, "end": {"line": 8, "character": 17}}, "nameRange": {"start": {"line": 8, "character": 4}, "end": {"line": 8, "character": 17}}, "qname": "blackboard:largestRectangleArea.heights.pop()", "kind": "expression"}
-  ],
   "problems/1293-shortest-path-in-a-grid-with-obstacles-elimination/dijkstra.py": [
     {"range": {"start": {"line": 25, "character": 20}, "end": {"line": 25, "character": 66}}, "nameRange": {"start": {"line": 25, "character": 20}, "end": {"line": 25, "character": 66}}, "qname": "problems.1293-shortest-path-in-a-grid-with-obstacles-elimination.dijkstra:shortest_path_in_a_grid_with_obstacles_elimination.heapq.heappush(pq, (steps + 1, nr, nc, new_k))", "kind": "expression"},
     {"range": {"start": {"line": 13, "character": 29}, "end": {"line": 13, "character": 46}}, "nameRange": {"start": {"line": 13, "character": 29}, "end": {"line": 13, "character": 46}}, "qname": "problems.1293-shortest-path-in-a-grid-with-obstacles-elimination.dijkstra:shortest_path_in_a_grid_with_obstacles_elimination.heapq.heappop(pq)", "kind": "expression"},
@@ -59,6 +53,10 @@
     {"range": {"start": {"line": 6, "character": 8}, "end": {"line": 6, "character": 37}}, "nameRange": {"start": {"line": 6, "character": 8}, "end": {"line": 6, "character": 37}}, "qname": "problems.123-best-time-to-buy-and-sell-stock-iii.state:best_time_to_buy_and_sell_stock_III.sell1 = max(sell1, hold1 + p)", "kind": "expression"},
     {"range": {"start": {"line": 7, "character": 8}, "end": {"line": 7, "character": 37}}, "nameRange": {"start": {"line": 7, "character": 8}, "end": {"line": 7, "character": 37}}, "qname": "problems.123-best-time-to-buy-and-sell-stock-iii.state:best_time_to_buy_and_sell_stock_III.hold2 = max(hold2, sell1 - p)", "kind": "expression"},
     {"range": {"start": {"line": 8, "character": 8}, "end": {"line": 8, "character": 37}}, "nameRange": {"start": {"line": 8, "character": 8}, "end": {"line": 8, "character": 37}}, "qname": "problems.123-best-time-to-buy-and-sell-stock-iii.state:best_time_to_buy_and_sell_stock_III.sell2 = max(sell2, hold2 + p)", "kind": "expression"}
+  ],
+  "problems/347-top-k-frequent-elements/heap-nlargets.py": [
+    {"range": {"start": {"line": 5, "character": 29}, "end": {"line": 5, "character": 40}}, "nameRange": {"start": {"line": 5, "character": 29}, "end": {"line": 5, "character": 40}}, "qname": "problems.347-top-k-frequent-elements.heap-nlargets:topKFrequent.freq.keys()", "kind": "expression"},
+    {"range": {"start": {"line": 5, "character": 42}, "end": {"line": 5, "character": 54}}, "nameRange": {"start": {"line": 5, "character": 42}, "end": {"line": 5, "character": 54}}, "qname": "problems.347-top-k-frequent-elements.heap-nlargets:topKFrequent.key=freq.get", "kind": "expression"}
   ],
   "problems/212-word-search-ii/solution.py": [
     {"range": {"start": {"line": 5, "character": 12}, "end": {"line": 5, "character": 41}}, "nameRange": {"start": {"line": 5, "character": 12}, "end": {"line": 5, "character": 41}}, "qname": "problems.212-word-search-ii.solution:word_search_II.node = node.setdefault(c, {})", "kind": "expression"},

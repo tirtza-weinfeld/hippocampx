@@ -1,56 +1,9 @@
 {
-  "blackboard:largestRectangleArea": {
-    "args": [
-      "heights"
-    ],
-    "code": "def largestRectangleArea( heights: list[int]) -> int:\n    heights.append(0); stack  = [-1]; max_area = 0\n    for i, h in enumerate(heights):\n        while stack[-1] != -1 and heights[stack[-1]] > h:\n            height = heights[stack.pop()]\n            width = i - stack[-1] - 1\n            max_area = max(max_area, height * width)\n        stack.append(i)\n    heights.pop()\n    return max_area",
-    "expressions": {
-      "heights.append(0)": "adds a **right sentinel** bar smaller than all others, forcing the stack to empty and compute all remaining areas at the end (no leftover bars).",
-      "heights.pop()": "restore original list",
-      "heights[stack[-1]] > h": "pop while current bar is lower than stack's top",
-      "stack = [-1]": "adds a **left sentinel** index before the array start, so width computation `i - stack[-1] - 1` always works (never empty stack).",
-      "width = i - stack[-1] - 1": "We subtract 1 because the bar at stack[-1] is strictly smaller and marks the left boundary, which is excluded from the rectangle"
-    },
-    "file_path": "backend/algorithms/blackboard.py",
-    "intuition": "- We treat each bar as the smallest bar in a rectangle:\n    - To find its maximal rectangle, we must know:\n            - The first smaller bar to its left\n            - The first smaller bar to its right\n    - That defines the rectangle's width.\n\n    - Algorithm Logic\n    1.      Sentinel (0) ensures all bars are processed (flush remaining stack).\n    2.      Stack invariant: indices of bars in increasing height order.\n    3.      For each bar:\n        - While current height h is less than top of stack, we found the right boundary for heights[top].\n        - Pop it, compute:\n            - ```python\n            - height = heights[popped]\n            - width = i - stack[-1] - 1\n            - area = height * width\n            - ```\n\n    - because stack[-1] is now the index of the previous smaller bar (left boundary).\n\n            4.      Push current index.\n            5.      Remove sentinel before returning.\n\n    - Correctness\n            - Each bar is pushed and popped once ⇒ O(n)\n            - Stack always maintains increasing heights ⇒ ensures correct left boundary\n            - When popped, i is the first index to the right where height drops ⇒ correct right boundary\n            - All rectangles are considered exactly once ⇒ max area found.",
-    "kind": "function",
-    "label": "def largestRectangleArea(heights: list[int]) -> int",
-    "name": "largestRectangleArea",
-    "returns": {
-      "label": "int"
-    },
-    "time_complexity": "O(n):\nEach index is pushed once and popped once, so the total operations across the loop are linear.\n*[19!]The inner while doesn't make it O(n²) because every pop is matched to one push.*"
-  },
-  "blackboard:largestRectangleArea.heights.append(0)": {
-    "kind": "expression",
-    "name": "heights.append(0)",
-    "summary": "adds a **right sentinel** bar smaller than all others, forcing the stack to empty and compute all remaining areas at the end (no leftover bars)."
-  },
-  "blackboard:largestRectangleArea.heights.pop()": {
-    "kind": "expression",
-    "name": "heights.pop()",
-    "summary": "restore original list"
-  },
-  "blackboard:largestRectangleArea.heights[stack[-1]] > h": {
-    "kind": "expression",
-    "name": "heights[stack[-1]] > h",
-    "summary": "pop while current bar is lower than stack's top"
-  },
-  "blackboard:largestRectangleArea.stack = [-1]": {
-    "kind": "expression",
-    "name": "stack = [-1]",
-    "summary": "adds a **left sentinel** index before the array start, so width computation `i - stack[-1] - 1` always works (never empty stack)."
-  },
-  "blackboard:largestRectangleArea.width = i - stack[-1] - 1": {
-    "kind": "expression",
-    "name": "width = i - stack[-1] - 1",
-    "summary": "We subtract 1 because the bar at stack[-1] is strictly smaller and marks the left boundary, which is excluded from the rectangle"
-  },
   "core.bellman-ford.classic:bellman_ford_classic": {
     "args": [
+      "vertices",
       "edges",
-      "source",
-      "vertices"
+      "source"
     ],
     "code": "def bellman_ford_classic(\n    vertices: list[str], edges: list[tuple[str, str, float]], source: str\n) -> dict[str, float]:\n\n    d = [float(\"inf\")] * (V := len(vertices))\n    d[source] = 0\n\n    for _ in range(V - 1):\n        updated = False\n        for u, v, w in edges:\n            if d[u] + w < d[v]:\n                d[v] = d[u] + w\n                updated = True\n        if not updated:\n            return d\n\n    # if we get here, we did all V-1 passes, so still need to check for cycles\n    for u, v, w in edges:\n        if d[u] + w < d[v]:\n            raise Exception(\"Negative-weight cycle\")\n\n    return d",
     "expressions": {
@@ -78,8 +31,8 @@
   },
   "core.bellman-ford.layered_dag:bellman_ford_layered_dag": {
     "args": [
-      "vertices",
       "source",
+      "vertices",
       "edges"
     ],
     "code": "def bellman_ford_layered_dag(\n    vertices: list[str], edges: list[tuple[str, str, float]], source: str\n) -> dict[str, float]:\n\n    # 1) Initialize\n    d = {v: float(\"inf\") for v in vertices}\n    d[source], V = 0, len(vertices)\n\n    # 2) Layered relaxation: starting from δ₀, do V passes to compute δ₁…δ_V\n    for k in range(V):  # k = 0…V-1\n        d_k = {**d}  # snapshot of δ_k\n        for u, v, w in edges:\n            if d[u] + w < d_k[v]:\n                d_k[v] = d[u] + w\n        d = d_k  # now holds δ_{k+1}\n\n    # 3) Identify \"witnesses\" to negative cycles:\n    #    any v for which an extra relaxation is still possible\n    witnesses = {v for u, v, w in edges if d[u] + w < d[v]}\n\n    if not witnesses:\n        return d\n\n    # 4) Build adjacency list for negative-cycle propagation\n    adj = defaultdict(list)\n    for u, v, _ in edges:\n        adj[u].append(v)\n\n    # 5) DFS to propagate −∞ to all vertices reachable from any witness\n    stack = list(witnesses)\n    reachable = set(witnesses)\n\n    while stack:\n        u = stack.pop()\n        d[u] = float(\"-inf\")\n        for v in adj[u]:\n            if v not in reachable:\n                reachable.add(v)\n                stack.append(v)\n\n    return d",
@@ -191,9 +144,9 @@
   },
   "core.modular-arithmetic.congruent1:congruent1": {
     "args": [
+      "n",
       "a",
-      "b",
-      "n"
+      "b"
     ],
     "code": "def congruent1(a: int, b: int, n: int) -> bool:\n    return (a - b) % n == 0",
     "file_path": "backend/algorithms/core/modular-arithmetic/congruent1.py",
@@ -226,9 +179,9 @@
   },
   "core.modular-arithmetic.congruent2:congruent2": {
     "args": [
+      "n",
       "a",
-      "b",
-      "n"
+      "b"
     ],
     "code": "def congruent2(a: int, b: int, n: int) -> bool:\n    return a % n == b % n",
     "file_path": "backend/algorithms/core/modular-arithmetic/congruent2.py",
@@ -523,9 +476,9 @@
   },
   "problems.127-word-ladder.solution:word_ladder": {
     "args": [
-      "endWord",
+      "wordList",
       "beginWord",
-      "wordList"
+      "endWord"
     ],
     "code": "def word_ladder(beginWord: str, endWord: str, wordList: list[str]) -> int:\n    if endWord not in wordList:\n        return 0\n\n    L = len(beginWord)\n    combos: dict[str, list[str]] = defaultdict(list)\n    for w in wordList:\n        for i in range(L):\n            combos[w[:i] + \"*\" + w[i+1:]].append(w)\n\n    front, back = {beginWord}, {endWord}\n    dist_front, dist_back = {beginWord: 1}, {endWord: 1}\n\n    while front and back:\n        # expand smaller side to optimize\n        if len(front) > len(back):\n            front, back = back, front\n            dist_front, dist_back = dist_back, dist_front\n\n        next_front = set()\n        for word in front:\n            for i in range(L):\n                for n in combos[word[:i] + \"*\" + word[i+1:]]: # Use pre-computed neighbors\n                    if n in dist_back:\n                        return dist_front[word] + dist_back[n]\n                    if n not in dist_front:\n                        dist_front[n] = dist_front[word] + 1\n                        next_front.add(n)\n        front = next_front\n\n    return 0",
     "file_path": "backend/algorithms/problems/127-word-ladder/solution.py",
@@ -814,8 +767,8 @@
   },
   "problems.146-lru-cache.solution:LRUCache.put": {
     "args": [
-      "key",
-      "value"
+      "value",
+      "key"
     ],
     "code": "    def put(self, key: int, value: int) -> None:\n        if key in self.cache:\n            self.cache.move_to_end(key)\n        self.cache[key] = value\n        if len(self.cache) > self.capacity:\n            self.cache.popitem(last=False)",
     "file_path": "backend/algorithms/problems/146-lru-cache/solution.py",
@@ -844,11 +797,11 @@
   },
   "problems.1514-path-with-maximum-probability.solution:path_with_maximum_probability": {
     "args": [
-      "end",
-      "start",
       "n",
-      "edges",
-      "succProb"
+      "start",
+      "succProb",
+      "end",
+      "edges"
     ],
     "code": "def path_with_maximum_probability(n: int, edges: list[list[int]], succProb: list[float], start: int, end: int) -> float:\n    prob = [0.0] * n # rob[i] stores max probability to reach node i\n    prob[start] = 1.0  # Start with full certainty\n\n    for _ in range(n - 1):  # Perform up to n-1 rounds of relaxation\n        updated = False\n        for (u, v), p in zip(edges, succProb):\n            if prob[u] * p > prob[v]:  # Try to improve v through u\n                prob[v] = prob[u] * p\n                updated = True\n            if prob[v] * p > prob[u]:  # Try to improve u through v (undirected graph)\n                prob[u] = prob[v] * p\n                updated = True\n        if not updated:\n            break  # Early exit if no updates in this round\n\n    return prob[end]",
     "file_path": "backend/algorithms/problems/1514-path-with-maximum-probability/solution.py",
@@ -908,8 +861,8 @@
   },
   "problems.1590-make-sum-divisible-by-p.solution:minSubarrayToMakeSumDivisibleByP": {
     "args": [
-      "segments",
-      "p"
+      "p",
+      "segments"
     ],
     "code": "def minSubarrayToMakeSumDivisibleByP(segments: list[int], p: int) -> int:\n\n    total_remainder = sum(segments) % p\n    if total_remainder == 0:\n        return 0\n\n    remainder_idx = {0: -1}\n    prefix_remainder, min_length = 0, len(segments)\n\n    for i, segment in enumerate(segments):\n        prefix_remainder = (prefix_remainder + segment) % p\n        need = (prefix_remainder - total_remainder + p) % p\n        if need in remainder_idx:\n            min_length = min(min_length, i - remainder_idx[need])\n        remainder_idx[prefix_remainder] = i\n\n    return min_length if min_length < len(segments) else -1",
     "file_path": "backend/algorithms/problems/1590-make-sum-divisible-by-p/solution.py",
@@ -1263,8 +1216,8 @@
   "problems.2145-count-the-hidden-sequences.solution:numberOfArrays": {
     "args": [
       "lower",
-      "differences",
-      "upper"
+      "upper",
+      "differences"
     ],
     "code": "def numberOfArrays(differences: list[int], lower: int, upper: int) -> int:\n\n    prefix_sum = min_marker = max_marker = 0\n\n    for diff in differences:\n        prefix_sum += diff\n        min_marker = min(min_marker, prefix_sum)\n        max_marker = max(max_marker, prefix_sum)\n\n    return max(0, (upper - max_marker) - (lower - min_marker) + 1)",
     "file_path": "backend/algorithms/problems/2145-count-the-hidden-sequences/solution.py",
@@ -1365,6 +1318,66 @@
     "name": "segments",
     "summary": "List of integers representing trip segments."
   },
+  "problems.347-top-k-frequent-elements.heap-nlargets:topKFrequent": {
+    "args": [
+      "nums",
+      "k"
+    ],
+    "code": "def topKFrequent(nums: list[int], k: int) -> list[int]:\n    freq = Counter(nums)\n    return heapq.nlargest(k, freq.keys(), key=freq.get)",
+    "expressions": {
+      "freq.keys()": "iterable → here freq.keys(), i.e. all unique numbers.",
+      "key=freq.get": "key → function that gives a value to rank by. freq.get(x) = frequency of x."
+    },
+    "file_path": "backend/algorithms/problems/347-top-k-frequent-elements/heap-nlargets.py",
+    "kind": "function",
+    "label": "def topKFrequent(nums: list[int], k: int) -> list[int]",
+    "name": "topKFrequent",
+    "returns": {
+      "label": "list[int]"
+    },
+    "summary": "using built-in function heapq.nlargest",
+    "time_complexity": "O(n log k)"
+  },
+  "problems.347-top-k-frequent-elements.heap-nlargets:topKFrequent.freq.keys()": {
+    "kind": "expression",
+    "name": "freq.keys()",
+    "summary": "iterable → here freq.keys(), i.e. all unique numbers."
+  },
+  "problems.347-top-k-frequent-elements.heap-nlargets:topKFrequent.key=freq.get": {
+    "kind": "expression",
+    "name": "key=freq.get",
+    "summary": "key → function that gives a value to rank by. freq.get(x) = frequency of x."
+  },
+  "problems.347-top-k-frequent-elements.heap:topKFrequent": {
+    "args": [
+      "nums",
+      "k"
+    ],
+    "code": "def topKFrequent(nums: list[int], k: int) -> list[int]:\n    freq ,h= Counter(nums), []\n    for num, f in freq.items():\n        heapq.heappush(h, (f, num))\n        if len(h) > k:\n            heapq.heappop(h)\n\n    return [num for _, num in h]",
+    "file_path": "backend/algorithms/problems/347-top-k-frequent-elements/heap.py",
+    "kind": "function",
+    "label": "def topKFrequent(nums: list[int], k: int) -> list[int]",
+    "name": "topKFrequent",
+    "returns": {
+      "label": "list[int]"
+    },
+    "time_complexity": "O(n log k)"
+  },
+  "problems.347-top-k-frequent-elements.sort-frequency-bucketing:topKFrequent": {
+    "args": [
+      "nums",
+      "k"
+    ],
+    "code": "def topKFrequent(nums: list[int], k: int) -> list[int]:\n\n    bucket=[[] for _ in range(len(nums)+1)]\n    for n,f in Counter(nums).items():\n        bucket[f].append(n)\n\n    return [num for f_bucket in reversed(bucket) for num in f_bucket][:k]",
+    "file_path": "backend/algorithms/problems/347-top-k-frequent-elements/sort-frequency-bucketing.py",
+    "kind": "function",
+    "label": "def topKFrequent(nums: list[int], k: int) -> list[int]",
+    "name": "topKFrequent",
+    "returns": {
+      "label": "list[int]"
+    },
+    "time_complexity": "O(n):\nCounter(nums) → O(n)\nBuild buckets → O(n) (each element placed once)\nFlatten in reverse until k → O(n)"
+  },
   "problems.36-valid-sudoku.solution:is_valid_sudoku": {
     "args": [
       "board"
@@ -1451,8 +1464,8 @@
   },
   "problems.39-combination-sum.solution:combination_sum": {
     "args": [
-      "candidates",
-      "target"
+      "target",
+      "candidates"
     ],
     "code": "def combination_sum(candidates: list[int], target: int) -> list[list[int]]:\n\n    candidates.sort()\n    res, path = [], []\n\n    def dfs(i: int, rem: int) -> None:\n        if rem == 0:\n            res.append(path.copy())\n            return\n        for j in range(i, len(candidates)):\n            if (c := candidates[j]) > rem:\n                break\n            path.append(c)\n            dfs(j, rem - c)\n            path.pop()\n\n    dfs(0, target)\n    return res",
     "file_path": "backend/algorithms/problems/39-combination-sum/solution.py",
@@ -1569,8 +1582,8 @@
   },
   "problems.460-lfu-cache.solution:LFUCache.put": {
     "args": [
-      "key",
-      "value"
+      "value",
+      "key"
     ],
     "code": "    def put(self, key: int, value: int) -> None:\n        if self.capacity <= 0:\n            return\n\n        if key in self.cache:\n            self.cache[key] = value\n            self._bump(key)\n            return\n\n        if len(self.cache) >= self.capacity:\n            old_key, _ = self.buckets[self.minfreq].popitem(last=False)\n            del self.cache[old_key]\n            del self.freq[old_key]\n\n        self.cache[key] = value\n        self.freq[key] = 1\n        self.buckets[1][key] = None\n        self.minfreq = 1",
     "file_path": "backend/algorithms/problems/460-lfu-cache/solution.py",
@@ -1793,9 +1806,9 @@
   },
   "problems.743-network-delay-time.solution:network_delay_time": {
     "args": [
-      "times",
       "k",
-      "n"
+      "n",
+      "times"
     ],
     "code": "def network_delay_time(times: list[list[int]], n: int, k: int) -> int:\n\n    adj = defaultdict(list)\n    for u, v, w in times:\n        adj[u].append((v, w))\n    pq, finalized, time = [(0, k)], set(), 0\n    while pq:\n        t, node = heapq.heappop(pq)\n        if node in finalized:\n            continue\n        finalized.add(node)\n        time = t\n        for neighbor, travel_time in adj[node]:\n            if neighbor not in finalized:\n                heapq.heappush(pq, (time + travel_time, neighbor))\n    return time if len(finalized) == n else -1",
     "file_path": "backend/algorithms/problems/743-network-delay-time/solution.py",
@@ -1822,8 +1835,8 @@
   },
   "problems.76-minimum-window-substring.solution:minWindow": {
     "args": [
-      "s",
-      "t"
+      "t",
+      "s"
     ],
     "code": "def minWindow(s: str, t: str) -> str:\n    t_count, have = Counter(t), defaultdict(int)\n    letters_needed, min_idx, l = len(t_count), None, 0\n    for r, c in enumerate(s):\n        have[c] += 1\n        if have[c] == t_count[c]:\n            letters_needed -= 1\n            while letters_needed == 0:\n                if not min_idx or r - l + 1 < min_idx[1] - min_idx[0]:\n                    min_idx = l, r + 1\n                have[s[l]] -= 1\n                if have[s[l]] < t_count[s[l]]:\n                    letters_needed += 1\n                l += 1\n    return \"\" if min_idx == None else s[min_idx[0] : min_idx[1]]",
     "file_path": "backend/algorithms/problems/76-minimum-window-substring/solution.py",
@@ -1871,11 +1884,11 @@
   },
   "problems.787-cheapest-flights-within-k-stops.bellman_ford:cheapest_flights_with_at_most_k_stops": {
     "args": [
-      "flights",
-      "k",
       "src",
       "dst",
-      "n"
+      "k",
+      "n",
+      "flights"
     ],
     "code": "def cheapest_flights_with_at_most_k_stops(\n    n: int, flights: list[list[int]], src: int, dst: int, k: int\n) -> int:\n    d = [float(\"inf\")] * n\n    d[src] = 0\n\n    for _ in range(k + 1):\n        tmp = d[:]\n        for u, v, w in flights:\n            if d[u] + w < tmp[v]:\n                tmp[v] = d[u] + w\n        d = tmp\n\n    return d[dst] if d[dst] < float(\"inf\") else -1",
     "file_path": "backend/algorithms/problems/787-cheapest-flights-within-k-stops/bellman_ford.py",
@@ -1889,10 +1902,10 @@
   },
   "problems.787-cheapest-flights-within-k-stops.dijkstra:cheapest_flights_with_at_most_k_stops": {
     "args": [
+      "src",
       "k",
       "dst",
-      "flights",
-      "src"
+      "flights"
     ],
     "code": "def cheapest_flights_with_at_most_k_stops( flights: list[list[int]], src: int, dst: int, k: int) -> int:\n\n    graph = defaultdict(list)\n    for u, v, price in flights:\n        graph[u].append((v, price))\n\n    pq, min_stops = [(0, src, 0)], {}\n\n    while pq:\n        cost, city, stops = heapq.heappop(pq)\n\n        # If we've already found a path to this city using fewer or equal stops, skip.\n        # A path with fewer stops must have been cheaper or equal due to PQ ordering.\n        if stops > min_stops.get(city, float(\"inf\")): continue\n        if city == dst: return cost\n\n        # Record the new minimum stops to reach this city\n        min_stops[city] = stops\n        if stops <= k:\n            for neighbor, price in graph[city]:\n                heapq.heappush(pq, (cost + price, neighbor, stops + 1))\n    return -1",
     "file_path": "backend/algorithms/problems/787-cheapest-flights-within-k-stops/dijkstra.py",
@@ -1994,8 +2007,8 @@
   },
   "problems.875-koko-eating-bananas.solution:koko_eating_bananas": {
     "args": [
-      "piles",
-      "h"
+      "h",
+      "piles"
     ],
     "code": "def koko_eating_bananas(piles: list[int], h: int) -> int:\n\n    def hours(k:int) -> int:\n        return sum((p + k - 1) // k for p in piles)\n        # return sum(math.ceil(pile / k) for pile in piles)\n\n    l, r = 1, max(piles)\n    while l < r:\n        k = (l + r) // 2\n        if hours(k) <= h:\n            r = k\n        else:\n            l = k + 1\n    return l",
     "file_path": "backend/algorithms/problems/875-koko-eating-bananas/solution.py",
