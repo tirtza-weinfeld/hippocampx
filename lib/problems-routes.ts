@@ -14,6 +14,7 @@ export const PROBLEMS_ROUTES: NavigationItem[] = [
             { title: 'Binary Tree Maximum Path Sum', href: '/problems/124-binary-tree-maximum-path-sum', icon: Code, color: "text-red-500", bgColor: "bg-red-500/10" },
             { title: 'Capacity To Ship Packages Within D Days', href: '/problems/1011-capacity-to-ship-packages-within-d-days', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
             { title: 'Cheapest Flights Within K Stops', href: '/problems/787-cheapest-flights-within-k-stops', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
+            { title: 'Climbing Stairs', href: '/problems/70-climbing-stairs', icon: Code, color: "text-green-500", bgColor: "bg-green-500/10" },
             { title: 'Clone Graph', href: '/problems/133-clone-graph', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
             { title: 'Coin Change II', href: '/problems/518-coin-change-ii', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
             { title: 'Combination Sum', href: '/problems/39-combination-sum', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },

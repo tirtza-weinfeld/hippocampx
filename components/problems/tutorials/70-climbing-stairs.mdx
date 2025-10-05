@@ -1,0 +1,45 @@
+# Climbing Stairs
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="easy" />
+
+<PillList pills={["dynamic-programming"]} />
+
+[70. Climbing Stairs](https://leetcode.com/problems/climbing-stairs)
+
+## [!ProblemDefinition] Definition
+
+You are climbing a staircase. It takes `n` steps to reach the top.     Each time you can either climb `1` or `2` steps.    In how many distinct ways can you climb to the top?
+
+## Bottomup Solution
+
+### [!ProblemCodeSnippet] Code Snippet
+
+```python meta="source=problems/70-climbing-stairs/bottomup.py"
+def climbStairs(n: int) -> int:
+    a = b = 1
+    for _ in range(n):
+        a, b = b, a + b
+    return a
+```
+
+
+---
+
+## Topdown Solution
+
+### [!ProblemCodeSnippet] Code Snippet
+
+```python meta="source=problems/70-climbing-stairs/topdown.py"
+def climbStairs(n: int) -> int:
+    memo = {}
+    def dp(i):
+        if i <= 0:
+            return i == 0
+        if i not in memo:
+            memo[i] = dp(i - 1) + dp(i - 2)
+        return memo[i]
+    return dp(n)
+```
+

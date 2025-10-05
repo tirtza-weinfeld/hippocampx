@@ -39,7 +39,8 @@
       "188-best-time-to-buy-and-sell-stock-iv",
       "2140-solving-questions-with-brainpower",
       "416-partition-equal-subset-sum",
-      "518-coin-change-ii"
+      "518-coin-change-ii",
+      "70-climbing-stairs"
     ],
     "trie": [
       "208-implement-trie-prefix-tree",
@@ -206,7 +207,8 @@
       "136-single-number",
       "191-number-of-1-bits",
       "20-valid-parentheses",
-      "35-search-insert-position"
+      "35-search-insert-position",
+      "70-climbing-stairs"
     ]
   },
   "time_complexity": {

@@ -17,6 +17,7 @@ Given a sorted array that has been left-rotated at an unknown pivot, return the 
 
 ```python meta="source=problems/33-search-in-rotated-sorted-array/solution.py"
 def search(nums: list[int], target: int) -> int:
+
     l, r = 0, len(nums) - 1
     while l <= r:
         mid = (l + r) // 2

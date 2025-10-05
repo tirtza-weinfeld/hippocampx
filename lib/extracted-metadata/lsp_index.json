@@ -1605,7 +1605,7 @@
           "name": "search",
           "detail": "search(nums: list[int], target: int) -> int",
           "kind": 12,
-          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 18, "character": 13}},
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 19, "character": 13}},
           "nameRange": {
             "start": {
               "line": 0,
@@ -2411,6 +2411,72 @@
                 "end": {
                   "line": 11,
                   "character": 14
+                }
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "uri": "problems/70-climbing-stairs/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/70-climbing-stairs/bottomup.py",
+      "symbols": [
+        {
+          "name": "climbStairs",
+          "detail": "climbStairs(n: int) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 4, "character": 12}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 15
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/70-climbing-stairs/topdown.py",
+      "symbols": [
+        {
+          "name": "climbStairs",
+          "detail": "climbStairs(n: int) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 8, "character": 16}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 15
+            }
+          },
+          "children": [
+            {
+              "name": "dp",
+              "detail": "dp(i)",
+              "kind": 12,
+              "range": {"start": {"line": 2, "character": 4}, "end": {"line": 7, "character": 22}},
+              "nameRange": {
+                "start": {
+                  "line": 2,
+                  "character": 8
+                },
+                "end": {
+                  "line": 2,
+                  "character": 10
                 }
               },
               "children": []
