@@ -1,5 +1,5 @@
 "use client"
-// import { M } from "./a"
+import { M } from "./a"
 // import { DebugReactExports } from "./debug"
 
 export default function TestPage() {
@@ -8,7 +8,7 @@ export default function TestPage() {
             <h1>Test Page</h1>
             {/* <DebugReactExports /> */}
             {/* <hr /> */}
-            {/* <M /> */}
+            <M />
         </div>
     )
 }
