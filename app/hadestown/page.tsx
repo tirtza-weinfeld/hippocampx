@@ -16,6 +16,7 @@ import {
   BookMarkedIcon,
 } from "lucide-react"
 import { CharacterGuides } from "@/components/hadestown/character-guide"
+import { Route } from "next"
 
 export default function HomePage() {
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -51,7 +52,7 @@ export default function HomePage() {
         <div className="railroad-pattern absolute inset-0 opacity-10 dark:opacity-20"></div>
       </div>
 
-  
+
 
       {/* Hero Section */}
       <div className="relative overflow-hidden">
@@ -107,21 +108,21 @@ export default function HomePage() {
               title="Spelling Challenge"
               description="Drag and drop letters to spell Hadestown words"
               icon={<PencilIcon className="h-12 w-12 text-amber-600 dark:text-amber-400" />}
-              href="/hadestown/games/spelling"
+              href={"/hadestown/games/spelling" as Route}
               delay={0.2}
             />
             <GameCard
               title="Vocabulary Quest"
               description="Learn new words from the world of Hadestown"
               icon={<BookIcon className="h-12 w-12 text-amber-600 dark:text-amber-400" />}
-              href="/hadestown/games/vocabulary"
+              href={"/hadestown/games/vocabulary" as Route}
               delay={0.4}
             />
             <GameCard
               title="Lyric Challenge"
               description="Complete the missing lyrics from Hadestown songs"
               icon={<MusicIcon className="h-12 w-12 text-amber-600 dark:text-amber-400" />}
-              href="/hadestown/games/lyrics"
+              href={"/hadestown/games/lyrics" as Route}
               delay={0.6}
             />
             {/* <GameCard
@@ -135,28 +136,28 @@ export default function HomePage() {
               title="Seasons Sorting"
               description="Help Persephone organize items for each season"
               icon={<FlowerIcon className="h-12 w-12 text-amber-600 dark:text-amber-400" />}
-              href="/hadestown/games/seasons"
+              href={"/hadestown/games/seasons" as Route}
               delay={1.0}
             />
             <GameCard
               title="Lyrics Explorer"
               description="Discover song meanings and vocabulary"
               icon={<BookOpenIcon className="h-12 w-12 text-amber-600 dark:text-amber-400" />}
-              href="/hadestown/lyrics-explorer"
+              href={"/hadestown/lyrics-explorer" as Route}
               delay={1.2}
             />
             <GameCard
               title="Word Memory Game"
               description="Match words with their definitions"
               icon={<PuzzleIcon className="h-12 w-12 text-amber-600 dark:text-amber-400" />}
-              href="/hadestown/games/word-memory"
+              href={"/hadestown/games/word-memory" as Route}
               delay={1.4}
             />
             <GameCard
               title="Hadestown Story"
               description="Read the magical tale of Orpheus and Eurydice"
               icon={<BookMarkedIcon className="h-12 w-12 text-amber-600 dark:text-amber-400" />}
-              href="/hadestown/story"
+              href={"/hadestown/story" as Route}
               delay={1.6}
             />
           </div>
@@ -195,7 +196,7 @@ function GameCard({
   title: string
   description: string
   icon: React.ReactNode
-  href: string
+  href: Route
   delay?: number
 }) {
   return (
@@ -216,7 +217,7 @@ function GameCard({
           >
             {/* Add glow effect behind icon */}
             <div className="absolute inset-0 bg-gradient-to-br from-amber-500/20 to-amber-500/10 dark:from-amber-500/20 dark:to-amber-600/10 rounded-full blur-md"></div>
-            {React.cloneElement(icon as React.ReactElement<{className: string}>, {
+            {React.cloneElement(icon as React.ReactElement<{ className: string }>, {
               className: "h-12 w-12 text-amber-600 dark:text-amber-400 relative",
             })}
           </motion.div>

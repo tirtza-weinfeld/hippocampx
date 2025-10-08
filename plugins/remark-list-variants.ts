@@ -40,35 +40,35 @@ const remarkListVariants: Plugin<[], Root> = () => {
   
   return (tree: Root, file: VFile) => {
     // Recursive function to process nodes and track nesting level
-    function processNode(node: Node, parent: Parent, index: number | undefined, currentLevel: number): void {
+    function processNode(node: RootContent, parent: Root | Parent | List | ListItem, index: number | undefined, currentLevel: number): void {
       if (node.type === 'list') {
         const list = node as List
         if (!parent || index === undefined) return
-        
+
         // Transform this list with the current level
         if (list.ordered) {
           transformOrderedList(list, file, parent, index, currentLevel)
         } else {
           transformUnorderedList(list, file, parent, index, currentLevel)
         }
-        
+
         // Process children with the same level (list items don't increase level)
         if (list.children) {
           list.children.forEach((child, childIndex) => {
-            processNode(child, list, childIndex, currentLevel)
+            processNode(child as RootContent, list, childIndex, currentLevel)
           })
         }
       } else if (node.type === 'listItem') {
         const listItem = node as ListItem
         // Process listItem children, incrementing level for nested lists
         if (listItem.children) {
-          listItem.children.forEach((child: Node, childIndex: number) => {
+          listItem.children.forEach((child, childIndex: number) => {
             if (child.type === 'list') {
               // Nested list gets incremented level
-              processNode(child, listItem, childIndex, currentLevel + 1)
+              processNode(child as RootContent, listItem, childIndex, currentLevel + 1)
             } else {
               // Other children keep the same level
-              processNode(child, listItem, childIndex, currentLevel)
+              processNode(child as RootContent, listItem, childIndex, currentLevel)
             }
           })
         }
@@ -76,8 +76,8 @@ const remarkListVariants: Plugin<[], Root> = () => {
         // Process other nodes recursively without changing level
         const parentNode = node as Parent
         if (parentNode.children) {
-          parentNode.children.forEach((child: Node, childIndex: number) => {
-            processNode(child, parentNode, childIndex, currentLevel)
+          parentNode.children.forEach((child, childIndex: number) => {
+            processNode(child as RootContent, parentNode, childIndex, currentLevel)
           })
         }
       }
@@ -375,7 +375,7 @@ function createJSXAttribute(name: string, value: string | number | boolean) {
 }
 
 // Transform ordered lists to OrderedList JSX components with proper numbering
-function transformOrderedList(list: List, file: VFile, parent: Parent, index: number, nestingLevel: number) {
+function transformOrderedList(list: List, file: VFile, parent: Root | Parent | List | ListItem, index: number, nestingLevel: number) {
   const originalNumbers = extractOriginalNumbers(list, file)
   const restartPoints = detectRestartPoints(originalNumbers)
   const markers = extractMarkers(list, file)
@@ -426,11 +426,11 @@ function transformOrderedList(list: List, file: VFile, parent: Parent, index: nu
     children: transformedItems
   }
 
-  parent.children[index] = orderedListElement as RootContent
+  parent.children[index] = orderedListElement as unknown as RootContent
 }
 
 // Transform unordered lists to UnorderedList JSX components
-function transformUnorderedList(list: List, file: VFile, parent: Parent, index: number, nestingLevel: number) {
+function transformUnorderedList(list: List, file: VFile, parent: Root | Parent | List | ListItem, index: number, nestingLevel: number) {
   // Use the provided nesting level
   const level = nestingLevel
   const markers = extractMarkers(list, file)
@@ -474,7 +474,7 @@ function transformUnorderedList(list: List, file: VFile, parent: Parent, index: 
     children: transformedItems
   }
 
-  parent.children[index] = unorderedListElement as RootContent
+  parent.children[index] = unorderedListElement as unknown as RootContent
 }
 
 export default remarkListVariants

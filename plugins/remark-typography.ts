@@ -2,22 +2,24 @@ import type { Strong, Emphasis, InlineCode } from 'mdast'
 import type { Plugin } from 'unified'
 import type { Node } from 'unist'
 import { visit } from 'unist-util-visit'
-import { isValidColorName, getStepColor } from '../lib/step-colors'
+import { isValidColorName, getStepColor } from './lib/step-colors.js'
 
-export const remarkTypography: Plugin = () => (tree: Node) => {
-  visit(tree, (node: Node) => {
-    if (node.type === 'strong') {
-      transformStepSyntax(node as Strong)
-    }
+const remarkTypography: Plugin = () => {
+  return (tree: Node) => {
+    visit(tree, (node: Node) => {
+      if (node.type === 'strong') {
+        transformStepSyntax(node as Strong)
+      }
 
-    if (node.type === 'emphasis') {
-      transformStepSyntax(node as Emphasis)
-    }
+      if (node.type === 'emphasis') {
+        transformStepSyntax(node as Emphasis)
+      }
 
-    if (node.type === 'inlineCode') {
-      transformStepSyntax(node as InlineCode)
-    }
-  })
+      if (node.type === 'inlineCode') {
+        transformStepSyntax(node as InlineCode)
+      }
+    })
+  }
 }
 
 function transformStepSyntax(node: Strong | Emphasis | InlineCode) {
@@ -70,6 +72,9 @@ function transformStepSyntax(node: Strong | Emphasis | InlineCode) {
 
   // Add step data attribute
   if (!node.data) node.data = {}
-  if (!node.data.hProperties) node.data.hProperties = {}
-  node.data.hProperties['data-step'] = stepValue
+  const data = node.data as any
+  if (!data.hProperties) data.hProperties = {}
+  data.hProperties['data-step'] = stepValue
 }
+
+export default remarkTypography

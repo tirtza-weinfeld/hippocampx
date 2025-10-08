@@ -4,6 +4,7 @@ import { ProbabilityScale } from "@/components/calculus/chance-basics/probabilit
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ArrowRight } from "lucide-react"
+import { Route } from "next"
 
 export default function ChanceBasicsPage() {
   return (
@@ -21,7 +22,7 @@ export default function ChanceBasicsPage() {
         <ProbabilityScale />
 
         <div className="flex justify-center">
-          <Link href="/experiments/coin-flip">
+          <Link href={"/experiments/coin-flip" as Route}>
             <Button size="lg" className="bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white">
               Try the Coin Flip Experiment <ArrowRight className="ml-2 h-4 w-4" />
             </Button>

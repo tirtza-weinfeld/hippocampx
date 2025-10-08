@@ -1099,6 +1099,50 @@
       ]
     },
     {
+      "uri": "problems/198-house-robber/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/198-house-robber/solution.py",
+      "symbols": [
+        {
+          "name": "rob",
+          "detail": "rob(houses: list[int]) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 8, "character": 16}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 7
+            }
+          },
+          "children": [
+            {
+              "name": "dp",
+              "detail": "dp(h)",
+              "kind": 12,
+              "range": {"start": {"line": 2, "character": 4}, "end": {"line": 7, "character": 22}},
+              "nameRange": {
+                "start": {
+                  "line": 2,
+                  "character": 8
+                },
+                "end": {
+                  "line": 2,
+                  "character": 10
+                }
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
       "uri": "problems/20-valid-parentheses/__init__.py",
       "symbols": []
     },

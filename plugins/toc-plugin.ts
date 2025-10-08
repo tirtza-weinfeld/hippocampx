@@ -4,8 +4,8 @@ import type { Parent, Node } from 'unist'
 import type { Heading, Text, Strong, Emphasis } from 'mdast'
 import { visit } from 'unist-util-visit'
 import GithubSlugger from 'github-slugger'
-import { extractTextFromHeading, extractDisplayTextFromHeading } from '../lib/mdx-text-extraction'
-import { isValidColorName, getStepColor } from '../lib/step-colors'
+import { extractTextFromHeading, extractDisplayTextFromHeading } from './mdx-text-extraction.js'
+import { isValidColorName, getStepColor } from './lib/step-colors.js'
 
 interface TocHeading {
   text: string

@@ -17,6 +17,7 @@ import {
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { routes } from "@/lib/routes";
 import { usePathname } from "next/navigation";
+import { Route } from "next";
 
 export function AppSidebar({ variant, collapsible, className, side }: {
   side?: "left" | "right"
@@ -47,7 +48,7 @@ export function AppSidebar({ variant, collapsible, className, side }: {
               {routes.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild isActive={item.href === pathname}>
-                    <Link href={item.href} onClick={() => setOpenMobile(false)}>
+                    <Link href={item.href as Route} onClick={() => setOpenMobile(false)}>
                       <item.icon />
                       <span>{item.title}</span>
                     </Link>

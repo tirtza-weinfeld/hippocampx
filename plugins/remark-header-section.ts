@@ -3,7 +3,7 @@ import type { Plugin } from 'unified'
 import type { Node } from 'unist'
 import { visit } from 'unist-util-visit'
 import GithubSlugger from 'github-slugger'
-import { extractTextFromHeading } from '../lib/mdx-text-extraction'
+import { extractTextFromHeading } from './mdx-text-extraction.js'
 
 interface PluginOptions {
   componentPath?: string
@@ -74,7 +74,7 @@ export const remarkHeaderSection: Plugin<[PluginOptions?]> = () => {
       }
       
       // Replace the heading and content with the section wrapper
-      parent.children.splice(index, content.length + 1, sectionWrapper as RootContent)
+      parent.children.splice(index, content.length + 1, sectionWrapper as unknown as RootContent)
     })
   }
 }
@@ -139,4 +139,4 @@ function extractSectionContent(parent: Parent, headingIndex: number, currentDept
   return content
 }
 
-
+export default remarkHeaderSection

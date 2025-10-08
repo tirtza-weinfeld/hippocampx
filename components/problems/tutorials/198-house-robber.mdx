@@ -1,0 +1,28 @@
+# House Robber
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="medium" />
+
+<PillList pills={["dynamic_programming", "dynamic_programming-1D"]} />
+
+[198. House Robber](https://leetcode.com/problems/house-robber)
+
+## [!ProblemDefinition] Definition
+
+Given houses[i] = money in house i, return the maximum amount you can rob without robbing two adjacent house.
+
+## [!ProblemCodeSnippet] Code Snippet
+
+```python meta="source=problems/198-house-robber/solution.py"
+def rob(houses: list[int]) -> int:
+    memo = {}
+    def dp(h):
+        if h >= len(houses):
+            return 0
+        if h not in memo:
+            memo[h] = max(houses[h] + dp(h + 2), dp(h + 1))
+        return memo[h]
+    return dp(0)
+```
+

@@ -25,6 +25,7 @@ export const PROBLEMS_ROUTES: NavigationItem[] = [
             { title: 'Design Add and Search Words Data Structure', href: '/problems/211-design-add-and-search-words-data-structure', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
             { title: 'Find First and Last Position of Element in Sorted Array', href: '/problems/34-find-first-and-last-position-of-element-in-sorted-array', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
             { title: 'Find Minimum in Rotated Sorted Array', href: '/problems/153-find-minimum-in-rotated-sorted-array', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
+            { title: 'House Robber', href: '/problems/198-house-robber', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
             { title: 'Implement Trie (Prefix Tree)', href: '/problems/208-implement-trie-prefix-tree', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
             { title: 'Koko Eating Bananas', href: '/problems/875-koko-eating-bananas', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
             { title: 'Kth Largest Element In An Array', href: '/problems/215-kth-largest-element-in-an-array', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },

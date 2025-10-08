@@ -6,26 +6,27 @@ import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 import { useReducedMotion } from "motion/react"
+import { Route } from "next"
 
 const activities = [
   {
     title: "Slope Explorer",
     description: "Discover how derivatives relate to the slopes of curves",
-    href: "/calculus/lab/slope-explorer",
+    href: "/calculus/lab/slope-explorer" as Route,
     color: "bg-gradient-to-br from-blue-500 to-blue-700",
     textColor: "text-white",
   },
   {
     title: "Area Builder",
     description: "Visualize integrals as areas under curves",
-    href: "/calculus/lab/area-builder",
+    href: "/calculus/lab/area-builder" as Route,
     color: "bg-gradient-to-br from-green-500 to-green-700",
     textColor: "text-white",
   },
   {
     title: "Function Laboratory",
     description: "Experiment with different functions and their transformations",
-    href: "/calculus/lab/function-laboratory",
+    href: "/calculus/lab/function-laboratory" as Route,
     color: "bg-gradient-to-br from-indigo-500 to-purple-700",
     textColor: "text-white",
   },

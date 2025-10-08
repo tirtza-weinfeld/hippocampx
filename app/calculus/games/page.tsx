@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button"
 import { TrendingUp, Layers, ActivityIcon, PlayCircle, ArrowDownUp, Brain, History, LineChart } from "lucide-react"
 import { PageTransition } from "@/components/calculus/page-transition"
+import type { Route } from "next"
 
 export default function GamesPage() {
   const games = [
@@ -11,7 +12,7 @@ export default function GamesPage() {
       title: "Slope Racer",
       description: "Race against time by finding the correct slopes of curves and tangent lines.",
       icon: <TrendingUp className="h-6 w-6" />,
-      href: "/calculus/games/slope-racer",
+      href: "/calculus/games/slope-racer" as Route,
       color: "from-blue-500 to-sky-400",
       image: "/calculus/games/slope-racer.png",
       // age: "Ages 10-14",
@@ -20,7 +21,7 @@ export default function GamesPage() {
       title: "Area Builder",
       description: "Build shapes and calculate their areas using the power of integration.",
       icon: <Layers className="h-6 w-6" />,
-      href: "/calculus/games/area-builder",
+      href: "/calculus/games/area-builder" as Route,
       color: "from-green-500 to-emerald-400",
       image: "/calculus/games/area-builder.png",
       // age: "Ages 9-12",
@@ -29,7 +30,7 @@ export default function GamesPage() {
       title: "Function Transformer",
       description: "Transform functions and predict how their graphs will change.",
       icon: <ActivityIcon className="h-6 w-6" />,
-      href: "/calculus/games/function-transformer",
+      href: "/calculus/games/function-transformer" as Route,
       color: "from-indigo-500 to-violet-400",
       image: "/calculus/games/function-transformer.png",
       // age: "Ages 8-12",
@@ -38,7 +39,7 @@ export default function GamesPage() {
       title: "Limit Explorer",
       description: "Guide your character as close as possible to the boundary without crossing it.",
       icon: <ArrowDownUp className="h-6 w-6" />,
-      href: "/calculus/games/limit-explorer",
+      href: "/calculus/games/limit-explorer" as Route,
       color: "from-purple-500 to-blue-400",
       image: "/calculus/games/limit-explorer.png",
       // age: "Ages 10-14",
@@ -47,7 +48,7 @@ export default function GamesPage() {
       title: "Calculus Puzzles",
       description: "Solve fun puzzles that test your understanding of calculus concepts.",
       icon: <Brain className="h-6 w-6" />,
-      href: "/calculus/games/calculus-puzzles",
+      href: "/calculus/games/calculus-puzzles" as Route,
       color: "from-pink-500 to-rose-400",
       image: "/calculus/games/calculus-puzzles.png",
       // age: "Ages 11-14",
@@ -56,7 +57,7 @@ export default function GamesPage() {
       title: "Rate Master",
       description: "Master rates of change by predicting how fast objects move and grow.",
       icon: <PlayCircle className="h-6 w-6" />,
-      href: "/calculus/games/rate-master",
+      href: "/calculus/games/rate-master" as Route,
       color: "from-amber-500 to-orange-400",
       image: "/calculus/games/rate-master.png",
       // age: "Ages 9-13",
@@ -65,7 +66,7 @@ export default function GamesPage() {
       title: "Graph Creator",
       description: "Create, visualize, and explore mathematical functions and their properties.",
       icon: <LineChart className="h-6 w-6" />,
-      href: "/calculus/games/graph-creator",
+      href: "/calculus/games/graph-creator" as Route,
       color: "from-cyan-500 to-blue-400",
       image: "/calculus/games/function-transformer.png", // Reusing an image temporarily
       // age: "Ages 12-16",
@@ -74,7 +75,7 @@ export default function GamesPage() {
       title: "Calculus Legends",
       description: "Test your knowledge about the brilliant minds behind calculus in this fun trivia game.",
       icon: <History className="h-6 w-6" />,
-      href: "/calculus/games/calculus-legends",
+      href: "/calculus/games/calculus-legends" as Route,
       color: "from-amber-600 to-red-500",
       // age: "Ages 10-15",
     },

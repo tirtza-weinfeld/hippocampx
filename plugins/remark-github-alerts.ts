@@ -48,3 +48,5 @@ export const remarkGithubAlerts: Plugin = () => (tree: Node) => {
     } as Node;
   });
 };
+
+export default remarkGithubAlerts;

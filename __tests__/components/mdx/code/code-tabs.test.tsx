@@ -240,7 +240,7 @@ describe('CodeTabs Component', () => {
           </CodeTabsList>
           <CodeTab file="test.py">
             <MockCodeBlock>
-              <code>print("Hello, World!")</code>
+              <code>{'print("Hello, World!")'}</code>
             </MockCodeBlock>
           </CodeTab>
         </CodeTabs>

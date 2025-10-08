@@ -6,13 +6,16 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button"
 import { CoinsIcon as CoinIcon, Dices, PlayCircle, WalletCardsIcon as Cards } from "lucide-react"
 import Image from "next/image"
+import { Route } from "next"
+
+
 export function FeaturedExperiments() {
   const experiments = [
     {
       title: "Coin Flip Simulator",
       description: "Flip virtual coins and track the results to see probability in action.",
       icon: <CoinIcon className="h-6 w-6" />,
-      href: "/calculus/experiments/coin-flip",
+      href: "/calculus/experiments/coin-flip" as Route,
       color: "from-violet-500 to-fuchsia-400",
       image: "/placeholder.svg?height=200&width=400",
     },
@@ -20,7 +23,7 @@ export function FeaturedExperiments() {
       title: "Dice Roll Challenge",
       description: "Roll dice and predict outcomes while learning about random chance.",
       icon: <Dices className="h-6 w-6" />,
-      href: "/calculus/experiments/dice-roll",
+      href: "/calculus/experiments/dice-roll" as Route,
       color: "from-amber-500 to-orange-400",
       image: "/placeholder.svg?height=200&width=400",
     },
@@ -28,7 +31,7 @@ export function FeaturedExperiments() {
       title: "Card Probability",
       description: "Draw cards from a deck and discover the probability of different hands.",
       icon: <Cards className="h-6 w-6" />,
-      href: "/calculus/experiments/card-probability",
+      href: "/calculus/experiments/card-probability" as Route,
       color: "from-green-500 to-emerald-400",
       image: "/placeholder.svg?height=200&width=400",
     },

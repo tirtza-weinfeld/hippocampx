@@ -552,6 +552,18 @@
       "difficulty": "medium",
       "topics": ["heap", "min-heap"]
     },
+    "198-house-robber": {
+      "solutions": {
+        "solution.py": {
+          "code": "def rob(houses: list[int]) -> int:\n    memo = {}\n    def dp(h):\n        if h >= len(houses):\n            return 0\n        if h not in memo:\n            memo[h] = max(houses[h] + dp(h + 2), dp(h + 1))\n        return memo[h]\n    return dp(0)"
+        }
+      },
+      "title": "House Robber",
+      "definition": "Given houses[i] = money in house i, return the maximum amount you can rob without robbing two adjacent house.",
+      "leetcode": "https://leetcode.com/problems/house-robber",
+      "difficulty": "medium",
+      "topics": ["dynamic_programming", "dynamic_programming-1D"]
+    },
     "146-lru-cache": {
       "solutions": {
         "solution.py": {

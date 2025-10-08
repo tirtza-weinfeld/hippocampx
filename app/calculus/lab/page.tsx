@@ -11,6 +11,7 @@ import {
   BarChart4,
 } from "lucide-react"
 import { PageTransition } from "@/components/calculus/page-transition"
+import { Route } from "next"
 
 export default function LabPage() {
   const activities = [
@@ -18,7 +19,7 @@ export default function LabPage() {
       title: "Slope Explorer",
       description: "Visualize derivatives and tangent lines on interactive curves.",
       icon: <TrendingUp className="h-6 w-6" />,
-      href: "/calculus/lab/slope-explorer",
+      href: "/calculus/lab/slope-explorer" as Route,
       color: "from-blue-500 to-sky-400",
       emoji: "📈",
       difficulty: "Beginner",
@@ -27,7 +28,7 @@ export default function LabPage() {
       title: "Area Builder",
       description: "Discover the power of integrals by finding areas under curves.",
       icon: <Layers className="h-6 w-6" />,
-      href: "/calculus/lab/area-builder",
+      href: "/calculus/lab/area-builder" as Route,
       color: "from-green-500 to-emerald-400",
       emoji: "📐",
       difficulty: "Beginner",
@@ -36,7 +37,7 @@ export default function LabPage() {
       title: "Function Laboratory",
       description: "Build, transform, and analyze functions to see calculus in action.",
       icon: <Function className="h-6 w-6" />,
-      href: "/calculus/lab/function-laboratory",
+      href: "/calculus/lab/function-laboratory" as Route,
       color: "from-indigo-500 to-violet-400",
       emoji: "🧪",
       difficulty: "Intermediate",
@@ -45,7 +46,7 @@ export default function LabPage() {
       title: "Limit Approach",
       description: "See what happens as x approaches different values in interactive functions.",
       icon: <ArrowDownUp className="h-6 w-6" />,
-      href: "/calculus/lab/limit-approach",
+      href: "/calculus/lab/limit-approach" as Route,
       color: "from-purple-500 to-indigo-400",
       emoji: "🔍",
       difficulty: "Intermediate",
@@ -54,7 +55,7 @@ export default function LabPage() {
       title: "Rate Analyzer",
       description: "Explore rates of change in real-world scenarios with interactive simulations.",
       icon: <Activity className="h-6 w-6" />,
-      href: "/calculus/lab/rate-analyzer",
+      href: "/calculus/lab/rate-analyzer" as Route,
       color: "from-red-500 to-pink-400",
       emoji: "⏱️",
       difficulty: "Advanced",
@@ -63,7 +64,7 @@ export default function LabPage() {
       title: "Graph Creator",
       description: "Create and analyze your own mathematical functions and their derivatives.",
       icon: <BarChart4 className="h-6 w-6" />,
-      href: "/calculus/lab/graph-creator",
+      href: "/calculus/lab/graph-creator" as Route,
       color: "from-amber-500 to-orange-400",
       emoji: "📊",
       difficulty: "Advanced",

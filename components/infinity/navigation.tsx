@@ -16,6 +16,7 @@ import {
 } from "lucide-react"
 import { useIsMobile as useMobile } from "@/hooks/use-mobile"
 import { cn } from "@/lib/utils"
+import { Route } from "next"
 
 // Infinity-themed symbols for decoration
 const infinitySymbols = ["∞", "ℵ", "ω", "⧜", "∝", "⧞"]
@@ -447,7 +448,7 @@ export function Navigation() {
 
                       {/* Navigation button */}
                       <Link
-                        href={item.href}
+                        href={item.href as Route}
                         className={cn(
                           "flex items-center justify-center rounded-full shadow-lg transition-all relative",
                           "h-14 w-14",

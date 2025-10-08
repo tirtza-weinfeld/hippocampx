@@ -116,6 +116,12 @@
       "215-kth-largest-element-in-an-array",
       "347-top-k-frequent-elements"
     ],
+    "dynamic_programming": [
+      "198-house-robber"
+    ],
+    "dynamic_programming-1D": [
+      "198-house-robber"
+    ],
     "greedy": [
       "122-best-time-to-buy-and-sell-stock-ii"
     ],
@@ -166,6 +172,7 @@
       "153-find-minimum-in-rotated-sorted-array",
       "1590-make-sum-divisible-by-p",
       "1631-path-with-minimum-effort",
+      "198-house-robber",
       "200-number-of-islands",
       "208-implement-trie-prefix-tree",
       "211-design-add-and-search-words-data-structure",

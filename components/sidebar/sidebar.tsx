@@ -15,6 +15,7 @@ import { InfinityFontSelector } from "./infinity-font-selector"
 import { ThemeToggle } from "@/components/theme/theme-toggle"
 import { routes, NavigationItem } from "@/lib/routes"
 import { SparklesToggle } from "@/components/calculus/ui/sparkles-toggle"
+import { Route } from "next"
 
 type SidebarProps = {
   readonly children: ReactNode
@@ -191,7 +192,7 @@ export function Sidebar({ children, defaultOpen }: SidebarProps) {
     }
 
     if (shouldNavigate) {
-      router.push(href)
+      router.push(href as Route)
     }
 
     if (parentHref) {
@@ -674,7 +675,7 @@ function NavItem({ item, isExpanded, pathname, onClick, isOpen, onOpenChange, re
                   ref={(el) => registerRef(child.href, el)}
                 >
                   <Link
-                    href={child.href}
+                    href={child.href as Route}
                     className={cn(
                       "flex rounded-lg px-3 py-2 text-sm transition-all duration-200",
                       pathname === child.href
@@ -702,7 +703,7 @@ function NavItem({ item, isExpanded, pathname, onClick, isOpen, onOpenChange, re
     return (
       <li ref={itemRef} className="relative">
         <Link
-          href={item.href}
+          href={item.href as Route}
           className={cn(
             "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
             isActive ? "bg-primary/15 text-primary" : "hover:bg-muted/50",
@@ -796,7 +797,7 @@ function NavItem({ item, isExpanded, pathname, onClick, isOpen, onOpenChange, re
                     <div key={child.title}>
                       <Link
                         ref={(el) => registerRef(child.href, el)}
-                        href={child.href}
+                        href={child.href as Route}
                         className={cn(
                           "flex w-full justify-start px-3 py-2 text-sm rounded-lg transition-all items-center",
                           pathname === child.href
@@ -832,7 +833,7 @@ function NavItem({ item, isExpanded, pathname, onClick, isOpen, onOpenChange, re
           <Tooltip>
             <TooltipTrigger asChild>
               <Link
-                href={item.href}
+                href={item.href as Route}
                 className={cn("flex h-10 w-10 justify-center rounded-lg transition-all items-center hover:bg-primary/10", isActive ? "bg-primary/10" : "")}
                 aria-label={item.title}
               >
@@ -888,7 +889,7 @@ function NavItem({ item, isExpanded, pathname, onClick, isOpen, onOpenChange, re
           </Button>
         ) : (
           <Link
-            href={item.href}
+            href={item.href as Route}
             className={cn(
               "flex w-full justify-start gap-3 rounded-lg text-sm font-medium transition-all h-10 px-3 items-center",
               isActive ? "bg-primary/10" : "",
@@ -945,7 +946,7 @@ function NavItem({ item, isExpanded, pathname, onClick, isOpen, onOpenChange, re
                     ref={(el) => registerRef(child.href, el)}
                   >
                     <Link
-                      href={child.href}
+                      href={child.href as Route}
                       className={cn(
                         "flex rounded-lg px-3 mr-1 py-2 text-sm transition-all",
                         pathname === child.href

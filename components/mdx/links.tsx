@@ -5,6 +5,7 @@ import type { ReactNode, ComponentPropsWithoutRef } from "react"
 import { ArrowUpRight, ExternalLink } from "lucide-react"
 import { cn } from "@/lib/utils"
 import Link from "next/link"
+import { Route } from "next"
 
 
 
@@ -19,7 +20,7 @@ export const CustomLink = ({ href, children, className, onClick, ...rest }: Link
 
   return (
     <Link
-      href={href || ""}
+      href={href as Route|| ""}
       className={cn("inline-flex items-center gap-1 relative group", className)}
       target={isExternal ? "_blank" : undefined}
       rel={isExternal ? "noopener noreferrer" : undefined}

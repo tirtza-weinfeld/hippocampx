@@ -1,53 +1,34 @@
 import type { NextConfig } from "next";
 import createMDX from '@next/mdx'
-import remarkMath from 'remark-math'
-import rehypeKatex from 'rehype-katex'
-import rehypeMdxCodeProps from 'rehype-mdx-code-props'
-import rehypeSlug from 'rehype-slug'
-import rehypeAutolinkHeadings from 'rehype-autolink-headings'
-import remarkGfm from 'remark-gfm'
-import remarkInjectToc from "@/plugins/toc-plugin"
-import { remarkGithubAlerts } from "@/plugins/remark-github-alerts"
-// import remarkSmartCodeImport from "@/plugins/remark-smart-code-import"
-import remarkCodeCopy from "@/plugins/remark-code-copy"
-import remarkFeatureList from "@/plugins/remark-feature-list"
-import remarkListVariants from "@/plugins/remark-list-variants"
-import { remarkHeaderSection } from "@/plugins/remark-header-section"
-import { remarkTypography } from "@/plugins/remark-typography"
-import { remarkSectionList } from "@/plugins/remark-section-list"
-import remarkCodeTabs from "@/plugins/remark-code-tabs"
-import { remarkCollapsibleSection } from "@/plugins/remark-collapsible-section"
 
+// import remarkMath from 'remark-math'
+// import rehypeKatex from 'rehype-katex'
+// import rehypeMdxCodeProps from 'rehype-mdx-code-props'
+// import rehypeSlug from 'rehype-slug'
+// import rehypeAutolinkHeadings from 'rehype-autolink-headings'
 const withMDX = createMDX({
   extension: /\.mdx?$/,
   options: {
     remarkPlugins: [
-      remarkMath,
-      remarkGfm,
-      remarkTypography,
-
-      remarkCodeTabs,       // Must run BEFORE remarkHeaderSection to catch [!CodeTabs] markers
-      remarkCollapsibleSection,  // Must run BEFORE remarkHeaderSection to catch [!Collapsible] markers
-
-      remarkHeaderSection,
-      remarkSectionList,
-
-      remarkInjectToc,
-
-      remarkGithubAlerts,
-      remarkCodeCopy,
-      // remarkSmartCodeImport,
-
-      remarkFeatureList,    // Must run before remarkListVariants
-      remarkListVariants,
+      'remark-math',
+      'remark-gfm',
+      '@hippocampx/plugins/remark-typography',
+      '@hippocampx/plugins/remark-code-tabs',
+      '@hippocampx/plugins/remark-header-section',
+      '@hippocampx/plugins/remark-section-list',
+      '@hippocampx/plugins/toc-plugin',
+      '@hippocampx/plugins/remark-github-alerts',
+      '@hippocampx/plugins/remark-code-copy',
+      '@hippocampx/plugins/remark-feature-list',
+      '@hippocampx/plugins/remark-list-variants',
 
 
       ],
     rehypePlugins: [
-      rehypeKatex,
-      [rehypeMdxCodeProps, { tagName: 'code' }],
-      rehypeSlug,
-      [rehypeAutolinkHeadings,
+      'rehype-katex',
+      ['rehype-mdx-code-props', { tagName: 'code' }],
+      'rehype-slug',
+      ['rehype-autolink-headings',
         {
           behavior: 'wrap',
           properties: {
@@ -59,11 +40,12 @@ const withMDX = createMDX({
 })
 
 const nextConfig: NextConfig = {
-  experimental: {
-    // ppr: true,
-    mdxRs: false,
-    reactCompiler: true,
-  },
+  typedRoutes: true,
+  reactCompiler: true,
+  // experimental: {
+  //   // ppr: true,
+  //   mdxRs: false,
+  // },
   pageExtensions: ['ts', 'tsx', 'mdx'],
   // Force CSS updates during development
   // webpack: (config, { dev, isServer }) => {
@@ -88,6 +70,7 @@ const nextConfig: NextConfig = {
         pathname: '/**',
       },
     ],
+    // qualities: [75, 100],
   },
 }
 

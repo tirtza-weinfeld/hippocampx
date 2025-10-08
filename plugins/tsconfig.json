@@ -1,0 +1,29 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": ".",
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "skipLibCheck": true,
+    "strict": false,
+    "noImplicitAny": false,
+    "noEmit": false
+  },
+  "include": [
+    "./remark-typography.ts",
+    "./remark-code-tabs.ts",
+    "./remark-header-section.ts",
+    "./remark-section-list.ts",
+    "./toc-plugin.ts",
+    "./remark-github-alerts.ts",
+    "./remark-code-copy",
+    "./remark-feature-list.ts",
+    "./remark-list-variants.ts",
+    "./mdx-text-extraction.ts",
+    "./lib/step-colors.ts",
+    "./mdast-types.d.ts"
+  ],
+  "exclude": ["node_modules", "dist"]
+}

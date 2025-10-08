@@ -5,6 +5,7 @@ import Link from "next/link"
 import { ArrowRight, ActivityIcon as Function, Activity, TrendingUp, ArrowDownUp, Layers, Sigma } from "lucide-react"
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { useReducedMotion } from "motion/react"
+import { Route } from "next"
 
 export function LearningPathways() {
   const shouldReduceMotion = useReducedMotion()
@@ -119,7 +120,7 @@ export function LearningPathways() {
                       }
                 }
               >
-                <Link href={pathway.href} className="block h-full">
+                <Link href={pathway.href  as Route} className="block h-full">
                   <Card className="h-full overflow-hidden transition-all border-2 border-border bg-background/60 backdrop-blur-sm">
                     <div
                       className={`absolute inset-0 bg-gradient-to-br ${pathway.color} opacity-0 hover:opacity-10 transition-opacity duration-300`}

@@ -1,0 +1,28 @@
+{
+  "name": "@hippocampx/plugins",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "files": ["dist"],
+  "scripts": {
+    "build": "../node_modules/.bin/tsc || true"
+  },
+  "exports": {
+    "./remark-typography": "./dist/remark-typography.js",
+    "./remark-code-tabs": "./dist/remark-code-tabs.js",
+    "./remark-header-section": "./dist/remark-header-section.js",
+    "./remark-section-list": "./dist/remark-section-list.js",
+    "./toc-plugin": "./dist/toc-plugin.js",
+    "./remark-github-alerts": "./dist/remark-github-alerts.js",
+    "./remark-code-copy": "./dist/remark-code-copy/index.js",
+    "./remark-feature-list": "./dist/remark-feature-list.js",
+    "./remark-list-variants": "./dist/remark-list-variants.js"
+  },
+  "dependencies": {
+    "unified": "^11.0.5",
+    "unist-util-visit": "^5.0.0",
+    "@types/mdast": "^4.0.4",
+    "@types/hast": "^3.0.4",
+    "@types/unist": "^3.0.3"
+  }
+}

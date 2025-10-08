@@ -16,6 +16,7 @@ import {
 } from "lucide-react"
 import { useIsMobile as useMobile } from "@/hooks/use-mobile"
 import { cn } from "@/lib/utils"
+import { Route } from "next"
 
 // Binary symbols for decoration
 const binarySymbols = ["0", "1", "10", "11", "100", "101", "110", "111"]
@@ -549,7 +550,7 @@ export function Navigation() {
 
                       <Link
                         ref={(el) => { navItemRefs.current[index] = el }}
-                        href={item.href}
+                        href={item.href as Route}
                         className={cn(
                           "flex items-center justify-center rounded-full shadow-lg transition-all relative",
                           "h-14 w-14", // Same size for all

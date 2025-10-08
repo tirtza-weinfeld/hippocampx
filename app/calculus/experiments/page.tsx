@@ -3,13 +3,15 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button"
 import { CoinsIcon as CoinIcon, Dices, PlayCircle, WalletCardsIcon as Cards, Shuffle, PieChart } from "lucide-react"
 import Image from "next/image"
+import type { Route } from "next"
+
 export default function ExperimentsPage() {
   const experiments = [
     {
       title: "Coin Flip Simulator",
       description: "Flip virtual coins and track the results to see probability in action.",
       icon: <CoinIcon className="h-6 w-6" />,
-      href: "/experiments/coin-flip",
+      href: "/experiments/coin-flip" as Route,
       color: "from-violet-500 to-fuchsia-400",
       image: "/placeholder.svg?height=200&width=400",
       difficulty: "Beginner",
@@ -18,7 +20,7 @@ export default function ExperimentsPage() {
       title: "Dice Roll Challenge",
       description: "Roll dice and predict outcomes while learning about random chance.",
       icon: <Dices className="h-6 w-6" />,
-      href: "/experiments/dice-roll",
+      href: "/experiments/dice-roll" as Route,
       color: "from-amber-500 to-orange-400",
       image: "/placeholder.svg?height=200&width=400",
       difficulty: "Beginner",
@@ -27,7 +29,7 @@ export default function ExperimentsPage() {
       title: "Card Probability",
       description: "Draw cards from a deck and discover the probability of different hands.",
       icon: <Cards className="h-6 w-6" />,
-      href: "/experiments/card-probability",
+      href: "/experiments/card-probability" as Route,
       color: "from-green-500 to-emerald-400",
       image: "/placeholder.svg?height=200&width=400",
       difficulty: "Intermediate",
@@ -36,7 +38,7 @@ export default function ExperimentsPage() {
       title: "Spinner Probability",
       description: "Create custom spinners and predict where they'll land.",
       icon: <PieChart className="h-6 w-6" />,
-      href: "/experiments/spinner",
+      href: "/experiments/spinner" as Route,
       color: "from-blue-500 to-cyan-400",
       image: "/placeholder.svg?height=200&width=400",
       difficulty: "Intermediate",
@@ -45,7 +47,7 @@ export default function ExperimentsPage() {
       title: "Marble Grab",
       description: "Grab marbles from a bag and calculate the probability of different colors.",
       icon: <Shuffle className="h-6 w-6" />,
-      href: "/experiments/marble-grab",
+      href: "/experiments/marble-grab" as Route,
       color: "from-pink-500 to-rose-400",
       image: "/placeholder.svg?height=200&width=400",
       difficulty: "Advanced",
@@ -54,7 +56,7 @@ export default function ExperimentsPage() {
       title: "Probability Calculator",
       description: "Calculate the probability of complex events with this interactive tool.",
       icon: <PlayCircle className="h-6 w-6" />,
-      href: "/experiments/calculator",
+      href: "/experiments/calculator" as Route,
       color: "from-indigo-500 to-violet-400",
       image: "/placeholder.svg?height=200&width=400",
       difficulty: "Advanced",

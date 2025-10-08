@@ -10,6 +10,7 @@ import { SearchEmptyState } from "./search-dialog/search-empty-state"
 import { SearchShortcut } from "./search-dialog/search-shortcut"
 import { routes } from "@/lib/routes"
 import { SortableList } from "@/components/ui/sortable-list"
+import { Route } from "next"
 
 interface SearchDialogProps {
   isOpen: boolean
@@ -446,7 +447,7 @@ export function SearchDialog({
         )}
       >
         <Link
-          href={item.href}
+          href={item.href as Route}
           onClick={() => {
             // Add to recent searches
             addToRecentSearches({

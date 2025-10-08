@@ -44,7 +44,8 @@ export function extractDisplayTextFromHeading(node: Heading): string {
       }
     } else if ('children' in node && Array.isArray(node.children)) {
       // Recursively process children
-      node.children.forEach((child: Node) =>
+      const children = node.children as Node[]
+      children.forEach((child) =>
         visitTextNodes(child as MdastNode)
       )
     }
@@ -97,7 +98,8 @@ export function extractTextFromHeading(node: Heading): string {
       }
     } else if ('children' in node && Array.isArray(node.children)) {
       // Recursively process children
-      node.children.forEach((child: Node) =>
+      const children = node.children as Node[]
+      children.forEach((child) =>
         visitTextNodes(child as MdastNode)
       )
     }

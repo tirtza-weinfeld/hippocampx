@@ -17,6 +17,7 @@ import {
 import { useIsMobile as useMobile } from "@/hooks/use-mobile"
 import { cn } from "@/lib/utils"
 import { VisuallyHidden } from "@/components/calculus/visually-hidden"
+import { Route } from "next"
 // import { SparklesCore } from "@/components/calculus/ui/sparkles"
 
 // Math symbols for decoration
@@ -500,7 +501,7 @@ export function Navigation() {
                     >
                       <Link
                         ref={(el) => { navItemRefs.current[index] = el }}
-                        href={item.href}
+                        href={item.href as Route}
                         className={cn(
                           "flex items-center justify-center rounded-full shadow-lg transition-all",
                           active ? "h-16 w-16" : "h-14 w-14",

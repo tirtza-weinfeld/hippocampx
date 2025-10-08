@@ -3,7 +3,7 @@ import type { Plugin } from 'unified'
 import type { Node } from 'unist'
 import { visit } from 'unist-util-visit'
 import GithubSlugger from 'github-slugger'
-import { extractTextFromHeading } from '../lib/mdx-text-extraction'
+import { extractTextFromHeading } from './mdx-text-extraction.js'
 
 interface MdxJsxAttribute {
   type: 'mdxJsxAttribute'
@@ -150,3 +150,5 @@ function extractSectionContent(parent: Parent, headingIndex: number, currentDept
 
   return content
 }
+
+export default remarkCollapsibleSection
