@@ -4,7 +4,7 @@ import React from "react"
 import { motion } from "motion/react"
 import type { ReactNode } from "react"
 import { cn } from "@/lib/utils"
-// import { CustomHeaders } from "./custom/headers"
+import { CustomHeaders } from "./custom/headers"
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -19,33 +19,49 @@ interface TypographyProps {
   [key: string]: unknown
 }
 
-//currently not using custom components for headers
 const withCustomComponent = (WrappedComponent: React.ComponentType<TypographyProps>, headerTag: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6') => {
-  const ComponentWithCustomHeader = ({ children, className, ...props }: TypographyProps) => {
-    // const component = props['component'] as string | undefined
-    
-    // if (component) {
-    //   const Component = CustomHeaders[component as keyof typeof CustomHeaders] || ((props: TypographyProps) => <div {...props} />)
-    //   return (
-    //     <Component>
-    //       {React.createElement(headerTag, {
-    //         className: cn(className, 
-    //           headerTag === 'h1' && 'text-3xl md:text-4xl ',
-    //           headerTag === 'h2' && 'text-2xl md:text-3xl ',
-    //           headerTag === 'h3' && 'text-xl md:text-2xl ',
-    //           headerTag === 'h4' && 'text-lg md:text-xl ',
-    //           headerTag === 'h5' && 'text-lg md:text-xl ',
-    //           headerTag === 'h6' && 'text-base md:text-lg ',
-    //         ),
-    //         ...props
-    //       }, children)}
-    //     </Component>
-    //   )
-    // }
-    
+  function ComponentWithCustomHeader({ children, className, ...props }: TypographyProps) {
+    const componentName = props['component'] as string | undefined
+
+    // if (componentName && 'ProblemTimeComplexityHeader' === componentName) {
+    if (false) {
+      const CustomComponent = CustomHeaders[componentName as keyof typeof CustomHeaders]
+
+      if (CustomComponent) {
+        const headerClassName = cn(
+          className,
+          headerTag === 'h1' && 'text-3xl md:text-4xl',
+          headerTag === 'h2' && 'text-2xl md:text-3xl',
+          headerTag === 'h3' && 'text-xl md:text-2xl',
+          headerTag === 'h4' && 'text-lg md:text-xl',
+          headerTag === 'h5' && 'text-lg md:text-xl',
+          headerTag === 'h6' && 'text-base md:text-lg'
+        )
+
+        if (headerTag === 'h1') {
+          return <CustomComponent><h1 className={headerClassName} {...props}>{children}</h1></CustomComponent>
+        }
+        if (headerTag === 'h2') {
+          return <CustomComponent><h2 className={headerClassName} {...props}>{children}</h2></CustomComponent>
+        }
+        if (headerTag === 'h3') {
+          return <CustomComponent><h3 className={headerClassName} {...props}>{children}</h3></CustomComponent>
+        }
+        if (headerTag === 'h4') {
+          return <CustomComponent><h4 className={headerClassName} {...props}>{children}</h4></CustomComponent>
+        }
+        if (headerTag === 'h5') {
+          return <CustomComponent><h5 className={headerClassName} {...props}>{children}</h5></CustomComponent>
+        }
+        if (headerTag === 'h6') {
+          return <CustomComponent><h6 className={headerClassName} {...props}>{children}</h6></CustomComponent>
+        }
+      }
+    }
+
     return <WrappedComponent className={className} {...props}>{children}</WrappedComponent>
   }
-  
+
   ComponentWithCustomHeader.displayName = `withCustomComponent(${WrappedComponent.displayName || WrappedComponent.name || 'Component'})`
   return ComponentWithCustomHeader
 }
@@ -84,7 +100,8 @@ const H3Base = ({ children, className, ...props }: TypographyProps) => {
 
   return (
     <motion.div {...fadeInUp} className="relative mb-6 mt-10">
-      <h3 className={cn("text-2xl md:text-3xl font-bold tracking-tight", "text-gray-800 dark:text-gray-200", className)} {...props}>
+
+      <h3 className={cn(" text-2xl md:text-3xl font-bold tracking-tight  leading-tight", "text-gray-800 dark:text-gray-200", className)} {...props}>
         {children}
       </h3>
     </motion.div>

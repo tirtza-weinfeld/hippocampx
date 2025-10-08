@@ -380,7 +380,7 @@ def extract_problem_metadata(problem_dir: Path) -> dict[str, dict]:
             docstring = ast.get_docstring(tree, clean=True)
             if docstring:
                 # Parse using simplified format for __init__.py sections
-                expected_sections = ['Title', 'Definition', 'Leetcode', 'Difficulty', 'Topics']
+                expected_sections = ['Title', 'Definition', 'Leetcode', 'Difficulty', 'Topics', 'Group']
                 meta = parse_simple_docstring(docstring, expected_sections)
 
                 # Map sections to problem metadata fields (direct mapping)
@@ -395,6 +395,18 @@ def extract_problem_metadata(problem_dir: Path) -> dict[str, dict]:
                         else:
                             # Fallback: treat as comma-separated string
                             problem_data['topics'] = [topic.strip() for topic in value.split(',')]
+                    elif key == 'group' and value:
+                        # Handle Group: parse into list of lists
+                        # Format: [file1.py, file2.py]\n[file3.py] -> [["file1.py", "file2.py"], ["file3.py"]]
+                        groups = []
+                        for line in value.split('\n'):
+                            line = line.strip()
+                            if line.startswith('[') and line.endswith(']'):
+                                # Extract content between brackets and split by comma
+                                files = line[1:-1].split(',')
+                                groups.append([f.strip() for f in files])
+                        if groups:
+                            problem_data['group'] = groups
                     else:
                         problem_data[key] = value
 
@@ -437,6 +449,48 @@ def process_directory(directory_path: Path, directory_name: str) -> dict[str, di
 
     return all_items
 
+class CompactJSONEncoder(json.JSONEncoder):
+    """Custom JSON encoder that keeps arrays compact (single-line)."""
+    def encode(self, obj):
+        if isinstance(obj, list):
+            return '[' + ', '.join(json.dumps(item, ensure_ascii=False) if not isinstance(item, list)
+                                   else '[' + ', '.join(json.dumps(x, ensure_ascii=False) for x in item) + ']'
+                                   for item in obj) + ']'
+        return super().encode(obj)
+
+    def iterencode(self, obj, _one_shot=False):
+        """Encode while keeping lists compact."""
+        for chunk in super().iterencode(obj, _one_shot):
+            yield chunk
+
+def compact_json_dumps(obj):
+    """Custom JSON serialization with compact arrays."""
+    def format_value(value, depth=0):
+        ind = '  ' * depth
+        if isinstance(value, dict):
+            if not value:
+                return '{}'
+            items = []
+            for k, v in value.items():
+                formatted_v = format_value(v, depth + 1)
+                items.append(f'{ind}  {json.dumps(k, ensure_ascii=False)}: {formatted_v}')
+            return '{\n' + ',\n'.join(items) + '\n' + ind + '}'
+        elif isinstance(value, list):
+            if not value:
+                return '[]'
+            # Compact array format
+            if all(isinstance(item, list) for item in value):
+                # List of lists (like group field)
+                formatted_items = ['[' + ', '.join(json.dumps(x, ensure_ascii=False) for x in item) + ']' for item in value]
+                return '[' + ', '.join(formatted_items) + ']'
+            else:
+                # Simple list (like topics field)
+                return '[' + ', '.join(json.dumps(item, ensure_ascii=False) for item in value) + ']'
+        else:
+            return json.dumps(value, ensure_ascii=False)
+
+    return format_value(obj)
+
 def main():
     """Main extraction function."""
     # Path to algorithms directory (parent of both problems and core)
@@ -463,7 +517,7 @@ def main():
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
     with open(output_path, 'w', encoding='utf-8') as f:
-        json.dump(output_data, f, indent=2, ensure_ascii=False)
+        f.write(compact_json_dumps(output_data))
 
     print(f"\n✅ Extracted metadata for {len(all_problems)} problems and {len(all_core)} core algorithms")
     print(f"Output: {output_path}")

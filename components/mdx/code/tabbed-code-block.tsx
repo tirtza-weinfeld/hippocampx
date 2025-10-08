@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useCallback } from 'react'
-import { motion, AnimatePresence } from 'motion/react'
+import { motion, AnimatePresence, useReducedMotion } from 'motion/react'
 import { cn } from '@/lib/utils'
 import CopyCode from './copy-code'
 
@@ -18,6 +18,7 @@ export interface TabbedCodeBlockProps {
 
 export default function TabbedCodeBlock({ tabs, className }: TabbedCodeBlockProps) {
   const [selectedTab, setSelectedTab] = useState<string>(tabs[0]?.label ?? '')
+  const shouldReduceMotion = useReducedMotion()
 
   const handleTabChange = useCallback((tabLabel: string) => {
     setSelectedTab(tabLabel)
@@ -34,11 +35,10 @@ export default function TabbedCodeBlock({ tabs, className }: TabbedCodeBlockProp
   return (
     <div className={cn('w-full max-w-3xl mx-auto my-8', className)}>
       {/* Tab Navigation */}
-      <div className="relative mb-2 flex justify-center">
-        <div className="absolute inset-0 bg-gradient-to-r from-amber-200/60 via-pink-100/40 to-amber-100/60 dark:from-gray-800/80 dark:to-gray-900/80 rounded-xl blur-sm opacity-60 pointer-events-none" aria-hidden="true" />
+      <div className="relative flex justify-center">
         <div
           role="tablist"
-          className="relative flex gap-2 px-2 py-1 rounded-xl bg-white/80 dark:bg-gray-900/80 shadow-lg border border-gray-200 dark:border-gray-700"
+          className="relative flex gap-2 px-2 pb-0 rounded-t-lg bg-gray-100 dark:bg-gray-800 border-t border-x border-gray-200 dark:border-gray-700"
           aria-label="Code tabs"
         >
           {tabs.map(tab => (
@@ -49,21 +49,15 @@ export default function TabbedCodeBlock({ tabs, className }: TabbedCodeBlockProp
               aria-selected={selectedTab === tab.label}
               aria-controls={`tabpanel-${tab.label}`}
               className={cn(
-                'relative px-5 py-2 text-base font-semibold transition-all duration-200 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400',
+                'relative px-4 text-sm font-semibold transition-all duration-200 rounded-t-md',
+                'focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500',
                 selectedTab === tab.label
-                  ? 'text-amber-800 dark:text-amber-200 bg-amber-100/80 dark:bg-amber-900/60 shadow-md'
-                  : 'text-gray-600 dark:text-gray-400 bg-transparent hover:bg-amber-50/60 dark:hover:bg-gray-800/40'
+                  ? 'text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-900 border-t-2 border-x border-blue-500 border-b-0 pt-2 pb-0'
+                  : 'text-gray-600 dark:text-gray-400 bg-transparent hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50 py-2'
               )}
               onClick={() => handleTabChange(tab.label)}
             >
               {tab.label}
-              {selectedTab === tab.label && (
-                <motion.div
-                  className="absolute left-0 right-0 bottom-0 h-1 rounded-b bg-gradient-to-r from-amber-400 via-pink-300 to-amber-500 dark:from-amber-700 dark:to-pink-700"
-                  layoutId="activeTabUnderline"
-                  transition={{ type: 'spring', bounce: 0.3, duration: 0.5 }}
-                />
-              )}
             </button>
           ))}
         </div>
@@ -79,19 +73,20 @@ export default function TabbedCodeBlock({ tabs, className }: TabbedCodeBlockProp
               id={`tabpanel-${selectedTabData.label}`}
               aria-labelledby={`tab-${selectedTabData.label}`}
               className="outline-none"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2 }}
+              layout
+              initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={shouldReduceMotion ? { opacity: 1 } : { opacity: 0 }}
+              transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.2, ease: [0.32, 0.72, 0, 1] }}
             >
-              <div className="shadow-2xl rounded-2xl dark:bg-gray-900 bg-white/90 border border-gray-200 dark:border-gray-800 p-6 md:p-8 mt-2">
+              <div className="shadow-lg rounded-b-lg dark:bg-gray-900 bg-white border-x border-b border-gray-200 dark:border-gray-700 p-4">
                 <div className="relative">
                   <CopyCode
                     className="absolute top-2 right-2 z-10"
                     code={selectedTabData.code}
                   />
-                  <div className="overflow-x-auto py-4 md:py-6 text-[1.05rem] leading-relaxed">
-                    <pre className={`language-${selectedTabData.language} bg-transparent p-0 m-0`}>
+                  <div className="overflow-x-auto py-4 md:py-6 text-sm leading-relaxed">
+                    <pre className={`language-${selectedTabData.language} bg-transparent p-0 m-0 font-mono`}>
                       <code className={`language-${selectedTabData.language} whitespace-pre-wrap break-words`}>
                         {selectedTabData.code || 'No code.'}
                       </code>

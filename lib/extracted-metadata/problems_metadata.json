@@ -12,9 +12,7 @@
       "definition": "Given a partially filled *9×9* board with digits *1–9* and *.* for empty cells, solve it. *[19!]It is guaranteed that the input board has only one solution*",
       "leetcode": "https://leetcode.com/problems/sudoku-solver",
       "difficulty": "hard",
-      "topics": [
-        "game"
-      ]
+      "topics": ["game"]
     },
     "1631-path-with-minimum-effort": {
       "solutions": {
@@ -34,9 +32,7 @@
       "definition": "Find a path from the top-left to the bottom-right of a height grid that minimizes the \"effort\". - Effort is the single largest height difference between any two adjacent cells on the path.",
       "leetcode": "https://leetcode.com/problems/path-with-minimum-effort",
       "difficulty": "medium",
-      "topics": [
-        "dijkstra"
-      ]
+      "topics": ["dijkstra"]
     },
     "909-snakes-and-ladders": {
       "solutions": {
@@ -50,9 +46,7 @@
       "definition": "Given an `n × n` integer board where cells are numbered from `1` to `n²` in a Boustrophedonical style. Each cell's value is either **[3!]-1** for a *[3!]normal* square or a **[16!]destination** number for a *[16!]snake/ladder*. Starting from square `1`, return the least number of moves to reach square `n²`. You must take any snake or ladder you land on.",
       "leetcode": "https://leetcode.com/problems/snakes-and-ladders",
       "difficulty": "medium",
-      "topics": [
-        "bfs"
-      ]
+      "topics": ["bfs"]
     },
     "1-two-sum": {
       "solutions": {
@@ -65,10 +59,7 @@
       "definition": "Given an array of integers `nums` and an integer `target`, return indices of the two numbers such that they add up to `target`.",
       "leetcode": "https://leetcode.com/problems/two-sum",
       "difficulty": "easy",
-      "topics": [
-        "hash-table",
-        "k-sum"
-      ]
+      "topics": ["hash-table", "k-sum"]
     },
     "152-maximum-product-subarray": {
       "solutions": {
@@ -80,9 +71,7 @@
       "definition": "Given an array of integers, return the maximum product of any contiguous subarray.",
       "leetcode": "https://leetcode.com/problems/maximum-product-subarray",
       "difficulty": "medium",
-      "topics": [
-        "dynamic-programming"
-      ]
+      "topics": ["dynamic-programming"]
     },
     "1293-shortest-path-in-a-grid-with-obstacles-elimination": {
       "solutions": {
@@ -116,9 +105,7 @@
       "definition": "Given an `m x n` grid where cells are either empty (`0`) or an obstacle (`1`), and an integer `k` representing the maximum number of obstacles you can eliminate, find the minimum number of steps to travel from the top-left corner `(0, 0)` to the bottom-right `(m-1, n-1)`. Each move (up, down, left, right) costs one step. If no such path exists, return `-1`.",
       "leetcode": "https://leetcode.com/problems/shortest-path-in-a-grid-with-obstacles-elimination",
       "difficulty": "hard",
-      "topics": [
-        "bfs"
-      ]
+      "topics": ["bfs"]
     },
     "648-replace-words": {
       "solutions": {
@@ -130,9 +117,7 @@
       "definition": "Given a list of words and a sentence, replace all words in the sentence with the shortest root that is a prefix of the word.",
       "leetcode": "https://leetcode.com/problems/replace-words",
       "difficulty": "medium",
-      "topics": [
-        "trie"
-      ]
+      "topics": ["trie"]
     },
     "394-decode-string": {
       "solutions": {
@@ -144,9 +129,7 @@
       "definition": "Given a string `s` that contains digits, letters, and brackets, decode the string.",
       "leetcode": "https://leetcode.com/problems/decode-string",
       "difficulty": "medium",
-      "topics": [
-        "stack"
-      ]
+      "topics": ["stack"]
     },
     "211-design-add-and-search-words-data-structure": {
       "solutions": {
@@ -158,9 +141,7 @@
       "definition": "Design a data structure that supports adding new words and finding if a string matches any previously added string. Supports '.' as a wildcard character.",
       "leetcode": "https://leetcode.com/problems/design-add-and-search-words-data-structure",
       "difficulty": "medium",
-      "topics": [
-        "trie"
-      ]
+      "topics": ["trie"]
     },
     "1406-stone-game-iii": {
       "solutions": {
@@ -174,10 +155,7 @@
       "definition": "Array stoneValue; players alternately take 1–3 stones from the left maximizing score difference. Return \"Alice\", \"Bob\", or \"Tie\" under optimal play.",
       "leetcode": "https://leetcode.com/problems/stone-game-iii",
       "difficulty": "hard",
-      "topics": [
-        "game",
-        "dynamic-programming"
-      ]
+      "topics": ["game", "dynamic-programming"]
     },
     "875-koko-eating-bananas": {
       "solutions": {
@@ -201,10 +179,7 @@
       "definition": "Given banana piles `piles` and hour limit `h`, find the minimum eating speed\n**$k\\in\\mathbb{N}$** such that $\\sum_{i=1}^{|piles|} \\lceil \\frac{p_i}{k} \\rceil \\leq h$ where each hour Koko eats up to `k` bananas from one pile (any leftover hour is wasted)",
       "leetcode": "https://leetcode.com/problems/koko-eating-bananas",
       "difficulty": "medium",
-      "topics": [
-        "binary-search",
-        "binary-search-answer-space"
-      ]
+      "topics": ["binary-search", "binary-search-answer-space"]
     },
     "460-lfu-cache": {
       "solutions": {
@@ -216,9 +191,7 @@
       "definition": "A cache that evicts the least frequently used item when the cache is full.",
       "leetcode": "https://leetcode.com/problems/lfu-cache",
       "difficulty": "hard",
-      "topics": [
-        "cache"
-      ]
+      "topics": ["cache"]
     },
     "133-clone-graph": {
       "solutions": {
@@ -248,9 +221,7 @@
       "definition": "Given a reference to a node in a connected undirected graph, return a deep copy (clone) of the graph.",
       "leetcode": "https://leetcode.com/problems/clone-graph",
       "difficulty": "medium",
-      "topics": [
-        "bfs"
-      ]
+      "topics": ["bfs"]
     },
     "238-product-of-array-except-self": {
       "solutions": {
@@ -264,10 +235,7 @@
       "definition": "Given an integer array nums, return an array answer such that `answer[i]` is equal to the product of all the elements of `nums` except `nums[i]`,      *[sky!]Achieve $O(n)$ time complexity and without using the division operator.*",
       "leetcode": "https://leetcode.com/problems/product-of-array-except-self",
       "difficulty": "medium",
-      "topics": [
-        "prefix-suffix",
-        "two-pass-scan"
-      ]
+      "topics": ["prefix-suffix", "two-pass-scan"]
     },
     "523-continuous-subarray-sum": {
       "solutions": {
@@ -284,9 +252,7 @@
       "definition": "Given an array of integers and a target k, determine if there exists a subarray with sum divisible by k.",
       "leetcode": "https://leetcode.com/problems/continuous-subarray-sum",
       "difficulty": "medium",
-      "topics": [
-        "prefix-sum"
-      ]
+      "topics": ["prefix-sum"]
     },
     "518-coin-change-ii": {
       "solutions": {
@@ -300,10 +266,7 @@
       "definition": "Given an array of coin denominations and a total amount, return the number of combinations of coins that make up that amount. You can assume an infinite number of each coin.",
       "leetcode": "https://leetcode.com/problems/coin-change-ii",
       "difficulty": "medium",
-      "topics": [
-        "dynamic-programming",
-        "knapsack"
-      ]
+      "topics": ["dynamic-programming", "knapsack"]
     },
     "416-partition-equal-subset-sum": {
       "solutions": {
@@ -317,9 +280,7 @@
       "definition": "Given an integer array `nums`, determine if you can partition it into two subsets with an equal sum.",
       "leetcode": "https://leetcode.com/problems/partition-equal-subset-sum",
       "difficulty": "medium",
-      "topics": [
-        "dynamic-programming"
-      ]
+      "topics": ["dynamic-programming"]
     },
     "188-best-time-to-buy-and-sell-stock-iv": {
       "solutions": {
@@ -334,9 +295,7 @@
       "definition": "Given a list of daily stock prices `prices` and an integer `k` (max transactions), return the maximum profit.",
       "leetcode": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock-iv",
       "difficulty": "hard",
-      "topics": [
-        "dynamic-programming"
-      ]
+      "topics": ["dynamic-programming"]
     },
     "20-valid-parentheses": {
       "solutions": {
@@ -349,9 +308,7 @@
       "definition": "Given a string `s` containing just the characters `'()', '{}', '[]'`,     determine if the input string is valid",
       "leetcode": "https://leetcode.com/problems/valid-parentheses",
       "difficulty": "easy",
-      "topics": [
-        "stack"
-      ]
+      "topics": ["stack"]
     },
     "370-range-addition": {
       "solutions": {
@@ -368,9 +325,7 @@
       "definition": "Given an array and a list of operations, apply range updates and return the final array.",
       "leetcode": "https://leetcode.com/problems/range-addition",
       "difficulty": "medium",
-      "topics": [
-        "prefix-sum"
-      ]
+      "topics": ["prefix-sum"]
     },
     "120-triangle": {
       "solutions": {
@@ -384,9 +339,7 @@
       "definition": "Given a `triangle` (list of lists), find the minimum path sum from top to bottom. From index `i` in a row, you may move to index `i` or `i + 1` in the next row.",
       "leetcode": "https://leetcode.com/problems/triangle",
       "difficulty": "medium",
-      "topics": [
-        "dynamic-programming"
-      ]
+      "topics": ["dynamic-programming"]
     },
     "787-cheapest-flights-within-k-stops": {
       "solutions": {
@@ -406,10 +359,7 @@
       "definition": "Given a list of flights where flights[i] = [from, to, price] represents a flight from city from to city to with a price price, and a starting city src and a destination city dst, your task is to find the cheapest price from src to dst with up to k stops. If there is no such route, return -1.",
       "leetcode": "https://leetcode.com/problems/cheapest-flights-within-k-stops",
       "difficulty": "medium",
-      "topics": [
-        "dijkstra",
-        "bfs"
-      ]
+      "topics": ["dijkstra", "bfs"]
     },
     "363-max-sum-of-rectangle-no-larger-than-k": {
       "solutions": {
@@ -421,9 +371,7 @@
       "definition": "Given a 2D matrix and a target sum, return the maximum sum of any submatrix no larger than K.",
       "leetcode": "https://leetcode.com/problems/max-sum-of-rectangle-no-larger-than-k",
       "difficulty": "hard",
-      "topics": [
-        "kadane"
-      ]
+      "topics": ["kadane"]
     },
     "778-swim-in-rising-water": {
       "solutions": {
@@ -443,9 +391,7 @@
       "definition": "You are given an `N x N` grid of elevations. Find the minimum \"time\" `t` to travel from `(0, 0)` to `(N-1, N-1)`. You can only move between adjacent cells if their elevation is less than or equal to the time `t`",
       "leetcode": "https://leetcode.com/problems/swim-in-rising-water",
       "difficulty": "hard",
-      "topics": [
-        "dijkstra"
-      ]
+      "topics": ["dijkstra"]
     },
     "525-contiguous-array": {
       "solutions": {
@@ -461,9 +407,7 @@
       "definition": "Given a binary array, find the maximum length of a contiguous subarray with equal number of 0 and 1.",
       "leetcode": "https://leetcode.com/problems/contiguous-array",
       "difficulty": "medium",
-      "topics": [
-        "prefix-sum"
-      ]
+      "topics": ["prefix-sum"]
     },
     "3-longest-substring-without-repeating-characters": {
       "solutions": {
@@ -483,9 +427,7 @@
       "definition": "Given a string `s`, find the length of the longest substring without repeating characters.",
       "leetcode": "https://leetcode.com/problems/longest-substring-without-repeating-characters",
       "difficulty": "medium",
-      "topics": [
-        "sliding-window"
-      ]
+      "topics": ["sliding-window"]
     },
     "51-n-queens": {
       "solutions": {
@@ -514,10 +456,7 @@
       "definition": "Place n queens on an n x n board such that no two queens threaten each other. *[19!]meaning no two queens share the same row, column, or diagonal*.",
       "leetcode": "https://leetcode.com/problems/n-queens",
       "difficulty": "hard",
-      "topics": [
-        "backtrack",
-        "game"
-      ]
+      "topics": ["backtrack", "game"]
     },
     "560-subarray-sum-equals-k": {
       "solutions": {
@@ -534,9 +473,7 @@
       "definition": "Given an array of integers and a target sum k, return the total number of continuous subarrays whose sum equals to k.",
       "leetcode": "https://leetcode.com/problems/subarray-sum-equals-k",
       "difficulty": "medium",
-      "topics": [
-        "prefix-sum"
-      ]
+      "topics": ["prefix-sum"]
     },
     "1590-make-sum-divisible-by-p": {
       "solutions": {
@@ -553,9 +490,7 @@
       "definition": "Given an array of positive integers and a positive integer p, remove the shortest subarray such that the sum of the remaining elements is divisible by p. Return the length of the shortest subarray to remove, or -1 if not possible.",
       "leetcode": "https://leetcode.com/problems/make-sum-divisible-by-p",
       "difficulty": "medium",
-      "topics": [
-        "prefix-sum"
-      ]
+      "topics": ["prefix-sum"]
     },
     "191-number-of-1-bits": {
       "solutions": {
@@ -572,9 +507,7 @@
       "definition": "Given a positive integer, return the number set bits (1s) in it's binary representation",
       "leetcode": "https://leetcode.com/problems/number-of-1-bits",
       "difficulty": "Easy",
-      "topics": [
-        "bit-manipulation"
-      ]
+      "topics": ["bit-manipulation"]
     },
     "70-climbing-stairs": {
       "solutions": {
@@ -589,9 +522,7 @@
       "definition": "You are climbing a staircase. It takes `n` steps to reach the top.     Each time you can either climb `1` or `2` steps.    In how many distinct ways can you climb to the top?",
       "leetcode": "https://leetcode.com/problems/climbing-stairs",
       "difficulty": "easy",
-      "topics": [
-        "dynamic-programming"
-      ]
+      "topics": ["dynamic-programming"]
     },
     "918-maximum-sum-of-circular-subarray": {
       "solutions": {
@@ -603,9 +534,7 @@
       "definition": "Given a circular array of integers, return the maximum sum of any contiguous subarray.",
       "leetcode": "https://leetcode.com/problems/maximum-sum-of-circular-subarray",
       "difficulty": "medium",
-      "topics": [
-        "kadane"
-      ]
+      "topics": ["kadane"]
     },
     "215-kth-largest-element-in-an-array": {
       "solutions": {
@@ -621,10 +550,7 @@
       "definition": "Given an integer array nums and an integer k, return the kth largest element in the array.",
       "leetcode": "https://leetcode.com/problems/kth-largest-element-in-an-array",
       "difficulty": "medium",
-      "topics": [
-        "heap",
-        "min-heap"
-      ]
+      "topics": ["heap", "min-heap"]
     },
     "146-lru-cache": {
       "solutions": {
@@ -636,9 +562,7 @@
       "definition": "A cache that evicts the least recently used item when the cache is full.",
       "leetcode": "https://leetcode.com/problems/lru-cache",
       "difficulty": "medium",
-      "topics": [
-        "cache"
-      ]
+      "topics": ["cache"]
     },
     "102-binary-tree-level-order-traversal": {
       "solutions": {
@@ -672,9 +596,7 @@
       "definition": "Given an array of integers and an integer k, return the number of non-empty subarrays that have a sum divisible by k.",
       "leetcode": "https://leetcode.com/problems/subarray-sums-divisible-by-k",
       "difficulty": "medium",
-      "topics": [
-        "prefix-sum"
-      ]
+      "topics": ["prefix-sum"]
     },
     "122-best-time-to-buy-and-sell-stock-ii": {
       "solutions": {
@@ -686,9 +608,7 @@
       "definition": "Given a list of daily stock prices `prices`; you may complete multiple transactions (buy → sell → buy …) but cannot hold more than one share at a time. Return the maximum total profit.",
       "leetcode": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock-ii",
       "difficulty": "medium",
-      "topics": [
-        "greedy"
-      ]
+      "topics": ["greedy"]
     },
     "33-search-in-rotated-sorted-array": {
       "solutions": {
@@ -700,10 +620,7 @@
       "definition": "Given a sorted array that has been left-rotated at an unknown pivot, return the index of a target value if found, otherwise return -1.\n    *[pink!] time complexity O(logn)*.",
       "leetcode": "https://leetcode.com/problems/search-in-rotated-sorted-array",
       "difficulty": "medium",
-      "topics": [
-        "binary-search",
-        "rotated-array"
-      ]
+      "topics": ["binary-search", "rotated-array"]
     },
     "124-binary-tree-maximum-path-sum": {
       "solutions": {
@@ -715,9 +632,7 @@
       "definition": "Given a binary tree, find the maximum path sum.",
       "leetcode": "https://leetcode.com/problems/binary-tree-maximum-path-sum",
       "difficulty": "hard",
-      "topics": [
-        "kadane"
-      ]
+      "topics": ["kadane"]
     },
     "1510-stone-game-iv": {
       "solutions": {
@@ -731,10 +646,7 @@
       "definition": "Alice and Bob alternately take turns removing a perfect square from the board. The first player to have no moves loses. Return True if Alice wins, False otherwise.",
       "leetcode": "https://leetcode.com/problems/stone-game-iv",
       "difficulty": "hard",
-      "topics": [
-        "dynamic-programming",
-        "game"
-      ]
+      "topics": ["dynamic-programming", "game"]
     },
     "153-find-minimum-in-rotated-sorted-array": {
       "solutions": {
@@ -751,9 +663,7 @@
       "definition": "Given a unique-element sorted array that has been rotated at an unknown pivot, find its minimum value.",
       "leetcode": "https://leetcode.com/problems/find-minimum-in-rotated-sorted-array",
       "difficulty": "medium",
-      "topics": [
-        "binary-search"
-      ]
+      "topics": ["binary-search"]
     },
     "994-rotting-oranges": {
       "solutions": {
@@ -767,9 +677,7 @@
       "definition": "Given an `m x n` 2D grid of `0`s (empty), `1`s (fresh), and `2`s (rotten), every minute, any fresh orange adjacent to a rotten one becomes rotten. Return the minimum minutes required until no fresh oranges remain. If it's impossible, return -1.",
       "leetcode": "https://leetcode.com/problems/rotting-oranges",
       "difficulty": "medium",
-      "topics": [
-        "bfs"
-      ]
+      "topics": ["bfs"]
     },
     "121-best-time-to-buy-and-sell-stock": {
       "solutions": {
@@ -786,9 +694,7 @@
       "definition": "Given a list of daily stock prices `prices`; choose one day to buy and a later day to sell for maximum profit. Return the max profit, or `0` if no profit is possible.",
       "leetcode": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock",
       "difficulty": "easy",
-      "topics": [
-        "dynamic-programming"
-      ]
+      "topics": ["dynamic-programming"]
     },
     "53-maximum-subarray": {
       "solutions": {
@@ -805,9 +711,7 @@
       "definition": "Given an array of integers, return the maximum sum of any contiguous subarray.",
       "leetcode": "https://leetcode.com/problems/maximum-subarray",
       "difficulty": "medium",
-      "topics": [
-        "kadane"
-      ]
+      "topics": ["kadane"]
     },
     "34-find-first-and-last-position-of-element-in-sorted-array": {
       "solutions": {
@@ -819,9 +723,7 @@
       "definition": "Given a sorted array of integers `nums` that may contain duplicates, find the starting and ending indices of a given `target`. If the target is not in the array, return `[-1, -1]`.",
       "leetcode": "https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array",
       "difficulty": "medium",
-      "topics": [
-        "binary-search"
-      ]
+      "topics": ["binary-search"]
     },
     "76-minimum-window-substring": {
       "solutions": {
@@ -834,9 +736,7 @@
       "definition": "Given two strings `s` and `t` of lengths `m` and `n` respectively,     return the minimum window substring of `s` such that every character in `t` (including duplicates)     is included in the window. If no such window exists, return an empty string `\"\"`,\n    *[19!]solve it in linear time complexity O(m + n)*",
       "leetcode": "https://leetcode.com/problems/minimum-window-substring",
       "difficulty": "hard",
-      "topics": [
-        "sliding-window"
-      ]
+      "topics": ["sliding-window"]
     },
     "84-largest-rectangle-in-histogram": {
       "solutions": {
@@ -860,9 +760,7 @@
       "definition": "Given an array of integers representing the histogram's bar heights where the width of each bar is 1,     return the area of the largest rectangle in the histogram.",
       "leetcode": "https://leetcode.com/problems/largest-rectangle-in-histogram",
       "difficulty": "hard",
-      "topics": [
-        "stack"
-      ]
+      "topics": ["stack"]
     },
     "136-single-number": {
       "solutions": {
@@ -876,9 +774,7 @@
       "definition": "Given a non-empty array of integers nums, every element appears twice except for one. Find that single one.    *[sky!]Achieve *linear* time complexity and *constant* space complexity.*",
       "leetcode": "https://leetcode.com/problems/single-number",
       "difficulty": "Easy",
-      "topics": [
-        "bit-manipulation"
-      ]
+      "topics": ["bit-manipulation"]
     },
     "1514-path-with-maximum-probability": {
       "solutions": {
@@ -896,9 +792,7 @@
       "definition": "Given an undirected graph with edges representing traversal probabilities, find the path from a `start` to an `end` node with the highest success probability.",
       "leetcode": "https://leetcode.com/problems/path-with-maximum-probability",
       "difficulty": "medium",
-      "topics": [
-        "bellman-ford"
-      ]
+      "topics": ["bellman-ford"]
     },
     "79-word-search": {
       "solutions": {
@@ -912,9 +806,7 @@
       "definition": "Determine if a word exists in a 2D board by following adjacent letters without reuse.",
       "leetcode": "https://leetcode.com/problems/word-search",
       "difficulty": "medium",
-      "topics": [
-        "backtrack"
-      ]
+      "topics": ["backtrack"]
     },
     "39-combination-sum": {
       "solutions": {
@@ -933,9 +825,7 @@
       "definition": "Return all unique combinations where chosen numbers sum to a target. Numbers can be reused.",
       "leetcode": "https://leetcode.com/problems/combination-sum",
       "difficulty": "medium",
-      "topics": [
-        "backtrack"
-      ]
+      "topics": ["backtrack"]
     },
     "542-01-matrix": {
       "solutions": {
@@ -949,9 +839,7 @@
       "definition": "Given a binary matrix `mat`, return the distance of the nearest `0` for each cell. The distance between two adjacent cells is 1.",
       "leetcode": "https://leetcode.com/problems/01-matrix",
       "difficulty": "medium",
-      "topics": [
-        "bfs"
-      ]
+      "topics": ["bfs"]
     },
     "1011-capacity-to-ship-packages-within-d-days": {
       "solutions": {
@@ -964,9 +852,7 @@
       "definition": "Given a list of weights and a number of days, find the minimum capacity of a ship that can ship all the weights within the given number of days.",
       "leetcode": "https://leetcode.com/problems/capacity-to-ship-packages-within-d-days",
       "difficulty": "medium",
-      "topics": [
-        "binary-search"
-      ]
+      "topics": ["binary-search"]
     },
     "208-implement-trie-prefix-tree": {
       "solutions": {
@@ -978,9 +864,7 @@
       "definition": "Implement a trie (prefix tree) with insert, search, and startsWith methods.",
       "leetcode": "https://leetcode.com/problems/implement-trie-prefix-tree",
       "difficulty": "medium",
-      "topics": [
-        "trie"
-      ]
+      "topics": ["trie"]
     },
     "325-maximum-size-subarray-sum-equals-k": {
       "solutions": {
@@ -997,9 +881,7 @@
       "definition": "Given an array of integers and a target sum k, return the length of the longest subarray with sum equal to k.",
       "leetcode": "https://leetcode.com/problems/maximum-size-subarray-sum-equals-k",
       "difficulty": "medium",
-      "topics": [
-        "prefix-sum"
-      ]
+      "topics": ["prefix-sum"]
     },
     "2145-count-the-hidden-sequences": {
       "solutions": {
@@ -1017,9 +899,7 @@
       "definition": "Given differences array representing daily changes, lower and upper bounds, return the number of valid starting values for the sequence.",
       "leetcode": "https://leetcode.com/problems/count-the-hidden-sequences",
       "difficulty": "medium",
-      "topics": [
-        "array"
-      ]
+      "topics": ["array"]
     },
     "35-search-insert-position": {
       "solutions": {
@@ -1031,9 +911,7 @@
       "definition": "Given a sorted array of distinct integers and a target value, find the index of the target. If absent, return the index where it would be inserted to maintain order.",
       "leetcode": "https://leetcode.com/problems/search-insert-position",
       "difficulty": "easy",
-      "topics": [
-        "binary-search"
-      ]
+      "topics": ["binary-search"]
     },
     "46-permutations": {
       "solutions": {
@@ -1052,10 +930,7 @@
       "definition": "Return all permutations of a list of unique numbers.",
       "leetcode": "https://leetcode.com/problems/permutations",
       "difficulty": "medium",
-      "topics": [
-        "backtrack",
-        "permutation"
-      ]
+      "topics": ["backtrack", "permutation"]
     },
     "123-best-time-to-buy-and-sell-stock-iii": {
       "solutions": {
@@ -1094,10 +969,7 @@
       "definition": "Given a list of daily stock prices `prices`; at most **two** transactions are allowed (cannot overlap). Return the maximum total profit.",
       "leetcode": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock-iii",
       "difficulty": "hard",
-      "topics": [
-        "dynamic-programming",
-        "array"
-      ]
+      "topics": ["dynamic-programming", "array"]
     },
     "347-top-k-frequent-elements": {
       "solutions": {
@@ -1119,13 +991,11 @@
         }
       },
       "title": "Top K Frequent Elements",
-      "definition": "Given an integer array `nums` and an integer `k`, return the `k` most **frequent** elements     *[19!] You may return the answer in any order*\n    *[pink!] Algorithm complexity must be better than O(nlogn) where `n` is the length of the input array*.\n    .",
+      "definition": "Given an integer array `nums` and an integer `k`, return the `k` most **frequent** elements\n    *[19!]Algorithm complexity must be better than *[orange!]O(nlogn)* where `n` is the length of the input array,     You may return the answer in any order*",
       "leetcode": "https://leetcode.com/problems/top-k-frequent-elements",
       "difficulty": "medium",
-      "topics": [
-        "heap",
-        "min-heap"
-      ]
+      "topics": ["heap", "min-heap"],
+      "group": [["heap.py", "heap-nlargets.py"], ["sort-frequency-bucketing.py"]]
     },
     "200-number-of-islands": {
       "solutions": {
@@ -1143,10 +1013,7 @@
       "definition": "Given an `m x n` 2D grid of '1's (land) and '0's (water), return the number of islands. An island is formed by connecting adjacent lands horizontally or vertically. Assume all four edges of the grid are all surrounded by water.",
       "leetcode": "https://leetcode.com/problems/number-of-islands",
       "difficulty": "medium",
-      "topics": [
-        "dfs",
-        "bfs"
-      ]
+      "topics": ["dfs", "bfs"]
     },
     "2140-solving-questions-with-brainpower": {
       "solutions": {
@@ -1160,9 +1027,7 @@
       "definition": "Given an array of `questions` where `questions[i] = [pointsᵢ, brainpowerᵢ]`, you process from i=0 and at each i choose to either solve (gain `pointsᵢ` and jump `brainpowerᵢ + 1`) or skip (move to `i + 1`). Return the maximum points achievable.",
       "leetcode": "https://leetcode.com/problems/solving-questions-with-brainpower",
       "difficulty": "medium",
-      "topics": [
-        "dynamic-programming"
-      ]
+      "topics": ["dynamic-programming"]
     },
     "212-word-search-ii": {
       "solutions": {
@@ -1191,10 +1056,7 @@
       "definition": "Given a board and a list of words, find all words in the board.",
       "leetcode": "https://leetcode.com/problems/word-search-ii",
       "difficulty": "hard",
-      "topics": [
-        "trie",
-        "backtrack"
-      ]
+      "topics": ["trie", "backtrack"]
     },
     "713-subarray-product-less-than-k": {
       "solutions": {
@@ -1207,9 +1069,7 @@
       "definition": "Given an array of integers nums and an integer k, return the number of contiguous subarrays where the product of all the elements in the subarray is less than k.",
       "leetcode": "https://leetcode.com/problems/subarray-product-less-than-k",
       "difficulty": "medium",
-      "topics": [
-        "sliding-window"
-      ]
+      "topics": ["sliding-window"]
     },
     "36-valid-sudoku": {
       "solutions": {
@@ -1232,9 +1092,7 @@
       "definition": "Given a partially filled 9×9 board with digits `1–9` and `.` for empty cells, determine if it is valid - *[gray!]no duplicates in any row, column, or 3×3 sub-box. You do not need to solve it*.",
       "leetcode": "https://leetcode.com/problems/valid-sudoku",
       "difficulty": "medium",
-      "topics": [
-        "game"
-      ]
+      "topics": ["game"]
     },
     "743-network-delay-time": {
       "solutions": {
@@ -1252,9 +1110,7 @@
       "definition": "Given `n` nodes labeled `1` through `n` and directed travel times between them, find the minimum time for a signal starting at node `k` to reach *all* nodes. If impossible, return -1",
       "leetcode": "https://leetcode.com/problems/network-delay-time",
       "difficulty": "medium",
-      "topics": [
-        "dijkstra"
-      ]
+      "topics": ["dijkstra"]
     },
     "127-word-ladder": {
       "solutions": {
@@ -1268,9 +1124,7 @@
       "definition": "Given a `beginWord`, an `endWord`, and a dictionary `wordList`, find the length of the shortest transformation sequence from `beginWord` to `endWord` such that only one letter is changed at a time and each transformed word exists in the `wordList`.",
       "leetcode": "https://leetcode.com/problems/word-ladder",
       "difficulty": "hard",
-      "topics": [
-        "bfs"
-      ]
+      "topics": ["bfs"]
     }
   },
   "core": {
@@ -1296,11 +1150,7 @@
       },
       "title": "Bellman-Ford Algorithm",
       "definition": "Bellman-Ford ...",
-      "topics": [
-        "graph_algorithms",
-        "shortest_path",
-        "dynamic_programming"
-      ]
+      "topics": ["graph_algorithms", "shortest_path", "dynamic_programming"]
     },
     "modular-arithmetic": {
       "solutions": {
@@ -1333,11 +1183,7 @@
       },
       "title": "Modular Arithmetic",
       "definition": "A system of arithmetic for integers where numbers \"wrap around\" after reaching a certain value (the modulus).",
-      "topics": [
-        "number_theory",
-        "modular_arithmetic",
-        "congruence"
-      ]
+      "topics": ["number_theory", "modular_arithmetic", "congruence"]
     },
     "dijkstra": {
       "solutions": {
@@ -1352,11 +1198,7 @@
       },
       "title": "Dijkstra's Algorithm",
       "definition": "Dijkstra's Algorithm ...",
-      "topics": [
-        "graph_algorithms",
-        "shortest_path",
-        "greedy"
-      ]
+      "topics": ["graph_algorithms", "shortest_path", "greedy"]
     },
     "binary-search": {
       "solutions": {
@@ -1377,10 +1219,7 @@
       },
       "title": "Binary Search Algorithm",
       "definition": "Binary Search ...",
-      "topics": [
-        "search_algorithm",
-        "divide_and_conquer"
-      ]
+      "topics": ["search_algorithm", "divide_and_conquer"]
     }
   }
 }

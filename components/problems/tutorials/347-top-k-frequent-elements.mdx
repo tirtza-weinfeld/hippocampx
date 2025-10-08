@@ -10,9 +10,8 @@
 
 ## [!ProblemDefinition] Definition
 
-Given an integer array `nums` and an integer `k`, return the `k` most **frequent** elements     *[19!] You may return the answer in any order*
-    *[pink!] Algorithm complexity must be better than O(nlogn) where `n` is the length of the input array*.
-    .
+Given an integer array `nums` and an integer `k`, return the `k` most **frequent** elements
+    *[19!]Algorithm complexity must be better than *[orange!]O(nlogn)* where `n` is the length of the input array,     You may return the answer in any order*
 
 ## Heap Solution
 
@@ -20,7 +19,7 @@ Given an integer array `nums` and an integer `k`, return the `k` most **frequent
 
 - $O(n log k)$
 
-### [!ProblemCodeSnippet] Code Snippet
+### [!CodeTabs] Code Snippet
 
 ```python meta="source=problems/347-top-k-frequent-elements/heap.py"
 import heapq
@@ -32,8 +31,17 @@ def topKFrequent(nums: list[int], k: int) -> list[int]:
         heapq.heappush(h, (f, num))
         if len(h) > k:
             heapq.heappop(h)
-
+    
     return [num for _, num in h]
+```
+
+```python meta="source=problems/347-top-k-frequent-elements/heap-nlargets.py"
+import heapq
+from collections import Counter
+
+def topKFrequent(nums: list[int], k: int) -> list[int]:
+    freq = Counter(nums)
+    return heapq.nlargest(k, freq.keys(), key=freq.get)
 ```
 
 
@@ -60,25 +68,5 @@ def topKFrequent(nums: list[int], k: int) -> list[int]:
         bucket[f].append(n)
 
     return [num for f_bucket in reversed(bucket) for num in f_bucket][:k]
-```
-
-
----
-
-## Heap Nlargets Solution
-
-### [!ProblemTimeComplexity] Time Complexity
-
-- $O(n log k)$
-
-### [!ProblemCodeSnippet] Code Snippet
-
-```python meta="source=problems/347-top-k-frequent-elements/heap-nlargets.py"
-import heapq
-from collections import Counter
-
-def topKFrequent(nums: list[int], k: int) -> list[int]:
-    freq = Counter(nums)
-    return heapq.nlargest(k, freq.keys(), key=freq.get)
 ```
 

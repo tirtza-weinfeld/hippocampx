@@ -1,0 +1,49 @@
+
+## Without Group - working tooltips
+
+```python meta="source=problems/347-top-k-frequent-elements/heap-nlargets.py"
+import heapq
+from collections import Counter
+
+def topKFrequent(nums: list[int], k: int) -> list[int]:
+    freq = Counter(nums)
+    return heapq.nlargest(k, freq.keys(), key=freq.get)
+```
+
+
+[Expression Tooltips] Parsed source: {
+    sourceFile: 'problems/347-top-k-frequent-elements/heap-nlargets.py',
+    functionName: undefined,
+    rawMeta: 'source=problems/347-top-k-frequent-elements/heap-nlargets.py'
+  }
+  [Expression Tooltips] Found 2 expression uses for: problems/347-top-k-frequent-elements/heap-nlargets.py
+  [Expression Tooltips] Code has 7 lines
+  [Expression Tooltips] First 10 lines: [
+    'import heapq',
+    'from collections import Counter',
+    '',
+    'def topKFrequent(nums: list[int], k: int) -> list[int]:',
+    '    freq = Counter(nums)',
+    '    return heapq.nlargest(k, freq.keys(), key=freq.get)',
+    ''
+  ]
+  [Expression Tooltips] Added 2 decorations for: problems/347-top-k-frequent-elements/heap-nlargets.py
+  [Expression Tooltips] No rawMeta found
+  [Expression Tooltips] No source match in meta: /[yellow!]topKFrequent/
+  [Expression Tooltips] No rawMeta found
+   GET /problems/347-top-k-frequent-elements 200 in 274ms
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  

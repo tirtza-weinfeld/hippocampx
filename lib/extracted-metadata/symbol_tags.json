@@ -1,9 +1,9 @@
 {
   "core.bellman-ford.classic:bellman_ford_classic": {
     "args": [
+      "source",
       "edges",
-      "vertices",
-      "source"
+      "vertices"
     ],
     "code": "def bellman_ford_classic(\n    vertices: list[str], edges: list[tuple[str, str, float]], source: str\n) -> dict[str, float]:\n\n    d = [float(\"inf\")] * (V := len(vertices))\n    d[source] = 0\n\n    for _ in range(V - 1):\n        updated = False\n        for u, v, w in edges:\n            if d[u] + w < d[v]:\n                d[v] = d[u] + w\n                updated = True\n        if not updated:\n            return d\n\n    # if we get here, we did all V-1 passes, so still need to check for cycles\n    for u, v, w in edges:\n        if d[u] + w < d[v]:\n            raise Exception(\"Negative-weight cycle\")\n\n    return d",
     "expressions": {
@@ -66,8 +66,8 @@
   },
   "core.binary-search.bisect_left:simple_bisect_left": {
     "args": [
-      "a",
-      "x"
+      "x",
+      "a"
     ],
     "code": "def simple_bisect_left(a: list[int], x: int):\n\n    l, r = 0, len(a)\n    while l < r:\n        mid = (l + r) // 2\n        if x > a[mid]:\n            l = mid + 1\n        else:\n            r = mid\n    return l",
     "expressions": {
@@ -144,9 +144,9 @@
   },
   "core.modular-arithmetic.congruent1:congruent1": {
     "args": [
-      "a",
       "n",
-      "b"
+      "b",
+      "a"
     ],
     "code": "def congruent1(a: int, b: int, n: int) -> bool:\n    return (a - b) % n == 0",
     "file_path": "backend/algorithms/core/modular-arithmetic/congruent1.py",
@@ -179,9 +179,9 @@
   },
   "core.modular-arithmetic.congruent2:congruent2": {
     "args": [
-      "a",
       "n",
-      "b"
+      "b",
+      "a"
     ],
     "code": "def congruent2(a: int, b: int, n: int) -> bool:\n    return a % n == b % n",
     "file_path": "backend/algorithms/core/modular-arithmetic/congruent2.py",
@@ -214,8 +214,8 @@
   },
   "core.modular-arithmetic.mod:mod": {
     "args": [
-      "a",
-      "b"
+      "b",
+      "a"
     ],
     "code": "def mod(a: int, b: int) -> int:\n    return a % b",
     "file_path": "backend/algorithms/core/modular-arithmetic/mod.py",
@@ -242,8 +242,8 @@
   },
   "problems.1-two-sum.solution:two_sum": {
     "args": [
-      "nums",
-      "target"
+      "target",
+      "nums"
     ],
     "code": "def two_sum(nums: list[int], target: int) -> list[int]:\n\n    seen = {}\n\n    for i, num in enumerate(nums):\n        if (x := target - num) in seen:\n            return seen[x], i\n        seen[num] = i",
     "file_path": "backend/algorithms/problems/1-two-sum/solution.py",
@@ -257,8 +257,8 @@
   },
   "problems.1011-capacity-to-ship-packages-within-d-days.solution:capacity_to_ship_packages_within_d_days": {
     "args": [
-      "days",
-      "weights"
+      "weights",
+      "days"
     ],
     "code": "def capacity_to_ship_packages_within_d_days(weights: list[int], days: int) -> int:\n    def days_needed(capacity: int) -> int:\n        d, load = 1, 0\n        for w in weights:\n            if load + w <= capacity:\n                load += w\n            else:\n                d += 1\n                load = w\n        return d\n\n    l, r = max(weights), sum(weights)\n    while l < r:\n        capacity = (l + r) // 2\n        if days_needed(capacity) <= days:\n            r = capacity\n        else:\n            l = capacity + 1\n    return l",
     "file_path": "backend/algorithms/problems/1011-capacity-to-ship-packages-within-d-days/solution.py",
@@ -476,8 +476,8 @@
   },
   "problems.127-word-ladder.solution:word_ladder": {
     "args": [
-      "beginWord",
       "wordList",
+      "beginWord",
       "endWord"
     ],
     "code": "def word_ladder(beginWord: str, endWord: str, wordList: list[str]) -> int:\n    if endWord not in wordList:\n        return 0\n\n    L = len(beginWord)\n    combos: dict[str, list[str]] = defaultdict(list)\n    for w in wordList:\n        for i in range(L):\n            combos[w[:i] + \"*\" + w[i+1:]].append(w)\n\n    front, back = {beginWord}, {endWord}\n    dist_front, dist_back = {beginWord: 1}, {endWord: 1}\n\n    while front and back:\n        # expand smaller side to optimize\n        if len(front) > len(back):\n            front, back = back, front\n            dist_front, dist_back = dist_back, dist_front\n\n        next_front = set()\n        for word in front:\n            for i in range(L):\n                for n in combos[word[:i] + \"*\" + word[i+1:]]: # Use pre-computed neighbors\n                    if n in dist_back:\n                        return dist_front[word] + dist_back[n]\n                    if n not in dist_front:\n                        dist_front[n] = dist_front[word] + 1\n                        next_front.add(n)\n        front = next_front\n\n    return 0",
@@ -493,8 +493,8 @@
   },
   "problems.1293-shortest-path-in-a-grid-with-obstacles-elimination.a_star:manhattan_distance": {
     "args": [
-      "a",
-      "b"
+      "b",
+      "a"
     ],
     "code": "def manhattan_distance(a: tuple[int, int], b: tuple[int, int]) -> int:\n    return abs(a[0] - b[0]) + abs(a[1] - b[1])",
     "file_path": "backend/algorithms/problems/1293-shortest-path-in-a-grid-with-obstacles-elimination/a_star.py",
@@ -508,8 +508,8 @@
   },
   "problems.1293-shortest-path-in-a-grid-with-obstacles-elimination.a_star:shortest_path_in_a_grid_with_obstacles_elimination": {
     "args": [
-      "k",
-      "grid"
+      "grid",
+      "k"
     ],
     "code": "def shortest_path_in_a_grid_with_obstacles_elimination(grid: list[list[int]], k: int) -> int:\n\n    rows, cols = len(grid), len(grid[0])\n\n    def h(r: int, c: int) -> int:\n        return manhattan_distance((r, c), (rows - 1, cols - 1))\n\n    if k >= (md:= h(0, 0)) - 1:\n        return md\n\n    pq = [(md, 0, 0, 0, k)]\n\n    max_k = [[-1] * cols for _ in range(rows)]\n    max_k[0][0] = k\n\n    while pq:\n        _, steps, r, c, remaining_k = heapq.heappop(pq)\n\n        if (r, c) == (rows - 1, cols - 1):\n            return steps\n\n        if remaining_k < max_k[r][c]:\n            continue\n\n        for dr, dc in [(0, 1), (0, -1), (1, 0), (-1, 0)]:\n            if 0 <= (nr:= r + dr) < rows and 0 <= (nc:= c + dc) < cols:\n                if (new_remaining_k := remaining_k - grid[nr][nc] ) > max_k[nr][nc]:\n                    max_k[nr][nc] = new_remaining_k\n                    heapq.heappush(pq, ((steps + 1) + h(nr, nc), steps + 1, nr, nc, new_remaining_k))\n\n    return -1",
     "expressions": {
@@ -548,8 +548,8 @@
   },
   "problems.1293-shortest-path-in-a-grid-with-obstacles-elimination.bfs:shortest_path_in_a_grid_with_obstacles_elimination": {
     "args": [
-      "k",
-      "grid"
+      "grid",
+      "k"
     ],
     "code": "def shortest_path_in_a_grid_with_obstacles_elimination(grid: list[list[int]], k: int) -> int:\n\n    rows, cols = len(grid), len(grid[0])\n    min_steps = rows + cols - 3 \n    if k >= min_steps:\n        return min_steps\n\n    max_k = [[-1] * cols for _ in range(rows)]\n    max_k[0][0] = k\n\n    q = deque([(0, 0, 0, k)])\n\n    while q:\n        r, c, steps, remaining_k = q.popleft()\n        for dr, dc in [(1,0), (-1,0), (0,1), (0,-1)]:\n            nr, nc = r + dr, c + dc\n            if 0 <= nr < rows and 0 <= nc < cols:\n                new_remaining_k = remaining_k - grid[nr][nc]\n                if new_remaining_k > max_k[nr][nc]:\n                    if (nr, nc) == (rows - 1, cols - 1):\n                        return steps + 1\n                    max_k[nr][nc] = new_remaining_k\n                    q.append((nr, nc, steps + 1, new_remaining_k))\n    return -1",
     "file_path": "backend/algorithms/problems/1293-shortest-path-in-a-grid-with-obstacles-elimination/bfs.py",
@@ -586,8 +586,8 @@
   },
   "problems.1293-shortest-path-in-a-grid-with-obstacles-elimination.dijkstra:shortest_path_in_a_grid_with_obstacles_elimination": {
     "args": [
-      "k",
-      "grid"
+      "grid",
+      "k"
     ],
     "code": "def shortest_path_in_a_grid_with_obstacles_elimination(grid: list[list[int]], k: int) -> int:\n\n    rows, cols = len(grid), len(grid[0])\n    if k >= rows + cols - 3:\n        return rows + cols - 2\n\n    pq = [(0, 0, 0, k)]\n\n    max_k = [[-1] * cols for _ in range(rows)]\n    max_k[0][0] = k\n\n    while pq:\n\n        steps, r, c, k_rem = heapq.heappop(pq)\n\n        if (r, c) == (rows - 1, cols - 1):\n            return steps\n\n        if k_rem < max_k[r][c]:\n            continue\n\n        for dr, dc in [(0, 1), (0, -1), (1, 0), (-1, 0)]:\n            if 0 <= (nr:= r + dr) < rows and 0 <= (nc:= c + dc) < cols:\n                if (new_k:= k_rem - grid[nr][nc]) > max_k[nr][nc]:\n                    max_k[nr][nc] = new_k\n                    heapq.heappush(pq, (steps + 1, nr, nc, new_k))\n\n    return -1",
     "expressions": {
@@ -767,8 +767,8 @@
   },
   "problems.146-lru-cache.solution:LRUCache.put": {
     "args": [
-      "value",
-      "key"
+      "key",
+      "value"
     ],
     "code": "    def put(self, key: int, value: int) -> None:\n        if key in self.cache:\n            self.cache.move_to_end(key)\n        self.cache[key] = value\n        if len(self.cache) > self.capacity:\n            self.cache.popitem(last=False)",
     "file_path": "backend/algorithms/problems/146-lru-cache/solution.py",
@@ -797,11 +797,11 @@
   },
   "problems.1514-path-with-maximum-probability.solution:path_with_maximum_probability": {
     "args": [
-      "n",
-      "edges",
-      "start",
       "end",
-      "succProb"
+      "succProb",
+      "start",
+      "n",
+      "edges"
     ],
     "code": "def path_with_maximum_probability(n: int, edges: list[list[int]], succProb: list[float], start: int, end: int) -> float:\n    prob = [0.0] * n # rob[i] stores max probability to reach node i\n    prob[start] = 1.0  # Start with full certainty\n\n    for _ in range(n - 1):  # Perform up to n-1 rounds of relaxation\n        updated = False\n        for (u, v), p in zip(edges, succProb):\n            if prob[u] * p > prob[v]:  # Try to improve v through u\n                prob[v] = prob[u] * p\n                updated = True\n            if prob[v] * p > prob[u]:  # Try to improve u through v (undirected graph)\n                prob[u] = prob[v] * p\n                updated = True\n        if not updated:\n            break  # Early exit if no updates in this round\n\n    return prob[end]",
     "file_path": "backend/algorithms/problems/1514-path-with-maximum-probability/solution.py",
@@ -1076,8 +1076,8 @@
   },
   "problems.211-design-add-and-search-words-data-structure.solution:WordDictionary.search.dfs": {
     "args": [
-      "i",
-      "node"
+      "node",
+      "i"
     ],
     "code": "        def dfs(node: dict, i: int) -> bool:\n\n            if i == len(word):\n                return self.END_MARKER in node\n\n            if (c := word[i]) == \".\":\n\n                return any(\n                    dfs(child, i + 1)\n                    for k, child in node.items()\n                    if k != self.END_MARKER\n                )\n            child = node.get(c)\n            return bool(child) and dfs(child, i + 1)",
     "expressions": {
@@ -1215,8 +1215,8 @@
   },
   "problems.2145-count-the-hidden-sequences.solution:numberOfArrays": {
     "args": [
-      "lower",
       "differences",
+      "lower",
       "upper"
     ],
     "code": "def numberOfArrays(differences: list[int], lower: int, upper: int) -> int:\n\n    prefix_sum = min_marker = max_marker = 0\n\n    for diff in differences:\n        prefix_sum += diff\n        min_marker = min(min_marker, prefix_sum)\n        max_marker = max(max_marker, prefix_sum)\n\n    return max(0, (upper - max_marker) - (lower - min_marker) + 1)",
@@ -1605,8 +1605,8 @@
   },
   "problems.460-lfu-cache.solution:LFUCache.put": {
     "args": [
-      "value",
-      "key"
+      "key",
+      "value"
     ],
     "code": "    def put(self, key: int, value: int) -> None:\n        if self.capacity <= 0:\n            return\n\n        if key in self.cache:\n            self.cache[key] = value\n            self._bump(key)\n            return\n\n        if len(self.cache) >= self.capacity:\n            old_key, _ = self.buckets[self.minfreq].popitem(last=False)\n            del self.cache[old_key]\n            del self.freq[old_key]\n\n        self.cache[key] = value\n        self.freq[key] = 1\n        self.buckets[1][key] = None\n        self.minfreq = 1",
     "file_path": "backend/algorithms/problems/460-lfu-cache/solution.py",
@@ -1829,8 +1829,8 @@
   },
   "problems.743-network-delay-time.solution:network_delay_time": {
     "args": [
-      "k",
       "n",
+      "k",
       "times"
     ],
     "code": "def network_delay_time(times: list[list[int]], n: int, k: int) -> int:\n\n    adj = defaultdict(list)\n    for u, v, w in times:\n        adj[u].append((v, w))\n    pq, finalized, time = [(0, k)], set(), 0\n    while pq:\n        t, node = heapq.heappop(pq)\n        if node in finalized:\n            continue\n        finalized.add(node)\n        time = t\n        for neighbor, travel_time in adj[node]:\n            if neighbor not in finalized:\n                heapq.heappush(pq, (time + travel_time, neighbor))\n    return time if len(finalized) == n else -1",
@@ -1907,11 +1907,11 @@
   },
   "problems.787-cheapest-flights-within-k-stops.bellman_ford:cheapest_flights_with_at_most_k_stops": {
     "args": [
-      "k",
-      "n",
       "dst",
-      "src",
-      "flights"
+      "flights",
+      "n",
+      "k",
+      "src"
     ],
     "code": "def cheapest_flights_with_at_most_k_stops(\n    n: int, flights: list[list[int]], src: int, dst: int, k: int\n) -> int:\n    d = [float(\"inf\")] * n\n    d[src] = 0\n\n    for _ in range(k + 1):\n        tmp = d[:]\n        for u, v, w in flights:\n            if d[u] + w < tmp[v]:\n                tmp[v] = d[u] + w\n        d = tmp\n\n    return d[dst] if d[dst] < float(\"inf\") else -1",
     "file_path": "backend/algorithms/problems/787-cheapest-flights-within-k-stops/bellman_ford.py",
@@ -1926,9 +1926,9 @@
   "problems.787-cheapest-flights-within-k-stops.dijkstra:cheapest_flights_with_at_most_k_stops": {
     "args": [
       "k",
-      "dst",
       "src",
-      "flights"
+      "flights",
+      "dst"
     ],
     "code": "def cheapest_flights_with_at_most_k_stops( flights: list[list[int]], src: int, dst: int, k: int) -> int:\n\n    graph = defaultdict(list)\n    for u, v, price in flights:\n        graph[u].append((v, price))\n\n    pq, min_stops = [(0, src, 0)], {}\n\n    while pq:\n        cost, city, stops = heapq.heappop(pq)\n\n        # If we've already found a path to this city using fewer or equal stops, skip.\n        # A path with fewer stops must have been cheaper or equal due to PQ ordering.\n        if stops > min_stops.get(city, float(\"inf\")): continue\n        if city == dst: return cost\n\n        # Record the new minimum stops to reach this city\n        min_stops[city] = stops\n        if stops <= k:\n            for neighbor, price in graph[city]:\n                heapq.heappush(pq, (cost + price, neighbor, stops + 1))\n    return -1",
     "file_path": "backend/algorithms/problems/787-cheapest-flights-within-k-stops/dijkstra.py",
@@ -1959,8 +1959,8 @@
   },
   "problems.79-word-search.solution:word_search": {
     "args": [
-      "board",
-      "word"
+      "word",
+      "board"
     ],
     "code": "def word_search(board: list[list[str]], word: str) -> bool:\n    rows, cols, n = len(board), len(board[0]), len(word)\n    def dfs(r: int, c: int, i: int) -> bool:\n        if i == n:\n            return True\n        if not (0 <= r < rows and 0 <= c < cols and board[r][c] == word[i]):\n            return False\n        tmp, board[r][c] = board[r][c], \"#\"\n        for x, y in ((r + 1, c), (r - 1, c), (r, c + 1), (r, c - 1)):\n            if dfs(x, y, i + 1):\n                board[r][c] = tmp\n                return True\n        board[r][c] = tmp\n        return False\n    return any(\n        dfs(r, c, 0)\n        for r in range(rows)\n        for c in range(cols)\n        if board[r][c] == word[0]\n    )",
     "file_path": "backend/algorithms/problems/79-word-search/solution.py",

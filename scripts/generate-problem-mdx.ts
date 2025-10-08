@@ -34,6 +34,7 @@ interface Problem {
   difficulty?: string
   topics?: string[]
   solutions: Record<string, Solution>
+  group?: string[][]
 }
 
 type ProblemsMetadata = Record<string, Problem>
@@ -114,7 +115,9 @@ function formatIntuitionContent(content: string): string {
 
 function formatCodeBlock(code: string, language: string = 'python', sourcePath?: string): string {
   const sourceAttr = sourcePath ? ` meta="source=problems/${sourcePath}"` : ''
-  return `\`\`\`${language}${sourceAttr}\n${code.trim()}\n\`\`\`\n\n`
+  // Normalize consecutive newlines (3+ newlines -> 2 newlines = 1 blank line)
+  const normalizedCode = code.trim().replace(/\n{3,}/g, '\n\n')
+  return `\`\`\`${language}${sourceAttr}\n${normalizedCode}\n\`\`\`\n\n`
 }
 
 function formatVariables(variables: Record<string, string>): string {
@@ -150,7 +153,12 @@ function solutionFileNameToTitle(fileName: string): string {
     .join(' ') + ' Solution'
 }
 
-function generateSolutionContent(problemId: string, fileName: string, solution: Solution): string {
+function generateSolutionContent(
+  problemId: string,
+  fileName: string,
+  solution: Solution,
+  additionalSnippets?: Array<{ fileName: string; solution: Solution }>
+): string {
   const solutionTitle = solutionFileNameToTitle(fileName)
   let content = `## ${solutionTitle}\n\n`
 
@@ -189,10 +197,26 @@ function generateSolutionContent(problemId: string, fileName: string, solution: 
     content += formatSection('Returns', solution.returns, 'ProblemReturns', '###')
   }
 
-  // Add code implementation
+  // Add code implementation (using CodeTabs if there are additional snippets)
   if (solution.code) {
     const sourcePath = `${problemId}/${fileName}`
-    content += formatSection('Code Snippet', formatCodeBlock(solution.code, 'python', sourcePath), 'ProblemCodeSnippet', '###')
+
+    if (additionalSnippets && additionalSnippets.length > 0) {
+      // Use CodeTabs for multiple code snippets
+      content += `### [!CodeTabs] Code Snippet\n\n`
+
+      // Add main code block
+      content += formatCodeBlock(solution.code, 'python', sourcePath)
+
+      // Add additional snippets
+      for (const { fileName: snippetFileName, solution: snippetSolution } of additionalSnippets) {
+        const snippetSourcePath = `${problemId}/${snippetFileName}`
+        content += formatCodeBlock(snippetSolution.code, 'python', snippetSourcePath)
+      }
+    } else {
+      // Single code snippet
+      content += formatSection('Code Snippet', formatCodeBlock(solution.code, 'python', sourcePath), 'ProblemCodeSnippet', '###')
+    }
   }
 
   return content
@@ -242,18 +266,56 @@ function generateMDXContent(problemId: string, problem: Problem): string {
     content += formatSection('Definition', problem.definition, 'ProblemDefinition')
   }
   
-  // Handle solutions
-  const solutionEntries = Object.entries(problem.solutions)
-  
-  if (solutionEntries.length === 1) {
+  // Handle solutions - process group structure if present
+  let solutionsToGenerate: Array<{
+    fileName: string
+    solution: Solution
+    additionalSnippets?: Array<{ fileName: string; solution: Solution }>
+  }> = []
+
+  if (problem.group && problem.group.length > 0) {
+    // Process grouped solutions
+    for (const group of problem.group) {
+      if (group.length > 0) {
+        // First file in group is the main solution
+        const mainFileName = group[0]
+        const mainSolution = problem.solutions[mainFileName]
+
+        if (mainSolution) {
+          // Remaining files in group are additional snippets
+          const additionalSnippets = group.slice(1)
+            .map(fileName => ({
+              fileName,
+              solution: problem.solutions[fileName]
+            }))
+            .filter(item => item.solution) // Filter out any missing solutions
+
+          solutionsToGenerate.push({
+            fileName: mainFileName,
+            solution: mainSolution,
+            additionalSnippets: additionalSnippets.length > 0 ? additionalSnippets : undefined
+          })
+        }
+      }
+    }
+  } else {
+    // No grouping - process all solutions normally
+    const solutionEntries = Object.entries(problem.solutions)
+    solutionsToGenerate = solutionEntries.map(([fileName, solution]) => ({
+      fileName,
+      solution
+    }))
+  }
+
+  if (solutionsToGenerate.length === 1) {
     // Single solution - don't add solution title, just add the content directly
-    const [fileName, solution] = solutionEntries[0]
-    
+    const { fileName, solution, additionalSnippets } = solutionsToGenerate[0]
+
     // Add intuition if available
     if (solution.intuition) {
       content += formatSection('Intuition', solution.intuition, 'ProblemIntuition')
     }
-    
+
     // Add complexity analysis
     if (solution.time_complexity) {
       content += formatSection('Time Complexity', solution.time_complexity, 'ProblemTimeComplexity')
@@ -262,7 +324,7 @@ function generateMDXContent(problemId: string, problem: Problem): string {
     // if (solution.space_complexity) {
     //   content += formatSection('Space Complexity', solution.space_complexity, 'ProblemSpaceComplexity')
     // }
-    
+
     // Add args if available
     if (solution.args && Object.keys(solution.args).length > 0) {
       const argsString = formatArgs(solution.args)
@@ -291,23 +353,35 @@ function generateMDXContent(problemId: string, problem: Problem): string {
     if (solution.returns && solution.returns.trim()) {
       content += formatSection('Returns', solution.returns, 'ProblemReturns')
     }
-    
-    // Add code implementation
+
+    // Add code implementation (with tabs if additional snippets exist)
     if (solution.code) {
       const sourcePath = `${problemId}/${fileName}`
-      content += formatSection('Code Snippet', formatCodeBlock(solution.code, 'python', sourcePath), 'ProblemCodeSnippet')
+
+      if (additionalSnippets && additionalSnippets.length > 0) {
+        // Use CodeTabs for multiple code snippets
+        content += `## [!CodeTabs] Code Snippet\n\n`
+
+        // Add main code block
+        content += formatCodeBlock(solution.code, 'python', sourcePath)
+
+        // Add additional snippets
+        for (const { fileName: snippetFileName, solution: snippetSolution } of additionalSnippets) {
+          const snippetSourcePath = `${problemId}/${snippetFileName}`
+          content += formatCodeBlock(snippetSolution.code, 'python', snippetSourcePath)
+        }
+      } else {
+        // Single code snippet
+        content += formatSection('Code Snippet', formatCodeBlock(solution.code, 'python', sourcePath), 'ProblemCodeSnippet')
+      }
     }
-    // if (solution.code) {
-    //   const sourcePath = `${problemId}/${fileName}`
-    //   content += formatSection('Code Snippet', formatCodeBlock(solution.code, 'python', sourcePath), 'ProblemCodeSnippet')
-    // }
   } else {
     // Multiple solutions - add each solution with its own title
-    for (const [fileName, solution] of solutionEntries) {
-      content += generateSolutionContent(problemId, fileName, solution)
+    for (const { fileName, solution, additionalSnippets } of solutionsToGenerate) {
+      content += generateSolutionContent(problemId, fileName, solution, additionalSnippets)
       content += '\n---\n\n' // Add separator between solutions
     }
-    
+
     // Remove trailing separator
     content = content.replace(/\n---\n\n$/, '')
   }

@@ -4,6 +4,11 @@ import type { MDXComponents } from 'mdx/types';
 import { DifficultyBadge } from '@/components/mdx/difficulty-badge';
 import CodeBlock, { CodeBlockSkeleton } from '@/components/mdx/code/code-block';
 import InlineCode from '@/components/mdx/code/code-inline';
+import { CodeTabs } from '@/components/mdx/code/code-tabs';
+import { CodeTab } from '@/components/mdx/code/code-tab';
+import { CodeTabsList } from '@/components/mdx/code/code-tabs-list';
+import { CodeTabTrigger } from '@/components/mdx/code/code-tab-trigger';
+
 // import { MermaidDiagram } from '@/components/mdx/code/mermaid-diagram';
 // import { ProblemCodeBlock } from '@/components/mdx/problem/code/problem-code-block';
 // import TabbedCodeBlock from '@/components/mdx/code/tabbed-code-block';
@@ -41,6 +46,10 @@ import  CollapsibleListItem from '@/components/mdx/list/collapsible-list-item';
 import CollapsibleIntuitionListItem from '@/components/mdx/list/collapsible-intuition-list-item';
 import { CustomLists } from '@/components/mdx/custom/list'
 import { PillList } from '@/components/mdx/list/pill-list';
+// Collapsible Section Components
+import { CollapsibleSection } from '@/components/mdx/collapsible/collapsible-section';
+import { CollapsibleSectionHeader } from '@/components/mdx/collapsible/collapsible-section-header';
+import { CollapsibleSectionContent } from '@/components/mdx/collapsible/collapsible-section-content';
 // Header Components (using existing typography components)
 
 
@@ -63,6 +72,12 @@ export const customComponents = {
   ProblemDeepDive,
   CollapsibleListItem,
   CollapsibleIntuitionListItem,
+
+  // Collapsible Section Components
+  CollapsibleSection,
+  CollapsibleSectionHeader,
+  CollapsibleSectionContent,
+
   // Typography
   h1: H1,
   h2: H2,
@@ -108,6 +123,12 @@ export const customComponents = {
   caption: TableCaption,
 
   CodeEditor,
+  CodeTabs,
+  CodeTab,
+  CodeTabsList,
+  CodeTabTrigger,
+  
+
   // Code components with proper handling
   code: ({ children, className, ...props }: ComponentPropsWithoutRef<'code'>) => {
     // Handle code blocks (with language specification)

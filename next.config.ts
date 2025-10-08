@@ -15,15 +15,19 @@ import remarkListVariants from "@/plugins/remark-list-variants"
 import { remarkHeaderSection } from "@/plugins/remark-header-section"
 import { remarkTypography } from "@/plugins/remark-typography"
 import { remarkSectionList } from "@/plugins/remark-section-list"
+import remarkCodeTabs from "@/plugins/remark-code-tabs"
+import { remarkCollapsibleSection } from "@/plugins/remark-collapsible-section"
 
 const withMDX = createMDX({
   extension: /\.mdx?$/,
   options: {
     remarkPlugins: [
-      remarkMath, 
+      remarkMath,
       remarkGfm,
       remarkTypography,
 
+      remarkCodeTabs,       // Must run BEFORE remarkHeaderSection to catch [!CodeTabs] markers
+      remarkCollapsibleSection,  // Must run BEFORE remarkHeaderSection to catch [!Collapsible] markers
 
       remarkHeaderSection,
       remarkSectionList,
@@ -35,8 +39,8 @@ const withMDX = createMDX({
       // remarkSmartCodeImport,
 
       remarkFeatureList,    // Must run before remarkListVariants
-      remarkListVariants, 
-   
+      remarkListVariants,
+
 
       ],
     rehypePlugins: [
