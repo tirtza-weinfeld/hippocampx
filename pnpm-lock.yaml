@@ -943,7 +943,6 @@ packages:
 
   '@hippocampx/plugins@file:plugins':
     resolution: {directory: plugins, type: directory}
-    engines: {node: '>=23.0.0'}
 
   '@humanfs/core@0.19.1':
     resolution: {integrity: sha512-5DyQ4+1JEUzejeK1JGICcideyfUbGixgS9jNgex5nqkW+cY7WZhxBigmieN5Qnw9ZosSNVC9KQKyb+GUaGyKUA==}
@@ -6052,13 +6051,7 @@ snapshots:
 
   '@floating-ui/utils@0.2.10': {}
 
-  '@hippocampx/plugins@file:plugins':
-    dependencies:
-      '@types/hast': 3.0.4
-      '@types/mdast': 4.0.4
-      '@types/unist': 3.0.3
-      unified: 11.0.5
-      unist-util-visit: 5.0.0
+  '@hippocampx/plugins@file:plugins': {}
 
   '@humanfs/core@0.19.1': {}
 

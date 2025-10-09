@@ -1,7 +1,7 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
-    "outDir": "./dist",
+    "outDir": "../node_modules/@hippocampx/plugins/dist",
     "rootDir": ".",
     "declaration": true,
     "declarationMap": true,

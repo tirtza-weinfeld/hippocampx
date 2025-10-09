@@ -3,16 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "pnpm": {
-    "onlyBuiltDependencies": ["@hippocampx/plugins"]
-  }, 
   "scripts": {
     "dev": " next dev --turbopack ",
-    "build": "next build --turbopack",
+    "build": "pnpm build:plugins && next build --turbopack",
     "build:scripts": "pnpm problems:generate",
     "start": "next start",
     "lint": "eslint",
-    "build:plugins": "cd plugins && pnpm build",
+    "build:plugins": "tsc -p plugins/tsconfig.json",
     "db:generate": "drizzle-kit generate:pg",
     "db:push": "drizzle-kit push:pg",
     "db:studio": "drizzle-kit studio",
