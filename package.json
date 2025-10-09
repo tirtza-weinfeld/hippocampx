@@ -5,7 +5,8 @@
   "type": "module", 
   "scripts": {
     "dev": " next dev --turbopack ",
-    "build": "pnpm build:plugins && next build --turbopack",
+    "prepare": "pnpm build:plugins", 
+    "build": "next build --turbopack",
     "build:scripts": "pnpm problems:generate",
     "start": "next start",
     "lint": "eslint",
