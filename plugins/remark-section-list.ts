@@ -1,6 +1,6 @@
 import { visit } from 'unist-util-visit'
 import type { Plugin } from 'unified'
-import type { Root, List, Heading, Parent } from 'mdast'
+import type { Root, List, Heading } from 'mdast'
 import type { Node } from 'unist'
 import { extractTextFromHeading } from './mdx-text-extraction.js'
 
@@ -25,7 +25,7 @@ export const remarkSectionList: Plugin<[], Root> = () => {
   }
 
   // Extract content between current heading and next same/higher level heading
-  function extractSectionContent(parent: Parent, headingIndex: number, currentDepth: number): Node[] {
+  function extractSectionContent(parent: { children: Node[] }, headingIndex: number, currentDepth: number): Node[] {
     const content: Node[] = []
     let i = headingIndex + 1
 
@@ -47,7 +47,7 @@ export const remarkSectionList: Plugin<[], Root> = () => {
   // Return transformer function that processes the tree
   const transformer = (tree: Root) => {
     // Find all headings with component directives and mark lists in their content
-    visit(tree, 'heading', (node: Heading, index: number | undefined, parent: Parent | undefined) => {
+    visit(tree, 'heading', (node, index, parent) => {
       if (!parent || index === undefined) return
 
       // Extract heading text to check for component directive

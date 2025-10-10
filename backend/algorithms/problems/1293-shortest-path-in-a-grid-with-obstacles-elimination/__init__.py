@@ -4,4 +4,8 @@ Definition: Given an `m x n` grid where cells are either empty (`0`) or an obsta
 Leetcode: https://leetcode.com/problems/shortest-path-in-a-grid-with-obstacles-elimination
 Difficulty: hard
 Topics: [bfs]
+Group:
+    [a_star.py]
+    [dijkstra.py]
+    [bfs.py]
 """

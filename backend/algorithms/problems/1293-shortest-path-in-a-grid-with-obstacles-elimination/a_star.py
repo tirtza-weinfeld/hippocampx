@@ -1,9 +1,5 @@
 import heapq
 
-def manhattan_distance(a: tuple[int, int], b: tuple[int, int]) -> int:
-    """Calculate Manhattan distance between two points."""
-    return abs(a[0] - b[0]) + abs(a[1] - b[1])
-
 
 
 def shortest_path_in_a_grid_with_obstacles_elimination(grid: list[list[int]], k: int) -> int:
@@ -50,3 +46,10 @@ def shortest_path_in_a_grid_with_obstacles_elimination(grid: list[list[int]], k:
                     heapq.heappush(pq, ((steps + 1) + h(nr, nc), steps + 1, nr, nc, new_remaining_k))
                     
     return -1
+
+
+def manhattan_distance(a: tuple[int, int], b: tuple[int, int]) -> int:
+    """Calculate Manhattan distance between two points."""
+    return abs(a[0] - b[0]) + abs(a[1] - b[1])
+
+

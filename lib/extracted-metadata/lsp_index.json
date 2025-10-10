@@ -522,34 +522,17 @@
       "uri": "problems/1293-shortest-path-in-a-grid-with-obstacles-elimination/a_star.py",
       "symbols": [
         {
-          "name": "manhattan_distance",
-          "detail": "manhattan_distance(a: tuple[int, int], b: tuple[int, int]) -> int",
-          "kind": 12,
-          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 3, "character": 46}},
-          "nameRange": {
-            "start": {
-              "line": 2,
-              "character": 4
-            },
-            "end": {
-              "line": 2,
-              "character": 22
-            }
-          },
-          "children": []
-        },
-        {
           "name": "shortest_path_in_a_grid_with_obstacles_elimination",
           "detail": "shortest_path_in_a_grid_with_obstacles_elimination(grid: list[list[int]], k: int) -> int",
           "kind": 12,
-          "range": {"start": {"line": 5, "character": 0}, "end": {"line": 35, "character": 13}},
+          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 32, "character": 13}},
           "nameRange": {
             "start": {
-              "line": 5,
+              "line": 2,
               "character": 4
             },
             "end": {
-              "line": 5,
+              "line": 2,
               "character": 54
             }
           },
@@ -558,20 +541,37 @@
               "name": "h",
               "detail": "h(r: int, c: int) -> int",
               "kind": 12,
-              "range": {"start": {"line": 9, "character": 4}, "end": {"line": 10, "character": 63}},
+              "range": {"start": {"line": 6, "character": 4}, "end": {"line": 7, "character": 63}},
               "nameRange": {
                 "start": {
-                  "line": 9,
+                  "line": 6,
                   "character": 8
                 },
                 "end": {
-                  "line": 9,
+                  "line": 6,
                   "character": 9
                 }
               },
               "children": []
             }
           ]
+        },
+        {
+          "name": "manhattan_distance",
+          "detail": "manhattan_distance(a: tuple[int, int], b: tuple[int, int]) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 34, "character": 0}, "end": {"line": 35, "character": 46}},
+          "nameRange": {
+            "start": {
+              "line": 34,
+              "character": 4
+            },
+            "end": {
+              "line": 34,
+              "character": 22
+            }
+          },
+          "children": []
         }
       ]
     },

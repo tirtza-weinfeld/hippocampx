@@ -20,10 +20,10 @@ Given a board and a list of words, find all words in the board.
 
 ## [!(ProblemTimeComplexity)] Time Complexity
 
-- $O(m $n \cdot 4$^L)$
+- $O(m n \cdot 4^L)$
     - **Symbols:** m×n board, W=∑(w∈dict)|w|, L=max|w|.
     - **Build trie:** $O(W)$.
-    - **DFS (worst case):** first step ≤ 4 choices, then ≤ 3 per step ⇒ $O(m $n \cdot 4$ * 3^(L-1)$). Coarse bound: $O(m $n \cdot 4$^L)$.
+    - **DFS (worst case):** first step ≤ 4 choices, then ≤ 3 per step ⇒ $O(m n \cdot 4 * 3^(L-1)$). Coarse bound: $O(m n \cdot 4^L)$.
     - **Space:** trie $O(W)$; recursion/visited path $O(L)$.
 
 ## [!(ProblemKeyVariables)] Key Variables

@@ -12,6 +12,60 @@
 
 Given an `m x n` grid where cells are either empty (`0`) or an obstacle (`1`), and an integer `k` representing the maximum number of obstacles you can eliminate, find the minimum number of steps to travel from the top-left corner `(0, 0)` to the bottom-right `(m-1, n-1)`. Each move (up, down, left, right) costs one step. If no such path exists, return `-1`.
 
+## A Star Solution
+
+### [!(ProblemTimeComplexity)] Time Complexity
+
+- $O(m * n * k * \log(m * n * k)$)
+
+### [!(ProblemKeyVariables)] Key Variables
+
+- `pq`: (f_cost, steps, r, c, remaining_k)
+
+### [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/1293-shortest-path-in-a-grid-with-obstacles-elimination/a_star.py"
+import heapq
+
+def shortest_path_in_a_grid_with_obstacles_elimination(grid: list[list[int]], k: int) -> int:
+
+    rows, cols = len(grid), len(grid[0])
+
+    def h(r: int, c: int) -> int:
+        return manhattan_distance((r, c), (rows - 1, cols - 1))
+
+    if k >= (md:= h(0, 0)) - 1:
+        return md
+
+    pq = [(md, 0, 0, 0, k)]
+
+    max_k = [[-1] * cols for _ in range(rows)]
+    max_k[0][0] = k
+
+    while pq:
+        _, steps, r, c, remaining_k = heapq.heappop(pq)
+
+        if (r, c) == (rows - 1, cols - 1):
+            return steps
+
+        if remaining_k < max_k[r][c]:
+            continue
+
+        for dr, dc in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
+            if 0 <= (nr:= r + dr) < rows and 0 <= (nc:= c + dc) < cols:
+                if (new_remaining_k := remaining_k - grid[nr][nc] ) > max_k[nr][nc]:
+                    max_k[nr][nc] = new_remaining_k
+                    heapq.heappush(pq, ((steps + 1) + h(nr, nc), steps + 1, nr, nc, new_remaining_k))
+
+    return -1
+
+def manhattan_distance(a: tuple[int, int], b: tuple[int, int]) -> int:
+    return abs(a[0] - b[0]) + abs(a[1] - b[1])
+```
+
+
+---
+
 ## Dijkstra Solution
 
 ### [!(ProblemKeyVariables)] Key Variables
@@ -49,52 +103,6 @@ def shortest_path_in_a_grid_with_obstacles_elimination(grid: list[list[int]], k:
                 if (new_k:= k_rem - grid[nr][nc]) > max_k[nr][nc]:
                     max_k[nr][nc] = new_k
                     heapq.heappush(pq, (steps + 1, nr, nc, new_k))
-
-    return -1
-```
-
-
----
-
-## A Star Solution
-
-### [!(ProblemCodeSnippet)] Code Snippet
-
-```python meta="source=problems/1293-shortest-path-in-a-grid-with-obstacles-elimination/a_star.py"
-import heapq
-
-def manhattan_distance(a: tuple[int, int], b: tuple[int, int]) -> int:
-    return abs(a[0] - b[0]) + abs(a[1] - b[1])
-
-def shortest_path_in_a_grid_with_obstacles_elimination(grid: list[list[int]], k: int) -> int:
-
-    rows, cols = len(grid), len(grid[0])
-
-    def h(r: int, c: int) -> int:
-        return manhattan_distance((r, c), (rows - 1, cols - 1))
-
-    if k >= (md:= h(0, 0)) - 1:
-        return md
-
-    pq = [(md, 0, 0, 0, k)]
-
-    max_k = [[-1] * cols for _ in range(rows)]
-    max_k[0][0] = k
-
-    while pq:
-        _, steps, r, c, remaining_k = heapq.heappop(pq)
-
-        if (r, c) == (rows - 1, cols - 1):
-            return steps
-
-        if remaining_k < max_k[r][c]:
-            continue
-
-        for dr, dc in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
-            if 0 <= (nr:= r + dr) < rows and 0 <= (nc:= c + dc) < cols:
-                if (new_remaining_k := remaining_k - grid[nr][nc] ) > max_k[nr][nc]:
-                    max_k[nr][nc] = new_remaining_k
-                    heapq.heappush(pq, ((steps + 1) + h(nr, nc), steps + 1, nr, nc, new_remaining_k))
 
     return -1
 ```

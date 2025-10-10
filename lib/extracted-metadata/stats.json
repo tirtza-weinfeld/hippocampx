@@ -229,6 +229,7 @@
       "$O(n)$"
     ],
     "1293-shortest-path-in-a-grid-with-obstacles-elimination": [
+      "$O(m  \\cdot  n  \\cdot  k  \\cdot  \\log(m  \\cdot  n  \\cdot  k))$",
       "$O(m  \\cdot  n  \\cdot  k)$"
     ],
     "1406-stone-game-iii": [
