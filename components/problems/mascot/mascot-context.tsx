@@ -116,6 +116,24 @@ function mascotReducer(state: MascotState, action: MascotAction): MascotState {
       return newState
     }
 
+    case 'SET_SORT_BY': {
+      const newState = {
+        ...state,
+        problems: { ...state.problems, sortBy: action.sortBy }
+      }
+      setStoredValue("problems-sort-by", action.sortBy)
+      return newState
+    }
+
+    case 'SET_SORT_ORDER': {
+      const newState = {
+        ...state,
+        problems: { ...state.problems, sortOrder: action.sortOrder }
+      }
+      setStoredValue("problems-sort-order", action.sortOrder)
+      return newState
+    }
+
     default:
       return state
   }
@@ -145,6 +163,8 @@ const ProblemsStateContext = createContext<{
   expandedProblems: string[]
   hasActiveFilters: boolean
   activeFilterCount: number
+  sortBy: 'number' | 'difficulty' | 'date'
+  sortOrder: 'asc' | 'desc'
 }>({
   searchQuery: "",
   difficultyFilter: "all",
@@ -152,6 +172,8 @@ const ProblemsStateContext = createContext<{
   expandedProblems: [],
   hasActiveFilters: false,
   activeFilterCount: 0,
+  sortBy: "number",
+  sortOrder: "asc",
 })
 
 const ProblemsActionsContext = createContext<{
@@ -162,6 +184,8 @@ const ProblemsActionsContext = createContext<{
   toggleProblemExpansion: (slug: string) => void
   toggleAllProblems: (allSlugs: string[]) => void
   resetFilters: () => void
+  setSortBy: (sortBy: 'number' | 'difficulty' | 'date') => void
+  setSortOrder: (sortOrder: 'asc' | 'desc') => void
 }>({
   setSearchQuery: () => {},
   setDifficultyFilter: () => {},
@@ -170,6 +194,8 @@ const ProblemsActionsContext = createContext<{
   toggleProblemExpansion: () => {},
   toggleAllProblems: () => {},
   resetFilters: () => {},
+  setSortBy: () => {},
+  setSortOrder: () => {},
 })
 
 const ScrollActionsContext = createContext<{
@@ -214,6 +240,8 @@ export function MascotProvider({ children }: { children: React.ReactNode }) {
       difficultyFilter: "all",
       topicFilter: "all",
       expandedProblems: [],
+      sortBy: "number",
+      sortOrder: "asc",
     }
   })
 
@@ -247,6 +275,16 @@ export function MascotProvider({ children }: { children: React.ReactNode }) {
     const storedExpandedProblems = getStoredValue("problems-expanded", [])
     if (storedExpandedProblems.length > 0) {
       dispatch({ type: 'SET_EXPANDED_PROBLEMS', problems: storedExpandedProblems })
+    }
+
+    const storedSortBy = getStoredValue("problems-sort-by", "number")
+    if (storedSortBy !== "number") {
+      dispatch({ type: 'SET_SORT_BY', sortBy: storedSortBy })
+    }
+
+    const storedSortOrder = getStoredValue("problems-sort-order", "asc")
+    if (storedSortOrder !== "asc") {
+      dispatch({ type: 'SET_SORT_ORDER', sortOrder: storedSortOrder })
     }
   }
 
@@ -284,6 +322,8 @@ export function MascotProvider({ children }: { children: React.ReactNode }) {
             state.problems.difficultyFilter !== 'all',
             state.problems.topicFilter !== 'all'
           ].filter(Boolean).length,
+          sortBy: state.problems.sortBy,
+          sortOrder: state.problems.sortOrder,
         }}>
           <ProblemsActionsContext value={{
             setSearchQuery: (query: string) => dispatch({ type: 'SET_SEARCH_QUERY', query }),
@@ -293,6 +333,8 @@ export function MascotProvider({ children }: { children: React.ReactNode }) {
             toggleProblemExpansion: (slug: string) => dispatch({ type: 'TOGGLE_PROBLEM_EXPANSION', slug }),
             toggleAllProblems: (allSlugs: string[]) => dispatch({ type: 'TOGGLE_ALL_PROBLEMS', allSlugs }),
             resetFilters: () => dispatch({ type: 'RESET_FILTERS' }),
+            setSortBy: (sortBy: 'number' | 'difficulty' | 'date') => dispatch({ type: 'SET_SORT_BY', sortBy }),
+            setSortOrder: (sortOrder: 'asc' | 'desc') => dispatch({ type: 'SET_SORT_ORDER', sortOrder }),
           }}>
             <ScrollActionsContext value={scrollActions}>
               {children}

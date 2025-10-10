@@ -388,9 +388,11 @@ export function SearchDialog({
 
   // Define renderSearchItem function before using it
   function renderSearchItem(item: SearchItem, index: number) {
-    const Icon = item.icon || Compass
-    const color = item.color || "text-teal-500"
-    const bgColor = item.bgColor || "bg-teal-500/10"
+    // Always enrich the item to ensure we have icon data
+    const enrichedItem = enrichItemData(item)
+    const Icon: ElementType = enrichedItem.icon || Compass
+    const color = enrichedItem.color || "text-teal-500"
+    const bgColor = enrichedItem.bgColor || "bg-teal-500/10"
 
     const itemContent = (
       <>
@@ -399,15 +401,15 @@ export function SearchDialog({
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <span className="font-medium truncate">{item.title}</span>
-            {isFavorite(item.href) && (
+            <span className="font-medium truncate">{enrichedItem.title}</span>
+            {isFavorite(enrichedItem.href) && (
               <Star className="h-3 w-3 text-yellow-500 fill-current" />
             )}
           </div>
-          {item.parent && (
+          {enrichedItem.parent && (
             <p className="text-xs text-muted-foreground truncate">
-              {/* {item.parent} */}
-              {item.href.split("/").slice(1).join("/")}
+              {/* {enrichedItem.parent} */}
+              {enrichedItem.href.split("/").slice(1).join("/")}
             </p>
           )}
         </div>
@@ -416,20 +418,20 @@ export function SearchDialog({
             e.preventDefault()
             e.stopPropagation()
             toggleFavorite({
-              title: item.title,
-              href: item.href,
-              parent: item.parent,
-              parentHref: item.parentHref,
+              title: enrichedItem.title,
+              href: enrichedItem.href,
+              parent: enrichedItem.parent,
+              parentHref: enrichedItem.parentHref,
             })
           }}
           className={cn(
             "p-1 rounded transition-colors",
-            isFavorite(item.href)
+            isFavorite(enrichedItem.href)
               ? "text-yellow-500 hover:text-yellow-600"
               : "text-muted-foreground hover:text-foreground"
           )}
         >
-          <Star className={cn("h-3 w-3", isFavorite(item.href) && "fill-current")} />
+          <Star className={cn("h-3 w-3", isFavorite(enrichedItem.href) && "fill-current")} />
         </button>
       </>
     )
@@ -437,8 +439,8 @@ export function SearchDialog({
     // All items navigate consistently - no special parent category behavior
     return (
       <Command.Item
-        key={item.href}
-        value={item.href}
+        key={enrichedItem.href}
+        value={enrichedItem.href}
         asChild
         className={cn(
           "flex items-center gap-3 px-3 py-2 cursor-pointer rounded-lg transition-colors",
@@ -447,16 +449,16 @@ export function SearchDialog({
         )}
       >
         <Link
-          href={item.href as Route}
+          href={enrichedItem.href as Route}
           onClick={() => {
             // Add to recent searches
             addToRecentSearches({
-              title: item.title,
-              href: item.href,
-              parent: item.parent,
-              parentHref: item.parentHref,
+              title: enrichedItem.title,
+              href: enrichedItem.href,
+              parent: enrichedItem.parent,
+              parentHref: enrichedItem.parentHref,
             })
-            onNavigate(item.href, item.parentHref, true)
+            onNavigate(enrichedItem.href, enrichedItem.parentHref, true)
           }}
         >
           {itemContent}

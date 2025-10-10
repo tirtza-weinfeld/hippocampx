@@ -1,5 +1,6 @@
 ---
-alwaysApply: true
+description: nextjs 
+alwaysApply: false
 ---
 # Next.js Rules
 

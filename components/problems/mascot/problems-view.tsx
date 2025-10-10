@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, use } from 'react'
-import {BookOpen, Clock, Target, TrendingUp, X, RotateCcw, Hash, ChevronDown, ChevronRight, ChevronUp, ChevronsDown } from 'lucide-react'
+import {BookOpen, Clock, Target, TrendingUp, X, RotateCcw, Hash, ChevronDown, ChevronRight, ChevronUp, ChevronsDown, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -39,6 +39,8 @@ export function ProblemsView({ problems: problemsData, time_complexities, topics
     expandedProblems,
     hasActiveFilters,
     activeFilterCount,
+    sortBy,
+    sortOrder,
   } = use(ProblemsStateContext)
   const {
     setSearchQuery,
@@ -47,6 +49,8 @@ export function ProblemsView({ problems: problemsData, time_complexities, topics
     toggleProblemExpansion,
     toggleAllProblems,
     resetFilters,
+    setSortBy,
+    setSortOrder,
   } = use(ProblemsActionsContext)
   const { getScrollPosition, setScrollPosition } = use(ScrollActionsContext)
 
@@ -144,7 +148,7 @@ export function ProblemsView({ problems: problemsData, time_complexities, topics
       Object.values(problem.solutions || {}).some(solution =>
         cleanTextForSearch(solution.title || '').includes(searchTerm) ||
         cleanTextForSearch(solution.code || '').includes(searchTerm)
-        
+
       )
 
 
@@ -161,9 +165,29 @@ export function ProblemsView({ problems: problemsData, time_complexities, topics
     return matchesSearch && matchesDifficulty && matchesTopic
   })
 
+  // Sort problems based on sortBy and sortOrder
+  const sortedProblems = [...filteredProblems].sort((a, b) => {
+    let comparison = 0
+
+    if (sortBy === 'number') {
+      const numA = parseInt(a.slug.match(/^(\d+)-/)?.[1] || '0', 10)
+      const numB = parseInt(b.slug.match(/^(\d+)-/)?.[1] || '0', 10)
+      comparison = numA - numB
+    } else if (sortBy === 'difficulty') {
+      const difficultyOrder = { easy: 1, medium: 2, hard: 3 }
+      comparison = difficultyOrder[a.difficulty] - difficultyOrder[b.difficulty]
+    } else if (sortBy === 'date') {
+      const dateA = new Date(a.time_stamps?.updated_at || 0).getTime()
+      const dateB = new Date(b.time_stamps?.updated_at || 0).getTime()
+      comparison = dateB - dateA // newest first by default
+    }
+
+    return sortOrder === 'asc' ? comparison : -comparison
+  })
+
   // Get expand/collapse all button state
-  const totalProblems = filteredProblems.length
-  const expandedCount = filteredProblems.filter(p =>
+  const totalProblems = sortedProblems.length
+  const expandedCount = sortedProblems.filter(p =>
     expandedProblems?.includes(p.slug) ?? false
   ).length
 
@@ -172,14 +196,14 @@ export function ProblemsView({ problems: problemsData, time_complexities, topics
 
   // Wrapper for toggleAllProblems that passes the current filtered problem slugs
   function handleToggleAllProblems() {
-    toggleAllProblems(filteredProblems.map(p => p.slug))
+    toggleAllProblems(sortedProblems.map(p => p.slug))
   }
 
   // Statistics
-  const total = filteredProblems.length
-  const easy = filteredProblems.filter(p => p.difficulty === 'easy').length
-  const medium = filteredProblems.filter(p => p.difficulty === 'medium').length
-  const hard = filteredProblems.filter(p => p.difficulty === 'hard').length
+  const total = sortedProblems.length
+  const easy = sortedProblems.filter(p => p.difficulty === 'easy').length
+  const medium = sortedProblems.filter(p => p.difficulty === 'medium').length
+  const hard = sortedProblems.filter(p => p.difficulty === 'hard').length
   const topTopics = uniqueTopics.slice(0, 3)
 
   const stats = { total, easy, medium, hard, topTopics }
@@ -381,7 +405,59 @@ export function ProblemsView({ problems: problemsData, time_complexities, topics
               </MascotDropdownContent>
             </MascotDropdown>
 
+            {/* Sort By dropdown */}
+            <MascotDropdown>
+              <MascotDropdownTrigger>
+                <div className={cn(
+                  "h-7 w-7 p-0 border-0 bg-transparent flex items-center justify-center cursor-pointer",
+                  "transition-all duration-200 rounded-md relative",
+                  "bg-linear-to-r hover:bg-linear-to-l",
+                  "from-indigo-50 to-indigo-100 dark:from-indigo-950/50 dark:to-indigo-900/50",
+                  "text-indigo-700 dark:text-indigo-300",
+                  "hover:text-indigo-600 dark:hover:text-indigo-400"
+                )}>
+                  <ArrowUpDown className="h-4 w-4" />
+                  {sortBy !== 'number' && (
+                    <div className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-indigo-500 dark:bg-indigo-300 rounded-full border border-background" />
+                  )}
+                </div>
+              </MascotDropdownTrigger>
+              <MascotDropdownContent className="min-w-[160px] py-2 right-0">
+                {[
+                  { value: 'number', label: 'Number' },
+                  { value: 'difficulty', label: 'Difficulty' },
+                  { value: 'date', label: 'Date Updated' }
+                ].map((sort) => (
+                  <MascotDropdownCheckboxItem
+                    key={sort.value}
+                    onClick={() => setSortBy(sort.value as 'number' | 'difficulty' | 'date')}
+                    checked={sortBy === sort.value}
+                    className="indigo"
+                    Indicator={ArrowUpDown}
+                  >
+                    {sort.label}
+                  </MascotDropdownCheckboxItem>
+                ))}
+              </MascotDropdownContent>
+            </MascotDropdown>
 
+            {/* Sort Order toggle */}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+              className={cn(
+                "h-7 w-7 p-0 hover:bg-linear-to-r hover:from-indigo-50 hover:to-indigo-100 dark:hover:from-indigo-950/50 dark:hover:to-indigo-900/50 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all duration-200 rounded-md ring-0 focus:ring-2 focus:ring-indigo-500/50 text-muted-foreground",
+              )}
+              title={sortOrder === 'asc' ? 'Sort ascending' : 'Sort descending'}
+              aria-label={sortOrder === 'asc' ? 'Sort ascending' : 'Sort descending'}
+            >
+              {sortOrder === 'asc' ? (
+                <ArrowUp className="h-4 w-4" />
+              ) : (
+                <ArrowDown className="h-4 w-4" />
+              )}
+            </Button>
 
             {/* Reset button */}
             {/* {hasActiveFilters && ( */}
@@ -471,7 +547,7 @@ export function ProblemsView({ problems: problemsData, time_complexities, topics
         tabIndex={-1}
       >
         <div className="space-y-4 group/problems">
-          {filteredProblems.length === 0 ? (
+          {sortedProblems.length === 0 ? (
             <div className="text-center py-16">
               <div className="text-8xl bg-linear-to-r from-sky-500  via-blue-300 to-sky-100
                hover:bg-linear-to-l bg-clip-text text-transparent mb-6 
@@ -497,7 +573,7 @@ export function ProblemsView({ problems: problemsData, time_complexities, topics
               )}
             </div>
           ) : (
-            filteredProblems.map((problem, index) => {
+            sortedProblems.map((problem, index) => {
               const isExpanded = expandedProblems?.includes(problem.slug) ?? false
 
 

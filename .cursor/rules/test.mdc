@@ -1,7 +1,6 @@
 ---
-description:
-globs:
-alwaysApply: true
+description: testing
+alwaysApply: false
 ---
 # Tests Rules
 

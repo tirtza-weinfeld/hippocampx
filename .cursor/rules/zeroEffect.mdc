@@ -4,16 +4,17 @@ alwaysApply: true
 
 ### 🚫 Zero-Effect Policy
 
-`useEffect` / `useLayoutEffect` / `useInsertionEffect` are **prohibited**.  
+`useEffect` / `useLayoutEffect` / `useInsertionEffect` are **prohibited**.
 They MUST NOT appear in generated code except in the following **explicit exceptions**:
 
-1. Bridging to an **imperative third-party widget** that requires lifecycle hooks.  
-2. Managing a **subscription** only when `useSyncExternalStore` is impossible.  
+1. Bridging to an **imperative third-party widget** that requires lifecycle hooks.
+2. Managing a **subscription** only when `useSyncExternalStore` is impossible.
 3. Performing **layout measurement** via a `ref` callback with cleanup.
 
-All other cases must be replaced with declarative, modern React 19 + Next.js App Router + React Compiler RC patterns.  
-> Use **Server Actions**, `use(promise)` with `<Suspense>`, `useTransition`, and `useOptimistic` for async UI and optimistic state.  
-> Enforce with **`eslint-plugin-react-hooks@rc`**: set `"react-hooks/react-compiler": "error"` to guarantee compliance.
+All other cases must be replaced with declarative, modern React 19 + Next.js App Router + React Compiler RC patterns.
+> Use **Server Actions**, `use(promise)` with `<Suspense>`, `useTransition`, and `useOptimistic` for async UI and optimistic state.
+> When Effects ARE used (exceptions only), use **`useEffectEvent`** to extract non-reactive logic that needs latest props/state.
+> Enforce with **`eslint-plugin-react-hooks@6.1.1+`**: set `"react-hooks/react-compiler": "error"` to guarantee compliance.
 
 | ❌ If you are doing this with `useEffect`… | ✅ Do this instead                                                                                          |
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------- |
@@ -23,6 +24,7 @@ All other cases must be replaced with declarative, modern React 19 + Next.js App
 | Derive data from props/state               | Compute during render; use `useMemo` only if profiling proves necessary                                     |
 | Kick off async UI after a user event       | Handle inside the **event handler**; use `useTransition` / `useOptimistic` for async UI states              |
 | Read server result in client               | Pass the **promise** and call `use(promise)`                                                                |
-| Imperative third-party widget / DOM bridge | Use widget’s API; if unavailable, use a **ref callback** with cleanup (allowed exception)                    |
+| Imperative third-party widget / DOM bridge | Use widget's API; if unavailable, use a **ref callback** with cleanup (allowed exception)                    |
 | Scroll/resize reads & layout work          | Use a **ref callback** + `ResizeObserver` / `IntersectionObserver` (no effect)                              |
 | Timers for UI feedback                     | Start/clear in **event handlers** or an **external scheduler**; effect use allowed only if subscription-like |
+| Analytics/logging with latest values       | Use **`useEffectEvent`** inside effect to read current props/state without re-triggering effect              |

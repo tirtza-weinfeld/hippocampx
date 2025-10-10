@@ -13,6 +13,8 @@ export type MascotState = {
     difficultyFilter: string
     topicFilter: string
     expandedProblems: string[]
+    sortBy: 'number' | 'difficulty' | 'date'
+    sortOrder: 'asc' | 'desc'
   }
 }
 
@@ -28,6 +30,8 @@ export type MascotAction =
   | { type: 'TOGGLE_PROBLEM_EXPANSION'; slug: string }
   | { type: 'TOGGLE_ALL_PROBLEMS'; allSlugs: string[] }
   | { type: 'RESET_FILTERS' }
+  | { type: 'SET_SORT_BY'; sortBy: 'number' | 'difficulty' | 'date' }
+  | { type: 'SET_SORT_ORDER'; sortOrder: 'asc' | 'desc' }
 
 
 
@@ -49,6 +53,10 @@ export type Problem = {
   leetcode: string
   topics?: string[]
   solutions: Record<string, Solution>
+  time_stamps?: {
+    created_at: string
+    updated_at: string
+  }
 }
 
 

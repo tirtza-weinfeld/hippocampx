@@ -27,23 +27,59 @@ alwaysApply: true
 **Data Flow:**
 Server fetches → Client interacts → Server mutates → Client optimistic updates
 
-**Latest Features (Canary):**
-View Transitions for smooth animations, Activity for preserving state
+## WHEN TO USE NEW FEATURES
+
+**Use Activity when:**
+- Tabs/panels need to preserve state when hidden (form inputs, scroll position)
+- Pre-rendering likely next routes for instant navigation
+- Sidebar/drawer that opens/closes frequently
+- Avoid unmounting/remounting expensive components
+- DON'T use for: Components that rarely reappear, simple show/hide
+
+**Use useEffectEvent when:**
+- Effect needs latest props/state without re-running the effect
+- Analytics/logging that shouldn't trigger reconnections
+- Event handlers inside effects that read current values
+- Separating "event" logic from reactive dependencies
+- DON'T use for: Regular event handlers, shortcut for proper dependencies, or as escape hatch
+- WARNING: useEffectEvent cannot be in dependency arrays (React will error)
+
+**Use cacheSignal when:**
+- Server Component fetching with auto-cancellation
+- Need to differentiate real errors from abort errors
+- Want to clean up in-flight requests on render failure
+- Works only in RSC, returns null in Client Components
+- DON'T use for: Client-side fetching, manual abort control
+
+**Use Partial Pre-rendering (prerender/resume) when:**
+- Need hybrid static shell + dynamic content
+- Building CDN-friendly apps with per-request data
+- Want to split build-time static generation from request-time rendering
+- DON'T use in Next.js (use Next.js PPR instead), for fully static sites (use prerender alone), or fully dynamic pages (use streaming SSR)
+
+**SSR Streaming choices:**
+- Node.js: Always use renderToPipeableStream/resumeToPipeableStream (faster, supports compression)
+- Edge/Deno: Use renderToReadableStream/resume (Web Streams)
+- DON'T use Web Streams in Node.js (slower, no compression)
 
 ## SERVER PATTERNS
 
-### Server Components + Cache
+### Server Components + Cache + cacheSignal
 ```tsx
-import { cache } from 'react'
+import { cache, cacheSignal } from 'react'
 import * as motion from 'motion/react-client'
 
 // Cache prevents duplicate API calls across components
 const getProduct = cache(async (id: string) => {
-  return await fetch(`/api/products/${id}`).then(r => r.json())
+  return await fetch(`/api/products/${id}`, {
+    signal: cacheSignal() // Auto-abort when render completes/fails
+  }).then(r => r.json())
 })
 
 const getUser = cache(async (userId: string) => {
-  return await fetch(`/api/users/${userId}`).then(r => r.json())
+  return await fetch(`/api/users/${userId}`, {
+    signal: cacheSignal()
+  }).then(r => r.json())
 })
 
 export default async function ProductPage({ id }: { id: string }) {
@@ -71,7 +107,9 @@ export default async function ProductPage({ id }: { id: string }) {
 // This will reuse the cached getProduct call - no duplicate API request
 async function ProductReviews({ productId }: { productId: string }) {
   const product = await getProduct(productId) // Cache hit!
-  const reviews = await fetch(`/api/reviews/${productId}`).then(r => r.json())
+  const reviews = await fetch(`/api/reviews/${productId}`, {
+    signal: cacheSignal()
+  }).then(r => r.json())
 
   return (
     <motion.section initial={{ y: 20 }} animate={{ y: 0 }}>
@@ -79,6 +117,45 @@ async function ProductReviews({ productId }: { productId: string }) {
       <ReviewsList reviews={reviews} />
     </motion.section>
   )
+}
+```
+
+### cacheSignal for Request Management
+```tsx
+import { cache, cacheSignal } from 'react'
+
+// Auto-abort fetch requests when render completes/fails
+const fetchProductData = cache(async (id: string) => {
+  const response = await fetch(`/api/products/${id}`, {
+    signal: cacheSignal() // Aborts on render completion/failure
+  })
+  return response.json()
+})
+
+// Error handling with cacheSignal
+async function getProductWithAnalytics(id: string) {
+  try {
+    const [product, analytics] = await Promise.all([
+      db.query.products.findFirst({ where: eq(products.id, id) }),
+      db.query.analytics.findMany({ where: eq(analytics.productId, id) })
+    ])
+    return { product, analytics }
+  } catch (error) {
+    // Only log real errors, not cancellation errors
+    if (!cacheSignal()?.aborted) {
+      logError('Product fetch failed:', error)
+    }
+    return null
+  }
+}
+
+// Returns AbortSignal during rendering, null outside rendering or in Client Components
+async function Component() {
+  const signal = cacheSignal() // AbortSignal or null
+  if (signal) {
+    // Running in Server Component during render
+    await fetchProductData('123')
+  }
 }
 ```
 
@@ -100,6 +177,139 @@ async function updateQuantity(productId: string, quantity: number) {
   "use server"
   await db.update(cart).set({ quantity }).where(eq(cart.productId, productId))
   revalidateTag('cart')
+}
+```
+
+## SSR & PARTIAL PRE-RENDERING
+
+### Streaming SSR - Node.js (Preferred)
+```tsx
+import { renderToPipeableStream } from 'react-dom/server'
+
+async function handler(req: Request, res: Response) {
+  const { pipe, abort } = renderToPipeableStream(<App />, {
+    bootstrapModules: ['/client.js'],
+    onShellReady() {
+      // Stream HTML as soon as shell (above Suspense) is ready
+      res.statusCode = 200
+      res.setHeader('content-type', 'text/html')
+      pipe(res)
+    },
+    onAllReady() {
+      // All content ready - use for crawlers
+    },
+    onShellError(error) {
+      // Shell failed - send error page
+      res.statusCode = 500
+      res.send('<h1>Server Error</h1>')
+    },
+    onError(error) {
+      console.error('Render error:', error)
+    }
+  })
+
+  // Abort on client disconnect
+  req.on('close', abort)
+}
+
+// Suspense boundaries automatically batch for better UX
+// React batches reveals for short time to show more content together
+// Auto-stops batching if approaching 2.5s LCP threshold
+```
+
+### Streaming SSR - Edge/Deno
+```tsx
+import { renderToReadableStream } from 'react-dom/server'
+
+async function handler(request: Request) {
+  const stream = await renderToReadableStream(<App />, {
+    bootstrapModules: ['/client.js'],
+    signal: request.signal, // Auto-abort on disconnect
+    onError(error) {
+      console.error('Render error:', error)
+    }
+  })
+
+  // Wait for shell before responding
+  await stream.allReady
+
+  return new Response(stream, {
+    status: 200,
+    headers: { 'content-type': 'text/html' }
+  })
+}
+```
+
+### Partial Pre-rendering - Build + Runtime
+```tsx
+import { prerender } from 'react-dom/static'
+import { resumeToPipeableStream } from 'react-dom/server'
+
+// 1. Build time: Generate static shell
+async function buildStaticShell() {
+  const controller = new AbortController()
+
+  const { prelude, postponed } = await prerender(<App />, {
+    signal: controller.signal,
+    bootstrapModules: ['/client.js']
+  })
+
+  // Save postponed state (JSON-serializable)
+  await fs.writeFile('build/postponed.json', JSON.stringify(postponed))
+
+  // Deploy prelude (static HTML) to CDN
+  await fs.writeFile('build/index.html', prelude)
+}
+
+// 2. Runtime: Resume with dynamic content (Node.js)
+async function handleRequest(req: Request, res: Response) {
+  const postponed = JSON.parse(await fs.readFile('build/postponed.json', 'utf-8'))
+
+  const { pipe } = resumeToPipeableStream(<App />, postponed, {
+    bootstrapModules: ['/client.js'],
+    onShellReady() {
+      res.setHeader('content-type', 'text/html')
+      pipe(res)
+    },
+    onError(error) {
+      console.error('Resume error:', error)
+    }
+  })
+}
+
+// Alternative: Edge/Deno with Web Streams
+import { resume } from 'react-dom/static'
+
+async function handleRequestEdge(request: Request) {
+  const postponed = await getPostponedState()
+
+  const stream = await resume(<App />, postponed, {
+    bootstrapModules: ['/client.js']
+  })
+
+  return new Response(stream, {
+    headers: { 'content-type': 'text/html' }
+  })
+}
+```
+
+### Static Generation with Resume
+```tsx
+import { resumeAndPrerender } from 'react-dom/static'
+
+// Generate fully static HTML from postponed state
+async function generateStaticPage(params: { id: string }) {
+  const postponed = await getPostponedState(params)
+
+  const { prelude } = await resumeAndPrerender(<ProductPage {...params} />, postponed, {
+    bootstrapModules: ['/client.js'],
+    onError(error) {
+      console.error('Static gen error:', error)
+    }
+  })
+
+  // Fully static HTML ready for CDN
+  return prelude
 }
 ```
 
@@ -139,6 +349,47 @@ function Counter() {
 }
 ```
 
+### useEffectEvent for Non-Reactive Logic
+```tsx
+"use client"
+import { useEffectEvent } from 'react'
+
+// Extract non-reactive logic from effects
+function ChatRoom({ roomId, theme }: { roomId: string, theme: string }) {
+  const [message, setMessage] = useState('')
+
+  // Event reads latest props without causing re-renders
+  const onConnected = useEffectEvent(() => {
+    showNotification('Connected!', theme) // Uses latest theme
+  })
+
+  useEffect(() => {
+    const connection = createConnection(roomId)
+    connection.on('connected', onConnected)
+    connection.connect()
+    return () => connection.disconnect()
+  }, [roomId]) // Only re-run on roomId change, not theme
+
+  return <input value={message} onChange={e => setMessage(e.target.value)} />
+}
+
+// Analytics example - read latest values without triggering effects
+function Page({ url }: { url: string }) {
+  const { items } = useContext(ShoppingCartContext)
+  const numberOfItems = items.length
+
+  const onNavigate = useEffectEvent((visitedUrl: string) => {
+    logVisit(visitedUrl, numberOfItems) // Always uses current cart size
+  })
+
+  useEffect(() => {
+    onNavigate(url)
+  }, [url]) // Only track on URL change, not cart updates
+
+  return <PageContent />
+}
+```
+
 ### Using Promises from Server
 ```tsx
 "use client"
@@ -164,7 +415,7 @@ function ProductDetails({ productPromise }: { productPromise: Promise<Product> }
 
 ### Smart Server → Client Streaming
 ```tsx
-import { cache } from 'react'
+import { cache, cacheSignal } from 'react'
 
 // Cached expensive computation - prevents duplicate work
 const getProductAnalytics = cache(async (productId: string) => {
@@ -179,6 +430,12 @@ const getProductAnalytics = cache(async (productId: string) => {
   `, [productId])
 
   return processAnalytics(analytics)
+})
+
+const getProduct = cache(async (id: string) => {
+  return await fetch(`/api/products/${id}`, {
+    signal: cacheSignal()
+  }).then(r => r.json())
 })
 
 export default async function ProductPage({ id }: { id: string }) {
@@ -592,40 +849,59 @@ function ProductCard({ product, isExpanded, onToggle }) {
 }
 ```
 
-### Activity Component
+### Activity Component - State Preservation
 ```tsx
 import { Activity } from 'react'
 
-// Preserve state while hiding content
-function TabsContainer({ activeTab }) {
+// Preserve component state when hiding (better than conditional rendering)
+function TabsContainer({ activeTab }: { activeTab: string }) {
   return (
     <div>
       <Activity mode={activeTab === 'home' ? 'visible' : 'hidden'}>
-        <HomeTab />
+        <HomeTab /> {/* State preserved when switching tabs */}
       </Activity>
       <Activity mode={activeTab === 'profile' ? 'visible' : 'hidden'}>
-        <ProfileTab />
+        <ProfileTab /> {/* Form inputs, scroll position maintained */}
       </Activity>
       <Activity mode={activeTab === 'settings' ? 'visible' : 'hidden'}>
-        <SettingsTab />
+        <SettingsTab /> {/* Video playback position preserved */}
       </Activity>
     </div>
   )
 }
 
-// Pre-render likely next routes
-function ProductPage({ id, relatedProducts }) {
+// Pre-render background content at lower priority
+function ProductPage({ id, relatedProducts }: { id: string, relatedProducts: any[] }) {
   return (
     <div>
       <ProductDisplay id={id} />
 
-      {/* Pre-render first related product for instant navigation */}
+      {/* Pre-render likely next route for instant navigation */}
       <Activity mode="hidden">
         <ProductPage id={relatedProducts[0].id} />
       </Activity>
     </div>
   )
 }
+
+// Expandable sidebar with state preservation
+function Layout({ isShowingSidebar }: { isShowingSidebar: boolean }) {
+  return (
+    <div className="flex">
+      <Activity mode={isShowingSidebar ? 'visible' : 'hidden'}>
+        <Sidebar /> {/* Maintains scroll position, expanded sections */}
+      </Activity>
+      <MainContent />
+    </div>
+  )
+}
+
+// Hidden components:
+// - Use display: none (visually hidden)
+// - Re-render at lower priority
+// - Effects are cleaned up
+// - Internal state is preserved
+// Use for components likely to become visible again
 ```
 
 ### Container Queries with Tailwind

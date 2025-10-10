@@ -1,6 +1,10 @@
 {
   "problems": {
     "37-sudoku-solver": {
+      "time_stamps": {
+        "created_at": "2025-09-12T16:05:16.850049",
+        "updated_at": "2025-09-30T19:05:08.950126"
+      },
       "solutions": {
         "solution.py": {
           "intuition": "MRV (Minimum Remaining Values):\n    Candidates per cell: `{'1'..'9'} − (row ∪ col ∪ box)`.\n    MRV: pick the empty cell with the fewest candidates to prune hardest.\n    Place a digit tentatively, update sets, recurse; undo on failure (backtrack).\n    If any cell has 0 candidates, the branch is impossible → backtrack immediately.",
@@ -15,6 +19,10 @@
       "topics": ["game"]
     },
     "1631-path-with-minimum-effort": {
+      "time_stamps": {
+        "created_at": "2025-09-12T16:06:10.762743",
+        "updated_at": "2025-09-15T18:58:00.237842"
+      },
       "solutions": {
         "solution.py": {
           "args": {
@@ -35,6 +43,10 @@
       "topics": ["dijkstra"]
     },
     "909-snakes-and-ladders": {
+      "time_stamps": {
+        "created_at": "2025-09-12T16:06:03.946097",
+        "updated_at": "2025-09-30T19:05:08.952509"
+      },
       "solutions": {
         "solution.py": {
           "intuition": "Flatten the Board First 🎲\n    The key insight here is to **pre-process the 2D `board` into a 1D `flat_board` list**. This powerful first step handles all the complex Boustrophedonical logic upfront. By doing this, the BFS loop becomes exceptionally clean and avoids the need for a coordinate conversion function. The search can then operate on a simple 1D array, treating the board as the simple, linear graph it truly represents.",
@@ -49,6 +61,10 @@
       "topics": ["bfs"]
     },
     "1-two-sum": {
+      "time_stamps": {
+        "created_at": "2025-09-29T09:50:47.660266",
+        "updated_at": "2025-10-10T11:47:30.513898"
+      },
       "solutions": {
         "solution.py": {
           "time_complexity": "O(n)\n    where n is the length of the nums array. We iterate through the array once.",
@@ -62,6 +78,10 @@
       "topics": ["hash-table", "k-sum"]
     },
     "152-maximum-product-subarray": {
+      "time_stamps": {
+        "created_at": "2025-09-12T16:05:33.324160",
+        "updated_at": "2025-09-29T12:41:30.343864"
+      },
       "solutions": {
         "solution.py": {
           "code": "def maximum_product_subarray(nums: list[int]) -> int:\n\n    hi = lo = max_prod = nums[0]\n    for x in nums[1:]:\n        if x < 0:\n            hi, lo = lo, hi\n        hi = max(x, hi * x)\n        lo = min(x, lo * x)\n        max_prod = max(max_prod, hi)\n    return max_prod"
@@ -74,6 +94,10 @@
       "topics": ["dynamic-programming"]
     },
     "1293-shortest-path-in-a-grid-with-obstacles-elimination": {
+      "time_stamps": {
+        "created_at": "2025-09-12T16:06:03.946398",
+        "updated_at": "2025-09-30T19:05:08.947847"
+      },
       "solutions": {
         "dijkstra.py": {
           "variables": {
@@ -108,6 +132,10 @@
       "topics": ["bfs"]
     },
     "648-replace-words": {
+      "time_stamps": {
+        "created_at": "2025-09-12T16:05:57.931295",
+        "updated_at": "2025-09-15T18:58:00.237736"
+      },
       "solutions": {
         "solution.py": {
           "code": "def replace_words(dictionary: list[str], sentence: str) -> str:\n    trie = {}\n\n    for word in dictionary:\n        node = trie\n        for c in word:\n            if \"$\" in node:\n                break\n            node = node.setdefault(c, {})\n        node[\"$\"] = True\n\n    def search(word: str) -> str:\n        node = trie\n        for i, c in enumerate(word):\n            if \"$\" in node:\n                return word[:i]\n            if c not in node:\n                return word\n            node = node[c]\n        return word\n\n    return \" \".join(search(word) for word in sentence.split())"
@@ -120,6 +148,10 @@
       "topics": ["trie"]
     },
     "394-decode-string": {
+      "time_stamps": {
+        "created_at": "2025-09-12T16:05:43.509425",
+        "updated_at": "2025-09-15T18:58:00.237437"
+      },
       "solutions": {
         "solution.py": {
           "code": "def decode_string(s: str) -> str:\n    stack, s = [], \"1[\" + s + \"]\"\n    for c in s:\n        if c == \"]\":\n            curr = []\n            while stack[-1] != \"[\":\n                curr.append(stack.pop())\n            stack.pop()  # remove \"[\"\n            num = []\n            while stack and stack[-1].isdigit():\n                num.append(stack.pop())\n            stack.append(\"\".join(reversed(curr)) * int(\"\".join(reversed(num))))\n        else:\n            stack.append(c)\n    return stack[0]"
@@ -132,6 +164,10 @@
       "topics": ["stack"]
     },
     "211-design-add-and-search-words-data-structure": {
+      "time_stamps": {
+        "created_at": "2025-09-12T16:05:43.508854",
+        "updated_at": "2025-09-17T16:21:50.341185"
+      },
       "solutions": {
         "solution.py": {
           "code": "\nclass WordDictionary:\n\n    def __init__(self):\n        self.trie: dict[str, dict] = {}\n        self.END_MARKER = \"$\"\n\n    def add_word(self, word: str) -> None:\n        node = self.trie\n        for c in word:\n            node = node.setdefault(c, {})\n        node[self.END_MARKER] = True\n\n    def search(self, word: str) -> bool:\n\n        def dfs(node: dict, i: int) -> bool:\n\n            if i == len(word):\n                return self.END_MARKER in node\n\n            if (c := word[i]) == \".\":\n\n                return any(\n                    dfs(child, i + 1)\n                    for k, child in node.items()\n                    if k != self.END_MARKER\n                )\n            child = node.get(c)\n            return bool(child) and dfs(child, i + 1)\n\n        return dfs(self.trie, 0)"
@@ -144,6 +180,10 @@
       "topics": ["trie"]
     },
     "1406-stone-game-iii": {
+      "time_stamps": {
+        "created_at": "2025-09-12T16:06:03.946455",
+        "updated_at": "2025-09-30T19:06:08.585939"
+      },
       "solutions": {
         "solution.py": {
           "intuition": "Score-difference DP:\n    Let `dp[i]` = max score difference current player can achieve starting at index `i`.\n    Transition: `dp[i] = max_{k∈{1,2,3}} (sum(i..i+k-1) − dp[i+k])`. Answer from `dp[0]`.",
@@ -158,6 +198,10 @@
       "topics": ["game", "dynamic-programming"]
     },
     "875-koko-eating-bananas": {
+      "time_stamps": {
+        "created_at": "2025-09-12T16:06:03.945955",
+        "updated_at": "2025-09-30T19:05:08.952372"
+      },
       "solutions": {
         "solution.py": {
           "intuition": "Binary searching the answer space, (eating speed `k`):\n    The range of possible speeds is from `1` to `max(piles)`\n    The key property is that the problem is **monotonic** (if a speed `k` is fast enough, any speed greater than `k` will also be fast enough)\n    This allows us to binary search for the *minimum* valid speed\n    We test a mid speed (`k = (l + r) // 2`)\n        If it's valid (`hours(k) <= h`), we try to find a smaller valid speed by searching the lower half (`r = k`)\n        If it's too slow, we must increase the speed by searching the upper half (`l = k + 1`)\n    The loop converges on the smallest `k` that works 🍌",
@@ -182,6 +226,10 @@
       "topics": ["binary-search", "binary-search-answer-space"]
     },
     "460-lfu-cache": {
+      "time_stamps": {
+        "created_at": "2025-09-12T16:05:57.930976",
+        "updated_at": "2025-09-15T18:58:00.237451"
+      },
       "solutions": {
         "solution.py": {
           "code": "from collections import defaultdict, OrderedDict\n\nclass LFUCache:\n    def __init__(self, capacity: int):\n        self.capacity    = capacity\n        self.cache       = {}  # key → value\n        self.freq        = {}  # key → freq\n        self.buckets     = defaultdict(OrderedDict)  # freq → keys in LRU order\n        self.minfreq     = 0\n\n    def _bump(self, key: int):\n        f = self.freq[key]\n        # remove from old bucket\n        del self.buckets[f][key]\n        if not self.buckets[f]:\n            del self.buckets[f]\n            if self.minfreq == f:\n                self.minfreq += 1\n                \n        # Promote the book to the next shelf up, placing it by the chair.\n        self.freq[key] +=1 # self.freq[key] = f + 1\n        self.buckets[f + 1][key] = None\n\n    def get(self, key: int) -> int:\n        if key not in self.cache:\n            return -1\n        self._bump(key)\n        return self.cache[key]\n\n    def put(self, key: int, value: int) -> None:\n        if self.capacity <= 0:\n            return\n\n        if key in self.cache:\n            self.cache[key] = value\n            self._bump(key)\n            return\n\n        # Evict from the far end of the least popular shelf.\n        if len(self.cache) >= self.capacity:\n            old_key, _ = self.buckets[self.minfreq].popitem(last=False)\n            del self.cache[old_key]\n            del self.freq[old_key]\n\n        # A new book starts on the bottom shelf, by the chair.\n        self.cache[key] = value\n        self.freq[key] = 1\n        self.buckets[1][key] = None\n        self.minfreq = 1"
@@ -194,6 +242,10 @@
       "topics": ["cache"]
     },
     "133-clone-graph": {
+      "time_stamps": {
+        "created_at": "2025-09-12T16:05:33.324061",
+        "updated_at": "2025-09-30T19:05:08.948114"
+      },
       "solutions": {
         "solution.py": {
           "intuition": "Hash Map as a Visited Set & Node Cache 🗺️\n    The key to traversing a potentially cyclic graph is a `visited` set. Here, the `cloned` dictionary serves a dual purpose. It acts as both a **`visited` set** (by checking `if n not in cloned`) and a **cache** that maps an original node to its clone. This ensures each node is cloned exactly once and prevents getting stuck in an infinite loop.",
@@ -224,6 +276,10 @@
       "topics": ["bfs"]
     },
     "238-product-of-array-except-self": {
+      "time_stamps": {
+        "created_at": "2025-09-29T10:06:33.328225",
+        "updated_at": "2025-09-30T19:05:08.949484"
+      },
       "solutions": {
         "solution.py": {
           "intuition": "Two passes:\n        1.  *[orange!]Prefix* pass → `res[i]` = product of all elements *[orange!]before* `i`.\n        2.  *[purple!]Suffix* pass → multiply each `res[i]` by product of all elements *[purple!]after* `i`.",
@@ -238,6 +294,10 @@
       "topics": ["prefix-suffix", "two-pass-scan"]
     },
     "523-continuous-subarray-sum": {
+      "time_stamps": {
+        "created_at": "2025-09-12T16:05:57.931080",
+        "updated_at": "2025-09-29T12:48:05.175290"
+      },
       "solutions": {
         "solution.py": {
           "args": {
@@ -255,6 +315,10 @@
       "topics": ["prefix-sum"]
     },
     "518-coin-change-ii": {
+      "time_stamps": {
+        "created_at": "2025-09-12T16:05:57.931034",
+        "updated_at": "2025-09-30T19:05:08.951246"
+      },
       "solutions": {
         "solution.py": {
           "intuition": "Paradigm: This is a classic **Unbounded Knapsack** counting problem.\n\n    Insight: To count *combinations* without overcounting *permutations* (`1+2` vs `2+1`), the DP imposes a strict processing order on the coins. This ensures that combinations are always built in the same sequence (e.g., using smaller denomination coins before larger ones), elegantly eliminating duplicates.",
@@ -269,6 +333,10 @@
       "topics": ["dynamic-programming", "knapsack"]
     },
     "416-partition-equal-subset-sum": {
+      "time_stamps": {
+        "created_at": "2025-09-12T16:05:57.930844",
+        "updated_at": "2025-09-30T19:05:08.950534"
+      },
       "solutions": {
         "solution.py": {
           "intuition": "Paradigm: This is the **0/1 Knapsack** decision problem in disguise.\n\n    Insight: The problem transforms from partitioning an array into a simpler question: can a subset of \"items\" (`nums`) perfectly fill a \"knapsack\" with capacity `total_sum / 2`? Each item's weight is equal to its value.",
@@ -283,6 +351,10 @@
       "topics": ["dynamic-programming"]
     },
     "188-best-time-to-buy-and-sell-stock-iv": {
+      "time_stamps": {
+        "created_at": "2025-09-12T16:05:43.508701",
+        "updated_at": "2025-09-29T12:41:30.357182"
+      },
       "solutions": {
         "dp.py": {
           "code": "\ndef best_time_to_buy_and_sell_stock_IV(k: int, prices: list[int]) -> int:\n\n    cost = [float(\"inf\")] * (k + 1)\n    profit = [0] * (k + 1)\n    for p in prices:\n        for t in range(1, k + 1):\n            cost[t] = min(cost[t], p - profit[t - 1])\n            profit[t] = max(profit[t], p - cost[t])\n    return profit[k]"
@@ -298,6 +370,10 @@
       "topics": ["dynamic-programming"]
     },
     "20-valid-parentheses": {
+      "time_stamps": {
+        "created_at": "2025-10-03T15:45:20.243728",
+        "updated_at": "2025-10-03T15:59:14.202009"
+      },
       "solutions": {
         "solution.py": {
           "time_complexity": "O(n)",
@@ -311,6 +387,10 @@
       "topics": ["stack"]
     },
     "370-range-addition": {
+      "time_stamps": {
+        "created_at": "2025-09-12T16:05:43.509337",
+        "updated_at": "2025-09-29T12:53:25.721288"
+      },
       "solutions": {
         "solution.py": {
           "args": {
@@ -328,6 +408,10 @@
       "topics": ["prefix-sum"]
     },
     "120-triangle": {
+      "time_stamps": {
+        "created_at": "2025-09-12T16:05:33.323838",
+        "updated_at": "2025-09-30T19:05:08.946635"
+      },
       "solutions": {
         "solution.py": {
           "intuition": "Paradigm: This is a classic bottom-up dynamic programming problem.\n    Insight: The minimum path to the bottom *from* any cell `(r, c)` is independent of the path taken *to* that cell. This allows us to start at the bottom (where path sums are known) and iteratively compute the optimal path for each cell on the row above by choosing the cheaper of its two children's already-computed optimal paths.",
@@ -342,6 +426,10 @@
       "topics": ["dynamic-programming"]
     },
     "787-cheapest-flights-within-k-stops": {
+      "time_stamps": {
+        "created_at": "2025-09-12T16:06:03.945900",
+        "updated_at": "2025-09-30T19:05:08.952064"
+      },
       "solutions": {
         "dijkstra.py": {
           "variables": {
@@ -362,6 +450,10 @@
       "topics": ["dijkstra", "bfs"]
     },
     "363-max-sum-of-rectangle-no-larger-than-k": {
+      "time_stamps": {
+        "created_at": "2025-09-12T16:05:43.509273",
+        "updated_at": "2025-09-15T18:58:00.237593"
+      },
       "solutions": {
         "solution.py": {
           "code": "from bisect import bisect_left, insort\n\ndef max_sum_of_rectangle_no_larger_than_k(mat: list[list[int]], k: int) -> int:\n    # [Opt Loop Ordering] transpose so outer loops iterate the smaller dim (fewer (l,r) pairs)\n    m, n = len(mat), len(mat[0])\n    if m > n:\n        mat = [list(r) for r in zip(*mat)]\n        m, n = n, m\n\n    # [Kadane Fast-Path] classic Kadane; return value if ≤ k, else None → fall back to constrained step\n    def kadane_leq(arr: list[int], K: int) -> int | None:\n        best = cur = arr[0]\n        for x in arr[1:]:\n            cur = x if cur < 0 else cur + x  # Kadane \"extend or restart\"\n            best = max(best, cur)\n            if best == K:\n                return K  # [Early Exit] cannot beat K\n        return best if best <= K else None\n\n    ans = float(\"-inf\")\n\n    # ------------------- Technique 1: Column-Pair Compression (2D → 1D) -------------------\n    # Fix left/right columns; accumulate row sums inside this strip → a 1D array `row`.\n    # Any contiguous subarray of `row` == some rectangle between columns [l..r].\n    for l in range(n):\n        row = [0] * m\n        for r in range(l, n):\n            for i in range(m):\n                row[i] += mat[i][r]\n\n            # Example: if mat = [[1,2,3],[4,5,6],[7,8,9]], (l,r)=(0,1) → row=[1+2,4+5,7+8]=[3,9,15]\n\n            # ------------------- Technique 2: Kadane (fast path, unconstrained) -------------------\n            fast = kadane_leq(row, k)\n            if fast is not None:\n                ans = max(ans, fast)\n                if ans == k:\n                    return k  # [Early Exit]\n                continue\n\n            # ------------------- Technique 3: Ordered Prefix Sums + Binary Search -------------------\n            # 1D target: max subarray sum ≤ k on `row` with negatives allowed.\n            # Keep sorted prefix sums; for running sum s, find smallest prefix p ≥ s-k → s - p ≤ k and as large as possible.\n            # Example: row=[3,-2,5], k=6:\n            # pref=[0]; s=3→need ≥ -3→pick 0→cand=3; s=1→≥ -5→0→cand=1; s=6→≥ 0→0→cand=6 (best)\n            s, pref = 0, [0]\n            for v in row:\n                s += v\n                j = bisect_left(pref, s - k)  # find smallest prefix ≥ s-k\n                if j < len(pref):\n                    ans = max(ans, s - pref[j])\n                    if ans == k:\n                        return k  # [Early Exit]\n                insort(pref, s)  # keep prefixes sorted for future queries\n\n    return ans"
@@ -374,6 +466,10 @@
       "topics": ["kadane"]
     },
     "778-swim-in-rising-water": {
+      "time_stamps": {
+        "created_at": "2025-09-12T16:06:03.945808",
+        "updated_at": "2025-09-15T18:58:00.237748"
+      },
       "solutions": {
         "solution.py": {
           "args": {
@@ -394,6 +490,10 @@
       "topics": ["dijkstra"]
     },
     "525-contiguous-array": {
+      "time_stamps": {
+        "created_at": "2025-09-12T16:05:57.931146",
+        "updated_at": "2025-09-29T12:50:27.977981"
+      },
       "solutions": {
         "solution.py": {
           "args": {
@@ -410,6 +510,10 @@
       "topics": ["prefix-sum"]
     },
     "3-longest-substring-without-repeating-characters": {
+      "time_stamps": {
+        "created_at": "2025-09-12T16:05:16.849870",
+        "updated_at": "2025-10-03T14:18:45.257450"
+      },
       "solutions": {
         "solution.py": {
           "time_complexity": "O(n)",
@@ -430,6 +534,10 @@
       "topics": ["sliding-window"]
     },
     "51-n-queens": {
+      "time_stamps": {
+        "created_at": "2025-09-12T16:05:16.850151",
+        "updated_at": "2025-09-30T19:05:08.951102"
+      },
       "solutions": {
         "solution.py": {
           "intuition": "Backtrack with State Tracking ♛\n    Place one queen per row. Track blocked columns, diagonals: Valid placement → recurse to next row, Invalid → skip, After recursion, remove queen to try next column. Track state using: `cols` for columns, `diag1` for main diagonal *↘* `row - col`, `diag2` for anti-diagonal *↙* `row + col`.",
@@ -459,6 +567,10 @@
       "topics": ["backtrack", "game"]
     },
     "560-subarray-sum-equals-k": {
+      "time_stamps": {
+        "created_at": "2025-09-12T16:05:57.931241",
+        "updated_at": "2025-09-29T12:53:12.615462"
+      },
       "solutions": {
         "solution.py": {
           "args": {
@@ -476,6 +588,10 @@
       "topics": ["prefix-sum"]
     },
     "1590-make-sum-divisible-by-p": {
+      "time_stamps": {
+        "created_at": "2025-09-12T16:06:10.762653",
+        "updated_at": "2025-09-29T12:49:52.934968"
+      },
       "solutions": {
         "solution.py": {
           "args": {
@@ -493,6 +609,10 @@
       "topics": ["prefix-sum"]
     },
     "191-number-of-1-bits": {
+      "time_stamps": {
+        "created_at": "2025-10-03T12:08:53.211195",
+        "updated_at": "2025-10-03T13:16:10.347547"
+      },
       "solutions": {
         "bit_count.py": {
           "code": "def hammingWeight( n: int) -> int:\n    return n.bit_count()"
@@ -510,6 +630,10 @@
       "topics": ["bit-manipulation"]
     },
     "70-climbing-stairs": {
+      "time_stamps": {
+        "created_at": "2025-10-05T11:34:24.045380",
+        "updated_at": "2025-10-05T19:58:41.319391"
+      },
       "solutions": {
         "bottomup.py": {
           "code": "def climbStairs(n: int) -> int:\n    a = b = 1\n    for _ in range(n):\n        a, b = b, a + b\n    return a"
@@ -525,6 +649,10 @@
       "topics": ["dynamic-programming"]
     },
     "918-maximum-sum-of-circular-subarray": {
+      "time_stamps": {
+        "created_at": "2025-09-12T16:06:03.946154",
+        "updated_at": "2025-09-15T18:58:00.237782"
+      },
       "solutions": {
         "solution.py": {
           "code": "def maximum_sum_of_circular_subarray(nums: list[int]) -> int:\n    total, max_end = min_end = 0\n    max_sum, min_sum = float(\"-inf\"), float(\"inf\")\n    for x in nums:\n        total += x\n        max_end = max(x, max_end + x)\n        max_sum = max(max_sum, max_end)  # Kadane (max)\n        min_end = min(x, min_end + x)\n        min_sum = min(min_sum, min_end)  # Kadane (min)\n    return max_sum if max_sum < 0 else max(max_sum, total - min_sum)"
@@ -537,6 +665,10 @@
       "topics": ["kadane"]
     },
     "215-kth-largest-element-in-an-array": {
+      "time_stamps": {
+        "created_at": "2025-10-04T12:12:22.407617",
+        "updated_at": "2025-10-04T15:19:16.074591"
+      },
       "solutions": {
         "solution.py": {
           "time_complexity": "O(n log k):\n    Deep Dive: one sift (faster constant) vs push+pop\n        heappush does a sift-up → O(log k)\n        heappop does a sift-down → O(log k)\n        total ≈ 2 x O(log k) operations\n        heapreplace does one sift operation, not two\n        removes root, places new element, and does only one sift-down → O(log k)\n        So same asymptotic complexity, but half the work, fewer comparisons and function calls → faster constant factor.",
@@ -553,6 +685,10 @@
       "topics": ["heap", "min-heap"]
     },
     "198-house-robber": {
+      "time_stamps": {
+        "created_at": "2025-10-08T20:56:07.516185",
+        "updated_at": "2025-10-08T23:22:49.984532"
+      },
       "solutions": {
         "solution.py": {
           "code": "def rob(houses: list[int]) -> int:\n    memo = {}\n    def dp(h):\n        if h >= len(houses):\n            return 0\n        if h not in memo:\n            memo[h] = max(houses[h] + dp(h + 2), dp(h + 1))\n        return memo[h]\n    return dp(0)"
@@ -565,6 +701,10 @@
       "topics": ["dynamic_programming", "dynamic_programming-1D"]
     },
     "146-lru-cache": {
+      "time_stamps": {
+        "created_at": "2025-09-12T16:05:33.324105",
+        "updated_at": "2025-10-10T11:47:41.674401"
+      },
       "solutions": {
         "solution.py": {
           "code": "from collections import OrderedDict\n\nclass LRUCache:\n    def __init__(self, capacity: int):\n        self.cache: OrderedDict[int, int] = OrderedDict()\n        self.capacity = capacity\n\n    def get(self, key: int) -> int:\n        if (val := self.cache.get(key)) is None:\n            return -1\n        self.cache.move_to_end(key)\n        return val\n\n    def put(self, key: int, value: int) -> None:\n        if key in self.cache:\n            self.cache.move_to_end(key)\n        self.cache[key] = value\n        if len(self.cache) > self.capacity:\n            self.cache.popitem(last=False)"
@@ -577,6 +717,10 @@
       "topics": ["cache"]
     },
     "102-binary-tree-level-order-traversal": {
+      "time_stamps": {
+        "created_at": "2025-09-12T16:05:33.323765",
+        "updated_at": "2025-09-30T19:05:08.946338"
+      },
       "solutions": {
         "solution.py": {
           "intuition": "The core logic hinges on the inner `for` loop\n    The expression `len(queue)` takes a \"snapshot\" of the number of nodes on the current level before the loop begins. The loop then dequeues and processes exactly that many nodes, ensuring that only nodes from the current level are handled while their children are queued up for the next iteration. This technique is the key to cleanly separating the levels.",
@@ -594,6 +738,10 @@
       "difficulty": "medium"
     },
     "974-subarray-sums-divisible-by-k": {
+      "time_stamps": {
+        "created_at": "2025-09-12T16:06:03.946196",
+        "updated_at": "2025-09-29T12:50:27.977945"
+      },
       "solutions": {
         "solution.py": {
           "args": {
@@ -611,6 +759,10 @@
       "topics": ["prefix-sum"]
     },
     "122-best-time-to-buy-and-sell-stock-ii": {
+      "time_stamps": {
+        "created_at": "2025-09-12T16:05:33.323910",
+        "updated_at": "2025-09-17T16:17:51.939682"
+      },
       "solutions": {
         "solution.py": {
           "code": "def best_time_to_buy_and_sell_stock_II(prices: list[int]) -> int:\n    profit = 0\n    for i in range(1, len(prices)):\n        if prices[i] > prices[i - 1]:\n            profit += prices[i] - prices[i - 1]\n    return profit"
@@ -623,6 +775,10 @@
       "topics": ["greedy"]
     },
     "33-search-in-rotated-sorted-array": {
+      "time_stamps": {
+        "created_at": "2025-10-04T15:24:13.926042",
+        "updated_at": "2025-10-04T16:40:07.398403"
+      },
       "solutions": {
         "solution.py": {
           "code": "def search(nums: list[int], target: int) -> int:\n    \n    l, r = 0, len(nums) - 1\n    while l <= r:\n        mid = (l + r) // 2\n        if nums[mid] == target:\n            return mid\n        # left half sorted\n        if nums[l] <= nums[mid]:\n            if nums[l] <= target < nums[mid]:\n                r = mid - 1\n            else:\n                l = mid + 1\n        # right half sorted\n        else:\n            if nums[mid] < target <= nums[r]:\n                l = mid + 1\n            else:\n                r = mid - 1\n    return -1"
@@ -635,6 +791,10 @@
       "topics": ["binary-search", "rotated-array"]
     },
     "124-binary-tree-maximum-path-sum": {
+      "time_stamps": {
+        "created_at": "2025-09-12T16:05:33.323992",
+        "updated_at": "2025-09-15T18:58:00.232319"
+      },
       "solutions": {
         "solution.py": {
           "code": "def binary_tree_maximum_path_sum(root) -> int:\n    best = float(\"-inf\")\n    def dfs(node):\n        nonlocal best\n        if not node:\n            return 0\n        l = max(dfs(node.left), 0)\n        r = max(dfs(node.right), 0)\n        best = max(best, node.val + l + r)\n        return node.val + max(l, r)\n\n    dfs(root)\n    return best"
@@ -647,6 +807,10 @@
       "topics": ["kadane"]
     },
     "1510-stone-game-iv": {
+      "time_stamps": {
+        "created_at": "2025-09-12T16:06:10.762509",
+        "updated_at": "2025-09-30T19:05:08.948268"
+      },
       "solutions": {
         "solution.py": {
           "intuition": "Minimax:\n    *Paradigm*: This is a classic *impartial game* solved using the *Minimax* principle on game states.\n    *Insight*: A position is defined as *winning* if you can make *any* move to a position that you know is *losing* for your opponent. The DP builds this win/loss classification for every number of stones up to `n`, starting from the base case that 0 stones is a losing position.",
@@ -661,6 +825,10 @@
       "topics": ["dynamic-programming", "game"]
     },
     "153-find-minimum-in-rotated-sorted-array": {
+      "time_stamps": {
+        "created_at": "2025-09-12T16:05:43.508577",
+        "updated_at": "2025-09-29T12:42:20.260872"
+      },
       "solutions": {
         "solution.py": {
           "intuition": "The goal is to find the *inflection point* in the rotated list (where the numbers switch from high to low) — this point is the minimum element.\n    We use a modified binary search to home in on this point.\n    The key is comparing the middle element `nums[mid]` with the rightmost element `nums[r]`. This comparison tells us which part of the array is currently sorted and can be discarded.\n        **Case 1: `nums[mid] < nums[r]`**\n        **Example:** In `[4, 5, 1, 2, 3]`, if `mid` points to `1`, `nums[mid]` (`1`) is less than `nums[r]` (`3`).\n        **Logic:** This indicates that the entire right portion of the array from `mid` to `r` (i.e., `[1, 2, 3]`) is sorted. The minimum element could be `nums[mid]` itself, or it could be to its left. We can safely search the left half (including `mid`) by setting `r = mid`.\n        **Case 2: `nums[mid] >= nums[r]`**\n        **Example:** In `[4, 5, 1, 2, 3]`, if `mid` points to `5` in an earlier step, `nums[mid]` (`5`) is greater than `nums[r]` (`3`).\n        **Logic:** This indicates that the inflection point (the minimum value) must lie to the right of `mid`. The left portion `[4, 5]` is sorted but contains values larger than the true minimum. We discard this left portion by setting `l = mid + 1`.\n    The loop terminates when `l` and `r` converge, at which point `nums[l]` is the smallest element.",
@@ -678,6 +846,10 @@
       "topics": ["binary-search"]
     },
     "994-rotting-oranges": {
+      "time_stamps": {
+        "created_at": "2025-09-12T16:06:03.946253",
+        "updated_at": "2025-09-30T19:05:08.952837"
+      },
       "solutions": {
         "solution.py": {
           "intuition": "Multi-Source BFS 🍊:\n    The key is to initialize the queue with the coordinates of *all* initially rotten oranges. The BFS then naturally simulates the rotting process in parallel from all sources. Each \"level\" of the BFS corresponds to one minute passing. Finally, you must check if any `fresh_oranges` remain to handle cases where some are unreachable.",
@@ -692,6 +864,10 @@
       "topics": ["bfs"]
     },
     "121-best-time-to-buy-and-sell-stock": {
+      "time_stamps": {
+        "created_at": "2025-09-12T16:05:33.323875",
+        "updated_at": "2025-10-10T11:47:38.013491"
+      },
       "solutions": {
         "solution.py": {
           "time_complexity": "O(n)\n    where n is the length of the prices array. We iterate through the array once.",
@@ -709,6 +885,10 @@
       "topics": ["dynamic-programming"]
     },
     "53-maximum-subarray": {
+      "time_stamps": {
+        "created_at": "2025-09-12T16:05:16.850187",
+        "updated_at": "2025-09-30T19:05:08.951389"
+      },
       "solutions": {
         "solution.py": {
           "time_complexity": "O(n)\n    where n is the length of the array. We iterate through the array once.",
@@ -726,6 +906,10 @@
       "topics": ["kadane"]
     },
     "34-find-first-and-last-position-of-element-in-sorted-array": {
+      "time_stamps": {
+        "created_at": "2025-09-12T16:05:16.849941",
+        "updated_at": "2025-09-29T12:42:20.261137"
+      },
       "solutions": {
         "solution.py": {
           "code": "from bisect import bisect_left, bisect_right\n\ndef find_first_and_last_position_of_element_in_sorted_array(nums: list[int], target: int) -> list[int]:\n\n    start = bisect_left(nums, target)\n    if start < len(nums) and nums[start] == target:\n        return start, bisect_right(nums, target) - 1\n    return -1, -1"
@@ -738,6 +922,10 @@
       "topics": ["binary-search"]
     },
     "76-minimum-window-substring": {
+      "time_stamps": {
+        "created_at": "2025-10-03T14:38:56.852556",
+        "updated_at": "2025-10-03T15:41:07.016797"
+      },
       "solutions": {
         "solution.py": {
           "time_complexity": "O(m + n)",
@@ -751,6 +939,10 @@
       "topics": ["sliding-window"]
     },
     "84-largest-rectangle-in-histogram": {
+      "time_stamps": {
+        "created_at": "2025-09-29T10:05:50.776011",
+        "updated_at": "2025-10-04T11:59:05.354285"
+      },
       "solutions": {
         "solution.py": {
           "intuition": "Each bar can form a rectangle where its height is the limiting factor:\n    That rectangle extends until a strictly shorter bar appears on either side.\n    Instead of searching both directions explicitly, we discover these bounds on the fly:\n        when a shorter bar appears at `r`, every taller bar popped from the stack\n        now knows its right boundary (`r`) and its left boundary (`l = stack.pop()`).\n\n    Deep Dive: Walkthrough:\n    Append `0` so every bar eventually meets a shorter right neighbor\n    Keep *[3!]indices* in strictly increasing heights (stack starts *[3!][-1]*)\n    For each `r, h`: while top is taller, pop `l` and compute area = `heights[l] * (r - stack[-1] - 1)`\n    Push `r`; remove the sentinel; return best",
@@ -775,6 +967,10 @@
       "topics": ["stack"]
     },
     "136-single-number": {
+      "time_stamps": {
+        "created_at": "2025-09-30T11:20:36.046635",
+        "updated_at": "2025-10-03T12:14:39.572548"
+      },
       "solutions": {
         "solution.py": {
           "intuition": "Using bitwise XOR to cancel out the duplicates:\n    XOR cancels pairs (a^a=0, a^0=a; associative/commutative), so the lone element remains\n\n    Deep Dive: XOR Reminder\n    XOR properties:\n        a ^ a = 0 (a number XOR itself is zero)\n        a ^ 0 = a (a number XOR zero is itself)\n        Commutative: a ^ b = b ^ a\n        Associative: (a ^ b) ^ c = a ^ (b ^ c)\n    Meaning:\n        Because order and grouping don't matter, you can XOR all numbers in any sequence\n    Cancellation:\n        Each pair of identical numbers a ^ a becomes 0\n        XORing by zero doesn't change the result\n    Result:\n        After all pairs cancel, only the unpaired (single) element remains\n    Example:\n        nums = [**[1!]4**, **[10!]1**, **[14!]2**, **[10!]1**, **[14!]2**]\n        **[1!]4** ^ **[10!]1** ^ **[14!]2** ^ **[10!]1** ^ **[14!]2**\n        **[10!](1 ^ 1)** ^ **[14!](2 ^ 2)** ^ **[1!]4**\n        **[10!]0** ^ **[14!]0** ^ **[1!]4** = **[1!]4**",
@@ -789,6 +985,10 @@
       "topics": ["bit-manipulation"]
     },
     "1514-path-with-maximum-probability": {
+      "time_stamps": {
+        "created_at": "2025-09-12T16:06:10.762600",
+        "updated_at": "2025-09-29T12:41:57.766704"
+      },
       "solutions": {
         "solution.py": {
           "intuition": "Bellman-Ford variant to maximize product of probabilities.\n    Each node tracks the maximum probability to reach it from `start`.",
@@ -807,6 +1007,10 @@
       "topics": ["bellman-ford"]
     },
     "79-word-search": {
+      "time_stamps": {
+        "created_at": "2025-09-12T16:05:16.850224",
+        "updated_at": "2025-09-30T19:05:08.952204"
+      },
       "solutions": {
         "solution.py": {
           "intuition": "Dfs with early exit on mismatch\n    Start dfs from each cell\n    At each step:\n        Check bounds and character match\n        Mark visited cell with a temp symbol (e.g. #)\n        Try 4 directions (no revisiting)\n        Restore cell after backtracking\n        Stop early if the full word is matched.",
@@ -821,6 +1025,10 @@
       "topics": ["backtrack"]
     },
     "39-combination-sum": {
+      "time_stamps": {
+        "created_at": "2025-09-12T16:05:16.850085",
+        "updated_at": "2025-09-30T19:05:08.950374"
+      },
       "solutions": {
         "solution.py": {
           "intuition": "DFS with backtracking\n    Sort candidates, try each starting from current index (to allow reuse), prune if number exceeds remaining target, and record the path when rem == 0.",
@@ -840,6 +1048,10 @@
       "topics": ["backtrack"]
     },
     "542-01-matrix": {
+      "time_stamps": {
+        "created_at": "2025-09-12T16:05:57.931194",
+        "updated_at": "2025-09-30T19:05:08.951641"
+      },
       "solutions": {
         "solution.py": {
           "intuition": "Multi-Source BFS from the Target 🎯:\n    Instead of starting a separate BFS from every `1` to find the nearest `0` (which would be slow), this approach inverts the problem. It starts a single, **multi-source BFS from all `0`s simultaneously**. The level of the BFS at which a cell is reached is, by definition, its shortest distance to any `0`. This \"start from the answer\" strategy is a powerful technique for shortest path problems.",
@@ -854,6 +1066,10 @@
       "topics": ["bfs"]
     },
     "1011-capacity-to-ship-packages-within-d-days": {
+      "time_stamps": {
+        "created_at": "2025-09-12T16:06:03.946326",
+        "updated_at": "2025-09-29T12:42:20.260216"
+      },
       "solutions": {
         "solution.py": {
           "intuition": "Binary searching the answer space, (the ship's capacity)\n    The range of possible capacities is from `max(weights)` to `sum(weights)`.\n    The problem has a **monotonic property** ideal for binary search. The function `daysNeeded(capacity)` is monotonically non-increasing: as `capacity` grows, the days required can only decrease or stay the same.\n    This creates a predictable `\\[False, ..., False, True, ..., True\\]` sequence for our condition, `daysNeeded(capacity) <= days`. The goal is to find the leftmost `True`, which represents the minimal valid capacity.\n        If `daysNeeded(capacity) <= days` is `True`, then `capacity` is a potential answer, and we try for a better (smaller) one in the left half by setting `r = capacity`.\n        If it is `False`, then `capacity` is too small, and we must search for a larger capacity in the right half by setting `l = capacity + 1`.",
@@ -867,6 +1083,10 @@
       "topics": ["binary-search"]
     },
     "208-implement-trie-prefix-tree": {
+      "time_stamps": {
+        "created_at": "2025-09-12T16:05:43.508813",
+        "updated_at": "2025-09-30T19:05:08.948903"
+      },
       "solutions": {
         "solution.py": {
           "code": "from collections import defaultdict\n\n\nclass TrieNode:\n\n    __slots__ = (\"children\", \"end\")\n\n    def __init__(self):\n\n        self.children: defaultdict[str, TrieNode] = defaultdict(TrieNode)\n        self.end = False\n\n\nclass Trie:\n\n    def __init__(self):\n\n        self.root = TrieNode()\n\n    def insert(self, word: str) -> None:\n\n        node = self.root\n        for ch in word:\n            node = node.children[ch]\n        node.end = True\n\n    def search(self, word: str) -> bool:\n        node = self.root\n        for ch in word:\n            if (node := node.children.get(ch)) is None:\n                return False\n        return node.end\n\n    def starts_with(self, prefix: str) -> bool:\n        node = self.root\n        for ch in prefix:\n            if (node := node.children.get(ch)) is None:\n                return False\n        return True\n"
@@ -879,6 +1099,10 @@
       "topics": ["trie"]
     },
     "325-maximum-size-subarray-sum-equals-k": {
+      "time_stamps": {
+        "created_at": "2025-09-12T16:05:43.508934",
+        "updated_at": "2025-09-29T12:53:24.553199"
+      },
       "solutions": {
         "solution.py": {
           "args": {
@@ -896,6 +1120,10 @@
       "topics": ["prefix-sum"]
     },
     "2145-count-the-hidden-sequences": {
+      "time_stamps": {
+        "created_at": "2025-09-12T16:06:10.762863",
+        "updated_at": "2025-09-29T12:46:45.820316"
+      },
       "solutions": {
         "solution.py": {
           "args": {
@@ -914,6 +1142,10 @@
       "topics": ["array"]
     },
     "35-search-insert-position": {
+      "time_stamps": {
+        "created_at": "2025-09-12T16:05:16.849981",
+        "updated_at": "2025-09-29T12:42:20.262465"
+      },
       "solutions": {
         "solution.py": {
           "code": "from bisect import bisect_left\n\ndef search_insert_position(nums: list[int], target: int) -> int:\n    return bisect_left(nums, target)"
@@ -926,6 +1158,10 @@
       "topics": ["binary-search"]
     },
     "46-permutations": {
+      "time_stamps": {
+        "created_at": "2025-09-12T16:05:16.850118",
+        "updated_at": "2025-09-30T19:05:08.950815"
+      },
       "solutions": {
         "solution.py": {
           "intuition": "Recursive Tree of Choices\n    Build permutations by choosing unused elements: At each level, try each remaining number, recurse with updated path, and backtrack to un-choose. Use used list or boolean flags to track chosen elements.",
@@ -945,6 +1181,10 @@
       "topics": ["backtrack", "permutation"]
     },
     "123-best-time-to-buy-and-sell-stock-iii": {
+      "time_stamps": {
+        "created_at": "2025-09-12T16:05:33.323948",
+        "updated_at": "2025-09-30T19:05:08.947077"
+      },
       "solutions": {
         "dp.py": {
           "intuition": "Cost profit tracking\n    Track the cost and profit for two separate trades, using the profit from the first trade to reduce the cost of the second trade.",
@@ -984,6 +1224,10 @@
       "topics": ["dynamic-programming", "array"]
     },
     "347-top-k-frequent-elements": {
+      "time_stamps": {
+        "created_at": "2025-10-04T12:12:26.433187",
+        "updated_at": "2025-10-08T19:06:26.437293"
+      },
       "solutions": {
         "heap.py": {
           "time_complexity": "O(n log k)",
@@ -1010,6 +1254,10 @@
       "group": [["heap.py", "heap-nlargets.py"], ["sort-frequency-bucketing.py"]]
     },
     "200-number-of-islands": {
+      "time_stamps": {
+        "created_at": "2025-09-12T16:05:43.508768",
+        "updated_at": "2025-10-10T11:47:47.788265"
+      },
       "solutions": {
         "solution.py": {
           "intuition": "Find, Count, and Sink 🏝️\n    The strategy is to scan every cell of the grid. If an unvisited piece of land (`1`) is found, you've discovered a new island, so you increment the `islands` counter. Then, immediately launch a BFS from that cell to find and \"sink\" all connected parts of that same island by changing their value to `0`. This modification of the grid ensures each island group is counted exactly once.",
@@ -1028,6 +1276,10 @@
       "topics": ["dfs", "bfs"]
     },
     "2140-solving-questions-with-brainpower": {
+      "time_stamps": {
+        "created_at": "2025-09-12T16:06:10.762818",
+        "updated_at": "2025-09-30T19:05:08.949268"
+      },
       "solutions": {
         "solution.py": {
           "intuition": "Paradigm: This is a classic **Longest Path** problem on a Directed Acyclic Graph (DAG).\n    Insight: The maximum score obtainable *from* any question `i` is a fixed value, regardless of past choices. This allows a backward pass from the end of the exam (where the future score is 0), calculating the optimal future score for each question by simply choosing the `max()` of two pre-computed paths: the one from \"solving\" vs. the one from \"skipping\".",
@@ -1042,6 +1294,10 @@
       "topics": ["dynamic-programming"]
     },
     "212-word-search-ii": {
+      "time_stamps": {
+        "created_at": "2025-09-12T16:05:43.508892",
+        "updated_at": "2025-09-30T19:05:08.949078"
+      },
       "solutions": {
         "solution.py": {
           "intuition": "Prefix rails\n    The trie lays down \"prefix rails\" across the grid: you only move where a rail continues; off‑rail steps end instantly.\n    A terminal is a station: record the word once, close that spur, and drop empty rails as you pass. In one walk, a cell is used at most once.",
@@ -1071,6 +1327,10 @@
       "topics": ["trie", "backtrack"]
     },
     "713-subarray-product-less-than-k": {
+      "time_stamps": {
+        "created_at": "2025-09-12T16:05:57.931365",
+        "updated_at": "2025-09-30T19:05:08.951791"
+      },
       "solutions": {
         "solution.py": {
           "time_complexity": "O(n)",
@@ -1084,6 +1344,10 @@
       "topics": ["sliding-window"]
     },
     "36-valid-sudoku": {
+      "time_stamps": {
+        "created_at": "2025-09-12T16:05:16.850013",
+        "updated_at": "2025-09-30T19:05:08.949952"
+      },
       "solutions": {
         "solution.py": {
           "intuition": "Cube index and think locally\n    **cube_index := **[pink!](r // 3) * 3** + **[purple!](c // 3)**** treats the 9×9 board as a 3×3 grid of 3×3 boxes:\n        `[pink!]r//3` gives which *[pink!]box-row* (0,1,2) you're in\n        `[purple!]c//3` gives which *[purple!]box-column* (0,1,2)\n        multiplying the *[pink!]box-row* by *[pink!]3* and adding the *[purple!]box-column* yields a unique index 0–8 for each 3×3 cube.",
@@ -1107,6 +1371,10 @@
       "topics": ["game"]
     },
     "743-network-delay-time": {
+      "time_stamps": {
+        "created_at": "2025-09-12T16:05:57.931423",
+        "updated_at": "2025-09-30T19:05:08.951925"
+      },
       "solutions": {
         "solution.py": {
           "time_complexity": "O(E log V):\n    E is the number of edges (the length of the input list `times`)\n    V is the number of vertices (the number of nodes `n`)\n\n    By substituting these into the standard Dijkstra complexity formula, O(E log V), you get O(len(times) log n).",
@@ -1125,6 +1393,10 @@
       "topics": ["dijkstra"]
     },
     "127-word-ladder": {
+      "time_stamps": {
+        "created_at": "2025-09-12T16:05:33.324026",
+        "updated_at": "2025-09-30T19:05:08.947226"
+      },
       "solutions": {
         "solution.py": {
           "intuition": "Bidirectional BFS Meets in the Middle 🤝:\n    This solution uses two  optimizations. First, it **pre-computes all possible generic transformations** (e.g., `h*t`) in a dictionary, allowing for instant lookups of neighboring words instead of generating them on the fly. Second, it performs a **bidirectional BFS**, launching one search from the `beginWord` and another from the `endWord`. By always expanding the smaller of the two frontiers, it drastically reduces the search space. The algorithm finishes when the two searches meet, at which point the shortest path is found.",
@@ -1141,6 +1413,10 @@
   },
   "core": {
     "bellman-ford": {
+      "time_stamps": {
+        "created_at": "2025-09-17T21:12:55.387063",
+        "updated_at": "2025-09-17T21:18:06.626360"
+      },
       "solutions": {
         "layered_dag.py": {
           "intuition": "Compute k-edge shortest-path distances and detect negative cycles via layered relaxation.\n    1. δ₀(s,v): initialize distances (0 at source, ∞ elsewhere).\n    2. For i = 1…V: perform one pass of edge-relaxation to compute δᵢ(s,v),\n        the best cost using ≤ i edges.\n    3. Identify any vertex v where δ_V(s,v) < δ_{V−1}(s,v) as a negative-cycle witness.\n    4. Flood successors of those witnesses and mark their distances as −∞.",
@@ -1165,6 +1441,10 @@
       "topics": ["graph_algorithms", "shortest_path", "dynamic_programming"]
     },
     "modular-arithmetic": {
+      "time_stamps": {
+        "created_at": "2025-09-17T21:13:31.611970",
+        "updated_at": "2025-09-17T21:20:36.929219"
+      },
       "solutions": {
         "congruent2.py": {
           "args": {
@@ -1198,6 +1478,10 @@
       "topics": ["number_theory", "modular_arithmetic", "congruence"]
     },
     "dijkstra": {
+      "time_stamps": {
+        "created_at": "2025-09-17T21:13:20.568516",
+        "updated_at": "2025-09-30T19:05:08.945649"
+      },
       "solutions": {
         "algorithm.py": {
           "time_complexity": "O((V + E) log V)",
@@ -1213,6 +1497,10 @@
       "topics": ["graph_algorithms", "shortest_path", "greedy"]
     },
     "binary-search": {
+      "time_stamps": {
+        "created_at": "2025-09-17T21:13:08.414101",
+        "updated_at": "2025-09-30T18:24:30.519747"
+      },
       "solutions": {
         "bisect_left.py": {
           "intuition": "Return the index where to insert item x in list a, assuming a is sorted.",

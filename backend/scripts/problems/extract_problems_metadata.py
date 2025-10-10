@@ -15,6 +15,7 @@ import ast
 import json
 from pathlib import Path
 from code_cleaner_new import clean_code
+from get_directory_timestamps import get_directory_timestamps
 
 
 def ast_type_to_string(annotation) -> str:
@@ -365,6 +366,7 @@ def extract_function_metadata(file_path: Path) -> dict[str, str]:
 def extract_problem_metadata(problem_dir: Path) -> dict[str, dict]:
     """Extract metadata from a problem directory using simplified docstring format."""
     problem_data = {
+        'time_stamps': get_directory_timestamps(problem_dir),
         'solutions': {}
     }
 
