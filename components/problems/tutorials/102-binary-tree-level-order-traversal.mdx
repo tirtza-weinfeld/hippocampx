@@ -6,29 +6,29 @@
 
 [102. Binary Tree Level Order Traversal](https://leetcode.com/problems/binary-tree-level-order-traversal)
 
-## [!ProblemDefinition] Definition
+## [!(ProblemDefinition)] Definition
 
 Given the root of a binary tree, return its nodes' values organized by level, from left to right.
 
-## [!ProblemIntuition] Intuition
+## [!(ProblemIntuition)] Intuition
 
 - The core logic hinges on the inner `for` loop
     - The expression `len(queue)` takes a "snapshot" of the number of nodes on the current level before the loop begins. The loop then dequeues and processes exactly that many nodes, ensuring that only nodes from the current level are handled while their children are queued up for the next iteration. This technique is the key to cleanly separating the levels.
 
-## [!ProblemTimeComplexity] Time Complexity
+## [!(ProblemTimeComplexity)] Time Complexity
 
 - $O(N)$
     - where N is the total number of nodes in the tree. This is optimal as every node must be visited once.
 
-## [!ProblemArguments] Key Arguments
+## [!(ProblemArguments)] Key Arguments
 
 - `root`: Root node of the binary tree
 
-## [!ProblemReturns] Returns
+## [!(ProblemReturns)] Returns
 
 `list[list[int]]`: List of lists, where each inner list contains values of nodes at the same level
 
-## [!ProblemCodeSnippet] Code Snippet
+## [!(ProblemCodeSnippet)] Code Snippet
 
 ```python meta="source=problems/102-binary-tree-level-order-traversal/solution.py"
 from collections import deque

@@ -46,15 +46,21 @@ import  CollapsibleListItem from '@/components/mdx/list/collapsible-list-item';
 import CollapsibleIntuitionListItem from '@/components/mdx/list/collapsible-intuition-list-item';
 import { CustomLists } from '@/components/mdx/custom/list'
 import { PillList } from '@/components/mdx/list/pill-list';
-// Collapsible Section Components
-import { CollapsibleSection } from '@/components/mdx/collapsible/collapsible-section';
-import { CollapsibleSectionHeader } from '@/components/mdx/collapsible/collapsible-section-header';
-import { CollapsibleSectionContent } from '@/components/mdx/collapsible/collapsible-section-content';
-// Header Components (using existing typography components)
-
+// Collapsible Section Components (old - kept for backwards compatibility)
+// import { CollapsibleSection as OldCollapsibleSection } from '@/components/mdx/collapsible/collapsible-section';
+// import { CollapsibleSectionHeader as OldCollapsibleSectionHeader } from '@/components/mdx/collapsible/collapsible-section-header';
+// import { CollapsibleSectionContent as OldCollapsibleSectionContent } from '@/components/mdx/collapsible/collapsible-section-content';
+// New Section Components
+import { SectionHeader } from "@/components/mdx/section/section-header"
+import { SectionContent } from "@/components/mdx/section/section-content"
+import { Section } from "@/components/mdx/section/section"
+import { CollapsibleSection } from "@/components/mdx/section/collapsible-section"
 
 export const customComponents = {
   PillList,
+  SectionHeader,
+  SectionContent,
+  Section,
   // Lists - Standard HTML elements only
   ul: UnorderedList,
   ol: OrderedList,
@@ -73,10 +79,13 @@ export const customComponents = {
   CollapsibleListItem,
   CollapsibleIntuitionListItem,
 
-  // Collapsible Section Components
+  // New Section Components (from plugin)
   CollapsibleSection,
-  CollapsibleSectionHeader,
-  CollapsibleSectionContent,
+
+  // Old Collapsible Section Components (backwards compatibility)
+  // OldCollapsibleSection,
+  // OldCollapsibleSectionHeader,
+  // OldCollapsibleSectionContent,
 
   // Typography
   h1: H1,

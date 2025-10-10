@@ -8,18 +8,18 @@
 
 [787. Cheapest Flights Within K Stops](https://leetcode.com/problems/cheapest-flights-within-k-stops)
 
-## [!ProblemDefinition] Definition
+## [!(ProblemDefinition)] Definition
 
 Given a list of flights where flights[i] = [from, to, price] represents a flight from city from to city to with a price price, and a starting city src and a destination city dst, your task is to find the cheapest price from src to dst with up to k stops. If there is no such route, return -1.
 
 ## Dijkstra Solution
 
-### [!ProblemKeyVariables] Key Variables
+### [!(ProblemKeyVariables)] Key Variables
 
 - `pq`: Priority queue to store the state (cost, city, stops_taken)
 - `min_stops`: Tracks the minimum stops to reach each city
 
-### [!ProblemCodeSnippet] Code Snippet
+### [!(ProblemCodeSnippet)] Code Snippet
 
 ```python meta="source=problems/787-cheapest-flights-within-k-stops/dijkstra.py"
 from collections import defaultdict
@@ -54,12 +54,12 @@ def cheapest_flights_with_at_most_k_stops( flights: list[list[int]], src: int, d
 
 ## Bellman Ford Solution
 
-### [!ProblemTimeComplexity] Time Complexity
+### [!(ProblemTimeComplexity)] Time Complexity
 
 - $O(kE)$
     - where `k` is the number of stops and `E` is the number of flights.
 
-### [!ProblemCodeSnippet] Code Snippet
+### [!(ProblemCodeSnippet)] Code Snippet
 
 ```python meta="source=problems/787-cheapest-flights-within-k-stops/bellman_ford.py"
 def cheapest_flights_with_at_most_k_stops(

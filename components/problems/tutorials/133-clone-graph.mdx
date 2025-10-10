@@ -8,36 +8,36 @@
 
 [133. Clone Graph](https://leetcode.com/problems/clone-graph)
 
-## [!ProblemDefinition] Definition
+## [!(ProblemDefinition)] Definition
 
 Given a reference to a node in a connected undirected graph, return a deep copy (clone) of the graph.
 
-## [!ProblemIntuition] Intuition
+## [!(ProblemIntuition)] Intuition
 
 - Hash Map as a Visited Set & Node Cache 🗺️
     - The key to traversing a potentially cyclic graph is a `visited` set. Here, the `cloned` dictionary serves a dual purpose. It acts as both a **`visited` set** (by checking `if n not in cloned`) and a **cache** that maps an original node to its clone. This ensures each node is cloned exactly once and prevents getting stuck in an infinite loop.
 
-## [!ProblemTimeComplexity] Time Complexity
+## [!(ProblemTimeComplexity)] Time Complexity
 
 - $O(V + E)$
     - where V is the number of vertices (nodes) and E is the number of edges. This is optimal as we must visit every node and traverse every edge to create the full copy.
 
-## [!ProblemArguments] Key Arguments
+## [!(ProblemArguments)] Key Arguments
 
 - `node: Node | None`: The node to clone
 
-## [!ProblemKeyVariables] Key Variables
+## [!(ProblemKeyVariables)] Key Variables
 
 - `cloned`: A dictionary that maps an original node to its clone
 - `queue`: A queue that stores the nodes to be visited
 - `cur`: The current node being visited
 - `n`: The neighbor of the current node
 
-## [!ProblemReturns] Returns
+## [!(ProblemReturns)] Returns
 
 `Node | None`: The cloned graph
 
-## [!ProblemCodeSnippet] Code Snippet
+## [!(ProblemCodeSnippet)] Code Snippet
 
 ```python meta="source=problems/133-clone-graph/solution.py"
 from collections import deque

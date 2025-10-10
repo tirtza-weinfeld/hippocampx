@@ -1,8 +1,8 @@
 {
   "core.bellman-ford.classic:bellman_ford_classic": {
     "args": [
-      "edges",
       "source",
+      "edges",
       "vertices"
     ],
     "code": "def bellman_ford_classic(\n    vertices: list[str], edges: list[tuple[str, str, float]], source: str\n) -> dict[str, float]:\n\n    d = [float(\"inf\")] * (V := len(vertices))\n    d[source] = 0\n\n    for _ in range(V - 1):\n        updated = False\n        for u, v, w in edges:\n            if d[u] + w < d[v]:\n                d[v] = d[u] + w\n                updated = True\n        if not updated:\n            return d\n\n    # if we get here, we did all V-1 passes, so still need to check for cycles\n    for u, v, w in edges:\n        if d[u] + w < d[v]:\n            raise Exception(\"Negative-weight cycle\")\n\n    return d",
@@ -144,9 +144,9 @@
   },
   "core.modular-arithmetic.congruent1:congruent1": {
     "args": [
-      "b",
       "n",
-      "a"
+      "a",
+      "b"
     ],
     "code": "def congruent1(a: int, b: int, n: int) -> bool:\n    return (a - b) % n == 0",
     "file_path": "backend/algorithms/core/modular-arithmetic/congruent1.py",
@@ -179,9 +179,9 @@
   },
   "core.modular-arithmetic.congruent2:congruent2": {
     "args": [
-      "b",
       "n",
-      "a"
+      "a",
+      "b"
     ],
     "code": "def congruent2(a: int, b: int, n: int) -> bool:\n    return a % n == b % n",
     "file_path": "backend/algorithms/core/modular-arithmetic/congruent2.py",
@@ -214,8 +214,8 @@
   },
   "core.modular-arithmetic.mod:mod": {
     "args": [
-      "b",
-      "a"
+      "a",
+      "b"
     ],
     "code": "def mod(a: int, b: int) -> int:\n    return a % b",
     "file_path": "backend/algorithms/core/modular-arithmetic/mod.py",
@@ -242,8 +242,8 @@
   },
   "problems.1-two-sum.solution:two_sum": {
     "args": [
-      "target",
-      "nums"
+      "nums",
+      "target"
     ],
     "code": "def two_sum(nums: list[int], target: int) -> list[int]:\n\n    seen = {}\n\n    for i, num in enumerate(nums):\n        if (x := target - num) in seen:\n            return seen[x], i\n        seen[num] = i",
     "file_path": "backend/algorithms/problems/1-two-sum/solution.py",
@@ -257,8 +257,8 @@
   },
   "problems.1011-capacity-to-ship-packages-within-d-days.solution:capacity_to_ship_packages_within_d_days": {
     "args": [
-      "days",
-      "weights"
+      "weights",
+      "days"
     ],
     "code": "def capacity_to_ship_packages_within_d_days(weights: list[int], days: int) -> int:\n    def days_needed(capacity: int) -> int:\n        d, load = 1, 0\n        for w in weights:\n            if load + w <= capacity:\n                load += w\n            else:\n                d += 1\n                load = w\n        return d\n\n    l, r = max(weights), sum(weights)\n    while l < r:\n        capacity = (l + r) // 2\n        if days_needed(capacity) <= days:\n            r = capacity\n        else:\n            l = capacity + 1\n    return l",
     "file_path": "backend/algorithms/problems/1011-capacity-to-ship-packages-within-d-days/solution.py",
@@ -476,8 +476,8 @@
   },
   "problems.127-word-ladder.solution:word_ladder": {
     "args": [
-      "beginWord",
       "wordList",
+      "beginWord",
       "endWord"
     ],
     "code": "def word_ladder(beginWord: str, endWord: str, wordList: list[str]) -> int:\n    if endWord not in wordList:\n        return 0\n\n    L = len(beginWord)\n    combos: dict[str, list[str]] = defaultdict(list)\n    for w in wordList:\n        for i in range(L):\n            combos[w[:i] + \"*\" + w[i+1:]].append(w)\n\n    front, back = {beginWord}, {endWord}\n    dist_front, dist_back = {beginWord: 1}, {endWord: 1}\n\n    while front and back:\n        # expand smaller side to optimize\n        if len(front) > len(back):\n            front, back = back, front\n            dist_front, dist_back = dist_back, dist_front\n\n        next_front = set()\n        for word in front:\n            for i in range(L):\n                for n in combos[word[:i] + \"*\" + word[i+1:]]: # Use pre-computed neighbors\n                    if n in dist_back:\n                        return dist_front[word] + dist_back[n]\n                    if n not in dist_front:\n                        dist_front[n] = dist_front[word] + 1\n                        next_front.add(n)\n        front = next_front\n\n    return 0",
@@ -493,8 +493,8 @@
   },
   "problems.1293-shortest-path-in-a-grid-with-obstacles-elimination.a_star:manhattan_distance": {
     "args": [
-      "b",
-      "a"
+      "a",
+      "b"
     ],
     "code": "def manhattan_distance(a: tuple[int, int], b: tuple[int, int]) -> int:\n    return abs(a[0] - b[0]) + abs(a[1] - b[1])",
     "file_path": "backend/algorithms/problems/1293-shortest-path-in-a-grid-with-obstacles-elimination/a_star.py",
@@ -767,8 +767,8 @@
   },
   "problems.146-lru-cache.solution:LRUCache.put": {
     "args": [
-      "value",
-      "key"
+      "key",
+      "value"
     ],
     "code": "    def put(self, key: int, value: int) -> None:\n        if key in self.cache:\n            self.cache.move_to_end(key)\n        self.cache[key] = value\n        if len(self.cache) > self.capacity:\n            self.cache.popitem(last=False)",
     "file_path": "backend/algorithms/problems/146-lru-cache/solution.py",
@@ -797,11 +797,11 @@
   },
   "problems.1514-path-with-maximum-probability.solution:path_with_maximum_probability": {
     "args": [
-      "n",
-      "edges",
-      "start",
       "succProb",
-      "end"
+      "end",
+      "edges",
+      "n",
+      "start"
     ],
     "code": "def path_with_maximum_probability(n: int, edges: list[list[int]], succProb: list[float], start: int, end: int) -> float:\n    prob = [0.0] * n # rob[i] stores max probability to reach node i\n    prob[start] = 1.0  # Start with full certainty\n\n    for _ in range(n - 1):  # Perform up to n-1 rounds of relaxation\n        updated = False\n        for (u, v), p in zip(edges, succProb):\n            if prob[u] * p > prob[v]:  # Try to improve v through u\n                prob[v] = prob[u] * p\n                updated = True\n            if prob[v] * p > prob[u]:  # Try to improve u through v (undirected graph)\n                prob[u] = prob[v] * p\n                updated = True\n        if not updated:\n            break  # Early exit if no updates in this round\n\n    return prob[end]",
     "file_path": "backend/algorithms/problems/1514-path-with-maximum-probability/solution.py",
@@ -1215,9 +1215,9 @@
   },
   "problems.2145-count-the-hidden-sequences.solution:numberOfArrays": {
     "args": [
-      "lower",
+      "differences",
       "upper",
-      "differences"
+      "lower"
     ],
     "code": "def numberOfArrays(differences: list[int], lower: int, upper: int) -> int:\n\n    prefix_sum = min_marker = max_marker = 0\n\n    for diff in differences:\n        prefix_sum += diff\n        min_marker = min(min_marker, prefix_sum)\n        max_marker = max(max_marker, prefix_sum)\n\n    return max(0, (upper - max_marker) - (lower - min_marker) + 1)",
     "file_path": "backend/algorithms/problems/2145-count-the-hidden-sequences/solution.py",
@@ -1316,8 +1316,8 @@
   },
   "problems.325-maximum-size-subarray-sum-equals-k.solution:maxSizeSubarraySumEqualsK": {
     "args": [
-      "segments",
-      "k"
+      "k",
+      "segments"
     ],
     "code": "def maxSizeSubarraySumEqualsK(segments: list[int], k: int) -> int:\n\n    marker_idx = {0: -1}\n    prefix_sum = max_length = 0\n\n    for i, segment in enumerate(segments):\n\n        prefix_sum += segment\n\n        if (target_marker := prefix_sum - k) in marker_idx:\n            max_length = max(max_length, i - marker_idx[target_marker])\n\n        if prefix_sum not in marker_idx:\n            marker_idx[prefix_sum] = i\n\n    return max_length",
     "file_path": "backend/algorithms/problems/325-maximum-size-subarray-sum-equals-k/solution.py",
@@ -1460,8 +1460,8 @@
   },
   "problems.370-range-addition.solution:getModifiedArray": {
     "args": [
-      "length",
-      "updates"
+      "updates",
+      "length"
     ],
     "code": "def getModifiedArray(length: int, updates: list[list[int]]) -> list[int]:\n\n    delta = [0] * (length + 1)\n\n    for start_day, end_day, change_in_km in updates:\n        delta[start_day] += change_in_km\n        delta[end_day + 1] -= change_in_km\n\n    prefix_sum = 0\n    return [prefix_sum := prefix_sum + change for change in delta[:-1]]",
     "file_path": "backend/algorithms/problems/370-range-addition/solution.py",
@@ -1487,8 +1487,8 @@
   },
   "problems.39-combination-sum.solution:combination_sum": {
     "args": [
-      "target",
-      "candidates"
+      "candidates",
+      "target"
     ],
     "code": "def combination_sum(candidates: list[int], target: int) -> list[list[int]]:\n\n    candidates.sort()\n    res, path = [], []\n\n    def dfs(i: int, rem: int) -> None:\n        if rem == 0:\n            res.append(path.copy())\n            return\n        for j in range(i, len(candidates)):\n            if (c := candidates[j]) > rem:\n                break\n            path.append(c)\n            dfs(j, rem - c)\n            path.pop()\n\n    dfs(0, target)\n    return res",
     "file_path": "backend/algorithms/problems/39-combination-sum/solution.py",
@@ -1605,8 +1605,8 @@
   },
   "problems.460-lfu-cache.solution:LFUCache.put": {
     "args": [
-      "value",
-      "key"
+      "key",
+      "value"
     ],
     "code": "    def put(self, key: int, value: int) -> None:\n        if self.capacity <= 0:\n            return\n\n        if key in self.cache:\n            self.cache[key] = value\n            self._bump(key)\n            return\n\n        if len(self.cache) >= self.capacity:\n            old_key, _ = self.buckets[self.minfreq].popitem(last=False)\n            del self.cache[old_key]\n            del self.freq[old_key]\n\n        self.cache[key] = value\n        self.freq[key] = 1\n        self.buckets[1][key] = None\n        self.minfreq = 1",
     "file_path": "backend/algorithms/problems/460-lfu-cache/solution.py",
@@ -1688,8 +1688,8 @@
   },
   "problems.518-coin-change-ii.solution:coin_change_II": {
     "args": [
-      "coins",
-      "amount"
+      "amount",
+      "coins"
     ],
     "code": "def coin_change_II(amount: int, coins: list[int]) -> int:\n    memo, n = {}, len(coins)\n\n    def dp(c, amount):\n        if amount == 0:\n            return 1\n        if amount < 0 or c == n:\n            return 0\n        if (c, amount) not in memo:\n            memo[c, amount] = dp(c, amount - coins[c]) + dp(c + 1, amount)\n        return memo[c, amount]\n\n    return dp(0, amount)",
     "file_path": "backend/algorithms/problems/518-coin-change-ii/solution.py",
@@ -1704,8 +1704,8 @@
   },
   "problems.523-continuous-subarray-sum.solution:checkSubarraySumIsMultipleOfK": {
     "args": [
-      "segments",
-      "k"
+      "k",
+      "segments"
     ],
     "code": "def checkSubarraySumIsMultipleOfK(segments: list[int], k: int) -> bool:\n\n    remainder_idx = {0: -1}\n    prefix_remainder = 0\n\n    for i, segment in enumerate(segments):\n        prefix_remainder = (prefix_remainder + segment) % k\n        if prefix_remainder in remainder_idx:\n            if i - remainder_idx[prefix_remainder] > 1:\n                return True\n        else:\n            remainder_idx[prefix_remainder] = i\n    return False",
     "file_path": "backend/algorithms/problems/523-continuous-subarray-sum/solution.py",
@@ -1787,8 +1787,8 @@
   },
   "problems.560-subarray-sum-equals-k.solution:subarraySumEqualsK": {
     "args": [
-      "segments",
-      "k"
+      "k",
+      "segments"
     ],
     "code": "def subarraySumEqualsK(segments: list[int], k: int) -> int:\n\n    marker_frequency = defaultdict(int, {0: 1})\n    prefix_sum = count = 0\n\n    for segment in segments:\n        prefix_sum += segment\n        count += marker_frequency[prefix_sum - k]\n        marker_frequency[prefix_sum] += 1\n\n    return count",
     "file_path": "backend/algorithms/problems/560-subarray-sum-equals-k/solution.py",
@@ -1829,9 +1829,9 @@
   },
   "problems.743-network-delay-time.solution:network_delay_time": {
     "args": [
+      "times",
       "n",
-      "k",
-      "times"
+      "k"
     ],
     "code": "def network_delay_time(times: list[list[int]], n: int, k: int) -> int:\n\n    adj = defaultdict(list)\n    for u, v, w in times:\n        adj[u].append((v, w))\n    pq, finalized, time = [(0, k)], set(), 0\n    while pq:\n        t, node = heapq.heappop(pq)\n        if node in finalized:\n            continue\n        finalized.add(node)\n        time = t\n        for neighbor, travel_time in adj[node]:\n            if neighbor not in finalized:\n                heapq.heappush(pq, (time + travel_time, neighbor))\n    return time if len(finalized) == n else -1",
     "file_path": "backend/algorithms/problems/743-network-delay-time/solution.py",
@@ -1907,9 +1907,9 @@
   },
   "problems.787-cheapest-flights-within-k-stops.bellman_ford:cheapest_flights_with_at_most_k_stops": {
     "args": [
-      "dst",
-      "n",
       "src",
+      "n",
+      "dst",
       "k",
       "flights"
     ],
@@ -1925,10 +1925,10 @@
   },
   "problems.787-cheapest-flights-within-k-stops.dijkstra:cheapest_flights_with_at_most_k_stops": {
     "args": [
-      "dst",
       "k",
       "src",
-      "flights"
+      "flights",
+      "dst"
     ],
     "code": "def cheapest_flights_with_at_most_k_stops( flights: list[list[int]], src: int, dst: int, k: int) -> int:\n\n    graph = defaultdict(list)\n    for u, v, price in flights:\n        graph[u].append((v, price))\n\n    pq, min_stops = [(0, src, 0)], {}\n\n    while pq:\n        cost, city, stops = heapq.heappop(pq)\n\n        # If we've already found a path to this city using fewer or equal stops, skip.\n        # A path with fewer stops must have been cheaper or equal due to PQ ordering.\n        if stops > min_stops.get(city, float(\"inf\")): continue\n        if city == dst: return cost\n\n        # Record the new minimum stops to reach this city\n        min_stops[city] = stops\n        if stops <= k:\n            for neighbor, price in graph[city]:\n                heapq.heappush(pq, (cost + price, neighbor, stops + 1))\n    return -1",
     "file_path": "backend/algorithms/problems/787-cheapest-flights-within-k-stops/dijkstra.py",
@@ -1959,8 +1959,8 @@
   },
   "problems.79-word-search.solution:word_search": {
     "args": [
-      "board",
-      "word"
+      "word",
+      "board"
     ],
     "code": "def word_search(board: list[list[str]], word: str) -> bool:\n    rows, cols, n = len(board), len(board[0]), len(word)\n    def dfs(r: int, c: int, i: int) -> bool:\n        if i == n:\n            return True\n        if not (0 <= r < rows and 0 <= c < cols and board[r][c] == word[i]):\n            return False\n        tmp, board[r][c] = board[r][c], \"#\"\n        for x, y in ((r + 1, c), (r - 1, c), (r, c + 1), (r, c - 1)):\n            if dfs(x, y, i + 1):\n                board[r][c] = tmp\n                return True\n        board[r][c] = tmp\n        return False\n    return any(\n        dfs(r, c, 0)\n        for r in range(rows)\n        for c in range(cols)\n        if board[r][c] == word[0]\n    )",
     "file_path": "backend/algorithms/problems/79-word-search/solution.py",
@@ -2030,8 +2030,8 @@
   },
   "problems.875-koko-eating-bananas.solution:koko_eating_bananas": {
     "args": [
-      "h",
-      "piles"
+      "piles",
+      "h"
     ],
     "code": "def koko_eating_bananas(piles: list[int], h: int) -> int:\n\n    def hours(k:int) -> int:\n        return sum((p + k - 1) // k for p in piles)\n        # return sum(math.ceil(pile / k) for pile in piles)\n\n    l, r = 1, max(piles)\n    while l < r:\n        k = (l + r) // 2\n        if hours(k) <= h:\n            r = k\n        else:\n            l = k + 1\n    return l",
     "file_path": "backend/algorithms/problems/875-koko-eating-bananas/solution.py",
@@ -2108,8 +2108,8 @@
   },
   "problems.974-subarray-sums-divisible-by-k.solution:subarraysSumIsDivisibleByK": {
     "args": [
-      "segments",
-      "k"
+      "k",
+      "segments"
     ],
     "code": "def subarraysSumIsDivisibleByK(segments: list[int], k: int) -> int:\n    remainder_frequency = defaultdict(int, {0: 1})\n    prefix_remainder = count = 0\n\n    for segment in segments:\n        prefix_remainder = (prefix_remainder + segment) % k\n        count += remainder_frequency[prefix_remainder]\n        remainder_frequency[prefix_remainder] += 1\n    return count",
     "file_path": "backend/algorithms/problems/974-subarray-sums-divisible-by-k/solution.py",

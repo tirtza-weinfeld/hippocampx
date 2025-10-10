@@ -8,24 +8,24 @@
 
 [1631. Path With Minimum Effort](https://leetcode.com/problems/path-with-minimum-effort)
 
-## [!ProblemDefinition] Definition
+## [!(ProblemDefinition)] Definition
 
 Find a path from the top-left to the bottom-right of a height grid that minimizes the "effort". - Effort is the single largest height difference between any two adjacent cells on the path.
 
-## [!ProblemArguments] Key Arguments
+## [!(ProblemArguments)] Key Arguments
 
 - `heights: list[list[int]]`: 2D list of integers representing the heights of the cells
 
-## [!ProblemKeyVariables] Key Variables
+## [!(ProblemKeyVariables)] Key Variables
 
 - `pq`: Priority queue stores (max_effort_on_path, r, c)
 - `resolved`: set to store the positions that have been resolved
 
-## [!ProblemReturns] Returns
+## [!(ProblemReturns)] Returns
 
 `int`: minimum effort to reach the bottom-right cell
 
-## [!ProblemCodeSnippet] Code Snippet
+## [!(ProblemCodeSnippet)] Code Snippet
 
 ```python meta="source=problems/1631-path-with-minimum-effort/solution.py"
 import heapq

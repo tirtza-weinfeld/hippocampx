@@ -8,21 +8,21 @@
 
 [909. Snakes and Ladders](https://leetcode.com/problems/snakes-and-ladders)
 
-## [!ProblemDefinition] Definition
+## [!(ProblemDefinition)] Definition
 
 Given an `n × n` integer board where cells are numbered from `1` to `n²` in a Boustrophedonical style. Each cell's value is either **[3!]-1** for a *[3!]normal* square or a **[16!]destination** number for a *[16!]snake/ladder*. Starting from square `1`, return the least number of moves to reach square `n²`. You must take any snake or ladder you land on.
 
-## [!ProblemIntuition] Intuition
+## [!(ProblemIntuition)] Intuition
 
 - Flatten the Board First 🎲
     - The key insight here is to **pre-process the 2D `board` into a 1D `flat_board` list**. This powerful first step handles all the complex Boustrophedonical logic upfront. By doing this, the BFS loop becomes exceptionally clean and avoids the need for a coordinate conversion function. The search can then operate on a simple 1D array, treating the board as the simple, linear graph it truly represents.
 
-## [!ProblemTimeComplexity] Time Complexity
+## [!(ProblemTimeComplexity)] Time Complexity
 
 - $O($n^{2}$)$
     - where n is the dimension of the board. The initial flattening of the board takes $O($n^{2}$)$ time. The subsequent BFS visits each of the $n^{2}$ squares at most once.
 
-## [!ProblemCodeSnippet] Code Snippet
+## [!(ProblemCodeSnippet)] Code Snippet
 
 ```python meta="source=problems/909-snakes-and-ladders/solution.py"
 from collections import deque

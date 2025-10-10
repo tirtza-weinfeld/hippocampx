@@ -8,11 +8,11 @@
 
 [36. Valid Sudoku](https://leetcode.com/problems/valid-sudoku)
 
-## [!ProblemDefinition] Definition
+## [!(ProblemDefinition)] Definition
 
 Given a partially filled 9×9 board with digits `1–9` and `.` for empty cells, determine if it is valid - *[gray!]no duplicates in any row, column, or 3×3 sub-box. You do not need to solve it*.
 
-## [!ProblemIntuition] Intuition
+## [!(ProblemIntuition)] Intuition
 
 - Cube index and think locally
     - **cube_index := **[pink!](r // 3) * 3** + **[purple!](c // 3)**** treats the 9×9 board as a 3×3 grid of 3×3 boxes:
@@ -20,20 +20,20 @@ Given a partially filled 9×9 board with digits `1–9` and `.` for empty cells,
         - `[purple!]c//3` gives which *[purple!]box-column* (0,1,2)
         - multiplying the *[pink!]box-row* by *[pink!]3* and adding the *[purple!]box-column* yields a unique index 0–8 for each 3×3 cube.
 
-## [!ProblemTimeComplexity] Time Complexity
+## [!(ProblemTimeComplexity)] Time Complexity
 
 - $O(81)$
     - i.e., $O($n^{2}$)$. Fixed 9×9 boards scan at most 81 cells. Generalized n×n Sudoku validation runs in $O($n^{2}$)$ time.
 
-## [!ProblemArguments] Key Arguments
+## [!(ProblemArguments)] Key Arguments
 
 - `board: list[list[str]]`: 9x9 Sudoku board with digits 1-9 and '.' for empty cells
 
-## [!ProblemReturns] Returns
+## [!(ProblemReturns)] Returns
 
 `bool`: True if the board is valid, False otherwise
 
-## [!ProblemCodeSnippet] Code Snippet
+## [!(ProblemCodeSnippet)] Code Snippet
 
 ```python meta="source=problems/36-valid-sudoku/solution.py"
 def is_valid_sudoku(board: list[list[str]]) -> bool:

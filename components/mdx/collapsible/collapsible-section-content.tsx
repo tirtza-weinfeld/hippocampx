@@ -67,7 +67,7 @@ export function CollapsibleSectionContent({
           variants={variants}
           className={cn(
             "overflow-hidden",
-            "border-t border-gray-200/60 dark:border-gray-700/60"
+            "border-t border-gray-200/60 dark:border-gray-700/60",
           )}
         >
           <div
@@ -75,7 +75,7 @@ export function CollapsibleSectionContent({
               "px-6 py-5",
               "prose prose-gray dark:prose-invert max-w-none",
               "text-gray-700 dark:text-gray-300",
-              className
+              className,
             )}
           >
             {children}

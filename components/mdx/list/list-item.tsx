@@ -146,11 +146,11 @@ export default function ListItem({
       <div className={cn(
         "min-w-0 flex-1",
        
-        //  headerItem && "[&>*:first-child]:font-semibold [&>*:first-child]:text-em-gradient ",
+         headerItem && "[&>*:first-child]:font-semibold [&>*:first-child]:text-em-gradient ",
       )}>
  
 
-          
+          {/* <div>{headerItem ? "header" : "content"}</div> */}
           {children}
 
 

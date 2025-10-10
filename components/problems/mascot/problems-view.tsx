@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, use } from 'react'
-import {BookOpen, Clock, Target, TrendingUp, X, RotateCcw, Hash, ChevronDown, ChevronRight, ChevronUp, ChevronsDown, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react'
+import { BookOpen, Clock, Target, TrendingUp, X, RotateCcw, Hash, ChevronDown, ChevronRight, ChevronUp, ChevronsDown, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -17,6 +17,7 @@ import {
   ScrollActionsContext
 } from './mascot-context'
 import { MascotSettingsContext } from './mascot-settings-context'
+// import CodeBlock from '@/components/mdx/code/code-block'
 
 
 
@@ -29,7 +30,7 @@ const DIFFICULTY_COLORS: Record<string, string> = {
 
 
 export function ProblemsView({ problems: problemsData, time_complexities, topics }: { problems: Problems, time_complexities: Record<string, string>, topics: Record<string, string[]> }) {
-  
+
   const { stayOpen } = use(MascotSettingsContext)
   const { setIsOpen } = use(MascotActionsContext)
   const {
@@ -637,7 +638,7 @@ export function ProblemsView({ problems: problemsData, time_complexities, topics
                       [&>.link-marker]:hidden [&_.link-marker]:hidden"
                     >
                       {problem.title}
-                     
+
                     </Link>
                   </div>
 
@@ -648,6 +649,19 @@ export function ProblemsView({ problems: problemsData, time_complexities, topics
                   >
 
                     <div className="space-y-4">
+                      {/* {Object.values(problem.solutions).map((solution) => {
+                        const meta = `source=problems/${problem.slug}/${solution.title}`
+                        return (
+                          <div key={solution.title}>
+                            <h3>{solution.title}</h3>
+                            <CodeBlock className="language-python" meta={meta}>
+                              ```python  ${meta}
+                              {solution.code}
+                              ```
+                            </CodeBlock>
+                          </div>
+                        )
+                      })} */}
                       {/* Description */}
                       <div className="text-sm text-muted-foreground leading-relaxed">
                         <MarkdownRenderer>

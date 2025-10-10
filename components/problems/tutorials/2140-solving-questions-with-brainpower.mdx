@@ -8,21 +8,21 @@
 
 [2140. Most Points Solving Questions With Brainpower](https://leetcode.com/problems/solving-questions-with-brainpower)
 
-## [!ProblemDefinition] Definition
+## [!(ProblemDefinition)] Definition
 
 Given an array of `questions` where `questions[i] = [pointsᵢ, brainpowerᵢ]`, you process from i=0 and at each i choose to either solve (gain `pointsᵢ` and jump `brainpowerᵢ + 1`) or skip (move to `i + 1`). Return the maximum points achievable.
 
-## [!ProblemIntuition] Intuition
+## [!(ProblemIntuition)] Intuition
 
 - Paradigm: This is a classic **Longest Path** problem on a Directed Acyclic Graph (DAG).
     - Insight: The maximum score obtainable *from* any question `i` is a fixed value, regardless of past choices. This allows a backward pass from the end of the exam (where the future score is 0), calculating the optimal future score for each question by simply choosing the `max()` of two pre-computed paths: the one from "solving" vs. the one from "skipping".
 
-## [!ProblemTimeComplexity] Time Complexity
+## [!(ProblemTimeComplexity)] Time Complexity
 
 - $O(n)$
     - where `n` is the number of questions.
 
-## [!ProblemCodeSnippet] Code Snippet
+## [!(ProblemCodeSnippet)] Code Snippet
 
 ```python meta="source=problems/2140-solving-questions-with-brainpower/solution.py"
 def most_points_solving_questions_with_brainpower(questions: list[list[int]]) -> int:

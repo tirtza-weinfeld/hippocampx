@@ -1,31 +1,29 @@
-import { ProblemArgumentsHeader , ProblemArguments} from './problem-args'
+import { ProblemArgumentsHeader , ProblemArgumentsContent} from './problem-args'
 
-import { ProblemDefinitionHeader, ProblemDefinition } from './problem-definition'
-import { ProblemIntuitionHeader, ProblemIntuition } from './problem-intuition'
-import { ProblemDifficultyHeader, ProblemDifficulty } from './problem-difficulty'
-import { ProblemTimeComplexityHeader, ProblemTimeComplexity } from './problem-time-complexity'
-import { ProblemTopicsHeader, ProblemTopics } from './problem-topics'
-import { ProblemCodeSnippetHeader, ProblemCodeSnippet } from './problem-code-snippet'
-import { ProblemKeyVariablesHeader, ProblemKeyVariables } from './problem-key-variables'
-import { ProblemKeyExpressionsHeader, ProblemKeyExpressions } from './problem-key-expressions'
-import { ProblemReturnsHeader, ProblemReturns } from './problem-returns'
+import { ProblemDefinitionHeader, ProblemDefinitionContent } from './problem-definition'
+import { ProblemIntuitionHeader, ProblemIntuitionContent } from './problem-intuition'
+import { ProblemDifficultyHeader, ProblemDifficultyContent } from './problem-difficulty'
+import { ProblemTimeComplexityHeader, ProblemTimeComplexityContent } from './problem-time-complexity'
+import { ProblemTopicsHeader, ProblemTopicsContent } from './problem-topics'
+import { ProblemCodeSnippetHeader, ProblemCodeSnippetContent } from './problem-code-snippet'
+import { ProblemKeyVariablesHeader, ProblemKeyVariablesContent } from './problem-key-variables'
+import { ProblemKeyExpressionsHeader, ProblemKeyExpressionsContent } from './problem-key-expressions'
+import { ProblemReturnsHeader, ProblemReturnsContent } from './problem-returns'
 import ProblemIntuitionItem from '../list/problem-intuition-item'
-import { ProblemTipHeader, ProblemTip } from './problem-tip'
-import { ProblemCard } from './problem-card'
+import { ProblemTipHeader, ProblemTipContent } from './problem-tip'
 
 export const ProblemComponents = {
-  ProblemArguments,
-  ProblemDefinition,
-  ProblemIntuition,
-  ProblemDifficulty,
-  ProblemTimeComplexity,
-  ProblemTopics,
-  ProblemCodeSnippet,
-  ProblemKeyVariables,
-  ProblemKeyExpressions,
-  ProblemReturns,
-  ProblemTip,
-  ProblemCard
+  ProblemArgumentsContent,
+  ProblemDefinitionContent,
+  ProblemIntuitionContent,
+  ProblemDifficultyContent,
+  ProblemTimeComplexityContent,
+  ProblemTopicsContent,
+  ProblemCodeSnippetContent,
+  ProblemKeyVariablesContent,
+  ProblemKeyExpressionsContent,
+  ProblemReturnsContent,
+  ProblemTipContent,
 }
 
 export const ProblemHeaders = {

@@ -8,22 +8,22 @@
 
 [416. Partition Equal Subset Sum](https://leetcode.com/problems/partition-equal-subset-sum)
 
-## [!ProblemDefinition] Definition
+## [!(ProblemDefinition)] Definition
 
 Given an integer array `nums`, determine if you can partition it into two subsets with an equal sum.
 
-## [!ProblemIntuition] Intuition
+## [!(ProblemIntuition)] Intuition
 
 - Paradigm: This is the **0/1 Knapsack** decision problem in disguise.
 
 - Insight: The problem transforms from partitioning an array into a simpler question: can a subset of "items" (`nums`) perfectly fill a "knapsack" with capacity `total_sum / 2`? Each item's weight is equal to its value.
 
-## [!ProblemTimeComplexity] Time Complexity
+## [!(ProblemTimeComplexity)] Time Complexity
 
 - $O(N * Sum)$:
     - where N is the number of elements and Sum is the target subset sum.
 
-## [!ProblemCodeSnippet] Code Snippet
+## [!(ProblemCodeSnippet)] Code Snippet
 
 ```python meta="source=problems/416-partition-equal-subset-sum/solution.py"
 def can_partition_into_2_equal_subsets(nums: list[int]) -> bool:

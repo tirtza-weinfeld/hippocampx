@@ -8,22 +8,22 @@
 
 [1406. Stone Game III](https://leetcode.com/problems/stone-game-iii)
 
-## [!ProblemDefinition] Definition
+## [!(ProblemDefinition)] Definition
 
 Array stoneValue; players alternately take 1–3 stones from the left maximizing score difference. Return "Alice", "Bob", or "Tie" under optimal play.
 
-## [!ProblemIntuition] Intuition
+## [!(ProblemIntuition)] Intuition
 
 - Score-difference DP:
     - Let `dp[i]` = max score difference current player can achieve starting at index `i`.
     - Transition: `dp[i] = max_{k∈{1,2,3}} (sum(i..i+k-1) − dp[i+k])`. Answer from `dp[0]`.
 
-## [!ProblemTimeComplexity] Time Complexity
+## [!(ProblemTimeComplexity)] Time Complexity
 
 - $O(n)$
     - constant 3 choices per `i`
 
-## [!ProblemCodeSnippet] Code Snippet
+## [!(ProblemCodeSnippet)] Code Snippet
 
 ```python meta="source=problems/1406-stone-game-iii/solution.py"
 def stone_game_III(stoneValue: list[int]) -> str:

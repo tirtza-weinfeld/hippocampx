@@ -8,11 +8,11 @@
 
 [79. Word Search](https://leetcode.com/problems/word-search)
 
-## [!ProblemDefinition] Definition
+## [!(ProblemDefinition)] Definition
 
 Determine if a word exists in a 2D board by following adjacent letters without reuse.
 
-## [!ProblemIntuition] Intuition
+## [!(ProblemIntuition)] Intuition
 
 - Dfs with early exit on mismatch
     - Start dfs from each cell
@@ -23,7 +23,7 @@ Determine if a word exists in a 2D board by following adjacent letters without r
         - Restore cell after backtracking
         - Stop early if the full word is matched.
 
-## [!ProblemTimeComplexity] Time Complexity
+## [!(ProblemTimeComplexity)] Time Complexity
 
 - $O(M * N * 3^L)$
     - M, N = board size
@@ -31,7 +31,7 @@ Determine if a word exists in a 2D board by following adjacent letters without r
     - Each step explores at most 3 directions (excluding the one it came from)
     - Runtime improves with early mismatches and pruning
 
-## [!ProblemCodeSnippet] Code Snippet
+## [!(ProblemCodeSnippet)] Code Snippet
 
 ```python meta="source=problems/79-word-search/solution.py"
 def word_search(board: list[list[str]], word: str) -> bool:

@@ -58,7 +58,7 @@ function formatSection(title: string, content: string, component?: string, heade
     cleanContent = cleanContent.replace(/^(\s*-\s*)([^`:\s][^:\s]*)(\s*:)/gm, '$1`$2`$3')
   }
 
-  const headerText = component ? `${headerLevel} [!${component}] ${title}` : `${headerLevel} ${title}`
+  const headerText = component ? `${headerLevel} [!(${component})] ${title}` : `${headerLevel} ${title}`
   return `${headerText}\n\n${cleanContent}\n\n`
 }
 

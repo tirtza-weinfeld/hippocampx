@@ -8,11 +8,11 @@
 
 [136. Single Number](https://leetcode.com/problems/single-number)
 
-## [!ProblemDefinition] Definition
+## [!(ProblemDefinition)] Definition
 
 Given a non-empty array of integers nums, every element appears twice except for one. Find that single one.    *[sky!]Achieve *linear* time complexity and *constant* space complexity.*
 
-## [!ProblemIntuition] Intuition
+## [!(ProblemIntuition)] Intuition
 
 - Using bitwise XOR to cancel out the duplicates:
     - XOR cancels pairs (a^a=0, a^0=a; associative/commutative), so the lone element remains
@@ -36,12 +36,12 @@ Given a non-empty array of integers nums, every element appears twice except for
         - **[10!](1 ^ 1)** ^ **[14!](2 ^ 2)** ^ **[1!]4**
         - **[10!]0** ^ **[14!]0** ^ **[1!]4** = **[1!]4**
 
-## [!ProblemTimeComplexity] Time Complexity
+## [!(ProblemTimeComplexity)] Time Complexity
 
 - $O(n)$:
     - where n is the number of elements in the nums array
 
-## [!ProblemCodeSnippet] Code Snippet
+## [!(ProblemCodeSnippet)] Code Snippet
 
 ```python meta="source=problems/136-single-number/solution.py"
 def singleNumber(nums: list[int]) -> int:

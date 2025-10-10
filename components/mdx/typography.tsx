@@ -1,10 +1,8 @@
 "use client"
 
-import React from "react"
 import { motion } from "motion/react"
 import type { ReactNode } from "react"
 import { cn } from "@/lib/utils"
-import { CustomHeaders } from "./custom/headers"
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -19,56 +17,10 @@ interface TypographyProps {
   [key: string]: unknown
 }
 
-const withCustomComponent = (WrappedComponent: React.ComponentType<TypographyProps>, headerTag: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6') => {
-  function ComponentWithCustomHeader({ children, className, ...props }: TypographyProps) {
-    const componentName = props['component'] as string | undefined
-
-    // if (componentName && 'ProblemTimeComplexityHeader' === componentName) {
-    if (false) {
-      const CustomComponent = CustomHeaders[componentName as keyof typeof CustomHeaders]
-
-      if (CustomComponent) {
-        const headerClassName = cn(
-          className,
-          headerTag === 'h1' && 'text-3xl md:text-4xl',
-          headerTag === 'h2' && 'text-2xl md:text-3xl',
-          headerTag === 'h3' && 'text-xl md:text-2xl',
-          headerTag === 'h4' && 'text-lg md:text-xl',
-          headerTag === 'h5' && 'text-lg md:text-xl',
-          headerTag === 'h6' && 'text-base md:text-lg'
-        )
-
-        if (headerTag === 'h1') {
-          return <CustomComponent><h1 className={headerClassName} {...props}>{children}</h1></CustomComponent>
-        }
-        if (headerTag === 'h2') {
-          return <CustomComponent><h2 className={headerClassName} {...props}>{children}</h2></CustomComponent>
-        }
-        if (headerTag === 'h3') {
-          return <CustomComponent><h3 className={headerClassName} {...props}>{children}</h3></CustomComponent>
-        }
-        if (headerTag === 'h4') {
-          return <CustomComponent><h4 className={headerClassName} {...props}>{children}</h4></CustomComponent>
-        }
-        if (headerTag === 'h5') {
-          return <CustomComponent><h5 className={headerClassName} {...props}>{children}</h5></CustomComponent>
-        }
-        if (headerTag === 'h6') {
-          return <CustomComponent><h6 className={headerClassName} {...props}>{children}</h6></CustomComponent>
-        }
-      }
-    }
-
-    return <WrappedComponent className={className} {...props}>{children}</WrappedComponent>
-  }
-
-  ComponentWithCustomHeader.displayName = `withCustomComponent(${WrappedComponent.displayName || WrappedComponent.name || 'Component'})`
-  return ComponentWithCustomHeader
-}
 
 
 
-const H1Base = ({ children, className, ...props }: TypographyProps) => {
+export const H1= ({ children, className, ...props }: TypographyProps) => {
   return (
     <motion.div {...fadeInUp} className="relative mb-12 mt-16 first:mt-2 group">
       <h1 className={cn("text-4xl md:text-5xl font-extrabold text-center tracking-tight leading-tight", "text-teal-600 dark:text-teal-700", className)} {...props}>
@@ -79,9 +31,9 @@ const H1Base = ({ children, className, ...props }: TypographyProps) => {
     </motion.div>
   )
 }
-export const H1 = withCustomComponent(H1Base, 'h1')
 
-const H2Base = ({ children, className, ...props }: TypographyProps) => {
+
+export const H2 = ({ children, className, ...props }: TypographyProps) => {
   return (
     // <motion.div {...fadeInUp} className="relative mb-8 first:mt-12">
     <motion.div {...fadeInUp} className="relative mb-8 mt-12">
@@ -94,9 +46,8 @@ const H2Base = ({ children, className, ...props }: TypographyProps) => {
     </motion.div>
   )
 }
-export const H2 = withCustomComponent(H2Base, 'h2')
 
-const H3Base = ({ children, className, ...props }: TypographyProps) => {
+export const H3 = ({ children, className, ...props }: TypographyProps) => {
 
   return (
     <motion.div {...fadeInUp} className="relative mb-6 mt-10">
@@ -107,9 +58,8 @@ const H3Base = ({ children, className, ...props }: TypographyProps) => {
     </motion.div>
   )
 }
-export const H3 = withCustomComponent(H3Base, 'h3')
 
-const H4Base = ({ children, className, ...props }: TypographyProps) => {
+export const H4 = ({ children, className, ...props }: TypographyProps) => {
   return (
     <motion.div {...fadeInUp} className="relative mb-4 mt-8">
       <div className="flex items-center gap-2">
@@ -120,9 +70,8 @@ const H4Base = ({ children, className, ...props }: TypographyProps) => {
     </motion.div>
   )
 }
-export const H4 = withCustomComponent(H4Base, 'h4')
 
-const H5Base = ({ children, className, ...props }: TypographyProps) => {
+export const H5 = ({ children, className, ...props }: TypographyProps) => {
   return (
     <motion.h5
       {...fadeInUp}
@@ -133,9 +82,8 @@ const H5Base = ({ children, className, ...props }: TypographyProps) => {
     </motion.h5>
   )
 }
-export const H5 = withCustomComponent(H5Base, 'h5')
 
-const H6Base = ({ children, className, ...props }: TypographyProps) => {
+export const H6 = ({ children, className, ...props }: TypographyProps) => {
   return (
     <motion.h6
       {...fadeInUp}
@@ -146,7 +94,6 @@ const H6Base = ({ children, className, ...props }: TypographyProps) => {
     </motion.h6>
   )
 }
-export const H6 = withCustomComponent(H6Base, 'h6')
 
 export const Paragraph = ({ children, className, ...props }: TypographyProps) => (
   <motion.p

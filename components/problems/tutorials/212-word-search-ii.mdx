@@ -8,17 +8,17 @@
 
 [212. Word Search II](https://leetcode.com/problems/word-search-ii)
 
-## [!ProblemDefinition] Definition
+## [!(ProblemDefinition)] Definition
 
 Given a board and a list of words, find all words in the board.
 
-## [!ProblemIntuition] Intuition
+## [!(ProblemIntuition)] Intuition
 
 - Prefix rails
     - The trie lays down "prefix rails" across the grid: you only move where a rail continues; off‑rail steps end instantly.
     - A terminal is a station: record the word once, close that spur, and drop empty rails as you pass. In one walk, a cell is used at most once.
 
-## [!ProblemTimeComplexity] Time Complexity
+## [!(ProblemTimeComplexity)] Time Complexity
 
 - $O(m $n \cdot 4$^L)$
     - **Symbols:** m×n board, W=∑(w∈dict)|w|, L=max|w|.
@@ -26,14 +26,14 @@ Given a board and a list of words, find all words in the board.
     - **DFS (worst case):** first step ≤ 4 choices, then ≤ 3 per step ⇒ $O(m $n \cdot 4$ * 3^(L-1)$). Coarse bound: $O(m $n \cdot 4$^L)$.
     - **Space:** trie $O(W)$; recursion/visited path $O(L)$.
 
-## [!ProblemKeyVariables] Key Variables
+## [!(ProblemKeyVariables)] Key Variables
 
 - `trie`: Build trie from **words** list. Each end node gets a `$` key holding the word
 - `m`: number of rows
 - `n`: number of columns
 - `res`: the list of found words
 
-## [!ProblemCodeSnippet] Code Snippet
+## [!(ProblemCodeSnippet)] Code Snippet
 
 ```python meta="source=problems/212-word-search-ii/solution.py"
 def word_search_II(board: list[list[str]], words: list[str]) -> list[str]:

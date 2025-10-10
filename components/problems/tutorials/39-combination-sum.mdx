@@ -8,30 +8,30 @@
 
 [39. Combination Sum](https://leetcode.com/problems/combination-sum)
 
-## [!ProblemDefinition] Definition
+## [!(ProblemDefinition)] Definition
 
 Return all unique combinations where chosen numbers sum to a target. Numbers can be reused.
 
-## [!ProblemIntuition] Intuition
+## [!(ProblemIntuition)] Intuition
 
 - DFS with backtracking
     - Sort candidates, try each starting from current index (to allow reuse), prune if number exceeds remaining target, and record the path when rem == 0.
 
-## [!ProblemTimeComplexity] Time Complexity
+## [!(ProblemTimeComplexity)] Time Complexity
 
 - $O(2^n)$
     - Worst-case exponential in number of combinations explored, but pruning (if c > rem: break) reduces branches significantly.
 
-## [!ProblemArguments] Key Arguments
+## [!(ProblemArguments)] Key Arguments
 
 - `candidates: list[int]`: List of candidate numbers
 - `target: int`: Target sum to achieve
 
-## [!ProblemReturns] Returns
+## [!(ProblemReturns)] Returns
 
 `list[list[int]]`: List of all unique combinations that sum to target
 
-## [!ProblemCodeSnippet] Code Snippet
+## [!(ProblemCodeSnippet)] Code Snippet
 
 ```python meta="source=problems/39-combination-sum/solution.py"
 def combination_sum(candidates: list[int], target: int) -> list[list[int]]:

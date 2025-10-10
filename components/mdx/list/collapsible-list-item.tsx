@@ -113,7 +113,7 @@ export default function CollapsibleListItem({
           )}
 
           <div className="min-w-0 flex-1">
-            <div className={cn("text-sm", !isOpen && "truncate")}>{title}</div>
+            <div className={cn("text-sm ", "font-semibold text-em-gradient", !isOpen && "truncate")}>{title}</div>
           </div>
 
           <motion.div

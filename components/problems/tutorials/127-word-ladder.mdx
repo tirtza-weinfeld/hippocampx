@@ -8,21 +8,21 @@
 
 [127. Word Ladder](https://leetcode.com/problems/word-ladder)
 
-## [!ProblemDefinition] Definition
+## [!(ProblemDefinition)] Definition
 
 Given a `beginWord`, an `endWord`, and a dictionary `wordList`, find the length of the shortest transformation sequence from `beginWord` to `endWord` such that only one letter is changed at a time and each transformed word exists in the `wordList`.
 
-## [!ProblemIntuition] Intuition
+## [!(ProblemIntuition)] Intuition
 
 - Bidirectional BFS Meets in the Middle 🤝:
     - This solution uses two  optimizations. First, it **pre-computes all possible generic transformations** (e.g., `h*t`) in a dictionary, allowing for instant lookups of neighboring words instead of generating them on the fly. Second, it performs a **bidirectional BFS**, launching one search from the `beginWord` and another from the `endWord`. By always expanding the smaller of the two frontiers, it drastically reduces the search space. The algorithm finishes when the two searches meet, at which point the shortest path is found.
 
-## [!ProblemTimeComplexity] Time Complexity
+## [!(ProblemTimeComplexity)] Time Complexity
 
 - $O(N * L)$
     - where N is the number of words and L is the length of each word. The dominant operation is the initial pre-computation step to build the `combos` dictionary. The subsequent bidirectional search is typically much faster than this initial setup.
 
-## [!ProblemCodeSnippet] Code Snippet
+## [!(ProblemCodeSnippet)] Code Snippet
 
 ```python meta="source=problems/127-word-ladder/solution.py"
 from collections import defaultdict

@@ -8,11 +8,11 @@
 
 [215. Kth Largest Element In An Array](https://leetcode.com/problems/kth-largest-element-in-an-array)
 
-## [!ProblemDefinition] Definition
+## [!(ProblemDefinition)] Definition
 
 Given an integer array nums and an integer k, return the kth largest element in the array.
 
-## [!ProblemTimeComplexity] Time Complexity
+## [!(ProblemTimeComplexity)] Time Complexity
 
 - $O(n log k)$:
     - Deep Dive: one sift (faster constant) vs push+pop
@@ -23,7 +23,7 @@ Given an integer array nums and an integer k, return the kth largest element in 
         - removes root, places new element, and does only one sift-down → $O(log k)$
         - So same asymptotic complexity, but half the work, fewer comparisons and function calls → faster constant factor.
 
-## [!ProblemCodeSnippet] Code Snippet
+## [!(ProblemCodeSnippet)] Code Snippet
 
 ```python meta="source=problems/215-kth-largest-element-in-an-array/solution.py"
 import heapq

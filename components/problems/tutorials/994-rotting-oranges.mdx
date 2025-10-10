@@ -8,21 +8,21 @@
 
 [994. Rotting Oranges](https://leetcode.com/problems/rotting-oranges)
 
-## [!ProblemDefinition] Definition
+## [!(ProblemDefinition)] Definition
 
 Given an `m x n` 2D grid of `0`s (empty), `1`s (fresh), and `2`s (rotten), every minute, any fresh orange adjacent to a rotten one becomes rotten. Return the minimum minutes required until no fresh oranges remain. If it's impossible, return -1.
 
-## [!ProblemIntuition] Intuition
+## [!(ProblemIntuition)] Intuition
 
 - Multi-Source BFS 🍊:
     - The key is to initialize the queue with the coordinates of *all* initially rotten oranges. The BFS then naturally simulates the rotting process in parallel from all sources. Each "level" of the BFS corresponds to one minute passing. Finally, you must check if any `fresh_oranges` remain to handle cases where some are unreachable.
 
-## [!ProblemTimeComplexity] Time Complexity
+## [!(ProblemTimeComplexity)] Time Complexity
 
 - $O(m * n)$:
     - where m and n are the dimensions of the grid. Each cell is enqueued and dequeued at most once, making the process highly efficient and optimal.
 
-## [!ProblemCodeSnippet] Code Snippet
+## [!(ProblemCodeSnippet)] Code Snippet
 
 ```python meta="source=problems/994-rotting-oranges/solution.py"
 from collections import deque

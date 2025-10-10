@@ -24,7 +24,7 @@ export function ProblemDifficultyHeader({ children, className }: ProblemDifficul
   )
 }
 
-export function ProblemDifficulty({ children, className, ...props }: ProblemDifficultyProps) {
+export function ProblemDifficultyContent({ children, className, ...props }: ProblemDifficultyProps) {
   return (
     <div
       {...props}

@@ -14,13 +14,16 @@ const withMDX = createMDX({
       'remark-gfm',
       '@hippocampx/plugins/remark-typography',
       '@hippocampx/plugins/remark-code-tabs',
-      '@hippocampx/plugins/remark-header-section',
+      // '@hippocampx/plugins/remark-collapsible-section',
+      // '@hippocampx/plugins/remark-header-section',
       '@hippocampx/plugins/remark-section-list',
-      '@hippocampx/plugins/toc-plugin',
       '@hippocampx/plugins/remark-github-alerts',
       '@hippocampx/plugins/remark-code-copy',
       '@hippocampx/plugins/remark-feature-list',
       '@hippocampx/plugins/remark-list-variants',
+      '@hippocampx/plugins/toc-plugin',
+
+      '@hippocampx/plugins/remark-section-wrapper',
 
 
       ],

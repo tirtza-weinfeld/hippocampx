@@ -8,11 +8,11 @@
 
 [1011. Capacity To Ship Packages Within D Days](https://leetcode.com/problems/capacity-to-ship-packages-within-d-days)
 
-## [!ProblemDefinition] Definition
+## [!(ProblemDefinition)] Definition
 
 Given a list of weights and a number of days, find the minimum capacity of a ship that can ship all the weights within the given number of days.
 
-## [!ProblemIntuition] Intuition
+## [!(ProblemIntuition)] Intuition
 
 - Binary searching the answer space, (the ship's capacity)
     - The range of possible capacities is from `max(weights)` to `sum(weights)`.
@@ -21,7 +21,7 @@ Given a list of weights and a number of days, find the minimum capacity of a shi
         - If `daysNeeded(capacity) <= days` is `True`, then `capacity` is a potential answer, and we try for a better (smaller) one in the left half by setting `r = capacity`.
         - If it is `False`, then `capacity` is too small, and we must search for a larger capacity in the right half by setting `l = capacity + 1`.
 
-## [!ProblemCodeSnippet] Code Snippet
+## [!(ProblemCodeSnippet)] Code Snippet
 
 ```python meta="source=problems/1011-capacity-to-ship-packages-within-d-days/solution.py"
 def capacity_to_ship_packages_within_d_days(weights: list[int], days: int) -> int:

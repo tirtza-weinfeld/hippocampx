@@ -8,11 +8,11 @@
 
 [743. Network Delay Time](https://leetcode.com/problems/network-delay-time)
 
-## [!ProblemDefinition] Definition
+## [!(ProblemDefinition)] Definition
 
 Given `n` nodes labeled `1` through `n` and directed travel times between them, find the minimum time for a signal starting at node `k` to reach *all* nodes. If impossible, return -1
 
-## [!ProblemTimeComplexity] Time Complexity
+## [!(ProblemTimeComplexity)] Time Complexity
 
 - $O(E log V)$:
     - E is the number of edges (the length of the input list `times`)
@@ -20,16 +20,16 @@ Given `n` nodes labeled `1` through `n` and directed travel times between them, 
 
 - By substituting these into the standard Dijkstra complexity formula, $O(E log V)$, you get $O(len(times)$ log n).
 
-## [!ProblemArguments] Key Arguments
+## [!(ProblemArguments)] Key Arguments
 
 - `times: list[list[int]]`: list of lists of integers representing the edges and their weights
 - `k: int`: starting node
 
-## [!ProblemReturns] Returns
+## [!(ProblemReturns)] Returns
 
 `int`: minimum time for a signal starting at node `k` to reach *all* nodes or -1 if impossible
 
-## [!ProblemCodeSnippet] Code Snippet
+## [!(ProblemCodeSnippet)] Code Snippet
 
 ```python meta="source=problems/743-network-delay-time/solution.py"
 from collections import defaultdict

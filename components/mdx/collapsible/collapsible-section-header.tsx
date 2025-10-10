@@ -5,6 +5,7 @@ import { motion, useReducedMotion } from "motion/react"
 import { cn } from "@/lib/utils"
 import { ChevronDown } from "lucide-react"
 import { useCollapsibleContext } from "./collapsible-section"
+import { Link } from "@/components/mdx/links"
 
 export interface CollapsibleSectionHeaderProps {
   children: ReactNode
@@ -58,7 +59,7 @@ export function CollapsibleSectionHeader({
         "dark:hover:from-teal-950/30 dark:hover:via-sky-950/20 dark:dark:hover:to-teal-950/30",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/50 focus-visible:ring-offset-2",
         "focus-visible:ring-offset-white dark:focus-visible:ring-offset-gray-900",
-        className
+        className,
       )}
       whileHover={shouldReduceMotion ? {} : { scale: 1.01 }}
       whileTap={shouldReduceMotion ? {} : { scale: 0.99 }}
@@ -79,7 +80,7 @@ export function CollapsibleSectionHeader({
           headerLevel === 6 && "text-sm md:text-base"
         )}
       >
-        {children}
+        <Link href={`#${id}`} onClick={e => e.stopPropagation()}>{children}</Link>
       </Component>
 
       <motion.div

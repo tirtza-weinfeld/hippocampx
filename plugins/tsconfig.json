@@ -21,7 +21,9 @@
     "./remark-code-copy",
     "./remark-feature-list.ts",
     "./remark-list-variants.ts",
+    "./remark-collapsible-section.ts",
     "./mdx-text-extraction.ts",
+    "./remark-section-wrapper.ts",
     "./lib/step-colors.ts",
     "./mdast-types.d.ts"
   ],

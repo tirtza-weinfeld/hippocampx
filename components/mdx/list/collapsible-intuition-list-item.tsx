@@ -160,9 +160,9 @@ export default function CollapsibleIntuitionListItem({
           <div className={cn(
             "min-w-0 flex-1",
             !isOpen && "truncate",
-            headerItem && "[&>*:first-child]:font-semibold [&>*:first-child]:text-em-gradient"
+            // headerItem && "[&>*:first-child]:font-semibold [&>*:first-child]:text-em-gradient"
           )}>
-            <div className="text-sm">{title}</div>
+            <div className="text-sm font-semibold text-em-gradient">{title}</div>
           </div>
 
           <motion.div

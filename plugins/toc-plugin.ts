@@ -121,11 +121,26 @@ const remarkInjectToc: Plugin<[], Parent> = () => (tree) => {
   // First pass: collect all headings and find the TOC heading
   visit(tree, 'heading', (node: Heading, index, parent) => {
     // Extract text for display (preserves math notation) and for slug generation
-    const displayText = extractDisplayTextFromHeading(node)
-    const slugText = extractTextFromHeading(node)
-    const richContent = extractRichContentFromHeading(node)
-    
-    
+    let displayText = extractDisplayTextFromHeading(node)
+    let slugText = extractTextFromHeading(node)
+
+    // Clean collapsible and specialized component directives from TOC entries
+    // Matches: [!collapsible], [!collapsible:expand], [!(ComponentName)], [!collapsible(ComponentName)], etc.
+    const directiveMatch = displayText.match(/^\[!(?:collapsible(?::expand)?)?\(?(?:[^)]+)?\)?\]\s*(.*)/i)
+    if (directiveMatch) {
+      displayText = directiveMatch[1].trim()
+      slugText = slugText.replace(/^\[!(?:collapsible(?::expand)?)?\(?(?:[^)]+)?\)?\]\s*/i, '').trim()
+    }
+
+    // Extract rich content AFTER cleaning directives
+    // Create a temporary cleaned node for rich content extraction
+    const cleanedNode = structuredClone(node)
+    if (cleanedNode.children.length > 0 && cleanedNode.children[0].type === 'text') {
+      const textNode = cleanedNode.children[0] as Text
+      textNode.value = textNode.value.replace(/^\[!(?:collapsible(?::expand)?)?\(?(?:[^)]+)?\)?\]\s*/i, '')
+    }
+    const richContent = extractRichContentFromHeading(cleanedNode)
+
     if (!displayText || !slugText) return
 
     // Find and store the H1 index

@@ -8,14 +8,14 @@
 
 [347. Top K Frequent Elements](https://leetcode.com/problems/top-k-frequent-elements)
 
-## [!ProblemDefinition] Definition
+## [!(ProblemDefinition)] Definition
 
 Given an integer array `nums` and an integer `k`, return the `k` most **frequent** elements
     *[19!]Algorithm complexity must be better than *[orange!]O(nlogn)* where `n` is the length of the input array,     You may return the answer in any order*
 
 ## Heap Solution
 
-### [!ProblemTimeComplexity] Time Complexity
+### [!(ProblemTimeComplexity)] Time Complexity
 
 - $O(n log k)$
 
@@ -49,14 +49,14 @@ def topKFrequent(nums: list[int], k: int) -> list[int]:
 
 ## Sort Frequency Bucketing Solution
 
-### [!ProblemTimeComplexity] Time Complexity
+### [!(ProblemTimeComplexity)] Time Complexity
 
 - $O(n)$:
     - Counter(nums) → $O(n)$
     - Build buckets → $O(n)$ (each element placed once)
     - Flatten in reverse until k → $O(n)$
 
-### [!ProblemCodeSnippet] Code Snippet
+### [!(ProblemCodeSnippet)] Code Snippet
 
 ```python meta="source=problems/347-top-k-frequent-elements/sort-frequency-bucketing.py"
 from collections import Counter

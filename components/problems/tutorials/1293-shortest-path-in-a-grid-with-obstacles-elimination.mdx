@@ -8,19 +8,19 @@
 
 [1293. Shortest Path in a Grid with Obstacles Elimination](https://leetcode.com/problems/shortest-path-in-a-grid-with-obstacles-elimination)
 
-## [!ProblemDefinition] Definition
+## [!(ProblemDefinition)] Definition
 
 Given an `m x n` grid where cells are either empty (`0`) or an obstacle (`1`), and an integer `k` representing the maximum number of obstacles you can eliminate, find the minimum number of steps to travel from the top-left corner `(0, 0)` to the bottom-right `(m-1, n-1)`. Each move (up, down, left, right) costs one step. If no such path exists, return `-1`.
 
 ## Dijkstra Solution
 
-### [!ProblemKeyVariables] Key Variables
+### [!(ProblemKeyVariables)] Key Variables
 
 - `pq`: (g_cost, r, c, k_rem), The priority uses g_cost (steps) itself. No heuristic is used.
 - `steps`: The number of steps taken so far (g_cost)
 - `max_k`: max_k[r][c] stores the max eliminations we have at cell (r,c)
 
-### [!ProblemCodeSnippet] Code Snippet
+### [!(ProblemCodeSnippet)] Code Snippet
 
 ```python meta="source=problems/1293-shortest-path-in-a-grid-with-obstacles-elimination/dijkstra.py"
 def shortest_path_in_a_grid_with_obstacles_elimination(grid: list[list[int]], k: int) -> int:
@@ -58,7 +58,7 @@ def shortest_path_in_a_grid_with_obstacles_elimination(grid: list[list[int]], k:
 
 ## A Star Solution
 
-### [!ProblemCodeSnippet] Code Snippet
+### [!(ProblemCodeSnippet)] Code Snippet
 
 ```python meta="source=problems/1293-shortest-path-in-a-grid-with-obstacles-elimination/a_star.py"
 import heapq
@@ -104,25 +104,25 @@ def shortest_path_in_a_grid_with_obstacles_elimination(grid: list[list[int]], k:
 
 ## Bfs Solution
 
-### [!ProblemIntuition] Intuition
+### [!(ProblemIntuition)] Intuition
 
 - bfs with State-Budget Pruning 🔍:
     - The core idea is to perform a standard BFS over `(row, col, steps, remaining_k)` states, but only enqueue a move if it arrives at a cell with **strictly more** `remaining_k` than any prior visit. This pruning significantly reduces the number of states explored, making the algorithm much more efficient.
     - **Trivial shortcut:** If `k ≥ rows+cols–2`, you can go straight in `rows+cols–2` steps without ever touching an obstacle.
     - **Correctness guarantee:** Because BFS explores in order of increasing `steps`, the first time you dequeue the goal is the fewest-step path. Pruning by `remaining_k` never discards any shorter-step route—it simply avoids re-exploring dominated states.
 
-### [!ProblemTimeComplexity] Time Complexity
+### [!(ProblemTimeComplexity)] Time Complexity
 
 - $O(m * n * k)$:
     - Worst-case $O(m * n * k)$ (every cell × every possible k), but aggressive pruning usually makes it far faster in practice.
 
-### [!ProblemKeyVariables] Key Variables
+### [!(ProblemKeyVariables)] Key Variables
 
 - `max_k`: max_k[r][c] = maximum eliminations remaining when visiting (r,c)
 - `q`: (row, col, steps, remaining_k)
 - `min_steps`: Manhattan distance lower bound
 
-### [!ProblemCodeSnippet] Code Snippet
+### [!(ProblemCodeSnippet)] Code Snippet
 
 ```python meta="source=problems/1293-shortest-path-in-a-grid-with-obstacles-elimination/bfs.py"
 from collections import deque

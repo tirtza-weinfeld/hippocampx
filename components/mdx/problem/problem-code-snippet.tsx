@@ -12,19 +12,13 @@ interface ProblemCodeSnippetProps {
 
 export function ProblemCodeSnippetHeader({ children, className }: ProblemCodeSnippetProps) {
   return (
-    <div className={cn("flex items-center gap-2 mb-2", className)}>
-      <div className="flex-shrink-0 rounded-full p-1 bg-slate-100 dark:bg-slate-900/30">
-        <Code className="w-4 h-4 text-slate-600 dark:text-slate-400" />
-      </div>
-      <div className="font-semibold text-sm uppercase tracking-wider text-slate-600 dark:text-slate-400">
-        
-        {children}
-      </div>
+    <div className={className}>
+      {children}
     </div>
   )
 }
 
-export function ProblemCodeSnippet({ children, className, ...props }: ProblemCodeSnippetProps) {
+export function ProblemCodeSnippetContent({ children, className, ...props }: ProblemCodeSnippetProps) {
   return (
     <div
       {...props}
@@ -35,8 +29,8 @@ export function ProblemCodeSnippet({ children, className, ...props }: ProblemCod
       role="region"
       aria-label="Problem code snippet"
     >
- 
-          {children}
+
+      {children}
     </div>
   );
 }

@@ -8,22 +8,22 @@
 
 [238. Product of Array Except Self](https://leetcode.com/problems/product-of-array-except-self)
 
-## [!ProblemDefinition] Definition
+## [!(ProblemDefinition)] Definition
 
 Given an integer array nums, return an array answer such that `answer[i]` is equal to the product of all the elements of `nums` except `nums[i]`,      *[sky!]Achieve $O(n)$ time complexity and without using the division operator.*
 
-## [!ProblemIntuition] Intuition
+## [!(ProblemIntuition)] Intuition
 
 - Two passes:
         1.  *[orange!]Prefix* pass → `res[i]` = product of all elements *[orange!]before* `i`.
         2.  *[purple!]Suffix* pass → multiply each `res[i]` by product of all elements *[purple!]after* `i`.
 
-## [!ProblemTimeComplexity] Time Complexity
+## [!(ProblemTimeComplexity)] Time Complexity
 
 - $O(n)$
     - where n is the length of the nums array. We iterate through the array twice.
 
-## [!ProblemCodeSnippet] Code Snippet
+## [!(ProblemCodeSnippet)] Code Snippet
 
 ```python meta="source=problems/238-product-of-array-except-self/solution.py"
 def product_of_array_except_self(nums: list[int]) -> list[int]:

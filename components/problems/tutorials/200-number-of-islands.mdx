@@ -8,29 +8,29 @@
 
 [200. Number of Islands](https://leetcode.com/problems/number-of-islands)
 
-## [!ProblemDefinition] Definition
+## [!(ProblemDefinition)] Definition
 
 Given an `m x n` 2D grid of '1's (land) and '0's (water), return the number of islands. An island is formed by connecting adjacent lands horizontally or vertically. Assume all four edges of the grid are all surrounded by water.
 
-## [!ProblemIntuition] Intuition
+## [!(ProblemIntuition)] Intuition
 
 - Find, Count, and Sink 🏝️
     - The strategy is to scan every cell of the grid. If an unvisited piece of land (`1`) is found, you've discovered a new island, so you increment the `islands` counter. Then, immediately launch a BFS from that cell to find and "sink" all connected parts of that same island by changing their value to `0`. This modification of the grid ensures each island group is counted exactly once.
 
-## [!ProblemTimeComplexity] Time Complexity
+## [!(ProblemTimeComplexity)] Time Complexity
 
 - $O(m * n)$
     - where m and n are the dimensions of the grid. This is optimal as each cell is visited a constant number of times.
 
-## [!ProblemArguments] Key Arguments
+## [!(ProblemArguments)] Key Arguments
 
 - `grid: list[list[str]]`: 2D grid with '1' representing land and '0' representing water
 
-## [!ProblemReturns] Returns
+## [!(ProblemReturns)] Returns
 
 `int`: Number of islands in the grid
 
-## [!ProblemCodeSnippet] Code Snippet
+## [!(ProblemCodeSnippet)] Code Snippet
 
 ```python meta="source=problems/200-number-of-islands/solution.py"
 from collections import deque

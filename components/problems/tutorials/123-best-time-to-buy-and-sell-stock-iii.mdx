@@ -8,34 +8,34 @@
 
 [123. Best Time to Buy and Sell Stock III](https://leetcode.com/problems/best-time-to-buy-and-sell-stock-iii)
 
-## [!ProblemDefinition] Definition
+## [!(ProblemDefinition)] Definition
 
 Given a list of daily stock prices `prices`; at most **two** transactions are allowed (cannot overlap). Return the maximum total profit.
 
 ## Dp Solution
 
-### [!ProblemIntuition] Intuition
+### [!(ProblemIntuition)] Intuition
 
 - Cost profit tracking
     - Track the cost and profit for two separate trades, using the profit from the first trade to reduce the cost of the second trade.
 
-### [!ProblemTimeComplexity] Time Complexity
+### [!(ProblemTimeComplexity)] Time Complexity
 
 - $O(n)$
     - where n is the length of the prices array. We iterate through the array once.
 
-### [!ProblemKeyVariables] Key Variables
+### [!(ProblemKeyVariables)] Key Variables
 
 - `t1_cost`: cost of first trade
 - `t1_profit`: profit of first trade
 - `t2_cost`: cost of second trade
 - `t2_profit`: profit of second trade
 
-### [!ProblemReturns] Returns
+### [!(ProblemReturns)] Returns
 
 `int`: Maximum profit from at most two transactions
 
-### [!ProblemCodeSnippet] Code Snippet
+### [!(ProblemCodeSnippet)] Code Snippet
 
 ```python meta="source=problems/123-best-time-to-buy-and-sell-stock-iii/dp.py"
 def best_time_to_buy_and_sell_stock_III(prices: list[int]) -> int:
@@ -61,11 +61,11 @@ def best_time_to_buy_and_sell_stock_III(prices: list[int]) -> int:
 
 ## State Solution
 
-### [!ProblemIntuition] Intuition
+### [!(ProblemIntuition)] Intuition
 
 - hold sell states
 
-### [!ProblemCodeSnippet] Code Snippet
+### [!(ProblemCodeSnippet)] Code Snippet
 
 ```python meta="source=problems/123-best-time-to-buy-and-sell-stock-iii/state.py"
 def best_time_to_buy_and_sell_stock_III(prices: list[int]) -> int:
