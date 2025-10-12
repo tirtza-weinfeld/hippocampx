@@ -77,7 +77,7 @@ export function tooltipifyJSX(
         </PopoverTrigger>
         {/* <PopoverContent className="w-[90vw]  max-h-96 rounded-xl overflow-y-auto p-0 "> */}
         <PopoverContent className="w-96 max-h-96 rounded-lg overflow-y-auto p-0  border-none">
-          
+
           {renderContent(qname)}
         </PopoverContent>
       </Popover>

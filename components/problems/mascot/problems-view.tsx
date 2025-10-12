@@ -17,7 +17,6 @@ import {
   ScrollActionsContext
 } from './mascot-context'
 import { MascotSettingsContext } from './mascot-settings-context'
-// import CodeBlock from '@/components/mdx/code/code-block'
 
 
 
@@ -29,7 +28,7 @@ const DIFFICULTY_COLORS: Record<string, string> = {
 }
 
 
-export function ProblemsView({ problems: problemsData, time_complexities, topics }: { problems: Problems, time_complexities: Record<string, string>, topics: Record<string, string[]> }) {
+export function ProblemsView({ problems: problemsData, time_complexities, topics, preRenderedSolutions }: { problems: Problems, time_complexities: Record<string, string>, topics: Record<string, string[]>, preRenderedSolutions: Record<string, React.ReactNode> }) {
 
   const { stayOpen } = use(MascotSettingsContext)
   const { setIsOpen } = use(MascotActionsContext)
@@ -604,7 +603,7 @@ export function ProblemsView({ problems: problemsData, time_complexities, topics
                     {/* Expand/Collapse Button */}
                     <button
                       onClick={() => {
-                        console.log('Button clicked for:', problem.slug)
+                        // console.log('Button clicked for:', problem.slug)
                         toggleProblemExpansion(problem.slug)
                       }}
                       onKeyDown={(e) => {
@@ -649,19 +648,8 @@ export function ProblemsView({ problems: problemsData, time_complexities, topics
                   >
 
                     <div className="space-y-4">
-                      {/* {Object.values(problem.solutions).map((solution) => {
-                        const meta = `source=problems/${problem.slug}/${solution.title}`
-                        return (
-                          <div key={solution.title}>
-                            <h3>{solution.title}</h3>
-                            <CodeBlock className="language-python" meta={meta}>
-                              ```python  ${meta}
-                              {solution.code}
-                              ```
-                            </CodeBlock>
-                          </div>
-                        )
-                      })} */}
+
+                      {preRenderedSolutions[problem.slug]}
                       {/* Description */}
                       <div className="text-sm text-muted-foreground leading-relaxed">
                         <MarkdownRenderer>
@@ -704,7 +692,7 @@ export function ProblemsView({ problems: problemsData, time_complexities, topics
 
                           {problem.topics && problem.topics.map((topic) => (
                             <Badge
-                              key={topic}
+                              key={`${problem.slug}-${topic}`}
                               variant="outline"
                               className="text-xs bg-linear-to-r hover:bg-linear-to-l
                               hover:backdrop-blur-sm transition-all duration-300

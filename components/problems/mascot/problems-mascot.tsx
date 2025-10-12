@@ -17,15 +17,21 @@ import {
   MascotProvider
 } from "./mascot-context"
 import { MascotSettingsContext } from "./mascot-settings-context"
-import METADATA from "@/lib/extracted-metadata/problems_metadata.json"
-import STATS from "@/lib/extracted-metadata/stats.json"
 import { Problems } from "./mascot-types"
 // import { Problems, Topics } from "./mascot-types"
 import { cn } from "@/lib/utils"
 
-function ProblemsMascotContent() {
-  const problems = METADATA.problems
-  const stats = STATS
+function ProblemsMascotContent({
+  problems,
+  timeComplexities,
+  topics,
+  preRenderedSolutions,
+}: {
+  problems: Problems
+  timeComplexities: Record<string, string>
+  topics: Record<string, string[]>
+  preRenderedSolutions: Record<string, React.ReactNode>
+}) {
 
   // Use React 19 granular context pattern
   // const { selectedIcon, stayOpen, setStayOpen } = use(MascotSettingsContext)
@@ -122,9 +128,10 @@ function ProblemsMascotContent() {
               <div className="p-2 h-[calc(100%-112px)] overflow-auto flex flex-col" style={{ WebkitOverflowScrolling: 'touch' }}  >
                 {activeFeature === "main" && (
                   <ProblemsView
-                    problems={problems as unknown as Problems}
-                    time_complexities={stats.time_complexity as unknown as Record<string, string>}
-                    topics={stats.topics as unknown as Record<string, string[]>}
+                    problems={problems}
+                    time_complexities={timeComplexities}
+                    topics={topics}
+                    preRenderedSolutions={preRenderedSolutions}
                   />
                 )}
 
@@ -183,11 +190,26 @@ function ProblemsMascotContent() {
 }
 
 // Wrapper component with provider
-export function ProblemsMascot() {
+export function ProblemsMascot({
+  problems,
+  timeComplexities,
+  topics,
+  preRenderedSolutions,
+}: {
+  problems: Problems
+  timeComplexities: Record<string, string>
+  topics: Record<string, string[]>
+  preRenderedSolutions: Record<string, React.ReactNode>
+}) {
   return (
     <MascotSettingsProvider>
       <MascotProvider>
-        <ProblemsMascotContent />
+        <ProblemsMascotContent
+          problems={problems}
+          timeComplexities={timeComplexities}
+          topics={topics}
+          preRenderedSolutions={preRenderedSolutions}
+        />
       </MascotProvider>
     </MascotSettingsProvider>
   )
