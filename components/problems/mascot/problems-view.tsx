@@ -176,9 +176,13 @@ export function ProblemsView({ problems: problemsData, time_complexities, topics
     } else if (sortBy === 'difficulty') {
       const difficultyOrder = { easy: 1, medium: 2, hard: 3 }
       comparison = difficultyOrder[a.difficulty] - difficultyOrder[b.difficulty]
-    } else if (sortBy === 'date') {
+    } else if (sortBy === 'date-updated') {
       const dateA = new Date(a.time_stamps?.updated_at || 0).getTime()
       const dateB = new Date(b.time_stamps?.updated_at || 0).getTime()
+      comparison = dateB - dateA // newest first by default
+    } else if (sortBy === 'date-created') {
+      const dateA = new Date(a.time_stamps?.created_at || 0).getTime()
+      const dateB = new Date(b.time_stamps?.created_at || 0).getTime()
       comparison = dateB - dateA // newest first by default
     }
 
@@ -417,7 +421,7 @@ export function ProblemsView({ problems: problemsData, time_complexities, topics
                   "hover:text-indigo-600 dark:hover:text-indigo-400"
                 )}>
                   <ArrowUpDown className="h-4 w-4" />
-                  {sortBy !== 'number' && (
+                  {(sortBy !== 'number') && (
                     <div className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-indigo-500 dark:bg-indigo-300 rounded-full border border-background" />
                   )}
                 </div>
@@ -426,11 +430,12 @@ export function ProblemsView({ problems: problemsData, time_complexities, topics
                 {[
                   { value: 'number', label: 'Number' },
                   { value: 'difficulty', label: 'Difficulty' },
-                  { value: 'date', label: 'Date Updated' }
+                  { value: 'date-updated', label: 'Date Updated' },
+                  { value: 'date-created', label: 'Date Created' }
                 ].map((sort) => (
                   <MascotDropdownCheckboxItem
                     key={sort.value}
-                    onClick={() => setSortBy(sort.value as 'number' | 'difficulty' | 'date')}
+                    onClick={() => setSortBy(sort.value as 'number' | 'difficulty' | 'date-updated' | 'date-created')}
                     checked={sortBy === sort.value}
                     className="indigo"
                     Indicator={ArrowUpDown}

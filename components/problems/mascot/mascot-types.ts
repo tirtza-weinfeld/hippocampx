@@ -13,7 +13,7 @@ export type MascotState = {
     difficultyFilter: string
     topicFilter: string
     expandedProblems: string[]
-    sortBy: 'number' | 'difficulty' | 'date'
+    sortBy: 'number' | 'difficulty' | 'date-updated' | 'date-created'
     sortOrder: 'asc' | 'desc'
   }
 }
@@ -30,7 +30,7 @@ export type MascotAction =
   | { type: 'TOGGLE_PROBLEM_EXPANSION'; slug: string }
   | { type: 'TOGGLE_ALL_PROBLEMS'; allSlugs: string[] }
   | { type: 'RESET_FILTERS' }
-  | { type: 'SET_SORT_BY'; sortBy: 'number' | 'difficulty' | 'date' }
+  | { type: 'SET_SORT_BY'; sortBy: 'number' | 'difficulty' | 'date-updated' | 'date-created' }
   | { type: 'SET_SORT_ORDER'; sortOrder: 'asc' | 'desc' }
 
 

@@ -163,7 +163,7 @@ const ProblemsStateContext = createContext<{
   expandedProblems: string[]
   hasActiveFilters: boolean
   activeFilterCount: number
-  sortBy: 'number' | 'difficulty' | 'date'
+  sortBy: 'number' | 'difficulty' | 'date-updated' | 'date-created'
   sortOrder: 'asc' | 'desc'
 }>({
   searchQuery: "",
@@ -184,7 +184,7 @@ const ProblemsActionsContext = createContext<{
   toggleProblemExpansion: (slug: string) => void
   toggleAllProblems: (allSlugs: string[]) => void
   resetFilters: () => void
-  setSortBy: (sortBy: 'number' | 'difficulty' | 'date') => void
+  setSortBy: (sortBy: 'number' | 'difficulty' | 'date-updated' | 'date-created') => void
   setSortOrder: (sortOrder: 'asc' | 'desc') => void
 }>({
   setSearchQuery: () => {},
@@ -333,7 +333,7 @@ export function MascotProvider({ children }: { children: React.ReactNode }) {
             toggleProblemExpansion: (slug: string) => dispatch({ type: 'TOGGLE_PROBLEM_EXPANSION', slug }),
             toggleAllProblems: (allSlugs: string[]) => dispatch({ type: 'TOGGLE_ALL_PROBLEMS', allSlugs }),
             resetFilters: () => dispatch({ type: 'RESET_FILTERS' }),
-            setSortBy: (sortBy: 'number' | 'difficulty' | 'date') => dispatch({ type: 'SET_SORT_BY', sortBy }),
+            setSortBy: (sortBy: 'number' | 'difficulty' | 'date-updated' | 'date-created') => dispatch({ type: 'SET_SORT_BY', sortBy }),
             setSortOrder: (sortOrder: 'asc' | 'desc') => dispatch({ type: 'SET_SORT_ORDER', sortOrder }),
           }}>
             <ScrollActionsContext value={scrollActions}>
