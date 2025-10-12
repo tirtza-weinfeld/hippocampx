@@ -4,7 +4,7 @@ import { useRef, use } from "react"
 import { motion, AnimatePresence } from "motion/react"
 import { BottomNavigation } from "./bottom-navigation"
 import { MobileViewportMeta } from "../../mobile-viewport-meta"
-import { X } from "lucide-react"
+import { X, Maximize2, Minimize2 } from "lucide-react"
 import { SettingsView, CS_LEGENDS } from "./settings-view"
 import { MascotSettingsProvider } from "./mascot-settings-context"
 // import MascotSwitch from "./mascot-switch"
@@ -36,8 +36,8 @@ function ProblemsMascotContent({
   // Use React 19 granular context pattern
   // const { selectedIcon, stayOpen, setStayOpen } = use(MascotSettingsContext)
   const { selectedIcon, stayOpen } = use(MascotSettingsContext)
-  const { activeFeature, isOpen } = use(MascotStateContext)
-  const { setActiveFeature, setIsOpen, toggleOpen } = use(MascotActionsContext)
+  const { activeFeature, isOpen, isFullscreen } = use(MascotStateContext)
+  const { setActiveFeature, setIsOpen, toggleOpen, toggleFullscreen } = use(MascotActionsContext)
   const dialogRef = useRef<HTMLDivElement>(null)
 
   // Handle backdrop clicks to close dialog (only if stayOpen is false)
@@ -55,6 +55,12 @@ function ProblemsMascotContent({
     event.preventDefault()
     event.stopPropagation()
     setIsOpen(false)
+  }
+
+  function handleFullscreenClick(event: React.MouseEvent) {
+    event.preventDefault()
+    event.stopPropagation()
+    toggleFullscreen()
   }
 
   return (
@@ -80,13 +86,19 @@ function ProblemsMascotContent({
               initial={{ opacity: 0, y: 20, scale: 0.8 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 20, scale: 0.8 }}
-              className="bg-background/95 backdrop-blur-sm dark:bg-gray-800/95 rounded-2xl shadow-xl border-2 border-primary/50 w-[95vw] sm:w-[420px] h-[90vh] sm:h-[520px] max-w-[420px] max-h-[520px] transform-gpu will-change-transform flex flex-col overflow-hidden"
+              className={cn(
+                "bg-background/95 backdrop-blur-sm dark:bg-gray-800/95 rounded-2xl shadow-xl border-2 border-primary/50 transform-gpu will-change-transform flex flex-col overflow-hidden",
+                isFullscreen
+                  ? "w-screen h-screen max-w-none max-h-none rounded-none"
+                  : "w-[95vw] sm:w-[420px] h-[90vh] sm:h-[520px] max-w-[420px] max-h-[520px]"
+              )}
               onClick={(e) => e.stopPropagation()}
               style={{
                 transform: 'translate3d(0,0,0)',
                 position: 'fixed',
-                bottom: '4rem',
-                right: '1rem',
+                ...(isFullscreen
+                  ? { top: 0, left: 0, right: 0, bottom: 0 }
+                  : { bottom: '4rem', right: '1rem' }),
                 zIndex: 9999,
               }}
             >
@@ -113,15 +125,26 @@ function ProblemsMascotContent({
                   />
                 </div>
               </div> */}
-                <motion.button
-                  onClick={handleCloseClick}
-                  className="p-1  rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
-                  aria-label="Close mascot"
-                >
-                  <X size={16} />
-                </motion.button>
+                <div className="flex items-center gap-1">
+                  <motion.button
+                    onClick={handleFullscreenClick}
+                    className="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.95 }}
+                    aria-label={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
+                  >
+                    {isFullscreen ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
+                  </motion.button>
+                  <motion.button
+                    onClick={handleCloseClick}
+                    className="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.95 }}
+                    aria-label="Close mascot"
+                  >
+                    <X size={16} />
+                  </motion.button>
+                </div>
               </div>
 
               {/* Main Content Area */}

@@ -654,7 +654,6 @@ export function ProblemsView({ problems: problemsData, time_complexities, topics
 
                     <div className="space-y-4">
 
-                      {preRenderedSolutions[problem.slug]}
                       {/* Description */}
                       <div className="text-sm text-muted-foreground leading-relaxed">
                         <MarkdownRenderer>
@@ -662,6 +661,7 @@ export function ProblemsView({ problems: problemsData, time_complexities, topics
                         </MarkdownRenderer>
 
                       </div>
+                      {preRenderedSolutions[problem.slug]}
 
                       {/* Topics and LeetCode Link */}
                       <div className="flex items-center gap-3 overflow-hidden">

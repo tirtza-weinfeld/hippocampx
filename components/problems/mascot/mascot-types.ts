@@ -7,6 +7,7 @@ export type MascotState = {
   mascot: {
     activeFeature: ActiveFeature
     isOpen: boolean
+    isFullscreen: boolean
   }
   problems: {
     searchQuery: string
@@ -23,6 +24,8 @@ export type MascotAction =
   | { type: 'SET_ACTIVE_FEATURE'; feature: ActiveFeature }
   | { type: 'SET_IS_OPEN'; value: boolean }
   | { type: 'TOGGLE_OPEN' }
+  | { type: 'SET_IS_FULLSCREEN'; value: boolean }
+  | { type: 'TOGGLE_FULLSCREEN' }
   | { type: 'SET_SEARCH_QUERY'; query: string }
   | { type: 'SET_DIFFICULTY_FILTER'; filter: string }
   | { type: 'SET_TOPIC_FILTER'; filter: string }

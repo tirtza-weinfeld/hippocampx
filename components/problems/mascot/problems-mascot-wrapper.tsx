@@ -1,6 +1,6 @@
 import React from 'react'
 import { ProblemsMascot } from './problems-mascot'
-// import { ProblemSolutionsServer } from './problem-solutions-server'
+import { ProblemSolutionsServer } from './problem-solutions-server'
 import METADATA from '@/lib/extracted-metadata/problems_metadata.json'
 import STATS from '@/lib/extracted-metadata/stats.json'
 import { Problems } from './mascot-types'

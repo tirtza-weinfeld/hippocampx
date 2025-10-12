@@ -142,4 +142,41 @@ describe('InlineParser', () => {
     expect(tokens[0].content).toBe('array[index] and object[key] should remain intact')
     expect((tokens[0] as TextToken).stepData).toBeUndefined()
   })
+
+  it('should parse nested emphasis with step syntax correctly', () => {
+    const parser = new InlineParser('*[19!]Algorithm complexity must be better than *[orange!]O(nlogn)* where n is the length*')
+    const tokens = parser.parse()
+
+    expect(tokens).toHaveLength(1)
+    expect(tokens[0].type).toBe('emphasis')
+    expect(tokens[0].content).toBe('Algorithm complexity must be better than *[orange!]O(nlogn)* where n is the length')
+    expect(tokens[0].stepData?.step).toBe('19')
+    expect(tokens[0].stepData?.color).toBe('gray')
+
+    // Check that the nested emphasis is parsed in children
+    const emphasisToken = tokens[0] as any
+    const nestedEmphasis = emphasisToken.children.find((child: any) => child.type === 'emphasis')
+    expect(nestedEmphasis).toBeDefined()
+    expect(nestedEmphasis.content).toBe('O(nlogn)')
+    expect(nestedEmphasis.stepData?.step).toBe('orange')
+    expect(nestedEmphasis.stepData?.color).toBe('orange')
+  })
+
+  it('should handle multiple levels of nested emphasis', () => {
+    const parser = new InlineParser('*outer *inner* still outer*')
+    const tokens = parser.parse()
+
+    expect(tokens).toHaveLength(1)
+    expect(tokens[0].type).toBe('emphasis')
+    expect(tokens[0].content).toBe('outer *inner* still outer')
+
+    const emphasisToken = tokens[0] as any
+    expect(emphasisToken.children).toBeDefined()
+    expect(emphasisToken.children.length).toBeGreaterThan(0)
+
+    // Check that inner emphasis is parsed
+    const innerEmphasis = emphasisToken.children.find((child: any) => child.type === 'emphasis')
+    expect(innerEmphasis).toBeDefined()
+    expect(innerEmphasis.content).toBe('inner')
+  })
 })

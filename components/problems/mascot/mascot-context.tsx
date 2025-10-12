@@ -36,6 +36,24 @@ function mascotReducer(state: MascotState, action: MascotAction): MascotState {
       return newState
     }
 
+    case 'SET_IS_FULLSCREEN': {
+      const newState = {
+        ...state,
+        mascot: { ...state.mascot, isFullscreen: action.value }
+      }
+      setStoredValue("problems-mascot-fullscreen", action.value)
+      return newState
+    }
+
+    case 'TOGGLE_FULLSCREEN': {
+      const newState = {
+        ...state,
+        mascot: { ...state.mascot, isFullscreen: !state.mascot.isFullscreen }
+      }
+      setStoredValue("problems-mascot-fullscreen", newState.mascot.isFullscreen)
+      return newState
+    }
+
     case 'SET_SEARCH_QUERY': {
       const newState = {
         ...state,
@@ -144,16 +162,21 @@ function mascotReducer(state: MascotState, action: MascotAction): MascotState {
 const MascotStateContext = createContext<{
   activeFeature: ActiveFeature
   isOpen: boolean
-}>({ activeFeature: "main", isOpen: false })
+  isFullscreen: boolean
+}>({ activeFeature: "main", isOpen: false, isFullscreen: false })
 
 const MascotActionsContext = createContext<{
   setActiveFeature: (feature: ActiveFeature) => void
   setIsOpen: (value: boolean) => void
   toggleOpen: () => void
+  setIsFullscreen: (value: boolean) => void
+  toggleFullscreen: () => void
 }>({
   setActiveFeature: () => {},
   setIsOpen: () => {},
   toggleOpen: () => {},
+  setIsFullscreen: () => {},
+  toggleFullscreen: () => {},
 })
 
 const ProblemsStateContext = createContext<{
@@ -234,6 +257,7 @@ export function MascotProvider({ children }: { children: React.ReactNode }) {
     mascot: {
       activeFeature: "main",
       isOpen: false,
+      isFullscreen: false,
     },
     problems: {
       searchQuery: "",
@@ -286,6 +310,11 @@ export function MascotProvider({ children }: { children: React.ReactNode }) {
     if (storedSortOrder !== "asc") {
       dispatch({ type: 'SET_SORT_ORDER', sortOrder: storedSortOrder })
     }
+
+    const storedFullscreen = getStoredValue("problems-mascot-fullscreen", false)
+    if (storedFullscreen) {
+      dispatch({ type: 'SET_IS_FULLSCREEN', value: storedFullscreen })
+    }
   }
 
   // Imperative scroll position management (no reactive state)
@@ -304,12 +333,15 @@ export function MascotProvider({ children }: { children: React.ReactNode }) {
   return (
     <MascotStateContext value={{
       activeFeature: state.mascot.activeFeature,
-      isOpen: state.mascot.isOpen
+      isOpen: state.mascot.isOpen,
+      isFullscreen: state.mascot.isFullscreen
     }}>
       <MascotActionsContext value={{
         setActiveFeature: (feature: ActiveFeature) => dispatch({ type: 'SET_ACTIVE_FEATURE', feature }),
         setIsOpen: (value: boolean) => dispatch({ type: 'SET_IS_OPEN', value }),
         toggleOpen: () => dispatch({ type: 'TOGGLE_OPEN' }),
+        setIsFullscreen: (value: boolean) => dispatch({ type: 'SET_IS_FULLSCREEN', value }),
+        toggleFullscreen: () => dispatch({ type: 'TOGGLE_FULLSCREEN' }),
       }}>
         <ProblemsStateContext value={{
           searchQuery: state.problems.searchQuery,

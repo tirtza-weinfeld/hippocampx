@@ -147,11 +147,84 @@ export class InlineParser {
   }
 
   private parseEmphasis(text: string): EmphasisToken | null {
-    // Match single asterisk that's not part of double asterisk
-    const emphasisMatch = text.match(/^\*([^*]+)\*(?!\*)/)
-    if (!emphasisMatch) return null
+    // Check if this starts with a single asterisk (not double)
+    if (!text.startsWith('*') || text.startsWith('**')) {
+      return null
+    }
 
-    const [fullMatch, emphasisContent] = emphasisMatch
+    // Find the matching closing asterisk, accounting for nested emphasis
+    // We need to count nested single asterisks properly
+    let i = 1 // Start after the opening asterisk
+    let emphasisContent = ''
+
+    while (i < text.length) {
+      const char = text[i]
+      const nextChar = i + 1 < text.length ? text[i + 1] : ''
+      const prevChar = i > 0 ? text[i - 1] : ''
+
+      if (char === '*') {
+        // Skip double asterisks (strong tags) - they don't interfere with emphasis
+        if (nextChar === '*') {
+          i += 2
+          continue
+        }
+
+        // Also skip if we're at the end of a double asterisk
+        if (prevChar === '*') {
+          i++
+          continue
+        }
+
+        // This is a single asterisk
+        // We found a potential closing asterisk
+        // We need to look ahead to see if this closes our emphasis or opens a nested one
+
+        // Count how many asterisks follow this one
+        let asteriskCount = 1
+        let j = i + 1
+        while (j < text.length && text[j] === '*') {
+          asteriskCount++
+          j++
+        }
+
+        // If there's an odd number of asterisks ahead, this might be a nested opening
+        // For now, let's use a simpler heuristic: if the next non-asterisk char looks like
+        // it could start emphasis content (not whitespace, not punctuation that typically ends emphasis)
+        // and we can find another closing asterisk later, treat this as opening nested emphasis
+
+        // For simplicity, let's just look for the last single asterisk in the remaining text
+        // that could close our emphasis
+        let foundClosing = false
+        for (let k = text.length - 1; k > i; k--) {
+          if (text[k] === '*' &&
+              (k + 1 >= text.length || text[k + 1] !== '*') &&
+              (k === 0 || text[k - 1] !== '*')) {
+            // Found a potential closing asterisk
+            emphasisContent = text.slice(1, k)
+            i = k
+            foundClosing = true
+            break
+          }
+        }
+
+        if (foundClosing) {
+          break
+        } else {
+          // No closing found after this, so this must be the closing
+          emphasisContent = text.slice(1, i)
+          break
+        }
+      }
+
+      i++
+    }
+
+    // If we didn't find a closing asterisk, this isn't valid emphasis
+    if (emphasisContent === '') {
+      return null
+    }
+
+    const fullMatch = text.slice(0, i + 1)
     const start = this.position
     this.position += fullMatch.length
 
@@ -188,9 +261,11 @@ export class InlineParser {
         break
       }
 
-      // Only treat [ as special if it's followed by valid step syntax or link syntax
+      // Only treat [ as special if it's followed by link syntax
+      // Note: [color!] step syntax without parentheses is NOT parsed in plain text
+      // It's only extracted inside formatted elements (emphasis, strong, code)
       if (char === '[') {
-        if (substring.match(/^\[([^!\]]+)!\]/) || substring.match(/^\[([^\]]+)\]\([^)]+\)/)) {
+        if (substring.match(/^\[([^\]]+)\]\([^)]+\)/)) {
           nextSpecial = i
           break
         }
