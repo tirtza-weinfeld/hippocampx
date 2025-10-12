@@ -1,20 +1,20 @@
 "use client"
 
+import { use } from "react"
 import { motion } from "motion/react"
-import { List, Code2, Settings } from "lucide-react"
+import { List, Settings } from "lucide-react"
 import { ActiveFeature } from "./mascot-types"
+import { MascotStateContext, MascotActionsContext } from "./mascot-context"
 
-interface BottomNavigationProps {
-  activeFeature: ActiveFeature
-  onFeatureChange: (feature: ActiveFeature) => void
-}
+export function BottomNavigation() {
+  const { activeFeature } = use(MascotStateContext)
+  const { setActiveFeature } = use(MascotActionsContext)
 
-export function BottomNavigation({ activeFeature, onFeatureChange }: BottomNavigationProps) {
   return (
     <div className="border-t border-gray-200 dark:border-gray-700 bg-gray-50/80 dark:bg-gray-900/80 p-2 h-[60px] flex items-center">
       <div className="flex items-center justify-center gap-1 w-full">
         <motion.button
-          onClick={() => onFeatureChange("main")}
+          onClick={() => setActiveFeature("main")}
           className={`flex items-center gap-1 px-3 py-2 rounded-lg text-xs transition-colors
             hover:shadow-lg hover:shadow-blue-500 dark:hover:shadow-blue-700 ${
             activeFeature === "main"
@@ -28,23 +28,8 @@ export function BottomNavigation({ activeFeature, onFeatureChange }: BottomNavig
           <span>Problems</span>
         </motion.button>
 
-        {/* <motion.button
-          onClick={() => onFeatureChange("snippets")}
-          className={`flex items-center gap-1 px-3 py-2 rounded-lg text-xs transition-colors
-            hover:shadow-lg hover:shadow-purple-500 dark:hover:shadow-purple-700 ${
-            activeFeature === "snippets"
-              ? "bg-purple-500/30 text-purple-700 dark:text-purple-300"
-              : "hover:bg-purple-500/30 dark:hover:bg-purple-700 text-gray-600 dark:text-gray-400"
-          }`}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          <Code2 size={14} />
-          <span>Snippets</span>
-        </motion.button> */}
-
         <motion.button
-          onClick={() => onFeatureChange("settings")}
+          onClick={() => setActiveFeature("settings")}
           className={`flex items-center gap-1 px-3 py-2 rounded-lg text-xs transition-colors
             hover:shadow-lg hover:shadow-green-500 dark:hover:shadow-green-700 ${
             activeFeature === "settings"

@@ -152,67 +152,46 @@ export class InlineParser {
       return null
     }
 
-    // Find the matching closing asterisk, accounting for nested emphasis
-    // We need to count nested single asterisks properly
+    // Find the matching closing asterisk, handling nested emphasis
+    // For *outer *inner* text*, we need to properly match pairs
     let i = 1 // Start after the opening asterisk
+    let emphasisDepth = 1
     let emphasisContent = ''
 
     while (i < text.length) {
       const char = text[i]
       const nextChar = i + 1 < text.length ? text[i + 1] : ''
-      const prevChar = i > 0 ? text[i - 1] : ''
+      const prevChar = i - 1 >= 0 ? text[i - 1] : ''
 
       if (char === '*') {
-        // Skip double asterisks (strong tags) - they don't interfere with emphasis
-        if (nextChar === '*') {
-          i += 2
-          continue
-        }
-
-        // Also skip if we're at the end of a double asterisk
-        if (prevChar === '*') {
+        // Check if this is part of a double asterisk (strong)
+        if (nextChar === '*' || prevChar === '*') {
+          // This is part of **, skip it
           i++
           continue
         }
 
-        // This is a single asterisk
-        // We found a potential closing asterisk
-        // We need to look ahead to see if this closes our emphasis or opens a nested one
+        // This is a single * - it either opens or closes an emphasis
+        // Check if this could be an opening (followed by non-whitespace)
+        // or closing (preceded by non-whitespace)
+        const afterThis = i + 1 < text.length ? text[i + 1] : ''
+        const beforeThis = i > 1 ? text[i - 1] : ''
 
-        // Count how many asterisks follow this one
-        let asteriskCount = 1
-        let j = i + 1
-        while (j < text.length && text[j] === '*') {
-          asteriskCount++
-          j++
-        }
+        const isOpening = afterThis && !/\s/.test(afterThis)
+        const isClosing = beforeThis && !/\s/.test(beforeThis)
 
-        // If there's an odd number of asterisks ahead, this might be a nested opening
-        // For now, let's use a simpler heuristic: if the next non-asterisk char looks like
-        // it could start emphasis content (not whitespace, not punctuation that typically ends emphasis)
-        // and we can find another closing asterisk later, treat this as opening nested emphasis
-
-        // For simplicity, let's just look for the last single asterisk in the remaining text
-        // that could close our emphasis
-        let foundClosing = false
-        for (let k = text.length - 1; k > i; k--) {
-          if (text[k] === '*' &&
-              (k + 1 >= text.length || text[k + 1] !== '*') &&
-              (k === 0 || text[k - 1] !== '*')) {
-            // Found a potential closing asterisk
-            emphasisContent = text.slice(1, k)
-            i = k
-            foundClosing = true
+        if (isClosing) {
+          emphasisDepth--
+          if (emphasisDepth === 0) {
+            // Found our matching closing asterisk
+            emphasisContent = text.slice(1, i)
             break
           }
         }
 
-        if (foundClosing) {
-          break
-        } else {
-          // No closing found after this, so this must be the closing
-          emphasisContent = text.slice(1, i)
-          break
+        if (isOpening && emphasisDepth > 0) {
+          // This opens a nested emphasis
+          emphasisDepth++
         }
       }
 
@@ -220,7 +199,7 @@ export class InlineParser {
     }
 
     // If we didn't find a closing asterisk, this isn't valid emphasis
-    if (emphasisContent === '') {
+    if (emphasisContent === '' || emphasisDepth !== 0) {
       return null
     }
 

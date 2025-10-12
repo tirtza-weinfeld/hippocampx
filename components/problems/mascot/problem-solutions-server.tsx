@@ -1,6 +1,5 @@
-import React from 'react'
-import CodeBlock from '@/components/mdx/code/code-block'
-import { Solution } from './mascot-types'
+import React, { Suspense } from 'react'
+import CodeBlock, { CodeBlockSkeleton } from '@/components/mdx/code/code-block'
 
 /**
  * Normalize code by cleaning up excessive newlines
@@ -15,30 +14,19 @@ function normalizeCode(code: string): string {
  * This allows CodeBlock (async server component) to be used within client components
  * via the composition pattern.
  */
-export async function ProblemSolutionsServer({
-  solutions,
-  problemSlug,
-}: {
-  solutions: Record<string, Solution>
-  problemSlug: string
-}) {
-  const solutionEntries = Object.entries(solutions)
+export function ProblemSolutionsServer({ code, meta, }: { code: string, meta: string }) {
 
-  const renderedSolutions = await Promise.all(
-    solutionEntries.map(async ([key, solution], index) => {
-      // problems/1-two-sum/solution.py
-      const meta = `"source=problems/${problemSlug}/solution.py"`
-      const cleanedCode = normalizeCode(solution.code)
-      return (
-        <div key={`problem/${problemSlug}-solution-${index}.py`}>
-          <h3>{solution.title}</h3>
-          <CodeBlock className="language-python" meta={meta}>
-            {cleanedCode}
-          </CodeBlock>
-        </div>
-      )
-    })
+  const cleanedCode = normalizeCode(code)
+
+  return (
+
+    // <Suspense fallback={<CodeBlockSkeleton />}>
+      <CodeBlock className="language-python" meta={meta}>
+        {cleanedCode}
+      </CodeBlock>
+    //  </Suspense>
+
+
   )
 
-  return <>{renderedSolutions}</>
 }

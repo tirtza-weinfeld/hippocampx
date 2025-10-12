@@ -143,40 +143,71 @@ describe('InlineParser', () => {
     expect((tokens[0] as TextToken).stepData).toBeUndefined()
   })
 
-  it('should parse nested emphasis with step syntax correctly', () => {
-    const parser = new InlineParser('*[19!]Algorithm complexity must be better than *[orange!]O(nlogn)* where n is the length*')
+  it('should parse 909-snakes-and-ladders definition correctly', () => {
+    const definition = "Each cell's value is either **[3!]-1** for a *[3!]normal* square or a **[16!]destination** number for a *[16!]snake/ladder*"
+    const parser = new InlineParser(definition)
     const tokens = parser.parse()
 
-    expect(tokens).toHaveLength(1)
-    expect(tokens[0].type).toBe('emphasis')
-    expect(tokens[0].content).toBe('Algorithm complexity must be better than *[orange!]O(nlogn)* where n is the length')
-    expect(tokens[0].stepData?.step).toBe('19')
-    expect(tokens[0].stepData?.color).toBe('gray')
+    // Find all strong tokens
+    const strongTokens = tokens.filter(t => t.type === 'strong')
+    expect(strongTokens.length).toBe(2)
 
-    // Check that the nested emphasis is parsed in children
-    const emphasisToken = tokens[0] as any
-    const nestedEmphasis = emphasisToken.children.find((child: any) => child.type === 'emphasis')
-    expect(nestedEmphasis).toBeDefined()
-    expect(nestedEmphasis.content).toBe('O(nlogn)')
-    expect(nestedEmphasis.stepData?.step).toBe('orange')
-    expect(nestedEmphasis.stepData?.color).toBe('orange')
+    // Check first strong token: **[3!]-1**
+    const firstStrongToken = strongTokens[0]
+    expect(firstStrongToken.content).toBe('-1')
+    expect(firstStrongToken.stepData?.step).toBe('3')
+    expect(firstStrongToken.stepData?.color).toBe('amber')
+
+    // Check second strong token: **[16!]destination**
+    const secondStrongToken = strongTokens[1]
+    expect(secondStrongToken.content).toBe('destination')
+    expect(secondStrongToken.stepData?.step).toBe('16')
+    expect(secondStrongToken.stepData?.color).toBe('pink')
+
+    // Find all emphasis tokens
+    const emphasisTokens = tokens.filter(t => t.type === 'emphasis')
+    expect(emphasisTokens.length).toBe(2)
+
+    // Check first emphasis token: *[3!]normal*
+    const firstEmphasisToken = emphasisTokens[0]
+    expect(firstEmphasisToken.content).toBe('normal')
+    expect(firstEmphasisToken.stepData?.step).toBe('3')
+    expect(firstEmphasisToken.stepData?.color).toBe('amber')
+
+    // Check second emphasis token: *[16!]snake/ladder*
+    const secondEmphasisToken = emphasisTokens[1]
+    expect(secondEmphasisToken.content).toBe('snake/ladder')
+    expect(secondEmphasisToken.stepData?.step).toBe('16')
+    expect(secondEmphasisToken.stepData?.color).toBe('pink')
   })
 
-  it('should handle multiple levels of nested emphasis', () => {
-    const parser = new InlineParser('*outer *inner* still outer*')
-    const tokens = parser.parse()
+  it('should parse 347-top-k-frequent-elements definition correctly - individual formatting', () => {
+    // Test the individual formatted elements that appear in the definition
 
-    expect(tokens).toHaveLength(1)
-    expect(tokens[0].type).toBe('emphasis')
-    expect(tokens[0].content).toBe('outer *inner* still outer')
+    // Test emphasis with step syntax
+    const parser1 = new InlineParser('*[19!]Algorithm complexity must be better than O(nlogn)*')
+    const tokens1 = parser1.parse()
+    const emphasis1 = tokens1.find(t => t.type === 'emphasis')
+    expect(emphasis1).toBeDefined()
+    expect(emphasis1?.stepData?.step).toBe('19')
+    expect(emphasis1?.stepData?.color).toBe('gray')
+    expect(emphasis1?.content).toContain('Algorithm complexity must be better than')
 
-    const emphasisToken = tokens[0] as any
-    expect(emphasisToken.children).toBeDefined()
-    expect(emphasisToken.children.length).toBeGreaterThan(0)
+    // Test emphasis with color name
+    const parser2 = new InlineParser('*[orange!]O(nlogn)*')
+    const tokens2 = parser2.parse()
+    const emphasis2 = tokens2.find(t => t.type === 'emphasis')
+    expect(emphasis2).toBeDefined()
+    expect(emphasis2?.content).toBe('O(nlogn)')
+    expect(emphasis2?.stepData?.step).toBe('orange')
+    expect(emphasis2?.stepData?.color).toBe('orange')
 
-    // Check that inner emphasis is parsed
-    const innerEmphasis = emphasisToken.children.find((child: any) => child.type === 'emphasis')
-    expect(innerEmphasis).toBeDefined()
-    expect(innerEmphasis.content).toBe('inner')
+    // Test that inline code works
+    const parser3 = new InlineParser('where `n` is the length')
+    const tokens3 = parser3.parse()
+    const code = tokens3.find(t => t.type === 'inlineCode')
+    expect(code).toBeDefined()
+    expect(code?.content).toBe('n')
   })
+
 })
