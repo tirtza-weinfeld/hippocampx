@@ -4,8 +4,10 @@ alwaysApply: false
 ---
 # Next.js Rules
 
-**Essential patterns for Next.js 15+ App Router**
+**Essential patterns for Next.js 16+ App Router**
 
+https://nextjs.org/blog/next-16-beta
+ 
 ## MDX INTEGRATION
 
 ```js

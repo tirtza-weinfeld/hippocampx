@@ -1,16 +1,19 @@
-import { revalidateTag } from "next/cache"
+import { updateTag } from "next/cache"
 import { use } from "react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import WordsTable from "./words-table"
 import AddWordForm from "./add-word-form"
 
 type WordItem = {
-  id: string | number
-  word: string
-  definition: string
+  readonly id: string | number
+  readonly word: string
+  readonly definition: string
 }
 
-type ActionResult = { ok: boolean; message?: string }
+type ActionResult = {
+  readonly ok: boolean
+  readonly message?: string
+}
 
 async function addWord(formData: FormData): Promise<ActionResult> {
   'use server'
@@ -35,8 +38,8 @@ async function addWord(formData: FormData): Promise<ActionResult> {
     cache: 'no-store',
   })
 
-  // Invalidate SSR cache via tag for fresh list render
-  revalidateTag('hippo-words')
+  // Invalidate SSR cache via updateTag for read-your-writes semantics
+  updateTag('hippo-words')
   return { ok: res.ok, message: res.ok ? 'Added' : 'Failed to add' }
 }
 
@@ -64,7 +67,7 @@ async function updateWord(formData: FormData): Promise<ActionResult> {
     cache: 'no-store',
   })
 
-  revalidateTag('hippo-words')
+  updateTag('hippo-words')
   return { ok: res.ok, message: res.ok ? 'Saved' : 'Failed to save' }
 }
 
@@ -86,7 +89,7 @@ async function deleteWord(formData: FormData): Promise<ActionResult> {
   })
 
   if (res.ok) {
-    revalidateTag('hippo-words')
+    updateTag('hippo-words')
     console.log('deleteWord', id, 'deleted')
     return { ok: true, message: 'Deleted' }
   }
