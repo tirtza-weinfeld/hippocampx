@@ -1,0 +1,15 @@
+```python meta="source=problems/560-subarray-sum-equals-k/solution.py"
+from collections import defaultdict
+
+def subarraySumEqualsK(segments: list[int], k: int) -> int:
+
+    marker_frequency = defaultdict(int, {0: 1})
+    prefix_sum = count = 0
+
+    for segment in segments:
+        prefix_sum += segment
+        count += marker_frequency[prefix_sum - k]
+        marker_frequency[prefix_sum] += 1
+
+    return count
+```

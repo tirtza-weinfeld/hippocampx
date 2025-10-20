@@ -6,8 +6,15 @@ import type { Heading, Code, Text } from 'mdast';
 /**
  * Remark plugin that transforms headings with [!CodeTabs] marker into CodeTabs components.
  *
- * This plugin detects headings containing [!CodeTabs] and collects all subsequent code blocks,
- * wrapping each in a <CodeTab> component and the whole group in a <CodeTabs> component.
+ * This plugin detects headings containing [!CodeTabs] and collects all subsequent code blocks
+ * until it hits another heading or non-code content. It creates a complete tab structure:
+ * - <CodeTabs> wrapper with defaultFile attribute set to the first file
+ * - <CodeTabsList> containing <CodeTabTrigger> components for each file
+ * - <CodeTab> components wrapping each code block with file attribute
+ *
+ * Filenames are extracted from the source= meta attribute (e.g., source=path/to/file.py),
+ * falling back to the language extension if no source is found (e.g., code.py for python).
+ * If text follows [!CodeTabs] in the heading, the heading is preserved with that text.
  *
  * @example
  * Input MDX:
@@ -24,24 +31,29 @@ import type { Heading, Code, Text } from 'mdast';
  *     freq = Counter(nums)
  * ```
  * ```
+ *
  * Output:
  * ```tsx
- * <CodeTabs files={['heap.py', 'heap-nlargets.py']}>
- * 
- *     <CodeTab file="heap.py">
+ * <CodeTabs defaultFile="heap.py">
+ *   <CodeTabsList>
+ *     <CodeTabTrigger file="heap.py" />
+ *     <CodeTabTrigger file="heap-nlargest.py" />
+ *   </CodeTabsList>
+ *
+ *   <CodeTab file="heap.py">
  *     ```python meta="source=problems/347-top-k-frequent-elements/heap.py"
- *        def topKFrequent(nums, k):
- *            freq ,h= Counter(nums), []
- *        ```
- *     </CodeTab>
- * 
- *     <CodeTab file="heap-nlargets.py">
- *     ```python meta="source=problems/347-top-k-frequent-elements/heap-nlargets.py"
- *        def topKFrequent(nums, k):
- *            freq = Counter(nums)
- *        ```
- *     </CodeTab>
- * </CodeTabs >
+ *     def topKFrequent(nums, k):
+ *         freq ,h= Counter(nums), []
+ *     ```
+ *   </CodeTab>
+ *
+ *   <CodeTab file="heap-nlargest.py">
+ *     ```python meta="source=problems/347-top-k-frequent-elements/heap-nlargest.py"
+ *     def topKFrequent(nums, k):
+ *         freq = Counter(nums)
+ *     ```
+ *   </CodeTab>
+ * </CodeTabs>
  * ```
  * 
  *

@@ -25,6 +25,11 @@ Given a unique-element sorted array that has been rotated at an unknown pivot, f
         - **Logic:** This indicates that the inflection point (the minimum value) must lie to the right of `mid`. The left portion `[4, 5]` is sorted but contains values larger than the true minimum. We discard this left portion by setting `l = mid + 1`.
     - The loop terminates when `l` and `r` converge, at which point `nums[l]` is the smallest element.
 
+## [!(ProblemKeyExpressions)] Key Expressions
+
+- `r = mid`: If nums[mid] is less than nums[r], the minimum is in the left half (inclusive of mid).
+- `l = mid + 1`: the smallest is on the right
+
 ## [!(ProblemCodeSnippet)] Code Snippet
 
 ```python meta="source=problems/153-find-minimum-in-rotated-sorted-array/solution.py"

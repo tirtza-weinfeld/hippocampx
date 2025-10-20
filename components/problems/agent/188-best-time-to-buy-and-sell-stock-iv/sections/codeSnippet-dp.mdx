@@ -1,0 +1,11 @@
+```python meta="source=problems/188-best-time-to-buy-and-sell-stock-iv/dp.py"
+def best_time_to_buy_and_sell_stock_IV(k: int, prices: list[int]) -> int:
+
+    cost = [float("inf")] * (k + 1)
+    profit = [0] * (k + 1)
+    for p in prices:
+        for t in range(1, k + 1):
+            cost[t] = min(cost[t], p - profit[t - 1])
+            profit[t] = max(profit[t], p - cost[t])
+    return profit[k]
+```

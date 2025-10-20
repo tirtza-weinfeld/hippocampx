@@ -55,8 +55,41 @@ import { SectionHeader } from "@/components/mdx/section/section-header"
 import { SectionContent } from "@/components/mdx/section/section-content"
 import { Section } from "@/components/mdx/section/section"
 import { CollapsibleSection } from "@/components/mdx/section/collapsible-section"
+import { ProblemSolutionGroup } from "@/components/mdx/problem/problem-solution-group";
+import { ProblemActive } from "@/components/mdx/problem/problem-active";
+import { ProblemCodeTabs } from "@/components/mdx/problem/problem-code-tabs";
+import { ProblemCodeTabsList } from "@/components/mdx/problem/problem-code-tabs-list";
+import { ProblemCodeTabTrigger } from "@/components/mdx/problem/problem-code-tab-trigger";
+import { ProblemCodeTab } from "@/components/mdx/problem/problem-code-tab"; 
+import { ProblemCard, FabButton, FabGroup, ProblemCardProvider, FilterProvider, ProblemCardFilterHeader, ProblemCardContent, ProblemCardHeader, ProblemCardDialog, ProblemCardTab } from '@/components/mdx/problem/card'
+import { ProblemTimeComplexityBadge ,ProblemCardDifficultyBadge, ProblemCardLeetCodeBadge} from '@/components/mdx/problem/card/badge';
+
 
 export const customComponents = {
+  ProblemCardContent,
+  ProblemCardHeader,
+  ProblemCardDialog,
+  ProblemCard,
+  ProblemCardTab,
+  
+  FabButton,
+  FabGroup,
+  // ProblemFileList,
+  // ProblemFileTrigger,
+  // ProblemCardCalloutCodeSnippet,
+  ProblemCardProvider,
+  // ProblemCardExpandAllButton,
+  ProblemTimeComplexityBadge,
+  ProblemCardDifficultyBadge,
+  FilterProvider,
+  ProblemCardFilterHeader,
+  ProblemSolutionGroup,
+  ProblemActive,
+  ProblemCodeTabs,
+  ProblemCodeTabsList,
+  ProblemCodeTabTrigger,
+  ProblemCodeTab,
+  ProblemCardLeetCodeBadge,
   PillList,
   SectionHeader,
   SectionContent,

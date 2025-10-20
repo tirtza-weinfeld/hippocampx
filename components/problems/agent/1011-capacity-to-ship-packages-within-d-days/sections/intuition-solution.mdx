@@ -1,0 +1,6 @@
+Binary searching the answer space, (the ship's capacity)
+    The range of possible capacities is from `max(weights)` to `sum(weights)`.
+    The problem has a **monotonic property** ideal for binary search. The function `daysNeeded(capacity)` is monotonically non-increasing: as `capacity` grows, the days required can only decrease or stay the same.
+    This creates a predictable `\[False, ..., False, True, ..., True\]` sequence for our condition, `daysNeeded(capacity) <= days`. The goal is to find the leftmost `True`, which represents the minimal valid capacity.
+        If `daysNeeded(capacity) <= days` is `True`, then `capacity` is a potential answer, and we try for a better (smaller) one in the left half by setting `r = capacity`.
+        If it is `False`, then `capacity` is too small, and we must search for a larger capacity in the right half by setting `l = capacity + 1`.

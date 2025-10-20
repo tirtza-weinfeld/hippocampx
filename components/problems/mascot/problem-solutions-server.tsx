@@ -14,19 +14,16 @@ function normalizeCode(code: string): string {
  * This allows CodeBlock (async server component) to be used within client components
  * via the composition pattern.
  */
-export function ProblemSolutionsServer({ code, meta, }: { code: string, meta: string }) {
+export async function ProblemSolutionsServer({ code, meta, }: { code: string, meta: string }) {
 
   const cleanedCode = normalizeCode(code)
 
   return (
-
-    // <Suspense fallback={<CodeBlockSkeleton />}>
+    <Suspense fallback={<CodeBlockSkeleton />}>
       <CodeBlock className="language-python" meta={meta}>
         {cleanedCode}
       </CodeBlock>
-    //  </Suspense>
-
-
+    </Suspense>
   )
 
 }

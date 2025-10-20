@@ -1,0 +1,8 @@
+```python meta="source=problems/191-number-of-1-bits/brian-kernighan.py"
+def hammingWeight(n: int) -> int:
+    count = 0
+    while n:
+        n &= n - 1 # drop the lowest set bit
+        count += 1
+    return count
+```

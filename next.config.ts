@@ -13,7 +13,7 @@ const withMDX = createMDX({
       'remark-math',
       'remark-gfm',
       '@hippocampx/plugins/remark-typography',
-      '@hippocampx/plugins/remark-code-tabs',
+      // '@hippocampx/plugins/remark-code-tabs',
       // '@hippocampx/plugins/remark-collapsible-section',
       // '@hippocampx/plugins/remark-header-section',
       '@hippocampx/plugins/remark-section-list',

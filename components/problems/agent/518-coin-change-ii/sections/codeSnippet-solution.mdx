@@ -1,0 +1,15 @@
+```python meta="source=problems/518-coin-change-ii/solution.py"
+def coin_change_II(amount: int, coins: list[int]) -> int:
+    memo, n = {}, len(coins)
+
+    def dp(c, amount):
+        if amount == 0:
+            return 1
+        if amount < 0 or c == n:
+            return 0
+        if (c, amount) not in memo:
+            memo[c, amount] = dp(c, amount - coins[c]) + dp(c + 1, amount)
+        return memo[c, amount]
+
+    return dp(0, amount)
+```

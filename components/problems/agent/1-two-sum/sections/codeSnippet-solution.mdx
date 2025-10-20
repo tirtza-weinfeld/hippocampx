@@ -1,0 +1,10 @@
+```python meta="source=problems/1-two-sum/solution.py"
+def two_sum(nums: list[int], target: int) -> list[int]:
+
+    seen = {}
+
+    for i, num in enumerate(nums):
+        if (x := target - num) in seen:
+            return seen[x], i
+        seen[num] = i
+```

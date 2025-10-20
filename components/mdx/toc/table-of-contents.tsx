@@ -478,7 +478,10 @@ export function TableOfContents({ headings: rawHeadings, className, maxHeight = 
                                 // Parent heading: colored text, no background
                                 isParent && `bg-toc-gradient `,
                                 (isActive && !isParent) && "border-b-1 border-sky-500 border-dashed",
-                                `ml-${3+ (child.level-3) * 3}`,
+                                child.level === 3 && "ml-3",
+                                child.level === 4 && "ml-6",
+                                child.level === 5 && "ml-[2.25rem]",
+                                child.level === 6 && "ml-[3rem]",
                          
                      
                                 "w-fit"
@@ -507,7 +510,8 @@ export function TableOfContents({ headings: rawHeadings, className, maxHeight = 
 
                                     isActive && "text-toc-gradient",
                                     "group-hover:text-toc-gradient"
-                                  )}>{child.richContent ? renderRichContent(child.richContent) : renderTextWithMath(child.text)}</span>
+                                  )}>
+                                    {child.richContent ? renderRichContent(child.richContent) : renderTextWithMath(child.text)}</span>
                                 </span>
                               </span>
                             </li>

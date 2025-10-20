@@ -1,0 +1,5 @@
+- `heights.append(0)`: adds a **right sentinel** bar smaller than all others, forcing the stack to empty and compute all remaining areas at the end (no leftover bars).
+- `stack = [-1]`: adds a **left sentinel** index before the array start, so width computation `r - stack[-1] - 1` always works (never empty stack).
+- `heights[stack[-1]] > h`: pop while current bar is lower than stack's top
+- `width = r - stack[-1] - 1`: We subtract 1 because the bar at stack[-1] is strictly smaller and marks the left boundary, which is excluded from the rectangle
+- `heights.pop()`: restore original list

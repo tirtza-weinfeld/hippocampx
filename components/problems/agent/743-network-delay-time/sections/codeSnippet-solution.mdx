@@ -1,0 +1,21 @@
+```python meta="source=problems/743-network-delay-time/solution.py"
+from collections import defaultdict
+import heapq
+
+def network_delay_time(times: list[list[int]], n: int, k: int) -> int:
+
+    adj = defaultdict(list)
+    for u, v, w in times:
+        adj[u].append((v, w))
+    pq, finalized, time = [(0, k)], set(), 0
+    while pq:
+        t, node = heapq.heappop(pq)
+        if node in finalized:
+            continue
+        finalized.add(node)
+        time = t
+        for neighbor, travel_time in adj[node]:
+            if neighbor not in finalized:
+                heapq.heappush(pq, (time + travel_time, neighbor))
+    return time if len(finalized) == n else -1
+```

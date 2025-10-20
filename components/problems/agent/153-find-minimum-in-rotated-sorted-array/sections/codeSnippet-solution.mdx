@@ -1,0 +1,12 @@
+```python meta="source=problems/153-find-minimum-in-rotated-sorted-array/solution.py"
+def find_minimum_in_rotated_sorted_array(nums: list[int]) -> int:
+        
+    l, r = 0, len(nums) - 1
+    while l < r:
+        mid = (l + r) // 2
+        if nums[mid] < nums[r]:
+            r = mid
+        else:
+            l = mid + 1 
+    return nums[l]
+```

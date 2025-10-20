@@ -132,14 +132,14 @@ function formatArgs(args: Record<string, string>): string {
     .join('\n')
 }
 
-// function formatExpressions(expressions: Record<string, string>): string {
-//   return Object.entries(expressions)
-//     .map(([key, value]) => {
-//       // The key is already the expression, so wrap it in backticks
-//       return `- \`${key}\`: ${value}`
-//     })
-//     .join('\n')
-// }
+function formatExpressions(expressions: Record<string, string>): string {
+  return Object.entries(expressions)
+    .map(([key, value]) => {
+      // The key is already the expression, so wrap it in backticks
+      return `- \`${key}\`: ${value}`
+    })
+    .join('\n')
+}
 
 
 function solutionFileNameToTitle(fileName: string): string {
@@ -185,12 +185,12 @@ function generateSolutionContent(
   }
 
   // Add expressions if available
-  // if (solution.expressions && Object.keys(solution.expressions).length > 0) {
-  //   const expressionsString = formatExpressions(solution.expressions)
-  //   if (expressionsString.trim()) {
-  //     content += formatSection('Key Expressions', expressionsString, 'ProblemKeyExpressions', '###')
-  //   }
-  // }
+  if (solution.expressions && Object.keys(solution.expressions).length > 0) {
+    const expressionsString = formatExpressions(solution.expressions)
+    if (expressionsString.trim()) {
+      content += formatSection('Key Expressions', expressionsString, 'ProblemKeyExpressions', '###')
+    }
+  }
 
   // Add returns if available
   if (solution.returns && solution.returns.trim()) {
@@ -342,12 +342,12 @@ function generateMDXContent(problemId: string, problem: Problem): string {
     }
 
     // Add expressions if available
-    // if (solution.expressions && Object.keys(solution.expressions).length > 0) {
-    //   const expressionsString = formatExpressions(solution.expressions)
-    //   if (expressionsString.trim()) {
-    //     content += formatSection('Key Expressions', expressionsString, 'ProblemKeyExpressions')
-    //   }
-    // }
+    if (solution.expressions && Object.keys(solution.expressions).length > 0) {
+      const expressionsString = formatExpressions(solution.expressions)
+      if (expressionsString.trim()) {
+        content += formatSection('Key Expressions', expressionsString, 'ProblemKeyExpressions')
+      }
+    }
 
     // Add returns if available
     if (solution.returns && solution.returns.trim()) {

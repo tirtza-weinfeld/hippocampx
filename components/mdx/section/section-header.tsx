@@ -1,4 +1,4 @@
 export function SectionHeader({ children }: { children: React.ReactNode }) {
-    return <div>{children}</div>
+    return <div className="transition-colors duration-200">{children}</div>
 }
 

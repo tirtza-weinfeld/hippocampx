@@ -11,6 +11,9 @@ import { ProblemKeyExpressionsHeader, ProblemKeyExpressionsContent } from './pro
 import { ProblemReturnsHeader, ProblemReturnsContent } from './problem-returns'
 import ProblemIntuitionItem from '../list/problem-intuition-item'
 import { ProblemTipHeader, ProblemTipContent } from './problem-tip'
+import { MascotExpandableBadge } from './mascot/mascot-expandable-badge'
+import { MascotExpandableSection } from './mascot/mascot-expandable-section'
+import { MascotSolution } from './mascot/mascot-solution'
 
 export const ProblemComponents = {
   ProblemArgumentsContent,
@@ -24,6 +27,9 @@ export const ProblemComponents = {
   ProblemKeyExpressionsContent,
   ProblemReturnsContent,
   ProblemTipContent,
+  MascotExpandableBadge,
+  MascotExpandableSection,
+  MascotSolution,
 }
 
 export const ProblemHeaders = {

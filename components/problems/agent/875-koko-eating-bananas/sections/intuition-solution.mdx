@@ -1,0 +1,8 @@
+Binary searching the answer space, (eating speed `k`):
+    The range of possible speeds is from `1` to `max(piles)`
+    The key property is that the problem is **monotonic** (if a speed `k` is fast enough, any speed greater than `k` will also be fast enough)
+    This allows us to binary search for the *minimum* valid speed
+    We test a mid speed (`k = (l + r) // 2`)
+        If it's valid (`hours(k) <= h`), we try to find a smaller valid speed by searching the lower half (`r = k`)
+        If it's too slow, we must increase the speed by searching the upper half (`l = k + 1`)
+    The loop converges on the smallest `k` that works 🍌

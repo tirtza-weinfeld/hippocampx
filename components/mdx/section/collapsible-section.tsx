@@ -2,27 +2,34 @@
 
 import { cn } from "@/lib/utils"
 import { ChevronDown } from "lucide-react"
-import { useState, Activity,  } from "react"
-
-
+import { useState, Activity } from "react"
 
 export function CollapsibleSection({ children }: { children: React.ReactNode }) {
     const [header, content, expand] = children as [React.ReactNode, React.ReactNode, string | undefined]
     const [expanded, setExpanded] = useState(expand ?? false)
+
     return (
-        <>
-        {/* <div className="relative w-fit border-2 border-gray-200  bg-teal-500/10 rounded-lg p-2 my-2"> */}
-            <div className='relative w-fit ' >
-                <button className="absolute top-2 -right-12 rounded-full bg-background/80 p-1
-                hover:bg-background/80
-                " onClick={() => setExpanded(!expanded)}><ChevronDown className={cn(expanded ? 'rotate-180' : '')} /></button>
+        <div>
+            <div className='relative w-fit'>
+                <button
+                    className="absolute top-2 -right-12 rounded-full p-2 transition-all duration-200
+                     hover:scale-110 hover:bg-teal-500/10 active:scale-95"
+                    onClick={() => setExpanded(!expanded)}
+                    aria-label={expanded ? "Collapse section" : "Expand section"}
+                >
+                    <ChevronDown
+                        className={cn(
+                            "h-4 w-4 transition-transform duration-300 ease-out",
+                            expanded ? 'rotate-180' : ''
+                        )}
+                    />
+                </button>
                 {header}
             </div>
             <Activity mode={expanded ? 'visible' : 'hidden'}>
                 {content}
             </Activity>
-        {/* </div> */}
-        </>
+        </div>
     )
 }
 

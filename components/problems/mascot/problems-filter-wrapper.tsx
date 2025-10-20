@@ -15,12 +15,12 @@ export function ProblemsFilterWrapper({
   problems,
   uniqueTopics,
   timeComplexities,
-  children,
+  problemCardsMap,
 }: {
   problems: Array<{ slug: string; problem: Problem }>
   uniqueTopics: string[]
   timeComplexities: Record<string, string>
-  children: React.ReactNode[]
+  problemCardsMap: Record<string, React.ReactNode>
 }) {
   const {
     searchQuery,
@@ -108,18 +108,9 @@ export function ProblemsFilterWrapper({
     toggleAllProblems(sortedProblems.map((p) => p.slug))
   }
 
-  // Create a map of slugs to their index in children array
-  const childrenArray = Array.isArray(children) ? children : [children]
-  const slugToChildMap = new Map<string, React.ReactNode>()
-  problems.forEach(({ slug }, index) => {
-    if (childrenArray[index]) {
-      slugToChildMap.set(slug, childrenArray[index])
-    }
-  })
-
-  // Get filtered and sorted children
+  // Get filtered and sorted children from the map
   const sortedChildren = sortedProblems
-    .map(({ slug }) => slugToChildMap.get(slug))
+    .map(({ slug }) => problemCardsMap[slug])
     .filter((child): child is React.ReactNode => child !== undefined)
 
   return (

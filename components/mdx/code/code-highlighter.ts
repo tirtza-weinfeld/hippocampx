@@ -1,3 +1,5 @@
+'use server'
+import { cache } from 'react'
 import { codeToHast } from 'shiki'
 import { transformerCodeTooltipSource } from './transformers/meta-tooltip';
 import { transformerExpressionTooltips } from './transformers/meta-tooltip-expressions';
@@ -16,24 +18,24 @@ import type { UsesData, LspData, ExpressionsData, SymbolTagsData } from './trans
 
 /**
  * Applies syntax highlighting and tooltip data attributes to code using Shiki and custom transformers.
- * 
+ *
  * This function is the core of the tooltip system's highlighting pipeline:
  * 1. **Shiki Processing**: Converts code to HAST (Hyperscript Abstract Syntax Tree) with syntax highlighting
  * 2. **Transformer Chain**: Applies custom transformers that add tooltip data attributes to matching symbols
  * 3. **JSX Conversion**: Converts HAST to JSX elements for React rendering
- * 
+ *
  * The transformer chain runs in priority order:
  * - Line/word highlighting (visual effects)
  * - Expression tooltips (lower priority - complex expressions)
  * - Symbol tooltips (higher priority - functions, variables, parameters)
- * 
+ *
  * @param code - Raw source code to highlight
  * @param lang - Programming language for syntax highlighting
  * @param meta - Optional meta attributes (e.g., "source=file.py:function highlight=3-5")
  * @param transformers - Whether to apply tooltip transformers (default: true)
  * @param isInline - Whether this is inline code (affects JSX conversion)
  * @returns JSX elements with syntax highlighting and tooltip data attributes
- * 
+ *
  * @example
  * ```typescript
  * const highlighted = await highlightCode(
@@ -43,7 +45,7 @@ import type { UsesData, LspData, ExpressionsData, SymbolTagsData } from './trans
  * );
  * ```
  */
-export default async function highlightCode(code: string, lang: string, meta?: string, transformers: boolean = true, isInline: boolean = false) {
+const highlightCode = cache(async function highlightCode(code: string, lang: string, meta?: string, transformers: boolean = true, isInline: boolean = false) {
   // const tooltipContent = await getTooltipContent()
 
   const hast = await codeToHast(code as string, {
@@ -62,17 +64,17 @@ export default async function highlightCode(code: string, lang: string, meta?: s
     },
     defaultColor: 'light-dark()',
     transformers: transformers ? [
-  
+
       transformerExpressionTooltips(expressionsData as ExpressionsData, lspData as LspData),
       transformerCodeTooltipSource(usesData as UsesData, lspData as LspData, symbolTags as SymbolTagsData),
       transformerMetaHighlight({className: 'line-highlight'}),
       transformerMetaWordHighlight({className: 'word-highlight'}),
     ] : [],
-    
+
   })
 
-  return hastToJSX(hast, isInline) 
- 
+  return hastToJSX(hast, isInline)
 
-}
+})
 
+export default highlightCode

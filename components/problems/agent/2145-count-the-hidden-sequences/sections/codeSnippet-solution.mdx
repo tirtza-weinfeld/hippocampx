@@ -1,0 +1,12 @@
+```python meta="source=problems/2145-count-the-hidden-sequences/solution.py"
+def numberOfArrays(differences: list[int], lower: int, upper: int) -> int:
+
+    prefix_sum = min_marker = max_marker = 0
+
+    for diff in differences:
+        prefix_sum += diff
+        min_marker = min(min_marker, prefix_sum)
+        max_marker = max(max_marker, prefix_sum)
+
+    return max(0, (upper - max_marker) - (lower - min_marker) + 1)
+```

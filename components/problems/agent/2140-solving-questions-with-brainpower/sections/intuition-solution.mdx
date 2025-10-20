@@ -1,0 +1,2 @@
+Paradigm: This is a classic **Longest Path** problem on a Directed Acyclic Graph (DAG).
+    Insight: The maximum score obtainable *from* any question `i` is a fixed value, regardless of past choices. This allows a backward pass from the end of the exam (where the future score is 0), calculating the optimal future score for each question by simply choosing the `max()` of two pre-computed paths: the one from "solving" vs. the one from "skipping".

@@ -37,3 +37,16 @@ export function M() {
         </>
     )
 }
+
+
+export function MdxActivity({ children, active }: { children: React.ReactNode, active: boolean }
+
+) {
+    return (
+        <Activity mode={active ? "visible" : "hidden"}>
+            {children}
+        </Activity>
+    )
+}
+
+

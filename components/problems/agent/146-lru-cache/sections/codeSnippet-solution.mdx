@@ -1,0 +1,21 @@
+```python meta="source=problems/146-lru-cache/solution.py"
+from collections import OrderedDict
+
+class LRUCache:
+    def __init__(self, capacity: int):
+        self.cache: OrderedDict[int, int] = OrderedDict()
+        self.capacity = capacity
+
+    def get(self, key: int) -> int:
+        if (val := self.cache.get(key)) is None:
+            return -1
+        self.cache.move_to_end(key)
+        return val
+
+    def put(self, key: int, value: int) -> None:
+        if key in self.cache:
+            self.cache.move_to_end(key)
+        self.cache[key] = value
+        if len(self.cache) > self.capacity:
+            self.cache.popitem(last=False)
+```

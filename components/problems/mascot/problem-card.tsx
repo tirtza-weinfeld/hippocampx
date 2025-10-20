@@ -6,9 +6,10 @@ import { Badge } from '@/components/ui/badge'
 import { Link } from '@/components/mdx/links'
 import { MarkdownRenderer } from '@/components/mdx/parse'
 import { cn } from '@/lib/utils'
-import { ProblemsStateContext, ProblemsActionsContext, MascotActionsContext } from './mascot-context'
+import { ProblemsStateContext, ProblemsActionsContext, MascotActionsContext, MascotStateContext } from './mascot-context'
 import { MascotSettingsContext } from './mascot-settings-context'
 import { Problem } from './mascot-types'
+import { Activity } from 'react'
 
 export function ProblemCard({
   problem,
@@ -25,6 +26,7 @@ export function ProblemCard({
   const { toggleProblemExpansion } = use(ProblemsActionsContext)
   const { setIsOpen } = use(MascotActionsContext)
   const { stayOpen } = use(MascotSettingsContext)
+  const { isFullscreen } = use(MascotStateContext)
 
   const isExpanded = expandedProblems?.includes(slug) ?? false
   const problemNumber = slug.match(/^(\d+)-/)?.[1]
@@ -101,8 +103,8 @@ export function ProblemCard({
             <MarkdownRenderer>{problem.definition}</MarkdownRenderer>
           </div>
 
-          {/* Server-rendered solutions (passed as children with Suspense) */}
-          {children}
+          {/* Server-rendered solutions - only displayed when expanded */}
+          <Activity mode={isFullscreen ? "visible" : "hidden"}> {children} </Activity>
 
           {/* Topics and LeetCode Link */}
           <div className="flex items-center gap-3 overflow-hidden">

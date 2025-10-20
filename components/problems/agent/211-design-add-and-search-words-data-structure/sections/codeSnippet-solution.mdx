@@ -1,0 +1,32 @@
+```python meta="source=problems/211-design-add-and-search-words-data-structure/solution.py"
+class WordDictionary:
+
+    def __init__(self):
+        self.trie: dict[str, dict] = {}
+        self.END_MARKER = "$"
+
+    def add_word(self, word: str) -> None:
+        node = self.trie
+        for c in word:
+            node = node.setdefault(c, {})
+        node[self.END_MARKER] = True
+
+    def search(self, word: str) -> bool:
+
+        def dfs(node: dict, i: int) -> bool:
+
+            if i == len(word):
+                return self.END_MARKER in node
+
+            if (c := word[i]) == ".":
+
+                return any(
+                    dfs(child, i + 1)
+                    for k, child in node.items()
+                    if k != self.END_MARKER
+                )
+            child = node.get(c)
+            return bool(child) and dfs(child, i + 1)
+
+        return dfs(self.trie, 0)
+```

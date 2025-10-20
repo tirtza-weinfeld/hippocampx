@@ -12,7 +12,6 @@ export function ProblemsMascot() {
   // Create server component views
   const views = {
     main: <ProblemsView />,
-    // main: <div>Loading...</div>,
     settings: <SettingsView />,
   }
 

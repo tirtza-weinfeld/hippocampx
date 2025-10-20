@@ -1,0 +1,7 @@
+- `node = node.setdefault(c, {})`: create a new node for the character if it doesn't exist
+- `if "$" in node`: if the current node is the end of a word
+- `res.append(node.pop("$"))`: add the word to the result list and remove the "$" key to prevent duplicates
+- `if not node`: prune the trie to remove dead branches.
+- `[dfs`: .. Launch DFS from every cell that matches any trie root key
+- `board[i][j] = "#"`: Mark as visited
+- `board[i][j] = c`: Restore cell

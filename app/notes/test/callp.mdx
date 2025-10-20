@@ -1,0 +1,128 @@
+import Call from './call.mdx'
+
+# LeetCode Problems
+
+## Resizable Table of Contents
+
+## [!collapsible:expand] Top K Frequent Elements
+
+
+<ProblemCardCallout tab="intuition" file="heap.py">
+        
+{/* <ProblemCardLeetCodeBadge difficulty="medium">[347](https://leetcode.com/problems/top-k-frequent-elements)</ProblemCardLeetCodeBadge>
+<ProblemTimeComplexityBadge complexity="linearithmic">$O(n \log k)$</ProblemTimeComplexityBadge>
+<ProblemTimeComplexityBadge complexity="linear">$O(n)$</ProblemTimeComplexityBadge> */}
+
+
+
+
+
+<ProblemCardFabGroup>
+  <ProblemCardCalloutFabButton  tab="definition" />
+  {/* <ProblemCardCalloutFabButton className="text-yellow-500 bg-yellow-500/10" tab="intuition" /> there was no intuition in the original problem*/}
+
+  <ProblemCardCalloutFabButton  tab="timeComplexity" />
+
+    <ProblemCardCalloutFabButton  tab="keyVariables" files={new Set(["heap.py"])} />
+    <ProblemCardCalloutFabButton  tab="keyExpressions"  /> 
+</ProblemCardFabGroup>
+
+<ProblemCardCalloutDialog>
+
+<ProblemCardCalloutTab tab="definition" >
+Given an integer array `nums` and an integer `k`, return the `k` most **frequent** elements
+    *[19!]Algorithm complexity must be better than *[orange!]O(nlogn)* where `n` is the length of the input array,     You may return the answer in any order*
+</ProblemCardCalloutTab>
+
+
+<ProblemCardCalloutTab tab="timeComplexity" file="heap.py">
+- $O(n \log k)$:
+    - Counter(nums) → $O(n)$
+    - heapq.heappush(h, (f, num)) → $O(\log k)$
+    - heapq.heappop(h) → $O(\log k)$
+    - total ≈ 2 x $O(\log k)$ operations
+    - So same asymptotic complexity, but half the work, fewer comparisons and function calls → faster constant factor.
+</ProblemCardCalloutTab>
+<ProblemCardCalloutTab tab="timeComplexity" file="heap-nlargest.py">
+$O(n \log k)$
+  
+</ProblemCardCalloutTab>
+
+<ProblemCardCalloutTab tab="timeComplexity" file="sort-frequency-bucketing.py">
+- $O(n)$:
+    - Counter(nums) → $O(n)$
+    - Build buckets → $O(n)$ (each element placed once)
+    - Flatten in reverse until k → $O(n)$
+</ProblemCardCalloutTab>
+
+<ProblemCardCalloutTab tab="keyVariables" file="heap.py">
+- `freq`: the frequency of the numbers
+- `h`: the heap
+</ProblemCardCalloutTab>
+
+<ProblemCardCalloutTab  tab="keyExpressions" file="heap.py">
+- `heapq.heappush(h, (f, num))`: push the frequency and number into the heap
+</ProblemCardCalloutTab>
+<ProblemCardCalloutTab  tab="keyExpressions" file="heap-nlargest.py">
+- `freq.keys()`: iterable → here freq.keys(), i.e. all unique numbers.
+- `key=freq.get`: key → function that gives a value to rank by. freq.get(x) = frequency of x.
+</ProblemCardCalloutTab>
+
+<ProblemCardCalloutTab  tab="keyExpressions" file="sort-frequency-bucketing.py">
+- `bucket[f].append(n)`: append n to the bucket with frequency f
+</ProblemCardCalloutTab>
+</ProblemCardCalloutDialog>
+
+<ProblemFileList>
+  <ProblemFileTrigger file="heap.py" />
+  <ProblemFileTrigger file="heap-nlargest.py" />
+  <ProblemFileTrigger file="sort-frequency-bucketing.py" />
+</ProblemFileList>
+
+
+<ProblemCardCalloutCodeSnippet file="heap.py">
+```python meta="source=problems/347-top-k-frequent-elements/heap.py"
+import heapq
+from collections import Counter
+
+def topKFrequent(nums: list[int], k: int) -> list[int]:
+    freq ,h= Counter(nums), []
+    for num, f in freq.items():
+        heapq.heappush(h, (f, num))
+        if len(h) > k:
+            heapq.heappop(h)
+    
+    return [num for _, num in h]
+```
+
+</ProblemCardCalloutCodeSnippet>
+<ProblemCardCalloutCodeSnippet file="heap-nlargest.py">
+```python meta="source=problems/347-top-k-frequent-elements/heap-nlargets.py"
+import heapq
+from collections import Counter
+
+def topKFrequent(nums: list[int], k: int) -> list[int]:
+    freq = Counter(nums)
+    return heapq.nlargest(k, freq.keys(), key=freq.get)
+```
+</ProblemCardCalloutCodeSnippet>
+
+<ProblemCardCalloutCodeSnippet file="sort-frequency-bucketing.py">
+```python meta="source=problems/347-top-k-frequent-elements/sort-frequency-bucketing.py"
+from collections import Counter
+
+def topKFrequent(nums: list[int], k: int) -> list[int]:
+
+    bucket=[[] for _ in range(len(nums)+1)]
+    for n,f in Counter(nums).items():
+        bucket[f].append(n)
+
+    return [num for f_bucket in reversed(bucket) for num in f_bucket][:k]
+```
+</ProblemCardCalloutCodeSnippet>
+
+
+</ProblemCardCallout>
+
+
+ 

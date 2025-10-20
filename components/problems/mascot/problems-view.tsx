@@ -1,17 +1,13 @@
-import React, { Suspense } from 'react'
 import { ProblemsViewContent } from './problems-view-content'
 // import METADATA from '@/lib/extracted-metadata/problems_metadata.json'
 // import STATS from '@/lib/extracted-metadata/stats.json'
 // import { Problems } from './mascot-types'
 
 
-export async function ProblemsView() {
+export function ProblemsView() {
   return (
 
-    <Suspense fallback={<div>slow...</div>}>
-      {/* <SlowComponent /> */}
       <ProblemsViewContent />
-    </Suspense>
 
     // <div>hello</div>
 

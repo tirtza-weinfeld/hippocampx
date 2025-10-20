@@ -1,0 +1,12 @@
+```python meta="source=problems/1510-stone-game-iv/solution.py"
+def stone_game_IV(n: int) -> bool:
+
+    memo = {0: False}
+
+    def dp(n):
+        if n not in memo:
+            memo[n] = any(not dp(n - i**2) for i in range(int(n**0.5), 0, -1))
+        return memo[n]
+
+    return dp(n)
+```

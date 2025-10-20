@@ -1,0 +1,8 @@
+```python meta="source=problems/347-top-k-frequent-elements/heap-nlargets.py"
+import heapq
+from collections import Counter
+
+def topKFrequent(nums: list[int], k: int) -> list[int]:
+    freq = Counter(nums)
+    return heapq.nlargest(k, freq.keys(), key=freq.get)
+```

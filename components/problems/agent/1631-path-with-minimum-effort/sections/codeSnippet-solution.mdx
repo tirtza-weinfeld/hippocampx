@@ -1,0 +1,19 @@
+```python meta="source=problems/1631-path-with-minimum-effort/solution.py"
+import heapq
+
+def path_with_minimum_effort(heights: list[list[int]]) -> int:
+
+    R, C = len(heights), len(heights[0])
+    pq, resolved = [(0, 0, 0)], set()
+
+    while pq:
+        effort, r, c = heapq.heappop(pq)
+        if (r, c) in resolved: continue
+        if (r, c) == (R - 1, C - 1): return effort
+        resolved.add((r, c))
+
+        for nr, nc in [(r, c + 1), (r, c - 1), (r + 1, c), (r - 1, c)]:
+            if 0 <= nr < R and 0 <= nc < C and (nr, nc) not in resolved:
+                neighbor_effort = max(effort, abs(heights[nr][nc] - heights[r][c]))
+                heapq.heappush(pq, (neighbor_effort, nr, nc))
+```

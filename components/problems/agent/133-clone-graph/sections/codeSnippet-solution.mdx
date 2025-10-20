@@ -1,0 +1,22 @@
+```python meta="source=problems/133-clone-graph/solution.py"
+from collections import deque
+
+class Node:
+    def __init__(self, val=0, neighbors=None):
+        self.val = val
+        self.neighbors = neighbors if neighbors is not None else []
+
+def clone_graph(node: Node | None) -> Node | None:
+    if not node:
+        return None
+    cloned = {node: Node(node.val)}
+    queue = deque([node])
+    while queue:
+        cur = queue.popleft()
+        for n in cur.neighbors:
+            if n not in cloned:
+                cloned[n] = Node(n.val)
+                queue.append(n)
+            cloned[cur].neighbors.append(cloned[n])
+    return cloned[node]
+```

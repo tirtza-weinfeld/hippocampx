@@ -51,7 +51,7 @@ export const H3 = ({ children, className, ...props }: TypographyProps) => {
 
   return (
     <motion.div {...fadeInUp} className="relative mb-6 mt-10">
-
+      <div className="absolute -left-2 top-0 w-1 h-full bg-link-gradient opacity-70 rounded-full" />
       <h3 className={cn(" text-2xl md:text-3xl font-bold tracking-tight  leading-tight", "text-gray-800 dark:text-gray-200", className)} {...props}>
         {children}
       </h3>
@@ -62,6 +62,8 @@ export const H3 = ({ children, className, ...props }: TypographyProps) => {
 export const H4 = ({ children, className, ...props }: TypographyProps) => {
   return (
     <motion.div {...fadeInUp} className="relative mb-4 mt-8">
+      <div className="absolute -left-2 top-0 w-1 h-full bg-link-gradient opacity-50 rounded-full" />
+
       <div className="flex items-center gap-2">
         <h4 className={cn("text-lg md:text-xl lg:text-2xl font-extrabold tracking-tight", "text-gray-800 dark:text-gray-200", className)} {...props}>
           {children}
@@ -75,7 +77,8 @@ export const H5 = ({ children, className, ...props }: TypographyProps) => {
   return (
     <motion.h5
       {...fadeInUp}
-      className={cn("text-lg md:text-xl font-semibold tracking-tight mb-3 mt-6 border-l-2 border-blue-500 pl-3", "text-gray-800 dark:text-gray-200", className)}
+      // className={cn("text-lg md:text-xl font-semibold tracking-tight mb-3 mt-6 border-l-2 border-blue-500 pl-3", "text-gray-800 dark:text-gray-200", className)}
+      className={cn("text-lg md:text-xl font-semibold tracking-tight mb-3 mt-6 ", "text-gray-800 dark:text-gray-200", className)}
       {...props}
     >
       {children}

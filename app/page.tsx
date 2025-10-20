@@ -1,13 +1,9 @@
 
-export default function HomePage() {
+  export default function HomePage() {
   return (
-
     <div className="h-full w-full flex flex-col place-items-center justify-center ">
-
-
       <h1
         className="
-        
         text-5xl 
         font-bold animate-pulse
          transition-transform duration-700 
@@ -26,7 +22,7 @@ export default function HomePage() {
          "
       >
         HippoCampX
-        
+
       </h1>
 
 

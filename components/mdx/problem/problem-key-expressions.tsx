@@ -1,7 +1,6 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { Braces } from "lucide-react";
 
 interface ProblemKeyExpressionsProps {
   children: React.ReactNode;
