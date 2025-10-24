@@ -1,0 +1,15 @@
+- Deep Dive: Subproblems: dp(i) = maximum money obtainable robbing prefix `houses[0..i]
+    - for 0 ≤ i < n.  (*[4!]prefix ≙ starting from 0 until i*)
+
+- Deep Dive: Relation: dp(i) = max(dp(i-1), houses[i] + dp(i-2))
+        - Either skip house `i` (best stays `dp(i-1)`)
+        - or rob it and skip `i-1` (best is `houses[i] + dp(i-2)`)
+
+- Deep Dive: Topo. order: Increasing i
+        - Increasing i  (i = 0, 1, ..., n-1)
+
+- Deep Dive: Base: dp(0)
+        - max money obtainable robbing the empty prefix `houses[0..0]`
+
+- Deep Dive: Original: dp(n)
+        - maximum money obtainable robbing prefix `houses[0..n-1]` (the whole array)

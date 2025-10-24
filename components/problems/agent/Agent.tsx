@@ -30,6 +30,7 @@ const Problem648ReplaceWords = lazy(() => import('./648-replace-words'))
 const Problem394DecodeString = lazy(() => import('./394-decode-string'))
 const Problem211DesignAddAndSearchWordsDataStructure = lazy(() => import('./211-design-add-and-search-words-data-structure'))
 const Problem1406StoneGameIii = lazy(() => import('./1406-stone-game-iii'))
+const Problem213HouseRobberIi = lazy(() => import('./213-house-robber-ii'))
 const Problem875KokoEatingBananas = lazy(() => import('./875-koko-eating-bananas'))
 const Problem460LfuCache = lazy(() => import('./460-lfu-cache'))
 const Problem133CloneGraph = lazy(() => import('./133-clone-graph'))
@@ -139,6 +140,11 @@ const problemComponents = {
     "1406-stone-game-iii": (
       <Suspense key="1406-stone-game-iii" fallback={<div className="p-4 text-gray-500">Loading...</div>}>
         <Problem1406StoneGameIii />
+      </Suspense>
+    ),
+    "213-house-robber-ii": (
+      <Suspense key="213-house-robber-ii" fallback={<div className="p-4 text-gray-500">Loading...</div>}>
+        <Problem213HouseRobberIi />
       </Suspense>
     ),
     "875-koko-eating-bananas": (

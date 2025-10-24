@@ -12,15 +12,6 @@
 
 Find a path from the top-left to the bottom-right of a height grid that minimizes the "effort". - Effort is the single largest height difference between any two adjacent cells on the path.
 
-## [!(ProblemArguments)] Key Arguments
-
-- `heights: list[list[int]]`: 2D list of integers representing the heights of the cells
-
-## [!(ProblemKeyVariables)] Key Variables
-
-- `pq`: Priority queue stores (max_effort_on_path, r, c)
-- `resolved`: set to store the positions that have been resolved
-
 ## [!(ProblemReturns)] Returns
 
 `int`: minimum effort to reach the bottom-right cell

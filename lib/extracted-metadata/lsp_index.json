@@ -1103,13 +1103,57 @@
       "symbols": []
     },
     {
-      "uri": "problems/198-house-robber/solution.py",
+      "uri": "problems/198-house-robber/bottom-up-prefix.py",
       "symbols": [
         {
           "name": "rob",
           "detail": "rob(houses: list[int]) -> int",
           "kind": 12,
-          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 8, "character": 16}},
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 4, "character": 13}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 7
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/198-house-robber/bottom-up-suffix.py",
+      "symbols": [
+        {
+          "name": "rob",
+          "detail": "rob(houses: list[int]) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 4, "character": 13}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 7
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/198-house-robber/top-down-suffix.py",
+      "symbols": [
+        {
+          "name": "rob",
+          "detail": "rob(houses: list[int]) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 10, "character": 16}},
           "nameRange": {
             "start": {
               "line": 0,
@@ -1123,16 +1167,16 @@
           "children": [
             {
               "name": "dp",
-              "detail": "dp(h)",
+              "detail": "dp(i: int) -> int",
               "kind": 12,
-              "range": {"start": {"line": 2, "character": 4}, "end": {"line": 7, "character": 22}},
+              "range": {"start": {"line": 3, "character": 4}, "end": {"line": 8, "character": 22}},
               "nameRange": {
                 "start": {
-                  "line": 2,
+                  "line": 3,
                   "character": 8
                 },
                 "end": {
-                  "line": 2,
+                  "line": 3,
                   "character": 10
                 }
               },
@@ -1461,6 +1505,71 @@
               "children": []
             }
           ]
+        }
+      ]
+    },
+    {
+      "uri": "problems/213-house-robber-ii/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/213-house-robber-ii/_solution.py",
+      "symbols": [
+        {
+          "name": "rob",
+          "detail": "rob(houses: list[int]) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 12, "character": 0}, "end": {"line": 15, "character": 63}},
+          "nameRange": {
+            "start": {
+              "line": 12,
+              "character": 4
+            },
+            "end": {
+              "line": 12,
+              "character": 7
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/213-house-robber-ii/solution.py",
+      "symbols": [
+        {
+          "name": "circularRob",
+          "detail": "circularRob(houses: list[int]) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 4, "character": 49}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 15
+            }
+          },
+          "children": []
+        },
+        {
+          "name": "rob",
+          "detail": "rob(houses: list[int]) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 7, "character": 0}, "end": {"line": 11, "character": 13}},
+          "nameRange": {
+            "start": {
+              "line": 7,
+              "character": 4
+            },
+            "end": {
+              "line": 7,
+              "character": 7
+            }
+          },
+          "children": []
         }
       ]
     },

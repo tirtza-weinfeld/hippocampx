@@ -1,0 +1,8 @@
+- In a circle, first and last houses are adjacent — we cannot rob both
+    - ⇒ Split into two linear cases:
+        - exclude last house → `rob(houses[:-1])`
+        - exclude first house → `rob(houses[1:])`
+    - Take the better of the two.
+
+- Base case:
+        - if only one house, rob it directly.

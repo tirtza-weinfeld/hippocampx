@@ -206,6 +206,23 @@
       "difficulty": "hard",
       "topics": ["game", "dynamic-programming"]
     },
+    "213-house-robber-ii": {
+      "time_stamps": {
+        "created_at": "2025-10-24T09:05:51.240258",
+        "updated_at": "2025-10-24T12:13:44.601228"
+      },
+      "solutions": {
+        "solution.py": {
+          "intuition": "In a circle, first and last houses are adjacent — we cannot rob both\n    ⇒ Split into two linear cases:\n        exclude last house → `rob(houses[:-1])`\n        exclude first house → `rob(houses[1:])`\n    Take the better of the two.\n\n    Base case:\n        if only one house, rob it directly.",
+          "code": "def circularRob(houses: list[int]) -> int:\n    if len(houses) == 1:\n        return houses[0]\n    # compute two linear cases and choose max\n    return max(rob(houses[:-1]), rob(houses[1:]))\n\n# 198\ndef rob(houses: list[int]) -> int:\n    h1, h2 = 0, 0\n    for h in houses:\n        h2, h1 = h1, max(h1, h2 + h)\n    return h1"
+        }
+      },
+      "title": "House Robber II",
+      "definition": "Given houses[i] = money in the i-th house arranged in a circle, return the maximum amount you can rob without robbing two adjacent houses",
+      "leetcode": "https://leetcode.com/problems/house-robber-ii",
+      "difficulty": "Medium",
+      "topics": ["dynamic_programming", "dynamic_programming-1D"]
+    },
     "875-koko-eating-bananas": {
       "time_stamps": {
         "created_at": "2025-09-12T16:06:03.945955",
@@ -696,18 +713,42 @@
     "198-house-robber": {
       "time_stamps": {
         "created_at": "2025-10-08T20:56:07.516185",
-        "updated_at": "2025-10-08T23:22:49.984532"
+        "updated_at": "2025-10-24T12:21:01.225020"
       },
       "solutions": {
-        "solution.py": {
-          "code": "def rob(houses: list[int]) -> int:\n    memo = {}\n    def dp(h):\n        if h >= len(houses):\n            return 0\n        if h not in memo:\n            memo[h] = max(houses[h] + dp(h + 2), dp(h + 1))\n        return memo[h]\n    return dp(0)"
+        "bottom-up-prefix.py": {
+          "intuition": "Deep Dive: Subproblems: dp(i) = maximum money obtainable robbing prefix `houses[0..i]\n    for 0 ≤ i < n.  (*[14!]prefix ≙ starting from 0 until i*)\n\n    Deep Dive: Relation: dp(i) = max(dp(i-1), houses[i] + dp(i-2))\n        Either skip house `i` (best stays `dp(i-1)`)\n        or rob it and skip `i-1` (best is `houses[i] + dp(i-2)`)\n\n    Deep Dive: Topo. order: Increasing i\n        Increasing i  (i = 0, 1, ..., n-1)\n\n    Deep Dive: Base: dp(0)\n        max money obtainable robbing the empty prefix `houses[0..0]`\n\n    Deep Dive: Original: dp(n)\n        maximum money obtainable robbing prefix `houses[0..n-1]` (the whole array)",
+          "time_complexity": "O(n):\n    *Θ(n)* subproblems, *Θ(1)* work each → *Θ(n)* total",
+          "variables": {
+            "h1": "the best total so far (that is, dp(i-1), the best up to the previous house).",
+            "h2": "the best total up to two houses ago (dp(i-2))."
+          },
+          "expressions": {
+            "h2, h1 = h1, max(h1, h2 + h)": "choose best between:\n        - skipping this house → keep h1 (dp(i-1))\n        - robbing this house → add h to h2 (dp(i-2) + h)"
+          },
+          "code": "\n\n\ndef rob(houses: list[int]) -> int:\n    h1, h2 = 0, 0\n    for h in houses:\n        h2, h1 = h1, max(h1, h2 + h)\n    return h1\n\n\n    "
+        },
+        "top-down-suffix.py": {
+          "expressions": {
+            "max(dp(i + 1), houses[i] + dp(i + 2))": "Either skip house `i` *[1!](best stays `dp(i+1)`)*\n        or rob it and skip `i+1` *[2!](best is `houses[i] + dp(i+2)`)*"
+          },
+          "intuition": "Deep Dive: Subproblems: dp(i) = maximum money obtainable robbing **suffix** `houses[i..n-1]`,             for 0 ≤ i ≤ n.  (*[4!]suffix ≙ starting from i until the end*)\n\n    Deep Dive: Relation: dp(i) = max(dp(i+1), houses[i] + dp(i+2))\n        Either skip house `i` (best stays `dp(i+1)`)\n        or rob it and skip `i+1` (best is `houses[i] + dp(i+2)`)\n\n    Deep Dive: Topo. order: Decreasing i\n        Subproblems `dp(i)` depend solely on strictly larger `i` so acyclic\n\n    Deep Dive: Base: dp(n)\n        max money obtainable robbing the empty suffix `houses[n..n]`\n\n    Deep Dive: Original: dp(0)\n        maximum money obtainable robbing suffix `houses[0..n-1]` (the whole array)",
+          "time_complexity": "O(n):\n    *Θ(n)* subproblems, *Θ(1)* work each → *Θ(n)* total (with memoization)",
+          "code": "\n\n\ndef rob(houses: list[int]) -> int:\n\n    memo = {}\n    def dp(i: int) -> int:\n        if i >= len(houses):\n            return 0\n        if i not in memo:\n            memo[i] = max(dp(i + 1), houses[i] + dp(i + 2))\n        return memo[i]\n\n    return dp(0)\n"
+        },
+        "bottom-up-suffix.py": {
+          "expressions": {
+            "reversed(range(len(houses)))": "for i in range(len(houses) - 1, -1, -1)"
+          },
+          "code": "def rob(houses: list[int]) -> int:\n    h1 = h2 = 0\n    for i in reversed(range(len(houses))):\n        h1, h2 = max(h1, houses[i] + h2), h1\n    return h1"
         }
       },
       "title": "House Robber",
       "definition": "Given houses[i] = money in house i, return the maximum amount you can rob without robbing two adjacent house.",
       "leetcode": "https://leetcode.com/problems/house-robber",
       "difficulty": "medium",
-      "topics": ["dynamic_programming", "dynamic_programming-1D"]
+      "topics": ["dynamic_programming", "dynamic_programming-1D"],
+      "group": [["top-down-suffix.py"], ["bottom-up-suffix.py"], ["bottom-up-prefix.py"]]
     },
     "146-lru-cache": {
       "time_stamps": {

@@ -16,14 +16,6 @@ Given a string `s`, find the length of the longest substring without repeating c
 
 - $O(n)$
 
-## [!(ProblemArguments)] Key Arguments
-
-- `s: str`: Input string to analyze
-
-## [!(ProblemKeyExpressions)] Key Expressions
-
-- `l = max(c_idx[c] + 1, l)`: ensures that l does not move backward in cases where the last occurrence of s[r] was before l.
-
 ## [!(ProblemReturns)] Returns
 
 `int`: Length of the longest substring without repeating characters

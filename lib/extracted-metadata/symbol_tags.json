@@ -1,9 +1,9 @@
 {
   "core.bellman-ford.classic:bellman_ford_classic": {
     "args": [
-      "edges",
+      "source",
       "vertices",
-      "source"
+      "edges"
     ],
     "code": "def bellman_ford_classic(\n    vertices: list[str], edges: list[tuple[str, str, float]], source: str\n) -> dict[str, float]:\n\n    d = [float(\"inf\")] * (V := len(vertices))\n    d[source] = 0\n\n    for _ in range(V - 1):\n        updated = False\n        for u, v, w in edges:\n            if d[u] + w < d[v]:\n                d[v] = d[u] + w\n                updated = True\n        if not updated:\n            return d\n\n    # if we get here, we did all V-1 passes, so still need to check for cycles\n    for u, v, w in edges:\n        if d[u] + w < d[v]:\n            raise Exception(\"Negative-weight cycle\")\n\n    return d",
     "expressions": {
@@ -31,9 +31,9 @@
   },
   "core.bellman-ford.layered_dag:bellman_ford_layered_dag": {
     "args": [
+      "source",
       "edges",
-      "vertices",
-      "source"
+      "vertices"
     ],
     "code": "def bellman_ford_layered_dag(\n    vertices: list[str], edges: list[tuple[str, str, float]], source: str\n) -> dict[str, float]:\n\n    # 1) Initialize\n    d = {v: float(\"inf\") for v in vertices}\n    d[source], V = 0, len(vertices)\n\n    # 2) Layered relaxation: starting from δ₀, do V passes to compute δ₁…δ_V\n    for k in range(V):  # k = 0…V-1\n        d_k = {**d}  # snapshot of δ_k\n        for u, v, w in edges:\n            if d[u] + w < d_k[v]:\n                d_k[v] = d[u] + w\n        d = d_k  # now holds δ_{k+1}\n\n    # 3) Identify \"witnesses\" to negative cycles:\n    #    any v for which an extra relaxation is still possible\n    witnesses = {v for u, v, w in edges if d[u] + w < d[v]}\n\n    if not witnesses:\n        return d\n\n    # 4) Build adjacency list for negative-cycle propagation\n    adj = defaultdict(list)\n    for u, v, _ in edges:\n        adj[u].append(v)\n\n    # 5) DFS to propagate −∞ to all vertices reachable from any witness\n    stack = list(witnesses)\n    reachable = set(witnesses)\n\n    while stack:\n        u = stack.pop()\n        d[u] = float(\"-inf\")\n        for v in adj[u]:\n            if v not in reachable:\n                reachable.add(v)\n                stack.append(v)\n\n    return d",
     "file_path": "backend/algorithms/core/bellman-ford/layered_dag.py",
@@ -145,8 +145,8 @@
   "core.modular-arithmetic.congruent1:congruent1": {
     "args": [
       "a",
-      "b",
-      "n"
+      "n",
+      "b"
     ],
     "code": "def congruent1(a: int, b: int, n: int) -> bool:\n    return (a - b) % n == 0",
     "file_path": "backend/algorithms/core/modular-arithmetic/congruent1.py",
@@ -180,8 +180,8 @@
   "core.modular-arithmetic.congruent2:congruent2": {
     "args": [
       "a",
-      "b",
-      "n"
+      "n",
+      "b"
     ],
     "code": "def congruent2(a: int, b: int, n: int) -> bool:\n    return a % n == b % n",
     "file_path": "backend/algorithms/core/modular-arithmetic/congruent2.py",
@@ -476,9 +476,9 @@
   },
   "problems.127-word-ladder.solution:word_ladder": {
     "args": [
+      "beginWord",
       "endWord",
-      "wordList",
-      "beginWord"
+      "wordList"
     ],
     "code": "def word_ladder(beginWord: str, endWord: str, wordList: list[str]) -> int:\n    if endWord not in wordList:\n        return 0\n\n    L = len(beginWord)\n    combos: dict[str, list[str]] = defaultdict(list)\n    for w in wordList:\n        for i in range(L):\n            combos[w[:i] + \"*\" + w[i+1:]].append(w)\n\n    front, back = {beginWord}, {endWord}\n    dist_front, dist_back = {beginWord: 1}, {endWord: 1}\n\n    while front and back:\n        # expand smaller side to optimize\n        if len(front) > len(back):\n            front, back = back, front\n            dist_front, dist_back = dist_back, dist_front\n\n        next_front = set()\n        for word in front:\n            for i in range(L):\n                for n in combos[word[:i] + \"*\" + word[i+1:]]: # Use pre-computed neighbors\n                    if n in dist_back:\n                        return dist_front[word] + dist_back[n]\n                    if n not in dist_front:\n                        dist_front[n] = dist_front[word] + 1\n                        next_front.add(n)\n        front = next_front\n\n    return 0",
     "file_path": "backend/algorithms/problems/127-word-ladder/solution.py",
@@ -797,11 +797,11 @@
   },
   "problems.1514-path-with-maximum-probability.solution:path_with_maximum_probability": {
     "args": [
-      "edges",
-      "start",
       "end",
       "succProb",
-      "n"
+      "start",
+      "n",
+      "edges"
     ],
     "code": "def path_with_maximum_probability(n: int, edges: list[list[int]], succProb: list[float], start: int, end: int) -> float:\n    prob = [0.0] * n # rob[i] stores max probability to reach node i\n    prob[start] = 1.0  # Start with full certainty\n\n    for _ in range(n - 1):  # Perform up to n-1 rounds of relaxation\n        updated = False\n        for (u, v), p in zip(edges, succProb):\n            if prob[u] * p > prob[v]:  # Try to improve v through u\n                prob[v] = prob[u] * p\n                updated = True\n            if prob[v] * p > prob[u]:  # Try to improve u through v (undirected graph)\n                prob[u] = prob[v] * p\n                updated = True\n        if not updated:\n            break  # Early exit if no updates in this round\n\n    return prob[end]",
     "file_path": "backend/algorithms/problems/1514-path-with-maximum-probability/solution.py",
@@ -861,8 +861,8 @@
   },
   "problems.1590-make-sum-divisible-by-p.solution:minSubarrayToMakeSumDivisibleByP": {
     "args": [
-      "p",
-      "segments"
+      "segments",
+      "p"
     ],
     "code": "def minSubarrayToMakeSumDivisibleByP(segments: list[int], p: int) -> int:\n\n    total_remainder = sum(segments) % p\n    if total_remainder == 0:\n        return 0\n\n    remainder_idx = {0: -1}\n    prefix_remainder, min_length = 0, len(segments)\n\n    for i, segment in enumerate(segments):\n        prefix_remainder = (prefix_remainder + segment) % p\n        need = (prefix_remainder - total_remainder + p) % p\n        if need in remainder_idx:\n            min_length = min(min_length, i - remainder_idx[need])\n        remainder_idx[prefix_remainder] = i\n\n    return min_length if min_length < len(segments) else -1",
     "file_path": "backend/algorithms/problems/1590-make-sum-divisible-by-p/solution.py",
@@ -948,6 +948,87 @@
       "label": "int"
     },
     "time_complexity": "O(k):\nwhere k = number of 1s (faster than looping 32 times)"
+  },
+  "problems.198-house-robber.bottom-up-prefix:rob": {
+    "args": [
+      "houses"
+    ],
+    "code": "def rob(houses: list[int]) -> int:\n    h1, h2 = 0, 0\n    for h in houses:\n        h2, h1 = h1, max(h1, h2 + h)\n    return h1",
+    "expressions": {
+      "h2, h1 = h1, max(h1, h2 + h)": "choose best between:\n        - skipping this house → keep h1 (dp(i-1))\n        - robbing this house → add h to h2 (dp(i-2) + h)"
+    },
+    "file_path": "backend/algorithms/problems/198-house-robber/bottom-up-prefix.py",
+    "intuition": "- Deep Dive: Subproblems: dp(i) = maximum money obtainable robbing prefix `houses[0..i]\n    - for 0 ≤ i < n.  (*[14!]prefix ≙ starting from 0 until i*)\n\n    - Deep Dive: Relation: dp(i) = max(dp(i-1), houses[i] + dp(i-2))\n        - Either skip house `i` (best stays `dp(i-1)`)\n        - or rob it and skip `i-1` (best is `houses[i] + dp(i-2)`)\n\n    - Deep Dive: Topo. order: Increasing i\n        - Increasing i  (i = 0, 1, ..., n-1)\n\n    - Deep Dive: Base: dp(0)\n        - max money obtainable robbing the empty prefix `houses[0..0]`\n\n    - Deep Dive: Original: dp(n)\n        - maximum money obtainable robbing prefix `houses[0..n-1]` (the whole array)",
+    "kind": "function",
+    "label": "def rob(houses: list[int]) -> int",
+    "name": "rob",
+    "returns": {
+      "label": "int"
+    },
+    "time_complexity": "O(n):\n*Θ(n)* subproblems, *Θ(1)* work each → *Θ(n)* total",
+    "variables": [
+      "h1",
+      "h2"
+    ]
+  },
+  "problems.198-house-robber.bottom-up-prefix:rob.h1": {
+    "kind": "variable",
+    "name": "h1",
+    "summary": "the best total so far (that is, dp(i-1), the best up to the previous house)."
+  },
+  "problems.198-house-robber.bottom-up-prefix:rob.h2": {
+    "kind": "variable",
+    "name": "h2",
+    "summary": "the best total up to two houses ago (dp(i-2))."
+  },
+  "problems.198-house-robber.bottom-up-prefix:rob.h2, h1 = h1, max(h1, h2 + h)": {
+    "kind": "expression",
+    "name": "h2, h1 = h1, max(h1, h2 + h)",
+    "summary": "choose best between:\n        - skipping this house → keep h1 (dp(i-1))\n        - robbing this house → add h to h2 (dp(i-2) + h)"
+  },
+  "problems.198-house-robber.bottom-up-suffix:rob": {
+    "args": [
+      "houses"
+    ],
+    "code": "def rob(houses: list[int]) -> int:\n    h1 = h2 = 0\n    for i in reversed(range(len(houses))):\n        h1, h2 = max(h1, houses[i] + h2), h1\n    return h1",
+    "expressions": {
+      "reversed(range(len(houses)))": "for i in range(len(houses) - 1, -1, -1)"
+    },
+    "file_path": "backend/algorithms/problems/198-house-robber/bottom-up-suffix.py",
+    "kind": "function",
+    "label": "def rob(houses: list[int]) -> int",
+    "name": "rob",
+    "returns": {
+      "label": "int"
+    }
+  },
+  "problems.198-house-robber.bottom-up-suffix:rob.reversed(range(len(houses)))": {
+    "kind": "expression",
+    "name": "reversed(range(len(houses)))",
+    "summary": "for i in range(len(houses) - 1, -1, -1)"
+  },
+  "problems.198-house-robber.top-down-suffix:rob": {
+    "args": [
+      "houses"
+    ],
+    "code": "def rob(houses: list[int]) -> int:\n\n    memo = {}\n    def dp(i: int) -> int:\n        if i >= len(houses):\n            return 0\n        if i not in memo:\n            memo[i] = max(dp(i + 1), houses[i] + dp(i + 2))\n        return memo[i]\n\n    return dp(0)",
+    "expressions": {
+      "max(dp(i + 1), houses[i] + dp(i + 2))": "Either skip house `i` *[1!](best stays `dp(i+1)`)*\n        or rob it and skip `i+1` *[2!](best is `houses[i] + dp(i+2)`)*"
+    },
+    "file_path": "backend/algorithms/problems/198-house-robber/top-down-suffix.py",
+    "intuition": "- Deep Dive: Subproblems: dp(i) = maximum money obtainable robbing **suffix** `houses[i..n-1]`,             for 0 ≤ i ≤ n.  (*[4!]suffix ≙ starting from i until the end*)\n\n    - Deep Dive: Relation: dp(i) = max(dp(i+1), houses[i] + dp(i+2))\n        - Either skip house `i` (best stays `dp(i+1)`)\n        - or rob it and skip `i+1` (best is `houses[i] + dp(i+2)`)\n\n    - Deep Dive: Topo. order: Decreasing i\n        - Subproblems `dp(i)` depend solely on strictly larger `i` so acyclic\n\n    - Deep Dive: Base: dp(n)\n        - max money obtainable robbing the empty suffix `houses[n..n]`\n\n    - Deep Dive: Original: dp(0)\n        - maximum money obtainable robbing suffix `houses[0..n-1]` (the whole array)",
+    "kind": "function",
+    "label": "def rob(houses: list[int]) -> int",
+    "name": "rob",
+    "returns": {
+      "label": "int"
+    },
+    "time_complexity": "O(n):\n*Θ(n)* subproblems, *Θ(1)* work each → *Θ(n)* total (with memoization)"
+  },
+  "problems.198-house-robber.top-down-suffix:rob.max(dp(i + 1), houses[i] + dp(i + 2))": {
+    "kind": "expression",
+    "name": "max(dp(i + 1), houses[i] + dp(i + 2))",
+    "summary": "Either skip house `i` *[1!](best stays `dp(i+1)`)*\n        or rob it and skip `i+1` *[2!](best is `houses[i] + dp(i+2)`)*"
   },
   "problems.20-valid-parentheses.solution:isValid": {
     "args": [
@@ -1098,8 +1179,8 @@
   },
   "problems.212-word-search-ii.solution:word_search_II": {
     "args": [
-      "board",
-      "words"
+      "words",
+      "board"
     ],
     "code": "def word_search_II(board: list[list[str]], words: list[str]) -> list[str]:\n    trie = {}  \n    for word in words:\n        node = trie\n        for c in word:\n            node = node.setdefault(c, {})\n        node[\"$\"] = word\n\n    def dfs(i, j, parent):\n        if not (0 <= i < m and 0 <= j < n) or (c := board[i][j]) not in parent:\n            return\n        node = parent[c]\n        if \"$\" in node:\n            res.append(node.pop(\"$\"))\n        board[i][j] = \"#\"\n        for x, y in ((i - 1, j), (i + 1, j), (i, j - 1), (i, j + 1)):\n            dfs(x, y, node)\n        board[i][j] = c\n        if not node:\n            parent.pop(c)\n\n    m, n, res = len(board), len(board[0]), []\n    [dfs(i, j, trie) for i in range(m) for j in range(n) if board[i][j] in trie]\n\n    return res",
     "expressions": {
@@ -1198,6 +1279,20 @@
     "name": "trie",
     "summary": "Build trie from **words** list. Each end node gets a `$` key holding the word"
   },
+  "problems.213-house-robber-ii.solution:circularRob": {
+    "args": [
+      "houses"
+    ],
+    "code": "def circularRob(houses: list[int]) -> int:\n    if len(houses) == 1:\n        return houses[0]\n    # compute two linear cases and choose max\n    return max(rob(houses[:-1]), rob(houses[1:]))",
+    "file_path": "backend/algorithms/problems/213-house-robber-ii/solution.py",
+    "intuition": "- In a circle, first and last houses are adjacent — we cannot rob both\n    - ⇒ Split into two linear cases:\n        - exclude last house → `rob(houses[:-1])`\n        - exclude first house → `rob(houses[1:])`\n    - Take the better of the two.\n\n    - Base case:\n        - if only one house, rob it directly.",
+    "kind": "function",
+    "label": "def circularRob(houses: list[int]) -> int",
+    "name": "circularRob",
+    "returns": {
+      "label": "int"
+    }
+  },
   "problems.2140-solving-questions-with-brainpower.solution:most_points_solving_questions_with_brainpower": {
     "args": [
       "questions"
@@ -1215,9 +1310,9 @@
   },
   "problems.2145-count-the-hidden-sequences.solution:numberOfArrays": {
     "args": [
-      "differences",
+      "lower",
       "upper",
-      "lower"
+      "differences"
     ],
     "code": "def numberOfArrays(differences: list[int], lower: int, upper: int) -> int:\n\n    prefix_sum = min_marker = max_marker = 0\n\n    for diff in differences:\n        prefix_sum += diff\n        min_marker = min(min_marker, prefix_sum)\n        max_marker = max(max_marker, prefix_sum)\n\n    return max(0, (upper - max_marker) - (lower - min_marker) + 1)",
     "file_path": "backend/algorithms/problems/2145-count-the-hidden-sequences/solution.py",
@@ -1316,8 +1411,8 @@
   },
   "problems.325-maximum-size-subarray-sum-equals-k.solution:maxSizeSubarraySumEqualsK": {
     "args": [
-      "k",
-      "segments"
+      "segments",
+      "k"
     ],
     "code": "def maxSizeSubarraySumEqualsK(segments: list[int], k: int) -> int:\n\n    marker_idx = {0: -1}\n    prefix_sum = max_length = 0\n\n    for i, segment in enumerate(segments):\n\n        prefix_sum += segment\n\n        if (target_marker := prefix_sum - k) in marker_idx:\n            max_length = max(max_length, i - marker_idx[target_marker])\n\n        if prefix_sum not in marker_idx:\n            marker_idx[prefix_sum] = i\n\n    return max_length",
     "file_path": "backend/algorithms/problems/325-maximum-size-subarray-sum-equals-k/solution.py",
@@ -1487,8 +1582,8 @@
   },
   "problems.39-combination-sum.solution:combination_sum": {
     "args": [
-      "target",
-      "candidates"
+      "candidates",
+      "target"
     ],
     "code": "def combination_sum(candidates: list[int], target: int) -> list[list[int]]:\n\n    candidates.sort()\n    res, path = [], []\n\n    def dfs(i: int, rem: int) -> None:\n        if rem == 0:\n            res.append(path.copy())\n            return\n        for j in range(i, len(candidates)):\n            if (c := candidates[j]) > rem:\n                break\n            path.append(c)\n            dfs(j, rem - c)\n            path.pop()\n\n    dfs(0, target)\n    return res",
     "file_path": "backend/algorithms/problems/39-combination-sum/solution.py",
@@ -1688,8 +1783,8 @@
   },
   "problems.518-coin-change-ii.solution:coin_change_II": {
     "args": [
-      "amount",
-      "coins"
+      "coins",
+      "amount"
     ],
     "code": "def coin_change_II(amount: int, coins: list[int]) -> int:\n    memo, n = {}, len(coins)\n\n    def dp(c, amount):\n        if amount == 0:\n            return 1\n        if amount < 0 or c == n:\n            return 0\n        if (c, amount) not in memo:\n            memo[c, amount] = dp(c, amount - coins[c]) + dp(c + 1, amount)\n        return memo[c, amount]\n\n    return dp(0, amount)",
     "file_path": "backend/algorithms/problems/518-coin-change-ii/solution.py",
@@ -1704,8 +1799,8 @@
   },
   "problems.523-continuous-subarray-sum.solution:checkSubarraySumIsMultipleOfK": {
     "args": [
-      "k",
-      "segments"
+      "segments",
+      "k"
     ],
     "code": "def checkSubarraySumIsMultipleOfK(segments: list[int], k: int) -> bool:\n\n    remainder_idx = {0: -1}\n    prefix_remainder = 0\n\n    for i, segment in enumerate(segments):\n        prefix_remainder = (prefix_remainder + segment) % k\n        if prefix_remainder in remainder_idx:\n            if i - remainder_idx[prefix_remainder] > 1:\n                return True\n        else:\n            remainder_idx[prefix_remainder] = i\n    return False",
     "file_path": "backend/algorithms/problems/523-continuous-subarray-sum/solution.py",
@@ -1787,8 +1882,8 @@
   },
   "problems.560-subarray-sum-equals-k.solution:subarraySumEqualsK": {
     "args": [
-      "k",
-      "segments"
+      "segments",
+      "k"
     ],
     "code": "def subarraySumEqualsK(segments: list[int], k: int) -> int:\n\n    marker_frequency = defaultdict(int, {0: 1})\n    prefix_sum = count = 0\n\n    for segment in segments:\n        prefix_sum += segment\n        count += marker_frequency[prefix_sum - k]\n        marker_frequency[prefix_sum] += 1\n\n    return count",
     "file_path": "backend/algorithms/problems/560-subarray-sum-equals-k/solution.py",
@@ -1829,9 +1924,9 @@
   },
   "problems.743-network-delay-time.solution:network_delay_time": {
     "args": [
-      "times",
       "n",
-      "k"
+      "k",
+      "times"
     ],
     "code": "def network_delay_time(times: list[list[int]], n: int, k: int) -> int:\n\n    adj = defaultdict(list)\n    for u, v, w in times:\n        adj[u].append((v, w))\n    pq, finalized, time = [(0, k)], set(), 0\n    while pq:\n        t, node = heapq.heappop(pq)\n        if node in finalized:\n            continue\n        finalized.add(node)\n        time = t\n        for neighbor, travel_time in adj[node]:\n            if neighbor not in finalized:\n                heapq.heappush(pq, (time + travel_time, neighbor))\n    return time if len(finalized) == n else -1",
     "file_path": "backend/algorithms/problems/743-network-delay-time/solution.py",
@@ -1907,11 +2002,11 @@
   },
   "problems.787-cheapest-flights-within-k-stops.bellman_ford:cheapest_flights_with_at_most_k_stops": {
     "args": [
-      "dst",
       "n",
       "k",
       "flights",
-      "src"
+      "src",
+      "dst"
     ],
     "code": "def cheapest_flights_with_at_most_k_stops(\n    n: int, flights: list[list[int]], src: int, dst: int, k: int\n) -> int:\n    d = [float(\"inf\")] * n\n    d[src] = 0\n\n    for _ in range(k + 1):\n        tmp = d[:]\n        for u, v, w in flights:\n            if d[u] + w < tmp[v]:\n                tmp[v] = d[u] + w\n        d = tmp\n\n    return d[dst] if d[dst] < float(\"inf\") else -1",
     "file_path": "backend/algorithms/problems/787-cheapest-flights-within-k-stops/bellman_ford.py",
@@ -1925,10 +2020,10 @@
   },
   "problems.787-cheapest-flights-within-k-stops.dijkstra:cheapest_flights_with_at_most_k_stops": {
     "args": [
-      "dst",
       "k",
-      "flights",
-      "src"
+      "src",
+      "dst",
+      "flights"
     ],
     "code": "def cheapest_flights_with_at_most_k_stops( flights: list[list[int]], src: int, dst: int, k: int) -> int:\n\n    graph = defaultdict(list)\n    for u, v, price in flights:\n        graph[u].append((v, price))\n\n    pq, min_stops = [(0, src, 0)], {}\n\n    while pq:\n        cost, city, stops = heapq.heappop(pq)\n\n        # If we've already found a path to this city using fewer or equal stops, skip.\n        # A path with fewer stops must have been cheaper or equal due to PQ ordering.\n        if stops > min_stops.get(city, float(\"inf\")): continue\n        if city == dst: return cost\n\n        # Record the new minimum stops to reach this city\n        min_stops[city] = stops\n        if stops <= k:\n            for neighbor, price in graph[city]:\n                heapq.heappush(pq, (cost + price, neighbor, stops + 1))\n    return -1",
     "file_path": "backend/algorithms/problems/787-cheapest-flights-within-k-stops/dijkstra.py",
@@ -1959,8 +2054,8 @@
   },
   "problems.79-word-search.solution:word_search": {
     "args": [
-      "board",
-      "word"
+      "word",
+      "board"
     ],
     "code": "def word_search(board: list[list[str]], word: str) -> bool:\n    rows, cols, n = len(board), len(board[0]), len(word)\n    def dfs(r: int, c: int, i: int) -> bool:\n        if i == n:\n            return True\n        if not (0 <= r < rows and 0 <= c < cols and board[r][c] == word[i]):\n            return False\n        tmp, board[r][c] = board[r][c], \"#\"\n        for x, y in ((r + 1, c), (r - 1, c), (r, c + 1), (r, c - 1)):\n            if dfs(x, y, i + 1):\n                board[r][c] = tmp\n                return True\n        board[r][c] = tmp\n        return False\n    return any(\n        dfs(r, c, 0)\n        for r in range(rows)\n        for c in range(cols)\n        if board[r][c] == word[0]\n    )",
     "file_path": "backend/algorithms/problems/79-word-search/solution.py",
@@ -2108,8 +2203,8 @@
   },
   "problems.974-subarray-sums-divisible-by-k.solution:subarraysSumIsDivisibleByK": {
     "args": [
-      "k",
-      "segments"
+      "segments",
+      "k"
     ],
     "code": "def subarraysSumIsDivisibleByK(segments: list[int], k: int) -> int:\n    remainder_frequency = defaultdict(int, {0: 1})\n    prefix_remainder = count = 0\n\n    for segment in segments:\n        prefix_remainder = (prefix_remainder + segment) % k\n        count += remainder_frequency[prefix_remainder]\n        remainder_frequency[prefix_remainder] += 1\n    return count",
     "file_path": "backend/algorithms/problems/974-subarray-sums-divisible-by-k/solution.py",

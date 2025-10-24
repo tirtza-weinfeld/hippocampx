@@ -1,9 +1,0 @@
-def rob(houses: list[int]) -> int:
-    memo = {}
-    def dp(h):
-        if h >= len(houses):
-            return 0
-        if h not in memo:
-            memo[h] = max(houses[h] + dp(h + 2), dp(h + 1))
-        return memo[h]
-    return dp(0)

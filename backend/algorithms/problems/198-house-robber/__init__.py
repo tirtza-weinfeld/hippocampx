@@ -4,4 +4,8 @@ Definition: Given houses[i] = money in house i, return the maximum amount you ca
 Leetcode: https://leetcode.com/problems/house-robber
 Difficulty: medium
 Topics: [dynamic_programming , dynamic_programming-1D]
+Group: 
+    [top-down-suffix.py]
+    [bottom-up-suffix.py]
+    [bottom-up-prefix.py]
 """

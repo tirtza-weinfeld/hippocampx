@@ -22,24 +22,6 @@ Given a reference to a node in a connected undirected graph, return a deep copy 
 - $O(V + E)$
     - where V is the number of vertices (nodes) and E is the number of edges. This is optimal as we must visit every node and traverse every edge to create the full copy.
 
-## [!(ProblemArguments)] Key Arguments
-
-- `node: Node | None`: The node to clone
-
-## [!(ProblemKeyVariables)] Key Variables
-
-- `cloned`: A dictionary that maps an original node to its clone
-- `queue`: A queue that stores the nodes to be visited
-- `cur`: The current node being visited
-- `n`: The neighbor of the current node
-
-## [!(ProblemKeyExpressions)] Key Expressions
-
-- `if n not in cloned`: Check if the node has not been visited
-- `cloned[n] = Node(n.val)`: Create a new node for the neighbor
-- `queue.append(n)`: Add the neighbor to the queue
-- `cloned[cur].neighbors.append(cloned[n])`: Add the neighbor to the current node's neighbors
-
 ## [!(ProblemReturns)] Returns
 
 `Node | None`: The cloned graph

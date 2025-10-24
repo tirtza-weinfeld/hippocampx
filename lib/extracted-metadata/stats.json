@@ -53,6 +53,14 @@
       "394-decode-string",
       "84-largest-rectangle-in-histogram"
     ],
+    "dynamic_programming": [
+      "198-house-robber",
+      "213-house-robber-ii"
+    ],
+    "dynamic_programming-1D": [
+      "198-house-robber",
+      "213-house-robber-ii"
+    ],
     "binary-search": [
       "1011-capacity-to-ship-packages-within-d-days",
       "153-find-minimum-in-rotated-sorted-array",
@@ -116,12 +124,6 @@
       "215-kth-largest-element-in-an-array",
       "347-top-k-frequent-elements"
     ],
-    "dynamic_programming": [
-      "198-house-robber"
-    ],
-    "dynamic_programming-1D": [
-      "198-house-robber"
-    ],
     "greedy": [
       "122-best-time-to-buy-and-sell-stock-ii"
     ],
@@ -176,6 +178,7 @@
       "200-number-of-islands",
       "208-implement-trie-prefix-tree",
       "211-design-add-and-search-words-data-structure",
+      "213-house-robber-ii",
       "2140-solving-questions-with-brainpower",
       "2145-count-the-hidden-sequences",
       "215-kth-largest-element-in-an-array",
@@ -270,6 +273,10 @@
     ],
     "215-kth-largest-element-in-an-array": [
       "$O(n \\log k)$"
+    ],
+    "198-house-robber": [
+      "$O(n)$",
+      "$O(n)$"
     ],
     "102-binary-tree-level-order-traversal": [
       "$O(N)$"

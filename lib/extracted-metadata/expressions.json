@@ -28,6 +28,15 @@
   "problems/215-kth-largest-element-in-an-array/solution.py": [
     {"range": {"start": {"line": 6, "character": 18}, "end": {"line": 6, "character": 35}}, "nameRange": {"start": {"line": 6, "character": 18}, "end": {"line": 6, "character": 35}}, "qname": "problems.215-kth-largest-element-in-an-array.solution:findKthLargest.heapreplace(h, x)", "kind": "expression"}
   ],
+  "problems/198-house-robber/bottom-up-prefix.py": [
+    {"range": {"start": {"line": 3, "character": 8}, "end": {"line": 3, "character": 36}}, "nameRange": {"start": {"line": 3, "character": 8}, "end": {"line": 3, "character": 36}}, "qname": "problems.198-house-robber.bottom-up-prefix:rob.h2, h1 = h1, max(h1, h2 + h)", "kind": "expression"}
+  ],
+  "problems/198-house-robber/top-down-suffix.py": [
+    {"range": {"start": {"line": 7, "character": 22}, "end": {"line": 7, "character": 59}}, "nameRange": {"start": {"line": 7, "character": 22}, "end": {"line": 7, "character": 59}}, "qname": "problems.198-house-robber.top-down-suffix:rob.max(dp(i + 1), houses[i] + dp(i + 2))", "kind": "expression"}
+  ],
+  "problems/198-house-robber/bottom-up-suffix.py": [
+    {"range": {"start": {"line": 2, "character": 13}, "end": {"line": 2, "character": 41}}, "nameRange": {"start": {"line": 2, "character": 13}, "end": {"line": 2, "character": 41}}, "qname": "problems.198-house-robber.bottom-up-suffix:rob.reversed(range(len(houses)))", "kind": "expression"}
+  ],
   "problems/124-binary-tree-maximum-path-sum/solution.py": [
     {"range": {"start": {"line": 8, "character": 8}, "end": {"line": 8, "character": 42}}, "nameRange": {"start": {"line": 8, "character": 8}, "end": {"line": 8, "character": 42}}, "qname": "problems.124-binary-tree-maximum-path-sum.solution:binary_tree_maximum_path_sum.dfs.best = max(best, node.val + l + r)", "kind": "expression"},
     {"range": {"start": {"line": 9, "character": 8}, "end": {"line": 9, "character": 35}}, "nameRange": {"start": {"line": 9, "character": 8}, "end": {"line": 9, "character": 35}}, "qname": "problems.124-binary-tree-maximum-path-sum.solution:binary_tree_maximum_path_sum.dfs.return node.val + max(l, r)", "kind": "expression"}

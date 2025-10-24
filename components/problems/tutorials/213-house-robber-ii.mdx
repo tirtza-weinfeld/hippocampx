@@ -1,0 +1,42 @@
+# House Robber II
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="medium" />
+
+<PillList pills={["dynamic_programming", "dynamic_programming-1D"]} />
+
+[213. House Robber II](https://leetcode.com/problems/house-robber-ii)
+
+## [!(ProblemDefinition)] Definition
+
+Given houses[i] = money in the i-th house arranged in a circle, return the maximum amount you can rob without robbing two adjacent houses
+
+## [!(ProblemIntuition)] Intuition
+
+- In a circle, first and last houses are adjacent — we cannot rob both
+    - ⇒ Split into two linear cases:
+        - exclude last house → `rob(houses[:-1])`
+        - exclude first house → `rob(houses[1:])`
+    - Take the better of the two.
+
+- Base case:
+        - if only one house, rob it directly.
+
+## [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/213-house-robber-ii/solution.py"
+def circularRob(houses: list[int]) -> int:
+    if len(houses) == 1:
+        return houses[0]
+    # compute two linear cases and choose max
+    return max(rob(houses[:-1]), rob(houses[1:]))
+
+# 198
+def rob(houses: list[int]) -> int:
+    h1, h2 = 0, 0
+    for h in houses:
+        h2, h1 = h1, max(h1, h2 + h)
+    return h1
+```
+

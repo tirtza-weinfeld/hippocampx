@@ -20,11 +20,6 @@ Given `n` nodes labeled `1` through `n` and directed travel times between them, 
 
 - By substituting these into the standard Dijkstra complexity formula, $O(E \log V)$, you get $O(len(times)$ \log n).
 
-## [!(ProblemArguments)] Key Arguments
-
-- `times: list[list[int]]`: list of lists of integers representing the edges and their weights
-- `k: int`: starting node
-
 ## [!(ProblemReturns)] Returns
 
 `int`: minimum time for a signal starting at node `k` to reach *all* nodes or -1 if impossible

@@ -120,26 +120,26 @@ function formatCodeBlock(code: string, language: string = 'python', sourcePath?:
   return `\`\`\`${language}${sourceAttr}\n${normalizedCode}\n\`\`\`\n\n`
 }
 
-function formatVariables(variables: Record<string, string>): string {
-  return Object.entries(variables)
-    .map(([key, value]) => `- \`${key}\`: ${value}`)
-    .join('\n')
-}
+// function formatVariables(variables: Record<string, string>): string {
+//   return Object.entries(variables)
+//     .map(([key, value]) => `- \`${key}\`: ${value}`)
+//     .join('\n')
+// }
 
-function formatArgs(args: Record<string, string>): string {
-  return Object.entries(args)
-    .map(([key, value]) => `- \`${key}\`: ${value}`)
-    .join('\n')
-}
+// function formatArgs(args: Record<string, string>): string {
+//   return Object.entries(args)
+//     .map(([key, value]) => `- \`${key}\`: ${value}`)
+//     .join('\n')
+// }
 
-function formatExpressions(expressions: Record<string, string>): string {
-  return Object.entries(expressions)
-    .map(([key, value]) => {
-      // The key is already the expression, so wrap it in backticks
-      return `- \`${key}\`: ${value}`
-    })
-    .join('\n')
-}
+// function formatExpressions(expressions: Record<string, string>): string {
+//   return Object.entries(expressions)
+//     .map(([key, value]) => {
+//       // The key is already the expression, so wrap it in backticks
+//       return `- \`${key}\`: ${value}`
+//     })
+//     .join('\n')
+// }
 
 
 function solutionFileNameToTitle(fileName: string): string {
@@ -177,20 +177,20 @@ function generateSolutionContent(
   // }
 
   // Add variables if available
-  if (solution.variables && Object.keys(solution.variables).length > 0) {
-    const variablesString = formatVariables(solution.variables)
-    if (variablesString.trim()) {
-      content += formatSection('Key Variables', variablesString, 'ProblemKeyVariables', '###')
-    }
-  }
+  // if (solution.variables && Object.keys(solution.variables).length > 0) {
+  //   const variablesString = formatVariables(solution.variables)
+  //   if (variablesString.trim()) {
+  //     content += formatSection('Key Variables', variablesString, 'ProblemKeyVariables', '###')
+  //   }
+  // }
 
   // Add expressions if available
-  if (solution.expressions && Object.keys(solution.expressions).length > 0) {
-    const expressionsString = formatExpressions(solution.expressions)
-    if (expressionsString.trim()) {
-      content += formatSection('Key Expressions', expressionsString, 'ProblemKeyExpressions', '###')
-    }
-  }
+  // if (solution.expressions && Object.keys(solution.expressions).length > 0) {
+  //   const expressionsString = formatExpressions(solution.expressions)
+  //   if (expressionsString.trim()) {
+  //     content += formatSection('Key Expressions', expressionsString, 'ProblemKeyExpressions', '###')
+  //   }
+  // }
 
   // Add returns if available
   if (solution.returns && solution.returns.trim()) {
@@ -326,28 +326,28 @@ function generateMDXContent(problemId: string, problem: Problem): string {
     // }
 
     // Add args if available
-    if (solution.args && Object.keys(solution.args).length > 0) {
-      const argsString = formatArgs(solution.args)
-      if (argsString.trim()) {
-        content += formatSection('Key Arguments', argsString, 'ProblemArguments')
-      }
-    }
+    // if (solution.args && Object.keys(solution.args).length > 0) {
+    //   const argsString = formatArgs(solution.args)
+    //   if (argsString.trim()) {
+    //     content += formatSection('Key Arguments', argsString, 'ProblemArguments')
+    //   }
+    // }
 
-    // Add variables if available
-    if (solution.variables && Object.keys(solution.variables).length > 0) {
-      const variablesString = formatVariables(solution.variables)
-      if (variablesString.trim()) {
-        content += formatSection('Key Variables', variablesString, 'ProblemKeyVariables')
-      }
-    }
+    // // Add variables if available
+    // if (solution.variables && Object.keys(solution.variables).length > 0) {
+    //   const variablesString = formatVariables(solution.variables)
+    //   if (variablesString.trim()) {
+    //     content += formatSection('Key Variables', variablesString, 'ProblemKeyVariables')
+    //   }
+    // }
 
     // Add expressions if available
-    if (solution.expressions && Object.keys(solution.expressions).length > 0) {
-      const expressionsString = formatExpressions(solution.expressions)
-      if (expressionsString.trim()) {
-        content += formatSection('Key Expressions', expressionsString, 'ProblemKeyExpressions')
-      }
-    }
+    // if (solution.expressions && Object.keys(solution.expressions).length > 0) {
+    //   const expressionsString = formatExpressions(solution.expressions)
+    //   if (expressionsString.trim()) {
+    //     content += formatSection('Key Expressions', expressionsString, 'ProblemKeyExpressions')
+    //   }
+    // }
 
     // Add returns if available
     if (solution.returns && solution.returns.trim()) {

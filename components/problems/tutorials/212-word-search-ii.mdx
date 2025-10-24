@@ -26,23 +26,6 @@ Given a board and a list of words, find all words in the board.
     - **DFS (worst case):** first step ≤ 4 choices, then ≤ 3 per step ⇒ $O(m n \cdot 4 * 3^(L-1)$). Coarse bound: $O(m n \cdot 4^L)$.
     - **Space:** trie $O(W)$; recursion/visited path $O(L)$.
 
-## [!(ProblemKeyVariables)] Key Variables
-
-- `trie`: Build trie from **words** list. Each end node gets a `$` key holding the word
-- `m`: number of rows
-- `n`: number of columns
-- `res`: the list of found words
-
-## [!(ProblemKeyExpressions)] Key Expressions
-
-- `node = node.setdefault(c, {})`: create a new node for the character if it doesn't exist
-- `if "$" in node`: if the current node is the end of a word
-- `res.append(node.pop("$"))`: add the word to the result list and remove the "$" key to prevent duplicates
-- `if not node`: prune the trie to remove dead branches.
-- `[dfs`: .. Launch DFS from every cell that matches any trie root key
-- `board[i][j] = "#"`: Mark as visited
-- `board[i][j] = c`: Restore cell
-
 ## [!(ProblemCodeSnippet)] Code Snippet
 
 ```python meta="source=problems/212-word-search-ii/solution.py"
