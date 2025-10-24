@@ -82,6 +82,7 @@ const Problem35SearchInsertPosition = lazy(() => import('./35-search-insert-posi
 const Problem46Permutations = lazy(() => import('./46-permutations'))
 const Problem123BestTimeToBuyAndSellStockIii = lazy(() => import('./123-best-time-to-buy-and-sell-stock-iii'))
 const Problem347TopKFrequentElements = lazy(() => import('./347-top-k-frequent-elements'))
+const Problem64MinimumPathSum = lazy(() => import('./64-minimum-path-sum'))
 const Problem200NumberOfIslands = lazy(() => import('./200-number-of-islands'))
 const Problem2140SolvingQuestionsWithBrainpower = lazy(() => import('./2140-solving-questions-with-brainpower'))
 const Problem212WordSearchIi = lazy(() => import('./212-word-search-ii'))
@@ -400,6 +401,11 @@ const problemComponents = {
     "347-top-k-frequent-elements": (
       <Suspense key="347-top-k-frequent-elements" fallback={<div className="p-4 text-gray-500">Loading...</div>}>
         <Problem347TopKFrequentElements />
+      </Suspense>
+    ),
+    "64-minimum-path-sum": (
+      <Suspense key="64-minimum-path-sum" fallback={<div className="p-4 text-gray-500">Loading...</div>}>
+        <Problem64MinimumPathSum />
       </Suspense>
     ),
     "200-number-of-islands": (

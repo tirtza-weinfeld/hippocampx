@@ -1,0 +1,60 @@
+# Minimum Path Sum
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="medium" />
+
+<PillList pills={["dynamic-programming"]} />
+
+[64. Minimum Path Sum](https://leetcode.com/problems/minimum-path-sum)
+
+## [!(ProblemDefinition)] Definition
+
+Given a m x n grid,filled with non-negative numbers, find the minimum path from top left to bottom right by only moving down or right at any point in time.
+
+## Bottom Up Solution
+
+### [!(ProblemIntuition)] Intuition
+
+- Deep Dive: 2D to 1D:
+    - In the 2D DP table, each cell depends only on its top and left neighbors:
+        - `dp[i][j] = grid[i][j] + min(dp[i-1][j], dp[i][j-1])`
+    - That means to compute row i, you only need:
+        - the current row's left value (`dp[i][j-1]`), and
+        - the previous row's value at the same column (`dp[i-1][j]`).
+    - So you can compress the table into one list of length c (number of columns):
+        - `dp[j]` keeps the current min path sum at column j (effectively `dp[i][j]`),
+        - `dp[j-1]` is the left cell,
+        - and as you move row by row, `dp[j]` from the previous iteration serves as the top cell.
+
+### [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/64-minimum-path-sum/bottom-up.py"
+def minPathSum(grid: list[list[int]]) -> int:
+    r, c = len(grid), len(grid[0])
+    dp = [float("inf")] * (c + 1); dp[1] = 0
+    for i in range(r):
+        for j in range(1, c + 1):
+            dp[j] = min(dp[j], dp[j - 1]) + grid[i][j - 1]
+    return dp[c]
+```
+
+
+---
+
+## Top Down Solution
+
+### [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/64-minimum-path-sum/top-down.py"
+def minPathSum(grid: list[list[int]]) -> int:
+    r, c, memo = len(grid), len(grid[0]), {}
+    def dp(i, j):
+        if i == r - 1 and j == c - 1: return grid[i][j]
+        if i >= r or j >= c: return float("inf")
+        if (k := (i, j)) not in memo:
+            memo[k] = grid[i][j] + min(dp(i + 1, j), dp(i, j + 1))
+        return memo[k]
+    return dp(0, 0)
+```
+

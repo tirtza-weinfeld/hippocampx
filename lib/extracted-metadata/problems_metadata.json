@@ -1303,6 +1303,33 @@
       "topics": ["heap", "min-heap"],
       "group": [["heap.py", "heap-nlargets.py"], ["sort-frequency-bucketing.py"]]
     },
+    "64-minimum-path-sum": {
+      "time_stamps": {
+        "created_at": "2025-10-24T12:26:24.243097",
+        "updated_at": "2025-10-24T14:33:08.986248"
+      },
+      "solutions": {
+        "bottom-up.py": {
+          "intuition": "Deep Dive: 2D to 1D:\n    In the 2D DP table, each cell depends only on its top and left neighbors:\n        `dp[i][j] = grid[i][j] + min(dp[i-1][j], dp[i][j-1])`\n    That means to compute row i, you only need:\n        the current row's left value (`dp[i][j-1]`), and\n        the previous row's value at the same column (`dp[i-1][j]`).\n    So you can compress the table into one list of length c (number of columns):\n        `dp[j]` keeps the current min path sum at column j (effectively `dp[i][j]`),\n        `dp[j-1]` is the left cell,\n        and as you move row by row, `dp[j]` from the previous iteration serves as the top cell.",
+          "variables": {
+            "dp": "dp has one extra slot (index 0) as a sentinel = ∞ to avoid boundary checks . `dp[j]` = min path sum to reach current cell in column `j-1`"
+          },
+          "expressions": {
+            "'min(dp[j], dp[j - 1]) + grid[i][j - 1]'=  update current cell": "min(top, left) + cell value"
+          },
+          "code": "def minPathSum(grid: list[list[int]]) -> int:\n    r, c = len(grid), len(grid[0])\n    dp = [float(\"inf\")] * (c + 1); dp[1] = 0\n    for i in range(r):\n        for j in range(1, c + 1):\n            dp[j] = min(dp[j], dp[j - 1]) + grid[i][j - 1]\n    return dp[c]\n"
+        },
+        "top-down.py": {
+          "code": "def minPathSum(grid: list[list[int]]) -> int:\n    r, c, memo = len(grid), len(grid[0]), {}\n    def dp(i, j):\n        if i == r - 1 and j == c - 1: return grid[i][j]\n        if i >= r or j >= c: return float(\"inf\")\n        if (k := (i, j)) not in memo:\n            memo[k] = grid[i][j] + min(dp(i + 1, j), dp(i, j + 1))\n        return memo[k]\n    return dp(0, 0)\n\n"
+        }
+      },
+      "title": "Minimum Path Sum",
+      "definition": "Given a m x n grid,filled with non-negative numbers, find the minimum path from top left to bottom right by only moving down or right at any point in time.",
+      "leetcode": "https://leetcode.com/problems/minimum-path-sum",
+      "difficulty": "medium",
+      "topics": ["dynamic-programming"],
+      "group": [["bottom-up.py"], ["top-down.py"]]
+    },
     "200-number-of-islands": {
       "time_stamps": {
         "created_at": "2025-09-12T16:05:43.508768",

@@ -1,0 +1,9 @@
+```python meta="source=problems/64-minimum-path-sum/bottomup.py"
+def minPathSum(grid: list[list[int]]) -> int:
+    r, c = len(grid), len(grid[0])
+    dp = [float("inf")] * (c + 1); dp[1] = 0
+    for i in range(r):
+        for j in range(1, c + 1):
+            dp[j] = min(dp[j], dp[j - 1]) + grid[i][j - 1]
+    return dp[c]
+```

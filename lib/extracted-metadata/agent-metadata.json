@@ -633,6 +633,16 @@
     "updatedAt": "2025-10-20T21:38:45.761590"
   },
   {
+    "id": "64-minimum-path-sum",
+    "title": "Minimum Path Sum",
+    "difficulty": "medium",
+    "topics": [
+      "dynamic-programming"
+    ],
+    "createdAt": "2025-10-24T12:26:24.243097",
+    "updatedAt": "2025-10-24T14:33:08.986248"
+  },
+  {
     "id": "200-number-of-islands",
     "title": "Number of Islands",
     "difficulty": "medium",

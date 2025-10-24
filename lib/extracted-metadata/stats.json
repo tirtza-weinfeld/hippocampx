@@ -40,6 +40,7 @@
       "2140-solving-questions-with-brainpower",
       "416-partition-equal-subset-sum",
       "518-coin-change-ii",
+      "64-minimum-path-sum",
       "70-climbing-stairs"
     ],
     "trie": [
@@ -200,6 +201,7 @@
       "53-maximum-subarray",
       "542-01-matrix",
       "560-subarray-sum-equals-k",
+      "64-minimum-path-sum",
       "648-replace-words",
       "713-subarray-product-less-than-k",
       "743-network-delay-time",
