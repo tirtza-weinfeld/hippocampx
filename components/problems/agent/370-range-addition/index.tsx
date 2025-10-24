@@ -15,6 +15,7 @@ export default async function Problem370RangeAddition() {
       solutionFiles={["solution.py"]}
       defaultFile="solution.py"
       fileSectionMap={{"solution.py":["definition","codeSnippet"]}}
+      leetcodeUrl="https://leetcode.com/problems/range-addition"
     >
         <AgentSection section="definition">
           <Definition />

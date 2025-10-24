@@ -16,6 +16,7 @@ export default async function Problem713SubarrayProductLessThanK() {
       solutionFiles={["solution.py"]}
       defaultFile="solution.py"
       fileSectionMap={{"solution.py":["definition","codeSnippet","timeComplexity"]}}
+      leetcodeUrl="https://leetcode.com/problems/subarray-product-less-than-k"
     >
         <AgentSection section="definition">
           <Definition />

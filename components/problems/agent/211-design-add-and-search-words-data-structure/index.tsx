@@ -15,6 +15,7 @@ export default async function Problem211DesignAddAndSearchWordsDataStructure() {
       solutionFiles={["solution.py"]}
       defaultFile="solution.py"
       fileSectionMap={{"solution.py":["definition","codeSnippet"]}}
+      leetcodeUrl="https://leetcode.com/problems/design-add-and-search-words-data-structure"
     >
         <AgentSection section="definition">
           <Definition />

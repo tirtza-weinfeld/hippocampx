@@ -17,6 +17,7 @@ export default async function Problem215KthLargestElementInAnArray() {
       solutionFiles={["solution.py"]}
       defaultFile="solution.py"
       fileSectionMap={{"solution.py":["definition","codeSnippet","timeComplexity","keyExpressions"]}}
+      leetcodeUrl="https://leetcode.com/problems/kth-largest-element-in-an-array"
     >
         <AgentSection section="definition">
           <Definition />

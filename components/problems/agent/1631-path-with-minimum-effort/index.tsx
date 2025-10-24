@@ -16,6 +16,7 @@ export default async function Problem1631PathWithMinimumEffort() {
       solutionFiles={["solution.py"]}
       defaultFile="solution.py"
       fileSectionMap={{"solution.py":["definition","codeSnippet","keyVariables"]}}
+      leetcodeUrl="https://leetcode.com/problems/path-with-minimum-effort"
     >
         <AgentSection section="definition">
           <Definition />

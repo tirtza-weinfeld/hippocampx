@@ -15,6 +15,7 @@ export default async function Problem146LruCache() {
       solutionFiles={["solution.py"]}
       defaultFile="solution.py"
       fileSectionMap={{"solution.py":["definition","codeSnippet"]}}
+      leetcodeUrl="https://leetcode.com/problems/lru-cache"
     >
         <AgentSection section="definition">
           <Definition />

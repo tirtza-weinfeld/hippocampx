@@ -16,6 +16,7 @@ export default async function Problem1514PathWithMaximumProbability() {
       solutionFiles={["solution.py"]}
       defaultFile="solution.py"
       fileSectionMap={{"solution.py":["definition","codeSnippet","intuition"]}}
+      leetcodeUrl="https://leetcode.com/problems/path-with-maximum-probability"
     >
         <AgentSection section="definition">
           <Definition />

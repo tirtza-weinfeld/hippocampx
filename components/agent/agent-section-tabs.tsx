@@ -21,20 +21,22 @@ export function SectionTabs({ fileSectionMap }: SectionTabsProps) {
   }, [fileSectionMap])
 
   return (
-    <div className="flex gap-2 px-5 py-3 border-b border-gray-200 dark:border-gray-700 flex-wrap">
-      {allSections.map(section => {
-        const hasInActiveFile = fileSectionMap[activeFile]?.includes(section)
+    <div className="overflow-x-auto overflow-y-hidden border-b border-gray-200 dark:border-gray-700">
+      <div className="flex gap-2 px-5 py-3 min-w-min">
+        {allSections.map(section => {
+          const hasInActiveFile = fileSectionMap[activeFile]?.includes(section)
 
-        return (
-          <SectionTab
-            key={section}
-            section={section}
-            isActive={activeSection === section}
-            className={hasInActiveFile ? '' : 'opacity-50'}
-            onClick={() => setActiveSection(section)}
-          />
-        )
-      })}
+          return (
+            <SectionTab
+              key={section}
+              section={section}
+              isActive={activeSection === section}
+              className={hasInActiveFile ? '' : 'opacity-50'}
+              onClick={() => setActiveSection(section)}
+            />
+          )
+        })}
+      </div>
     </div>
   )
 }

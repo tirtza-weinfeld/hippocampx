@@ -19,6 +19,7 @@ export default async function Problem133CloneGraph() {
       solutionFiles={["solution.py"]}
       defaultFile="solution.py"
       fileSectionMap={{"solution.py":["definition","codeSnippet","intuition","timeComplexity","keyVariables","keyExpressions"]}}
+      leetcodeUrl="https://leetcode.com/problems/clone-graph"
     >
         <AgentSection section="definition">
           <Definition />

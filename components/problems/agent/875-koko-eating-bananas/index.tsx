@@ -18,6 +18,7 @@ export default async function Problem875KokoEatingBananas() {
       solutionFiles={["solution.py"]}
       defaultFile="solution.py"
       fileSectionMap={{"solution.py":["definition","codeSnippet","intuition","timeComplexity","keyVariables"]}}
+      leetcodeUrl="https://leetcode.com/problems/koko-eating-bananas"
     >
         <AgentSection section="definition">
           <Definition />

@@ -958,6 +958,57 @@ function Form() {
 }
 ```
 
+### Fragment Refs (React 19+)
+```tsx
+import { Fragment, useRef } from 'react'
+
+// Attach refs directly to Fragments - no wrapper div needed
+// Fragment ref resolves to first child element
+function List({ items }: { items: Item[] }) {
+  const listRef = useRef<HTMLElement>(null)
+
+  return (
+    <Fragment ref={listRef}>
+      {items.map(item => (
+        <div key={item.id}>{item.name}</div>
+      ))}
+    </Fragment>
+  )
+}
+
+// Useful for managing focus without wrapper divs
+function MenuItems({ items, onSelect }: { items: MenuItem[], onSelect: (id: string) => void }) {
+  const firstItemRef = useRef<HTMLElement>(null)
+
+  return (
+    <Fragment ref={firstItemRef}>
+      {items.map(item => (
+        <li
+          key={item.id}
+          tabIndex={0}
+          onClick={() => onSelect(item.id)}
+        >
+          {item.label}
+        </li>
+      ))}
+    </Fragment>
+  )
+}
+
+// Passing Fragment refs through components
+function Dialog({ children, contentRef }: {
+  children: React.ReactNode
+  contentRef?: React.Ref<HTMLElement>
+}) {
+  return (
+    <Fragment ref={contentRef}>
+      <h2>Dialog Title</h2>
+      <div>{children}</div>
+    </Fragment>
+  )
+}
+```
+
 ### Ref Callbacks with Cleanup
 ```tsx
 function VideoPlayer() {
@@ -1208,6 +1259,29 @@ function TemporaryDebugComponent() {
   // Fix the actual issue instead of disabling compilation
   return <ProperlyWrittenComponent />
 }
+```
+
+### React Compiler ESLint (Canary)
+```js
+// eslint.config.js - Use official React Compiler ESLint rules
+import reactCompiler from 'eslint-plugin-react-compiler'
+
+export default [
+  {
+    plugins: {
+      'react-compiler': reactCompiler
+    },
+    rules: {
+      'react-compiler/react-compiler': 'error'
+    }
+  }
+]
+
+// Catches patterns that break compiler assumptions:
+// - Invalid hook usage
+// - Unsafe mutations
+// - Rules of React violations
+// Helps ensure code is compiler-compatible
 ```
 
 ## FORM PATTERNS

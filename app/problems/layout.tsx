@@ -1,6 +1,12 @@
 import type { Metadata } from 'next'
-import { MascotProviders } from '@/components/problems/mascot/mascot-providers'
-import { ProblemsMascot } from '@/components/problems/mascot/problems-mascot'
+// import { MascotProviders } from '@/components/problems/mascot/mascot-providers'
+// import { ProblemsMascot } from '@/components/problems/mascot/problems-mascot'
+// import { AgentWrapperDialog } from '@/components/agent/agent-wrapper-dialog'
+import { lazy } from 'react'
+// const AgentWrapper = lazy(() => import('@/components/problems/agent/wrapper'))
+
+const MascotProviders = lazy(() => import('@/components/problems/mascot/mascot-providers'))
+const ProblemsMascot = lazy(() => import('@/components/problems/mascot/problems-mascot'))
 
 export const metadata: Metadata = {
   title: 'Algorithm Problems',
@@ -18,6 +24,10 @@ export default function ProblemsLayout({
       <MascotProviders>
         <ProblemsMascot />
       </MascotProviders>
+      {/* <AgentWrapperDialog>
+        <AgentWrapper />
+      </AgentWrapperDialog> */}
+
     </div>
   )
 }

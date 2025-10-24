@@ -87,7 +87,9 @@ export function ProblemCard({
         <Link
           href={`/problems/${slug}`}
           onClick={handleProblemLinkClick}
-          className="font-semibold text-lg leading-tight hover:text-primary transition-colors
+          className="
+          font-semibold text-lg leading-tight hover:text-primary 
+          transition-colors
             group-hover:text-primary line-clamp-2 flex-1
             [&>.link-marker]:hidden [&_.link-marker]:hidden"
         >

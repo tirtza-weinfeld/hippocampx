@@ -21,6 +21,7 @@ export default async function Problem347TopKFrequentElements() {
       solutionFiles={["heap.py","sort-frequency-bucketing.py","heap-nlargets.py"]}
       defaultFile="heap.py"
       fileSectionMap={{"heap.py":["definition","codeSnippet","timeComplexity"],"sort-frequency-bucketing.py":["definition","codeSnippet","timeComplexity"],"heap-nlargets.py":["definition","codeSnippet","timeComplexity","keyExpressions"]}}
+      leetcodeUrl="https://leetcode.com/problems/top-k-frequent-elements"
     >
         <AgentSection section="definition">
           <Definition />

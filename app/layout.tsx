@@ -9,6 +9,7 @@ import { CustomTheme } from "@/components/theme/custom-theme";
 import { SparklesBackground } from "@/components/calculus/ui/sparkles-background";
 import { Fonts } from "@/components/sidebar/fonts";
 import { Font, getFontFamily } from "@/components/theme/font";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import 'katex/dist/katex.min.css';
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" })
@@ -47,23 +48,24 @@ export default async function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <TooltipProvider delayDuration={0}>
+            <CustomTheme>
 
-          <CustomTheme>
-    
-              
-            <div className="min-h-screen w-full">
-              <Sidebar defaultOpen={sidebarDefaultOpen}>
-                <div className="flex flex-col min-h-screen">
-                  <main className="flex-1">
-                    {children}
-                  </main>
-                  <AppFooter />
-                </div>
-              </Sidebar>
-            </div>
 
-        
-          </CustomTheme>
+              <div className="min-h-screen w-full">
+                <Sidebar defaultOpen={sidebarDefaultOpen}>
+                  <div className="flex flex-col min-h-screen">
+                    <main className="flex-1">
+                      {children}
+                    </main>
+                    <AppFooter />
+                  </div>
+                </Sidebar>
+              </div>
+
+
+            </CustomTheme>
+          </TooltipProvider>
         </ThemeProvider>
       </body>
     </html>

@@ -15,6 +15,7 @@ export default async function Problem35SearchInsertPosition() {
       solutionFiles={["solution.py"]}
       defaultFile="solution.py"
       fileSectionMap={{"solution.py":["definition","codeSnippet"]}}
+      leetcodeUrl="https://leetcode.com/problems/search-insert-position"
     >
         <AgentSection section="definition">
           <Definition />

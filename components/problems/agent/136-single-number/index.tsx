@@ -17,6 +17,7 @@ export default async function Problem136SingleNumber() {
       solutionFiles={["solution.py"]}
       defaultFile="solution.py"
       fileSectionMap={{"solution.py":["definition","codeSnippet","intuition","timeComplexity"]}}
+      leetcodeUrl="https://leetcode.com/problems/single-number"
     >
         <AgentSection section="definition">
           <Definition />

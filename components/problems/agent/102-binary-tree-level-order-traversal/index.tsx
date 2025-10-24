@@ -17,6 +17,7 @@ export default async function Problem102BinaryTreeLevelOrderTraversal() {
       solutionFiles={["solution.py"]}
       defaultFile="solution.py"
       fileSectionMap={{"solution.py":["definition","codeSnippet","intuition","timeComplexity"]}}
+      leetcodeUrl="https://leetcode.com/problems/binary-tree-level-order-traversal"
     >
         <AgentSection section="definition">
           <Definition />

@@ -15,6 +15,7 @@ export default async function Problem523ContinuousSubarraySum() {
       solutionFiles={["solution.py"]}
       defaultFile="solution.py"
       fileSectionMap={{"solution.py":["definition","codeSnippet"]}}
+      leetcodeUrl="https://leetcode.com/problems/continuous-subarray-sum"
     >
         <AgentSection section="definition">
           <Definition />

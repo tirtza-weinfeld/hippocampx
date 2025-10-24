@@ -15,6 +15,7 @@ export default async function Problem1590MakeSumDivisibleByP() {
       solutionFiles={["solution.py"]}
       defaultFile="solution.py"
       fileSectionMap={{"solution.py":["definition","codeSnippet"]}}
+      leetcodeUrl="https://leetcode.com/problems/make-sum-divisible-by-p"
     >
         <AgentSection section="definition">
           <Definition />

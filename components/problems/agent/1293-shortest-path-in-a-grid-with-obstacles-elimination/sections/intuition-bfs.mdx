@@ -1,4 +1,4 @@
-bfs with State-Budget Pruning 🔍:
-    The core idea is to perform a standard BFS over `(row, col, steps, remaining_k)` states, but only enqueue a move if it arrives at a cell with **strictly more** `remaining_k` than any prior visit. This pruning significantly reduces the number of states explored, making the algorithm much more efficient.
-    **Trivial shortcut:** If `k ≥ rows+cols–2`, you can go straight in `rows+cols–2` steps without ever touching an obstacle.
-    **Correctness guarantee:** Because BFS explores in order of increasing `steps`, the first time you dequeue the goal is the fewest-step path. Pruning by `remaining_k` never discards any shorter-step route—it simply avoids re-exploring dominated states.
+- bfs with State-Budget Pruning 🔍:
+    - The core idea is to perform a standard BFS over `(row, col, steps, remaining_k)` states, but only enqueue a move if it arrives at a cell with **strictly more** `remaining_k` than any prior visit. This pruning significantly reduces the number of states explored, making the algorithm much more efficient.
+    - **Trivial shortcut:** If `k ≥ rows+cols–2`, you can go straight in `rows+cols–2` steps without ever touching an obstacle.
+    - **Correctness guarantee:** Because BFS explores in order of increasing `steps`, the first time you dequeue the goal is the fewest-step path. Pruning by `remaining_k` never discards any shorter-step route—it simply avoids re-exploring dominated states.

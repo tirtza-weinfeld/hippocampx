@@ -8,15 +8,17 @@ import { FileTabs } from './agent-file-tabs'
 import { SectionTabs } from './agent-section-tabs'
 import { useProblemState } from './problem-state-context'
 
+
 type AgentCardProps = {
   children: ReactNode
   id: string
   title: string
-  difficulty: string
+  difficulty: 'easy' | 'medium' | 'hard'
   topics: string[]
   solutionFiles: string[]
   defaultFile: string
   fileSectionMap: Record<string, string[]>
+  leetcodeUrl: string
 }
 
 export function AgentCard({
@@ -27,12 +29,19 @@ export function AgentCard({
   topics,
   solutionFiles,
   defaultFile,
-  fileSectionMap
+  fileSectionMap,
+  leetcodeUrl
 }: AgentCardProps) {
   return (
     <ProblemStateProvider defaultFile={defaultFile}>
-      <div className="rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden bg-white dark:bg-gray-900 shadow-md mb-4">
-        <AgentHeader title={title} id={id} />
+      <div className="relative rounded-md  overflow-hidden
+       bg-gray-50/80 dark:bg-gray-950/30 shadow-md  mb-4 ">
+        <AgentHeader
+          title={title}
+          id={id}
+          leetcodeUrl={leetcodeUrl}
+          difficulty={difficulty}
+        />
 
         <ExpandedContent
           solutionFiles={solutionFiles}
@@ -62,9 +71,21 @@ function ExpandedContent({
 
   return (
     <Activity mode={isExpanded ? 'visible' : 'hidden'}>
-      <FileTabs files={solutionFiles} fileSectionMap={fileSectionMap} />
       <SectionTabs fileSectionMap={fileSectionMap} />
+      <FileTabs files={solutionFiles} fileSectionMap={fileSectionMap} />
       {children}
     </Activity>
+  )
+}
+
+
+export function AgentCardSkeleton() {
+  return (
+    <div className="relative rounded-md  overflow-hidden
+       bg-gray-50/80 dark:bg-gray-50/80 shadow-md  mb-4 ">
+      <div className="animate-pulse">
+        <div className="h-10 w-full bg-gray-200 dark:bg-gray-800"></div>
+      </div>
+    </div>
   )
 }

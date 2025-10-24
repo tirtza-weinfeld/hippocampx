@@ -17,6 +17,7 @@ export default async function Problem3LongestSubstringWithoutRepeatingCharacters
       solutionFiles={["solution.py"]}
       defaultFile="solution.py"
       fileSectionMap={{"solution.py":["definition","codeSnippet","timeComplexity","keyExpressions"]}}
+      leetcodeUrl="https://leetcode.com/problems/longest-substring-without-repeating-characters"
     >
         <AgentSection section="definition">
           <Definition />

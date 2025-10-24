@@ -17,6 +17,7 @@ export default async function Problem238ProductOfArrayExceptSelf() {
       solutionFiles={["solution.py"]}
       defaultFile="solution.py"
       fileSectionMap={{"solution.py":["definition","codeSnippet","intuition","timeComplexity"]}}
+      leetcodeUrl="https://leetcode.com/problems/product-of-array-except-self"
     >
         <AgentSection section="definition">
           <Definition />

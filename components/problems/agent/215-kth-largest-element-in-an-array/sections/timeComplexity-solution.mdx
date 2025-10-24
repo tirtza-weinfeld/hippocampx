@@ -1,8 +1,8 @@
-O(n log k):
-    Deep Dive: one sift (faster constant) vs push+pop
-        heappush does a sift-up → O(log k)
-        heappop does a sift-down → O(log k)
-        total ≈ 2 x O(log k) operations
-        heapreplace does one sift operation, not two
-        removes root, places new element, and does only one sift-down → O(log k)
-        So same asymptotic complexity, but half the work, fewer comparisons and function calls → faster constant factor.
+- $O(n \log k)$:
+    - Deep Dive: one sift (faster constant) vs push+pop
+        - heappush does a sift-up → $O(\log k)$
+        - heappop does a sift-down → $O(\log k)$
+        - total ≈ 2 x $O(\log k)$ operations
+        - heapreplace does one sift operation, not two
+        - removes root, places new element, and does only one sift-down → $O(\log k)$
+        - So same asymptotic complexity, but half the work, fewer comparisons and function calls → faster constant factor.

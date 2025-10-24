@@ -16,6 +16,7 @@ export default async function Problem70ClimbingStairs() {
       solutionFiles={["bottomup.py","topdown.py"]}
       defaultFile="bottomup.py"
       fileSectionMap={{"bottomup.py":["definition","codeSnippet"],"topdown.py":["definition","codeSnippet"]}}
+      leetcodeUrl="https://leetcode.com/problems/climbing-stairs"
     >
         <AgentSection section="definition">
           <Definition />

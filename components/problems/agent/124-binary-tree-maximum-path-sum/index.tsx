@@ -15,6 +15,7 @@ export default async function Problem124BinaryTreeMaximumPathSum() {
       solutionFiles={["solution.py"]}
       defaultFile="solution.py"
       fileSectionMap={{"solution.py":["definition","codeSnippet"]}}
+      leetcodeUrl="https://leetcode.com/problems/binary-tree-maximum-path-sum"
     >
         <AgentSection section="definition">
           <Definition />

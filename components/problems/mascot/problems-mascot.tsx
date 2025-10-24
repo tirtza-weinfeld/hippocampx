@@ -8,7 +8,7 @@ import { SettingsView } from './settings-view'
  * Server component that creates views and passes them to client components.
  * No data fetching here - each view fetches its own data independently.
  */
-export function ProblemsMascot() {
+export default function ProblemsMascot() {
   // Create server component views
   const views = {
     main: <ProblemsView />,

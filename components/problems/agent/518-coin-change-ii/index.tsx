@@ -17,6 +17,7 @@ export default async function Problem518CoinChangeIi() {
       solutionFiles={["solution.py"]}
       defaultFile="solution.py"
       fileSectionMap={{"solution.py":["definition","codeSnippet","intuition","timeComplexity"]}}
+      leetcodeUrl="https://leetcode.com/problems/coin-change-ii"
     >
         <AgentSection section="definition">
           <Definition />

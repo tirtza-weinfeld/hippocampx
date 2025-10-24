@@ -17,6 +17,7 @@ export default async function Problem153FindMinimumInRotatedSortedArray() {
       solutionFiles={["solution.py"]}
       defaultFile="solution.py"
       fileSectionMap={{"solution.py":["definition","codeSnippet","intuition","keyExpressions"]}}
+      leetcodeUrl="https://leetcode.com/problems/find-minimum-in-rotated-sorted-array"
     >
         <AgentSection section="definition">
           <Definition />

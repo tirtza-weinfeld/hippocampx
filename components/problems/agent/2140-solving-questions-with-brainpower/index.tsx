@@ -17,6 +17,7 @@ export default async function Problem2140SolvingQuestionsWithBrainpower() {
       solutionFiles={["solution.py"]}
       defaultFile="solution.py"
       fileSectionMap={{"solution.py":["definition","codeSnippet","intuition","timeComplexity"]}}
+      leetcodeUrl="https://leetcode.com/problems/solving-questions-with-brainpower"
     >
         <AgentSection section="definition">
           <Definition />

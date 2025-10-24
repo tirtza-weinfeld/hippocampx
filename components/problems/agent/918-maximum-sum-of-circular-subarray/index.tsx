@@ -15,6 +15,7 @@ export default async function Problem918MaximumSumOfCircularSubarray() {
       solutionFiles={["solution.py"]}
       defaultFile="solution.py"
       fileSectionMap={{"solution.py":["definition","codeSnippet"]}}
+      leetcodeUrl="https://leetcode.com/problems/maximum-sum-of-circular-subarray"
     >
         <AgentSection section="definition">
           <Definition />

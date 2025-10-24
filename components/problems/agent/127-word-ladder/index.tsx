@@ -17,6 +17,7 @@ export default async function Problem127WordLadder() {
       solutionFiles={["solution.py"]}
       defaultFile="solution.py"
       fileSectionMap={{"solution.py":["definition","codeSnippet","intuition","timeComplexity"]}}
+      leetcodeUrl="https://leetcode.com/problems/word-ladder"
     >
         <AgentSection section="definition">
           <Definition />

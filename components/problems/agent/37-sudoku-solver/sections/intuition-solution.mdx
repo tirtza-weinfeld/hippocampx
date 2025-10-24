@@ -1,5 +1,5 @@
-MRV (Minimum Remaining Values):
-    Candidates per cell: `{'1'..'9'} − (row ∪ col ∪ box)`.
-    MRV: pick the empty cell with the fewest candidates to prune hardest.
-    Place a digit tentatively, update sets, recurse; undo on failure (backtrack).
-    If any cell has 0 candidates, the branch is impossible → backtrack immediately.
+- MRV (Minimum Remaining Values):
+    - Candidates per cell: `{'1'..'9'} − (row ∪ col ∪ box)`.
+    - MRV: pick the empty cell with the fewest candidates to prune hardest.
+    - Place a digit tentatively, update sets, recurse; undo on failure (backtrack).
+    - If any cell has 0 candidates, the branch is impossible → backtrack immediately.

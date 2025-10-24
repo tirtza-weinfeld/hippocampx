@@ -15,6 +15,7 @@ export default async function Problem34FindFirstAndLastPositionOfElementInSorted
       solutionFiles={["solution.py"]}
       defaultFile="solution.py"
       fileSectionMap={{"solution.py":["definition","codeSnippet"]}}
+      leetcodeUrl="https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array"
     >
         <AgentSection section="definition">
           <Definition />

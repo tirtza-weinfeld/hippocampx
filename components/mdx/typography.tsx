@@ -133,10 +133,8 @@ export function Strong ({ children, ...props }: TypographyProps) {
       )}
       {...props}
     >
-      <span className=" 
-      bg-strong-gradient
-      ">
-      {children}
+      <span className="bg-strong-gradient">
+        {children}
       </span>
     </motion.strong>
   )

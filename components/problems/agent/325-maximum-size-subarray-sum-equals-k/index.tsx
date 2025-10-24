@@ -15,6 +15,7 @@ export default async function Problem325MaximumSizeSubarraySumEqualsK() {
       solutionFiles={["solution.py"]}
       defaultFile="solution.py"
       fileSectionMap={{"solution.py":["definition","codeSnippet"]}}
+      leetcodeUrl="https://leetcode.com/problems/maximum-size-subarray-sum-equals-k"
     >
         <AgentSection section="definition">
           <Definition />

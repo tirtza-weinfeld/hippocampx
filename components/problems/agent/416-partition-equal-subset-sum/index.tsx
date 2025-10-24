@@ -17,6 +17,7 @@ export default async function Problem416PartitionEqualSubsetSum() {
       solutionFiles={["solution.py"]}
       defaultFile="solution.py"
       fileSectionMap={{"solution.py":["definition","codeSnippet","intuition","timeComplexity"]}}
+      leetcodeUrl="https://leetcode.com/problems/partition-equal-subset-sum"
     >
         <AgentSection section="definition">
           <Definition />

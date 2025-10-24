@@ -1,18 +1,18 @@
-Brian Kernighan's algorithm:
-    counts the number of set bits (1s) in an integer efficiently by             repeatedly clearing the lowest set bit until the number becomes 0.
+- Brian Kernighan's algorithm:
+    - counts the number of set bits (1s) in an integer efficiently by             repeatedly clearing the lowest set bit until the number becomes 0.
 
-    Deep Dive: Why this always works
-    When you subtract 1 from a binary number:
-        You flip the lowest set bit (1) to 0
-        And everything to the right of it flips to 1
+- Deep Dive: Why this always works
+    - When you subtract 1 from a binary number:
+        - You flip the lowest set bit (1) to 0
+        - And everything to the right of it flips to 1
 
-    Example:
-    Start
+- Example:
+    - Start
         ```python
         n = 13 (1101)
         count = 0
         ```
-    Iteration 1
+    - Iteration 1
         ```python
         n   = 1101 (13)
         n-1 = 1100 (12)
@@ -20,7 +20,7 @@ Brian Kernighan's algorithm:
         1100 (12)
         count = 1
         ```
-    Iteration 2
+    - Iteration 2
         ```python
         n   = 1100 (12)
         n-1 = 1011 (11)
@@ -28,7 +28,7 @@ Brian Kernighan's algorithm:
         1000 (8)
         count = 2
         ```
-    Iteration 3
+    - Iteration 3
         ```python
         n   = 1000 (8)
         n-1 = 0111 (7)

@@ -16,6 +16,7 @@ export default async function Problem778SwimInRisingWater() {
       solutionFiles={["solution.py"]}
       defaultFile="solution.py"
       fileSectionMap={{"solution.py":["definition","codeSnippet","keyVariables"]}}
+      leetcodeUrl="https://leetcode.com/problems/swim-in-rising-water"
     >
         <AgentSection section="definition">
           <Definition />

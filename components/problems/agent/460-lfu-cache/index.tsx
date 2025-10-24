@@ -15,6 +15,7 @@ export default async function Problem460LfuCache() {
       solutionFiles={["solution.py"]}
       defaultFile="solution.py"
       fileSectionMap={{"solution.py":["definition","codeSnippet"]}}
+      leetcodeUrl="https://leetcode.com/problems/lfu-cache"
     >
         <AgentSection section="definition">
           <Definition />

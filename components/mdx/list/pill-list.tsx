@@ -155,9 +155,12 @@ export const PillList = ({ pills, className }: PillListProps) => {
               )}
             </motion.div>
           </AnimatePresence>
-          <span className="text-sm bg-linear-to-r from-sky-800 to-sky-500  via-blue-500 bg-clip-text text-transparent hover:bg-linear-to-l uppercase 
-          font-semibold tracking-wide
-          ">Topics</span>
+          <span className={cn(
+            "text-sm bg-linear-to-r from-sky-800 to-sky-500 via-blue-500 bg-clip-text text-transparent",
+            "hover:bg-linear-to-l uppercase font-semibold tracking-wide"
+          )}>
+            Topics
+          </span>
          
         </motion.button>
 

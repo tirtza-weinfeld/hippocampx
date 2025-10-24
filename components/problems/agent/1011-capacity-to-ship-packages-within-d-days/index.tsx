@@ -16,6 +16,7 @@ export default async function Problem1011CapacityToShipPackagesWithinDDays() {
       solutionFiles={["solution.py"]}
       defaultFile="solution.py"
       fileSectionMap={{"solution.py":["definition","codeSnippet","intuition"]}}
+      leetcodeUrl="https://leetcode.com/problems/capacity-to-ship-packages-within-d-days"
     >
         <AgentSection section="definition">
           <Definition />

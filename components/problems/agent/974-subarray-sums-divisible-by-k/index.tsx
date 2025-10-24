@@ -15,6 +15,7 @@ export default async function Problem974SubarraySumsDivisibleByK() {
       solutionFiles={["solution.py"]}
       defaultFile="solution.py"
       fileSectionMap={{"solution.py":["definition","codeSnippet"]}}
+      leetcodeUrl="https://leetcode.com/problems/subarray-sums-divisible-by-k"
     >
         <AgentSection section="definition">
           <Definition />

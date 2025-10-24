@@ -16,6 +16,7 @@ export default async function Problem20ValidParentheses() {
       solutionFiles={["solution.py"]}
       defaultFile="solution.py"
       fileSectionMap={{"solution.py":["definition","codeSnippet","timeComplexity"]}}
+      leetcodeUrl="https://leetcode.com/problems/valid-parentheses"
     >
         <AgentSection section="definition">
           <Definition />

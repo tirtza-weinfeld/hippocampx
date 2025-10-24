@@ -15,6 +15,7 @@ export default async function Problem33SearchInRotatedSortedArray() {
       solutionFiles={["solution.py"]}
       defaultFile="solution.py"
       fileSectionMap={{"solution.py":["definition","codeSnippet"]}}
+      leetcodeUrl="https://leetcode.com/problems/search-in-rotated-sorted-array"
     >
         <AgentSection section="definition">
           <Definition />

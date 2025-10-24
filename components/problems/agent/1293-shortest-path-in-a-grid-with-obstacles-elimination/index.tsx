@@ -25,6 +25,7 @@ export default async function Problem1293ShortestPathInAGridWithObstaclesElimina
       solutionFiles={["dijkstra.py","a_star.py","bfs.py"]}
       defaultFile="dijkstra.py"
       fileSectionMap={{"dijkstra.py":["definition","codeSnippet","keyVariables","keyExpressions"],"a_star.py":["definition","codeSnippet","timeComplexity","keyVariables","keyExpressions"],"bfs.py":["definition","codeSnippet","intuition","timeComplexity","keyVariables"]}}
+      leetcodeUrl="https://leetcode.com/problems/shortest-path-in-a-grid-with-obstacles-elimination"
     >
         <AgentSection section="definition">
           <Definition />

@@ -18,6 +18,7 @@ export default async function Problem191NumberOf1Bits() {
       solutionFiles={["bit_count.py","brian-kernighan.py"]}
       defaultFile="bit_count.py"
       fileSectionMap={{"bit_count.py":["definition","codeSnippet"],"brian-kernighan.py":["definition","codeSnippet","intuition","timeComplexity"]}}
+      leetcodeUrl="https://leetcode.com/problems/number-of-1-bits"
     >
         <AgentSection section="definition">
           <Definition />

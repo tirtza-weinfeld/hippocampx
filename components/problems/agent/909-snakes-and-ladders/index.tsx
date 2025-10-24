@@ -17,6 +17,7 @@ export default async function Problem909SnakesAndLadders() {
       solutionFiles={["solution.py"]}
       defaultFile="solution.py"
       fileSectionMap={{"solution.py":["definition","codeSnippet","intuition","timeComplexity"]}}
+      leetcodeUrl="https://leetcode.com/problems/snakes-and-ladders"
     >
         <AgentSection section="definition">
           <Definition />

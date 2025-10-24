@@ -17,6 +17,7 @@ export default async function Problem37SudokuSolver() {
       solutionFiles={["solution.py"]}
       defaultFile="solution.py"
       fileSectionMap={{"solution.py":["definition","codeSnippet","intuition","timeComplexity"]}}
+      leetcodeUrl="https://leetcode.com/problems/sudoku-solver"
     >
         <AgentSection section="definition">
           <Definition />

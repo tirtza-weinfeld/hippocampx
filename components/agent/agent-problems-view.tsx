@@ -31,7 +31,7 @@ type AgentProblemsViewProps = {
  * Problems are server-rendered components mapped by ID for O(1) lookup.
  * Uses React 19 use() to unwrap promise without blocking parent render.
  */
-export function AgentProblemsView({ metadata, problemComponents }: AgentProblemsViewProps) {
+export default function AgentProblemsView({ metadata, problemComponents }: AgentProblemsViewProps) {
   const [filters, setFilters] = useState<FilterState>({
     search: "",
     difficulty: "all",
@@ -111,29 +111,31 @@ export function AgentProblemsView({ metadata, problemComponents }: AgentProblems
   }), [metadata, filteredAndSorted])
 
   // Create visibility map
-  const visibleIds = useMemo(() => {
-    return new Set(filteredAndSorted.map(m => m.id))
-  }, [filteredAndSorted])
+  // const visibleIds = useMemo(() => {
+  //   return new Set(filteredAndSorted.map(m => m.id))
+  // }, [filteredAndSorted])
 
   // Create order map for CSS order property
-  const orderMap = useMemo(() => {
-    const map: Record<string, number> = {}
-    filteredAndSorted.forEach((m, index) => {
-      map[m.id] = index
-    })
-    return map
-  }, [filteredAndSorted])
+  // const orderMap = useMemo(() => {
+  //   const map: Record<string, number> = {}
+  //   filteredAndSorted.forEach((m, index) => {
+  //     map[m.id] = index
+  //   })
+  //   return map
+  // }, [filteredAndSorted])
 
   return (
     <div className="flex flex-col w-full">
-      <AgentFilterHeader
-        filters={filters}
-        onFiltersChange={setFilters}
-        topics={uniqueTopics}
-        stats={stats}
-      />
+      <div className="sticky top-0 z-10 bg-background pb-2">
+        <AgentFilterHeader
+          filters={filters}
+          onFiltersChange={setFilters}
+          topics={uniqueTopics}
+          stats={stats}
+        />
+      </div>
 
-      <div className="flex flex-col gap-0">
+      <div className="flex flex-col gap-0 bg-background">
         {/*
           Map over filtered/sorted metadata and render corresponding problem component.
           Activity handles visibility, CSS order handles sort order.

@@ -15,6 +15,7 @@ export default async function Problem208ImplementTriePrefixTree() {
       solutionFiles={["solution.py"]}
       defaultFile="solution.py"
       fileSectionMap={{"solution.py":["definition","codeSnippet"]}}
+      leetcodeUrl="https://leetcode.com/problems/implement-trie-prefix-tree"
     >
         <AgentSection section="definition">
           <Definition />

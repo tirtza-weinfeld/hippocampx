@@ -18,6 +18,7 @@ export default async function Problem787CheapestFlightsWithinKStops() {
       solutionFiles={["dijkstra.py","bellman_ford.py"]}
       defaultFile="dijkstra.py"
       fileSectionMap={{"dijkstra.py":["definition","codeSnippet","keyVariables"],"bellman_ford.py":["definition","codeSnippet","timeComplexity"]}}
+      leetcodeUrl="https://leetcode.com/problems/cheapest-flights-within-k-stops"
     >
         <AgentSection section="definition">
           <Definition />

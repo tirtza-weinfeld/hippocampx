@@ -19,6 +19,7 @@ export default async function Problem212WordSearchIi() {
       solutionFiles={["solution.py"]}
       defaultFile="solution.py"
       fileSectionMap={{"solution.py":["definition","codeSnippet","intuition","timeComplexity","keyVariables","keyExpressions"]}}
+      leetcodeUrl="https://leetcode.com/problems/word-search-ii"
     >
         <AgentSection section="definition">
           <Definition />

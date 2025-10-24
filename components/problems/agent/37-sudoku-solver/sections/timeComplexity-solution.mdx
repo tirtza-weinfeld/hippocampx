@@ -1,4 +1,4 @@
-O(9^k):
-    Let k be the number of empty cells (≤ 81).
-    practically Θ(∏(t=1 to k) m_t) where m_t = MRV-picked cell's candidate count at step t (usually ≪ 9)
-    MRV selection adds O(k) per level (≤ O(k^2) per path), dominated by the search
+- $O(9^k)$:
+    - Let k be the number of empty cells (≤ 81).
+    - practically $\Theta(∏(t=1 to k)$ m_t) where m_t = MRV-picked cell's candidate count at step t (usually ≪ 9)
+    - MRV selection adds $O(k)$ per level (≤ $O(k^{2})$ per path), dominated by the search

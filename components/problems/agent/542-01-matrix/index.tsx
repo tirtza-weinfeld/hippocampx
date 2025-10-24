@@ -17,6 +17,7 @@ export default async function Problem54201Matrix() {
       solutionFiles={["solution.py"]}
       defaultFile="solution.py"
       fileSectionMap={{"solution.py":["definition","codeSnippet","intuition","timeComplexity"]}}
+      leetcodeUrl="https://leetcode.com/problems/01-matrix"
     >
         <AgentSection section="definition">
           <Definition />

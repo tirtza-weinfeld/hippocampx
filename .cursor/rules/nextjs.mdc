@@ -1,13 +1,72 @@
 ---
-description: nextjs 
+description: nextjs
 alwaysApply: false
 ---
 # Next.js Rules
 
-**Essential patterns for Next.js 16+ App Router**
+**Essential patterns for Next.js App Router**
 
 https://nextjs.org/blog/next-16-beta
- 
+
+## ASYNC PROPS & SERVER APIS
+
+```tsx
+// Always await params, searchParams, cookies, headers
+export default async function Page(props: {
+  params: { id: string };
+  searchParams: { query: string };
+}) {
+  const params = await props.params;
+  const searchParams = await props.searchParams;
+  return <div>{params.id}</div>;
+}
+
+// Server APIs
+import { cookies, headers } from 'next/headers';
+
+const cookieStore = await cookies();
+const headersList = await headers();
+```
+
+## CACHING
+
+```tsx
+import { revalidateTag, updateTag, refresh } from 'next/cache';
+
+// revalidateTag with cacheLife profile
+revalidateTag('blog-posts', 'max');
+revalidateTag('news-feed', 'hours');
+revalidateTag('analytics', 'days');
+revalidateTag('products', { revalidate: 3600 });
+
+// updateTag for read-your-writes in Server Actions
+export async function updateProfile(userId: string, data: Profile) {
+  'use server';
+  await db.users.update(userId, data);
+  updateTag(`user-${userId}`);
+}
+
+// refresh for uncached data only
+export async function markAsRead(id: string) {
+  'use server';
+  await db.notifications.markAsRead(id);
+  refresh();
+}
+```
+
+## CONFIGURATION
+
+```ts
+// next.config.ts
+export default {
+  reactCompiler: true, // Automatic memoization
+  experimental: {
+    turbopackFileSystemCacheForDev: true,
+    cacheComponents: true, // Cache Components for partial prerendering
+  },
+};
+```
+
 ## MDX INTEGRATION
 
 ```js

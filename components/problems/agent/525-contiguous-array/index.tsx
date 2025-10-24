@@ -15,6 +15,7 @@ export default async function Problem525ContiguousArray() {
       solutionFiles={["solution.py"]}
       defaultFile="solution.py"
       fileSectionMap={{"solution.py":["definition","codeSnippet"]}}
+      leetcodeUrl="https://leetcode.com/problems/contiguous-array"
     >
         <AgentSection section="definition">
           <Definition />

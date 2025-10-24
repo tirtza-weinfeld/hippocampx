@@ -15,6 +15,7 @@ export default async function Problem122BestTimeToBuyAndSellStockIi() {
       solutionFiles={["solution.py"]}
       defaultFile="solution.py"
       fileSectionMap={{"solution.py":["definition","codeSnippet"]}}
+      leetcodeUrl="https://leetcode.com/problems/best-time-to-buy-and-sell-stock-ii"
     >
         <AgentSection section="definition">
           <Definition />

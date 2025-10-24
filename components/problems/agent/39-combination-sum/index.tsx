@@ -17,6 +17,7 @@ export default async function Problem39CombinationSum() {
       solutionFiles={["solution.py"]}
       defaultFile="solution.py"
       fileSectionMap={{"solution.py":["definition","codeSnippet","intuition","timeComplexity"]}}
+      leetcodeUrl="https://leetcode.com/problems/combination-sum"
     >
         <AgentSection section="definition">
           <Definition />

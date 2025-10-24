@@ -16,6 +16,7 @@ export default async function Problem76MinimumWindowSubstring() {
       solutionFiles={["solution.py"]}
       defaultFile="solution.py"
       fileSectionMap={{"solution.py":["definition","codeSnippet","timeComplexity"]}}
+      leetcodeUrl="https://leetcode.com/problems/minimum-window-substring"
     >
         <AgentSection section="definition">
           <Definition />

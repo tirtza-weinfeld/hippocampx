@@ -16,6 +16,7 @@ export default async function Problem743NetworkDelayTime() {
       solutionFiles={["solution.py"]}
       defaultFile="solution.py"
       fileSectionMap={{"solution.py":["definition","codeSnippet","timeComplexity"]}}
+      leetcodeUrl="https://leetcode.com/problems/network-delay-time"
     >
         <AgentSection section="definition">
           <Definition />

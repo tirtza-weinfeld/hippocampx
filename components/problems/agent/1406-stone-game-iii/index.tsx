@@ -17,6 +17,7 @@ export default async function Problem1406StoneGameIii() {
       solutionFiles={["solution.py"]}
       defaultFile="solution.py"
       fileSectionMap={{"solution.py":["definition","codeSnippet","intuition","timeComplexity"]}}
+      leetcodeUrl="https://leetcode.com/problems/stone-game-iii"
     >
         <AgentSection section="definition">
           <Definition />

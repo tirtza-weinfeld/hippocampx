@@ -19,6 +19,7 @@ export default async function Problem84LargestRectangleInHistogram() {
       solutionFiles={["solution.py"]}
       defaultFile="solution.py"
       fileSectionMap={{"solution.py":["definition","codeSnippet","intuition","timeComplexity","keyVariables","keyExpressions"]}}
+      leetcodeUrl="https://leetcode.com/problems/largest-rectangle-in-histogram"
     >
         <AgentSection section="definition">
           <Definition />

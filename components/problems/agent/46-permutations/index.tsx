@@ -17,6 +17,7 @@ export default async function Problem46Permutations() {
       solutionFiles={["solution.py"]}
       defaultFile="solution.py"
       fileSectionMap={{"solution.py":["definition","codeSnippet","intuition","timeComplexity"]}}
+      leetcodeUrl="https://leetcode.com/problems/permutations"
     >
         <AgentSection section="definition">
           <Definition />

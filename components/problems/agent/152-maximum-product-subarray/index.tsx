@@ -15,6 +15,7 @@ export default async function Problem152MaximumProductSubarray() {
       solutionFiles={["solution.py"]}
       defaultFile="solution.py"
       fileSectionMap={{"solution.py":["definition","codeSnippet"]}}
+      leetcodeUrl="https://leetcode.com/problems/maximum-product-subarray"
     >
         <AgentSection section="definition">
           <Definition />

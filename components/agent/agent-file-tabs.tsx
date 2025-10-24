@@ -14,20 +14,22 @@ export function FileTabs({ files, fileSectionMap }: FileTabsProps) {
   if (files.length <= 1) return null
 
   return (
-    <div className="flex gap-2 px-5 py-3 border-b border-gray-200 dark:border-gray-700 flex-wrap">
-      {files.map(file => {
-        const hasActiveSection = fileSectionMap[file]?.includes(activeSection)
+    <div className="overflow-x-auto overflow-y-hidden border-b border-gray-200 dark:border-gray-700">
+      <div className="flex gap-2 px-5 py-3 min-w-min">
+        {files.map(file => {
+          const hasActiveSection = fileSectionMap[file]?.includes(activeSection)
 
-        return (
-          <FileTab
-            key={file}
-            file={file}
-            isActive={activeFile === file}
-            className={hasActiveSection ? '' : 'opacity-50'}
-            onClick={() => setActiveFile(file)}
-          />
-        )
-      })}
+          return (
+            <FileTab
+              key={file}
+              file={file}
+              isActive={activeFile === file}
+              className={hasActiveSection ? '' : 'opacity-50'}
+              onClick={() => setActiveFile(file)}
+            />
+          )
+        })}
+      </div>
     </div>
   )
 }

@@ -15,6 +15,7 @@ export default async function Problem198HouseRobber() {
       solutionFiles={["solution.py"]}
       defaultFile="solution.py"
       fileSectionMap={{"solution.py":["definition","codeSnippet"]}}
+      leetcodeUrl="https://leetcode.com/problems/house-robber"
     >
         <AgentSection section="definition">
           <Definition />
