@@ -15,6 +15,7 @@
     "db:studio": "drizzle-kit studio",
     "db:seed": "tsx lib/db/seed.ts",
     "db:seed:dictionary": "tsx lib/db/dictionary-seed.ts",
+    "problems:create": "python3 backend/scripts/problems/create_problem.py",
     "problems:extract-lsp-index": "python3 backend/scripts/problems/generate_lsp_index.py --root backend/algorithms --out lib/extracted-metadata/lsp_index.json",
     "problems:extract-symbol-tags": "python3 backend/scripts/problems/generate_symbol_tags.py --root backend/algorithms --out lib/extracted-metadata/symbol_tags.json",
     "problems:extract-uses": "python3 backend/scripts/problems/generate_uses.py --root backend/algorithms --out lib/extracted-metadata/uses.json",

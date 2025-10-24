@@ -30,6 +30,16 @@
     "updatedAt": "2025-09-30T19:05:08.952509"
   },
   {
+    "id": "265-paint-house-ii",
+    "title": "Paint House II",
+    "difficulty": "hard",
+    "topics": [
+      "dynamic-programming"
+    ],
+    "createdAt": "2025-10-24T16:39:16.579858",
+    "updatedAt": "2025-10-24T17:03:54.398705"
+  },
+  {
     "id": "1-two-sum",
     "title": "Two Sum",
     "difficulty": "easy",
@@ -470,6 +480,17 @@
     "updatedAt": "2025-09-30T19:05:08.951389"
   },
   {
+    "id": "1570-dot-product-of-two-sparse-vectors",
+    "title": "Dot Product of Two Sparse Vectors",
+    "difficulty": "medium",
+    "topics": [
+      "vector",
+      "hash-table"
+    ],
+    "createdAt": "2025-10-24T15:31:44.411566",
+    "updatedAt": "2025-10-24T15:34:23.802860"
+  },
+  {
     "id": "34-find-first-and-last-position-of-element-in-sorted-array",
     "title": "Find First and Last Position of Element in Sorted Array",
     "difficulty": "medium",
@@ -640,7 +661,7 @@
       "dynamic-programming"
     ],
     "createdAt": "2025-10-24T12:26:24.243097",
-    "updatedAt": "2025-10-24T14:33:08.986248"
+    "updatedAt": "2025-10-24T14:34:50.615232"
   },
   {
     "id": "200-number-of-islands",

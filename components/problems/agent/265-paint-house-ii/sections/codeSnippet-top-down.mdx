@@ -1,0 +1,22 @@
+```python meta="source=problems/265-paint-house-ii/top-down.py"
+def minCostII(costs: list[list[int]]) -> int:
+    
+    n, k , memo = len(costs), len(costs[0]), {}
+
+    def dp(i: int) -> list[int]:
+        if i == n:
+            return [0] * k
+        if i not in memo:
+            nxt = dp(i + 1)
+            m1 = m2 = float("inf")
+            c1 = -1
+            for c, v in enumerate(nxt):
+                if v < m1:
+                    m2, m1, c1 = m1, v, c
+                elif v < m2:
+                    m2 = v
+            memo[i] = [costs[i][c] + (m2 if c == c1 else m1) for c in range(k)]
+        return memo[i]
+
+    return min(dp(0))
+```

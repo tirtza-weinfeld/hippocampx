@@ -23,12 +23,6 @@
       "909-snakes-and-ladders",
       "994-rotting-oranges"
     ],
-    "hash-table": [
-      "1-two-sum"
-    ],
-    "k-sum": [
-      "1-two-sum"
-    ],
     "dynamic-programming": [
       "120-triangle",
       "121-best-time-to-buy-and-sell-stock",
@@ -38,10 +32,18 @@
       "152-maximum-product-subarray",
       "188-best-time-to-buy-and-sell-stock-iv",
       "2140-solving-questions-with-brainpower",
+      "265-paint-house-ii",
       "416-partition-equal-subset-sum",
       "518-coin-change-ii",
       "64-minimum-path-sum",
       "70-climbing-stairs"
+    ],
+    "hash-table": [
+      "1-two-sum",
+      "1570-dot-product-of-two-sparse-vectors"
+    ],
+    "k-sum": [
+      "1-two-sum"
     ],
     "trie": [
       "208-implement-trie-prefix-tree",
@@ -131,6 +133,9 @@
     "rotated-array": [
       "33-search-in-rotated-sorted-array"
     ],
+    "vector": [
+      "1570-dot-product-of-two-sparse-vectors"
+    ],
     "bellman-ford": [
       "1514-path-with-maximum-probability"
     ],
@@ -155,6 +160,7 @@
       "1510-stone-game-iv",
       "188-best-time-to-buy-and-sell-stock-iv",
       "212-word-search-ii",
+      "265-paint-house-ii",
       "363-max-sum-of-rectangle-no-larger-than-k",
       "37-sudoku-solver",
       "460-lfu-cache",
@@ -173,6 +179,7 @@
       "1514-path-with-maximum-probability",
       "152-maximum-product-subarray",
       "153-find-minimum-in-rotated-sorted-array",
+      "1570-dot-product-of-two-sparse-vectors",
       "1590-make-sum-divisible-by-p",
       "1631-path-with-minimum-effort",
       "198-house-robber",
@@ -323,6 +330,10 @@
       "$O(n \\log k)$",
       "$O(n)$",
       "$O(n \\log k)$"
+    ],
+    "64-minimum-path-sum": [
+      "$O(r  \\cdot  c)$",
+      "$O(r  \\cdot  c)$"
     ],
     "200-number-of-islands": [
       "$O(m  \\cdot  n)$"

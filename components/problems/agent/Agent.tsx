@@ -23,6 +23,7 @@ const getAgentMetadata = cache(() =>
 const Problem37SudokuSolver = lazy(() => import('./37-sudoku-solver'))
 const Problem1631PathWithMinimumEffort = lazy(() => import('./1631-path-with-minimum-effort'))
 const Problem909SnakesAndLadders = lazy(() => import('./909-snakes-and-ladders'))
+const Problem265PaintHouseIi = lazy(() => import('./265-paint-house-ii'))
 const Problem1TwoSum = lazy(() => import('./1-two-sum'))
 const Problem152MaximumProductSubarray = lazy(() => import('./152-maximum-product-subarray'))
 const Problem1293ShortestPathInAGridWithObstaclesElimination = lazy(() => import('./1293-shortest-path-in-a-grid-with-obstacles-elimination'))
@@ -66,6 +67,7 @@ const Problem153FindMinimumInRotatedSortedArray = lazy(() => import('./153-find-
 const Problem994RottingOranges = lazy(() => import('./994-rotting-oranges'))
 const Problem121BestTimeToBuyAndSellStock = lazy(() => import('./121-best-time-to-buy-and-sell-stock'))
 const Problem53MaximumSubarray = lazy(() => import('./53-maximum-subarray'))
+const Problem1570DotProductOfTwoSparseVectors = lazy(() => import('./1570-dot-product-of-two-sparse-vectors'))
 const Problem34FindFirstAndLastPositionOfElementInSortedArray = lazy(() => import('./34-find-first-and-last-position-of-element-in-sorted-array'))
 const Problem76MinimumWindowSubstring = lazy(() => import('./76-minimum-window-substring'))
 const Problem84LargestRectangleInHistogram = lazy(() => import('./84-largest-rectangle-in-histogram'))
@@ -106,6 +108,11 @@ const problemComponents = {
     "909-snakes-and-ladders": (
       <Suspense key="909-snakes-and-ladders" fallback={<div className="p-4 text-gray-500">Loading...</div>}>
         <Problem909SnakesAndLadders />
+      </Suspense>
+    ),
+    "265-paint-house-ii": (
+      <Suspense key="265-paint-house-ii" fallback={<div className="p-4 text-gray-500">Loading...</div>}>
+        <Problem265PaintHouseIi />
       </Suspense>
     ),
     "1-two-sum": (
@@ -321,6 +328,11 @@ const problemComponents = {
     "53-maximum-subarray": (
       <Suspense key="53-maximum-subarray" fallback={<div className="p-4 text-gray-500">Loading...</div>}>
         <Problem53MaximumSubarray />
+      </Suspense>
+    ),
+    "1570-dot-product-of-two-sparse-vectors": (
+      <Suspense key="1570-dot-product-of-two-sparse-vectors" fallback={<div className="p-4 text-gray-500">Loading...</div>}>
+        <Problem1570DotProductOfTwoSparseVectors />
       </Suspense>
     ),
     "34-find-first-and-last-position-of-element-in-sorted-array": (

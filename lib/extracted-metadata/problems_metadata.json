@@ -60,6 +60,25 @@
       "difficulty": "medium",
       "topics": ["bfs"]
     },
+    "265-paint-house-ii": {
+      "time_stamps": {
+        "created_at": "2025-10-24T16:39:16.579858",
+        "updated_at": "2025-10-24T17:03:54.398705"
+      },
+      "solutions": {
+        "bottom-up.py": {
+          "code": "def minCostII(costs: list[list[int]]) -> int:\n    n, k = len(costs), len(costs[0]); row = [0]*k\n    for i in range(n-1, -1, -1):\n        m1 = m2 = float('inf'); c1 = -1\n        for c, v in enumerate(row):\n            if v < m1: m2, m1, c1 = m1, v, c\n            elif v < m2: m2 = v\n        row = [costs[i][c] + (m2 if c == c1 else m1) for c in range(k)]\n    return min(row)"
+        },
+        "top-down.py": {
+          "code": "def minCostII(costs: list[list[int]]) -> int:\n    \n    n, k , memo = len(costs), len(costs[0]), {}\n\n    def dp(i: int) -> list[int]:\n        if i == n:\n            return [0] * k\n        if i not in memo:\n            nxt = dp(i + 1)\n            m1 = m2 = float(\"inf\")\n            c1 = -1\n            for c, v in enumerate(nxt):\n                if v < m1:\n                    m2, m1, c1 = m1, v, c\n                elif v < m2:\n                    m2 = v\n            memo[i] = [costs[i][c] + (m2 if c == c1 else m1) for c in range(k)]\n        return memo[i]\n\n    return min(dp(0))"
+        }
+      },
+      "title": "Paint House II",
+      "definition": "Return the minimum cost to paint all houses such that no two adjacent houses have the same color.",
+      "leetcode": "https://leetcode.com/problems/paint-house-ii/description/",
+      "difficulty": "hard",
+      "topics": ["dynamic-programming"]
+    },
     "1-two-sum": {
       "time_stamps": {
         "created_at": "2025-09-29T09:50:47.660266",
@@ -955,6 +974,22 @@
       "difficulty": "medium",
       "topics": ["kadane"]
     },
+    "1570-dot-product-of-two-sparse-vectors": {
+      "time_stamps": {
+        "created_at": "2025-10-24T15:31:44.411566",
+        "updated_at": "2025-10-24T15:34:23.802860"
+      },
+      "solutions": {
+        "solution.py": {
+          "code": "class SparseVector:\n    __slots__ = (\"m\",)\n    def __init__(self, nums: list[int]):\n        self.m = {i: v for i, v in enumerate(nums) if v}\n\n    def dotProduct(self, vec: 'SparseVector') -> int:  \n        a, b = (self.m, vec.m) if len(self.m) <= len(vec.m) else (vec.m, self.m)\n        s = 0\n        for i, v in a.items():          \n            if (w := b.get(i)) is not None:\n                s += v * w\n        return s\n\n\n\n# Your SparseVector object will be instantiated and called as such:\n# v1 = SparseVector(nums1)\n# v2 = SparseVector(nums2)\n# ans = v1.dotProduct(v2)"
+        }
+      },
+      "title": "Dot Product of Two Sparse Vectors",
+      "definition": "Given two sparse vectors, compute their dot product",
+      "leetcode": "https://leetcode.com/problems/dot-product-of-two-sparse-vectors/description/",
+      "difficulty": "medium",
+      "topics": ["vector", "hash-table"]
+    },
     "34-find-first-and-last-position-of-element-in-sorted-array": {
       "time_stamps": {
         "created_at": "2025-09-12T16:05:16.849941",
@@ -1306,7 +1341,7 @@
     "64-minimum-path-sum": {
       "time_stamps": {
         "created_at": "2025-10-24T12:26:24.243097",
-        "updated_at": "2025-10-24T14:33:08.986248"
+        "updated_at": "2025-10-24T14:34:50.615232"
       },
       "solutions": {
         "bottom-up.py": {
@@ -1317,9 +1352,11 @@
           "expressions": {
             "'min(dp[j], dp[j - 1]) + grid[i][j - 1]'=  update current cell": "min(top, left) + cell value"
           },
+          "time_complexity": "O(r * c)",
           "code": "def minPathSum(grid: list[list[int]]) -> int:\n    r, c = len(grid), len(grid[0])\n    dp = [float(\"inf\")] * (c + 1); dp[1] = 0\n    for i in range(r):\n        for j in range(1, c + 1):\n            dp[j] = min(dp[j], dp[j - 1]) + grid[i][j - 1]\n    return dp[c]\n"
         },
         "top-down.py": {
+          "time_complexity": "O(r * c)",
           "code": "def minPathSum(grid: list[list[int]]) -> int:\n    r, c, memo = len(grid), len(grid[0]), {}\n    def dp(i, j):\n        if i == r - 1 and j == c - 1: return grid[i][j]\n        if i >= r or j >= c: return float(\"inf\")\n        if (k := (i, j)) not in memo:\n            memo[k] = grid[i][j] + min(dp(i + 1, j), dp(i, j + 1))\n        return memo[k]\n    return dp(0, 0)\n\n"
         }
       },

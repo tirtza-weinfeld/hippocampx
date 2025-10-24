@@ -1,0 +1,60 @@
+# Paint House II
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="hard" />
+
+<PillList pills={["dynamic-programming"]} />
+
+[265. Paint House II](https://leetcode.com/problems/paint-house-ii/description/)
+
+## [!(ProblemDefinition)] Definition
+
+Return the minimum cost to paint all houses such that no two adjacent houses have the same color.
+
+## Bottom Up Solution
+
+### [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/265-paint-house-ii/bottom-up.py"
+def minCostII(costs: list[list[int]]) -> int:
+    n, k = len(costs), len(costs[0]); row = [0]*k
+    for i in range(n-1, -1, -1):
+        m1 = m2 = float('inf'); c1 = -1
+        for c, v in enumerate(row):
+            if v < m1: m2, m1, c1 = m1, v, c
+            elif v < m2: m2 = v
+        row = [costs[i][c] + (m2 if c == c1 else m1) for c in range(k)]
+    return min(row)
+```
+
+
+---
+
+## Top Down Solution
+
+### [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/265-paint-house-ii/top-down.py"
+def minCostII(costs: list[list[int]]) -> int:
+
+    n, k , memo = len(costs), len(costs[0]), {}
+
+    def dp(i: int) -> list[int]:
+        if i == n:
+            return [0] * k
+        if i not in memo:
+            nxt = dp(i + 1)
+            m1 = m2 = float("inf")
+            c1 = -1
+            for c, v in enumerate(nxt):
+                if v < m1:
+                    m2, m1, c1 = m1, v, c
+                elif v < m2:
+                    m2 = v
+            memo[i] = [costs[i][c] + (m2 if c == c1 else m1) for c in range(k)]
+        return memo[i]
+
+    return min(dp(0))
+```
+

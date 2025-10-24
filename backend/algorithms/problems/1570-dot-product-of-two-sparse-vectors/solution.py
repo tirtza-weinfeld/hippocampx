@@ -1,0 +1,19 @@
+class SparseVector:
+    __slots__ = ("m",)
+    def __init__(self, nums: list[int]):
+        self.m = {i: v for i, v in enumerate(nums) if v}
+
+    def dotProduct(self, vec: 'SparseVector') -> int:  
+        a, b = (self.m, vec.m) if len(self.m) <= len(vec.m) else (vec.m, self.m)
+        s = 0
+        for i, v in a.items():          
+            if (w := b.get(i)) is not None:
+                s += v * w
+        return s
+
+
+
+# Your SparseVector object will be instantiated and called as such:
+# v1 = SparseVector(nums1)
+# v2 = SparseVector(nums2)
+# ans = v1.dotProduct(v2)
