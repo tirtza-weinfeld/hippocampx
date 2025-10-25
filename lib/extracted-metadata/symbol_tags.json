@@ -2,8 +2,8 @@
   "core.bellman-ford.classic:bellman_ford_classic": {
     "args": [
       "vertices",
-      "edges",
-      "source"
+      "source",
+      "edges"
     ],
     "code": "def bellman_ford_classic(\n    vertices: list[str], edges: list[tuple[str, str, float]], source: str\n) -> dict[str, float]:\n\n    d = [float(\"inf\")] * (V := len(vertices))\n    d[source] = 0\n\n    for _ in range(V - 1):\n        updated = False\n        for u, v, w in edges:\n            if d[u] + w < d[v]:\n                d[v] = d[u] + w\n                updated = True\n        if not updated:\n            return d\n\n    # if we get here, we did all V-1 passes, so still need to check for cycles\n    for u, v, w in edges:\n        if d[u] + w < d[v]:\n            raise Exception(\"Negative-weight cycle\")\n\n    return d",
     "expressions": {
@@ -31,8 +31,8 @@
   },
   "core.bellman-ford.layered_dag:bellman_ford_layered_dag": {
     "args": [
-      "edges",
       "source",
+      "edges",
       "vertices"
     ],
     "code": "def bellman_ford_layered_dag(\n    vertices: list[str], edges: list[tuple[str, str, float]], source: str\n) -> dict[str, float]:\n\n    # 1) Initialize\n    d = {v: float(\"inf\") for v in vertices}\n    d[source], V = 0, len(vertices)\n\n    # 2) Layered relaxation: starting from δ₀, do V passes to compute δ₁…δ_V\n    for k in range(V):  # k = 0…V-1\n        d_k = {**d}  # snapshot of δ_k\n        for u, v, w in edges:\n            if d[u] + w < d_k[v]:\n                d_k[v] = d[u] + w\n        d = d_k  # now holds δ_{k+1}\n\n    # 3) Identify \"witnesses\" to negative cycles:\n    #    any v for which an extra relaxation is still possible\n    witnesses = {v for u, v, w in edges if d[u] + w < d[v]}\n\n    if not witnesses:\n        return d\n\n    # 4) Build adjacency list for negative-cycle propagation\n    adj = defaultdict(list)\n    for u, v, _ in edges:\n        adj[u].append(v)\n\n    # 5) DFS to propagate −∞ to all vertices reachable from any witness\n    stack = list(witnesses)\n    reachable = set(witnesses)\n\n    while stack:\n        u = stack.pop()\n        d[u] = float(\"-inf\")\n        for v in adj[u]:\n            if v not in reachable:\n                reachable.add(v)\n                stack.append(v)\n\n    return d",
@@ -66,8 +66,8 @@
   },
   "core.binary-search.bisect_left:simple_bisect_left": {
     "args": [
-      "x",
-      "a"
+      "a",
+      "x"
     ],
     "code": "def simple_bisect_left(a: list[int], x: int):\n\n    l, r = 0, len(a)\n    while l < r:\n        mid = (l + r) // 2\n        if x > a[mid]:\n            l = mid + 1\n        else:\n            r = mid\n    return l",
     "expressions": {
@@ -120,8 +120,8 @@
   },
   "core.dijkstra.algorithm:dijkstra": {
     "args": [
-      "s",
-      "graph"
+      "graph",
+      "s"
     ],
     "code": "def dijkstra(graph: dict[str, dict[str, int]], s: str):\n\n    d = {v: float('inf') for v in graph} | {s: 0}\n    p = {v: None for v in graph}\n\n    pq = [(0, s)]\n\n    while pq:\n        d_u, u = heapq.heappop(pq)\n        if d_u > d[u]:\n            continue\n        for v ,w in graph[u]:\n            if (weight := d_u + w) < d[v]:\n                d[v], p[v] = weight, u\n                heapq.heappush(pq, (weight, v))\n\n    return d, p",
     "file_path": "backend/algorithms/core/dijkstra/algorithm.py",
@@ -144,9 +144,9 @@
   },
   "core.modular-arithmetic.congruent1:congruent1": {
     "args": [
-      "n",
       "b",
-      "a"
+      "a",
+      "n"
     ],
     "code": "def congruent1(a: int, b: int, n: int) -> bool:\n    return (a - b) % n == 0",
     "file_path": "backend/algorithms/core/modular-arithmetic/congruent1.py",
@@ -179,9 +179,9 @@
   },
   "core.modular-arithmetic.congruent2:congruent2": {
     "args": [
-      "n",
       "b",
-      "a"
+      "a",
+      "n"
     ],
     "code": "def congruent2(a: int, b: int, n: int) -> bool:\n    return a % n == b % n",
     "file_path": "backend/algorithms/core/modular-arithmetic/congruent2.py",
@@ -242,8 +242,8 @@
   },
   "problems.1-two-sum.solution:two_sum": {
     "args": [
-      "target",
-      "nums"
+      "nums",
+      "target"
     ],
     "code": "def two_sum(nums: list[int], target: int) -> list[int]:\n\n    seen = {}\n\n    for i, num in enumerate(nums):\n        if (x := target - num) in seen:\n            return seen[x], i\n        seen[num] = i",
     "file_path": "backend/algorithms/problems/1-two-sum/solution.py",
@@ -767,8 +767,8 @@
   },
   "problems.146-lru-cache.solution:LRUCache.put": {
     "args": [
-      "value",
-      "key"
+      "key",
+      "value"
     ],
     "code": "    def put(self, key: int, value: int) -> None:\n        if key in self.cache:\n            self.cache.move_to_end(key)\n        self.cache[key] = value\n        if len(self.cache) > self.capacity:\n            self.cache.popitem(last=False)",
     "file_path": "backend/algorithms/problems/146-lru-cache/solution.py",
@@ -798,10 +798,10 @@
   "problems.1514-path-with-maximum-probability.solution:path_with_maximum_probability": {
     "args": [
       "edges",
-      "succProb",
       "n",
       "start",
-      "end"
+      "end",
+      "succProb"
     ],
     "code": "def path_with_maximum_probability(n: int, edges: list[list[int]], succProb: list[float], start: int, end: int) -> float:\n    prob = [0.0] * n # rob[i] stores max probability to reach node i\n    prob[start] = 1.0  # Start with full certainty\n\n    for _ in range(n - 1):  # Perform up to n-1 rounds of relaxation\n        updated = False\n        for (u, v), p in zip(edges, succProb):\n            if prob[u] * p > prob[v]:  # Try to improve v through u\n                prob[v] = prob[u] * p\n                updated = True\n            if prob[v] * p > prob[u]:  # Try to improve u through v (undirected graph)\n                prob[u] = prob[v] * p\n                updated = True\n        if not updated:\n            break  # Early exit if no updates in this round\n\n    return prob[end]",
     "file_path": "backend/algorithms/problems/1514-path-with-maximum-probability/solution.py",
@@ -861,8 +861,8 @@
   },
   "problems.1590-make-sum-divisible-by-p.solution:minSubarrayToMakeSumDivisibleByP": {
     "args": [
-      "segments",
-      "p"
+      "p",
+      "segments"
     ],
     "code": "def minSubarrayToMakeSumDivisibleByP(segments: list[int], p: int) -> int:\n\n    total_remainder = sum(segments) % p\n    if total_remainder == 0:\n        return 0\n\n    remainder_idx = {0: -1}\n    prefix_remainder, min_length = 0, len(segments)\n\n    for i, segment in enumerate(segments):\n        prefix_remainder = (prefix_remainder + segment) % p\n        need = (prefix_remainder - total_remainder + p) % p\n        if need in remainder_idx:\n            min_length = min(min_length, i - remainder_idx[need])\n        remainder_idx[prefix_remainder] = i\n\n    return min_length if min_length < len(segments) else -1",
     "file_path": "backend/algorithms/problems/1590-make-sum-divisible-by-p/solution.py",
@@ -1310,9 +1310,9 @@
   },
   "problems.2145-count-the-hidden-sequences.solution:numberOfArrays": {
     "args": [
+      "differences",
       "upper",
-      "lower",
-      "differences"
+      "lower"
     ],
     "code": "def numberOfArrays(differences: list[int], lower: int, upper: int) -> int:\n\n    prefix_sum = min_marker = max_marker = 0\n\n    for diff in differences:\n        prefix_sum += diff\n        min_marker = min(min_marker, prefix_sum)\n        max_marker = max(max_marker, prefix_sum)\n\n    return max(0, (upper - max_marker) - (lower - min_marker) + 1)",
     "file_path": "backend/algorithms/problems/2145-count-the-hidden-sequences/solution.py",
@@ -1409,10 +1409,81 @@
     "name": "s",
     "summary": "Input string to analyze"
   },
+  "problems.312-burst-balloons.solution:Solution.maxCoins": {
+    "args": [
+      "nums"
+    ],
+    "code": "    def maxCoins(self, nums: list[int]) -> int:\n\n        nums = [1, *nums, 1] \n        memo = {}  \n\n        def dp(i, j):\n            if (key:=(i, j)) not in memo:\n                memo[key] = max(\n                    (\n                        dp(i, k) \n                        + nums[i] * nums[k] * nums[j]  \n                        + dp(k, j) \n                        for k in range(i + 1, j)     \n                    ),\n                    default=0  \n                )\n            return memo[key]\n\n        return dp(0, len(nums) - 1)",
+    "expressions": {
+      "[1, *nums, 1]": "Pad the array with 1s at both ends to handle boundaries easily"
+    },
+    "file_path": "backend/algorithms/problems/312-burst-balloons/solution.py",
+    "kind": "method",
+    "label": "def maxCoins(self, nums: list[int]) -> int",
+    "name": "maxCoins",
+    "returns": {
+      "label": "int"
+    }
+  },
+  "problems.312-burst-balloons.solution:Solution.maxCoins.[1, *nums, 1]": {
+    "kind": "expression",
+    "name": "[1, *nums, 1]",
+    "summary": "Pad the array with 1s at both ends to handle boundaries easily"
+  },
+  "problems.312-burst-balloons.solution:Solution.maxCoins.dp": {
+    "args": [
+      "i",
+      "j"
+    ],
+    "code": "        def dp(i, j):\n            if (key:=(i, j)) not in memo:\n                memo[key] = max(\n                    (\n                        dp(i, k) \n                        + nums[i] * nums[k] * nums[j]  \n                        + dp(k, j) \n                        for k in range(i + 1, j)     \n                    ),\n                    default=0  \n                )\n            return memo[key]",
+    "expressions": {
+      "default=0": "Base case: no balloons between `i` and `j` (no K exists) → 0 coins ,(The generator will be empty when j <= i + 1, so max(..., default=0) handles it))",
+      "dp(0, len(nums) - 1)": "Solve for the entire padded array: burst all original balloons between 0 and len(nums)-1",
+      "dp(i, k)": "Max coins from left part (i, k)",
+      "dp(k, j)": "*Maximum coins obtainable from right part:* bursting all balloons strictly between `k` and `j`                    (i.e., in the open interval `(k, j)`), with `k` and `j` acting as unburst boundaries.",
+      "for k in range(i + 1, j)": "Try every k in (i, j) as the LAST balloon to burst in the current interval. Since k is burst last, its adjacent unburst balloons are exactly nums[i] and nums[j].",
+      "nums[i] * nums[k] * nums[j]": "Coins obtained by bursting balloon `k` LAST                    in the open interval `(i, j)`. At this point, all other balloons between                    `i` and `j` have already been burst, so the immediate neighbors of `k` are                    the boundary balloons at `i` and `j`."
+    },
+    "file_path": "backend/algorithms/problems/312-burst-balloons/solution.py",
+    "kind": "method",
+    "label": "def dp(i, j)",
+    "name": "dp",
+    "summary": "Returns the maximum coins obtainable by bursting all balloons\nstrictly between indices `i` and `j` (*i and j are NOT burst*).\nAssumes `nums[i]` and `nums[j]` are the boundary balloons (not burst yet)"
+  },
+  "problems.312-burst-balloons.solution:Solution.maxCoins.dp.default=0": {
+    "kind": "expression",
+    "name": "default=0",
+    "summary": "Base case: no balloons between `i` and `j` (no K exists) → 0 coins ,(The generator will be empty when j <= i + 1, so max(..., default=0) handles it))"
+  },
+  "problems.312-burst-balloons.solution:Solution.maxCoins.dp.dp(0, len(nums) - 1)": {
+    "kind": "expression",
+    "name": "dp(0, len(nums) - 1)",
+    "summary": "Solve for the entire padded array: burst all original balloons between 0 and len(nums)-1"
+  },
+  "problems.312-burst-balloons.solution:Solution.maxCoins.dp.dp(i, k)": {
+    "kind": "expression",
+    "name": "dp(i, k)",
+    "summary": "Max coins from left part (i, k)"
+  },
+  "problems.312-burst-balloons.solution:Solution.maxCoins.dp.dp(k, j)": {
+    "kind": "expression",
+    "name": "dp(k, j)",
+    "summary": "*Maximum coins obtainable from right part:* bursting all balloons strictly between `k` and `j`                    (i.e., in the open interval `(k, j)`), with `k` and `j` acting as unburst boundaries."
+  },
+  "problems.312-burst-balloons.solution:Solution.maxCoins.dp.for k in range(i + 1, j)": {
+    "kind": "expression",
+    "name": "for k in range(i + 1, j)",
+    "summary": "Try every k in (i, j) as the LAST balloon to burst in the current interval. Since k is burst last, its adjacent unburst balloons are exactly nums[i] and nums[j]."
+  },
+  "problems.312-burst-balloons.solution:Solution.maxCoins.dp.nums[i] * nums[k] * nums[j]": {
+    "kind": "expression",
+    "name": "nums[i] * nums[k] * nums[j]",
+    "summary": "Coins obtained by bursting balloon `k` LAST                    in the open interval `(i, j)`. At this point, all other balloons between                    `i` and `j` have already been burst, so the immediate neighbors of `k` are                    the boundary balloons at `i` and `j`."
+  },
   "problems.325-maximum-size-subarray-sum-equals-k.solution:maxSizeSubarraySumEqualsK": {
     "args": [
-      "segments",
-      "k"
+      "k",
+      "segments"
     ],
     "code": "def maxSizeSubarraySumEqualsK(segments: list[int], k: int) -> int:\n\n    marker_idx = {0: -1}\n    prefix_sum = max_length = 0\n\n    for i, segment in enumerate(segments):\n\n        prefix_sum += segment\n\n        if (target_marker := prefix_sum - k) in marker_idx:\n            max_length = max(max_length, i - marker_idx[target_marker])\n\n        if prefix_sum not in marker_idx:\n            marker_idx[prefix_sum] = i\n\n    return max_length",
     "file_path": "backend/algorithms/problems/325-maximum-size-subarray-sum-equals-k/solution.py",
@@ -1609,36 +1680,25 @@
     "name": "target",
     "summary": "Target sum to achieve"
   },
-  "problems.416-partition-equal-subset-sum.solution:can_partition_into_2_equal_subsets": {
+  "problems.416-partition-equal-subset-sum.solution:canPartition": {
     "args": [
       "nums"
     ],
-    "code": "def can_partition_into_2_equal_subsets(nums: list[int]) -> bool:\n    memo, n = {}, len(nums)\n\n    def dp(i, s):\n        if i == n or s < 0:\n            return False\n        if s == 0:\n            return True\n\n        if (i, s) not in memo:\n            memo[i, s] = dp(i + 1, s) or dp(i + 1, s - nums[i])\n\n        return memo[(i, s)]\n\n    return False if ((total := sum(nums)) & 1) else dp(0, total / 2)",
-    "file_path": "backend/algorithms/problems/416-partition-equal-subset-sum/solution.py",
-    "intuition": "- Paradigm: This is the **0/1 Knapsack** decision problem in disguise.\n\n    - Insight: The problem transforms from partitioning an array into a simpler question: can a subset of \"items\" (`nums`) perfectly fill a \"knapsack\" with capacity `total_sum / 2`? Each item's weight is equal to its value.",
-    "kind": "function",
-    "label": "def can_partition_into_2_equal_subsets(nums: list[int]) -> bool",
-    "name": "can_partition_into_2_equal_subsets",
-    "returns": {
-      "label": "bool"
-    },
-    "time_complexity": "O(N * Sum):\nwhere N is the number of elements and Sum is the target subset sum."
-  },
-  "problems.416-partition-equal-subset-sum.solution:can_partition_into_2_equal_subsets.dp": {
-    "args": [
-      "i",
-      "s"
-    ],
-    "code": "    def dp(i, s):\n        if i == n or s < 0:\n            return False\n        if s == 0:\n            return True\n\n        if (i, s) not in memo:\n            memo[i, s] = dp(i + 1, s) or dp(i + 1, s - nums[i])\n\n        return memo[(i, s)]",
+    "code": "def canPartition(nums: list[int]) -> bool:\n\n    if (total := sum(nums)) & 1:\n        return False\n\n    nums.sort(reverse=True)\n    if nums[0] > (target := total // 2):\n        return False\n\n    memo = {}\n\n    def dp(i: int, r: int) -> bool:\n        if r == 0:\n            return True\n        if r < 0 or i == len(nums):\n            return False\n        if (k := (i, r)) not in memo:\n            memo[k] = dp(i + 1, r - nums[i]) or dp(i + 1, r)\n        return memo[k]\n\n    return dp(0, target)",
     "expressions": {
       "(total := sum(nums)) & 1": "odd sum"
     },
     "file_path": "backend/algorithms/problems/416-partition-equal-subset-sum/solution.py",
+    "intuition": "- This is the **0/1 Knapsack** decision problem in disguise:\n    - The problem transforms from partitioning an array into a simpler question:             can a subset of \"items\" (`nums`) perfectly fill a \"knapsack\" with capacity `total_sum // 2`?             Each item's weight is equal to its value.",
     "kind": "function",
-    "label": "def dp(i, s)",
-    "name": "dp"
+    "label": "def canPartition(nums: list[int]) -> bool",
+    "name": "canPartition",
+    "returns": {
+      "label": "bool"
+    },
+    "time_complexity": "O(n * target)"
   },
-  "problems.416-partition-equal-subset-sum.solution:can_partition_into_2_equal_subsets.dp.(total := sum(nums)) & 1": {
+  "problems.416-partition-equal-subset-sum.solution:canPartition.(total := sum(nums)) & 1": {
     "kind": "expression",
     "name": "(total := sum(nums)) & 1",
     "summary": "odd sum"
@@ -1700,8 +1760,8 @@
   },
   "problems.460-lfu-cache.solution:LFUCache.put": {
     "args": [
-      "value",
-      "key"
+      "key",
+      "value"
     ],
     "code": "    def put(self, key: int, value: int) -> None:\n        if self.capacity <= 0:\n            return\n\n        if key in self.cache:\n            self.cache[key] = value\n            self._bump(key)\n            return\n\n        if len(self.cache) >= self.capacity:\n            old_key, _ = self.buckets[self.minfreq].popitem(last=False)\n            del self.cache[old_key]\n            del self.freq[old_key]\n\n        self.cache[key] = value\n        self.freq[key] = 1\n        self.buckets[1][key] = None\n        self.minfreq = 1",
     "file_path": "backend/algorithms/problems/460-lfu-cache/solution.py",
@@ -1783,8 +1843,8 @@
   },
   "problems.518-coin-change-ii.solution:coin_change_II": {
     "args": [
-      "amount",
-      "coins"
+      "coins",
+      "amount"
     ],
     "code": "def coin_change_II(amount: int, coins: list[int]) -> int:\n    memo, n = {}, len(coins)\n\n    def dp(c, amount):\n        if amount == 0:\n            return 1\n        if amount < 0 or c == n:\n            return 0\n        if (c, amount) not in memo:\n            memo[c, amount] = dp(c, amount - coins[c]) + dp(c + 1, amount)\n        return memo[c, amount]\n\n    return dp(0, amount)",
     "file_path": "backend/algorithms/problems/518-coin-change-ii/solution.py",
@@ -1799,8 +1859,8 @@
   },
   "problems.523-continuous-subarray-sum.solution:checkSubarraySumIsMultipleOfK": {
     "args": [
-      "segments",
-      "k"
+      "k",
+      "segments"
     ],
     "code": "def checkSubarraySumIsMultipleOfK(segments: list[int], k: int) -> bool:\n\n    remainder_idx = {0: -1}\n    prefix_remainder = 0\n\n    for i, segment in enumerate(segments):\n        prefix_remainder = (prefix_remainder + segment) % k\n        if prefix_remainder in remainder_idx:\n            if i - remainder_idx[prefix_remainder] > 1:\n                return True\n        else:\n            remainder_idx[prefix_remainder] = i\n    return False",
     "file_path": "backend/algorithms/problems/523-continuous-subarray-sum/solution.py",
@@ -1882,8 +1942,8 @@
   },
   "problems.560-subarray-sum-equals-k.solution:subarraySumEqualsK": {
     "args": [
-      "segments",
-      "k"
+      "k",
+      "segments"
     ],
     "code": "def subarraySumEqualsK(segments: list[int], k: int) -> int:\n\n    marker_frequency = defaultdict(int, {0: 1})\n    prefix_sum = count = 0\n\n    for segment in segments:\n        prefix_sum += segment\n        count += marker_frequency[prefix_sum - k]\n        marker_frequency[prefix_sum] += 1\n\n    return count",
     "file_path": "backend/algorithms/problems/560-subarray-sum-equals-k/solution.py",
@@ -1998,8 +2058,8 @@
   },
   "problems.76-minimum-window-substring.solution:minWindow": {
     "args": [
-      "s",
-      "t"
+      "t",
+      "s"
     ],
     "code": "def minWindow(s: str, t: str) -> str:\n    t_count, have = Counter(t), defaultdict(int)\n    letters_needed, min_idx, l = len(t_count), None, 0\n    for r, c in enumerate(s):\n        have[c] += 1\n        if have[c] == t_count[c]:\n            letters_needed -= 1\n            while letters_needed == 0:\n                if not min_idx or r - l + 1 < min_idx[1] - min_idx[0]:\n                    min_idx = l, r + 1\n                have[s[l]] -= 1\n                if have[s[l]] < t_count[s[l]]:\n                    letters_needed += 1\n                l += 1\n    return \"\" if min_idx == None else s[min_idx[0] : min_idx[1]]",
     "file_path": "backend/algorithms/problems/76-minimum-window-substring/solution.py",
@@ -2048,10 +2108,10 @@
   "problems.787-cheapest-flights-within-k-stops.bellman_ford:cheapest_flights_with_at_most_k_stops": {
     "args": [
       "k",
-      "flights",
       "src",
+      "dst",
       "n",
-      "dst"
+      "flights"
     ],
     "code": "def cheapest_flights_with_at_most_k_stops(\n    n: int, flights: list[list[int]], src: int, dst: int, k: int\n) -> int:\n    d = [float(\"inf\")] * n\n    d[src] = 0\n\n    for _ in range(k + 1):\n        tmp = d[:]\n        for u, v, w in flights:\n            if d[u] + w < tmp[v]:\n                tmp[v] = d[u] + w\n        d = tmp\n\n    return d[dst] if d[dst] < float(\"inf\") else -1",
     "file_path": "backend/algorithms/problems/787-cheapest-flights-within-k-stops/bellman_ford.py",
@@ -2066,9 +2126,9 @@
   "problems.787-cheapest-flights-within-k-stops.dijkstra:cheapest_flights_with_at_most_k_stops": {
     "args": [
       "k",
-      "dst",
       "flights",
-      "src"
+      "src",
+      "dst"
     ],
     "code": "def cheapest_flights_with_at_most_k_stops( flights: list[list[int]], src: int, dst: int, k: int) -> int:\n\n    graph = defaultdict(list)\n    for u, v, price in flights:\n        graph[u].append((v, price))\n\n    pq, min_stops = [(0, src, 0)], {}\n\n    while pq:\n        cost, city, stops = heapq.heappop(pq)\n\n        # If we've already found a path to this city using fewer or equal stops, skip.\n        # A path with fewer stops must have been cheaper or equal due to PQ ordering.\n        if stops > min_stops.get(city, float(\"inf\")): continue\n        if city == dst: return cost\n\n        # Record the new minimum stops to reach this city\n        min_stops[city] = stops\n        if stops <= k:\n            for neighbor, price in graph[city]:\n                heapq.heappush(pq, (cost + price, neighbor, stops + 1))\n    return -1",
     "file_path": "backend/algorithms/problems/787-cheapest-flights-within-k-stops/dijkstra.py",
@@ -2099,8 +2159,8 @@
   },
   "problems.79-word-search.solution:word_search": {
     "args": [
-      "word",
-      "board"
+      "board",
+      "word"
     ],
     "code": "def word_search(board: list[list[str]], word: str) -> bool:\n    rows, cols, n = len(board), len(board[0]), len(word)\n    def dfs(r: int, c: int, i: int) -> bool:\n        if i == n:\n            return True\n        if not (0 <= r < rows and 0 <= c < cols and board[r][c] == word[i]):\n            return False\n        tmp, board[r][c] = board[r][c], \"#\"\n        for x, y in ((r + 1, c), (r - 1, c), (r, c + 1), (r, c - 1)):\n            if dfs(x, y, i + 1):\n                board[r][c] = tmp\n                return True\n        board[r][c] = tmp\n        return False\n    return any(\n        dfs(r, c, 0)\n        for r in range(rows)\n        for c in range(cols)\n        if board[r][c] == word[0]\n    )",
     "file_path": "backend/algorithms/problems/79-word-search/solution.py",
@@ -2170,8 +2230,8 @@
   },
   "problems.875-koko-eating-bananas.solution:koko_eating_bananas": {
     "args": [
-      "piles",
-      "h"
+      "h",
+      "piles"
     ],
     "code": "def koko_eating_bananas(piles: list[int], h: int) -> int:\n\n    def hours(k:int) -> int:\n        return sum((p + k - 1) // k for p in piles)\n        # return sum(math.ceil(pile / k) for pile in piles)\n\n    l, r = 1, max(piles)\n    while l < r:\n        k = (l + r) // 2\n        if hours(k) <= h:\n            r = k\n        else:\n            l = k + 1\n    return l",
     "file_path": "backend/algorithms/problems/875-koko-eating-bananas/solution.py",
@@ -2248,8 +2308,8 @@
   },
   "problems.974-subarray-sums-divisible-by-k.solution:subarraysSumIsDivisibleByK": {
     "args": [
-      "segments",
-      "k"
+      "k",
+      "segments"
     ],
     "code": "def subarraysSumIsDivisibleByK(segments: list[int], k: int) -> int:\n    remainder_frequency = defaultdict(int, {0: 1})\n    prefix_remainder = count = 0\n\n    for segment in segments:\n        prefix_remainder = (prefix_remainder + segment) % k\n        count += remainder_frequency[prefix_remainder]\n        remainder_frequency[prefix_remainder] += 1\n    return count",
     "file_path": "backend/algorithms/problems/974-subarray-sums-divisible-by-k/solution.py",

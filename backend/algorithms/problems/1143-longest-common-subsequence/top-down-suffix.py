@@ -1,0 +1,14 @@
+def longestCommonSubsequence(text1: str, text2: str) -> int:
+    memo = {}
+
+    def dp(i, j):
+        if i >= len(text1) or j >= len(text2):
+            return 0
+        if (k := (i, j)) not in memo:
+            if text1[i] == text2[j]:
+                memo[k] = 1 + dp(i + 1, j + 1)
+            else:
+                memo[k] = max(dp(i + 1, j), dp(i, j + 1))
+        return memo[k]
+
+    return dp(0, 0)

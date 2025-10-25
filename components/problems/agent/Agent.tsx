@@ -33,6 +33,7 @@ const Problem211DesignAddAndSearchWordsDataStructure = lazy(() => import('./211-
 const Problem1406StoneGameIii = lazy(() => import('./1406-stone-game-iii'))
 const Problem213HouseRobberIi = lazy(() => import('./213-house-robber-ii'))
 const Problem875KokoEatingBananas = lazy(() => import('./875-koko-eating-bananas'))
+const Problem1143LongestCommonSubsequence = lazy(() => import('./1143-longest-common-subsequence'))
 const Problem460LfuCache = lazy(() => import('./460-lfu-cache'))
 const Problem133CloneGraph = lazy(() => import('./133-clone-graph'))
 const Problem238ProductOfArrayExceptSelf = lazy(() => import('./238-product-of-array-except-self'))
@@ -50,6 +51,7 @@ const Problem525ContiguousArray = lazy(() => import('./525-contiguous-array'))
 const Problem3LongestSubstringWithoutRepeatingCharacters = lazy(() => import('./3-longest-substring-without-repeating-characters'))
 const Problem51NQueens = lazy(() => import('./51-n-queens'))
 const Problem560SubarraySumEqualsK = lazy(() => import('./560-subarray-sum-equals-k'))
+const Problem312BurstBalloons = lazy(() => import('./312-burst-balloons'))
 const Problem1590MakeSumDivisibleByP = lazy(() => import('./1590-make-sum-divisible-by-p'))
 const Problem191NumberOf1Bits = lazy(() => import('./191-number-of-1-bits'))
 const Problem70ClimbingStairs = lazy(() => import('./70-climbing-stairs'))
@@ -65,6 +67,7 @@ const Problem124BinaryTreeMaximumPathSum = lazy(() => import('./124-binary-tree-
 const Problem1510StoneGameIv = lazy(() => import('./1510-stone-game-iv'))
 const Problem153FindMinimumInRotatedSortedArray = lazy(() => import('./153-find-minimum-in-rotated-sorted-array'))
 const Problem994RottingOranges = lazy(() => import('./994-rotting-oranges'))
+const Problem1547MinimumCostToCutAStick = lazy(() => import('./1547-minimum-cost-to-cut-a-stick'))
 const Problem121BestTimeToBuyAndSellStock = lazy(() => import('./121-best-time-to-buy-and-sell-stock'))
 const Problem53MaximumSubarray = lazy(() => import('./53-maximum-subarray'))
 const Problem1570DotProductOfTwoSparseVectors = lazy(() => import('./1570-dot-product-of-two-sparse-vectors'))
@@ -73,6 +76,7 @@ const Problem76MinimumWindowSubstring = lazy(() => import('./76-minimum-window-s
 const Problem84LargestRectangleInHistogram = lazy(() => import('./84-largest-rectangle-in-histogram'))
 const Problem136SingleNumber = lazy(() => import('./136-single-number'))
 const Problem1514PathWithMaximumProbability = lazy(() => import('./1514-path-with-maximum-probability'))
+const Problem72EditDistance = lazy(() => import('./72-edit-distance'))
 const Problem79WordSearch = lazy(() => import('./79-word-search'))
 const Problem39CombinationSum = lazy(() => import('./39-combination-sum'))
 const Problem54201Matrix = lazy(() => import('./542-01-matrix'))
@@ -160,6 +164,11 @@ const problemComponents = {
         <Problem875KokoEatingBananas />
       </Suspense>
     ),
+    "1143-longest-common-subsequence": (
+      <Suspense key="1143-longest-common-subsequence" fallback={<div className="p-4 text-gray-500">Loading...</div>}>
+        <Problem1143LongestCommonSubsequence />
+      </Suspense>
+    ),
     "460-lfu-cache": (
       <Suspense key="460-lfu-cache" fallback={<div className="p-4 text-gray-500">Loading...</div>}>
         <Problem460LfuCache />
@@ -245,6 +254,11 @@ const problemComponents = {
         <Problem560SubarraySumEqualsK />
       </Suspense>
     ),
+    "312-burst-balloons": (
+      <Suspense key="312-burst-balloons" fallback={<div className="p-4 text-gray-500">Loading...</div>}>
+        <Problem312BurstBalloons />
+      </Suspense>
+    ),
     "1590-make-sum-divisible-by-p": (
       <Suspense key="1590-make-sum-divisible-by-p" fallback={<div className="p-4 text-gray-500">Loading...</div>}>
         <Problem1590MakeSumDivisibleByP />
@@ -320,6 +334,11 @@ const problemComponents = {
         <Problem994RottingOranges />
       </Suspense>
     ),
+    "1547-minimum-cost-to-cut-a-stick": (
+      <Suspense key="1547-minimum-cost-to-cut-a-stick" fallback={<div className="p-4 text-gray-500">Loading...</div>}>
+        <Problem1547MinimumCostToCutAStick />
+      </Suspense>
+    ),
     "121-best-time-to-buy-and-sell-stock": (
       <Suspense key="121-best-time-to-buy-and-sell-stock" fallback={<div className="p-4 text-gray-500">Loading...</div>}>
         <Problem121BestTimeToBuyAndSellStock />
@@ -358,6 +377,11 @@ const problemComponents = {
     "1514-path-with-maximum-probability": (
       <Suspense key="1514-path-with-maximum-probability" fallback={<div className="p-4 text-gray-500">Loading...</div>}>
         <Problem1514PathWithMaximumProbability />
+      </Suspense>
+    ),
+    "72-edit-distance": (
+      <Suspense key="72-edit-distance" fallback={<div className="p-4 text-gray-500">Loading...</div>}>
+        <Problem72EditDistance />
       </Suspense>
     ),
     "79-word-search": (

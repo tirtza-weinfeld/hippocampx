@@ -63,7 +63,7 @@
     "265-paint-house-ii": {
       "time_stamps": {
         "created_at": "2025-10-24T16:39:16.579858",
-        "updated_at": "2025-10-24T17:03:54.398705"
+        "updated_at": "2025-10-25T10:47:03.482274"
       },
       "solutions": {
         "bottom-up.py": {
@@ -270,6 +270,28 @@
       "difficulty": "medium",
       "topics": ["binary-search", "binary-search-answer-space"]
     },
+    "1143-longest-common-subsequence": {
+      "time_stamps": {
+        "created_at": "2025-10-25T10:54:30.351124",
+        "updated_at": "2025-10-25T11:38:39.029357"
+      },
+      "solutions": {
+        "top-down-suffix.py": {
+          "code": "def longestCommonSubsequence(text1: str, text2: str) -> int:\n    memo = {}\n\n    def dp(i, j):\n        if i >= len(text1) or j >= len(text2):\n            return 0\n        if (k := (i, j)) not in memo:\n            if text1[i] == text2[j]:\n                memo[k] = 1 + dp(i + 1, j + 1)\n            else:\n                memo[k] = max(dp(i + 1, j), dp(i, j + 1))\n        return memo[k]\n\n    return dp(0, 0)"
+        },
+        "bottom-up-suffix.py": {
+          "code": "def longestCommonSubsequence( text1: str, text2: str) -> int:\n    n1, n2 = len(text1), len(text2)\n    dp = [[0] * (n2+1) for _ in range(n1+1)]\n    \n    for i in reversed(range(n1)):\n        for j in reversed(range(n2)):\n            if text1[i] == text2[j]:\n                dp[i][j] = 1 + dp[i + 1][j + 1]\n            else:\n                dp[i][j] = max(dp[i + 1][j], dp[i][j + 1])\n    return dp[0][0]\n"
+        },
+        "bottom-up-prefix-1d.py": {
+          "code": "\ndef longestCommonSubsequence(a: str, b: str) -> int:\n    if len(a) < len(b):  # keep b the shorter to save space\n        a, b = b, a\n    dp = [0] * (len(b) + 1)\n    for ca in a:\n        diag = 0\n        for j, cb in enumerate(b, 1):\n            diag, dp[j] = dp[j], (diag + 1 if ca == cb else max(dp[j], dp[j - 1]))\n    return dp[-1]"
+        }
+      },
+      "title": "Longest Common Subsequence",
+      "definition": "Given two strings , return the length of their longest common subsequence",
+      "leetcode": "https://leetcode.com/problems/longest-common-subsequence",
+      "difficulty": "medium",
+      "topics": ["dynamic-programming"]
+    },
     "460-lfu-cache": {
       "time_stamps": {
         "created_at": "2025-09-12T16:05:57.930976",
@@ -380,17 +402,20 @@
     "416-partition-equal-subset-sum": {
       "time_stamps": {
         "created_at": "2025-09-12T16:05:57.930844",
-        "updated_at": "2025-09-30T19:05:08.950534"
+        "updated_at": "2025-10-25T12:40:36.035650"
       },
       "solutions": {
         "solution.py": {
-          "intuition": "Paradigm: This is the **0/1 Knapsack** decision problem in disguise.\n\n    Insight: The problem transforms from partitioning an array into a simpler question: can a subset of \"items\" (`nums`) perfectly fill a \"knapsack\" with capacity `total_sum / 2`? Each item's weight is equal to its value.",
-          "time_complexity": "O(N * Sum):\n    where N is the number of elements and Sum is the target subset sum.",
-          "code": "def can_partition_into_2_equal_subsets(nums: list[int]) -> bool:\n    memo, n = {}, len(nums)\n\n    def dp(i, s):\n        if i == n or s < 0:\n            return False\n        if s == 0:\n            return True\n\n        if (i, s) not in memo:\n            memo[i, s] = dp(i + 1, s) or dp(i + 1, s - nums[i])\n\n        return memo[(i, s)]\n\n    return False if ((total := sum(nums)) & 1) else dp(0, total / 2)"
+          "intuition": "This is the **0/1 Knapsack** decision problem in disguise:\n    The problem transforms from partitioning an array into a simpler question:             can a subset of \"items\" (`nums`) perfectly fill a \"knapsack\" with capacity `total_sum // 2`?             Each item's weight is equal to its value.",
+          "time_complexity": "O(n * target)",
+          "expressions": {
+            "(total := sum(nums)) & 1": "odd sum"
+          },
+          "code": "def canPartition(nums: list[int]) -> bool:\n\n    if (total := sum(nums)) & 1:\n        return False\n\n    nums.sort(reverse=True)\n    if nums[0] > (target := total // 2):\n        return False\n\n    memo = {}\n\n    def dp(i: int, r: int) -> bool:\n        if r == 0:\n            return True\n        if r < 0 or i == len(nums):\n            return False\n        if (k := (i, r)) not in memo:\n            memo[k] = dp(i + 1, r - nums[i]) or dp(i + 1, r)\n        return memo[k]\n\n    return dp(0, target)"
         }
       },
       "title": "Partition Equal Subset Sum",
-      "definition": "Given an integer array `nums`, determine if you can partition it into two subsets with an equal sum.",
+      "definition": "Given an integer array `nums`, determine if you can partition it into two subsets with an equal sum    `1 <= nums.length <= 200` , `1 <= nums[i] <= 100`",
       "leetcode": "https://leetcode.com/problems/partition-equal-subset-sum",
       "difficulty": "medium",
       "topics": ["dynamic-programming"]
@@ -631,6 +656,25 @@
       "leetcode": "https://leetcode.com/problems/subarray-sum-equals-k",
       "difficulty": "medium",
       "topics": ["prefix-sum"]
+    },
+    "312-burst-balloons": {
+      "time_stamps": {
+        "created_at": "2025-10-25T12:53:19.175675",
+        "updated_at": "2025-10-25T16:02:48.259996"
+      },
+      "solutions": {
+        "solution.py": {
+          "expressions": {
+            "[1, *nums, 1]": "Pad the array with 1s at both ends to handle boundaries easily"
+          },
+          "code": "class Solution:\n    def maxCoins(self, nums: list[int]) -> int:\n        \n        nums = [1, *nums, 1] \n        memo = {}  \n\n        def dp(i, j):\n            if (key:=(i, j)) not in memo:\n                memo[key] = max(\n                    (\n                        dp(i, k) \n                        + nums[i] * nums[k] * nums[j]  \n                        + dp(k, j) \n                        for k in range(i + 1, j)     \n                    ),\n                    default=0  \n                )\n            return memo[key]\n\n        return dp(0, len(nums) - 1)"
+        }
+      },
+      "title": "Burst Balloons",
+      "definition": "Burst balloons in any order; bursting i yields nums[i−1]*nums[i]*nums[i+1] (coedges = 1). Find the max coins possible.",
+      "leetcode": "https://leetcode.com/problems/burst-balloons",
+      "difficulty": "hard",
+      "topics": ["dp", "interval-dp"]
     },
     "1590-make-sum-divisible-by-p": {
       "time_stamps": {
@@ -932,6 +976,22 @@
       "difficulty": "medium",
       "topics": ["bfs"]
     },
+    "1547-minimum-cost-to-cut-a-stick": {
+      "time_stamps": {
+        "created_at": "2025-10-25T15:40:33.947699",
+        "updated_at": "2025-10-25T16:02:24.394769"
+      },
+      "solutions": {
+        "solution.py": {
+          "code": "class Solution:\n    def minCost(self, n: int, cuts: list[int]) -> int:\n\n        cuts = [0] + sorted(cuts) + [n]\n        memo = {}\n\n        def dp(l, r):\n            if r - l <= 1:\n                return 0\n\n            if (key := (l, r)) not in memo:\n                memo[key] = (cuts[r] - cuts[l]) + min(\n                    dp(l, k) + dp(k, r) for k in range(l + 1, r)\n                )\n            return memo[key]\n\n        return dp(0, len(cuts) - 1)"
+        }
+      },
+      "title": "Minimum Cost to Cut a Stick",
+      "definition": "Given a stick of length n and cut positions, each cut costs the stick's current length.    Find the minimum total cost to make all cuts\n    + `[7!]2 <= n <= 10^6` , `[7!]1 <= cuts.length <= min(n - 1, 100)` , `[7!]1 <= cuts[i] <= n - 1`\n    + *[8!]All the integers in cuts array are distinct*",
+      "leetcode": "https://leetcode.com/problems/minimum-cost-to-cut-a-stick/",
+      "difficulty": "hard",
+      "topics": ["dp", "interval-dp"]
+    },
     "121-best-time-to-buy-and-sell-stock": {
       "time_stamps": {
         "created_at": "2025-09-12T16:05:33.323875",
@@ -1090,6 +1150,22 @@
       "leetcode": "https://leetcode.com/problems/path-with-maximum-probability",
       "difficulty": "medium",
       "topics": ["bellman-ford"]
+    },
+    "72-edit-distance": {
+      "time_stamps": {
+        "created_at": "2025-10-25T11:37:09.566865",
+        "updated_at": "2025-10-25T11:52:53.018214"
+      },
+      "solutions": {
+        "solution.py": {
+          "code": "class Solution:\n    def minDistance(self, word1: str, word2: str) -> int:\n\n        n1, n2, memo = len(word1), len(word2), {}\n\n        def dp(i, j):\n            if i >= n1:\n                return n2 - j\n            if j >= n2:\n                return n1 - i\n            if (k := (i, j)) not in memo:\n                if word1[i] == word2[j]:\n                    memo[k] = dp(i + 1, j + 1)\n                else:\n                    memo[k] = 1 + min(dp(i + 1, j), dp(i, j + 1), dp(i + 1, j + 1))\n\n            return memo[k]\n\n        return dp(0, 0)"
+        }
+      },
+      "title": "Edit Distance",
+      "definition": "Given two strings a and b, return the minimum number of operations required to convert a to b(insert,delete,replace)",
+      "leetcode": "https://leetcode.com/problems/edit-distance/",
+      "difficulty": "medium",
+      "topics": ["dp"]
     },
     "79-word-search": {
       "time_stamps": {

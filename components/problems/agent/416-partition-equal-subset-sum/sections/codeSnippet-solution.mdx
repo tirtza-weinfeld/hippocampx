@@ -1,17 +1,23 @@
 ```python meta="source=problems/416-partition-equal-subset-sum/solution.py"
-def can_partition_into_2_equal_subsets(nums: list[int]) -> bool:
-    memo, n = {}, len(nums)
+def canPartition(nums: list[int]) -> bool:
 
-    def dp(i, s):
-        if i == n or s < 0:
-            return False
-        if s == 0:
+    if (total := sum(nums)) & 1:
+        return False
+
+    nums.sort(reverse=True)
+    if nums[0] > (target := total // 2):
+        return False
+
+    memo = {}
+
+    def dp(i: int, r: int) -> bool:
+        if r == 0:
             return True
+        if r < 0 or i == len(nums):
+            return False
+        if (k := (i, r)) not in memo:
+            memo[k] = dp(i + 1, r - nums[i]) or dp(i + 1, r)
+        return memo[k]
 
-        if (i, s) not in memo:
-            memo[i, s] = dp(i + 1, s) or dp(i + 1, s - nums[i])
-
-        return memo[(i, s)]
-
-    return False if ((total := sum(nums)) & 1) else dp(0, total / 2)
+    return dp(0, target)
 ```

@@ -1,29 +1,34 @@
-def can_partition_into_2_equal_subsets(nums: list[int]) -> bool:
+def canPartition(nums: list[int]) -> bool:
     """
     Intuition:
-        Paradigm: This is the **0/1 Knapsack** decision problem in disguise.
-
-        Insight: The problem transforms from partitioning an array into a simpler question: can a subset of "items" (`nums`) perfectly fill a "knapsack" with capacity `total_sum / 2`? Each item's weight is equal to its value.
+        This is the **0/1 Knapsack** decision problem in disguise:
+        The problem transforms from partitioning an array into a simpler question: \
+            can a subset of "items" (`nums`) perfectly fill a "knapsack" with capacity `total_sum // 2`? \
+            Each item's weight is equal to its value.
 
     Time Complexity:
-        O(N * Sum):
-        where N is the number of elements and Sum is the target subset sum.
-    """
-    memo, n = {}, len(nums)
+        O(n * target)
 
-    def dp(i, s):
-        """
-        Expressions:
+    Expressions:
           '(total := sum(nums)) & 1': odd sum
-        """
-        if i == n or s < 0:
-            return False
-        if s == 0:
+    """
+
+    if (total := sum(nums)) & 1:
+        return False
+
+    nums.sort(reverse=True)
+    if nums[0] > (target := total // 2):
+        return False
+
+    memo = {}
+
+    def dp(i: int, r: int) -> bool:
+        if r == 0:
             return True
+        if r < 0 or i == len(nums):
+            return False
+        if (k := (i, r)) not in memo:
+            memo[k] = dp(i + 1, r - nums[i]) or dp(i + 1, r)
+        return memo[k]
 
-        if (i, s) not in memo:
-            memo[i, s] = dp(i + 1, s) or dp(i + 1, s - nums[i])
-
-        return memo[(i, s)]
-
-    return False if ((total := sum(nums)) & 1) else dp(0, total / 2)
+    return dp(0, target)

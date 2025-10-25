@@ -1,0 +1,39 @@
+# Burst Balloons
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="hard" />
+
+<PillList pills={["dp", "interval-dp"]} />
+
+[312. Burst Balloons](https://leetcode.com/problems/burst-balloons)
+
+## [!(ProblemDefinition)] Definition
+
+Burst balloons in any order; bursting i yields nums[i−1]*nums[i]*nums[i+1] (coedges = 1). Find the max coins possible.
+
+## [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/312-burst-balloons/solution.py"
+class Solution:
+    def maxCoins(self, nums: list[int]) -> int:
+
+        nums = [1, *nums, 1] 
+        memo = {}  
+
+        def dp(i, j):
+            if (key:=(i, j)) not in memo:
+                memo[key] = max(
+                    (
+                        dp(i, k) 
+                        + nums[i] * nums[k] * nums[j]  
+                        + dp(k, j) 
+                        for k in range(i + 1, j)     
+                    ),
+                    default=0  
+                )
+            return memo[key]
+
+        return dp(0, len(nums) - 1)
+```
+

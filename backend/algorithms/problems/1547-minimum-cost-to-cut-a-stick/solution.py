@@ -1,0 +1,17 @@
+class Solution:
+    def minCost(self, n: int, cuts: list[int]) -> int:
+
+        cuts = [0] + sorted(cuts) + [n]
+        memo = {}
+
+        def dp(l, r):
+            if r - l <= 1:
+                return 0
+
+            if (key := (l, r)) not in memo:
+                memo[key] = (cuts[r] - cuts[l]) + min(
+                    dp(l, k) + dp(k, r) for k in range(l + 1, r)
+                )
+            return memo[key]
+
+        return dp(0, len(cuts) - 1)

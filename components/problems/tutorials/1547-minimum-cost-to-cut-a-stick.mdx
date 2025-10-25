@@ -1,0 +1,38 @@
+# Minimum Cost to Cut a Stick
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="hard" />
+
+<PillList pills={["dp", "interval-dp"]} />
+
+[1547. Minimum Cost to Cut a Stick](https://leetcode.com/problems/minimum-cost-to-cut-a-stick/)
+
+## [!(ProblemDefinition)] Definition
+
+Given a stick of length n and cut positions, each cut costs the stick's current length.    Find the minimum total cost to make all cuts
+    + `[7!]2 <= n <= 10^6` , `[7!]1 <= cuts.length <= min(n - 1, 100)` , `[7!]1 <= cuts[i] <= n - 1`
+    + *[8!]All the integers in cuts array are distinct*
+
+## [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/1547-minimum-cost-to-cut-a-stick/solution.py"
+class Solution:
+    def minCost(self, n: int, cuts: list[int]) -> int:
+
+        cuts = [0] + sorted(cuts) + [n]
+        memo = {}
+
+        def dp(l, r):
+            if r - l <= 1:
+                return 0
+
+            if (key := (l, r)) not in memo:
+                memo[key] = (cuts[r] - cuts[l]) + min(
+                    dp(l, k) + dp(k, r) for k in range(l + 1, r)
+                )
+            return memo[key]
+
+        return dp(0, len(cuts) - 1)
+```
+

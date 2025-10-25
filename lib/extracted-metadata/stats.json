@@ -24,6 +24,7 @@
       "994-rotting-oranges"
     ],
     "dynamic-programming": [
+      "1143-longest-common-subsequence",
       "120-triangle",
       "121-best-time-to-buy-and-sell-stock",
       "123-best-time-to-buy-and-sell-stock-iii",
@@ -115,6 +116,15 @@
       "51-n-queens",
       "79-word-search"
     ],
+    "dp": [
+      "1547-minimum-cost-to-cut-a-stick",
+      "312-burst-balloons",
+      "72-edit-distance"
+    ],
+    "interval-dp": [
+      "1547-minimum-cost-to-cut-a-stick",
+      "312-burst-balloons"
+    ],
     "bit-manipulation": [
       "136-single-number",
       "191-number-of-1-bits"
@@ -158,9 +168,11 @@
       "1293-shortest-path-in-a-grid-with-obstacles-elimination",
       "1406-stone-game-iii",
       "1510-stone-game-iv",
+      "1547-minimum-cost-to-cut-a-stick",
       "188-best-time-to-buy-and-sell-stock-iv",
       "212-word-search-ii",
       "265-paint-house-ii",
+      "312-burst-balloons",
       "363-max-sum-of-rectangle-no-larger-than-k",
       "37-sudoku-solver",
       "460-lfu-cache",
@@ -172,6 +184,7 @@
     "medium": [
       "1011-capacity-to-ship-packages-within-d-days",
       "102-binary-tree-level-order-traversal",
+      "1143-longest-common-subsequence",
       "120-triangle",
       "122-best-time-to-buy-and-sell-stock-ii",
       "133-clone-graph",
@@ -211,6 +224,7 @@
       "64-minimum-path-sum",
       "648-replace-words",
       "713-subarray-product-less-than-k",
+      "72-edit-distance",
       "743-network-delay-time",
       "787-cheapest-flights-within-k-stops",
       "79-word-search",
@@ -260,7 +274,7 @@
       "$O(n  \\cdot  amount)$"
     ],
     "416-partition-equal-subset-sum": [
-      "$O(N  \\cdot  Sum)$"
+      "$O(n  \\cdot  target)$"
     ],
     "20-valid-parentheses": [
       "$O(n)$"
