@@ -336,6 +336,9 @@
     "542-01-matrix": [
       "$O(m  \\cdot  n)$"
     ],
+    "1000-minimum-cost-to-merge-stones": [
+      "$O(n^3)$"
+    ],
     "46-permutations": [
       "$O(N!)$"
     ],

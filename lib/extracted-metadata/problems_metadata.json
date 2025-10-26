@@ -660,15 +660,11 @@
     "312-burst-balloons": {
       "time_stamps": {
         "created_at": "2025-10-25T12:53:19.175675",
-        "updated_at": "2025-10-26T11:55:03.035070"
+        "updated_at": "2025-10-26T20:58:37.576406"
       },
       "solutions": {
         "solution.py": {
-          "expressions": {
-            "[1, *nums, 1]": "Pad the array with 1s at both ends to handle boundaries easily"
-          },
-          "intuition": "Pad with 1's at both ends so edges are uniform.            **For any interval `(i, j)`, choose the last balloon `k` to pop**: *its neighbors are then `i` and `j`*,             giving coins `nums[i]*nums[k]*nums[j]`             + optimal coins from the two subintervals `dp(i,k)` and `dp(k,j)`             Memoize intervals; empty/sliver intervals give 0. (Classic interval DP, ~O(n³).)",
-          "code": "class Solution:\n    def maxCoins(self, nums: list[int]) -> int:\n\n        nums = [1, *nums, 1]\n        memo = {}\n\n        def dp(i, j):\n            if (key := (i, j)) not in memo:\n                memo[key] = max(\n                    (\n                        dp(i, k) + dp(k, j) + nums[i] * nums[k] * nums[j]\n                        for k in range(i + 1, j)\n                    ),\n                    default=0,\n                )\n            return memo[key]\n\n        return dp(0, len(nums) - 1)"
+          "code": "class Solution:\n    def maxCoins(self, nums: list[int]) -> int:\n\n        nums, memo = [1, *nums, 1], {}\n        cost = lambda l, r, k: nums[l] * nums[k] * nums[r]\n\n        def dp(l, r):\n            if (key := (l, r)) not in memo:\n                memo[key] = max(\n                    (dp(l, k) + dp(k, r) + cost(l, r, k) for k in range(l + 1, r)),\n                    default=0,\n                )\n            return memo[key]\n\n        return dp(0, len(nums) - 1)"
         }
       },
       "title": "Burst Balloons",
@@ -980,11 +976,11 @@
     "1547-minimum-cost-to-cut-a-stick": {
       "time_stamps": {
         "created_at": "2025-10-25T15:40:33.947699",
-        "updated_at": "2025-10-26T11:55:42.589565"
+        "updated_at": "2025-10-26T20:59:54.168705"
       },
       "solutions": {
         "solution.py": {
-          "code": "def minCost(n: int, cuts: list[int]) -> int:\n    cuts = [0, *sorted(cuts), n]\n    memo = {}\n\n    def dp(l: int, r: int) -> int:\n        if r - l <= 1:\n            return 0\n        if (l, r) not in memo:\n            memo[l, r] = min(\n                dp(l, k) + dp(k, r) + (cuts[r] - cuts[l]) for k in range(l + 1, r)\n            )\n        return memo[l, r]\n\n    return dp(0, len(cuts) - 1)"
+          "code": "class Solution:\n    def minCost(self, n: int, cuts: list[int]) -> int:\n\n        cuts, memo = [0, *sorted(cuts), n], {}\n        cost = lambda l, r: cuts[r] - cuts[l]\n\n        def dp(l, r):\n            if (l, r) not in memo:\n                memo[l, r] = min(\n                    (dp(l, k) + dp(k, r) + cost(l, r) for k in range(l + 1, r)),\n                    default=0,\n                )\n            return memo[l, r]\n\n        return dp(0, len(cuts) - 1)"
         }
       },
       "title": "Minimum Cost to Cut a Stick",
@@ -1155,11 +1151,11 @@
     "72-edit-distance": {
       "time_stamps": {
         "created_at": "2025-10-25T11:37:09.566865",
-        "updated_at": "2025-10-25T11:52:53.018214"
+        "updated_at": "2025-10-26T21:09:04.530196"
       },
       "solutions": {
         "solution.py": {
-          "code": "class Solution:\n    def minDistance(self, word1: str, word2: str) -> int:\n\n        n1, n2, memo = len(word1), len(word2), {}\n\n        def dp(i, j):\n            if i >= n1:\n                return n2 - j\n            if j >= n2:\n                return n1 - i\n            if (k := (i, j)) not in memo:\n                if word1[i] == word2[j]:\n                    memo[k] = dp(i + 1, j + 1)\n                else:\n                    memo[k] = 1 + min(dp(i + 1, j), dp(i, j + 1), dp(i + 1, j + 1))\n\n            return memo[k]\n\n        return dp(0, 0)"
+          "code": "class Solution:\n    def minDistance(self, word1: str, word2: str) -> int:\n\n        n1, n2, memo = len(word1), len(word2), {}\n\n        def dp(i, j):\n            if i >= n1: return n2 - j\n            if j >= n2: return n1 - i\n            if (k := (i, j)) not in memo:\n                memo[k] = ( \n                    dp(i + 1, j + 1) if word1[i] == word2[j] \n                    else 1 + min(dp(i + 1, j), dp(i, j + 1), dp(i + 1, j + 1))\n                )\n            return memo[k]\n\n        return dp(0, 0)"
         }
       },
       "title": "Edit Distance",
@@ -1263,11 +1259,18 @@
     "1000-minimum-cost-to-merge-stones": {
       "time_stamps": {
         "created_at": "2025-10-26T09:36:22.594314",
-        "updated_at": "2025-10-26T12:47:51.062144"
+        "updated_at": "2025-10-26T21:19:33.066319"
       },
       "solutions": {
         "solution.py": {
-          "code": "class Solution:\n    def mergeStones(self, stones: list[int], K: int) -> int:\n        if ((n := len(stones)) - 1) % (K - 1):return -1\n\n        prefix = [0]\n        for x in stones: prefix.append(prefix[-1] + x)\n        cost = lambda i, j: prefix[j + 1] - prefix[i]\n        \n        memo = {}\n\n        def dp(i, j):\n            if i == j:\n                return 0\n            if (key := (i, j)) not in memo:\n                memo[key] = min(\n                    dp(i, t) + dp(t + 1, j) + (cost(i, j) if (j - i) % (K - 1) == 0 else 0)\n                    for t in range(i, j, K - 1)\n                )\n            return memo[key]\n\n        return dp(0, n - 1)"
+          "expressions": {
+            "(r - l) % (K - 1)": "",
+            "- Start": "**n** piles",
+            "- So to reach 1 pile from `n`, we need": ""
+          },
+          "time_complexity": "O(n^3):\n    There are **O(n²)** subproblems (`l, r` pairs)\n    For each subproblem, the loop `[language=\"python\"]for t in range(l, r, K - 1)`\n        tries up to **O(n / (K - 1))** split points.\n        Each operation inside is *O(1)* (thanks to *[2!]prefix sums*)\n    So the time complexity is O(n^3 / (K - 1))",
+          "space_complexity": "O(n²) for memoization",
+          "code": "class Solution:\n    def mergeStones(self, stones: list[int], K: int) -> int:\n        if ((n := len(stones)) - 1) % (K - 1):return -1\n\n        prefix, memo = [0], {}\n        for x in stones: prefix.append(prefix[-1] + x)\n        cost = lambda l, r: 0 if (r - l) % (K - 1) else prefix[r + 1] - prefix[l]\n\n        def dp(l, r):\n            if (key := (l, r)) not in memo:\n                memo[key] = min(\n                    (dp(l, t) + dp(t + 1, r) + cost(l, r) for t in range(l, r, K - 1)),\n                    default=0,\n                )\n            return memo[key]\n\n        return dp(0, n - 1)"
         }
       },
       "title": "Minimum Cost to Merge Stones",

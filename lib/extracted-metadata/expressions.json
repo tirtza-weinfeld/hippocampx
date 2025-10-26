@@ -25,15 +25,6 @@
   "problems/3-longest-substring-without-repeating-characters/solution.py": [
     {"range": {"start": {"line": 4, "character": 12}, "end": {"line": 4, "character": 36}}, "nameRange": {"start": {"line": 4, "character": 12}, "end": {"line": 4, "character": 36}}, "qname": "problems.3-longest-substring-without-repeating-characters.solution:longest_substring_without_repeating_characters.l = max(c_idx[c] + 1, l)", "kind": "expression"}
   ],
-  "problems/312-burst-balloons/solution.py": [
-    {"range": {"start": {"line": 3, "character": 15}, "end": {"line": 3, "character": 28}}, "nameRange": {"start": {"line": 3, "character": 15}, "end": {"line": 3, "character": 28}}, "qname": "problems.312-burst-balloons.solution:Solution.maxCoins.[1, *nums, 1]", "kind": "expression"},
-    {"range": {"start": {"line": 13, "character": 20}, "end": {"line": 13, "character": 29}}, "nameRange": {"start": {"line": 13, "character": 20}, "end": {"line": 13, "character": 29}}, "qname": "problems.312-burst-balloons.solution:Solution.maxCoins.dp.default=0", "kind": "expression"},
-    {"range": {"start": {"line": 10, "character": 24}, "end": {"line": 10, "character": 32}}, "nameRange": {"start": {"line": 10, "character": 24}, "end": {"line": 10, "character": 32}}, "qname": "problems.312-burst-balloons.solution:Solution.maxCoins.dp.dp(i, k)", "kind": "expression"},
-    {"range": {"start": {"line": 10, "character": 46}, "end": {"line": 10, "character": 73}}, "nameRange": {"start": {"line": 10, "character": 46}, "end": {"line": 10, "character": 73}}, "qname": "problems.312-burst-balloons.solution:Solution.maxCoins.dp.nums[i] * nums[k] * nums[j]", "kind": "expression"},
-    {"range": {"start": {"line": 10, "character": 35}, "end": {"line": 10, "character": 43}}, "nameRange": {"start": {"line": 10, "character": 35}, "end": {"line": 10, "character": 43}}, "qname": "problems.312-burst-balloons.solution:Solution.maxCoins.dp.dp(k, j)", "kind": "expression"},
-    {"range": {"start": {"line": 11, "character": 24}, "end": {"line": 11, "character": 48}}, "nameRange": {"start": {"line": 11, "character": 24}, "end": {"line": 11, "character": 48}}, "qname": "problems.312-burst-balloons.solution:Solution.maxCoins.dp.for k in range(i + 1, j)", "kind": "expression"},
-    {"range": {"start": {"line": 17, "character": 15}, "end": {"line": 17, "character": 35}}, "nameRange": {"start": {"line": 17, "character": 15}, "end": {"line": 17, "character": 35}}, "qname": "problems.312-burst-balloons.solution:Solution.maxCoins.dp.dp(0, len(nums) - 1)", "kind": "expression"}
-  ],
   "problems/215-kth-largest-element-in-an-array/solution.py": [
     {"range": {"start": {"line": 6, "character": 18}, "end": {"line": 6, "character": 35}}, "nameRange": {"start": {"line": 6, "character": 18}, "end": {"line": 6, "character": 35}}, "qname": "problems.215-kth-largest-element-in-an-array.solution:findKthLargest.heapreplace(h, x)", "kind": "expression"}
   ],
@@ -63,6 +54,11 @@
   "problems/208-implement-trie-prefix-tree/solution.py": [
     {"range": {"start": {"line": 21, "character": 12}, "end": {"line": 21, "character": 36}}, "nameRange": {"start": {"line": 21, "character": 12}, "end": {"line": 21, "character": 36}}, "qname": "problems.208-implement-trie-prefix-tree.solution:Trie.insert.node = node.children[ch]", "kind": "expression"},
     {"range": {"start": {"line": 22, "character": 8}, "end": {"line": 22, "character": 23}}, "nameRange": {"start": {"line": 22, "character": 8}, "end": {"line": 22, "character": 23}}, "qname": "problems.208-implement-trie-prefix-tree.solution:Trie.insert.node.end = True", "kind": "expression"}
+  ],
+  "problems/1000-minimum-cost-to-merge-stones/solution.py": [
+    {"range": {"start": {"line": 6, "character": 33}, "end": {"line": 6, "character": 50}}, "nameRange": {"start": {"line": 6, "character": 33}, "end": {"line": 6, "character": 50}}, "qname": "problems.1000-minimum-cost-to-merge-stones.solution:Solution.mergeStones.(r - l) % (K - 1)", "kind": "expression"},
+    {"range": {"start": {"line": 11, "character": 67}, "end": {"line": 11, "character": 85}}, "nameRange": {"start": {"line": 11, "character": 67}, "end": {"line": 11, "character": 85}}, "qname": "problems.1000-minimum-cost-to-merge-stones.solution:Solution.mergeStones.dp.range(l, r, K - 1)", "kind": "expression"},
+    {"range": {"start": {"line": 12, "character": 20}, "end": {"line": 12, "character": 29}}, "nameRange": {"start": {"line": 12, "character": 20}, "end": {"line": 12, "character": 29}}, "qname": "problems.1000-minimum-cost-to-merge-stones.solution:Solution.mergeStones.dp.default=0", "kind": "expression"}
   ],
   "problems/123-best-time-to-buy-and-sell-stock-iii/dp.py": [
     {"range": {"start": {"line": 12, "character": 31}, "end": {"line": 12, "character": 44}}, "nameRange": {"start": {"line": 12, "character": 31}, "end": {"line": 12, "character": 44}}, "qname": "problems.123-best-time-to-buy-and-sell-stock-iii.dp:best_time_to_buy_and_sell_stock_III.p - t1_profit", "kind": "expression"}

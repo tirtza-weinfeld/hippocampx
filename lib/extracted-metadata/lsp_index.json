@@ -10,7 +10,61 @@
     },
     {
       "uri": "blackboard2.py",
-      "symbols": []
+      "symbols": [
+        {
+          "name": "Solution",
+          "detail": "class Solution",
+          "kind": 5,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 30, "character": 27}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 6
+            },
+            "end": {
+              "line": 0,
+              "character": 14
+            }
+          },
+          "children": [
+            {
+              "name": "mergeStones",
+              "detail": "mergeStones(stones: list[int], K: int) -> int",
+              "kind": 6,
+              "range": {"start": {"line": 1, "character": 4}, "end": {"line": 30, "character": 27}},
+              "nameRange": {
+                "start": {
+                  "line": 1,
+                  "character": 8
+                },
+                "end": {
+                  "line": 1,
+                  "character": 19
+                }
+              },
+              "children": [
+                {
+                  "name": "dp",
+                  "detail": "dp(l, r)",
+                  "kind": 12,
+                  "range": {"start": {"line": 22, "character": 8}, "end": {"line": 28, "character": 28}},
+                  "nameRange": {
+                    "start": {
+                      "line": 22,
+                      "character": 12
+                    },
+                    "end": {
+                      "line": 22,
+                      "character": 14
+                    }
+                  },
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
     },
     {
       "uri": "core/__init__.py",
@@ -249,7 +303,7 @@
           "name": "Solution",
           "detail": "class Solution",
           "kind": 5,
-          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 20, "character": 27}},
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 16, "character": 27}},
           "nameRange": {
             "start": {
               "line": 0,
@@ -265,7 +319,7 @@
               "name": "mergeStones",
               "detail": "mergeStones(stones: list[int], K: int) -> int",
               "kind": 6,
-              "range": {"start": {"line": 1, "character": 4}, "end": {"line": 20, "character": 27}},
+              "range": {"start": {"line": 1, "character": 4}, "end": {"line": 16, "character": 27}},
               "nameRange": {
                 "start": {
                   "line": 1,
@@ -279,16 +333,16 @@
               "children": [
                 {
                   "name": "dp",
-                  "detail": "dp(i, j)",
+                  "detail": "dp(l, r)",
                   "kind": 12,
-                  "range": {"start": {"line": 10, "character": 8}, "end": {"line": 18, "character": 28}},
+                  "range": {"start": {"line": 8, "character": 8}, "end": {"line": 14, "character": 28}},
                   "nameRange": {
                     "start": {
-                      "line": 10,
+                      "line": 8,
                       "character": 12
                     },
                     "end": {
-                      "line": 10,
+                      "line": 8,
                       "character": 14
                     }
                   },
@@ -1116,37 +1170,55 @@
       "uri": "problems/1547-minimum-cost-to-cut-a-stick/solution.py",
       "symbols": [
         {
-          "name": "minCost",
-          "detail": "minCost(n: int, cuts: list[int]) -> int",
-          "kind": 12,
-          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 13, "character": 31}},
+          "name": "Solution",
+          "detail": "class Solution",
+          "kind": 5,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 14, "character": 35}},
           "nameRange": {
             "start": {
               "line": 0,
-              "character": 4
+              "character": 6
             },
             "end": {
               "line": 0,
-              "character": 11
+              "character": 14
             }
           },
           "children": [
             {
-              "name": "dp",
-              "detail": "dp(l: int, r: int) -> int",
-              "kind": 12,
-              "range": {"start": {"line": 4, "character": 4}, "end": {"line": 11, "character": 25}},
+              "name": "minCost",
+              "detail": "minCost(n: int, cuts: list[int]) -> int",
+              "kind": 6,
+              "range": {"start": {"line": 1, "character": 4}, "end": {"line": 14, "character": 35}},
               "nameRange": {
                 "start": {
-                  "line": 4,
+                  "line": 1,
                   "character": 8
                 },
                 "end": {
-                  "line": 4,
-                  "character": 10
+                  "line": 1,
+                  "character": 15
                 }
               },
-              "children": []
+              "children": [
+                {
+                  "name": "dp",
+                  "detail": "dp(l, r)",
+                  "kind": 12,
+                  "range": {"start": {"line": 6, "character": 8}, "end": {"line": 12, "character": 29}},
+                  "nameRange": {
+                    "start": {
+                      "line": 6,
+                      "character": 12
+                    },
+                    "end": {
+                      "line": 6,
+                      "character": 14
+                    }
+                  },
+                  "children": []
+                }
+              ]
             }
           ]
         }
@@ -2061,7 +2133,7 @@
           "name": "Solution",
           "detail": "class Solution",
           "kind": 5,
-          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 17, "character": 35}},
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 14, "character": 35}},
           "nameRange": {
             "start": {
               "line": 0,
@@ -2077,7 +2149,7 @@
               "name": "maxCoins",
               "detail": "maxCoins(nums: list[int]) -> int",
               "kind": 6,
-              "range": {"start": {"line": 1, "character": 4}, "end": {"line": 17, "character": 35}},
+              "range": {"start": {"line": 1, "character": 4}, "end": {"line": 14, "character": 35}},
               "nameRange": {
                 "start": {
                   "line": 1,
@@ -2091,9 +2163,9 @@
               "children": [
                 {
                   "name": "dp",
-                  "detail": "dp(i, j)",
+                  "detail": "dp(l, r)",
                   "kind": 12,
-                  "range": {"start": {"line": 6, "character": 8}, "end": {"line": 15, "character": 28}},
+                  "range": {"start": {"line": 6, "character": 8}, "end": {"line": 12, "character": 28}},
                   "nameRange": {
                     "start": {
                       "line": 6,
@@ -3132,7 +3204,7 @@
           "name": "Solution",
           "detail": "class Solution",
           "kind": 5,
-          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 18, "character": 23}},
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 15, "character": 23}},
           "nameRange": {
             "start": {
               "line": 0,
@@ -3148,7 +3220,7 @@
               "name": "minDistance",
               "detail": "minDistance(word1: str, word2: str) -> int",
               "kind": 6,
-              "range": {"start": {"line": 1, "character": 4}, "end": {"line": 18, "character": 23}},
+              "range": {"start": {"line": 1, "character": 4}, "end": {"line": 15, "character": 23}},
               "nameRange": {
                 "start": {
                   "line": 1,
@@ -3164,7 +3236,7 @@
                   "name": "dp",
                   "detail": "dp(i, j)",
                   "kind": 12,
-                  "range": {"start": {"line": 5, "character": 8}, "end": {"line": 16, "character": 26}},
+                  "range": {"start": {"line": 5, "character": 8}, "end": {"line": 13, "character": 26}},
                   "nameRange": {
                     "start": {
                       "line": 5,

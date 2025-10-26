@@ -1,8 +1,8 @@
 {
   "core.bellman-ford.classic:bellman_ford_classic": {
     "args": [
-      "vertices",
       "source",
+      "vertices",
       "edges"
     ],
     "code": "def bellman_ford_classic(\n    vertices: list[str], edges: list[tuple[str, str, float]], source: str\n) -> dict[str, float]:\n\n    d = [float(\"inf\")] * (V := len(vertices))\n    d[source] = 0\n\n    for _ in range(V - 1):\n        updated = False\n        for u, v, w in edges:\n            if d[u] + w < d[v]:\n                d[v] = d[u] + w\n                updated = True\n        if not updated:\n            return d\n\n    # if we get here, we did all V-1 passes, so still need to check for cycles\n    for u, v, w in edges:\n        if d[u] + w < d[v]:\n            raise Exception(\"Negative-weight cycle\")\n\n    return d",
@@ -31,9 +31,9 @@
   },
   "core.bellman-ford.layered_dag:bellman_ford_layered_dag": {
     "args": [
-      "vertices",
       "source",
-      "edges"
+      "edges",
+      "vertices"
     ],
     "code": "def bellman_ford_layered_dag(\n    vertices: list[str], edges: list[tuple[str, str, float]], source: str\n) -> dict[str, float]:\n\n    # 1) Initialize\n    d = {v: float(\"inf\") for v in vertices}\n    d[source], V = 0, len(vertices)\n\n    # 2) Layered relaxation: starting from δ₀, do V passes to compute δ₁…δ_V\n    for k in range(V):  # k = 0…V-1\n        d_k = {**d}  # snapshot of δ_k\n        for u, v, w in edges:\n            if d[u] + w < d_k[v]:\n                d_k[v] = d[u] + w\n        d = d_k  # now holds δ_{k+1}\n\n    # 3) Identify \"witnesses\" to negative cycles:\n    #    any v for which an extra relaxation is still possible\n    witnesses = {v for u, v, w in edges if d[u] + w < d[v]}\n\n    if not witnesses:\n        return d\n\n    # 4) Build adjacency list for negative-cycle propagation\n    adj = defaultdict(list)\n    for u, v, _ in edges:\n        adj[u].append(v)\n\n    # 5) DFS to propagate −∞ to all vertices reachable from any witness\n    stack = list(witnesses)\n    reachable = set(witnesses)\n\n    while stack:\n        u = stack.pop()\n        d[u] = float(\"-inf\")\n        for v in adj[u]:\n            if v not in reachable:\n                reachable.add(v)\n                stack.append(v)\n\n    return d",
     "file_path": "backend/algorithms/core/bellman-ford/layered_dag.py",
@@ -66,8 +66,8 @@
   },
   "core.binary-search.bisect_left:simple_bisect_left": {
     "args": [
-      "x",
-      "a"
+      "a",
+      "x"
     ],
     "code": "def simple_bisect_left(a: list[int], x: int):\n\n    l, r = 0, len(a)\n    while l < r:\n        mid = (l + r) // 2\n        if x > a[mid]:\n            l = mid + 1\n        else:\n            r = mid\n    return l",
     "expressions": {
@@ -120,8 +120,8 @@
   },
   "core.dijkstra.algorithm:dijkstra": {
     "args": [
-      "s",
-      "graph"
+      "graph",
+      "s"
     ],
     "code": "def dijkstra(graph: dict[str, dict[str, int]], s: str):\n\n    d = {v: float('inf') for v in graph} | {s: 0}\n    p = {v: None for v in graph}\n\n    pq = [(0, s)]\n\n    while pq:\n        d_u, u = heapq.heappop(pq)\n        if d_u > d[u]:\n            continue\n        for v ,w in graph[u]:\n            if (weight := d_u + w) < d[v]:\n                d[v], p[v] = weight, u\n                heapq.heappush(pq, (weight, v))\n\n    return d, p",
     "file_path": "backend/algorithms/core/dijkstra/algorithm.py",
@@ -255,10 +255,60 @@
     },
     "time_complexity": "O(n)\nwhere n is the length of the nums array. We iterate through the array once."
   },
+  "problems.1000-minimum-cost-to-merge-stones.solution:Solution.mergeStones": {
+    "args": [
+      "K",
+      "stones"
+    ],
+    "code": "    def mergeStones(self, stones: list[int], K: int) -> int:\n        if ((n := len(stones)) - 1) % (K - 1):return -1\n\n        prefix, memo = [0], {}\n        for x in stones: prefix.append(prefix[-1] + x)\n        cost = lambda l, r: 0 if (r - l) % (K - 1) else prefix[r + 1] - prefix[l]\n\n        def dp(l, r):\n            if (key := (l, r)) not in memo:\n                memo[key] = min(\n                    (dp(l, t) + dp(t + 1, r) + cost(l, r) for t in range(l, r, K - 1)),\n                    default=0,\n                )\n            return memo[key]\n\n        return dp(0, n - 1)",
+    "expressions": {
+      "(r - l) % (K - 1)": "- Each merge reduces the pile count by K - 1\n            - Start: **n** piles\n                - After 1 merge → **n - (K - 1)** piles\n                - After 2 merges → **n - 2(K - 1)** piles\n                - After 3 merges → **n - 3(K - 1)** piles\n                - …and so on, until (if possible) you reach 1 pile\n        - So to reach 1 pile from `n`, we need:\n            - *n - x(K - 1) = 1*,\n            - *n - 1 = x (K - 1)* for some integer *x*.\n        - Thus (n - 1) must be divisible by (K - 1)\n           - checked in code by `(n - 1) % (K - 1) == 0`\n           - If not, merging all piles into one is impossible."
+    },
+    "file_path": "backend/algorithms/problems/1000-minimum-cost-to-merge-stones/solution.py",
+    "kind": "method",
+    "label": "def mergeStones(self, stones: list[int], K: int) -> int",
+    "name": "mergeStones",
+    "returns": {
+      "label": "int"
+    },
+    "space_complexity": "O(n²) for memoization",
+    "time_complexity": "O(n^3):\nThere are **O(n²)** subproblems (`l, r` pairs)\nFor each subproblem, the loop `[language=\"python\"]for t in range(l, r, K - 1)`\n    tries up to **O(n / (K - 1))** split points.\n    Each operation inside is *O(1)* (thanks to *[2!]prefix sums*)\nSo the time complexity is O(n^3 / (K - 1))"
+  },
+  "problems.1000-minimum-cost-to-merge-stones.solution:Solution.mergeStones.(r - l) % (K - 1)": {
+    "kind": "expression",
+    "name": "(r - l) % (K - 1)",
+    "summary": "- Each merge reduces the pile count by K - 1\n            - Start: **n** piles\n                - After 1 merge → **n - (K - 1)** piles\n                - After 2 merges → **n - 2(K - 1)** piles\n                - After 3 merges → **n - 3(K - 1)** piles\n                - …and so on, until (if possible) you reach 1 pile\n        - So to reach 1 pile from `n`, we need:\n            - *n - x(K - 1) = 1*,\n            - *n - 1 = x (K - 1)* for some integer *x*.\n        - Thus (n - 1) must be divisible by (K - 1)\n           - checked in code by `(n - 1) % (K - 1) == 0`\n           - If not, merging all piles into one is impossible."
+  },
+  "problems.1000-minimum-cost-to-merge-stones.solution:Solution.mergeStones.dp": {
+    "args": [
+      "l",
+      "r"
+    ],
+    "code": "        def dp(l, r):\n            if (key := (l, r)) not in memo:\n                memo[key] = min(\n                    (dp(l, t) + dp(t + 1, r) + cost(l, r) for t in range(l, r, K - 1)),\n                    default=0,\n                )\n            return memo[key]",
+    "expressions": {
+      "default=0": "If `r - l < K - 1` (the range of split points `range(l, r, K - 1`) is empty),                     meaning there aren't enough piles to form a *K-merge* yet — so no merge is possible yet,                    so no merge occurs so the cost is *0*.",
+      "range(l, r, K - 1)": "The loop `range(l, r, K - 1)` enforces valid split points                     so each merge step always combines exactly *K* piles."
+    },
+    "file_path": "backend/algorithms/problems/1000-minimum-cost-to-merge-stones/solution.py",
+    "kind": "method",
+    "label": "def dp(l, r)",
+    "name": "dp",
+    "summary": "**Subproblem `dp(l, r)`**\n     Minimum total cost to reduce *stones[l..r]*             to the smallest legally attainable pile count under *K-merges*, which is *1 + ((r - l) % (K - 1))*.\n    When do we add a merge cost? Only if `(r - l) % (K - 1) == 0` (segment can fully collapse to one pile), in which case we include `cost(l, r)`."
+  },
+  "problems.1000-minimum-cost-to-merge-stones.solution:Solution.mergeStones.dp.default=0": {
+    "kind": "expression",
+    "name": "default=0",
+    "summary": "If `r - l < K - 1` (the range of split points `range(l, r, K - 1`) is empty),                     meaning there aren't enough piles to form a *K-merge* yet — so no merge is possible yet,                    so no merge occurs so the cost is *0*."
+  },
+  "problems.1000-minimum-cost-to-merge-stones.solution:Solution.mergeStones.dp.range(l, r, K - 1)": {
+    "kind": "expression",
+    "name": "range(l, r, K - 1)",
+    "summary": "The loop `range(l, r, K - 1)` enforces valid split points                     so each merge step always combines exactly *K* piles."
+  },
   "problems.1011-capacity-to-ship-packages-within-d-days.solution:capacity_to_ship_packages_within_d_days": {
     "args": [
-      "weights",
-      "days"
+      "days",
+      "weights"
     ],
     "code": "def capacity_to_ship_packages_within_d_days(weights: list[int], days: int) -> int:\n    def days_needed(capacity: int) -> int:\n        d, load = 1, 0\n        for w in weights:\n            if load + w <= capacity:\n                load += w\n            else:\n                d += 1\n                load = w\n        return d\n\n    l, r = max(weights), sum(weights)\n    while l < r:\n        capacity = (l + r) // 2\n        if days_needed(capacity) <= days:\n            r = capacity\n        else:\n            l = capacity + 1\n    return l",
     "file_path": "backend/algorithms/problems/1011-capacity-to-ship-packages-within-d-days/solution.py",
@@ -477,8 +527,8 @@
   "problems.127-word-ladder.solution:word_ladder": {
     "args": [
       "beginWord",
-      "endWord",
-      "wordList"
+      "wordList",
+      "endWord"
     ],
     "code": "def word_ladder(beginWord: str, endWord: str, wordList: list[str]) -> int:\n    if endWord not in wordList:\n        return 0\n\n    L = len(beginWord)\n    combos: dict[str, list[str]] = defaultdict(list)\n    for w in wordList:\n        for i in range(L):\n            combos[w[:i] + \"*\" + w[i+1:]].append(w)\n\n    front, back = {beginWord}, {endWord}\n    dist_front, dist_back = {beginWord: 1}, {endWord: 1}\n\n    while front and back:\n        # expand smaller side to optimize\n        if len(front) > len(back):\n            front, back = back, front\n            dist_front, dist_back = dist_back, dist_front\n\n        next_front = set()\n        for word in front:\n            for i in range(L):\n                for n in combos[word[:i] + \"*\" + word[i+1:]]: # Use pre-computed neighbors\n                    if n in dist_back:\n                        return dist_front[word] + dist_back[n]\n                    if n not in dist_front:\n                        dist_front[n] = dist_front[word] + 1\n                        next_front.add(n)\n        front = next_front\n\n    return 0",
     "file_path": "backend/algorithms/problems/127-word-ladder/solution.py",
@@ -798,10 +848,10 @@
   "problems.1514-path-with-maximum-probability.solution:path_with_maximum_probability": {
     "args": [
       "edges",
+      "succProb",
       "n",
       "start",
-      "end",
-      "succProb"
+      "end"
     ],
     "code": "def path_with_maximum_probability(n: int, edges: list[list[int]], succProb: list[float], start: int, end: int) -> float:\n    prob = [0.0] * n # rob[i] stores max probability to reach node i\n    prob[start] = 1.0  # Start with full certainty\n\n    for _ in range(n - 1):  # Perform up to n-1 rounds of relaxation\n        updated = False\n        for (u, v), p in zip(edges, succProb):\n            if prob[u] * p > prob[v]:  # Try to improve v through u\n                prob[v] = prob[u] * p\n                updated = True\n            if prob[v] * p > prob[u]:  # Try to improve u through v (undirected graph)\n                prob[u] = prob[v] * p\n                updated = True\n        if not updated:\n            break  # Early exit if no updates in this round\n\n    return prob[end]",
     "file_path": "backend/algorithms/problems/1514-path-with-maximum-probability/solution.py",
@@ -861,8 +911,8 @@
   },
   "problems.1590-make-sum-divisible-by-p.solution:minSubarrayToMakeSumDivisibleByP": {
     "args": [
-      "p",
-      "segments"
+      "segments",
+      "p"
     ],
     "code": "def minSubarrayToMakeSumDivisibleByP(segments: list[int], p: int) -> int:\n\n    total_remainder = sum(segments) % p\n    if total_remainder == 0:\n        return 0\n\n    remainder_idx = {0: -1}\n    prefix_remainder, min_length = 0, len(segments)\n\n    for i, segment in enumerate(segments):\n        prefix_remainder = (prefix_remainder + segment) % p\n        need = (prefix_remainder - total_remainder + p) % p\n        if need in remainder_idx:\n            min_length = min(min_length, i - remainder_idx[need])\n        remainder_idx[prefix_remainder] = i\n\n    return min_length if min_length < len(segments) else -1",
     "file_path": "backend/algorithms/problems/1590-make-sum-divisible-by-p/solution.py",
@@ -1310,8 +1360,8 @@
   },
   "problems.2145-count-the-hidden-sequences.solution:numberOfArrays": {
     "args": [
-      "lower",
       "differences",
+      "lower",
       "upper"
     ],
     "code": "def numberOfArrays(differences: list[int], lower: int, upper: int) -> int:\n\n    prefix_sum = min_marker = max_marker = 0\n\n    for diff in differences:\n        prefix_sum += diff\n        min_marker = min(min_marker, prefix_sum)\n        max_marker = max(max_marker, prefix_sum)\n\n    return max(0, (upper - max_marker) - (lower - min_marker) + 1)",
@@ -1344,8 +1394,8 @@
   },
   "problems.215-kth-largest-element-in-an-array.solution:findKthLargest": {
     "args": [
-      "k",
-      "nums"
+      "nums",
+      "k"
     ],
     "code": "def findKthLargest(nums: list[int], k: int) -> int:\n    h = nums[:k]; heapq.heapify(h)\n    for x in nums[k:]:\n        if x > h[0]:\n            heapq.heapreplace(h, x) \n    return h[0]",
     "expressions": {
@@ -1409,78 +1459,6 @@
     "name": "s",
     "summary": "Input string to analyze"
   },
-  "problems.312-burst-balloons.solution:Solution.maxCoins": {
-    "args": [
-      "nums"
-    ],
-    "code": "    def maxCoins(self, nums: list[int]) -> int:\n\n        nums = [1, *nums, 1]\n        memo = {}\n\n        def dp(i, j):\n            if (key := (i, j)) not in memo:\n                memo[key] = max(\n                    (\n                        dp(i, k) + dp(k, j) + nums[i] * nums[k] * nums[j]\n                        for k in range(i + 1, j)\n                    ),\n                    default=0,\n                )\n            return memo[key]\n\n        return dp(0, len(nums) - 1)",
-    "expressions": {
-      "[1, *nums, 1]": "Pad the array with 1s at both ends to handle boundaries easily"
-    },
-    "file_path": "backend/algorithms/problems/312-burst-balloons/solution.py",
-    "intuition": "Pad with 1's at both ends so edges are uniform.            **For any interval `(i, j)`, choose the last balloon `k` to pop**: *its neighbors are then `i` and `j`*,             giving coins `nums[i]*nums[k]*nums[j]`             + optimal coins from the two subintervals `dp(i,k)` and `dp(k,j)`             Memoize intervals; empty/sliver intervals give 0. (Classic interval DP, ~O(n³).)",
-    "kind": "method",
-    "label": "def maxCoins(self, nums: list[int]) -> int",
-    "name": "maxCoins",
-    "returns": {
-      "label": "int"
-    }
-  },
-  "problems.312-burst-balloons.solution:Solution.maxCoins.[1, *nums, 1]": {
-    "kind": "expression",
-    "name": "[1, *nums, 1]",
-    "summary": "Pad the array with 1s at both ends to handle boundaries easily"
-  },
-  "problems.312-burst-balloons.solution:Solution.maxCoins.dp": {
-    "args": [
-      "i",
-      "j"
-    ],
-    "code": "        def dp(i, j):\n            if (key := (i, j)) not in memo:\n                memo[key] = max(\n                    (\n                        dp(i, k) + dp(k, j) + nums[i] * nums[k] * nums[j]\n                        for k in range(i + 1, j)\n                    ),\n                    default=0,\n                )\n            return memo[key]",
-    "expressions": {
-      "default=0": "Base case: no balloons between `i` and `j` (no K exists) → 0 coins ,(The generator will be empty when j <= i + 1, so max(..., default=0) handles it))",
-      "dp(0, len(nums) - 1)": "Solve for the entire padded array: burst all original balloons between 0 and len(nums)-1",
-      "dp(i, k)": "Max coins from left part (i, k)",
-      "dp(k, j)": "*Maximum coins obtainable from right part:* bursting all balloons strictly between `k` and `j`                    (i.e., in the open interval `(k, j)`), with `k` and `j` acting as unburst boundaries.",
-      "for k in range(i + 1, j)": "Try every k in (i, j) as the LAST balloon to burst in the current interval. Since k is burst last, its adjacent unburst balloons are exactly nums[i] and nums[j].",
-      "nums[i] * nums[k] * nums[j]": "Coins obtained by bursting balloon `k` LAST                    in the open interval `(i, j)`. At this point, all other balloons between                    `i` and `j` have already been burst, so the immediate neighbors of `k` are                    the boundary balloons at `i` and `j`."
-    },
-    "file_path": "backend/algorithms/problems/312-burst-balloons/solution.py",
-    "kind": "method",
-    "label": "def dp(i, j)",
-    "name": "dp",
-    "summary": "Returns the maximum coins obtainable by bursting all balloons\nstrictly between indices `i` and `j` (*i and j are NOT burst*).\nAssumes `nums[i]` and `nums[j]` are the boundary balloons (not burst yet)"
-  },
-  "problems.312-burst-balloons.solution:Solution.maxCoins.dp.default=0": {
-    "kind": "expression",
-    "name": "default=0",
-    "summary": "Base case: no balloons between `i` and `j` (no K exists) → 0 coins ,(The generator will be empty when j <= i + 1, so max(..., default=0) handles it))"
-  },
-  "problems.312-burst-balloons.solution:Solution.maxCoins.dp.dp(0, len(nums) - 1)": {
-    "kind": "expression",
-    "name": "dp(0, len(nums) - 1)",
-    "summary": "Solve for the entire padded array: burst all original balloons between 0 and len(nums)-1"
-  },
-  "problems.312-burst-balloons.solution:Solution.maxCoins.dp.dp(i, k)": {
-    "kind": "expression",
-    "name": "dp(i, k)",
-    "summary": "Max coins from left part (i, k)"
-  },
-  "problems.312-burst-balloons.solution:Solution.maxCoins.dp.dp(k, j)": {
-    "kind": "expression",
-    "name": "dp(k, j)",
-    "summary": "*Maximum coins obtainable from right part:* bursting all balloons strictly between `k` and `j`                    (i.e., in the open interval `(k, j)`), with `k` and `j` acting as unburst boundaries."
-  },
-  "problems.312-burst-balloons.solution:Solution.maxCoins.dp.for k in range(i + 1, j)": {
-    "kind": "expression",
-    "name": "for k in range(i + 1, j)",
-    "summary": "Try every k in (i, j) as the LAST balloon to burst in the current interval. Since k is burst last, its adjacent unburst balloons are exactly nums[i] and nums[j]."
-  },
-  "problems.312-burst-balloons.solution:Solution.maxCoins.dp.nums[i] * nums[k] * nums[j]": {
-    "kind": "expression",
-    "name": "nums[i] * nums[k] * nums[j]",
-    "summary": "Coins obtained by bursting balloon `k` LAST                    in the open interval `(i, j)`. At this point, all other balloons between                    `i` and `j` have already been burst, so the immediate neighbors of `k` are                    the boundary balloons at `i` and `j`."
-  },
   "problems.325-maximum-size-subarray-sum-equals-k.solution:maxSizeSubarraySumEqualsK": {
     "args": [
       "k",
@@ -1510,8 +1488,8 @@
   },
   "problems.347-top-k-frequent-elements.heap-nlargets:topKFrequent": {
     "args": [
-      "k",
-      "nums"
+      "nums",
+      "k"
     ],
     "code": "def topKFrequent(nums: list[int], k: int) -> list[int]:\n    freq = Counter(nums)\n    return heapq.nlargest(k, freq.keys(), key=freq.get)",
     "expressions": {
@@ -1540,8 +1518,8 @@
   },
   "problems.347-top-k-frequent-elements.heap:topKFrequent": {
     "args": [
-      "k",
-      "nums"
+      "nums",
+      "k"
     ],
     "code": "def topKFrequent(nums: list[int], k: int) -> list[int]:\n    freq ,h= Counter(nums), []\n    for num, f in freq.items():\n        heapq.heappush(h, (f, num))\n        if len(h) > k:\n            heapq.heappop(h)\n\n    return [num for _, num in h]",
     "file_path": "backend/algorithms/problems/347-top-k-frequent-elements/heap.py",
@@ -1555,8 +1533,8 @@
   },
   "problems.347-top-k-frequent-elements.sort-frequency-bucketing:topKFrequent": {
     "args": [
-      "k",
-      "nums"
+      "nums",
+      "k"
     ],
     "code": "def topKFrequent(nums: list[int], k: int) -> list[int]:\n\n    bucket=[[] for _ in range(len(nums)+1)]\n    for n,f in Counter(nums).items():\n        bucket[f].append(n)\n\n    return [num for f_bucket in reversed(bucket) for num in f_bucket][:k]",
     "file_path": "backend/algorithms/problems/347-top-k-frequent-elements/sort-frequency-bucketing.py",
@@ -2015,8 +1993,8 @@
   },
   "problems.713-subarray-product-less-than-k.solution:num_subarray_product_less_than_k": {
     "args": [
-      "k",
-      "nums"
+      "nums",
+      "k"
     ],
     "code": "def num_subarray_product_less_than_k(nums: list[int], k: int) -> int:\n    if k <= 1:\n        return 0\n    product, left, count = 1, 0, 0\n    for right, num in enumerate(nums):\n        product *= num\n        while product >= k:\n            product //= nums[left]\n            left += 1\n        count += right - left + 1\n    return count",
     "file_path": "backend/algorithms/problems/713-subarray-product-less-than-k/solution.py",
@@ -2030,8 +2008,8 @@
   },
   "problems.743-network-delay-time.solution:network_delay_time": {
     "args": [
-      "n",
       "k",
+      "n",
       "times"
     ],
     "code": "def network_delay_time(times: list[list[int]], n: int, k: int) -> int:\n\n    adj = defaultdict(list)\n    for u, v, w in times:\n        adj[u].append((v, w))\n    pq, finalized, time = [(0, k)], set(), 0\n    while pq:\n        t, node = heapq.heappop(pq)\n        if node in finalized:\n            continue\n        finalized.add(node)\n        time = t\n        for neighbor, travel_time in adj[node]:\n            if neighbor not in finalized:\n                heapq.heappush(pq, (time + travel_time, neighbor))\n    return time if len(finalized) == n else -1",
@@ -2059,8 +2037,8 @@
   },
   "problems.76-minimum-window-substring.solution:minWindow": {
     "args": [
-      "s",
-      "t"
+      "t",
+      "s"
     ],
     "code": "def minWindow(s: str, t: str) -> str:\n    t_count, have = Counter(t), defaultdict(int)\n    letters_needed, min_idx, l = len(t_count), None, 0\n    for r, c in enumerate(s):\n        have[c] += 1\n        if have[c] == t_count[c]:\n            letters_needed -= 1\n            while letters_needed == 0:\n                if not min_idx or r - l + 1 < min_idx[1] - min_idx[0]:\n                    min_idx = l, r + 1\n                have[s[l]] -= 1\n                if have[s[l]] < t_count[s[l]]:\n                    letters_needed += 1\n                l += 1\n    return \"\" if min_idx == None else s[min_idx[0] : min_idx[1]]",
     "file_path": "backend/algorithms/problems/76-minimum-window-substring/solution.py",
@@ -2108,10 +2086,10 @@
   },
   "problems.787-cheapest-flights-within-k-stops.bellman_ford:cheapest_flights_with_at_most_k_stops": {
     "args": [
-      "n",
-      "dst",
-      "flights",
       "k",
+      "n",
+      "flights",
+      "dst",
       "src"
     ],
     "code": "def cheapest_flights_with_at_most_k_stops(\n    n: int, flights: list[list[int]], src: int, dst: int, k: int\n) -> int:\n    d = [float(\"inf\")] * n\n    d[src] = 0\n\n    for _ in range(k + 1):\n        tmp = d[:]\n        for u, v, w in flights:\n            if d[u] + w < tmp[v]:\n                tmp[v] = d[u] + w\n        d = tmp\n\n    return d[dst] if d[dst] < float(\"inf\") else -1",
@@ -2126,10 +2104,10 @@
   },
   "problems.787-cheapest-flights-within-k-stops.dijkstra:cheapest_flights_with_at_most_k_stops": {
     "args": [
-      "flights",
-      "k",
       "dst",
-      "src"
+      "k",
+      "src",
+      "flights"
     ],
     "code": "def cheapest_flights_with_at_most_k_stops( flights: list[list[int]], src: int, dst: int, k: int) -> int:\n\n    graph = defaultdict(list)\n    for u, v, price in flights:\n        graph[u].append((v, price))\n\n    pq, min_stops = [(0, src, 0)], {}\n\n    while pq:\n        cost, city, stops = heapq.heappop(pq)\n\n        # If we've already found a path to this city using fewer or equal stops, skip.\n        # A path with fewer stops must have been cheaper or equal due to PQ ordering.\n        if stops > min_stops.get(city, float(\"inf\")): continue\n        if city == dst: return cost\n\n        # Record the new minimum stops to reach this city\n        min_stops[city] = stops\n        if stops <= k:\n            for neighbor, price in graph[city]:\n                heapq.heappush(pq, (cost + price, neighbor, stops + 1))\n    return -1",
     "file_path": "backend/algorithms/problems/787-cheapest-flights-within-k-stops/dijkstra.py",
@@ -2231,8 +2209,8 @@
   },
   "problems.875-koko-eating-bananas.solution:koko_eating_bananas": {
     "args": [
-      "piles",
-      "h"
+      "h",
+      "piles"
     ],
     "code": "def koko_eating_bananas(piles: list[int], h: int) -> int:\n\n    def hours(k:int) -> int:\n        return sum((p + k - 1) // k for p in piles)\n        # return sum(math.ceil(pile / k) for pile in piles)\n\n    l, r = 1, max(piles)\n    while l < r:\n        k = (l + r) // 2\n        if hours(k) <= h:\n            r = k\n        else:\n            l = k + 1\n    return l",
     "file_path": "backend/algorithms/problems/875-koko-eating-bananas/solution.py",
