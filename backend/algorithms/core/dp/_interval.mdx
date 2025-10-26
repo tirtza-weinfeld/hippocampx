@@ -1,0 +1,63 @@
+# Interval DP Cheatsheet
+
+
+## Core Idea
+
+Split a range `(l, r)` into two subranges via a pivot `k` to minimize or maximize some cost/gain.
+
+## Subproblems
+
+`dp[l][r]` (or `dp(l, r)`):
+→ best value (min / max) for subinterval from index `l` to `r`.
+Usually r - l <= 1 ⇒ base case 0.
+
+## Relation   
+
+$dp[l][r] = \min_{k \in (l, r)} \big(dp[l][k] + dp[k][r] + cost(l, k, r)\big)$
+(or max for gain problems)
+
+* `cost(l,k,r)` = direct cost/gain of combining, cutting, or popping between boundaries `l,r`.
+
+## Base Case
+
+If interval too small to split:
+`dp[l][r] = 0`.
+
+## Top-down
+
+```python
+def dp(l, r):
+    if r - l <= 1: return 0
+    if (l, r) not in memo:
+        memo[l, r] = min(
+            dp(l, k) + cost(l, k, r) + dp(k, r)
+            for k in range(l + 1, r)
+        )
+    return memo[l, r]
+
+
+```
+
+## Bottom-up
+```python
+for length in range(2, n):
+    for l in range(n - length):
+        r = l + length
+        dp[l][r] = min(
+            dp[l][k] + cost(l, k, r) + dp[k][r]
+            for k in range(l + 1, r)
+        )
+
+```
+
+## Examples
+
+| Problem | Subproblems | Cost | Goal |
+|---------|---------------|------|------|
+| Burst Balloons | max coins in (l,r) | nums[l]*nums[k]*nums[r] | maximize |
+| Cut Stick | min cut cost | cuts[r]-cuts[l] | minimize |
+| Matrix Chain | min multiply cost | A[l]*A[k]*A[r] | minimize |
+| Polygon Triangulation | min triangle cost | triangle(l,k,r) | minimize |
+| Merge Stones | min merge cost | sum(l..r) | minimize |
+
+

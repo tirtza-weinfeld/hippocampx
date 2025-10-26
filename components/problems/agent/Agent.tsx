@@ -82,6 +82,7 @@ const Problem39CombinationSum = lazy(() => import('./39-combination-sum'))
 const Problem54201Matrix = lazy(() => import('./542-01-matrix'))
 const Problem1011CapacityToShipPackagesWithinDDays = lazy(() => import('./1011-capacity-to-ship-packages-within-d-days'))
 const Problem208ImplementTriePrefixTree = lazy(() => import('./208-implement-trie-prefix-tree'))
+const Problem1000MinimumCostToMergeStones = lazy(() => import('./1000-minimum-cost-to-merge-stones'))
 const Problem325MaximumSizeSubarraySumEqualsK = lazy(() => import('./325-maximum-size-subarray-sum-equals-k'))
 const Problem2145CountTheHiddenSequences = lazy(() => import('./2145-count-the-hidden-sequences'))
 const Problem35SearchInsertPosition = lazy(() => import('./35-search-insert-position'))
@@ -407,6 +408,11 @@ const problemComponents = {
     "208-implement-trie-prefix-tree": (
       <Suspense key="208-implement-trie-prefix-tree" fallback={<div className="p-4 text-gray-500">Loading...</div>}>
         <Problem208ImplementTriePrefixTree />
+      </Suspense>
+    ),
+    "1000-minimum-cost-to-merge-stones": (
+      <Suspense key="1000-minimum-cost-to-merge-stones" fallback={<div className="p-4 text-gray-500">Loading...</div>}>
+        <Problem1000MinimumCostToMergeStones />
       </Suspense>
     ),
     "325-maximum-size-subarray-sum-equals-k": (

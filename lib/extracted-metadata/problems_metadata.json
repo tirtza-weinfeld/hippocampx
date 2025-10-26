@@ -660,14 +660,15 @@
     "312-burst-balloons": {
       "time_stamps": {
         "created_at": "2025-10-25T12:53:19.175675",
-        "updated_at": "2025-10-25T16:02:48.259996"
+        "updated_at": "2025-10-26T11:55:03.035070"
       },
       "solutions": {
         "solution.py": {
           "expressions": {
             "[1, *nums, 1]": "Pad the array with 1s at both ends to handle boundaries easily"
           },
-          "code": "class Solution:\n    def maxCoins(self, nums: list[int]) -> int:\n        \n        nums = [1, *nums, 1] \n        memo = {}  \n\n        def dp(i, j):\n            if (key:=(i, j)) not in memo:\n                memo[key] = max(\n                    (\n                        dp(i, k) \n                        + nums[i] * nums[k] * nums[j]  \n                        + dp(k, j) \n                        for k in range(i + 1, j)     \n                    ),\n                    default=0  \n                )\n            return memo[key]\n\n        return dp(0, len(nums) - 1)"
+          "intuition": "Pad with 1's at both ends so edges are uniform.            **For any interval `(i, j)`, choose the last balloon `k` to pop**: *its neighbors are then `i` and `j`*,             giving coins `nums[i]*nums[k]*nums[j]`             + optimal coins from the two subintervals `dp(i,k)` and `dp(k,j)`             Memoize intervals; empty/sliver intervals give 0. (Classic interval DP, ~O(n³).)",
+          "code": "class Solution:\n    def maxCoins(self, nums: list[int]) -> int:\n\n        nums = [1, *nums, 1]\n        memo = {}\n\n        def dp(i, j):\n            if (key := (i, j)) not in memo:\n                memo[key] = max(\n                    (\n                        dp(i, k) + dp(k, j) + nums[i] * nums[k] * nums[j]\n                        for k in range(i + 1, j)\n                    ),\n                    default=0,\n                )\n            return memo[key]\n\n        return dp(0, len(nums) - 1)"
         }
       },
       "title": "Burst Balloons",
@@ -979,11 +980,11 @@
     "1547-minimum-cost-to-cut-a-stick": {
       "time_stamps": {
         "created_at": "2025-10-25T15:40:33.947699",
-        "updated_at": "2025-10-25T16:02:24.394769"
+        "updated_at": "2025-10-26T11:55:42.589565"
       },
       "solutions": {
         "solution.py": {
-          "code": "class Solution:\n    def minCost(self, n: int, cuts: list[int]) -> int:\n\n        cuts = [0] + sorted(cuts) + [n]\n        memo = {}\n\n        def dp(l, r):\n            if r - l <= 1:\n                return 0\n\n            if (key := (l, r)) not in memo:\n                memo[key] = (cuts[r] - cuts[l]) + min(\n                    dp(l, k) + dp(k, r) for k in range(l + 1, r)\n                )\n            return memo[key]\n\n        return dp(0, len(cuts) - 1)"
+          "code": "def minCost(n: int, cuts: list[int]) -> int:\n    cuts = [0, *sorted(cuts), n]\n    memo = {}\n\n    def dp(l: int, r: int) -> int:\n        if r - l <= 1:\n            return 0\n        if (l, r) not in memo:\n            memo[l, r] = min(\n                dp(l, k) + dp(k, r) + (cuts[r] - cuts[l]) for k in range(l + 1, r)\n            )\n        return memo[l, r]\n\n    return dp(0, len(cuts) - 1)"
         }
       },
       "title": "Minimum Cost to Cut a Stick",
@@ -1258,6 +1259,22 @@
       "leetcode": "https://leetcode.com/problems/implement-trie-prefix-tree",
       "difficulty": "medium",
       "topics": ["trie"]
+    },
+    "1000-minimum-cost-to-merge-stones": {
+      "time_stamps": {
+        "created_at": "2025-10-26T09:36:22.594314",
+        "updated_at": "2025-10-26T12:47:51.062144"
+      },
+      "solutions": {
+        "solution.py": {
+          "code": "class Solution:\n    def mergeStones(self, stones: list[int], K: int) -> int:\n        if ((n := len(stones)) - 1) % (K - 1):return -1\n\n        prefix = [0]\n        for x in stones: prefix.append(prefix[-1] + x)\n        cost = lambda i, j: prefix[j + 1] - prefix[i]\n        \n        memo = {}\n\n        def dp(i, j):\n            if i == j:\n                return 0\n            if (key := (i, j)) not in memo:\n                memo[key] = min(\n                    dp(i, t) + dp(t + 1, j) + (cost(i, j) if (j - i) % (K - 1) == 0 else 0)\n                    for t in range(i, j, K - 1)\n                )\n            return memo[key]\n\n        return dp(0, n - 1)"
+        }
+      },
+      "title": "Minimum Cost to Merge Stones",
+      "definition": "Merge exactly k adjacent piles at a time (cost = sum of those piles). Return the minimum total cost to end with one pile, or -1 if impossible",
+      "leetcode": "https://leetcode.com/problems/minimum-cost-to-merge-stones/",
+      "difficulty": "hard",
+      "topics": ["dp"]
     },
     "325-maximum-size-subarray-sum-equals-k": {
       "time_stamps": {
@@ -1666,6 +1683,16 @@
       "title": "Modular Arithmetic",
       "definition": "A system of arithmetic for integers where numbers \"wrap around\" after reaching a certain value (the modulus).",
       "topics": ["number_theory", "modular_arithmetic", "congruence"]
+    },
+    "dp": {
+      "time_stamps": {
+        "created_at": "2025-10-26T09:20:39.128761",
+        "updated_at": "2025-10-26T12:49:40.101485"
+      },
+      "solutions": {},
+      "title": "Dynamic Programming",
+      "definition": "Dynamic Programming is a technique for solving problems by breaking them down into smaller subproblems and solving each subproblem only once.",
+      "topics": ["dp"]
     },
     "dijkstra": {
       "time_stamps": {

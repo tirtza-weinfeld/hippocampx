@@ -12,25 +12,27 @@
 
 Burst balloons in any order; bursting i yields nums[i−1]*nums[i]*nums[i+1] (coedges = 1). Find the max coins possible.
 
+## [!(ProblemIntuition)] Intuition
+
+- Pad with 1's at both ends so edges are uniform.            **For any interval `(i, j)`, choose the last balloon `k` to pop**: *its neighbors are then `i` and `j`*,             giving coins `nums[i]*nums[k]*nums[j]`             + optimal coins from the two subintervals `dp(i,k)` and `dp(k,j)`             Memoize intervals; empty/sliver intervals give 0. (Classic interval DP, ~O(n³).)
+
 ## [!(ProblemCodeSnippet)] Code Snippet
 
 ```python meta="source=problems/312-burst-balloons/solution.py"
 class Solution:
     def maxCoins(self, nums: list[int]) -> int:
 
-        nums = [1, *nums, 1] 
-        memo = {}  
+        nums = [1, *nums, 1]
+        memo = {}
 
         def dp(i, j):
-            if (key:=(i, j)) not in memo:
+            if (key := (i, j)) not in memo:
                 memo[key] = max(
                     (
-                        dp(i, k) 
-                        + nums[i] * nums[k] * nums[j]  
-                        + dp(k, j) 
-                        for k in range(i + 1, j)     
+                        dp(i, k) + dp(k, j) + nums[i] * nums[k] * nums[j]
+                        for k in range(i + 1, j)
                     ),
-                    default=0  
+                    default=0,
                 )
             return memo[key]
 

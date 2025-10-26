@@ -117,6 +117,7 @@
       "79-word-search"
     ],
     "dp": [
+      "1000-minimum-cost-to-merge-stones",
       "1547-minimum-cost-to-cut-a-stick",
       "312-burst-balloons",
       "72-edit-distance"
@@ -162,6 +163,7 @@
   },
   "difficulty": {
     "hard": [
+      "1000-minimum-cost-to-merge-stones",
       "123-best-time-to-buy-and-sell-stock-iii",
       "124-binary-tree-maximum-path-sum",
       "127-word-ladder",

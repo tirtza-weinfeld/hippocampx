@@ -3,10 +3,17 @@ class Solution:
         """
         Expressions:
             '[1, *nums, 1]': Pad the array with 1s at both ends to handle boundaries easily
+        Intuition:
+            Pad with 1's at both ends so edges are uniform.\
+            **For any interval `(i, j)`, choose the last balloon `k` to pop**: *its neighbors are then `i` and `j`*, \
+            giving coins `nums[i]*nums[k]*nums[j]` \
+            + optimal coins from the two subintervals `dp(i,k)` and `dp(k,j)` \
+            Memoize intervals; empty/sliver intervals give 0. (Classic interval DP, ~O(n³).)
+
         """
-        
-        nums = [1, *nums, 1] 
-        memo = {}  
+
+        nums = [1, *nums, 1]
+        memo = {}
 
         def dp(i, j):
             """
@@ -26,15 +33,13 @@ class Solution:
                 'for k in range(i + 1, j)': Try every k in (i, j) as the LAST balloon to burst in the current interval. Since k is burst last, its adjacent unburst balloons are exactly nums[i] and nums[j].
                 'dp(0, len(nums) - 1)': Solve for the entire padded array: burst all original balloons between 0 and len(nums)-1
             """
-            if (key:=(i, j)) not in memo:
+            if (key := (i, j)) not in memo:
                 memo[key] = max(
                     (
-                        dp(i, k) 
-                        + nums[i] * nums[k] * nums[j]  
-                        + dp(k, j) 
-                        for k in range(i + 1, j)     
+                        dp(i, k) + dp(k, j) + nums[i] * nums[k] * nums[j]
+                        for k in range(i + 1, j)
                     ),
-                    default=0  
+                    default=0,
                 )
             return memo[key]
 

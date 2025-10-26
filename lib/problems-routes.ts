@@ -45,6 +45,7 @@ export const PROBLEMS_ROUTES: NavigationItem[] = [
             { title: 'Maximum Subarray', href: '/problems/53-maximum-subarray', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
             { title: 'Maximum Sum of Circular Subarray', href: '/problems/918-maximum-sum-of-circular-subarray', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
             { title: 'Minimum Cost to Cut a Stick', href: '/problems/1547-minimum-cost-to-cut-a-stick', icon: Code, color: "text-red-500", bgColor: "bg-red-500/10" },
+            { title: 'Minimum Cost to Merge Stones', href: '/problems/1000-minimum-cost-to-merge-stones', icon: Code, color: "text-red-500", bgColor: "bg-red-500/10" },
             { title: 'Minimum Path Sum', href: '/problems/64-minimum-path-sum', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
             { title: 'Minimum Window Substring', href: '/problems/76-minimum-window-substring', icon: Code, color: "text-red-500", bgColor: "bg-red-500/10" },
             { title: 'Most Points Solving Questions With Brainpower', href: '/problems/2140-solving-questions-with-brainpower', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
