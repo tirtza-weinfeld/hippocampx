@@ -1,14 +1,18 @@
-def minCost(n: int, cuts: list[int]) -> int:
-    cuts = [0, *sorted(cuts), n]
-    memo = {}
+class Solution:
+    def minCost(self, n: int, cuts: list[int]) -> int:
+        cuts = [0, *sorted(cuts), n]
+        memo = {}
 
-    def dp(l: int, r: int) -> int:
-        if r - l <= 1:
-            return 0
-        if (l, r) not in memo:
-            memo[l, r] = min(
-                dp(l, k) + dp(k, r) + (cuts[r] - cuts[l]) for k in range(l + 1, r)
-            )
-        return memo[l, r]
+        def dp(l: int, r: int) -> int:
 
-    return dp(0, len(cuts) - 1)
+            if (l, r) not in memo:
+                memo[l, r] = min(
+                    (
+                        dp(l, k) + dp(k, r) + (cuts[r] - cuts[l])
+                        for k in range(l + 1, r)
+                    ),
+                    default=0,
+                )
+            return memo[l, r]
+
+        return dp(0, len(cuts) - 1)
