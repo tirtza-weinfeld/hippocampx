@@ -119,6 +119,7 @@
     "dp": [
       "1000-minimum-cost-to-merge-stones",
       "1547-minimum-cost-to-cut-a-stick",
+      "256-paint-house",
       "312-burst-balloons",
       "72-edit-distance"
     ],
@@ -206,6 +207,7 @@
       "2145-count-the-hidden-sequences",
       "215-kth-largest-element-in-an-array",
       "238-product-of-array-except-self",
+      "256-paint-house",
       "3-longest-substring-without-repeating-characters",
       "325-maximum-size-subarray-sum-equals-k",
       "33-search-in-rotated-sorted-array",
@@ -252,6 +254,9 @@
     ],
     "909-snakes-and-ladders": [
       "$O(n^2)$"
+    ],
+    "265-paint-house-ii": [
+      "$O(n  \\cdot  k)$"
     ],
     "1-two-sum": [
       "$O(n)$"
@@ -332,6 +337,9 @@
     ],
     "39-combination-sum": [
       "$O(2^n)$"
+    ],
+    "256-paint-house": [
+      "$O(n)$"
     ],
     "542-01-matrix": [
       "$O(m  \\cdot  n)$"

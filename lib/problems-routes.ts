@@ -54,6 +54,7 @@ export const PROBLEMS_ROUTES: NavigationItem[] = [
             { title: 'Number of 1 Bits', href: '/problems/191-number-of-1-bits', icon: Code, color: "text-green-500", bgColor: "bg-green-500/10" },
             { title: 'Number of Islands', href: '/problems/200-number-of-islands', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
             { title: 'Number of Subarrays with Product Less Than K', href: '/problems/713-subarray-product-less-than-k', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
+            { title: 'Paint House', href: '/problems/256-paint-house', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
             { title: 'Paint House II', href: '/problems/265-paint-house-ii', icon: Code, color: "text-red-500", bgColor: "bg-red-500/10" },
             { title: 'Partition Equal Subset Sum', href: '/problems/416-partition-equal-subset-sum', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
             { title: 'Path with Maximum Probability', href: '/problems/1514-path-with-maximum-probability', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },

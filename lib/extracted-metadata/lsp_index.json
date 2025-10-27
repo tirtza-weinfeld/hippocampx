@@ -10,61 +10,7 @@
     },
     {
       "uri": "blackboard2.py",
-      "symbols": [
-        {
-          "name": "Solution",
-          "detail": "class Solution",
-          "kind": 5,
-          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 30, "character": 27}},
-          "nameRange": {
-            "start": {
-              "line": 0,
-              "character": 6
-            },
-            "end": {
-              "line": 0,
-              "character": 14
-            }
-          },
-          "children": [
-            {
-              "name": "mergeStones",
-              "detail": "mergeStones(stones: list[int], K: int) -> int",
-              "kind": 6,
-              "range": {"start": {"line": 1, "character": 4}, "end": {"line": 30, "character": 27}},
-              "nameRange": {
-                "start": {
-                  "line": 1,
-                  "character": 8
-                },
-                "end": {
-                  "line": 1,
-                  "character": 19
-                }
-              },
-              "children": [
-                {
-                  "name": "dp",
-                  "detail": "dp(l, r)",
-                  "kind": 12,
-                  "range": {"start": {"line": 22, "character": 8}, "end": {"line": 28, "character": 28}},
-                  "nameRange": {
-                    "start": {
-                      "line": 22,
-                      "character": 12
-                    },
-                    "end": {
-                      "line": 22,
-                      "character": 14
-                    }
-                  },
-                  "children": []
-                }
-              ]
-            }
-          ]
-        }
-      ]
+      "symbols": []
     },
     {
       "uri": "core/__init__.py",
@@ -2031,6 +1977,126 @@
       ]
     },
     {
+      "uri": "problems/256-paint-house/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/256-paint-house/scalar.py",
+      "symbols": [
+        {
+          "name": "Solution",
+          "detail": "class Solution",
+          "kind": 5,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 14, "character": 48}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 6
+            },
+            "end": {
+              "line": 0,
+              "character": 14
+            }
+          },
+          "children": [
+            {
+              "name": "minCost",
+              "detail": "minCost(costs: list[list[int]]) -> int",
+              "kind": 6,
+              "range": {"start": {"line": 1, "character": 4}, "end": {"line": 14, "character": 48}},
+              "nameRange": {
+                "start": {
+                  "line": 1,
+                  "character": 8
+                },
+                "end": {
+                  "line": 1,
+                  "character": 15
+                }
+              },
+              "children": [
+                {
+                  "name": "dp",
+                  "detail": "dp(i: int, c: int) -> int",
+                  "kind": 12,
+                  "range": {"start": {"line": 4, "character": 8}, "end": {"line": 12, "character": 29}},
+                  "nameRange": {
+                    "start": {
+                      "line": 4,
+                      "character": 12
+                    },
+                    "end": {
+                      "line": 4,
+                      "character": 14
+                    }
+                  },
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "uri": "problems/256-paint-house/vector.py",
+      "symbols": [
+        {
+          "name": "Solution",
+          "detail": "class Solution",
+          "kind": 5,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 20, "character": 25}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 6
+            },
+            "end": {
+              "line": 0,
+              "character": 14
+            }
+          },
+          "children": [
+            {
+              "name": "minCost",
+              "detail": "minCost(costs: list[list[int]]) -> int",
+              "kind": 6,
+              "range": {"start": {"line": 1, "character": 4}, "end": {"line": 20, "character": 25}},
+              "nameRange": {
+                "start": {
+                  "line": 1,
+                  "character": 8
+                },
+                "end": {
+                  "line": 1,
+                  "character": 15
+                }
+              },
+              "children": [
+                {
+                  "name": "dp",
+                  "detail": "dp(i: int) -> list[int]",
+                  "kind": 12,
+                  "range": {"start": {"line": 4, "character": 8}, "end": {"line": 18, "character": 26}},
+                  "nameRange": {
+                    "start": {
+                      "line": 4,
+                      "character": 12
+                    },
+                    "end": {
+                      "line": 4,
+                      "character": 14
+                    }
+                  },
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
       "uri": "problems/265-paint-house-ii/__init__.py",
       "symbols": []
     },
@@ -2060,37 +2126,55 @@
       "uri": "problems/265-paint-house-ii/top-down.py",
       "symbols": [
         {
-          "name": "minCostII",
-          "detail": "minCostII(costs: list[list[int]]) -> int",
-          "kind": 12,
-          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 19, "character": 21}},
+          "name": "Solution",
+          "detail": "class Solution",
+          "kind": 5,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 20, "character": 25}},
           "nameRange": {
             "start": {
               "line": 0,
-              "character": 4
+              "character": 6
             },
             "end": {
               "line": 0,
-              "character": 13
+              "character": 14
             }
           },
           "children": [
             {
-              "name": "dp",
-              "detail": "dp(i: int) -> list[int]",
-              "kind": 12,
-              "range": {"start": {"line": 4, "character": 4}, "end": {"line": 17, "character": 22}},
+              "name": "minCostII",
+              "detail": "minCostII(costs: list[list[int]]) -> int",
+              "kind": 6,
+              "range": {"start": {"line": 1, "character": 4}, "end": {"line": 20, "character": 25}},
               "nameRange": {
                 "start": {
-                  "line": 4,
+                  "line": 1,
                   "character": 8
                 },
                 "end": {
-                  "line": 4,
-                  "character": 10
+                  "line": 1,
+                  "character": 17
                 }
               },
-              "children": []
+              "children": [
+                {
+                  "name": "dp",
+                  "detail": "dp(i: int) -> list[int]",
+                  "kind": 12,
+                  "range": {"start": {"line": 4, "character": 8}, "end": {"line": 18, "character": 26}},
+                  "nameRange": {
+                    "start": {
+                      "line": 4,
+                      "character": 12
+                    },
+                    "end": {
+                      "line": 4,
+                      "character": 14
+                    }
+                  },
+                  "children": []
+                }
+              ]
             }
           ]
         }

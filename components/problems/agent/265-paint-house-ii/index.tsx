@@ -5,6 +5,8 @@ import { AgentCard, AgentSection } from '@/components/agent'
 const Definition = lazy(() => import('./sections/definition.mdx'))
 const CodeSnippetBottomUp = lazy(() => import('./sections/codeSnippet-bottom-up.mdx'))
 const CodeSnippetTopDown = lazy(() => import('./sections/codeSnippet-top-down.mdx'))
+const IntuitionTopDown = lazy(() => import('./sections/intuition-top-down.mdx'))
+const TimeComplexityTopDown = lazy(() => import('./sections/timeComplexity-top-down.mdx'))
 
 export default async function Problem265PaintHouseIi() {
   return (
@@ -15,7 +17,7 @@ export default async function Problem265PaintHouseIi() {
       topics={["dynamic-programming"]}
       solutionFiles={["bottom-up.py","top-down.py"]}
       defaultFile="bottom-up.py"
-      fileSectionMap={{"bottom-up.py":["definition","codeSnippet"],"top-down.py":["definition","codeSnippet"]}}
+      fileSectionMap={{"bottom-up.py":["definition","codeSnippet"],"top-down.py":["definition","codeSnippet","intuition","timeComplexity"]}}
       leetcodeUrl="https://leetcode.com/problems/paint-house-ii/description/"
     >
         <AgentSection section="definition">
@@ -28,6 +30,14 @@ export default async function Problem265PaintHouseIi() {
 
         <AgentSection section="codeSnippet" file="top-down.py">
           <CodeSnippetTopDown />
+        </AgentSection>
+
+        <AgentSection section="intuition" file="top-down.py">
+          <IntuitionTopDown />
+        </AgentSection>
+
+        <AgentSection section="timeComplexity" file="top-down.py">
+          <TimeComplexityTopDown />
         </AgentSection>
     </AgentCard>
   )

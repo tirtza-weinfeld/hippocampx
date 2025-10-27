@@ -1,0 +1,6 @@
+- Deep Dive:Paint House (k=3) — Top-down DP with explicit memoization:
+    - **Subproblems:** dp(i, c) = min total cost to paint houses *[2!]suffix [i:]* given house i is painted color c
+    - **Relate:** *$dp(i, c) = costs[i][c] + \min_{c'!=c} dp(i+1, c')$*
+    - **Topological order:** *[2!]decreasing i*, subproblem `dp(i)` depends only on strictly larger i, `dp(i+1)`, so acyclic
+    - **Base case:** `dp(n) = [0, 0, 0]` (no houses left)
+    - **Original problem:** `answer = min(dp(0))`

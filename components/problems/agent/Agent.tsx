@@ -79,6 +79,7 @@ const Problem1514PathWithMaximumProbability = lazy(() => import('./1514-path-wit
 const Problem72EditDistance = lazy(() => import('./72-edit-distance'))
 const Problem79WordSearch = lazy(() => import('./79-word-search'))
 const Problem39CombinationSum = lazy(() => import('./39-combination-sum'))
+const Problem256PaintHouse = lazy(() => import('./256-paint-house'))
 const Problem54201Matrix = lazy(() => import('./542-01-matrix'))
 const Problem1011CapacityToShipPackagesWithinDDays = lazy(() => import('./1011-capacity-to-ship-packages-within-d-days'))
 const Problem208ImplementTriePrefixTree = lazy(() => import('./208-implement-trie-prefix-tree'))
@@ -393,6 +394,11 @@ const problemComponents = {
     "39-combination-sum": (
       <Suspense key="39-combination-sum" fallback={<div className="p-4 text-gray-500">Loading...</div>}>
         <Problem39CombinationSum />
+      </Suspense>
+    ),
+    "256-paint-house": (
+      <Suspense key="256-paint-house" fallback={<div className="p-4 text-gray-500">Loading...</div>}>
+        <Problem256PaintHouse />
       </Suspense>
     ),
     "542-01-matrix": (

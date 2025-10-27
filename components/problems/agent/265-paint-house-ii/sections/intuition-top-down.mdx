@@ -1,0 +1,6 @@
+- Deep Dive: Paint House (k colors) — Top-down DP with explicit memoization
+        - Subproblems: dp(i, c) = min total cost to paint suffix houses [i:] given house i is color c
+        - Relate: *$dp(i,c) = {costs}[i][c] + \min_{c \!= c} dp(i+1,c')$*
+        - Topological order: decreasing i (each dp(i,·) depends only on dp(i+1,·)) ⇒ acyclic
+        - Base case: dp(n, c) = 0 for all c (no houses left)
+        - Original problem: answer = min(dp(0, c)) over all colors c

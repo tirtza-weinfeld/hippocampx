@@ -1,4 +1,8 @@
 {
+  "problems/265-paint-house-ii/top-down.py": [
+    {"range": {"start": {"line": 17, "character": 27}, "end": {"line": 17, "character": 64}}, "nameRange": {"start": {"line": 17, "character": 27}, "end": {"line": 17, "character": 64}}, "qname": "problems.265-paint-house-ii.top-down:Solution.minCostII.dp.costs[i][c] + (m2 if c == c1 else m1)", "kind": "expression"},
+    {"range": {"start": {"line": 12, "character": 16}, "end": {"line": 12, "character": 42}}, "nameRange": {"start": {"line": 12, "character": 16}, "end": {"line": 12, "character": 42}}, "qname": "problems.265-paint-house-ii.top-down:Solution.minCostII.dp.for c, v in enumerate(nxt)", "kind": "expression"}
+  ],
   "problems/1293-shortest-path-in-a-grid-with-obstacles-elimination/dijkstra.py": [
     {"range": {"start": {"line": 25, "character": 20}, "end": {"line": 25, "character": 66}}, "nameRange": {"start": {"line": 25, "character": 20}, "end": {"line": 25, "character": 66}}, "qname": "problems.1293-shortest-path-in-a-grid-with-obstacles-elimination.dijkstra:shortest_path_in_a_grid_with_obstacles_elimination.heapq.heappush(pq, (steps + 1, nr, nc, new_k))", "kind": "expression"},
     {"range": {"start": {"line": 13, "character": 29}, "end": {"line": 13, "character": 46}}, "nameRange": {"start": {"line": 13, "character": 29}, "end": {"line": 13, "character": 46}}, "qname": "problems.1293-shortest-path-in-a-grid-with-obstacles-elimination.dijkstra:shortest_path_in_a_grid_with_obstacles_elimination.heapq.heappop(pq)", "kind": "expression"},
@@ -50,6 +54,12 @@
     {"range": {"start": {"line": 2, "character": 4}, "end": {"line": 2, "character": 16}}, "nameRange": {"start": {"line": 2, "character": 4}, "end": {"line": 2, "character": 16}}, "qname": "problems.84-largest-rectangle-in-histogram.solution:largestRectangleArea.stack = [-1]", "kind": "expression"},
     {"range": {"start": {"line": 4, "character": 34}, "end": {"line": 4, "character": 56}}, "nameRange": {"start": {"line": 4, "character": 34}, "end": {"line": 4, "character": 56}}, "qname": "problems.84-largest-rectangle-in-histogram.solution:largestRectangleArea.heights[stack[-1]] > h", "kind": "expression"},
     {"range": {"start": {"line": 8, "character": 4}, "end": {"line": 8, "character": 17}}, "nameRange": {"start": {"line": 8, "character": 4}, "end": {"line": 8, "character": 17}}, "qname": "problems.84-largest-rectangle-in-histogram.solution:largestRectangleArea.heights.pop()", "kind": "expression"}
+  ],
+  "problems/256-paint-house/vector.py": [
+    {"range": {"start": {"line": 9, "character": 16}, "end": {"line": 9, "character": 31}}, "nameRange": {"start": {"line": 9, "character": 16}, "end": {"line": 9, "character": 31}}, "qname": "problems.256-paint-house.vector:Solution.minCost.dp.nxt = dp(i + 1)", "kind": "expression"}
+  ],
+  "problems/256-paint-house/scalar.py": [
+    {"range": {"start": {"line": 10, "character": 20}, "end": {"line": 10, "character": 66}}, "nameRange": {"start": {"line": 10, "character": 20}, "end": {"line": 10, "character": 66}}, "qname": "problems.256-paint-house.scalar:Solution.minCost.dp.dp(i + 1, (c + 1) % 3), dp(i + 1, (c + 2) % 3)", "kind": "expression"}
   ],
   "problems/208-implement-trie-prefix-tree/solution.py": [
     {"range": {"start": {"line": 21, "character": 12}, "end": {"line": 21, "character": 36}}, "nameRange": {"start": {"line": 21, "character": 12}, "end": {"line": 21, "character": 36}}, "qname": "problems.208-implement-trie-prefix-tree.solution:Trie.insert.node = node.children[ch]", "kind": "expression"},

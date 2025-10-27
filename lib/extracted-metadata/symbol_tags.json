@@ -1,8 +1,8 @@
 {
   "core.bellman-ford.classic:bellman_ford_classic": {
     "args": [
-      "source",
       "vertices",
+      "source",
       "edges"
     ],
     "code": "def bellman_ford_classic(\n    vertices: list[str], edges: list[tuple[str, str, float]], source: str\n) -> dict[str, float]:\n\n    d = [float(\"inf\")] * (V := len(vertices))\n    d[source] = 0\n\n    for _ in range(V - 1):\n        updated = False\n        for u, v, w in edges:\n            if d[u] + w < d[v]:\n                d[v] = d[u] + w\n                updated = True\n        if not updated:\n            return d\n\n    # if we get here, we did all V-1 passes, so still need to check for cycles\n    for u, v, w in edges:\n        if d[u] + w < d[v]:\n            raise Exception(\"Negative-weight cycle\")\n\n    return d",
@@ -120,8 +120,8 @@
   },
   "core.dijkstra.algorithm:dijkstra": {
     "args": [
-      "graph",
-      "s"
+      "s",
+      "graph"
     ],
     "code": "def dijkstra(graph: dict[str, dict[str, int]], s: str):\n\n    d = {v: float('inf') for v in graph} | {s: 0}\n    p = {v: None for v in graph}\n\n    pq = [(0, s)]\n\n    while pq:\n        d_u, u = heapq.heappop(pq)\n        if d_u > d[u]:\n            continue\n        for v ,w in graph[u]:\n            if (weight := d_u + w) < d[v]:\n                d[v], p[v] = weight, u\n                heapq.heappush(pq, (weight, v))\n\n    return d, p",
     "file_path": "backend/algorithms/core/dijkstra/algorithm.py",
@@ -242,8 +242,8 @@
   },
   "problems.1-two-sum.solution:two_sum": {
     "args": [
-      "nums",
-      "target"
+      "target",
+      "nums"
     ],
     "code": "def two_sum(nums: list[int], target: int) -> list[int]:\n\n    seen = {}\n\n    for i, num in enumerate(nums):\n        if (x := target - num) in seen:\n            return seen[x], i\n        seen[num] = i",
     "file_path": "backend/algorithms/problems/1-two-sum/solution.py",
@@ -257,8 +257,8 @@
   },
   "problems.1000-minimum-cost-to-merge-stones.solution:Solution.mergeStones": {
     "args": [
-      "K",
-      "stones"
+      "stones",
+      "K"
     ],
     "code": "    def mergeStones(self, stones: list[int], K: int) -> int:\n        if ((n := len(stones)) - 1) % (K - 1):return -1\n\n        prefix, memo = [0], {}\n        for x in stones: prefix.append(prefix[-1] + x)\n        cost = lambda l, r: 0 if (r - l) % (K - 1) else prefix[r + 1] - prefix[l]\n\n        def dp(l, r):\n            if (key := (l, r)) not in memo:\n                memo[key] = min(\n                    (dp(l, t) + dp(t + 1, r) + cost(l, r) for t in range(l, r, K - 1)),\n                    default=0,\n                )\n            return memo[key]\n\n        return dp(0, n - 1)",
     "expressions": {
@@ -307,8 +307,8 @@
   },
   "problems.1011-capacity-to-ship-packages-within-d-days.solution:capacity_to_ship_packages_within_d_days": {
     "args": [
-      "days",
-      "weights"
+      "weights",
+      "days"
     ],
     "code": "def capacity_to_ship_packages_within_d_days(weights: list[int], days: int) -> int:\n    def days_needed(capacity: int) -> int:\n        d, load = 1, 0\n        for w in weights:\n            if load + w <= capacity:\n                load += w\n            else:\n                d += 1\n                load = w\n        return d\n\n    l, r = max(weights), sum(weights)\n    while l < r:\n        capacity = (l + r) // 2\n        if days_needed(capacity) <= days:\n            r = capacity\n        else:\n            l = capacity + 1\n    return l",
     "file_path": "backend/algorithms/problems/1011-capacity-to-ship-packages-within-d-days/solution.py",
@@ -526,9 +526,9 @@
   },
   "problems.127-word-ladder.solution:word_ladder": {
     "args": [
-      "beginWord",
       "wordList",
-      "endWord"
+      "endWord",
+      "beginWord"
     ],
     "code": "def word_ladder(beginWord: str, endWord: str, wordList: list[str]) -> int:\n    if endWord not in wordList:\n        return 0\n\n    L = len(beginWord)\n    combos: dict[str, list[str]] = defaultdict(list)\n    for w in wordList:\n        for i in range(L):\n            combos[w[:i] + \"*\" + w[i+1:]].append(w)\n\n    front, back = {beginWord}, {endWord}\n    dist_front, dist_back = {beginWord: 1}, {endWord: 1}\n\n    while front and back:\n        # expand smaller side to optimize\n        if len(front) > len(back):\n            front, back = back, front\n            dist_front, dist_back = dist_back, dist_front\n\n        next_front = set()\n        for word in front:\n            for i in range(L):\n                for n in combos[word[:i] + \"*\" + word[i+1:]]: # Use pre-computed neighbors\n                    if n in dist_back:\n                        return dist_front[word] + dist_back[n]\n                    if n not in dist_front:\n                        dist_front[n] = dist_front[word] + 1\n                        next_front.add(n)\n        front = next_front\n\n    return 0",
     "file_path": "backend/algorithms/problems/127-word-ladder/solution.py",
@@ -850,8 +850,8 @@
       "edges",
       "succProb",
       "n",
-      "start",
-      "end"
+      "end",
+      "start"
     ],
     "code": "def path_with_maximum_probability(n: int, edges: list[list[int]], succProb: list[float], start: int, end: int) -> float:\n    prob = [0.0] * n # rob[i] stores max probability to reach node i\n    prob[start] = 1.0  # Start with full certainty\n\n    for _ in range(n - 1):  # Perform up to n-1 rounds of relaxation\n        updated = False\n        for (u, v), p in zip(edges, succProb):\n            if prob[u] * p > prob[v]:  # Try to improve v through u\n                prob[v] = prob[u] * p\n                updated = True\n            if prob[v] * p > prob[u]:  # Try to improve u through v (undirected graph)\n                prob[u] = prob[v] * p\n                updated = True\n        if not updated:\n            break  # Early exit if no updates in this round\n\n    return prob[end]",
     "file_path": "backend/algorithms/problems/1514-path-with-maximum-probability/solution.py",
@@ -911,8 +911,8 @@
   },
   "problems.1590-make-sum-divisible-by-p.solution:minSubarrayToMakeSumDivisibleByP": {
     "args": [
-      "segments",
-      "p"
+      "p",
+      "segments"
     ],
     "code": "def minSubarrayToMakeSumDivisibleByP(segments: list[int], p: int) -> int:\n\n    total_remainder = sum(segments) % p\n    if total_remainder == 0:\n        return 0\n\n    remainder_idx = {0: -1}\n    prefix_remainder, min_length = 0, len(segments)\n\n    for i, segment in enumerate(segments):\n        prefix_remainder = (prefix_remainder + segment) % p\n        need = (prefix_remainder - total_remainder + p) % p\n        if need in remainder_idx:\n            min_length = min(min_length, i - remainder_idx[need])\n        remainder_idx[prefix_remainder] = i\n\n    return min_length if min_length < len(segments) else -1",
     "file_path": "backend/algorithms/problems/1590-make-sum-divisible-by-p/solution.py",
@@ -1207,8 +1207,8 @@
   },
   "problems.211-design-add-and-search-words-data-structure.solution:WordDictionary.search.dfs": {
     "args": [
-      "node",
-      "i"
+      "i",
+      "node"
     ],
     "code": "        def dfs(node: dict, i: int) -> bool:\n\n            if i == len(word):\n                return self.END_MARKER in node\n\n            if (c := word[i]) == \".\":\n\n                return any(\n                    dfs(child, i + 1)\n                    for k, child in node.items()\n                    if k != self.END_MARKER\n                )\n            child = node.get(c)\n            return bool(child) and dfs(child, i + 1)",
     "expressions": {
@@ -1360,9 +1360,9 @@
   },
   "problems.2145-count-the-hidden-sequences.solution:numberOfArrays": {
     "args": [
-      "differences",
+      "upper",
       "lower",
-      "upper"
+      "differences"
     ],
     "code": "def numberOfArrays(differences: list[int], lower: int, upper: int) -> int:\n\n    prefix_sum = min_marker = max_marker = 0\n\n    for diff in differences:\n        prefix_sum += diff\n        min_marker = min(min_marker, prefix_sum)\n        max_marker = max(max_marker, prefix_sum)\n\n    return max(0, (upper - max_marker) - (lower - min_marker) + 1)",
     "file_path": "backend/algorithms/problems/2145-count-the-hidden-sequences/solution.py",
@@ -1394,8 +1394,8 @@
   },
   "problems.215-kth-largest-element-in-an-array.solution:findKthLargest": {
     "args": [
-      "nums",
-      "k"
+      "k",
+      "nums"
     ],
     "code": "def findKthLargest(nums: list[int], k: int) -> int:\n    h = nums[:k]; heapq.heapify(h)\n    for x in nums[k:]:\n        if x > h[0]:\n            heapq.heapreplace(h, x) \n    return h[0]",
     "expressions": {
@@ -1429,6 +1429,171 @@
       "label": "list[int]"
     },
     "time_complexity": "O(n)\nwhere n is the length of the nums array. We iterate through the array twice."
+  },
+  "problems.256-paint-house.scalar:Solution.minCost": {
+    "args": [
+      "costs"
+    ],
+    "code": "    def minCost(self, costs: list[list[int]]) -> int:\n        n, memo = len(costs), {}\n\n        def dp(i: int, c: int) -> int:\n            if i == n:\n                return \n            if (i, c) not in memo:\n\n                memo[i, c] = costs[i][c] + min(\n                    dp(i + 1, (c + 1) % 3), dp(i + 1, (c + 2) % 3)\n                )\n            return memo[i, c]\n\n        return min(dp(0, 0), dp(0, 1), dp(0, 2))",
+    "file_path": "backend/algorithms/problems/256-paint-house/scalar.py",
+    "intuition": "- Deep Dive:Paint House (k=3) — Top-down DP with explicit memoization:\n    - **Subproblems:** dp(i, c) = min total cost to paint houses *[2!]suffix [i:]* given house i is painted color c.\n    - **Relate:** `[language=\"python\"]dp(i, c) = costs[i][c] + min(dp(i+1, other_color_1), dp(i+1, other_color_2))`                 *[19!]Choose the cheaper of the two other colors for the next house.*\n    - **Topological order:** *[2!]decreasing i*, subproblem `dp(i, c)` depends only on strictly larger i, `dp(i+1, other_color_1)` and `dp(i+1, other_color_2)`, so acyclic\n    - **Base case:**`dp(n, c) = 0` → no houses left to paint.\n    - **Original problem:** return `min(dp(0, 0), dp(0, 1), dp(0, 2))` — start with any first color.\n    - **Time complexity:** *O(n)*: each `(i, c)` computed once, constant work per state.\n    - **Space:** *O(n)* for memo and recursion depth.\n    - **Returns:** Minimum total cost to paint all houses so that no two adjacent share a color",
+    "kind": "method",
+    "label": "def minCost(self, costs: list[list[int]]) -> int",
+    "name": "minCost",
+    "returns": {
+      "label": "int"
+    }
+  },
+  "problems.256-paint-house.scalar:Solution.minCost.dp": {
+    "args": [
+      "i",
+      "c"
+    ],
+    "code": "        def dp(i: int, c: int) -> int:\n            if i == n:\n                return \n            if (i, c) not in memo:\n\n                memo[i, c] = costs[i][c] + min(\n                    dp(i + 1, (c + 1) % 3), dp(i + 1, (c + 2) % 3)\n                )\n            return memo[i, c]",
+    "expressions": {
+      "dp(i + 1, (c + 1) % 3), dp(i + 1, (c + 2) % 3)": "pick the cheapest of the two other color options for the next house"
+    },
+    "file_path": "backend/algorithms/problems/256-paint-house/scalar.py",
+    "kind": "method",
+    "label": "def dp(i: int, c: int) -> int",
+    "name": "dp",
+    "returns": {
+      "label": "int"
+    }
+  },
+  "problems.256-paint-house.scalar:Solution.minCost.dp.dp(i + 1, (c + 1) % 3), dp(i + 1, (c + 2) % 3)": {
+    "kind": "expression",
+    "name": "dp(i + 1, (c + 1) % 3), dp(i + 1, (c + 2) % 3)",
+    "summary": "pick the cheapest of the two other color options for the next house"
+  },
+  "problems.256-paint-house.vector:Solution.minCost": {
+    "args": [
+      "costs"
+    ],
+    "code": "    def minCost(self, costs: list[list[int]]) -> int:\n        n, memo = len(costs), {}\n\n        def dp(i: int) -> list[int]:\n            if i == n:\n                return [0, 0, 0]  \n\n            if i not in memo:\n                nxt = dp(i + 1)  \n\n                m1 = m2 = float(\"inf\"); c1 = -1\n                for c, v in enumerate(nxt):\n                    if v < m1:\n                        m2, m1, c1 = m1, v, c\n                    elif v < m2:\n                        m2 = v\n                memo[i] = [costs[i][c] + (m2 if c == c1 else m1) for c in range(3)]\n            return memo[i]\n\n        return min(dp(0))",
+    "file_path": "backend/algorithms/problems/256-paint-house/vector.py",
+    "intuition": "- Deep Dive:Paint House (k=3) — Top-down DP with explicit memoization:\n        - **Subproblems:** dp(i, c) = min total cost to paint houses *[2!]suffix [i:]* given house i is painted color c\n        - **Relate:** *$dp(i, c) = costs[i][c] + \\min_{c'!=c} dp(i+1, c')$*\n        - **Topological order:** *[2!]decreasing i*, subproblem `dp(i)` depends only on strictly larger i, `dp(i+1)`, so acyclic\n        - **Base case:** `dp(n) = [0, 0, 0]` (no houses left)\n        - **Original problem:** `answer = min(dp(0))`\n\n    - Time complexity:\n        - O(n):\n        - number of subproblems is n (We compute dp(i) once for each i)\n        - time per subproblem is O(1) (k=3).\n        - → *Θ(n)* total",
+    "kind": "method",
+    "label": "def minCost(self, costs: list[list[int]]) -> int",
+    "name": "minCost",
+    "returns": {
+      "label": "int",
+      "summary": "Minimum total cost to paint all houses with no adjacent equal colors."
+    }
+  },
+  "problems.256-paint-house.vector:Solution.minCost.dp": {
+    "args": [
+      "i"
+    ],
+    "code": "        def dp(i: int) -> list[int]:\n            if i == n:\n                return [0, 0, 0]  \n\n            if i not in memo:\n                nxt = dp(i + 1)  \n\n                m1 = m2 = float(\"inf\"); c1 = -1\n                for c, v in enumerate(nxt):\n                    if v < m1:\n                        m2, m1, c1 = m1, v, c\n                    elif v < m2:\n                        m2 = v\n                memo[i] = [costs[i][c] + (m2 if c == c1 else m1) for c in range(3)]\n            return memo[i]",
+    "expressions": {
+      "nxt = dp(i + 1)": "dp(i+1) = costs from the suffix [i+1:]"
+    },
+    "file_path": "backend/algorithms/problems/256-paint-house/vector.py",
+    "kind": "method",
+    "label": "def dp(i: int) -> list[int]",
+    "name": "dp",
+    "returns": {
+      "label": "list[int]"
+    },
+    "variables": [
+      "m1",
+      "m2",
+      "c1",
+      "nxt = costs for suffix [i+1"
+    ]
+  },
+  "problems.256-paint-house.vector:Solution.minCost.dp.c1": {
+    "kind": "variable",
+    "name": "c1",
+    "summary": "color of smallest cost in nxt (m1's color)"
+  },
+  "problems.256-paint-house.vector:Solution.minCost.dp.m1": {
+    "kind": "variable",
+    "name": "m1",
+    "summary": "smallest cost in nxt"
+  },
+  "problems.256-paint-house.vector:Solution.minCost.dp.m2": {
+    "kind": "variable",
+    "name": "m2",
+    "summary": "second smallest cost in nxt"
+  },
+  "problems.256-paint-house.vector:Solution.minCost.dp.nxt = costs for suffix [i+1": {
+    "kind": "variable",
+    "name": "nxt = costs for suffix [i+1",
+    "summary": "]"
+  },
+  "problems.256-paint-house.vector:Solution.minCost.dp.nxt = dp(i + 1)": {
+    "kind": "expression",
+    "name": "nxt = dp(i + 1)",
+    "summary": "dp(i+1) = costs from the suffix [i+1:]"
+  },
+  "problems.265-paint-house-ii.top-down:Solution.minCostII": {
+    "args": [
+      "costs"
+    ],
+    "code": "    def minCostII(self, costs: list[list[int]]) -> int:\n        n, k, memo = len(costs), len(costs[0]) , {}\n\n        def dp(i: int) -> list[int]:\n            if i == n:\n                return [0] * k\n\n            if i not in memo:\n                nxt = dp(i + 1)\n\n                m1 = m2 = float(\"inf\"); c1 = -1\n                for c, v in enumerate(nxt):\n                    if v < m1:\n                        m2, m1, c1 = m1, v, c\n                    elif v < m2:\n                        m2 = v\n                memo[i] = [costs[i][c] + (m2 if c == c1 else m1) for c in range(k)]\n            return memo[i]\n\n        return min(dp(0))",
+    "file_path": "backend/algorithms/problems/265-paint-house-ii/top-down.py",
+    "intuition": "- Deep Dive: Paint House (k colors) — Top-down DP with explicit memoization\n        - Subproblems: dp(i, c) = min total cost to paint suffix houses [i:] given house i is color c\n        - Relate: *$dp(i,c) = {costs}[i][c] + \\min_{c \\!= c} dp(i+1,c')$*\n        - Topological order: decreasing i (each dp(i,·) depends only on dp(i+1,·)) ⇒ acyclic\n        - Base case: dp(n, c) = 0 for all c (no houses left)\n        - Original problem: answer = min(dp(0, c)) over all colors c\n\n    - Time complexity:\n        - O(n * k):\n        - *n* rows x *O(k)* per row using *(m1, m2, c1)* trick\n\n    - Space:\n        - Θ(n·k) for memo (stores a length-k row per i)",
+    "kind": "method",
+    "label": "def minCostII(self, costs: list[list[int]]) -> int",
+    "name": "minCostII",
+    "returns": {
+      "label": "int"
+    }
+  },
+  "problems.265-paint-house-ii.top-down:Solution.minCostII.dp": {
+    "args": [
+      "i"
+    ],
+    "code": "        def dp(i: int) -> list[int]:\n            if i == n:\n                return [0] * k\n\n            if i not in memo:\n                nxt = dp(i + 1)\n\n                m1 = m2 = float(\"inf\"); c1 = -1\n                for c, v in enumerate(nxt):\n                    if v < m1:\n                        m2, m1, c1 = m1, v, c\n                    elif v < m2:\n                        m2 = v\n                memo[i] = [costs[i][c] + (m2 if c == c1 else m1) for c in range(k)]\n            return memo[i]",
+    "expressions": {
+      "costs[i][c] + (m2 if c == c1 else m1)": "If current color equals c1, we must take m2; otherwise take m1",
+      "for c, v in enumerate(nxt)": "Scan once to find the two best colors for the next row"
+    },
+    "file_path": "backend/algorithms/problems/265-paint-house-ii/top-down.py",
+    "kind": "method",
+    "label": "def dp(i: int) -> list[int]",
+    "name": "dp",
+    "returns": {
+      "label": "list[int]"
+    },
+    "variables": [
+      "m1",
+      "m2",
+      "c1",
+      "nxt = costs for suffix [i+1"
+    ]
+  },
+  "problems.265-paint-house-ii.top-down:Solution.minCostII.dp.c1": {
+    "kind": "variable",
+    "name": "c1",
+    "summary": "color of smallest cost in nxt (m1's color)"
+  },
+  "problems.265-paint-house-ii.top-down:Solution.minCostII.dp.costs[i][c] + (m2 if c == c1 else m1)": {
+    "kind": "expression",
+    "name": "costs[i][c] + (m2 if c == c1 else m1)",
+    "summary": "If current color equals c1, we must take m2; otherwise take m1"
+  },
+  "problems.265-paint-house-ii.top-down:Solution.minCostII.dp.for c, v in enumerate(nxt)": {
+    "kind": "expression",
+    "name": "for c, v in enumerate(nxt)",
+    "summary": "Scan once to find the two best colors for the next row"
+  },
+  "problems.265-paint-house-ii.top-down:Solution.minCostII.dp.m1": {
+    "kind": "variable",
+    "name": "m1",
+    "summary": "smallest value in nxt"
+  },
+  "problems.265-paint-house-ii.top-down:Solution.minCostII.dp.m2": {
+    "kind": "variable",
+    "name": "m2",
+    "summary": "second smallest value in nxt"
+  },
+  "problems.265-paint-house-ii.top-down:Solution.minCostII.dp.nxt = costs for suffix [i+1": {
+    "kind": "variable",
+    "name": "nxt = costs for suffix [i+1",
+    "summary": "]"
   },
   "problems.3-longest-substring-without-repeating-characters.solution:longest_substring_without_repeating_characters": {
     "args": [
@@ -1488,8 +1653,8 @@
   },
   "problems.347-top-k-frequent-elements.heap-nlargets:topKFrequent": {
     "args": [
-      "nums",
-      "k"
+      "k",
+      "nums"
     ],
     "code": "def topKFrequent(nums: list[int], k: int) -> list[int]:\n    freq = Counter(nums)\n    return heapq.nlargest(k, freq.keys(), key=freq.get)",
     "expressions": {
@@ -1518,8 +1683,8 @@
   },
   "problems.347-top-k-frequent-elements.heap:topKFrequent": {
     "args": [
-      "nums",
-      "k"
+      "k",
+      "nums"
     ],
     "code": "def topKFrequent(nums: list[int], k: int) -> list[int]:\n    freq ,h= Counter(nums), []\n    for num, f in freq.items():\n        heapq.heappush(h, (f, num))\n        if len(h) > k:\n            heapq.heappop(h)\n\n    return [num for _, num in h]",
     "file_path": "backend/algorithms/problems/347-top-k-frequent-elements/heap.py",
@@ -1533,8 +1698,8 @@
   },
   "problems.347-top-k-frequent-elements.sort-frequency-bucketing:topKFrequent": {
     "args": [
-      "nums",
-      "k"
+      "k",
+      "nums"
     ],
     "code": "def topKFrequent(nums: list[int], k: int) -> list[int]:\n\n    bucket=[[] for _ in range(len(nums)+1)]\n    for n,f in Counter(nums).items():\n        bucket[f].append(n)\n\n    return [num for f_bucket in reversed(bucket) for num in f_bucket][:k]",
     "file_path": "backend/algorithms/problems/347-top-k-frequent-elements/sort-frequency-bucketing.py",
@@ -1605,8 +1770,8 @@
   },
   "problems.370-range-addition.solution:getModifiedArray": {
     "args": [
-      "length",
-      "updates"
+      "updates",
+      "length"
     ],
     "code": "def getModifiedArray(length: int, updates: list[list[int]]) -> list[int]:\n\n    delta = [0] * (length + 1)\n\n    for start_day, end_day, change_in_km in updates:\n        delta[start_day] += change_in_km\n        delta[end_day + 1] -= change_in_km\n\n    prefix_sum = 0\n    return [prefix_sum := prefix_sum + change for change in delta[:-1]]",
     "file_path": "backend/algorithms/problems/370-range-addition/solution.py",
@@ -1632,8 +1797,8 @@
   },
   "problems.39-combination-sum.solution:combination_sum": {
     "args": [
-      "candidates",
-      "target"
+      "target",
+      "candidates"
     ],
     "code": "def combination_sum(candidates: list[int], target: int) -> list[list[int]]:\n\n    candidates.sort()\n    res, path = [], []\n\n    def dfs(i: int, rem: int) -> None:\n        if rem == 0:\n            res.append(path.copy())\n            return\n        for j in range(i, len(candidates)):\n            if (c := candidates[j]) > rem:\n                break\n            path.append(c)\n            dfs(j, rem - c)\n            path.pop()\n\n    dfs(0, target)\n    return res",
     "file_path": "backend/algorithms/problems/39-combination-sum/solution.py",
@@ -1993,8 +2158,8 @@
   },
   "problems.713-subarray-product-less-than-k.solution:num_subarray_product_less_than_k": {
     "args": [
-      "nums",
-      "k"
+      "k",
+      "nums"
     ],
     "code": "def num_subarray_product_less_than_k(nums: list[int], k: int) -> int:\n    if k <= 1:\n        return 0\n    product, left, count = 1, 0, 0\n    for right, num in enumerate(nums):\n        product *= num\n        while product >= k:\n            product //= nums[left]\n            left += 1\n        count += right - left + 1\n    return count",
     "file_path": "backend/algorithms/problems/713-subarray-product-less-than-k/solution.py",
@@ -2008,8 +2173,8 @@
   },
   "problems.743-network-delay-time.solution:network_delay_time": {
     "args": [
-      "k",
       "n",
+      "k",
       "times"
     ],
     "code": "def network_delay_time(times: list[list[int]], n: int, k: int) -> int:\n\n    adj = defaultdict(list)\n    for u, v, w in times:\n        adj[u].append((v, w))\n    pq, finalized, time = [(0, k)], set(), 0\n    while pq:\n        t, node = heapq.heappop(pq)\n        if node in finalized:\n            continue\n        finalized.add(node)\n        time = t\n        for neighbor, travel_time in adj[node]:\n            if neighbor not in finalized:\n                heapq.heappush(pq, (time + travel_time, neighbor))\n    return time if len(finalized) == n else -1",
@@ -2037,8 +2202,8 @@
   },
   "problems.76-minimum-window-substring.solution:minWindow": {
     "args": [
-      "t",
-      "s"
+      "s",
+      "t"
     ],
     "code": "def minWindow(s: str, t: str) -> str:\n    t_count, have = Counter(t), defaultdict(int)\n    letters_needed, min_idx, l = len(t_count), None, 0\n    for r, c in enumerate(s):\n        have[c] += 1\n        if have[c] == t_count[c]:\n            letters_needed -= 1\n            while letters_needed == 0:\n                if not min_idx or r - l + 1 < min_idx[1] - min_idx[0]:\n                    min_idx = l, r + 1\n                have[s[l]] -= 1\n                if have[s[l]] < t_count[s[l]]:\n                    letters_needed += 1\n                l += 1\n    return \"\" if min_idx == None else s[min_idx[0] : min_idx[1]]",
     "file_path": "backend/algorithms/problems/76-minimum-window-substring/solution.py",
@@ -2086,11 +2251,11 @@
   },
   "problems.787-cheapest-flights-within-k-stops.bellman_ford:cheapest_flights_with_at_most_k_stops": {
     "args": [
-      "k",
-      "n",
-      "flights",
       "dst",
-      "src"
+      "n",
+      "src",
+      "k",
+      "flights"
     ],
     "code": "def cheapest_flights_with_at_most_k_stops(\n    n: int, flights: list[list[int]], src: int, dst: int, k: int\n) -> int:\n    d = [float(\"inf\")] * n\n    d[src] = 0\n\n    for _ in range(k + 1):\n        tmp = d[:]\n        for u, v, w in flights:\n            if d[u] + w < tmp[v]:\n                tmp[v] = d[u] + w\n        d = tmp\n\n    return d[dst] if d[dst] < float(\"inf\") else -1",
     "file_path": "backend/algorithms/problems/787-cheapest-flights-within-k-stops/bellman_ford.py",
@@ -2105,8 +2270,8 @@
   "problems.787-cheapest-flights-within-k-stops.dijkstra:cheapest_flights_with_at_most_k_stops": {
     "args": [
       "dst",
-      "k",
       "src",
+      "k",
       "flights"
     ],
     "code": "def cheapest_flights_with_at_most_k_stops( flights: list[list[int]], src: int, dst: int, k: int) -> int:\n\n    graph = defaultdict(list)\n    for u, v, price in flights:\n        graph[u].append((v, price))\n\n    pq, min_stops = [(0, src, 0)], {}\n\n    while pq:\n        cost, city, stops = heapq.heappop(pq)\n\n        # If we've already found a path to this city using fewer or equal stops, skip.\n        # A path with fewer stops must have been cheaper or equal due to PQ ordering.\n        if stops > min_stops.get(city, float(\"inf\")): continue\n        if city == dst: return cost\n\n        # Record the new minimum stops to reach this city\n        min_stops[city] = stops\n        if stops <= k:\n            for neighbor, price in graph[city]:\n                heapq.heappush(pq, (cost + price, neighbor, stops + 1))\n    return -1",
@@ -2209,8 +2374,8 @@
   },
   "problems.875-koko-eating-bananas.solution:koko_eating_bananas": {
     "args": [
-      "h",
-      "piles"
+      "piles",
+      "h"
     ],
     "code": "def koko_eating_bananas(piles: list[int], h: int) -> int:\n\n    def hours(k:int) -> int:\n        return sum((p + k - 1) // k for p in piles)\n        # return sum(math.ceil(pile / k) for pile in piles)\n\n    l, r = 1, max(piles)\n    while l < r:\n        k = (l + r) // 2\n        if hours(k) <= h:\n            r = k\n        else:\n            l = k + 1\n    return l",
     "file_path": "backend/algorithms/problems/875-koko-eating-bananas/solution.py",
