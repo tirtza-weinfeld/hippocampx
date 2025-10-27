@@ -6,20 +6,19 @@ const Definition = lazy(() => import('./sections/definition.mdx'))
 const CodeSnippetSolution = lazy(() => import('./sections/codeSnippet-solution.mdx'))
 const IntuitionSolution = lazy(() => import('./sections/intuition-solution.mdx'))
 const TimeComplexitySolution = lazy(() => import('./sections/timeComplexity-solution.mdx'))
-const KeyVariablesSolution = lazy(() => import('./sections/keyVariables-solution.mdx'))
 const KeyExpressionsSolution = lazy(() => import('./sections/keyExpressions-solution.mdx'))
 
-export default async function Problem53MaximumSubarray() {
+export default async function Problem547NumberOfProvinces() {
   return (
     <AgentCard
-      id="53-maximum-subarray"
-      title="Maximum Subarray"
+      id="547-number-of-provinces"
+      title="Number of Provinces"
       difficulty="medium"
-      topics={["kadane","dp"]}
+      topics={["dsu"]}
       solutionFiles={["solution.py"]}
       defaultFile="solution.py"
-      fileSectionMap={{"solution.py":["definition","codeSnippet","intuition","timeComplexity","keyVariables","keyExpressions"]}}
-      leetcodeUrl="https://leetcode.com/problems/maximum-subarray"
+      fileSectionMap={{"solution.py":["definition","codeSnippet","intuition","timeComplexity","keyExpressions"]}}
+      leetcodeUrl="https://leetcode.com/problems/number-of-provinces/"
     >
         <AgentSection section="definition">
           <Definition />
@@ -35,10 +34,6 @@ export default async function Problem53MaximumSubarray() {
 
         <AgentSection section="timeComplexity" file="solution.py">
           <TimeComplexitySolution />
-        </AgentSection>
-
-        <AgentSection section="keyVariables" file="solution.py">
-          <KeyVariablesSolution />
         </AgentSection>
 
         <AgentSection section="keyExpressions" file="solution.py">

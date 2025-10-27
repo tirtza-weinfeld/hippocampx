@@ -1,0 +1,7 @@
+- `stack = [0]`: Start DFS from room 0
+- `seen[0] = True`: Room 0 is unlocked by default
+- `while stack`: While there are rooms to explore
+- `room = stack.pop()`: Take the last added room (DFS = LIFO)
+- `for key in rooms[room]`: For each key found in this room
+- `if not seen[key]`: If the room it unlocks isn't visited yet
+- `stack.append(key)`: Push it onto the stack to explore later

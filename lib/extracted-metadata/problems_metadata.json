@@ -383,6 +383,27 @@
       "difficulty": "medium",
       "topics": ["prefix-sum"]
     },
+    "547-number-of-provinces": {
+      "time_stamps": {
+        "created_at": "2025-10-27T11:31:50.829497",
+        "updated_at": "2025-10-27T12:18:50.369449"
+      },
+      "solutions": {
+        "solution.py": {
+          "expressions": {
+            "p = list(range(n := len(isConnected)))": "Each node starts as its own parent (each city = its own province)\n    'while x != p[x]' : This walks up the chain until it reaches the root.\n    'p[x] = p[p[x]]' : flattens the chain → next time find is faster\n    'p[find(i)] = find(j)' :  Whenever two cities are connected (`isConnected[i][j]`), we union their groups by linking one root to the other.\n    'sum(i == find(i) for i in range(n))' : Counts how many nodes are their own root — each root = one province."
+          },
+          "intuition": "Union-Find:\n    We treat each city as a node\n    If two cities are connected (directly or indirectly), they belong to the same set or group\n    Union-Find (or Disjoint Set Union, DSU) keeps track of which node belongs to which group",
+          "time_complexity": "O(n^2):\n    *Building connections:* *O(n^2)*\n    *Each union/find:* amortized *O(α(n))*\n        *α(n) is the inverse Ackermann function (~constant)*",
+          "code": "class Solution:\n    def findCircleNum(self, isConnected: list[list[int]]) -> int:\n        p = list(range(n := len(isConnected)))\n\n        def union(a, b):\n            p[find(a)] = find(b)\n\n        def find(x):\n            while x != p[x]:\n                p[x] = p[p[x]]\n                x = p[x]\n            return x\n\n        for i in range(n):\n            for j in range(i + 1, n):\n                if isConnected[i][j]:\n                    union(i, j)\n\n        return sum(i == find(i) for i in range(n))"
+        }
+      },
+      "title": "Number of Provinces",
+      "definition": "Given an *$n x n$* symmetric adjacency matrix isConnected    (`isConnected[i][i]`=`1` or `0`) for an *[6!]undirected* graph of n cities,    return the number of connected components (“provinces”). $1\\le n\\le 200$",
+      "leetcode": "https://leetcode.com/problems/number-of-provinces/",
+      "difficulty": "medium",
+      "topics": ["dsu"]
+    },
     "518-coin-change-ii": {
       "time_stamps": {
         "created_at": "2025-09-12T16:05:57.931034",
@@ -1015,23 +1036,32 @@
     "53-maximum-subarray": {
       "time_stamps": {
         "created_at": "2025-09-12T16:05:16.850187",
-        "updated_at": "2025-09-30T19:05:08.951389"
+        "updated_at": "2025-10-27T11:09:32.574428"
       },
       "solutions": {
         "solution.py": {
-          "time_complexity": "O(n)\n    where n is the length of the array. We iterate through the array once.",
-          "args": {
-            "nums: list[int]": "List of integers"
+          "intuition": "This is essentially *Kadane's Algorithm*:\n    Kadane’s Algorithm is an $O(n)$ dynamic programming method for finding the maximum subarray sum in a list of integers (contiguous elements).\n    Core idea:\n        Keep track of the best sum ending at the current position\n        If adding the current number hurts the sum, start fresh from the current number\n        Track the overall maximum as you go\n\n\n    Deep Dive: SRT BOT:\n        Subproblem: `dp(i) = max(nums[i], nums[i] + dp(i-1))`\n        Relate: `dp(i)` depends only on `dp(i-1)`\n        Topological order: increasing `i`\n        Base case: `dp(0) = nums[0]`\n        Original problem: `max(dp(i))` over all i",
+          "time_complexity": "O(n)",
+          "space_complexity": "O(1)",
+          "variables": {
+            "curr_sum": "the best subarray sum ending at the current index",
+            "max_sum": "the best subarray sum found so far"
           },
-          "returns": "`int`: Maximum sum of any contiguous subarray",
-          "code": "def maximum_subarray(nums: list[int]) -> int:\n    max_sum = curr_sum = float(\"-inf\")\n    for num in nums:\n        curr_sum = max(num, curr_sum + num)\n        max_sum = max(max_sum, curr_sum)\n    return max_sum"
+          "expressions": {
+            "curr_sum = max(num, curr_sum + num)": "If extending the previous subarray lowers the sum (`num > curr_sum + num `), start a new subarray from the current element"
+          },
+          "args": {
+            "nums: list[int]": "list of integers (can include negatives)"
+          },
+          "returns": "`int`: int: Maximum subarray sum",
+          "code": "def maximum_subarray(nums: list[int]) -> int:\n    max_sum = curr_sum = float(\"-inf\")\n    for num in nums:\n        curr_sum = max(num, curr_sum + num)\n        max_sum = max(max_sum, curr_sum)\n    return max_sum\n\n"
         }
       },
       "title": "Maximum Subarray",
       "definition": "Given an array of integers, return the maximum sum of any contiguous subarray.",
       "leetcode": "https://leetcode.com/problems/maximum-subarray",
       "difficulty": "medium",
-      "topics": ["kadane"]
+      "topics": ["kadane", "dp"]
     },
     "1570-dot-product-of-two-sparse-vectors": {
       "time_stamps": {
@@ -1509,6 +1539,36 @@
       "leetcode": "https://leetcode.com/problems/number-of-islands",
       "difficulty": "medium",
       "topics": ["dfs", "bfs"]
+    },
+    "841-keys-and-rooms": {
+      "time_stamps": {
+        "created_at": "2025-10-27T12:25:09.752816",
+        "updated_at": "2025-10-27T12:46:56.659753"
+      },
+      "solutions": {
+        "solution.py": {
+          "intuition": "Deep Dive:DFS reachability from room 0:\n    Goal: start from room 0 and reach every other room using the keys you find\n    Idea: DFS = “go as deep as possible before backtracking”\n        Each room is a node\n        Each key in that room is an edge to another node\n    Stack: we use a stack to track rooms we can explore next\n        Start with [0] (room 0 is unlocked)\n    Visited: mark rooms we’ve already opened so we don’t revisit them\n    Process:\n        Pop a room from the stack\n        For each key inside, if that room isn’t visited, mark it and push it on the stack\n    Finish: when the stack is empty, we’ve explored every reachable room\n    Check: if all rooms are visited → return True, else False",
+          "variables": {
+            "seen": "Track which rooms have been visited"
+          },
+          "expressions": {
+            "stack = [0]": "Start DFS from room 0",
+            "seen[0] = True": "Room 0 is unlocked by default",
+            "while stack": "While there are rooms to explore",
+            "room = stack.pop()": "Take the last added room (DFS = LIFO)",
+            "for key in rooms[room]": "For each key found in this room",
+            "if not seen[key]": "If the room it unlocks isn't visited yet",
+            "stack.append(key)": "Push it onto the stack to explore later"
+          },
+          "time_complexity": "O(n+E)",
+          "code": "class Solution:\n    def canVisitAllRooms(self, rooms: list[list[int]]) -> bool:\n\n        seen = [False] * len(rooms); stack = [0]\n        seen[0] = True\n        while stack:\n            for key in rooms[stack.pop()]:\n                if not seen[key]:\n                    seen[key] = True\n                    stack.append(key)\n        return all(seen)"
+        }
+      },
+      "title": "Keys and Rooms",
+      "definition": "Start at room 0 (unlocked).    `rooms[i]` lists keys found in room `i`;    using keys, can you visit all `n` rooms?    Return true/false.    Constraints: *n=rooms.length*, *2≤n≤1000*, *0≤|rooms[i]|≤1000*, *1≤Σ|rooms[i]|≤3000*, *keys in [0,n), unique per room*.",
+      "leetcode": "https://leetcode.com/problems/keys-and-rooms/",
+      "difficulty": "medium",
+      "topics": ["dfs"]
     },
     "2140-solving-questions-with-brainpower": {
       "time_stamps": {

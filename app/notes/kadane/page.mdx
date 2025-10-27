@@ -23,8 +23,8 @@
 >   - Track the overall maximum as you go.
 > 
 > - ~ Recurrence:
->   - `max_ending_here` = `max(num, max_ending_here + num)`
->   - `max_so_far` = `max(max_so_far, max_ending_here)`
+>   - `curr_sum` = `max(num, curr_sum + num)`
+>   - `max_sum` = `max(max_sum, curr_sum)`
 > - ~ *Example:*
 > For `[-2,1,-3,4,-1,2,1,-5,4]` → `6` (`[4,-1,2,1]`).
 

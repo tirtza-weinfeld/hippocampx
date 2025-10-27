@@ -23,6 +23,12 @@
     {"range": {"start": {"line": 17, "character": 16}, "end": {"line": 17, "character": 31}}, "nameRange": {"start": {"line": 17, "character": 16}, "end": {"line": 17, "character": 31}}, "qname": "problems.133-clone-graph.solution:clone_graph.queue.append(n)", "kind": "expression"},
     {"range": {"start": {"line": 18, "character": 12}, "end": {"line": 18, "character": 51}}, "nameRange": {"start": {"line": 18, "character": 12}, "end": {"line": 18, "character": 51}}, "qname": "problems.133-clone-graph.solution:clone_graph.cloned[cur].neighbors.append(cloned[n])", "kind": "expression"}
   ],
+  "problems/547-number-of-provinces/solution.py": [
+    {"range": {"start": {"line": 2, "character": 8}, "end": {"line": 2, "character": 46}}, "nameRange": {"start": {"line": 2, "character": 8}, "end": {"line": 2, "character": 46}}, "qname": "problems.547-number-of-provinces.solution:Solution.findCircleNum.p = list(range(n := len(isConnected)))", "kind": "expression"},
+    {"range": {"start": {"line": 8, "character": 12}, "end": {"line": 8, "character": 27}}, "nameRange": {"start": {"line": 8, "character": 12}, "end": {"line": 8, "character": 27}}, "qname": "problems.547-number-of-provinces.solution:Solution.findCircleNum.while x != p[x]", "kind": "expression"},
+    {"range": {"start": {"line": 9, "character": 16}, "end": {"line": 9, "character": 30}}, "nameRange": {"start": {"line": 9, "character": 16}, "end": {"line": 9, "character": 30}}, "qname": "problems.547-number-of-provinces.solution:Solution.findCircleNum.p[x] = p[p[x]]", "kind": "expression"},
+    {"range": {"start": {"line": 18, "character": 15}, "end": {"line": 18, "character": 50}}, "nameRange": {"start": {"line": 18, "character": 15}, "end": {"line": 18, "character": 50}}, "qname": "problems.547-number-of-provinces.solution:Solution.findCircleNum.sum(i == find(i) for i in range(n))", "kind": "expression"}
+  ],
   "problems/416-partition-equal-subset-sum/solution.py": [
     {"range": {"start": {"line": 2, "character": 7}, "end": {"line": 2, "character": 31}}, "nameRange": {"start": {"line": 2, "character": 7}, "end": {"line": 2, "character": 31}}, "qname": "problems.416-partition-equal-subset-sum.solution:canPartition.(total := sum(nums)) & 1", "kind": "expression"}
   ],
@@ -48,6 +54,9 @@
   "problems/153-find-minimum-in-rotated-sorted-array/solution.py": [
     {"range": {"start": {"line": 6, "character": 12}, "end": {"line": 6, "character": 19}}, "nameRange": {"start": {"line": 6, "character": 12}, "end": {"line": 6, "character": 19}}, "qname": "problems.153-find-minimum-in-rotated-sorted-array.solution:find_minimum_in_rotated_sorted_array.r = mid", "kind": "expression"},
     {"range": {"start": {"line": 8, "character": 12}, "end": {"line": 8, "character": 23}}, "nameRange": {"start": {"line": 8, "character": 12}, "end": {"line": 8, "character": 23}}, "qname": "problems.153-find-minimum-in-rotated-sorted-array.solution:find_minimum_in_rotated_sorted_array.l = mid + 1", "kind": "expression"}
+  ],
+  "problems/53-maximum-subarray/solution.py": [
+    {"range": {"start": {"line": 3, "character": 8}, "end": {"line": 3, "character": 43}}, "nameRange": {"start": {"line": 3, "character": 8}, "end": {"line": 3, "character": 43}}, "qname": "problems.53-maximum-subarray.solution:maximum_subarray.curr_sum = max(num, curr_sum + num)", "kind": "expression"}
   ],
   "problems/84-largest-rectangle-in-histogram/solution.py": [
     {"range": {"start": {"line": 1, "character": 4}, "end": {"line": 1, "character": 21}}, "nameRange": {"start": {"line": 1, "character": 4}, "end": {"line": 1, "character": 21}}, "qname": "problems.84-largest-rectangle-in-histogram.solution:largestRectangleArea.heights.append(0)", "kind": "expression"},
@@ -84,6 +93,13 @@
   "problems/347-top-k-frequent-elements/heap-nlargets.py": [
     {"range": {"start": {"line": 5, "character": 29}, "end": {"line": 5, "character": 40}}, "nameRange": {"start": {"line": 5, "character": 29}, "end": {"line": 5, "character": 40}}, "qname": "problems.347-top-k-frequent-elements.heap-nlargets:topKFrequent.freq.keys()", "kind": "expression"},
     {"range": {"start": {"line": 5, "character": 42}, "end": {"line": 5, "character": 54}}, "nameRange": {"start": {"line": 5, "character": 42}, "end": {"line": 5, "character": 54}}, "qname": "problems.347-top-k-frequent-elements.heap-nlargets:topKFrequent.key=freq.get", "kind": "expression"}
+  ],
+  "problems/841-keys-and-rooms/solution.py": [
+    {"range": {"start": {"line": 3, "character": 37}, "end": {"line": 3, "character": 48}}, "nameRange": {"start": {"line": 3, "character": 37}, "end": {"line": 3, "character": 48}}, "qname": "problems.841-keys-and-rooms.solution:Solution.canVisitAllRooms.stack = [0]", "kind": "expression"},
+    {"range": {"start": {"line": 4, "character": 8}, "end": {"line": 4, "character": 22}}, "nameRange": {"start": {"line": 4, "character": 8}, "end": {"line": 4, "character": 22}}, "qname": "problems.841-keys-and-rooms.solution:Solution.canVisitAllRooms.seen[0] = True", "kind": "expression"},
+    {"range": {"start": {"line": 5, "character": 8}, "end": {"line": 5, "character": 19}}, "nameRange": {"start": {"line": 5, "character": 8}, "end": {"line": 5, "character": 19}}, "qname": "problems.841-keys-and-rooms.solution:Solution.canVisitAllRooms.while stack", "kind": "expression"},
+    {"range": {"start": {"line": 7, "character": 16}, "end": {"line": 7, "character": 32}}, "nameRange": {"start": {"line": 7, "character": 16}, "end": {"line": 7, "character": 32}}, "qname": "problems.841-keys-and-rooms.solution:Solution.canVisitAllRooms.if not seen[key]", "kind": "expression"},
+    {"range": {"start": {"line": 9, "character": 20}, "end": {"line": 9, "character": 37}}, "nameRange": {"start": {"line": 9, "character": 20}, "end": {"line": 9, "character": 37}}, "qname": "problems.841-keys-and-rooms.solution:Solution.canVisitAllRooms.stack.append(key)", "kind": "expression"}
   ],
   "problems/212-word-search-ii/solution.py": [
     {"range": {"start": {"line": 5, "character": 12}, "end": {"line": 5, "character": 41}}, "nameRange": {"start": {"line": 5, "character": 12}, "end": {"line": 5, "character": 41}}, "qname": "problems.212-word-search-ii.solution:word_search_II.node = node.setdefault(c, {})", "kind": "expression"},

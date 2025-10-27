@@ -9,17 +9,17 @@ const TimeComplexitySolution = lazy(() => import('./sections/timeComplexity-solu
 const KeyVariablesSolution = lazy(() => import('./sections/keyVariables-solution.mdx'))
 const KeyExpressionsSolution = lazy(() => import('./sections/keyExpressions-solution.mdx'))
 
-export default async function Problem53MaximumSubarray() {
+export default async function Problem841KeysAndRooms() {
   return (
     <AgentCard
-      id="53-maximum-subarray"
-      title="Maximum Subarray"
+      id="841-keys-and-rooms"
+      title="Keys and Rooms"
       difficulty="medium"
-      topics={["kadane","dp"]}
+      topics={["dfs"]}
       solutionFiles={["solution.py"]}
       defaultFile="solution.py"
       fileSectionMap={{"solution.py":["definition","codeSnippet","intuition","timeComplexity","keyVariables","keyExpressions"]}}
-      leetcodeUrl="https://leetcode.com/problems/maximum-subarray"
+      leetcodeUrl="https://leetcode.com/problems/keys-and-rooms/"
     >
         <AgentSection section="definition">
           <Definition />

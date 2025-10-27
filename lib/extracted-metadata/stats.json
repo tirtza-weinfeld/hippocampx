@@ -95,6 +95,9 @@
       "560-subarray-sum-equals-k",
       "974-subarray-sums-divisible-by-k"
     ],
+    "dsu": [
+      "547-number-of-provinces"
+    ],
     "knapsack": [
       "518-coin-change-ii"
     ],
@@ -121,6 +124,7 @@
       "1547-minimum-cost-to-cut-a-stick",
       "256-paint-house",
       "312-burst-balloons",
+      "53-maximum-subarray",
       "72-edit-distance"
     ],
     "interval-dp": [
@@ -159,7 +163,8 @@
       "46-permutations"
     ],
     "dfs": [
-      "200-number-of-islands"
+      "200-number-of-islands",
+      "841-keys-and-rooms"
     ]
   },
   "difficulty": {
@@ -224,6 +229,7 @@
       "525-contiguous-array",
       "53-maximum-subarray",
       "542-01-matrix",
+      "547-number-of-provinces",
       "560-subarray-sum-equals-k",
       "64-minimum-path-sum",
       "648-replace-words",
@@ -232,6 +238,7 @@
       "743-network-delay-time",
       "787-cheapest-flights-within-k-stops",
       "79-word-search",
+      "841-keys-and-rooms",
       "875-koko-eating-bananas",
       "909-snakes-and-ladders",
       "918-maximum-sum-of-circular-subarray",
@@ -276,6 +283,9 @@
     ],
     "238-product-of-array-except-self": [
       "$O(n)$"
+    ],
+    "547-number-of-provinces": [
+      "$O(n^2)$"
     ],
     "518-coin-change-ii": [
       "$O(n  \\cdot  amount)$"
@@ -364,6 +374,9 @@
     ],
     "200-number-of-islands": [
       "$O(m  \\cdot  n)$"
+    ],
+    "841-keys-and-rooms": [
+      "$O(n+E)$"
     ],
     "2140-solving-questions-with-brainpower": [
       "$O(n)$"

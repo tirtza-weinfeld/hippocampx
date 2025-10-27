@@ -3050,6 +3050,85 @@
       ]
     },
     {
+      "uri": "problems/547-number-of-provinces/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/547-number-of-provinces/solution.py",
+      "symbols": [
+        {
+          "name": "Solution",
+          "detail": "class Solution",
+          "kind": 5,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 18, "character": 50}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 6
+            },
+            "end": {
+              "line": 0,
+              "character": 14
+            }
+          },
+          "children": [
+            {
+              "name": "findCircleNum",
+              "detail": "findCircleNum(isConnected: list[list[int]]) -> int",
+              "kind": 6,
+              "range": {"start": {"line": 1, "character": 4}, "end": {"line": 18, "character": 50}},
+              "nameRange": {
+                "start": {
+                  "line": 1,
+                  "character": 8
+                },
+                "end": {
+                  "line": 1,
+                  "character": 21
+                }
+              },
+              "children": [
+                {
+                  "name": "union",
+                  "detail": "union(a, b)",
+                  "kind": 12,
+                  "range": {"start": {"line": 4, "character": 8}, "end": {"line": 5, "character": 32}},
+                  "nameRange": {
+                    "start": {
+                      "line": 4,
+                      "character": 12
+                    },
+                    "end": {
+                      "line": 4,
+                      "character": 17
+                    }
+                  },
+                  "children": []
+                },
+                {
+                  "name": "find",
+                  "detail": "find(x)",
+                  "kind": 12,
+                  "range": {"start": {"line": 7, "character": 8}, "end": {"line": 11, "character": 20}},
+                  "nameRange": {
+                    "start": {
+                      "line": 7,
+                      "character": 12
+                    },
+                    "end": {
+                      "line": 7,
+                      "character": 16
+                    }
+                  },
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
       "uri": "problems/560-subarray-sum-equals-k/__init__.py",
       "symbols": []
     },
@@ -3532,6 +3611,50 @@
             }
           },
           "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/841-keys-and-rooms/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/841-keys-and-rooms/solution.py",
+      "symbols": [
+        {
+          "name": "Solution",
+          "detail": "class Solution",
+          "kind": 5,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 10, "character": 24}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 6
+            },
+            "end": {
+              "line": 0,
+              "character": 14
+            }
+          },
+          "children": [
+            {
+              "name": "canVisitAllRooms",
+              "detail": "canVisitAllRooms(rooms: list[list[int]]) -> bool",
+              "kind": 6,
+              "range": {"start": {"line": 1, "character": 4}, "end": {"line": 10, "character": 24}},
+              "nameRange": {
+                "start": {
+                  "line": 1,
+                  "character": 8
+                },
+                "end": {
+                  "line": 1,
+                  "character": 24
+                }
+              },
+              "children": []
+            }
+          ]
         }
       ]
     },

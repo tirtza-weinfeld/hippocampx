@@ -1,0 +1,50 @@
+# Keys and Rooms
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="medium" />
+
+<PillList pills={["dfs"]} />
+
+[841. Keys and Rooms](https://leetcode.com/problems/keys-and-rooms/)
+
+## [!(ProblemDefinition)] Definition
+
+Start at room 0 (unlocked).    `rooms[i]` lists keys found in room `i`;    using keys, can you visit all `n` rooms?    Return true/false.    Constraints: *n=rooms.length*, *2≤n≤1000*, *0≤|rooms[i]|≤1000*, *1≤Σ|rooms[i]|≤3000*, *keys in [0,n), unique per room*.
+
+## [!(ProblemIntuition)] Intuition
+
+- Deep Dive:DFS reachability from room 0:
+    - Goal: start from room 0 and reach every other room using the keys you find
+    - Idea: DFS = “go as deep as possible before backtracking”
+        - Each room is a node
+        - Each key in that room is an edge to another node
+    - Stack: we use a stack to track rooms we can explore next
+        - Start with [0] (room 0 is unlocked)
+    - Visited: mark rooms we’ve already opened so we don’t revisit them
+    - Process:
+        - Pop a room from the stack
+        - For each key inside, if that room isn’t visited, mark it and push it on the stack
+    - Finish: when the stack is empty, we’ve explored every reachable room
+    - Check: if all rooms are visited → return True, else False
+
+## [!(ProblemTimeComplexity)] Time Complexity
+
+- $O(n+E)$
+
+## [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/841-keys-and-rooms/solution.py"
+class Solution:
+    def canVisitAllRooms(self, rooms: list[list[int]]) -> bool:
+
+        seen = [False] * len(rooms); stack = [0]
+        seen[0] = True
+        while stack:
+            for key in rooms[stack.pop()]:
+                if not seen[key]:
+                    seen[key] = True
+                    stack.append(key)
+        return all(seen)
+```
+

@@ -1,0 +1,5 @@
+- `p = list(range(n := len(isConnected)))`: Each node starts as its own parent (each city = its own province)
+    'while x != p[x]' : This walks up the chain until it reaches the root.
+    'p[x] = p[p[x]]' : flattens the chain → next time find is faster
+    'p[find(i)] = find(j)' :  Whenever two cities are connected (`isConnected[i][j]`), we union their groups by linking one root to the other.
+    'sum(i == find(i) for i in range(n))' : Counts how many nodes are their own root — each root = one province.

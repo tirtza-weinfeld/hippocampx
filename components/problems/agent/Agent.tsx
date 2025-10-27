@@ -38,6 +38,7 @@ const Problem460LfuCache = lazy(() => import('./460-lfu-cache'))
 const Problem133CloneGraph = lazy(() => import('./133-clone-graph'))
 const Problem238ProductOfArrayExceptSelf = lazy(() => import('./238-product-of-array-except-self'))
 const Problem523ContinuousSubarraySum = lazy(() => import('./523-continuous-subarray-sum'))
+const Problem547NumberOfProvinces = lazy(() => import('./547-number-of-provinces'))
 const Problem518CoinChangeIi = lazy(() => import('./518-coin-change-ii'))
 const Problem416PartitionEqualSubsetSum = lazy(() => import('./416-partition-equal-subset-sum'))
 const Problem188BestTimeToBuyAndSellStockIv = lazy(() => import('./188-best-time-to-buy-and-sell-stock-iv'))
@@ -92,6 +93,7 @@ const Problem123BestTimeToBuyAndSellStockIii = lazy(() => import('./123-best-tim
 const Problem347TopKFrequentElements = lazy(() => import('./347-top-k-frequent-elements'))
 const Problem64MinimumPathSum = lazy(() => import('./64-minimum-path-sum'))
 const Problem200NumberOfIslands = lazy(() => import('./200-number-of-islands'))
+const Problem841KeysAndRooms = lazy(() => import('./841-keys-and-rooms'))
 const Problem2140SolvingQuestionsWithBrainpower = lazy(() => import('./2140-solving-questions-with-brainpower'))
 const Problem212WordSearchIi = lazy(() => import('./212-word-search-ii'))
 const Problem713SubarrayProductLessThanK = lazy(() => import('./713-subarray-product-less-than-k'))
@@ -189,6 +191,11 @@ const problemComponents = {
     "523-continuous-subarray-sum": (
       <Suspense key="523-continuous-subarray-sum" fallback={<div className="p-4 text-gray-500">Loading...</div>}>
         <Problem523ContinuousSubarraySum />
+      </Suspense>
+    ),
+    "547-number-of-provinces": (
+      <Suspense key="547-number-of-provinces" fallback={<div className="p-4 text-gray-500">Loading...</div>}>
+        <Problem547NumberOfProvinces />
       </Suspense>
     ),
     "518-coin-change-ii": (
@@ -459,6 +466,11 @@ const problemComponents = {
     "200-number-of-islands": (
       <Suspense key="200-number-of-islands" fallback={<div className="p-4 text-gray-500">Loading...</div>}>
         <Problem200NumberOfIslands />
+      </Suspense>
+    ),
+    "841-keys-and-rooms": (
+      <Suspense key="841-keys-and-rooms" fallback={<div className="p-4 text-gray-500">Loading...</div>}>
+        <Problem841KeysAndRooms />
       </Suspense>
     ),
     "2140-solving-questions-with-brainpower": (

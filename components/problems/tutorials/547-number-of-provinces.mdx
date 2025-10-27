@@ -1,0 +1,52 @@
+# Number of Provinces
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="medium" />
+
+<PillList pills={["dsu"]} />
+
+[547. Number of Provinces](https://leetcode.com/problems/number-of-provinces/)
+
+## [!(ProblemDefinition)] Definition
+
+Given an *$n x n$* symmetric adjacency matrix isConnected    (`isConnected[i][i]`=`1` or `0`) for an *[6!]undirected* graph of n cities,    return the number of connected components (“provinces”). $1\le n\le 200$
+
+## [!(ProblemIntuition)] Intuition
+
+- Union-Find:
+    - We treat each city as a node
+    - If two cities are connected (directly or indirectly), they belong to the same set or group
+    - Union-Find (or Disjoint Set Union, DSU) keeps track of which node belongs to which group
+
+## [!(ProblemTimeComplexity)] Time Complexity
+
+- $O(n^{2})$:
+    - *Building connections:* *$O(n^{2})$*
+    - *Each union/find:* amortized *$O(α(n)$)*
+        - *α(n) is the inverse Ackermann function (~constant)*
+
+## [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/547-number-of-provinces/solution.py"
+class Solution:
+    def findCircleNum(self, isConnected: list[list[int]]) -> int:
+        p = list(range(n := len(isConnected)))
+
+        def union(a, b):
+            p[find(a)] = find(b)
+
+        def find(x):
+            while x != p[x]:
+                p[x] = p[p[x]]
+                x = p[x]
+            return x
+
+        for i in range(n):
+            for j in range(i + 1, n):
+                if isConnected[i][j]:
+                    union(i, j)
+
+        return sum(i == find(i) for i in range(n))
+```
+

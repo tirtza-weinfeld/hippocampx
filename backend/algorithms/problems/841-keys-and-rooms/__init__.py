@@ -1,0 +1,12 @@
+"""
+Title: Keys and Rooms
+Definition: Start at room 0 (unlocked).\
+    `rooms[i]` lists keys found in room `i`;\
+    using keys, can you visit all `n` rooms?\
+    Return true/false.\
+    Constraints: *n=rooms.length*, *2≤n≤1000*, *0≤|rooms[i]|≤1000*, *1≤Σ|rooms[i]|≤3000*, *keys in [0,n), unique per room*.
+Leetcode: https://leetcode.com/problems/keys-and-rooms/
+Difficulty: medium
+Topics: [dfs]
+"""
+

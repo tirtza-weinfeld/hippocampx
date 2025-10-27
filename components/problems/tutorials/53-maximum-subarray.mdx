@@ -4,7 +4,7 @@
 
 <DifficultyBadge difficulty="medium" />
 
-<PillList pills={["kadane"]} />
+<PillList pills={["kadane", "dp"]} />
 
 [53. Maximum Subarray](https://leetcode.com/problems/maximum-subarray)
 
@@ -12,14 +12,29 @@
 
 Given an array of integers, return the maximum sum of any contiguous subarray.
 
+## [!(ProblemIntuition)] Intuition
+
+- This is essentially *Kadane's Algorithm*:
+    - Kadane’s Algorithm is an $O(n)$ dynamic programming method for finding the maximum subarray sum in a list of integers (contiguous elements).
+    - Core idea:
+        - Keep track of the best sum ending at the current position
+        - If adding the current number hurts the sum, start fresh from the current number
+        - Track the overall maximum as you go
+
+- Deep Dive: SRT BOT:
+        - Subproblem: `dp(i) = max(nums[i], nums[i] + dp(i-1))`
+        - Relate: `dp(i)` depends only on `dp(i-1)`
+        - Topological order: increasing `i`
+        - Base case: `dp(0) = nums[0]`
+        - Original problem: `max(dp(i))` over all i
+
 ## [!(ProblemTimeComplexity)] Time Complexity
 
 - $O(n)$
-    - where n is the length of the array. We iterate through the array once.
 
 ## [!(ProblemReturns)] Returns
 
-`int`: Maximum sum of any contiguous subarray
+`int`: int: Maximum subarray sum
 
 ## [!(ProblemCodeSnippet)] Code Snippet
 
