@@ -1,0 +1,61 @@
+# Course Schedule
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="medium" />
+
+<PillList pills={["topological-sort", "kahn's algorithm"]} />
+
+[207. Course Schedule](https://leetcode.com/problems/course-schedule)
+
+## [!(ProblemDefinition)] Definition
+
+Given `n` number of courses and `prerequisites` *[pink!][a, b]* meaning *[pink!]b → a*,     determine if all courses can be completed
+
+## [!(ProblemIntuition)] Intuition
+
+1. **Model**
+    - Each course = a node.
+    - Each prerequisite `[a, b]` = a directed edge `b → a` (“b before a”).
+
+2. **Goal**
+    - Can we take all courses = does the graph have **no cycle**?
+    - If a cycle exists, you’ll never get a course with indegree 0 again.
+
+3. **Idea (Kahn’s algorithm)**
+    - Compute **indegree** for each node (how many prereqs it has)
+    - Put all nodes with indegree 0 into a queue (they’re ready)
+    - While queue not empty:
+        - Pop one → mark as taken
+        - For each neighbor (course unlocked by it), decrement indegree
+        - If indegree becomes 0 → enqueue it
+    - If you’ve taken all courses → no cycle → return True
+    - Otherwise → cycle → return False
+
+## [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/207-course-schedule/solution.py"
+from collections import deque
+
+class Solution:
+    def canFinish(self, n: int, prerequisites: list[list[int]]) -> bool:
+        g = [[] for _ in range(n)]     
+        indeg = [0] * n                
+        for a, b in prerequisites:
+            g[b].append(a)             
+            indeg[a] += 1              
+
+        q = deque(i for i, d in enumerate(indeg) if d == 0)
+        taken = 0                      
+
+        while q:
+            u = q.popleft()             
+            taken += 1
+            for v in g[u]:              
+                indeg[v] -= 1           
+                if indeg[v] == 0:       
+                    q.append(v)         
+
+        return taken == n
+```
+

@@ -318,6 +318,16 @@
     "updatedAt": "2025-09-30T19:05:08.951102"
   },
   {
+    "id": "684-redundant-connection",
+    "title": "Redundant Connection",
+    "difficulty": "medium",
+    "topics": [
+      "dsu"
+    ],
+    "createdAt": "2025-10-28T11:35:49.425325",
+    "updatedAt": "2025-10-28T12:11:32.263782"
+  },
+  {
     "id": "560-subarray-sum-equals-k",
     "title": "Subarray Sum Equals K",
     "difficulty": "medium",
@@ -437,6 +447,17 @@
     ],
     "createdAt": "2025-09-12T16:05:33.323910",
     "updatedAt": "2025-09-17T16:17:51.939682"
+  },
+  {
+    "id": "207-course-schedule",
+    "title": "Course Schedule",
+    "difficulty": "medium",
+    "topics": [
+      "topological-sort",
+      "kahn's algorithm"
+    ],
+    "createdAt": "2025-10-28T10:30:03.325215",
+    "updatedAt": "2025-10-28T11:25:20.818604"
   },
   {
     "id": "33-search-in-rotated-sorted-array",
@@ -572,6 +593,17 @@
     ],
     "createdAt": "2025-09-30T11:20:36.046635",
     "updatedAt": "2025-10-03T12:14:39.572548"
+  },
+  {
+    "id": "210-course-schedule-ii",
+    "title": "Course Schedule II",
+    "difficulty": "medium",
+    "topics": [
+      "topological-sort",
+      "kahn's algorithm"
+    ],
+    "createdAt": "2025-10-28T11:22:57.625379",
+    "updatedAt": "2025-10-28T11:32:15.910635"
   },
   {
     "id": "1514-path-with-maximum-probability",

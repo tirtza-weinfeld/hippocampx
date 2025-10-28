@@ -96,7 +96,8 @@
       "974-subarray-sums-divisible-by-k"
     ],
     "dsu": [
-      "547-number-of-provinces"
+      "547-number-of-provinces",
+      "684-redundant-connection"
     ],
     "knapsack": [
       "518-coin-change-ii"
@@ -145,6 +146,14 @@
     ],
     "greedy": [
       "122-best-time-to-buy-and-sell-stock-ii"
+    ],
+    "topological-sort": [
+      "207-course-schedule",
+      "210-course-schedule-ii"
+    ],
+    "kahn's algorithm": [
+      "207-course-schedule",
+      "210-course-schedule-ii"
     ],
     "rotated-array": [
       "33-search-in-rotated-sorted-array"
@@ -205,7 +214,9 @@
       "1631-path-with-minimum-effort",
       "198-house-robber",
       "200-number-of-islands",
+      "207-course-schedule",
       "208-implement-trie-prefix-tree",
+      "210-course-schedule-ii",
       "211-design-add-and-search-words-data-structure",
       "213-house-robber-ii",
       "2140-solving-questions-with-brainpower",
@@ -233,6 +244,7 @@
       "560-subarray-sum-equals-k",
       "64-minimum-path-sum",
       "648-replace-words",
+      "684-redundant-connection",
       "713-subarray-product-less-than-k",
       "72-edit-distance",
       "743-network-delay-time",

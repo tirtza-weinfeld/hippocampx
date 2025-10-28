@@ -659,6 +659,25 @@
       "difficulty": "hard",
       "topics": ["backtrack", "game"]
     },
+    "684-redundant-connection": {
+      "time_stamps": {
+        "created_at": "2025-10-28T11:35:49.425325",
+        "updated_at": "2025-10-28T12:11:32.263782"
+      },
+      "solutions": {
+        "solution.py": {
+          "code": "class Solution:\n\n    def findRedundantConnection(self, edges: list[list[int]]) -> list[int]:\n\n        p = [*range(len(edges) + 1)]\n\n        def union(a, b):\n            p[a] = b\n\n        def find(x):\n            while x != p[x]:\n                p[x] = p[p[x]]\n                x = p[x]\n            return x\n\n        for u, v in edges:\n            if (a := find(u)) == (b := find(v)):\n                return [u, v]\n            union(a, b)\n        return [] \n\n"
+        },
+        "rank.py": {
+          "code": "class Solution:\n    def findRedundantConnection(self, edges: list[list[int]]) -> list[int]:\n        \n        p = [*range(len(edges) + 1)]\n        r = [0] * (len(edges) + 1)\n\n        def union(a, b):\n            if r[a] < r[b]:\n                a, b = b, a\n            p[b] = a\n            if r[a] == r[b]:\n                r[a] += 1\n\n        def find(x):\n            while x != p[x]:\n                p[x] = p[p[x]]\n                x = p[x]\n            return x\n\n        for u, v in edges:\n            if (a := find(u)) == (b := find(v)):\n                return [u, v]\n            union(a, b)\n\n        return []"
+        }
+      },
+      "title": "Redundant Connection",
+      "definition": "Given a tree with one extra edge added, return the edge that creates a cycle—removing it restores the tree",
+      "leetcode": "https://leetcode.com/problems/redundant-connection",
+      "difficulty": "medium",
+      "topics": ["dsu"]
+    },
     "560-subarray-sum-equals-k": {
       "time_stamps": {
         "created_at": "2025-09-12T16:05:57.931241",
@@ -906,6 +925,34 @@
       "leetcode": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock-ii",
       "difficulty": "medium",
       "topics": ["greedy"]
+    },
+    "207-course-schedule": {
+      "time_stamps": {
+        "created_at": "2025-10-28T10:30:03.325215",
+        "updated_at": "2025-10-28T11:25:20.818604"
+      },
+      "solutions": {
+        "solution.py": {
+          "intuition": "1. **Model**\n    Each course = a node.\n    Each prerequisite `[a, b]` = a directed edge `b → a` (“b before a”).\n\n    2. **Goal**\n    Can we take all courses = does the graph have **no cycle**?\n    If a cycle exists, you’ll never get a course with indegree 0 again.\n\n    3. **Idea (Kahn’s algorithm)**\n    Compute **indegree** for each node (how many prereqs it has)\n    Put all nodes with indegree 0 into a queue (they’re ready)\n    While queue not empty:\n        Pop one → mark as taken\n        For each neighbor (course unlocked by it), decrement indegree\n        If indegree becomes 0 → enqueue it\n    If you’ve taken all courses → no cycle → return True\n    Otherwise → cycle → return False",
+          "variables": {
+            "taken": "counter for how many courses we've \"completed\"",
+            "g": "`g[b]` = list of courses unlocked by taking `b`",
+            "indeg": "`indeg[a]` =  number of prerequisites left for course `a`"
+          },
+          "expressions": {
+            "g[b].append(a)": "add edge `b → a`\n    'indeg[a] += 1':    a has one more incoming edge\n    'deque(i for i, d in enumerate(indeg) if d == 0)' : Initialize queue with all courses having no prerequisites\n    'u = q.popleft()' : take a course with no remaining prereqs\n    'taken += 1' : increment the counter for how many courses we've \"completed\"\n    'for v in g[u]' : for each course unlocked by u\n    'indeg[v] -= 1' : one prerequisite is now satisfied\n    'if indeg[v] == 0' : if no prereqs left\n    'q.append(v)' : course is now ready to take\n    'taken == n' : If we managed to take all n courses, there was no cycle\n    'while q' : Process courses in BFS order"
+          },
+          "args": {
+            "prerequisites: list[list[int]]": "$prerequisites[i]=[a_i, b_i]$ indicates that you *must* take course *$b_i$* first before taking course $a_i$ *(b → a)*"
+          },
+          "code": "from collections import deque\n\nclass Solution:\n    def canFinish(self, n: int, prerequisites: list[list[int]]) -> bool:\n        g = [[] for _ in range(n)]     \n        indeg = [0] * n                \n        for a, b in prerequisites:\n            g[b].append(a)             \n            indeg[a] += 1              \n\n        q = deque(i for i, d in enumerate(indeg) if d == 0)\n        taken = 0                      \n\n        while q:\n            u = q.popleft()             \n            taken += 1\n            for v in g[u]:              \n                indeg[v] -= 1           \n                if indeg[v] == 0:       \n                    q.append(v)         \n\n        return taken == n"
+        }
+      },
+      "title": "Course Schedule",
+      "definition": "Given `n` number of courses and `prerequisites` *[pink!][a, b]* meaning *[pink!]b → a*,     determine if all courses can be completed",
+      "leetcode": "https://leetcode.com/problems/course-schedule",
+      "difficulty": "medium",
+      "topics": ["topological-sort", "kahn's algorithm"]
     },
     "33-search-in-rotated-sorted-array": {
       "time_stamps": {
@@ -1157,6 +1204,22 @@
       "leetcode": "https://leetcode.com/problems/single-number",
       "difficulty": "Easy",
       "topics": ["bit-manipulation"]
+    },
+    "210-course-schedule-ii": {
+      "time_stamps": {
+        "created_at": "2025-10-28T11:22:57.625379",
+        "updated_at": "2025-10-28T11:32:15.910635"
+      },
+      "solutions": {
+        "solution.py": {
+          "code": "from collections import deque\n\nclass Solution:\n    def findOrder(self, n: int, prerequisites: list[list[int]]) -> list[int]:\n        g = [[] for _ in range(n)]\n        indeg = [0] * n\n        for a, b in prerequisites: g[b].append(a); indeg[a] += 1\n        q = deque(i for i, d in enumerate(indeg) if d == 0)\n        order = []\n        while q:\n            u = q.popleft(); order.append(u)\n            for v in g[u]:\n                indeg[v] -= 1\n                if indeg[v] == 0: q.append(v)\n        return order if len(order) == n else []"
+        }
+      },
+      "title": "Course Schedule II",
+      "definition": "Given `n` number of courses and `prerequisites` *[pink!][a, b]* meaning *[pink!]b → a*,     find a valid order to take all courses or return `[]` if none exists",
+      "leetcode": "https://leetcode.com/problems/course-schedule-ii/",
+      "difficulty": "medium",
+      "topics": ["topological-sort", "kahn's algorithm"]
     },
     "1514-path-with-maximum-probability": {
       "time_stamps": {

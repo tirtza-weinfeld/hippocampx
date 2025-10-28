@@ -1,0 +1,24 @@
+```python meta="source=problems/207-course-schedule/solution.py"
+from collections import deque
+
+class Solution:
+    def canFinish(self, n: int, prerequisites: list[list[int]]) -> bool:
+        g = [[] for _ in range(n)]     
+        indeg = [0] * n                
+        for a, b in prerequisites:
+            g[b].append(a)             
+            indeg[a] += 1              
+
+        q = deque(i for i, d in enumerate(indeg) if d == 0)
+        taken = 0                      
+
+        while q:
+            u = q.popleft()             
+            taken += 1
+            for v in g[u]:              
+                indeg[v] -= 1           
+                if indeg[v] == 0:       
+                    q.append(v)         
+
+        return taken == n
+```

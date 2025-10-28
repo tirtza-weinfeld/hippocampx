@@ -51,6 +51,7 @@ const Problem778SwimInRisingWater = lazy(() => import('./778-swim-in-rising-wate
 const Problem525ContiguousArray = lazy(() => import('./525-contiguous-array'))
 const Problem3LongestSubstringWithoutRepeatingCharacters = lazy(() => import('./3-longest-substring-without-repeating-characters'))
 const Problem51NQueens = lazy(() => import('./51-n-queens'))
+const Problem684RedundantConnection = lazy(() => import('./684-redundant-connection'))
 const Problem560SubarraySumEqualsK = lazy(() => import('./560-subarray-sum-equals-k'))
 const Problem312BurstBalloons = lazy(() => import('./312-burst-balloons'))
 const Problem1590MakeSumDivisibleByP = lazy(() => import('./1590-make-sum-divisible-by-p'))
@@ -63,6 +64,7 @@ const Problem146LruCache = lazy(() => import('./146-lru-cache'))
 const Problem102BinaryTreeLevelOrderTraversal = lazy(() => import('./102-binary-tree-level-order-traversal'))
 const Problem974SubarraySumsDivisibleByK = lazy(() => import('./974-subarray-sums-divisible-by-k'))
 const Problem122BestTimeToBuyAndSellStockIi = lazy(() => import('./122-best-time-to-buy-and-sell-stock-ii'))
+const Problem207CourseSchedule = lazy(() => import('./207-course-schedule'))
 const Problem33SearchInRotatedSortedArray = lazy(() => import('./33-search-in-rotated-sorted-array'))
 const Problem124BinaryTreeMaximumPathSum = lazy(() => import('./124-binary-tree-maximum-path-sum'))
 const Problem1510StoneGameIv = lazy(() => import('./1510-stone-game-iv'))
@@ -76,6 +78,7 @@ const Problem34FindFirstAndLastPositionOfElementInSortedArray = lazy(() => impor
 const Problem76MinimumWindowSubstring = lazy(() => import('./76-minimum-window-substring'))
 const Problem84LargestRectangleInHistogram = lazy(() => import('./84-largest-rectangle-in-histogram'))
 const Problem136SingleNumber = lazy(() => import('./136-single-number'))
+const Problem210CourseScheduleIi = lazy(() => import('./210-course-schedule-ii'))
 const Problem1514PathWithMaximumProbability = lazy(() => import('./1514-path-with-maximum-probability'))
 const Problem72EditDistance = lazy(() => import('./72-edit-distance'))
 const Problem79WordSearch = lazy(() => import('./79-word-search'))
@@ -258,6 +261,11 @@ const problemComponents = {
         <Problem51NQueens />
       </Suspense>
     ),
+    "684-redundant-connection": (
+      <Suspense key="684-redundant-connection" fallback={<div className="p-4 text-gray-500">Loading...</div>}>
+        <Problem684RedundantConnection />
+      </Suspense>
+    ),
     "560-subarray-sum-equals-k": (
       <Suspense key="560-subarray-sum-equals-k" fallback={<div className="p-4 text-gray-500">Loading...</div>}>
         <Problem560SubarraySumEqualsK />
@@ -316,6 +324,11 @@ const problemComponents = {
     "122-best-time-to-buy-and-sell-stock-ii": (
       <Suspense key="122-best-time-to-buy-and-sell-stock-ii" fallback={<div className="p-4 text-gray-500">Loading...</div>}>
         <Problem122BestTimeToBuyAndSellStockIi />
+      </Suspense>
+    ),
+    "207-course-schedule": (
+      <Suspense key="207-course-schedule" fallback={<div className="p-4 text-gray-500">Loading...</div>}>
+        <Problem207CourseSchedule />
       </Suspense>
     ),
     "33-search-in-rotated-sorted-array": (
@@ -381,6 +394,11 @@ const problemComponents = {
     "136-single-number": (
       <Suspense key="136-single-number" fallback={<div className="p-4 text-gray-500">Loading...</div>}>
         <Problem136SingleNumber />
+      </Suspense>
+    ),
+    "210-course-schedule-ii": (
+      <Suspense key="210-course-schedule-ii" fallback={<div className="p-4 text-gray-500">Loading...</div>}>
+        <Problem210CourseScheduleIi />
       </Suspense>
     ),
     "1514-path-with-maximum-probability": (

@@ -1,0 +1,76 @@
+# Redundant Connection
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="medium" />
+
+<PillList pills={["dsu"]} />
+
+[684. Redundant Connection](https://leetcode.com/problems/redundant-connection)
+
+## [!(ProblemDefinition)] Definition
+
+Given a tree with one extra edge added, return the edge that creates a cycle—removing it restores the tree
+
+## Solution Solution
+
+### [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/684-redundant-connection/solution.py"
+class Solution:
+
+    def findRedundantConnection(self, edges: list[list[int]]) -> list[int]:
+
+        p = [*range(len(edges) + 1)]
+
+        def union(a, b):
+            p[a] = b
+
+        def find(x):
+            while x != p[x]:
+                p[x] = p[p[x]]
+                x = p[x]
+            return x
+
+        for u, v in edges:
+            if (a := find(u)) == (b := find(v)):
+                return [u, v]
+            union(a, b)
+        return []
+```
+
+
+---
+
+## Rank Solution
+
+### [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/684-redundant-connection/rank.py"
+class Solution:
+    def findRedundantConnection(self, edges: list[list[int]]) -> list[int]:
+
+        p = [*range(len(edges) + 1)]
+        r = [0] * (len(edges) + 1)
+
+        def union(a, b):
+            if r[a] < r[b]:
+                a, b = b, a
+            p[b] = a
+            if r[a] == r[b]:
+                r[a] += 1
+
+        def find(x):
+            while x != p[x]:
+                p[x] = p[p[x]]
+                x = p[x]
+            return x
+
+        for u, v in edges:
+            if (a := find(u)) == (b := find(v)):
+                return [u, v]
+            union(a, b)
+
+        return []
+```
+
