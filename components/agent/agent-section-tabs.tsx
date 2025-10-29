@@ -1,11 +1,11 @@
 "use client"
 
-import { SectionTab } from './agent-section-tab'
+import { SectionTab , SectionType} from './agent-section-tab'
 import { useProblemState } from './problem-state-context'
 import { useMemo } from 'react'
 
 type SectionTabsProps = {
-  fileSectionMap: Record<string, string[]>
+  fileSectionMap: Record<string, SectionType[]>
 }
 
 export function SectionTabs({ fileSectionMap }: SectionTabsProps) {
@@ -13,7 +13,7 @@ export function SectionTabs({ fileSectionMap }: SectionTabsProps) {
 
   // Derive unique sections from fileSectionMap
   const allSections = useMemo(() => {
-    const sectionsSet = new Set<string>()
+    const sectionsSet = new Set<SectionType>()
     Object.values(fileSectionMap).forEach(sections => {
       sections.forEach(section => sectionsSet.add(section))
     })

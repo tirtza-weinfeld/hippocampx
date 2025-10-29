@@ -1,14 +1,14 @@
 "use client"
 
 import { createContext, use, type ReactNode, useState } from 'react'
-
+import { SectionType } from './agent-section-tab'
 type ProblemState = {
   isExpanded: boolean
   setExpanded: (expanded: boolean) => void
   activeFile: string
   setActiveFile: (file: string) => void
-  activeSection: string
-  setActiveSection: (section: string) => void
+  activeSection: SectionType
+  setActiveSection: (section: SectionType) => void
 }
 
 const ProblemStateContext = createContext<ProblemState | null>(null)
@@ -16,13 +16,13 @@ const ProblemStateContext = createContext<ProblemState | null>(null)
 type ProblemStateProviderProps = {
   children: ReactNode
   defaultFile: string
-  defaultSection?: string
+  defaultSection?: SectionType
 }
 
 export function ProblemStateProvider({
   children,
   defaultFile,
-  defaultSection = 'code'
+  defaultSection = 'codeSnippet'
 }: ProblemStateProviderProps) {
   const [isExpanded, setExpanded] = useState(false)
   const [activeFile, setActiveFile] = useState(defaultFile)

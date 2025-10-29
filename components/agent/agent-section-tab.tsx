@@ -2,7 +2,7 @@
 
 import { cn } from "@/lib/utils"
 
-type SectionType = 'definition' | 'codeSnippet' | 'intuition' | 'timeComplexity' | 'keyVariables' | 'keyExpressions'
+export type SectionType = 'definition' | 'codeSnippet' | 'intuition' | 'timeComplexity' | 'keyVariables' | 'keyExpressions'
 
 const SECTION_LABELS: Record<SectionType, string> = {
   definition: 'Definition',

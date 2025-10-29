@@ -7,6 +7,7 @@ import { AgentHeader } from './agent-header'
 import { FileTabs } from './agent-file-tabs'
 import { SectionTabs } from './agent-section-tabs'
 import { useProblemState } from './problem-state-context'
+import { SectionType } from './agent-section-tab'
 
 
 type AgentCardProps = {
@@ -17,7 +18,7 @@ type AgentCardProps = {
   topics: string[]
   solutionFiles: string[]
   defaultFile: string
-  fileSectionMap: Record<string, string[]>
+  fileSectionMap: Record<string, SectionType[]>
   leetcodeUrl: string
 }
 
@@ -59,7 +60,7 @@ export function AgentCard({
 type ExpandedContentProps = {
   children: ReactNode
   solutionFiles: string[]
-  fileSectionMap: Record<string, string[]>
+  fileSectionMap: Record<string, SectionType[]>
 }
 
 function ExpandedContent({

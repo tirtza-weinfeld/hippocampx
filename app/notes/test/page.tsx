@@ -13,9 +13,9 @@ export default function TestPage() {
   return (
     <div>
       
-      <AgentWrapperDialog>
+      {/* <AgentWrapperDialog>
         <AgentWrapper />
-        </AgentWrapperDialog>
+        </AgentWrapperDialog> */}
 
       {/* <MascotProviders>
         <ProblemsMascot />
