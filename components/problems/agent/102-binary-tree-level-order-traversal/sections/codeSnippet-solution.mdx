@@ -1,20 +1,21 @@
 ```python meta="source=problems/102-binary-tree-level-order-traversal/solution.py"
 from collections import deque
+from core.Tree.binary_tree_node import TreeNode
 
-def binary_tree_level_order_traversal(root) -> list[list[int]]:
-
-    if not root:
-        return []
-    queue, result = deque([root]), []
-    while queue:
-        level = [] 
-        for _ in range(len(queue)):
-            node = queue.popleft()
-            level.append(node.val)
-            if node.left:
-                queue.append(node.left)
-            if node.right:
-                queue.append(node.right)
-        result.append(level)
-    return result
+class Solution:
+    def levelOrder(self, root: TreeNode | None) -> list[list[int]]:
+        if not root:
+            return []
+        q, result = deque([root]), []
+        while q:
+            level = []
+            for _ in range(len(q)):
+                u = q.popleft()
+                level.append(u.val)
+                if u.left:
+                    q.append(u.left)
+                if u.right:
+                    q.append(u.right)
+            result.append(level)
+        return result
 ```

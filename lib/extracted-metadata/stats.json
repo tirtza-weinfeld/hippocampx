@@ -14,6 +14,7 @@
       "787-cheapest-flights-within-k-stops"
     ],
     "bfs": [
+      "102-binary-tree-level-order-traversal",
       "127-word-ladder",
       "1293-shortest-path-in-a-grid-with-obstacles-elimination",
       "133-clone-graph",
@@ -143,6 +144,9 @@
     "min-heap": [
       "215-kth-largest-element-in-an-array",
       "347-top-k-frequent-elements"
+    ],
+    "binary-tree": [
+      "102-binary-tree-level-order-traversal"
     ],
     "greedy": [
       "122-best-time-to-buy-and-sell-stock-ii"
@@ -328,7 +332,7 @@
       "$O(n)$"
     ],
     "102-binary-tree-level-order-traversal": [
-      "$O(N)$"
+      "$O(n)$"
     ],
     "1510-stone-game-iv": [
       "$O(n  \\cdot  sqrt(n))$"

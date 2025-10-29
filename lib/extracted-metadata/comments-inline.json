@@ -30,7 +30,12 @@
     8
   ],
   "problems/102-binary-tree-level-order-traversal/solution.py": [
-    9
+    10
+  ],
+  "problems/102-binary-tree-level-order-traversal/similar.py": [
+    7,
+    9,
+    10
   ],
   "problems/1514-path-with-maximum-probability/solution.py": [
     1,

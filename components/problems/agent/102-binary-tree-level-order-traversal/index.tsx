@@ -6,6 +6,7 @@ const Definition = lazy(() => import('./sections/definition.mdx'))
 const CodeSnippetSolution = lazy(() => import('./sections/codeSnippet-solution.mdx'))
 const IntuitionSolution = lazy(() => import('./sections/intuition-solution.mdx'))
 const TimeComplexitySolution = lazy(() => import('./sections/timeComplexity-solution.mdx'))
+const CodeSnippetSimilar = lazy(() => import('./sections/codeSnippet-similar.mdx'))
 
 export default async function Problem102BinaryTreeLevelOrderTraversal() {
   return (
@@ -13,10 +14,10 @@ export default async function Problem102BinaryTreeLevelOrderTraversal() {
       id="102-binary-tree-level-order-traversal"
       title="Binary Tree Level Order Traversal"
       difficulty="medium"
-      topics={[]}
-      solutionFiles={["solution.py"]}
+      topics={["binary-tree","bfs"]}
+      solutionFiles={["solution.py","similar.py"]}
       defaultFile="solution.py"
-      fileSectionMap={{"solution.py":["definition","codeSnippet","intuition","timeComplexity"]}}
+      fileSectionMap={{"solution.py":["definition","codeSnippet","intuition","timeComplexity"],"similar.py":["definition","codeSnippet"]}}
       leetcodeUrl="https://leetcode.com/problems/binary-tree-level-order-traversal"
     >
         <AgentSection section="definition">
@@ -33,6 +34,10 @@ export default async function Problem102BinaryTreeLevelOrderTraversal() {
 
         <AgentSection section="timeComplexity" file="solution.py">
           <TimeComplexitySolution />
+        </AgentSection>
+
+        <AgentSection section="codeSnippet" file="similar.py">
+          <CodeSnippetSimilar />
         </AgentSection>
     </AgentCard>
   )

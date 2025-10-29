@@ -869,23 +869,27 @@
     "102-binary-tree-level-order-traversal": {
       "time_stamps": {
         "created_at": "2025-09-12T16:05:33.323765",
-        "updated_at": "2025-09-30T19:05:08.946338"
+        "updated_at": "2025-10-29T19:59:06.060579"
       },
       "solutions": {
         "solution.py": {
           "intuition": "The core logic hinges on the inner `for` loop\n    The expression `len(queue)` takes a \"snapshot\" of the number of nodes on the current level before the loop begins. The loop then dequeues and processes exactly that many nodes, ensuring that only nodes from the current level are handled while their children are queued up for the next iteration. This technique is the key to cleanly separating the levels.",
-          "time_complexity": "O(N)\n    where N is the total number of nodes in the tree. This is optimal as every node must be visited once.",
+          "time_complexity": "O(n)\n    where n is the total number of nodes in the tree. This is optimal as every node must be visited once.",
           "args": {
-            "root": "Root node of the binary tree"
+            "root: TreeNode | None": "Root node of the binary tree"
           },
           "returns": "`list[list[int]]`: List of lists, where each inner list contains values of nodes at the same level",
-          "code": "from collections import deque\n\ndef binary_tree_level_order_traversal(root) -> list[list[int]]:\n\n    if not root:\n        return []\n    queue, result = deque([root]), []\n    while queue:\n        level = [] \n        for _ in range(len(queue)):\n            node = queue.popleft()\n            level.append(node.val)\n            if node.left:\n                queue.append(node.left)\n            if node.right:\n                queue.append(node.right)\n        result.append(level)\n    return result"
+          "code": "from collections import deque\nfrom core.Tree.binary_tree_node import TreeNode\n\nclass Solution:\n    def levelOrder(self, root: TreeNode | None) -> list[list[int]]:\n        if not root:\n            return []\n        q, result = deque([root]), []\n        while q:\n            level = []\n            for _ in range(len(q)):\n                u = q.popleft()\n                level.append(u.val)\n                if u.left:\n                    q.append(u.left)\n                if u.right:\n                    q.append(u.right)\n            result.append(level)\n        return result"
+        },
+        "similar.py": {
+          "code": "from collections import deque\n\nclass Solution:\n    def levelOrder(self, root):\n        if not root:\n            return [] \n\n        result, q = [], deque([root])\n        while q:\n            result.append([n.val for n in q])\n            for _ in range(len(q)):\n                node = q.popleft()\n                if node.left: \n                    q.append(node.left)\n                if node.right:  \n                    q.append(node.right)\n        return result "
         }
       },
       "title": "Binary Tree Level Order Traversal",
-      "definition": "Given the root of a binary tree, return its nodes' values organized by level, from left to right.",
+      "definition": "Given the root of a binary tree, return its nodes values organized by level , from left to right",
       "leetcode": "https://leetcode.com/problems/binary-tree-level-order-traversal",
-      "difficulty": "medium"
+      "difficulty": "medium",
+      "topics": ["binary-tree", "bfs"]
     },
     "974-subarray-sums-divisible-by-k": {
       "time_stamps": {
@@ -1768,6 +1772,17 @@
     }
   },
   "core": {
+    "Tree": {
+      "time_stamps": {
+        "created_at": "2025-10-29T19:54:28.185942",
+        "updated_at": "2025-10-29T19:55:18.755975"
+      },
+      "solutions": {
+        "binary_tree_node.py": {
+          "code": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right"
+        }
+      }
+    },
     "bellman-ford": {
       "time_stamps": {
         "created_at": "2025-09-17T21:12:55.387063",
