@@ -265,8 +265,8 @@ pre {
      /* background-color: --alpha(var(--symbol-color) / 50%); */
 
   }
-  &:not(.comment-symbol , .expression-symbol> .tooltip-symbol) {
-  /* &:not(.comment-symbol ) { */
+  /* &:not(.comment-symbol , .expression-symbol> .tooltip-symbol) { */
+  &:not(.comment-symbol ) {
     border-radius: 2rem;
     border-bottom: 2px dotted;
 
