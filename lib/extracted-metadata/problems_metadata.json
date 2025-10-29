@@ -425,7 +425,7 @@
     "416-partition-equal-subset-sum": {
       "time_stamps": {
         "created_at": "2025-09-12T16:05:57.930844",
-        "updated_at": "2025-10-25T12:40:36.035650"
+        "updated_at": "2025-10-29T19:11:07.314625"
       },
       "solutions": {
         "solution.py": {
@@ -503,20 +503,18 @@
     "120-triangle": {
       "time_stamps": {
         "created_at": "2025-09-12T16:05:33.323838",
-        "updated_at": "2025-09-30T19:05:08.946635"
+        "updated_at": "2025-10-29T19:09:08.612126"
       },
       "solutions": {
         "solution.py": {
-          "intuition": "Paradigm: This is a classic bottom-up dynamic programming problem.\n    Insight: The minimum path to the bottom *from* any cell `(r, c)` is independent of the path taken *to* that cell. This allows us to start at the bottom (where path sums are known) and iteratively compute the optimal path for each cell on the row above by choosing the cheaper of its two children's already-computed optimal paths.",
-          "time_complexity": "O(N)\n    where N is the total number of cells in the triangle. The complexity is the number of subproblems (N), as each is solved once.",
-          "code": "def triangle_minimum_path_sum(triangle: list[list[int]]) -> int:\n\n    n, memo = len(triangle), {}\n\n    def dp(r, c):\n        if r == n - 1:\n            return triangle[r][c]\n        if (r, c) not in memo:\n            memo[(r, c)] = triangle[r][c] + min(dp(r + 1, c), dp(r + 1, c + 1))\n        return memo[(r, c)]\n\n    return dp(0, 0)"
+          "code": "class Solution:\n\n    def minimumTotal(self, triangle: list[list[int]]) -> int:\n\n        memo = {}\n\n        def dp(r, i):\n            if r == len(triangle):\n                return 0\n            if (r, i) not in memo:\n                memo[r, i] = triangle[r][i] + min(dp(r + 1, i), dp(r + 1, i + 1))\n            return memo[r, i]\n\n        return dp(0, 0)"
         }
       },
       "title": "Triangle Minimum Path Sum",
       "definition": "Given a `triangle` (list of lists), find the minimum path sum from top to bottom. From index `i` in a row, you may move to index `i` or `i + 1` in the next row.",
       "leetcode": "https://leetcode.com/problems/triangle",
       "difficulty": "medium",
-      "topics": ["dynamic-programming"]
+      "topics": ["dp"]
     },
     "787-cheapest-flights-within-k-stops": {
       "time_stamps": {

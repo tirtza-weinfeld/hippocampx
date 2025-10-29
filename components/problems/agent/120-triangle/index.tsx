@@ -4,8 +4,6 @@ import { AgentCard, AgentSection } from '@/components/agent'
 // Lazy imports for each section MDX
 const Definition = lazy(() => import('./sections/definition.mdx'))
 const CodeSnippetSolution = lazy(() => import('./sections/codeSnippet-solution.mdx'))
-const IntuitionSolution = lazy(() => import('./sections/intuition-solution.mdx'))
-const TimeComplexitySolution = lazy(() => import('./sections/timeComplexity-solution.mdx'))
 
 export default async function Problem120Triangle() {
   return (
@@ -13,10 +11,10 @@ export default async function Problem120Triangle() {
       id="120-triangle"
       title="Triangle Minimum Path Sum"
       difficulty="medium"
-      topics={["dynamic-programming"]}
+      topics={["dp"]}
       solutionFiles={["solution.py"]}
       defaultFile="solution.py"
-      fileSectionMap={{"solution.py":["definition","codeSnippet","intuition","timeComplexity"]}}
+      fileSectionMap={{"solution.py":["definition","codeSnippet"]}}
       leetcodeUrl="https://leetcode.com/problems/triangle"
     >
         <AgentSection section="definition">
@@ -25,14 +23,6 @@ export default async function Problem120Triangle() {
 
         <AgentSection section="codeSnippet" file="solution.py">
           <CodeSnippetSolution />
-        </AgentSection>
-
-        <AgentSection section="intuition" file="solution.py">
-          <IntuitionSolution />
-        </AgentSection>
-
-        <AgentSection section="timeComplexity" file="solution.py">
-          <TimeComplexitySolution />
         </AgentSection>
     </AgentCard>
   )

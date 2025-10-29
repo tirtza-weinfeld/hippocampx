@@ -4,7 +4,7 @@
 
 <DifficultyBadge difficulty="medium" />
 
-<PillList pills={["dynamic-programming"]} />
+<PillList pills={["dp"]} />
 
 [120. Triangle Minimum Path Sum](https://leetcode.com/problems/triangle)
 
@@ -12,30 +12,22 @@
 
 Given a `triangle` (list of lists), find the minimum path sum from top to bottom. From index `i` in a row, you may move to index `i` or `i + 1` in the next row.
 
-## [!(ProblemIntuition)] Intuition
-
-- Paradigm: This is a classic bottom-up dynamic programming problem.
-    - Insight: The minimum path to the bottom *from* any cell `(r, c)` is independent of the path taken *to* that cell. This allows us to start at the bottom (where path sums are known) and iteratively compute the optimal path for each cell on the row above by choosing the cheaper of its two children's already-computed optimal paths.
-
-## [!(ProblemTimeComplexity)] Time Complexity
-
-- $O(N)$
-    - where N is the total number of cells in the triangle. The complexity is the number of subproblems (N), as each is solved once.
-
 ## [!(ProblemCodeSnippet)] Code Snippet
 
 ```python meta="source=problems/120-triangle/solution.py"
-def triangle_minimum_path_sum(triangle: list[list[int]]) -> int:
+class Solution:
 
-    n, memo = len(triangle), {}
+    def minimumTotal(self, triangle: list[list[int]]) -> int:
 
-    def dp(r, c):
-        if r == n - 1:
-            return triangle[r][c]
-        if (r, c) not in memo:
-            memo[(r, c)] = triangle[r][c] + min(dp(r + 1, c), dp(r + 1, c + 1))
-        return memo[(r, c)]
+        memo = {}
 
-    return dp(0, 0)
+        def dp(r, i):
+            if r == len(triangle):
+                return 0
+            if (r, i) not in memo:
+                memo[r, i] = triangle[r][i] + min(dp(r + 1, i), dp(r + 1, i + 1))
+            return memo[r, i]
+
+        return dp(0, 0)
 ```
 

@@ -25,7 +25,6 @@
     ],
     "dynamic-programming": [
       "1143-longest-common-subsequence",
-      "120-triangle",
       "121-best-time-to-buy-and-sell-stock",
       "123-best-time-to-buy-and-sell-stock-iii",
       "1406-stone-game-iii",
@@ -102,6 +101,15 @@
     "knapsack": [
       "518-coin-change-ii"
     ],
+    "dp": [
+      "1000-minimum-cost-to-merge-stones",
+      "120-triangle",
+      "1547-minimum-cost-to-cut-a-stick",
+      "256-paint-house",
+      "312-burst-balloons",
+      "53-maximum-subarray",
+      "72-edit-distance"
+    ],
     "kadane": [
       "124-binary-tree-maximum-path-sum",
       "363-max-sum-of-rectangle-no-larger-than-k",
@@ -119,14 +127,6 @@
       "46-permutations",
       "51-n-queens",
       "79-word-search"
-    ],
-    "dp": [
-      "1000-minimum-cost-to-merge-stones",
-      "1547-minimum-cost-to-cut-a-stick",
-      "256-paint-house",
-      "312-burst-balloons",
-      "53-maximum-subarray",
-      "72-edit-distance"
     ],
     "interval-dp": [
       "1547-minimum-cost-to-cut-a-stick",
@@ -307,9 +307,6 @@
     ],
     "20-valid-parentheses": [
       "$O(n)$"
-    ],
-    "120-triangle": [
-      "$O(N)$"
     ],
     "787-cheapest-flights-within-k-stops": [
       "$O(kE)$"

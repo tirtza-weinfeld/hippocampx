@@ -213,7 +213,7 @@
       "dynamic-programming"
     ],
     "createdAt": "2025-09-12T16:05:57.930844",
-    "updatedAt": "2025-10-25T12:40:36.035650"
+    "updatedAt": "2025-10-29T19:11:07.314625"
   },
   {
     "id": "188-best-time-to-buy-and-sell-stock-iv",
@@ -250,10 +250,10 @@
     "title": "Triangle Minimum Path Sum",
     "difficulty": "medium",
     "topics": [
-      "dynamic-programming"
+      "dp"
     ],
     "createdAt": "2025-09-12T16:05:33.323838",
-    "updatedAt": "2025-09-30T19:05:08.946635"
+    "updatedAt": "2025-10-29T19:09:08.612126"
   },
   {
     "id": "787-cheapest-flights-within-k-stops",
