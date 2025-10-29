@@ -1,7 +1,7 @@
 ```python meta="source=problems/684-redundant-connection/rank.py"
 class Solution:
     def findRedundantConnection(self, edges: list[list[int]]) -> list[int]:
-        
+
         p = [*range(len(edges) + 1)]
         r = [0] * (len(edges) + 1)
 

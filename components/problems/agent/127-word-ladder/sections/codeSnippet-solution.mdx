@@ -15,7 +15,6 @@ def word_ladder(beginWord: str, endWord: str, wordList: list[str]) -> int:
     dist_front, dist_back = {beginWord: 1}, {endWord: 1}
 
     while front and back:
-        # expand smaller side to optimize
         if len(front) > len(back):
             front, back = back, front
             dist_front, dist_back = dist_back, dist_front
@@ -23,7 +22,7 @@ def word_ladder(beginWord: str, endWord: str, wordList: list[str]) -> int:
         next_front = set()
         for word in front:
             for i in range(L):
-                for n in combos[word[:i] + "*" + word[i+1:]]: # Use pre-computed neighbors
+                for n in combos[word[:i] + "*" + word[i+1:]]:
                     if n in dist_back:
                         return dist_front[word] + dist_back[n]
                     if n not in dist_front:

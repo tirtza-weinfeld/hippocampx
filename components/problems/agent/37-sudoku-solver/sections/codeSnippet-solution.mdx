@@ -17,7 +17,7 @@ def solve_sudoku(board: list[list[str]]) -> None:
             ((t, (i, j), D - (rows[i] | cols[j] | boxes[i//3*3 + j//3])) for t, (i, j) in enumerate(empties)),
             key=lambda x: len(x[2])
         )
-        
+
         empties.pop(k)
         for d in cand:
             board[i][j] = d; rows[i].add(d); cols[j].add(d); boxes[(b:=i//3*3 + j//3)].add(d)

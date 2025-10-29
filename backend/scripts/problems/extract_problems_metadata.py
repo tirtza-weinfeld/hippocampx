@@ -14,7 +14,7 @@ New simplified docstring format:
 import ast
 import json
 from pathlib import Path
-from code_cleaner_new import clean_code
+from code_cleaner import clean_code
 from get_directory_timestamps import get_directory_timestamps
 
 
@@ -173,17 +173,14 @@ def _process_section_lines(lines: list[tuple[str, str] | str]) -> str:
         # Calculate relative indent from base
         relative_indent = original_indent - base_indent
 
-        # Check if this line is a header (ends with :)
-        is_header = content.strip().endswith(':')
-
         # Mapping:
-        # - Headers at any level → 4 spaces
-        # - Non-header items at base level (relative 0) → 4 spaces
-        # - Non-header items beyond base (relative 4+) → 8 spaces
-        if is_header or relative_indent == 0:
+        # - Items at base level (relative 0) → 4 spaces
+        # - Items beyond base → 4 + relative_indent (preserves nesting)
+        if relative_indent == 0:
             mdx_indent = 4
         else:
-            mdx_indent = 8
+            # Preserve relative indentation: each level adds to base 4 spaces
+            mdx_indent = 4 + relative_indent
 
         processed_lines.append(' ' * mdx_indent + content)
 

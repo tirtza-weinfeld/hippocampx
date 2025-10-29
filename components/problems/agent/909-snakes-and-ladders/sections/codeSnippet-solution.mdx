@@ -3,10 +3,10 @@ from collections import deque
 
 def snakes_and_ladders(board: list[list[int]]) -> int:
 
-    flat_board =  [0] # Dummy 0 for 1-based indexing
+    flat_board =  [0]
     for r, row in enumerate(reversed(board)):
         flat_board.extend(row[::1 if r % 2 == 0 else -1])
-        
+
     target =(n:= len(board)) * n 
     moves, queue =  {1: 0}, deque([1])
 

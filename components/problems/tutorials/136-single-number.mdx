@@ -19,16 +19,16 @@ Given a non-empty array of integers nums, every element appears twice except for
 
 - Deep Dive: XOR Reminder
     - XOR properties:
-        - a ^ a = 0 (a number XOR itself is zero)
-        - a ^ 0 = a (a number XOR zero is itself)
-        - Commutative: a ^ b = b ^ a
-        - Associative: (a ^ b) ^ c = a ^ (b ^ c)
-    - Meaning:
+            - a ^ a = 0 (a number XOR itself is zero)
+            - a ^ 0 = a (a number XOR zero is itself)
+            - Commutative: a ^ b = b ^ a
+            - Associative: (a ^ b) ^ c = a ^ (b ^ c)
+        - Meaning:
         - Because order and grouping don't matter, you can XOR all numbers in any sequence
-    - Cancellation:
+        - Cancellation:
         - Each pair of identical numbers a ^ a becomes 0
         - XORing by zero doesn't change the result
-    - Result:
+        - Result:
         - After all pairs cancel, only the unpaired (single) element remains
     - Example:
         - nums = [**[1!]4**, **[10!]1**, **[14!]2**, **[10!]1**, **[14!]2**]

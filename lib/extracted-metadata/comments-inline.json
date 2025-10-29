@@ -1,0 +1,55 @@
+{
+  "problems/909-snakes-and-ladders/solution.py": [
+    4
+  ],
+  "problems/394-decode-string/solution.py": [
+    7
+  ],
+  "problems/1143-longest-common-subsequence/bottom-up-prefix-1d.py": [
+    1
+  ],
+  "problems/460-lfu-cache/solution.py": [
+    5,
+    6,
+    7,
+    18
+  ],
+  "problems/363-max-sum-of-rectangle-no-larger-than-k/solution.py": [
+    11,
+    14,
+    29,
+    35,
+    39,
+    40
+  ],
+  "problems/191-number-of-1-bits/brian-kernighan.py": [
+    3
+  ],
+  "problems/918-maximum-sum-of-circular-subarray/solution.py": [
+    6,
+    8
+  ],
+  "problems/102-binary-tree-level-order-traversal/solution.py": [
+    9
+  ],
+  "problems/1514-path-with-maximum-probability/solution.py": [
+    1,
+    2,
+    4,
+    7,
+    10,
+    14
+  ],
+  "problems/200-number-of-islands/solution.py": [
+    13,
+    20
+  ],
+  "problems/127-word-ladder/solution.py": [
+    23
+  ],
+  "core/bellman-ford/layered_dag.py": [
+    9,
+    10,
+    14
+  ]
+}

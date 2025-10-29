@@ -15,11 +15,11 @@
   },
   "core.bellman-ford.classic:bellman_ford_classic": {
     "args": [
+      "vertices",
       "source",
-      "edges",
-      "vertices"
+      "edges"
     ],
-    "code": "def bellman_ford_classic(\n    vertices: list[str], edges: list[tuple[str, str, float]], source: str\n) -> dict[str, float]:\n\n    d = [float(\"inf\")] * (V := len(vertices))\n    d[source] = 0\n\n    for _ in range(V - 1):\n        updated = False\n        for u, v, w in edges:\n            if d[u] + w < d[v]:\n                d[v] = d[u] + w\n                updated = True\n        if not updated:\n            return d\n\n    # if we get here, we did all V-1 passes, so still need to check for cycles\n    for u, v, w in edges:\n        if d[u] + w < d[v]:\n            raise Exception(\"Negative-weight cycle\")\n\n    return d",
+    "code": "def bellman_ford_classic(\n    vertices: list[str], edges: list[tuple[str, str, float]], source: str\n) -> dict[str, float]:\n\n    d = [float(\"inf\")] * (V := len(vertices))\n    d[source] = 0\n\n    for _ in range(V - 1):\n        updated = False\n        for u, v, w in edges:\n            if d[u] + w < d[v]:\n                d[v] = d[u] + w\n                updated = True\n        if not updated:\n            return d\n\n    for u, v, w in edges:\n        if d[u] + w < d[v]:\n            raise Exception(\"Negative-weight cycle\")\n\n    return d",
     "expressions": {
       "if not updated": "distances have stabilized—no negative cycles reachable",
       "range(V - 1)": "relax up to V-1 times, but return early if no update"
@@ -45,11 +45,11 @@
   },
   "core.bellman-ford.layered_dag:bellman_ford_layered_dag": {
     "args": [
-      "edges",
+      "vertices",
       "source",
-      "vertices"
+      "edges"
     ],
-    "code": "def bellman_ford_layered_dag(\n    vertices: list[str], edges: list[tuple[str, str, float]], source: str\n) -> dict[str, float]:\n\n    # 1) Initialize\n    d = {v: float(\"inf\") for v in vertices}\n    d[source], V = 0, len(vertices)\n\n    # 2) Layered relaxation: starting from δ₀, do V passes to compute δ₁…δ_V\n    for k in range(V):  # k = 0…V-1\n        d_k = {**d}  # snapshot of δ_k\n        for u, v, w in edges:\n            if d[u] + w < d_k[v]:\n                d_k[v] = d[u] + w\n        d = d_k  # now holds δ_{k+1}\n\n    # 3) Identify \"witnesses\" to negative cycles:\n    #    any v for which an extra relaxation is still possible\n    witnesses = {v for u, v, w in edges if d[u] + w < d[v]}\n\n    if not witnesses:\n        return d\n\n    # 4) Build adjacency list for negative-cycle propagation\n    adj = defaultdict(list)\n    for u, v, _ in edges:\n        adj[u].append(v)\n\n    # 5) DFS to propagate −∞ to all vertices reachable from any witness\n    stack = list(witnesses)\n    reachable = set(witnesses)\n\n    while stack:\n        u = stack.pop()\n        d[u] = float(\"-inf\")\n        for v in adj[u]:\n            if v not in reachable:\n                reachable.add(v)\n                stack.append(v)\n\n    return d",
+    "code": "def bellman_ford_layered_dag(\n    vertices: list[str], edges: list[tuple[str, str, float]], source: str\n) -> dict[str, float]:\n\n    d = {v: float(\"inf\") for v in vertices}\n    d[source], V = 0, len(vertices)\n\n    for k in range(V):\n        d_k = {**d}\n        for u, v, w in edges:\n            if d[u] + w < d_k[v]:\n                d_k[v] = d[u] + w\n        d = d_k\n\n    witnesses = {v for u, v, w in edges if d[u] + w < d[v]}\n\n    if not witnesses:\n        return d\n\n    adj = defaultdict(list)\n    for u, v, _ in edges:\n        adj[u].append(v)\n\n    stack = list(witnesses)\n    reachable = set(witnesses)\n\n    while stack:\n        u = stack.pop()\n        d[u] = float(\"-inf\")\n        for v in adj[u]:\n            if v not in reachable:\n                reachable.add(v)\n                stack.append(v)\n\n    return d",
     "file_path": "backend/algorithms/core/bellman-ford/layered_dag.py",
     "intuition": "- Compute k-edge shortest-path distances and detect negative cycles via layered relaxation.\n    1. δ₀(s,v): initialize distances (0 at source, ∞ elsewhere).\n    2. For i = 1…V: perform one pass of edge-relaxation to compute δᵢ(s,v),\n       - the best cost using ≤ i edges.\n    3. Identify any vertex v where δ_V(s,v) < δ_{V−1}(s,v) as a negative-cycle witness.\n    4. Flood successors of those witnesses and mark their distances as −∞.",
     "kind": "function",
@@ -80,8 +80,8 @@
   },
   "core.binary-search.bisect_left:simple_bisect_left": {
     "args": [
-      "a",
-      "x"
+      "x",
+      "a"
     ],
     "code": "def simple_bisect_left(a: list[int], x: int):\n\n    l, r = 0, len(a)\n    while l < r:\n        mid = (l + r) // 2\n        if x > a[mid]:\n            l = mid + 1\n        else:\n            r = mid\n    return l",
     "expressions": {
@@ -158,8 +158,8 @@
   },
   "core.modular-arithmetic.congruent1:congruent1": {
     "args": [
-      "a",
       "n",
+      "a",
       "b"
     ],
     "code": "def congruent1(a: int, b: int, n: int) -> bool:\n    return (a - b) % n == 0",
@@ -193,8 +193,8 @@
   },
   "core.modular-arithmetic.congruent2:congruent2": {
     "args": [
-      "a",
       "n",
+      "a",
       "b"
     ],
     "code": "def congruent2(a: int, b: int, n: int) -> bool:\n    return a % n == b % n",
@@ -256,8 +256,8 @@
   },
   "problems.1-two-sum.solution:two_sum": {
     "args": [
-      "target",
-      "nums"
+      "nums",
+      "target"
     ],
     "code": "def two_sum(nums: list[int], target: int) -> list[int]:\n\n    seen = {}\n\n    for i, num in enumerate(nums):\n        if (x := target - num) in seen:\n            return seen[x], i\n        seen[num] = i",
     "file_path": "backend/algorithms/problems/1-two-sum/solution.py",
@@ -271,8 +271,8 @@
   },
   "problems.1000-minimum-cost-to-merge-stones.solution:Solution.mergeStones": {
     "args": [
-      "stones",
-      "K"
+      "K",
+      "stones"
     ],
     "code": "    def mergeStones(self, stones: list[int], K: int) -> int:\n        if ((n := len(stones)) - 1) % (K - 1):return -1\n\n        prefix, memo = [0], {}\n        for x in stones: prefix.append(prefix[-1] + x)\n        cost = lambda l, r: 0 if (r - l) % (K - 1) else prefix[r + 1] - prefix[l]\n\n        def dp(l, r):\n            if (key := (l, r)) not in memo:\n                memo[key] = min(\n                    (dp(l, t) + dp(t + 1, r) + cost(l, r) for t in range(l, r, K - 1)),\n                    default=0,\n                )\n            return memo[key]\n\n        return dp(0, n - 1)",
     "expressions": {
@@ -338,7 +338,7 @@
     "args": [
       "root"
     ],
-    "code": "def binary_tree_level_order_traversal(root) -> list[list[int]]:\n\n    if not root:\n        return []\n    queue, result = deque([root]), []\n    while queue:\n        level = [] \n        for _ in range(len(queue)):  # Process nodes at the current level\n            node = queue.popleft()\n            level.append(node.val)\n            if node.left:\n                queue.append(node.left)\n            if node.right:\n                queue.append(node.right)\n        result.append(level)\n    return result",
+    "code": "def binary_tree_level_order_traversal(root) -> list[list[int]]:\n\n    if not root:\n        return []\n    queue, result = deque([root]), []\n    while queue:\n        level = [] \n        for _ in range(len(queue)):\n            node = queue.popleft()\n            level.append(node.val)\n            if node.left:\n                queue.append(node.left)\n            if node.right:\n                queue.append(node.right)\n        result.append(level)\n    return result",
     "file_path": "backend/algorithms/problems/102-binary-tree-level-order-traversal/solution.py",
     "intuition": "- The core logic hinges on the inner `for` loop\n    - The expression `len(queue)` takes a \"snapshot\" of the number of nodes on the current level before the loop begins. The loop then dequeues and processes exactly that many nodes, ensuring that only nodes from the current level are handled while their children are queued up for the next iteration. This technique is the key to cleanly separating the levels.",
     "kind": "function",
@@ -396,7 +396,7 @@
     "args": [
       "prices"
     ],
-    "code": "def best_time_to_buy_and_sell_stock_III(prices: list[int]) -> int:\n\n    t1_cost = t2_cost = float(\"inf\")\n    t1_profit = t2_profit = 0\n\n    for p in prices:\n\n        # First trade\n        t1_cost = min(t1_cost, p) \n        t1_profit = max(t1_profit, p - t1_cost)\n\n        # Second trade\n        t2_cost = min(t2_cost, p - t1_profit)\n        t2_profit = max(t2_profit, p - t2_cost)\n\n    return t2_profit",
+    "code": "def best_time_to_buy_and_sell_stock_III(prices: list[int]) -> int:\n\n    t1_cost = t2_cost = float(\"inf\")\n    t1_profit = t2_profit = 0\n\n    for p in prices:\n\n        t1_cost = min(t1_cost, p) \n        t1_profit = max(t1_profit, p - t1_cost)\n\n        t2_cost = min(t2_cost, p - t1_profit)\n        t2_profit = max(t2_profit, p - t2_cost)\n\n    return t2_profit",
     "expressions": {
       "p - t1_profit": "money you'd need now if earlier profit covered part of this buy"
     },
@@ -541,10 +541,10 @@
   "problems.127-word-ladder.solution:word_ladder": {
     "args": [
       "wordList",
-      "endWord",
-      "beginWord"
+      "beginWord",
+      "endWord"
     ],
-    "code": "def word_ladder(beginWord: str, endWord: str, wordList: list[str]) -> int:\n    if endWord not in wordList:\n        return 0\n\n    L = len(beginWord)\n    combos: dict[str, list[str]] = defaultdict(list)\n    for w in wordList:\n        for i in range(L):\n            combos[w[:i] + \"*\" + w[i+1:]].append(w)\n\n    front, back = {beginWord}, {endWord}\n    dist_front, dist_back = {beginWord: 1}, {endWord: 1}\n\n    while front and back:\n        # expand smaller side to optimize\n        if len(front) > len(back):\n            front, back = back, front\n            dist_front, dist_back = dist_back, dist_front\n\n        next_front = set()\n        for word in front:\n            for i in range(L):\n                for n in combos[word[:i] + \"*\" + word[i+1:]]: # Use pre-computed neighbors\n                    if n in dist_back:\n                        return dist_front[word] + dist_back[n]\n                    if n not in dist_front:\n                        dist_front[n] = dist_front[word] + 1\n                        next_front.add(n)\n        front = next_front\n\n    return 0",
+    "code": "def word_ladder(beginWord: str, endWord: str, wordList: list[str]) -> int:\n    if endWord not in wordList:\n        return 0\n\n    L = len(beginWord)\n    combos: dict[str, list[str]] = defaultdict(list)\n    for w in wordList:\n        for i in range(L):\n            combos[w[:i] + \"*\" + w[i+1:]].append(w)\n\n    front, back = {beginWord}, {endWord}\n    dist_front, dist_back = {beginWord: 1}, {endWord: 1}\n\n    while front and back:\n        if len(front) > len(back):\n            front, back = back, front\n            dist_front, dist_back = dist_back, dist_front\n\n        next_front = set()\n        for word in front:\n            for i in range(L):\n                for n in combos[word[:i] + \"*\" + word[i+1:]]:\n                    if n in dist_back:\n                        return dist_front[word] + dist_back[n]\n                    if n not in dist_front:\n                        dist_front[n] = dist_front[word] + 1\n                        next_front.add(n)\n        front = next_front\n\n    return 0",
     "file_path": "backend/algorithms/problems/127-word-ladder/solution.py",
     "intuition": "- Bidirectional BFS Meets in the Middle 🤝:\n    - This solution uses two  optimizations. First, it **pre-computes all possible generic transformations** (e.g., `h*t`) in a dictionary, allowing for instant lookups of neighboring words instead of generating them on the fly. Second, it performs a **bidirectional BFS**, launching one search from the `beginWord` and another from the `endWord`. By always expanding the smaller of the two frontiers, it drastically reduces the search space. The algorithm finishes when the two searches meet, at which point the shortest path is found.",
     "kind": "function",
@@ -831,8 +831,8 @@
   },
   "problems.146-lru-cache.solution:LRUCache.put": {
     "args": [
-      "value",
-      "key"
+      "key",
+      "value"
     ],
     "code": "    def put(self, key: int, value: int) -> None:\n        if key in self.cache:\n            self.cache.move_to_end(key)\n        self.cache[key] = value\n        if len(self.cache) > self.capacity:\n            self.cache.popitem(last=False)",
     "file_path": "backend/algorithms/problems/146-lru-cache/solution.py",
@@ -861,13 +861,13 @@
   },
   "problems.1514-path-with-maximum-probability.solution:path_with_maximum_probability": {
     "args": [
-      "edges",
-      "start",
       "n",
+      "start",
+      "edges",
       "succProb",
       "end"
     ],
-    "code": "def path_with_maximum_probability(n: int, edges: list[list[int]], succProb: list[float], start: int, end: int) -> float:\n    prob = [0.0] * n # rob[i] stores max probability to reach node i\n    prob[start] = 1.0  # Start with full certainty\n\n    for _ in range(n - 1):  # Perform up to n-1 rounds of relaxation\n        updated = False\n        for (u, v), p in zip(edges, succProb):\n            if prob[u] * p > prob[v]:  # Try to improve v through u\n                prob[v] = prob[u] * p\n                updated = True\n            if prob[v] * p > prob[u]:  # Try to improve u through v (undirected graph)\n                prob[u] = prob[v] * p\n                updated = True\n        if not updated:\n            break  # Early exit if no updates in this round\n\n    return prob[end]",
+    "code": "def path_with_maximum_probability(n: int, edges: list[list[int]], succProb: list[float], start: int, end: int) -> float:\n    prob = [0.0] * n\n    prob[start] = 1.0\n\n    for _ in range(n - 1):\n        updated = False\n        for (u, v), p in zip(edges, succProb):\n            if prob[u] * p > prob[v]:\n                prob[v] = prob[u] * p\n                updated = True\n            if prob[v] * p > prob[u]:\n                prob[u] = prob[v] * p\n                updated = True\n        if not updated:\n            break\n\n    return prob[end]",
     "file_path": "backend/algorithms/problems/1514-path-with-maximum-probability/solution.py",
     "intuition": "- Bellman-Ford variant to maximize product of probabilities.\n    - Each node tracks the maximum probability to reach it from `start`.",
     "kind": "function",
@@ -1002,7 +1002,7 @@
     "args": [
       "n"
     ],
-    "code": "def hammingWeight(n: int) -> int:\n    count = 0\n    while n:\n        n &= n - 1 # drop the lowest set bit\n        count += 1\n    return count",
+    "code": "def hammingWeight(n: int) -> int:\n    count = 0\n    while n:\n        n &= n - 1\n        count += 1\n    return count",
     "file_path": "backend/algorithms/problems/191-number-of-1-bits/brian-kernighan.py",
     "intuition": "- Brian Kernighan's algorithm:\n    - counts the number of set bits (1s) in an integer efficiently by             repeatedly clearing the lowest set bit until the number becomes 0.\n\n    - Deep Dive: Why this always works\n    - When you subtract 1 from a binary number:\n            - You flip the lowest set bit (1) to 0\n            - And everything to the right of it flips to 1\n\n    - Example:\n    - Start\n        - ```python\n            - n = 13 (1101)\n            - count = 0\n        - ```\n    - Iteration 1\n        - ```python\n            - n   = 1101 (13)\n            - n-1 = 1100 (12)\n            - ---------------- &\n                  - 1100 (12)\n            - count = 1\n        - ```\n    - Iteration 2\n        - ```python\n            - n   = 1100 (12)\n            - n-1 = 1011 (11)\n            - ---------------- &\n                  - 1000 (8)\n            - count = 2\n        - ```\n    - Iteration 3\n        - ```python\n            - n   = 1000 (8)\n            - n-1 = 0111 (7)\n            - ---------------- &\n                  - 0000 (0)\n            - count = 3\n        - ```",
     "kind": "function",
@@ -1112,7 +1112,7 @@
     "args": [
       "grid"
     ],
-    "code": "def number_of_islands(grid: list[list[str]]) -> int:\n    if not grid or not grid[0]:\n        return 0\n    m, n = len(grid), len(grid[0])\n    dirs = ((1,0),(-1,0),(0,1),(0,-1))\n    islands = 0\n\n    for i in range(m):\n        for j in range(n):\n            if grid[i][j] == \"1\":\n                islands += 1\n                grid[i][j] = \"0\" # mark as visited\n                q = deque([(i, j)])\n                while q:\n                    r, c = q.popleft()\n                    for dr, dc in dirs:\n                        nr, nc = r + dr, c + dc\n                        if 0 <= nr < m and 0 <= nc < n and grid[nr][nc] == \"1\":\n                            grid[nr][nc] = \"0\" # mark as visited\n                            q.append((nr, nc)) \n    return islands",
+    "code": "def number_of_islands(grid: list[list[str]]) -> int:\n    if not grid or not grid[0]:\n        return 0\n    m, n = len(grid), len(grid[0])\n    dirs = ((1,0),(-1,0),(0,1),(0,-1))\n    islands = 0\n\n    for i in range(m):\n        for j in range(n):\n            if grid[i][j] == \"1\":\n                islands += 1\n                grid[i][j] = \"0\"\n                q = deque([(i, j)])\n                while q:\n                    r, c = q.popleft()\n                    for dr, dc in dirs:\n                        nr, nc = r + dr, c + dc\n                        if 0 <= nr < m and 0 <= nc < n and grid[nr][nc] == \"1\":\n                            grid[nr][nc] = \"0\"\n                            q.append((nr, nc)) \n    return islands",
     "file_path": "backend/algorithms/problems/200-number-of-islands/solution.py",
     "intuition": "- Find, Count, and Sink 🏝️\n    - The strategy is to scan every cell of the grid. If an unvisited piece of land (`1`) is found, you've discovered a new island, so you increment the `islands` counter. Then, immediately launch a BFS from that cell to find and \"sink\" all connected parts of that same island by changing their value to `0`. This modification of the grid ensures each island group is counted exactly once.",
     "kind": "function",
@@ -1132,8 +1132,8 @@
   },
   "problems.207-course-schedule.solution:Solution.canFinish": {
     "args": [
-      "n",
-      "prerequisites"
+      "prerequisites",
+      "n"
     ],
     "code": "    def canFinish(self, n: int, prerequisites: list[list[int]]) -> bool:\n        g = [[] for _ in range(n)]     \n        indeg = [0] * n                \n        for a, b in prerequisites:\n            g[b].append(a)             \n            indeg[a] += 1              \n\n        q = deque(i for i, d in enumerate(indeg) if d == 0)\n        taken = 0                      \n\n        while q:\n            u = q.popleft()             \n            taken += 1\n            for v in g[u]:              \n                indeg[v] -= 1           \n                if indeg[v] == 0:       \n                    q.append(v)         \n\n        return taken == n",
     "expressions": {
@@ -1331,8 +1331,8 @@
   },
   "problems.211-design-add-and-search-words-data-structure.solution:WordDictionary.search.dfs": {
     "args": [
-      "node",
-      "i"
+      "i",
+      "node"
     ],
     "code": "        def dfs(node: dict, i: int) -> bool:\n\n            if i == len(word):\n                return self.END_MARKER in node\n\n            if (c := word[i]) == \".\":\n\n                return any(\n                    dfs(child, i + 1)\n                    for k, child in node.items()\n                    if k != self.END_MARKER\n                )\n            child = node.get(c)\n            return bool(child) and dfs(child, i + 1)",
     "expressions": {
@@ -1457,7 +1457,7 @@
     "args": [
       "houses"
     ],
-    "code": "def circularRob(houses: list[int]) -> int:\n    if len(houses) == 1:\n        return houses[0]\n    # compute two linear cases and choose max\n    return max(rob(houses[:-1]), rob(houses[1:]))",
+    "code": "def circularRob(houses: list[int]) -> int:\n    if len(houses) == 1:\n        return houses[0]\n    return max(rob(houses[:-1]), rob(houses[1:]))",
     "file_path": "backend/algorithms/problems/213-house-robber-ii/solution.py",
     "intuition": "- In a circle, first and last houses are adjacent — we cannot rob both\n    - ⇒ Split into two linear cases:\n        - exclude last house → `rob(houses[:-1])`\n        - exclude first house → `rob(houses[1:])`\n    - Take the better of the two.\n\n    - Base case:\n        - if only one house, rob it directly.",
     "kind": "function",
@@ -1484,8 +1484,8 @@
   },
   "problems.2145-count-the-hidden-sequences.solution:numberOfArrays": {
     "args": [
-      "upper",
       "lower",
+      "upper",
       "differences"
     ],
     "code": "def numberOfArrays(differences: list[int], lower: int, upper: int) -> int:\n\n    prefix_sum = min_marker = max_marker = 0\n\n    for diff in differences:\n        prefix_sum += diff\n        min_marker = min(min_marker, prefix_sum)\n        max_marker = max(max_marker, prefix_sum)\n\n    return max(0, (upper - max_marker) - (lower - min_marker) + 1)",
@@ -1570,8 +1570,8 @@
   },
   "problems.256-paint-house.scalar:Solution.minCost.dp": {
     "args": [
-      "c",
-      "i"
+      "i",
+      "c"
     ],
     "code": "        def dp(i: int, c: int) -> int:\n            if i == n:\n                return \n            if (i, c) not in memo:\n\n                memo[i, c] = costs[i][c] + min(\n                    dp(i + 1, (c + 1) % 3), dp(i + 1, (c + 2) % 3)\n                )\n            return memo[i, c]",
     "expressions": {
@@ -1894,8 +1894,8 @@
   },
   "problems.370-range-addition.solution:getModifiedArray": {
     "args": [
-      "length",
-      "updates"
+      "updates",
+      "length"
     ],
     "code": "def getModifiedArray(length: int, updates: list[list[int]]) -> list[int]:\n\n    delta = [0] * (length + 1)\n\n    for start_day, end_day, change_in_km in updates:\n        delta[start_day] += change_in_km\n        delta[end_day + 1] -= change_in_km\n\n    prefix_sum = 0\n    return [prefix_sum := prefix_sum + change for change in delta[:-1]]",
     "file_path": "backend/algorithms/problems/370-range-addition/solution.py",
@@ -1921,8 +1921,8 @@
   },
   "problems.39-combination-sum.solution:combination_sum": {
     "args": [
-      "target",
-      "candidates"
+      "candidates",
+      "target"
     ],
     "code": "def combination_sum(candidates: list[int], target: int) -> list[list[int]]:\n\n    candidates.sort()\n    res, path = [], []\n\n    def dfs(i: int, rem: int) -> None:\n        if rem == 0:\n            res.append(path.copy())\n            return\n        for j in range(i, len(candidates)):\n            if (c := candidates[j]) > rem:\n                break\n            path.append(c)\n            dfs(j, rem - c)\n            path.pop()\n\n    dfs(0, target)\n    return res",
     "file_path": "backend/algorithms/problems/39-combination-sum/solution.py",
@@ -1995,7 +1995,7 @@
     "summary": "List of integers to permute"
   },
   "problems.460-lfu-cache.solution:LFUCache": {
-    "code": "class LFUCache:\n    def __init__(self, capacity: int):\n        self.capacity    = capacity\n        self.cache       = {}  # key → value\n        self.freq        = {}  # key → freq\n        self.buckets     = defaultdict(OrderedDict)  # freq → keys in LRU order\n        self.minfreq     = 0\n\n    def _bump(self, key: int):\n        f = self.freq[key]\n        # remove from old bucket\n        del self.buckets[f][key]\n        if not self.buckets[f]:\n            del self.buckets[f]\n            if self.minfreq == f:\n                self.minfreq += 1\n\n        # Promote the book to the next shelf up, placing it by the chair.\n        self.freq[key] +=1 # self.freq[key] = f + 1\n        self.buckets[f + 1][key] = None\n\n    def get(self, key: int) -> int:\n        if key not in self.cache:\n            return -1\n        self._bump(key)\n        return self.cache[key]\n\n    def put(self, key: int, value: int) -> None:\n        if self.capacity <= 0:\n            return\n\n        if key in self.cache:\n            self.cache[key] = value\n            self._bump(key)\n            return\n\n        # Evict from the far end of the least popular shelf.\n        if len(self.cache) >= self.capacity:\n            old_key, _ = self.buckets[self.minfreq].popitem(last=False)\n            del self.cache[old_key]\n            del self.freq[old_key]\n\n        # A new book starts on the bottom shelf, by the chair.\n        self.cache[key] = value\n        self.freq[key] = 1\n        self.buckets[1][key] = None\n        self.minfreq = 1",
+    "code": "class LFUCache:\n    def __init__(self, capacity: int):\n        self.capacity    = capacity\n        self.cache       = {}\n        self.freq        = {}\n        self.buckets     = defaultdict(OrderedDict)\n        self.minfreq     = 0\n\n    def _bump(self, key: int):\n        f = self.freq[key]\n        del self.buckets[f][key]\n        if not self.buckets[f]:\n            del self.buckets[f]\n            if self.minfreq == f:\n                self.minfreq += 1\n\n        self.freq[key] +=1\n        self.buckets[f + 1][key] = None\n\n    def get(self, key: int) -> int:\n        if key not in self.cache:\n            return -1\n        self._bump(key)\n        return self.cache[key]\n\n    def put(self, key: int, value: int) -> None:\n        if self.capacity <= 0:\n            return\n\n        if key in self.cache:\n            self.cache[key] = value\n            self._bump(key)\n            return\n\n        if len(self.cache) >= self.capacity:\n            old_key, _ = self.buckets[self.minfreq].popitem(last=False)\n            del self.cache[old_key]\n            del self.freq[old_key]\n\n        self.cache[key] = value\n        self.freq[key] = 1\n        self.buckets[1][key] = None\n        self.minfreq = 1",
     "file_path": "backend/algorithms/problems/460-lfu-cache/solution.py",
     "intuition": "The LFU system is more sophisticated. It tracks not just *when* a book was last used, but also *how often* it has been used.",
     "kind": "class",
@@ -2028,8 +2028,8 @@
   },
   "problems.460-lfu-cache.solution:LFUCache.put": {
     "args": [
-      "value",
-      "key"
+      "key",
+      "value"
     ],
     "code": "    def put(self, key: int, value: int) -> None:\n        if self.capacity <= 0:\n            return\n\n        if key in self.cache:\n            self.cache[key] = value\n            self._bump(key)\n            return\n\n        if len(self.cache) >= self.capacity:\n            old_key, _ = self.buckets[self.minfreq].popitem(last=False)\n            del self.cache[old_key]\n            del self.freq[old_key]\n\n        self.cache[key] = value\n        self.freq[key] = 1\n        self.buckets[1][key] = None\n        self.minfreq = 1",
     "file_path": "backend/algorithms/problems/460-lfu-cache/solution.py",
@@ -2219,7 +2219,7 @@
     "args": [
       "mat"
     ],
-    "code": "def zero_one_matrix(mat: list[list[int]]) -> list[list[int]]:\n    m, n = len(mat), len(mat[0])\n    dist = [[-1] * n for _ in range(m)]\n    q = deque()\n    # Initialize queue with all zero-cells\n    for i in range(m):\n        for j in range(n):\n            if mat[i][j] == 0:\n                dist[i][j] = 0\n                q.append((i, j))\n\n    while q:\n        i, j = q.popleft()\n        for di, dj in ((1,0),(-1,0),(0,1),(0,-1)):\n            ni, nj = i + di, j + dj\n            if 0 <= ni < m and 0 <= nj < n and dist[ni][nj] < 0:\n                dist[ni][nj] = dist[i][j] + 1\n                q.append((ni, nj))\n    return dist",
+    "code": "def zero_one_matrix(mat: list[list[int]]) -> list[list[int]]:\n    m, n = len(mat), len(mat[0])\n    dist = [[-1] * n for _ in range(m)]\n    q = deque()\n    for i in range(m):\n        for j in range(n):\n            if mat[i][j] == 0:\n                dist[i][j] = 0\n                q.append((i, j))\n\n    while q:\n        i, j = q.popleft()\n        for di, dj in ((1,0),(-1,0),(0,1),(0,-1)):\n            ni, nj = i + di, j + dj\n            if 0 <= ni < m and 0 <= nj < n and dist[ni][nj] < 0:\n                dist[ni][nj] = dist[i][j] + 1\n                q.append((ni, nj))\n    return dist",
     "file_path": "backend/algorithms/problems/542-01-matrix/solution.py",
     "intuition": "- Multi-Source BFS from the Target 🎯:\n    - Instead of starting a separate BFS from every `1` to find the nearest `0` (which would be slow), this approach inverts the problem. It starts a single, **multi-source BFS from all `0`s simultaneously**. The level of the BFS at which a cell is reached is, by definition, its shortest distance to any `0`. This \"start from the answer\" strategy is a powerful technique for shortest path problems.",
     "kind": "function",
@@ -2389,9 +2389,9 @@
   },
   "problems.743-network-delay-time.solution:network_delay_time": {
     "args": [
-      "k",
       "times",
-      "n"
+      "n",
+      "k"
     ],
     "code": "def network_delay_time(times: list[list[int]], n: int, k: int) -> int:\n\n    adj = defaultdict(list)\n    for u, v, w in times:\n        adj[u].append((v, w))\n    pq, finalized, time = [(0, k)], set(), 0\n    while pq:\n        t, node = heapq.heappop(pq)\n        if node in finalized:\n            continue\n        finalized.add(node)\n        time = t\n        for neighbor, travel_time in adj[node]:\n            if neighbor not in finalized:\n                heapq.heappush(pq, (time + travel_time, neighbor))\n    return time if len(finalized) == n else -1",
     "file_path": "backend/algorithms/problems/743-network-delay-time/solution.py",
@@ -2418,8 +2418,8 @@
   },
   "problems.76-minimum-window-substring.solution:minWindow": {
     "args": [
-      "t",
-      "s"
+      "s",
+      "t"
     ],
     "code": "def minWindow(s: str, t: str) -> str:\n    t_count, have = Counter(t), defaultdict(int)\n    letters_needed, min_idx, l = len(t_count), None, 0\n    for r, c in enumerate(s):\n        have[c] += 1\n        if have[c] == t_count[c]:\n            letters_needed -= 1\n            while letters_needed == 0:\n                if not min_idx or r - l + 1 < min_idx[1] - min_idx[0]:\n                    min_idx = l, r + 1\n                have[s[l]] -= 1\n                if have[s[l]] < t_count[s[l]]:\n                    letters_needed += 1\n                l += 1\n    return \"\" if min_idx == None else s[min_idx[0] : min_idx[1]]",
     "file_path": "backend/algorithms/problems/76-minimum-window-substring/solution.py",
@@ -2468,10 +2468,10 @@
   "problems.787-cheapest-flights-within-k-stops.bellman_ford:cheapest_flights_with_at_most_k_stops": {
     "args": [
       "dst",
-      "src",
-      "k",
       "flights",
-      "n"
+      "n",
+      "src",
+      "k"
     ],
     "code": "def cheapest_flights_with_at_most_k_stops(\n    n: int, flights: list[list[int]], src: int, dst: int, k: int\n) -> int:\n    d = [float(\"inf\")] * n\n    d[src] = 0\n\n    for _ in range(k + 1):\n        tmp = d[:]\n        for u, v, w in flights:\n            if d[u] + w < tmp[v]:\n                tmp[v] = d[u] + w\n        d = tmp\n\n    return d[dst] if d[dst] < float(\"inf\") else -1",
     "file_path": "backend/algorithms/problems/787-cheapest-flights-within-k-stops/bellman_ford.py",
@@ -2486,11 +2486,11 @@
   "problems.787-cheapest-flights-within-k-stops.dijkstra:cheapest_flights_with_at_most_k_stops": {
     "args": [
       "dst",
-      "src",
+      "flights",
       "k",
-      "flights"
+      "src"
     ],
-    "code": "def cheapest_flights_with_at_most_k_stops( flights: list[list[int]], src: int, dst: int, k: int) -> int:\n\n    graph = defaultdict(list)\n    for u, v, price in flights:\n        graph[u].append((v, price))\n\n    pq, min_stops = [(0, src, 0)], {}\n\n    while pq:\n        cost, city, stops = heapq.heappop(pq)\n\n        # If we've already found a path to this city using fewer or equal stops, skip.\n        # A path with fewer stops must have been cheaper or equal due to PQ ordering.\n        if stops > min_stops.get(city, float(\"inf\")): continue\n        if city == dst: return cost\n\n        # Record the new minimum stops to reach this city\n        min_stops[city] = stops\n        if stops <= k:\n            for neighbor, price in graph[city]:\n                heapq.heappush(pq, (cost + price, neighbor, stops + 1))\n    return -1",
+    "code": "def cheapest_flights_with_at_most_k_stops( flights: list[list[int]], src: int, dst: int, k: int) -> int:\n\n    graph = defaultdict(list)\n    for u, v, price in flights:\n        graph[u].append((v, price))\n\n    pq, min_stops = [(0, src, 0)], {}\n\n    while pq:\n        cost, city, stops = heapq.heappop(pq)\n\n        if stops > min_stops.get(city, float(\"inf\")): continue\n        if city == dst: return cost\n\n        min_stops[city] = stops\n        if stops <= k:\n            for neighbor, price in graph[city]:\n                heapq.heappush(pq, (cost + price, neighbor, stops + 1))\n    return -1",
     "file_path": "backend/algorithms/problems/787-cheapest-flights-within-k-stops/dijkstra.py",
     "kind": "function",
     "label": "def cheapest_flights_with_at_most_k_stops(flights: list[list[int]], src: int, dst: int, k: int) -> int",
@@ -2660,7 +2660,7 @@
       "h",
       "piles"
     ],
-    "code": "def koko_eating_bananas(piles: list[int], h: int) -> int:\n\n    def hours(k:int) -> int:\n        return sum((p + k - 1) // k for p in piles)\n        # return sum(math.ceil(pile / k) for pile in piles)\n\n    l, r = 1, max(piles)\n    while l < r:\n        k = (l + r) // 2\n        if hours(k) <= h:\n            r = k\n        else:\n            l = k + 1\n    return l",
+    "code": "def koko_eating_bananas(piles: list[int], h: int) -> int:\n\n    def hours(k:int) -> int:\n        return sum((p + k - 1) // k for p in piles)\n\n    l, r = 1, max(piles)\n    while l < r:\n        k = (l + r) // 2\n        if hours(k) <= h:\n            r = k\n        else:\n            l = k + 1\n    return l",
     "file_path": "backend/algorithms/problems/875-koko-eating-bananas/solution.py",
     "intuition": "- Binary searching the answer space, (eating speed `k`):\n    - The range of possible speeds is from `1` to `max(piles)`\n    - The key property is that the problem is **monotonic** (if a speed `k` is fast enough, any speed greater than `k` will also be fast enough)\n    - This allows us to binary search for the *minimum* valid speed\n    - We test a mid speed (`k = (l + r) // 2`)\n        - If it's valid (`hours(k) <= h`), we try to find a smaller valid speed by searching the lower half (`r = k`)\n        - If it's too slow, we must increase the speed by searching the upper half (`l = k + 1`)\n    - The loop converges on the smallest `k` that works 🍌",
     "kind": "function",
@@ -2722,7 +2722,7 @@
     "args": [
       "board"
     ],
-    "code": "def snakes_and_ladders(board: list[list[int]]) -> int:\n\n    flat_board =  [0] # Dummy 0 for 1-based indexing\n    for r, row in enumerate(reversed(board)):\n        flat_board.extend(row[::1 if r % 2 == 0 else -1])\n\n    target =(n:= len(board)) * n \n    moves, queue =  {1: 0}, deque([1])\n\n    while queue:\n        current = queue.popleft()\n        for roll in range(1, 7):\n            nxt = current + roll\n            if nxt > target:\n                break\n            landing = flat_board[nxt] if flat_board[nxt] != -1 else nxt\n            if landing not in moves:\n                moves[landing] = moves[current] + 1\n                if landing == target:\n                    return moves[landing]\n                queue.append(landing)\n    return -1",
+    "code": "def snakes_and_ladders(board: list[list[int]]) -> int:\n\n    flat_board =  [0]\n    for r, row in enumerate(reversed(board)):\n        flat_board.extend(row[::1 if r % 2 == 0 else -1])\n\n    target =(n:= len(board)) * n \n    moves, queue =  {1: 0}, deque([1])\n\n    while queue:\n        current = queue.popleft()\n        for roll in range(1, 7):\n            nxt = current + roll\n            if nxt > target:\n                break\n            landing = flat_board[nxt] if flat_board[nxt] != -1 else nxt\n            if landing not in moves:\n                moves[landing] = moves[current] + 1\n                if landing == target:\n                    return moves[landing]\n                queue.append(landing)\n    return -1",
     "file_path": "backend/algorithms/problems/909-snakes-and-ladders/solution.py",
     "intuition": "- Flatten the Board First 🎲\n    - The key insight here is to **pre-process the 2D `board` into a 1D `flat_board` list**. This powerful first step handles all the complex Boustrophedonical logic upfront. By doing this, the BFS loop becomes exceptionally clean and avoids the need for a coordinate conversion function. The search can then operate on a simple 1D array, treating the board as the simple, linear graph it truly represents.",
     "kind": "function",

@@ -1,3 +1,4 @@
+
 :is(.line-highlight) {
   display: inline-block;
   width: 100%;
@@ -34,11 +35,14 @@ pre .line {
   /* background-color: red; */
 }
 
-
-
 pre .line:is(.line-numbers *):not(:is(::before)) {
   margin-left: 2rem;
   /* background-color: blue; */
+}
+pre .line:is(.line-numbers *):is(.comment-symbol)::before {
+  color: var(--color-green-500);
+
+
 }
 pre .line:is(.line-numbers *)::before {
   content: counter(line);
@@ -50,6 +54,7 @@ pre .line:is(.line-numbers *)::before {
   /* width: 3em;
   text-align: right; */
   color: var(--color-gray-400);
+
   user-select: none;
   font-size: 0.9em;
   opacity: 0.7;
@@ -146,7 +151,6 @@ pre {
   animation: fade-in 0.15s ease-out;
 }
 
-
 /* Word highlighting uses unified step system */
 .word-highlight,
 .word-highlight > * {
@@ -162,7 +166,6 @@ pre {
   font-weight: 600;
   padding-inline: 0.2rem;
 }
-
 
 :root {
   --symbol-color: var(--color-blue-600);
@@ -202,20 +205,90 @@ pre {
       --symbol-color: var(--color-cyan-400);
     }
   }
+
+  .comment-symbol {
+    --symbol-color: var(--color-green-500);
+    .dark & {
+      --symbol-color: var(--color-green-400);
+    }
+  }
 }
 
+
+/* .comment-symbol{
+  background-color: --alpha(var(--symbol-color) / 50%);
+:before{
+    content: '💬';
+    position: absolute;
+    left: 2;
+    width: 3rem;
+    text-align: center;
+    color: var(--color-gray-400);
+    user-select: none;
+    font-size: 0.9em;
+    opacity: 0.7;
+    line-height: 1rem;
+    place-self: center;
+  }
+   
+} */
 /* Tooltip symbol styling */
 .tooltip-symbol {
   cursor: pointer;
   text-underline-offset: 2px;
   transition: all 0.2s ease-in-out;
-  border-radius: 2rem;
-  border-bottom: 2px dotted;
 
-  border-color:var(--symbol-color) ;
-  &:hover {
+/*  
+  &:is(.comment-symbol) {
     background-color: --alpha(var(--symbol-color) / 50%);
+  
+  } */
+
+
+  
+/* .expression-symbol {
+  &:hover {
+  
+   &:is(.tooltip-symbol) {
+    background-color: --alpha(var(--symbol-color) / 80%);
+
   }
+  }
+} */
+  &:is( .expression-symbol> .tooltip-symbol) {
+    border-radius: 2rem;
+    border-bottom: 2px dotted;
+
+     border-color: --alpha(var(--symbol-color) / 70%);
+    /* border-color: var(--symbol-color); */
+
+     /* background-color: --alpha(var(--symbol-color) / 50%); */
+
+  }
+  &:not(.comment-symbol , .expression-symbol> .tooltip-symbol) {
+  /* &:not(.comment-symbol ) { */
+    border-radius: 2rem;
+    border-bottom: 2px dotted;
+
+    border-color: var(--symbol-color);
+  /* &:hover {
+    background-color: --alpha(var(--symbol-color) / 50%);
+    
+  } */
+}
+  &:not(.comment-symbol) {
+
+  &:hover {
+    background-color: --alpha(var(--symbol-color) / 20%);
+    /* &:is(.expression-symbol> .tooltip-symbol) { */
+    /* &:is(.expression-symbol> .tooltip-symbol) { */
+    &:is(.tooltip-symbol> .tooltip-symbol) {
+
+    /* padding-inline: 0.2rem; */
+    }
+  }
+}
+
 }
 /* Inline code with step highlighting */
 /* code[data-step] {

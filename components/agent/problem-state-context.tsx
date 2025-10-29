@@ -22,7 +22,7 @@ type ProblemStateProviderProps = {
 export function ProblemStateProvider({
   children,
   defaultFile,
-  defaultSection = 'definition'
+  defaultSection = 'code'
 }: ProblemStateProviderProps) {
   const [isExpanded, setExpanded] = useState(false)
   const [activeFile, setActiveFile] = useState(defaultFile)

@@ -42,14 +42,14 @@ def number_of_islands(grid: list[list[str]]) -> int:
         for j in range(n):
             if grid[i][j] == "1":
                 islands += 1
-                grid[i][j] = "0" # mark as visited
+                grid[i][j] = "0"
                 q = deque([(i, j)])
                 while q:
                     r, c = q.popleft()
                     for dr, dc in dirs:
                         nr, nc = r + dr, c + dc
                         if 0 <= nr < m and 0 <= nc < n and grid[nr][nc] == "1":
-                            grid[nr][nc] = "0" # mark as visited
+                            grid[nr][nc] = "0"
                             q.append((nr, nc)) 
     return islands
 ```

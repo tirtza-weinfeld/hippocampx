@@ -5,7 +5,7 @@ def rotting_oranges(grid: list[list[int]]) -> int:
     m, n = len(grid), len(grid[0])
     q, fresh = deque(), 0
     dirs = [(0,1),(0,-1),(1,0),(-1,0)]
-    
+
     for i in range(m):
         for j in range(n):
             if grid[i][j] == 2:
@@ -14,7 +14,7 @@ def rotting_oranges(grid: list[list[int]]) -> int:
                 fresh += 1
     if fresh == 0:
         return 0
-    
+
     minutes = 0
     while q and fresh:
         minutes += 1
@@ -26,6 +26,6 @@ def rotting_oranges(grid: list[list[int]]) -> int:
                     grid[nx][ny] = 2
                     fresh -= 1
                     q.append((nx, ny))
-    
+
     return minutes if fresh == 0 else -1
 ```

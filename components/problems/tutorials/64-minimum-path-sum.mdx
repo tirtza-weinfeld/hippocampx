@@ -17,15 +17,15 @@ Given a m x n grid,filled with non-negative numbers, find the minimum path from 
 ### [!(ProblemIntuition)] Intuition
 
 - Deep Dive: 2D to 1D:
-    - In the 2D DP table, each cell depends only on its top and left neighbors:
+        - In the 2D DP table, each cell depends only on its top and left neighbors:
         - `dp[i][j] = grid[i][j] + min(dp[i-1][j], dp[i][j-1])`
-    - That means to compute row i, you only need:
-        - the current row's left value (`dp[i][j-1]`), and
-        - the previous row's value at the same column (`dp[i-1][j]`).
-    - So you can compress the table into one list of length c (number of columns):
-        - `dp[j]` keeps the current min path sum at column j (effectively `dp[i][j]`),
-        - `dp[j-1]` is the left cell,
-        - and as you move row by row, `dp[j]` from the previous iteration serves as the top cell.
+        - That means to compute row i, you only need:
+            - the current row's left value (`dp[i][j-1]`), and
+            - the previous row's value at the same column (`dp[i-1][j]`).
+        - So you can compress the table into one list of length c (number of columns):
+            - `dp[j]` keeps the current min path sum at column j (effectively `dp[i][j]`),
+            - `dp[j-1]` is the left cell,
+            - and as you move row by row, `dp[j]` from the previous iteration serves as the top cell.
 
 ### [!(ProblemTimeComplexity)] Time Complexity
 

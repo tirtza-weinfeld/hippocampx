@@ -1,6 +1,7 @@
 import React, { isValidElement, cloneElement, ReactElement, JSXElementConstructor } from 'react';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
+import { MessageCircle, MessageCircleMore, MessageSquareText } from 'lucide-react';
 
 
 /**
@@ -37,9 +38,9 @@ export function tooltipifyJSX(
     return node.map((child, i) =>
       React.isValidElement(child)
         ? React.cloneElement(
-            tooltipifyJSX(child, renderContent) as React.ReactElement,
-            { key: child.key ?? i }
-          )
+          tooltipifyJSX(child, renderContent) as React.ReactElement,
+          { key: child.key ?? i }
+        )
         : tooltipifyJSX(child, renderContent)
     );
   }
@@ -53,6 +54,71 @@ export function tooltipifyJSX(
   const processedChildren = tooltipifyJSX(children as React.ReactNode, renderContent) as React.ReactNode;
 
   if (qname) {
+    const isCommentSymbol = typeof props.className === 'string' && props.className.includes('comment-symbol');
+
+    // Comment symbols get a special icon button appended inline
+    if (isCommentSymbol) {
+      return (
+        <Popover modal={false}>
+          <PopoverTrigger asChild>
+            <span className='relative group'>
+              {cloneElement(element, {
+                ...props,
+
+                className: cn(
+                  props.className as string,
+                  " cursor-pointer  transition-all duration-200 hover:bg-gray-200/30 dark:hover:bg-gray-800/30 ",
+                  "rounded-md",
+                  "",
+                  "hover:bg-green-500/10",
+
+          
+                  
+                )
+              }, processedChildren)}
+              {/* <MessageCircleMore className={cn(
+                
+                'absolute left-6 top-0 w-4 h-4 ',
+                'text-green-500/50 ',
+                'group-hover:scale-110',
+           
+                'group-hover:text-green-500',
+                'group-hover:bg-green-500/10',
+                " transition-all duration-200"
+              )} /> */}
+            </span>
+          </PopoverTrigger>
+          <PopoverContent className="w-96 max-h-96 rounded-lg overflow-y-auto p-0  border-none">
+
+            {renderContent(qname)}
+          </PopoverContent>
+        </Popover>
+      );
+    }
+
+    // Comment symbols get a special icon button appended inline
+    // if (isCommentSymbol) {
+    //   // Don't delete the data attribute yet, keep the span structure
+    //   return cloneElement(element, props, (
+    //     <Popover modal={false}>
+    //       <PopoverTrigger asChild className="cursor-pointer 
+    //         group
+    //           hover:bg-green-500/20
+    //           inline-flex items-center 
+    //           justify-center ml-2 w-2 h-5 rounded-md
+    //            text-green-500 hover:text-green-600 dark:text-green-400
+    //             dark:hover:text-green-300 hover:bg-green-50 dark:hover:bg-green-950/30 transition-all duration-200 cursor-pointer"
+    //         aria-label="View inline comment"
+    //       >
+    //         <span className='bg-green-500  w-1 h-3/4 rounded-full group-hover:w-2  '></span>
+    //       </PopoverTrigger>
+    //       <PopoverContent className="w-96 max-h-96 rounded-lg overflow-y-auto p-0 border-none">
+    //         {renderContent(qname)}
+    //       </PopoverContent>
+    //     </Popover>
+    //   ));
+    // }
+
     // Remove tooltip attributes from the span
     delete props['data-tooltip-symbol'];
     // Remove the tooltip-symbol class
@@ -63,19 +129,19 @@ export function tooltipifyJSX(
         .join(' ');
     }
 
-   
+    // Regular tooltip symbols use Popover
     return (
       <Popover modal={false}>
         <PopoverTrigger asChild>
           {cloneElement(element, {
             ...props,
+
             className: cn(
               props.className as string,
-              "cursor-pointer px-1.5 transition-all duration-300 hover:bg-gray-200/30 dark:hover:bg-gray-800/30 rounded-md"
+              "cursor-pointer transition-all duration-300 hover:bg-gray-200/30 dark:hover:bg-gray-800/30 rounded-md"
             )
           }, processedChildren)}
         </PopoverTrigger>
-        {/* <PopoverContent className="w-[90vw]  max-h-96 rounded-xl overflow-y-auto p-0 "> */}
         <PopoverContent className="w-96 max-h-96 rounded-lg overflow-y-auto p-0  border-none">
 
           {renderContent(qname)}
@@ -83,6 +149,7 @@ export function tooltipifyJSX(
       </Popover>
     );
   }
+
 
   // Recursively process children
   return cloneElement(element, props, processedChildren);

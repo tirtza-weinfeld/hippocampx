@@ -115,9 +115,7 @@ function formatIntuitionContent(content: string): string {
 
 function formatCodeBlock(code: string, language: string = 'python', sourcePath?: string): string {
   const sourceAttr = sourcePath ? ` meta="source=problems/${sourcePath}"` : ''
-  // Normalize consecutive newlines (3+ newlines -> 2 newlines = 1 blank line)
-  const normalizedCode = code.trim().replace(/\n{3,}/g, '\n\n')
-  return `\`\`\`${language}${sourceAttr}\n${normalizedCode}\n\`\`\`\n\n`
+  return `\`\`\`${language}${sourceAttr}\n${code.trim()}\n\`\`\`\n\n`
 }
 
 // function formatVariables(variables: Record<string, string>): string {

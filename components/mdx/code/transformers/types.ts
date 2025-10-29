@@ -112,6 +112,8 @@ export interface SymbolMetadata {
 export type UsesData = Record<string, SymbolUse[]>;
 /** Expression usage data indexed by filename */
 export type ExpressionsData = Record<string, ExpressionUse[]>;
+/** Inline comments data indexed by filename - array of line numbers (in cleaned code coordinates) */
+export type CommentsInlineData = Record<string, number[]>;
 /** LSP symbol definition data */
 export type LspData = LspIndex;
 /** Symbol metadata indexed by qualified name */

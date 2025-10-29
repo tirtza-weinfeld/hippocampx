@@ -37,7 +37,7 @@
       "dynamic-programming"
     ],
     "createdAt": "2025-10-24T16:39:16.579858",
-    "updatedAt": "2025-10-27T10:16:12.582587"
+    "updatedAt": "2025-10-29T17:13:18.107723"
   },
   {
     "id": "1-two-sum",
@@ -457,7 +457,7 @@
       "kahn's algorithm"
     ],
     "createdAt": "2025-10-28T10:30:03.325215",
-    "updatedAt": "2025-10-28T11:25:20.818604"
+    "updatedAt": "2025-10-29T17:12:44.194916"
   },
   {
     "id": "33-search-in-rotated-sorted-array",

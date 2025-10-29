@@ -6,11 +6,9 @@ def best_time_to_buy_and_sell_stock_III(prices: list[int]) -> int:
 
     for p in prices:
 
-        # First trade
         t1_cost = min(t1_cost, p) 
         t1_profit = max(t1_profit, p - t1_cost)
 
-        # Second trade
         t2_cost = min(t2_cost, p - t1_profit)
         t2_profit = max(t2_profit, p - t2_cost)
 

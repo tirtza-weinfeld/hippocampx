@@ -7,21 +7,21 @@ def shortest_path_in_a_grid_with_obstacles_elimination(grid: list[list[int]], k:
 
     def h(r: int, c: int) -> int:
         return manhattan_distance((r, c), (rows - 1, cols - 1))
-    
+
     if k >= (md:= h(0, 0)) - 1:
         return md
 
     pq = [(md, 0, 0, 0, k)]
-    
+
     max_k = [[-1] * cols for _ in range(rows)]
     max_k[0][0] = k
 
     while pq:
         _, steps, r, c, remaining_k = heapq.heappop(pq)
-        
+
         if (r, c) == (rows - 1, cols - 1):
             return steps
-        
+
         if remaining_k < max_k[r][c]:
             continue
 
@@ -30,7 +30,7 @@ def shortest_path_in_a_grid_with_obstacles_elimination(grid: list[list[int]], k:
                 if (new_remaining_k := remaining_k - grid[nr][nc] ) > max_k[nr][nc]:
                     max_k[nr][nc] = new_remaining_k
                     heapq.heappush(pq, ((steps + 1) + h(nr, nc), steps + 1, nr, nc, new_remaining_k))
-                    
+
     return -1
 
 def manhattan_distance(a: tuple[int, int], b: tuple[int, int]) -> int:

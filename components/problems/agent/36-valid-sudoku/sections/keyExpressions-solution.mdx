@@ -1,6 +1,6 @@
 - `if (`: Check for duplicates
 - `if (num := board[r][c]) != "."`: Skip empty cells
 - `cube_index := (r // 3) * 3 + (c // 3)`: The formula works by treating the *9×9* board as a *3×3* grid of *3×3* boxes:
-        - **[pink!]r//3** gives which *[pink!]box-row* (0,1,2) you're in;
-        - **[purple!]c//3** gives which *[purple!]box-column* (0,1,2).
-        - Multiplying the *[pink!]box-row* by *[pink!]3* and adding the *[purple!]box-column* yields a unique index 0–8 for each *3×3* cube.
+         - **[pink!]r//3** gives which *[pink!]box-row* (0,1,2) you're in;
+         - **[purple!]c//3** gives which *[purple!]box-column* (0,1,2).
+         - Multiplying the *[pink!]box-row* by *[pink!]3* and adding the *[purple!]box-column* yields a unique index 0–8 for each *3×3* cube.

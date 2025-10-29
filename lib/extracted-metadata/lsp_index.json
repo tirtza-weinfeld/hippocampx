@@ -62,7 +62,7 @@
           "name": "bellman_ford_classic",
           "detail": "bellman_ford_classic(vertices: list[str], edges: list[tuple[str, str, float]], source: str) -> dict[str, float]",
           "kind": 12,
-          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 21, "character": 12}},
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 20, "character": 12}},
           "nameRange": {
             "start": {
               "line": 0,
@@ -84,7 +84,7 @@
           "name": "bellman_ford_layered_dag",
           "detail": "bellman_ford_layered_dag(vertices: list[str], edges: list[tuple[str, str, float]], source: str) -> dict[str, float]",
           "kind": 12,
-          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 42, "character": 12}},
+          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 36, "character": 12}},
           "nameRange": {
             "start": {
               "line": 2,
@@ -600,7 +600,7 @@
           "name": "best_time_to_buy_and_sell_stock_III",
           "detail": "best_time_to_buy_and_sell_stock_III(prices: list[int]) -> int",
           "kind": 12,
-          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 15, "character": 20}},
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 13, "character": 20}},
           "nameRange": {
             "start": {
               "line": 0,
@@ -692,7 +692,7 @@
           "name": "word_ladder",
           "detail": "word_ladder(beginWord: str, endWord: str, wordList: list[str]) -> int",
           "kind": 12,
-          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 32, "character": 12}},
+          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 31, "character": 12}},
           "nameRange": {
             "start": {
               "line": 2,
@@ -1923,14 +1923,14 @@
           "name": "rob",
           "detail": "rob(houses: list[int]) -> int",
           "kind": 12,
-          "range": {"start": {"line": 12, "character": 0}, "end": {"line": 15, "character": 63}},
+          "range": {"start": {"line": 11, "character": 0}, "end": {"line": 14, "character": 63}},
           "nameRange": {
             "start": {
-              "line": 12,
+              "line": 11,
               "character": 4
             },
             "end": {
-              "line": 12,
+              "line": 11,
               "character": 7
             }
           },
@@ -1945,7 +1945,7 @@
           "name": "circularRob",
           "detail": "circularRob(houses: list[int]) -> int",
           "kind": 12,
-          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 4, "character": 49}},
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 3, "character": 49}},
           "nameRange": {
             "start": {
               "line": 0,
@@ -1962,14 +1962,14 @@
           "name": "rob",
           "detail": "rob(houses: list[int]) -> int",
           "kind": 12,
-          "range": {"start": {"line": 7, "character": 0}, "end": {"line": 11, "character": 13}},
+          "range": {"start": {"line": 5, "character": 0}, "end": {"line": 9, "character": 13}},
           "nameRange": {
             "start": {
-              "line": 7,
+              "line": 5,
               "character": 4
             },
             "end": {
-              "line": 7,
+              "line": 5,
               "character": 7
             }
           },
@@ -2428,7 +2428,7 @@
           "name": "search",
           "detail": "search(nums: list[int], target: int) -> int",
           "kind": 12,
-          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 19, "character": 13}},
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 17, "character": 13}},
           "nameRange": {
             "start": {
               "line": 0,
@@ -2624,7 +2624,7 @@
           "name": "max_sum_of_rectangle_no_larger_than_k",
           "detail": "max_sum_of_rectangle_no_larger_than_k(mat: list[list[int]], k: int) -> int",
           "kind": 12,
-          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 55, "character": 14}},
+          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 42, "character": 14}},
           "nameRange": {
             "start": {
               "line": 2,
@@ -2640,14 +2640,14 @@
               "name": "kadane_leq",
               "detail": "kadane_leq(arr: list[int], K: int) -> int | None",
               "kind": 12,
-              "range": {"start": {"line": 10, "character": 4}, "end": {"line": 17, "character": 42}},
+              "range": {"start": {"line": 8, "character": 4}, "end": {"line": 15, "character": 42}},
               "nameRange": {
                 "start": {
-                  "line": 10,
+                  "line": 8,
                   "character": 8
                 },
                 "end": {
-                  "line": 10,
+                  "line": 8,
                   "character": 18
                 }
               },
@@ -2896,7 +2896,7 @@
           "name": "LFUCache",
           "detail": "class LFUCache",
           "kind": 5,
-          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 48, "character": 24}},
+          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 44, "character": 24}},
           "nameRange": {
             "start": {
               "line": 2,
@@ -2929,7 +2929,7 @@
               "name": "_bump",
               "detail": "_bump(key: int)",
               "kind": 6,
-              "range": {"start": {"line": 10, "character": 4}, "end": {"line": 21, "character": 39}},
+              "range": {"start": {"line": 10, "character": 4}, "end": {"line": 19, "character": 39}},
               "nameRange": {
                 "start": {
                   "line": 10,
@@ -2946,14 +2946,14 @@
               "name": "get",
               "detail": "get(key: int) -> int",
               "kind": 6,
-              "range": {"start": {"line": 23, "character": 4}, "end": {"line": 27, "character": 30}},
+              "range": {"start": {"line": 21, "character": 4}, "end": {"line": 25, "character": 30}},
               "nameRange": {
                 "start": {
-                  "line": 23,
+                  "line": 21,
                   "character": 8
                 },
                 "end": {
-                  "line": 23,
+                  "line": 21,
                   "character": 11
                 }
               },
@@ -2963,14 +2963,14 @@
               "name": "put",
               "detail": "put(key: int, value: int) -> None",
               "kind": 6,
-              "range": {"start": {"line": 29, "character": 4}, "end": {"line": 48, "character": 24}},
+              "range": {"start": {"line": 27, "character": 4}, "end": {"line": 44, "character": 24}},
               "nameRange": {
                 "start": {
-                  "line": 29,
+                  "line": 27,
                   "character": 8
                 },
                 "end": {
-                  "line": 29,
+                  "line": 27,
                   "character": 11
                 }
               },
@@ -3157,7 +3157,7 @@
           "name": "zero_one_matrix",
           "detail": "zero_one_matrix(mat: list[list[int]]) -> list[list[int]]",
           "kind": 12,
-          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 20, "character": 15}},
+          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 19, "character": 15}},
           "nameRange": {
             "start": {
               "line": 2,
@@ -3806,7 +3806,7 @@
           "name": "cheapest_flights_with_at_most_k_stops",
           "detail": "cheapest_flights_with_at_most_k_stops(flights: list[list[int]], src: int, dst: int, k: int) -> int",
           "kind": 12,
-          "range": {"start": {"line": 3, "character": 0}, "end": {"line": 24, "character": 13}},
+          "range": {"start": {"line": 3, "character": 0}, "end": {"line": 21, "character": 13}},
           "nameRange": {
             "start": {
               "line": 3,
@@ -3946,7 +3946,7 @@
           "name": "koko_eating_bananas",
           "detail": "koko_eating_bananas(piles: list[int], h: int) -> int",
           "kind": 12,
-          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 13, "character": 12}},
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 12, "character": 12}},
           "nameRange": {
             "start": {
               "line": 0,

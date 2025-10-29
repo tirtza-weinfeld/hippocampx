@@ -2,6 +2,7 @@ import React from 'react';
 import { MarkdownRenderer } from '../parse';
 import type { SymbolMetadata } from './transformers/types';
 import { convertMathToKatex } from '@/lib/utils/math-to-katex';
+import commentsInlineSymbols from '@/lib/extracted-metadata/comments-inline-symbols.json';
 type TooltipMeta = SymbolMetadata;
 
 function TooltipHeader({ meta }: { meta: TooltipMeta }) {
@@ -176,11 +177,11 @@ function TooltipDescription({ meta }: { meta: TooltipMeta }) {
             from-slate-50/80 via-gray-50/60 to-transparent dark:from-slate-900/30 dark:via-gray-900/20 
             dark:to-transparent 
          shadow-sm backdrop-blur-sm">
-            <div className="flex items-center gap-2 mb-3">
+            {/* <div className="flex items-center gap-2 mb-3">
               <div className="w-1.5 h-1.5 bg-slate-500 rounded-full"></div>
               <div className="font-semibold text-slate-900 dark:text-slate-100 text-xs uppercase tracking-wider">Summary</div>
-            </div>
-            <MarkdownRenderer className=" leading-relaxed">
+            </div> */}
+            <MarkdownRenderer className=" leading-relaxed text-em-gradient font-bold">
               {meta.summary}
             </MarkdownRenderer>
           </div>
@@ -464,6 +465,21 @@ export function renderTooltipContent(
   qname: string,
   TOOLTIP_CONTENT: Record<string, SymbolMetadata>
 ): React.ReactNode {
+
+  // Check if this is an inline comment qname (format: "filename:comment-line:12")
+  if (qname.includes(':comment-line:')) {
+    const commentText = (commentsInlineSymbols as Record<string, string>)[qname];
+
+    if (commentText) {
+      return (
+        <div className="min-w-[280px] max-w-[420px] bg-white/90 dark:bg-gray-900/90 backdrop-blur-md shadow-lg  p-4">
+          <div className="text-sm text-green-700 dark:text-green-300 ">
+            {commentText}
+          </div>
+        </div>
+      );
+    }
+  }
 
   const meta = TOOLTIP_CONTENT[qname];
 

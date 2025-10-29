@@ -9,7 +9,7 @@
         "solution.py": {
           "intuition": "MRV (Minimum Remaining Values):\n    Candidates per cell: `{'1'..'9'} − (row ∪ col ∪ box)`.\n    MRV: pick the empty cell with the fewest candidates to prune hardest.\n    Place a digit tentatively, update sets, recurse; undo on failure (backtrack).\n    If any cell has 0 candidates, the branch is impossible → backtrack immediately.",
           "time_complexity": "O(9^k):\n    Let k be the number of empty cells (≤ 81).\n    practically Θ(∏(t=1 to k) m_t) where m_t = MRV-picked cell's candidate count at step t (usually ≪ 9)\n    MRV selection adds O(k) per level (≤ O(k^2) per path), dominated by the search",
-          "code": "def solve_sudoku(board: list[list[str]]) -> None:\n\n    D = set(\"123456789\")\n    rows = [set() for _ in range(9)]; cols = [set() for _ in range(9)]; boxes = [set() for _ in range(9)]\n    empties: list[tuple[int,int]] = []\n    for i in range(9):\n        for j in range(9):\n            v = board[i][j]\n            if v == '.': empties.append((i, j))\n            else: \n                rows[i].add(v); cols[j].add(v); boxes[i//3*3 + j//3].add(v)\n\n    def dfs() -> bool:\n        if not empties: return True\n        k, (i, j), cand = min(\n            ((t, (i, j), D - (rows[i] | cols[j] | boxes[i//3*3 + j//3])) for t, (i, j) in enumerate(empties)),\n            key=lambda x: len(x[2])\n        )\n        \n        empties.pop(k)\n        for d in cand:\n            board[i][j] = d; rows[i].add(d); cols[j].add(d); boxes[(b:=i//3*3 + j//3)].add(d)\n            if dfs(): return True\n            rows[i].remove(d); cols[j].remove(d); boxes[b].remove(d)\n        board[i][j] = '.'; empties.insert(k, (i, j))\n        return False\n\n    dfs()"
+          "code": "def solve_sudoku(board: list[list[str]]) -> None:\n\n    D = set(\"123456789\")\n    rows = [set() for _ in range(9)]; cols = [set() for _ in range(9)]; boxes = [set() for _ in range(9)]\n    empties: list[tuple[int,int]] = []\n    for i in range(9):\n        for j in range(9):\n            v = board[i][j]\n            if v == '.': empties.append((i, j))\n            else: \n                rows[i].add(v); cols[j].add(v); boxes[i//3*3 + j//3].add(v)\n\n    def dfs() -> bool:\n        if not empties: return True\n        k, (i, j), cand = min(\n            ((t, (i, j), D - (rows[i] | cols[j] | boxes[i//3*3 + j//3])) for t, (i, j) in enumerate(empties)),\n            key=lambda x: len(x[2])\n        )\n\n        empties.pop(k)\n        for d in cand:\n            board[i][j] = d; rows[i].add(d); cols[j].add(d); boxes[(b:=i//3*3 + j//3)].add(d)\n            if dfs(): return True\n            rows[i].remove(d); cols[j].remove(d); boxes[b].remove(d)\n        board[i][j] = '.'; empties.insert(k, (i, j))\n        return False\n\n    dfs()"
         }
       },
       "title": "Sudoku Solver",
@@ -51,7 +51,7 @@
         "solution.py": {
           "intuition": "Flatten the Board First 🎲\n    The key insight here is to **pre-process the 2D `board` into a 1D `flat_board` list**. This powerful first step handles all the complex Boustrophedonical logic upfront. By doing this, the BFS loop becomes exceptionally clean and avoids the need for a coordinate conversion function. The search can then operate on a simple 1D array, treating the board as the simple, linear graph it truly represents.",
           "time_complexity": "O(n^2)\n    where n is the dimension of the board. The initial flattening of the board takes O(n^2) time. The subsequent BFS visits each of the n^2 squares at most once.",
-          "code": "from collections import deque\n\ndef snakes_and_ladders(board: list[list[int]]) -> int:\n\n    flat_board =  [0] # Dummy 0 for 1-based indexing\n    for r, row in enumerate(reversed(board)):\n        flat_board.extend(row[::1 if r % 2 == 0 else -1])\n        \n    target =(n:= len(board)) * n \n    moves, queue =  {1: 0}, deque([1])\n\n    while queue:\n        current = queue.popleft()\n        for roll in range(1, 7):\n            nxt = current + roll\n            if nxt > target:\n                break\n            landing = flat_board[nxt] if flat_board[nxt] != -1 else nxt\n            if landing not in moves:\n                moves[landing] = moves[current] + 1\n                if landing == target:\n                    return moves[landing]\n                queue.append(landing)\n    return -1"
+          "code": "from collections import deque\n\ndef snakes_and_ladders(board: list[list[int]]) -> int:\n\n    flat_board =  [0]\n    for r, row in enumerate(reversed(board)):\n        flat_board.extend(row[::1 if r % 2 == 0 else -1])\n\n    target =(n:= len(board)) * n \n    moves, queue =  {1: 0}, deque([1])\n\n    while queue:\n        current = queue.popleft()\n        for roll in range(1, 7):\n            nxt = current + roll\n            if nxt > target:\n                break\n            landing = flat_board[nxt] if flat_board[nxt] != -1 else nxt\n            if landing not in moves:\n                moves[landing] = moves[current] + 1\n                if landing == target:\n                    return moves[landing]\n                queue.append(landing)\n    return -1"
         }
       },
       "title": "Snakes and Ladders",
@@ -63,7 +63,7 @@
     "265-paint-house-ii": {
       "time_stamps": {
         "created_at": "2025-10-24T16:39:16.579858",
-        "updated_at": "2025-10-27T10:16:12.582587"
+        "updated_at": "2025-10-29T17:13:18.107723"
       },
       "solutions": {
         "bottom-up.py": {
@@ -72,7 +72,7 @@
         "top-down.py": {
           "intuition": "Deep Dive: Paint House (k colors) — Top-down DP with explicit memoization\n        Subproblems: dp(i, c) = min total cost to paint suffix houses [i:] given house i is color c\n        Relate: *$dp(i,c) = {costs}[i][c] + \\min_{c \\!= c} dp(i+1,c')$*\n        Topological order: decreasing i (each dp(i,·) depends only on dp(i+1,·)) ⇒ acyclic\n        Base case: dp(n, c) = 0 for all c (no houses left)\n        Original problem: answer = min(dp(0, c)) over all colors c",
           "time_complexity": "O(n * k):\n        *n* rows x *O(k)* per row using *(m1, m2, c1)* trick\n\n    Space:\n        Θ(n·k) for memo (stores a length-k row per i)",
-          "code": "\nclass Solution:\n    def minCostII(self, costs: list[list[int]]) -> int:\n        n, k, memo = len(costs), len(costs[0]) , {}\n\n        def dp(i: int) -> list[int]:\n            if i == n:\n                return [0] * k\n\n            if i not in memo:\n                nxt = dp(i + 1)\n\n                m1 = m2 = float(\"inf\"); c1 = -1\n                for c, v in enumerate(nxt):\n                    if v < m1:\n                        m2, m1, c1 = m1, v, c\n                    elif v < m2:\n                        m2 = v\n                memo[i] = [costs[i][c] + (m2 if c == c1 else m1) for c in range(k)]\n            return memo[i]\n\n        return min(dp(0))"
+          "code": "class Solution:\n    def minCostII(self, costs: list[list[int]]) -> int:\n        n, k, memo = len(costs), len(costs[0]) , {}\n\n        def dp(i: int) -> list[int]:\n            if i == n:\n                return [0] * k\n\n            if i not in memo:\n                nxt = dp(i + 1)\n\n                m1 = m2 = float(\"inf\"); c1 = -1\n                for c, v in enumerate(nxt):\n                    if v < m1:\n                        m2, m1, c1 = m1, v, c\n                    elif v < m2:\n                        m2 = v\n                memo[i] = [costs[i][c] + (m2 if c == c1 else m1) for c in range(k)]\n            return memo[i]\n\n        return min(dp(0))"
         }
       },
       "title": "Paint House II",
@@ -129,7 +129,7 @@
           "expressions": {
             "heapq.heappush(pq, (steps + 1, nr, nc, new_k))": "The priority is simply the new step count.No heuristic is added, which is the only difference from the A* implementation.\n    'heapq.heappop(pq)': Pop the path with the lowest g_cost (steps) so far\n    'k_rem < max_k[r][c]': Prune paths that are suboptimal for a given cell"
           },
-          "code": "def shortest_path_in_a_grid_with_obstacles_elimination(grid: list[list[int]], k: int) -> int:\n\n    rows, cols = len(grid), len(grid[0])\n    if k >= rows + cols - 3:\n        return rows + cols - 2\n  \n    pq = [(0, 0, 0, k)]\n    \n    max_k = [[-1] * cols for _ in range(rows)]\n    max_k[0][0] = k\n\n    while pq:\n        \n        steps, r, c, k_rem = heapq.heappop(pq)\n        \n        if (r, c) == (rows - 1, cols - 1):\n            return steps\n        \n        if k_rem < max_k[r][c]:\n            continue\n\n        for dr, dc in [(0, 1), (0, -1), (1, 0), (-1, 0)]:\n            if 0 <= (nr:= r + dr) < rows and 0 <= (nc:= c + dc) < cols:\n                if (new_k:= k_rem - grid[nr][nc]) > max_k[nr][nc]:\n                    max_k[nr][nc] = new_k\n                    heapq.heappush(pq, (steps + 1, nr, nc, new_k))\n                    \n    return -1"
+          "code": "def shortest_path_in_a_grid_with_obstacles_elimination(grid: list[list[int]], k: int) -> int:\n\n    rows, cols = len(grid), len(grid[0])\n    if k >= rows + cols - 3:\n        return rows + cols - 2\n\n    pq = [(0, 0, 0, k)]\n\n    max_k = [[-1] * cols for _ in range(rows)]\n    max_k[0][0] = k\n\n    while pq:\n\n        steps, r, c, k_rem = heapq.heappop(pq)\n\n        if (r, c) == (rows - 1, cols - 1):\n            return steps\n\n        if k_rem < max_k[r][c]:\n            continue\n\n        for dr, dc in [(0, 1), (0, -1), (1, 0), (-1, 0)]:\n            if 0 <= (nr:= r + dr) < rows and 0 <= (nc:= c + dc) < cols:\n                if (new_k:= k_rem - grid[nr][nc]) > max_k[nr][nc]:\n                    max_k[nr][nc] = new_k\n                    heapq.heappush(pq, (steps + 1, nr, nc, new_k))\n\n    return -1"
         },
         "a_star.py": {
           "time_complexity": "O(m * n * k * log(m * n * k))",
@@ -140,7 +140,7 @@
             "new_remaining_k": "= remaining_k - grid[nr][nc], how many obstacle eliminations you will have left **after** moving to the next cell , if the cell is empty grid[nr][nc] is 0, if the cell is an obstacle grid[nr][nc] is 1.\n    'if remaining_k < max_k[r][c]': Handle items that are already outdated by the time they are popped.",
             "Topics": ""
           },
-          "code": "import heapq\n\n\n\ndef shortest_path_in_a_grid_with_obstacles_elimination(grid: list[list[int]], k: int) -> int:\n\n    rows, cols = len(grid), len(grid[0])\n\n    def h(r: int, c: int) -> int:\n        return manhattan_distance((r, c), (rows - 1, cols - 1))\n    \n    if k >= (md:= h(0, 0)) - 1:\n        return md\n\n    pq = [(md, 0, 0, 0, k)]\n    \n    max_k = [[-1] * cols for _ in range(rows)]\n    max_k[0][0] = k\n\n\n\n    while pq:\n        _, steps, r, c, remaining_k = heapq.heappop(pq)\n        \n        if (r, c) == (rows - 1, cols - 1):\n            return steps\n        \n        if remaining_k < max_k[r][c]:\n            continue\n\n        for dr, dc in [(0, 1), (0, -1), (1, 0), (-1, 0)]:\n            if 0 <= (nr:= r + dr) < rows and 0 <= (nc:= c + dc) < cols:\n                if (new_remaining_k := remaining_k - grid[nr][nc] ) > max_k[nr][nc]:\n                    max_k[nr][nc] = new_remaining_k\n                    heapq.heappush(pq, ((steps + 1) + h(nr, nc), steps + 1, nr, nc, new_remaining_k))\n                    \n    return -1\n\n\ndef manhattan_distance(a: tuple[int, int], b: tuple[int, int]) -> int:\n    return abs(a[0] - b[0]) + abs(a[1] - b[1])\n\n"
+          "code": "import heapq\n\ndef shortest_path_in_a_grid_with_obstacles_elimination(grid: list[list[int]], k: int) -> int:\n\n    rows, cols = len(grid), len(grid[0])\n\n    def h(r: int, c: int) -> int:\n        return manhattan_distance((r, c), (rows - 1, cols - 1))\n\n    if k >= (md:= h(0, 0)) - 1:\n        return md\n\n    pq = [(md, 0, 0, 0, k)]\n\n    max_k = [[-1] * cols for _ in range(rows)]\n    max_k[0][0] = k\n\n    while pq:\n        _, steps, r, c, remaining_k = heapq.heappop(pq)\n\n        if (r, c) == (rows - 1, cols - 1):\n            return steps\n\n        if remaining_k < max_k[r][c]:\n            continue\n\n        for dr, dc in [(0, 1), (0, -1), (1, 0), (-1, 0)]:\n            if 0 <= (nr:= r + dr) < rows and 0 <= (nc:= c + dc) < cols:\n                if (new_remaining_k := remaining_k - grid[nr][nc] ) > max_k[nr][nc]:\n                    max_k[nr][nc] = new_remaining_k\n                    heapq.heappush(pq, ((steps + 1) + h(nr, nc), steps + 1, nr, nc, new_remaining_k))\n\n    return -1\n\ndef manhattan_distance(a: tuple[int, int], b: tuple[int, int]) -> int:\n    return abs(a[0] - b[0]) + abs(a[1] - b[1])"
         },
         "bfs.py": {
           "intuition": "bfs with State-Budget Pruning 🔍:\n    The core idea is to perform a standard BFS over `(row, col, steps, remaining_k)` states, but only enqueue a move if it arrives at a cell with **strictly more** `remaining_k` than any prior visit. This pruning significantly reduces the number of states explored, making the algorithm much more efficient.\n    **Trivial shortcut:** If `k ≥ rows+cols–2`, you can go straight in `rows+cols–2` steps without ever touching an obstacle.\n    **Correctness guarantee:** Because BFS explores in order of increasing `steps`, the first time you dequeue the goal is the fewest-step path. Pruning by `remaining_k` never discards any shorter-step route—it simply avoids re-exploring dominated states.",
@@ -151,7 +151,7 @@
             "q": "(row, col, steps, remaining_k)",
             "min_steps": "Manhattan distance lower bound"
           },
-          "code": "from collections import deque\n\ndef shortest_path_in_a_grid_with_obstacles_elimination(grid: list[list[int]], k: int) -> int:\n    \n    rows, cols = len(grid), len(grid[0])\n    min_steps = rows + cols - 3 \n    if k >= min_steps:\n        return min_steps\n   \n    max_k = [[-1] * cols for _ in range(rows)]\n    max_k[0][0] = k\n\n    \n    q = deque([(0, 0, 0, k)])\n\n\n    while q:\n        r, c, steps, remaining_k = q.popleft()\n        for dr, dc in [(1,0), (-1,0), (0,1), (0,-1)]:\n            nr, nc = r + dr, c + dc\n            if 0 <= nr < rows and 0 <= nc < cols:\n                new_remaining_k = remaining_k - grid[nr][nc]\n                if new_remaining_k > max_k[nr][nc]:\n                    if (nr, nc) == (rows - 1, cols - 1):\n                        return steps + 1\n                    max_k[nr][nc] = new_remaining_k\n                    q.append((nr, nc, steps + 1, new_remaining_k))\n    return -1\n"
+          "code": "from collections import deque\n\ndef shortest_path_in_a_grid_with_obstacles_elimination(grid: list[list[int]], k: int) -> int:\n\n    rows, cols = len(grid), len(grid[0])\n    min_steps = rows + cols - 3 \n    if k >= min_steps:\n        return min_steps\n\n    max_k = [[-1] * cols for _ in range(rows)]\n    max_k[0][0] = k\n\n    q = deque([(0, 0, 0, k)])\n\n    while q:\n        r, c, steps, remaining_k = q.popleft()\n        for dr, dc in [(1,0), (-1,0), (0,1), (0,-1)]:\n            nr, nc = r + dr, c + dc\n            if 0 <= nr < rows and 0 <= nc < cols:\n                new_remaining_k = remaining_k - grid[nr][nc]\n                if new_remaining_k > max_k[nr][nc]:\n                    if (nr, nc) == (rows - 1, cols - 1):\n                        return steps + 1\n                    max_k[nr][nc] = new_remaining_k\n                    q.append((nr, nc, steps + 1, new_remaining_k))\n    return -1"
         }
       },
       "title": "Shortest Path in a Grid with Obstacles Elimination",
@@ -184,7 +184,7 @@
       },
       "solutions": {
         "solution.py": {
-          "code": "def decode_string(s: str) -> str:\n    stack, s = [], \"1[\" + s + \"]\"\n    for c in s:\n        if c == \"]\":\n            curr = []\n            while stack[-1] != \"[\":\n                curr.append(stack.pop())\n            stack.pop()  # remove \"[\"\n            num = []\n            while stack and stack[-1].isdigit():\n                num.append(stack.pop())\n            stack.append(\"\".join(reversed(curr)) * int(\"\".join(reversed(num))))\n        else:\n            stack.append(c)\n    return stack[0]"
+          "code": "def decode_string(s: str) -> str:\n    stack, s = [], \"1[\" + s + \"]\"\n    for c in s:\n        if c == \"]\":\n            curr = []\n            while stack[-1] != \"[\":\n                curr.append(stack.pop())\n            stack.pop()\n            num = []\n            while stack and stack[-1].isdigit():\n                num.append(stack.pop())\n            stack.append(\"\".join(reversed(curr)) * int(\"\".join(reversed(num))))\n        else:\n            stack.append(c)\n    return stack[0]"
         }
       },
       "title": "Decode String",
@@ -200,7 +200,7 @@
       },
       "solutions": {
         "solution.py": {
-          "code": "\nclass WordDictionary:\n\n    def __init__(self):\n        self.trie: dict[str, dict] = {}\n        self.END_MARKER = \"$\"\n\n    def add_word(self, word: str) -> None:\n        node = self.trie\n        for c in word:\n            node = node.setdefault(c, {})\n        node[self.END_MARKER] = True\n\n    def search(self, word: str) -> bool:\n\n        def dfs(node: dict, i: int) -> bool:\n\n            if i == len(word):\n                return self.END_MARKER in node\n\n            if (c := word[i]) == \".\":\n\n                return any(\n                    dfs(child, i + 1)\n                    for k, child in node.items()\n                    if k != self.END_MARKER\n                )\n            child = node.get(c)\n            return bool(child) and dfs(child, i + 1)\n\n        return dfs(self.trie, 0)"
+          "code": "class WordDictionary:\n\n    def __init__(self):\n        self.trie: dict[str, dict] = {}\n        self.END_MARKER = \"$\"\n\n    def add_word(self, word: str) -> None:\n        node = self.trie\n        for c in word:\n            node = node.setdefault(c, {})\n        node[self.END_MARKER] = True\n\n    def search(self, word: str) -> bool:\n\n        def dfs(node: dict, i: int) -> bool:\n\n            if i == len(word):\n                return self.END_MARKER in node\n\n            if (c := word[i]) == \".\":\n\n                return any(\n                    dfs(child, i + 1)\n                    for k, child in node.items()\n                    if k != self.END_MARKER\n                )\n            child = node.get(c)\n            return bool(child) and dfs(child, i + 1)\n\n        return dfs(self.trie, 0)"
         }
       },
       "title": "Design Add and Search Words Data Structure",
@@ -235,7 +235,7 @@
       "solutions": {
         "solution.py": {
           "intuition": "In a circle, first and last houses are adjacent — we cannot rob both\n    ⇒ Split into two linear cases:\n        exclude last house → `rob(houses[:-1])`\n        exclude first house → `rob(houses[1:])`\n    Take the better of the two.\n\n    Base case:\n        if only one house, rob it directly.",
-          "code": "def circularRob(houses: list[int]) -> int:\n    if len(houses) == 1:\n        return houses[0]\n    # compute two linear cases and choose max\n    return max(rob(houses[:-1]), rob(houses[1:]))\n\n# 198\ndef rob(houses: list[int]) -> int:\n    h1, h2 = 0, 0\n    for h in houses:\n        h2, h1 = h1, max(h1, h2 + h)\n    return h1"
+          "code": "def circularRob(houses: list[int]) -> int:\n    if len(houses) == 1:\n        return houses[0]\n    return max(rob(houses[:-1]), rob(houses[1:]))\n\ndef rob(houses: list[int]) -> int:\n    h1, h2 = 0, 0\n    for h in houses:\n        h2, h1 = h1, max(h1, h2 + h)\n    return h1"
         }
       },
       "title": "House Robber II",
@@ -263,7 +263,7 @@
             "k": "The mid pointer of the binary search"
           },
           "returns": "`int`: The minimum eating speed",
-          "code": "def koko_eating_bananas(piles: list[int], h: int) -> int:\n\n    def hours(k:int) -> int:\n        return sum((p + k - 1) // k for p in piles)\n        # return sum(math.ceil(pile / k) for pile in piles)\n\n    l, r = 1, max(piles)\n    while l < r:\n        k = (l + r) // 2\n        if hours(k) <= h:\n            r = k\n        else:\n            l = k + 1\n    return l"
+          "code": "def koko_eating_bananas(piles: list[int], h: int) -> int:\n\n    def hours(k:int) -> int:\n        return sum((p + k - 1) // k for p in piles)\n\n    l, r = 1, max(piles)\n    while l < r:\n        k = (l + r) // 2\n        if hours(k) <= h:\n            r = k\n        else:\n            l = k + 1\n    return l"
         }
       },
       "title": "Koko Eating Bananas",
@@ -282,10 +282,10 @@
           "code": "def longestCommonSubsequence(text1: str, text2: str) -> int:\n    memo = {}\n\n    def dp(i, j):\n        if i >= len(text1) or j >= len(text2):\n            return 0\n        if (k := (i, j)) not in memo:\n            if text1[i] == text2[j]:\n                memo[k] = 1 + dp(i + 1, j + 1)\n            else:\n                memo[k] = max(dp(i + 1, j), dp(i, j + 1))\n        return memo[k]\n\n    return dp(0, 0)"
         },
         "bottom-up-suffix.py": {
-          "code": "def longestCommonSubsequence( text1: str, text2: str) -> int:\n    n1, n2 = len(text1), len(text2)\n    dp = [[0] * (n2+1) for _ in range(n1+1)]\n    \n    for i in reversed(range(n1)):\n        for j in reversed(range(n2)):\n            if text1[i] == text2[j]:\n                dp[i][j] = 1 + dp[i + 1][j + 1]\n            else:\n                dp[i][j] = max(dp[i + 1][j], dp[i][j + 1])\n    return dp[0][0]\n"
+          "code": "def longestCommonSubsequence( text1: str, text2: str) -> int:\n    n1, n2 = len(text1), len(text2)\n    dp = [[0] * (n2+1) for _ in range(n1+1)]\n\n    for i in reversed(range(n1)):\n        for j in reversed(range(n2)):\n            if text1[i] == text2[j]:\n                dp[i][j] = 1 + dp[i + 1][j + 1]\n            else:\n                dp[i][j] = max(dp[i + 1][j], dp[i][j + 1])\n    return dp[0][0]"
         },
         "bottom-up-prefix-1d.py": {
-          "code": "\ndef longestCommonSubsequence(a: str, b: str) -> int:\n    if len(a) < len(b):  # keep b the shorter to save space\n        a, b = b, a\n    dp = [0] * (len(b) + 1)\n    for ca in a:\n        diag = 0\n        for j, cb in enumerate(b, 1):\n            diag, dp[j] = dp[j], (diag + 1 if ca == cb else max(dp[j], dp[j - 1]))\n    return dp[-1]"
+          "code": "def longestCommonSubsequence(a: str, b: str) -> int:\n    if len(a) < len(b):\n        a, b = b, a\n    dp = [0] * (len(b) + 1)\n    for ca in a:\n        diag = 0\n        for j, cb in enumerate(b, 1):\n            diag, dp[j] = dp[j], (diag + 1 if ca == cb else max(dp[j], dp[j - 1]))\n    return dp[-1]"
         }
       },
       "title": "Longest Common Subsequence",
@@ -301,7 +301,7 @@
       },
       "solutions": {
         "solution.py": {
-          "code": "from collections import defaultdict, OrderedDict\n\nclass LFUCache:\n    def __init__(self, capacity: int):\n        self.capacity    = capacity\n        self.cache       = {}  # key → value\n        self.freq        = {}  # key → freq\n        self.buckets     = defaultdict(OrderedDict)  # freq → keys in LRU order\n        self.minfreq     = 0\n\n    def _bump(self, key: int):\n        f = self.freq[key]\n        # remove from old bucket\n        del self.buckets[f][key]\n        if not self.buckets[f]:\n            del self.buckets[f]\n            if self.minfreq == f:\n                self.minfreq += 1\n                \n        # Promote the book to the next shelf up, placing it by the chair.\n        self.freq[key] +=1 # self.freq[key] = f + 1\n        self.buckets[f + 1][key] = None\n\n    def get(self, key: int) -> int:\n        if key not in self.cache:\n            return -1\n        self._bump(key)\n        return self.cache[key]\n\n    def put(self, key: int, value: int) -> None:\n        if self.capacity <= 0:\n            return\n\n        if key in self.cache:\n            self.cache[key] = value\n            self._bump(key)\n            return\n\n        # Evict from the far end of the least popular shelf.\n        if len(self.cache) >= self.capacity:\n            old_key, _ = self.buckets[self.minfreq].popitem(last=False)\n            del self.cache[old_key]\n            del self.freq[old_key]\n\n        # A new book starts on the bottom shelf, by the chair.\n        self.cache[key] = value\n        self.freq[key] = 1\n        self.buckets[1][key] = None\n        self.minfreq = 1"
+          "code": "from collections import defaultdict, OrderedDict\n\nclass LFUCache:\n    def __init__(self, capacity: int):\n        self.capacity    = capacity\n        self.cache       = {}\n        self.freq        = {}\n        self.buckets     = defaultdict(OrderedDict)\n        self.minfreq     = 0\n\n    def _bump(self, key: int):\n        f = self.freq[key]\n        del self.buckets[f][key]\n        if not self.buckets[f]:\n            del self.buckets[f]\n            if self.minfreq == f:\n                self.minfreq += 1\n\n        self.freq[key] +=1\n        self.buckets[f + 1][key] = None\n\n    def get(self, key: int) -> int:\n        if key not in self.cache:\n            return -1\n        self._bump(key)\n        return self.cache[key]\n\n    def put(self, key: int, value: int) -> None:\n        if self.capacity <= 0:\n            return\n\n        if key in self.cache:\n            self.cache[key] = value\n            self._bump(key)\n            return\n\n        if len(self.cache) >= self.capacity:\n            old_key, _ = self.buckets[self.minfreq].popitem(last=False)\n            del self.cache[old_key]\n            del self.freq[old_key]\n\n        self.cache[key] = value\n        self.freq[key] = 1\n        self.buckets[1][key] = None\n        self.minfreq = 1"
         }
       },
       "title": "LFU Cache",
@@ -450,10 +450,10 @@
       },
       "solutions": {
         "dp.py": {
-          "code": "\ndef best_time_to_buy_and_sell_stock_IV(k: int, prices: list[int]) -> int:\n\n    cost = [float(\"inf\")] * (k + 1)\n    profit = [0] * (k + 1)\n    for p in prices:\n        for t in range(1, k + 1):\n            cost[t] = min(cost[t], p - profit[t - 1])\n            profit[t] = max(profit[t], p - cost[t])\n    return profit[k]"
+          "code": "def best_time_to_buy_and_sell_stock_IV(k: int, prices: list[int]) -> int:\n\n    cost = [float(\"inf\")] * (k + 1)\n    profit = [0] * (k + 1)\n    for p in prices:\n        for t in range(1, k + 1):\n            cost[t] = min(cost[t], p - profit[t - 1])\n            profit[t] = max(profit[t], p - cost[t])\n    return profit[k]"
         },
         "states.py": {
-          "code": "       \n\ndef best_time_to_buy_and_sell_stock_IV(k: int, prices: list[int]) -> int:\n    buy  = [float(\"-inf\")] * (k + 1)\n    sell = [0] * (k + 1)\n    for p in prices:\n        for t in range(1, k + 1):\n            buy[t]  = max(buy[t],  sell[t - 1] - p)\n            sell[t] = max(sell[t], buy[t] + p)\n    return sell[k]"
+          "code": "def best_time_to_buy_and_sell_stock_IV(k: int, prices: list[int]) -> int:\n    buy  = [float(\"-inf\")] * (k + 1)\n    sell = [0] * (k + 1)\n    for p in prices:\n        for t in range(1, k + 1):\n            buy[t]  = max(buy[t],  sell[t - 1] - p)\n            sell[t] = max(sell[t], buy[t] + p)\n    return sell[k]"
         }
       },
       "title": "Best Time to Buy and Sell Stock IV",
@@ -529,7 +529,7 @@
             "pq": "Priority queue to store the state (cost, city, stops_taken)",
             "min_stops": "Tracks the minimum stops to reach each city"
           },
-          "code": "\nfrom collections import defaultdict\nimport heapq\n\n\ndef cheapest_flights_with_at_most_k_stops( flights: list[list[int]], src: int, dst: int, k: int) -> int:\n\n    graph = defaultdict(list)\n    for u, v, price in flights:\n        graph[u].append((v, price))\n\n    pq, min_stops = [(0, src, 0)], {}\n    \n    while pq:\n        cost, city, stops = heapq.heappop(pq)\n\n        # If we've already found a path to this city using fewer or equal stops, skip.\n        # A path with fewer stops must have been cheaper or equal due to PQ ordering.\n        if stops > min_stops.get(city, float(\"inf\")): continue\n        if city == dst: return cost\n\n        # Record the new minimum stops to reach this city\n        min_stops[city] = stops\n        if stops <= k:\n            for neighbor, price in graph[city]:\n                heapq.heappush(pq, (cost + price, neighbor, stops + 1))\n    return -1\n"
+          "code": "from collections import defaultdict\nimport heapq\n\ndef cheapest_flights_with_at_most_k_stops( flights: list[list[int]], src: int, dst: int, k: int) -> int:\n\n    graph = defaultdict(list)\n    for u, v, price in flights:\n        graph[u].append((v, price))\n\n    pq, min_stops = [(0, src, 0)], {}\n\n    while pq:\n        cost, city, stops = heapq.heappop(pq)\n\n        if stops > min_stops.get(city, float(\"inf\")): continue\n        if city == dst: return cost\n\n        min_stops[city] = stops\n        if stops <= k:\n            for neighbor, price in graph[city]:\n                heapq.heappush(pq, (cost + price, neighbor, stops + 1))\n    return -1"
         },
         "bellman_ford.py": {
           "time_complexity": "O(kE)\n    where `k` is the number of stops and `E` is the number of flights.",
@@ -549,7 +549,7 @@
       },
       "solutions": {
         "solution.py": {
-          "code": "from bisect import bisect_left, insort\n\ndef max_sum_of_rectangle_no_larger_than_k(mat: list[list[int]], k: int) -> int:\n    # [Opt Loop Ordering] transpose so outer loops iterate the smaller dim (fewer (l,r) pairs)\n    m, n = len(mat), len(mat[0])\n    if m > n:\n        mat = [list(r) for r in zip(*mat)]\n        m, n = n, m\n\n    # [Kadane Fast-Path] classic Kadane; return value if ≤ k, else None → fall back to constrained step\n    def kadane_leq(arr: list[int], K: int) -> int | None:\n        best = cur = arr[0]\n        for x in arr[1:]:\n            cur = x if cur < 0 else cur + x  # Kadane \"extend or restart\"\n            best = max(best, cur)\n            if best == K:\n                return K  # [Early Exit] cannot beat K\n        return best if best <= K else None\n\n    ans = float(\"-inf\")\n\n    # ------------------- Technique 1: Column-Pair Compression (2D → 1D) -------------------\n    # Fix left/right columns; accumulate row sums inside this strip → a 1D array `row`.\n    # Any contiguous subarray of `row` == some rectangle between columns [l..r].\n    for l in range(n):\n        row = [0] * m\n        for r in range(l, n):\n            for i in range(m):\n                row[i] += mat[i][r]\n\n            # Example: if mat = [[1,2,3],[4,5,6],[7,8,9]], (l,r)=(0,1) → row=[1+2,4+5,7+8]=[3,9,15]\n\n            # ------------------- Technique 2: Kadane (fast path, unconstrained) -------------------\n            fast = kadane_leq(row, k)\n            if fast is not None:\n                ans = max(ans, fast)\n                if ans == k:\n                    return k  # [Early Exit]\n                continue\n\n            # ------------------- Technique 3: Ordered Prefix Sums + Binary Search -------------------\n            # 1D target: max subarray sum ≤ k on `row` with negatives allowed.\n            # Keep sorted prefix sums; for running sum s, find smallest prefix p ≥ s-k → s - p ≤ k and as large as possible.\n            # Example: row=[3,-2,5], k=6:\n            # pref=[0]; s=3→need ≥ -3→pick 0→cand=3; s=1→≥ -5→0→cand=1; s=6→≥ 0→0→cand=6 (best)\n            s, pref = 0, [0]\n            for v in row:\n                s += v\n                j = bisect_left(pref, s - k)  # find smallest prefix ≥ s-k\n                if j < len(pref):\n                    ans = max(ans, s - pref[j])\n                    if ans == k:\n                        return k  # [Early Exit]\n                insort(pref, s)  # keep prefixes sorted for future queries\n\n    return ans"
+          "code": "from bisect import bisect_left, insort\n\ndef max_sum_of_rectangle_no_larger_than_k(mat: list[list[int]], k: int) -> int:\n    m, n = len(mat), len(mat[0])\n    if m > n:\n        mat = [list(r) for r in zip(*mat)]\n        m, n = n, m\n\n    def kadane_leq(arr: list[int], K: int) -> int | None:\n        best = cur = arr[0]\n        for x in arr[1:]:\n            cur = x if cur < 0 else cur + x\n            best = max(best, cur)\n            if best == K:\n                return K\n        return best if best <= K else None\n\n    ans = float(\"-inf\")\n\n    for l in range(n):\n        row = [0] * m\n        for r in range(l, n):\n            for i in range(m):\n                row[i] += mat[i][r]\n\n            fast = kadane_leq(row, k)\n            if fast is not None:\n                ans = max(ans, fast)\n                if ans == k:\n                    return k\n                continue\n\n            s, pref = 0, [0]\n            for v in row:\n                s += v\n                j = bisect_left(pref, s - k)\n                if j < len(pref):\n                    ans = max(ans, s - pref[j])\n                    if ans == k:\n                        return k\n                insort(pref, s)\n\n    return ans"
         }
       },
       "title": "Max Sum of Rectangle No Larger Than K",
@@ -593,7 +593,7 @@
             "segments: list[int]": "List of integers (positive for forward, negative/zero for backward)."
           },
           "returns": "`int`: The length of the longest balanced subarray.",
-          "code": "import sys, os\nsys.path.append(os.path.join(os.path.dirname(__file__), '..','325-maximum-size-subarray-sum-equals-k'))\nfrom solution import maxSizeSubarraySumEqualsK\n\n\ndef findMaxLengthOfBalancedSubarray(segments: list[int]) -> int:\n    \n    normalized_segments = [1 if num > 0 else -1 for num in segments]\n    return maxSizeSubarraySumEqualsK(normalized_segments, 0)"
+          "code": "import sys, os\nsys.path.append(os.path.join(os.path.dirname(__file__), '..','325-maximum-size-subarray-sum-equals-k'))\nfrom solution import maxSizeSubarraySumEqualsK\n\ndef findMaxLengthOfBalancedSubarray(segments: list[int]) -> int:\n\n    normalized_segments = [1 if num > 0 else -1 for num in segments]\n    return maxSizeSubarraySumEqualsK(normalized_segments, 0)"
         }
       },
       "title": "Contiguous Array",
@@ -666,10 +666,10 @@
       },
       "solutions": {
         "solution.py": {
-          "code": "class Solution:\n\n    def findRedundantConnection(self, edges: list[list[int]]) -> list[int]:\n\n        p = [*range(len(edges) + 1)]\n\n        def union(a, b):\n            p[a] = b\n\n        def find(x):\n            while x != p[x]:\n                p[x] = p[p[x]]\n                x = p[x]\n            return x\n\n        for u, v in edges:\n            if (a := find(u)) == (b := find(v)):\n                return [u, v]\n            union(a, b)\n        return [] \n\n"
+          "code": "class Solution:\n\n    def findRedundantConnection(self, edges: list[list[int]]) -> list[int]:\n\n        p = [*range(len(edges) + 1)]\n\n        def union(a, b):\n            p[a] = b\n\n        def find(x):\n            while x != p[x]:\n                p[x] = p[p[x]]\n                x = p[x]\n            return x\n\n        for u, v in edges:\n            if (a := find(u)) == (b := find(v)):\n                return [u, v]\n            union(a, b)\n        return [] "
         },
         "rank.py": {
-          "code": "class Solution:\n    def findRedundantConnection(self, edges: list[list[int]]) -> list[int]:\n        \n        p = [*range(len(edges) + 1)]\n        r = [0] * (len(edges) + 1)\n\n        def union(a, b):\n            if r[a] < r[b]:\n                a, b = b, a\n            p[b] = a\n            if r[a] == r[b]:\n                r[a] += 1\n\n        def find(x):\n            while x != p[x]:\n                p[x] = p[p[x]]\n                x = p[x]\n            return x\n\n        for u, v in edges:\n            if (a := find(u)) == (b := find(v)):\n                return [u, v]\n            union(a, b)\n\n        return []"
+          "code": "class Solution:\n    def findRedundantConnection(self, edges: list[list[int]]) -> list[int]:\n\n        p = [*range(len(edges) + 1)]\n        r = [0] * (len(edges) + 1)\n\n        def union(a, b):\n            if r[a] < r[b]:\n                a, b = b, a\n            p[b] = a\n            if r[a] == r[b]:\n                r[a] += 1\n\n        def find(x):\n            while x != p[x]:\n                p[x] = p[p[x]]\n                x = p[x]\n            return x\n\n        for u, v in edges:\n            if (a := find(u)) == (b := find(v)):\n                return [u, v]\n            union(a, b)\n\n        return []"
         }
       },
       "title": "Redundant Connection",
@@ -746,9 +746,9 @@
           "code": "def hammingWeight( n: int) -> int:\n    return n.bit_count()"
         },
         "brian-kernighan.py": {
-          "intuition": "Brian Kernighan's algorithm:\n    counts the number of set bits (1s) in an integer efficiently by             repeatedly clearing the lowest set bit until the number becomes 0.\n\n    Deep Dive: Why this always works\n    When you subtract 1 from a binary number:\n        You flip the lowest set bit (1) to 0\n        And everything to the right of it flips to 1\n\n    Example:\n    Start\n        ```python\n        n = 13 (1101)\n        count = 0\n        ```\n    Iteration 1\n        ```python\n        n   = 1101 (13)\n        n-1 = 1100 (12)\n        ---------------- &\n        1100 (12)\n        count = 1\n        ```\n    Iteration 2\n        ```python\n        n   = 1100 (12)\n        n-1 = 1011 (11)\n        ---------------- &\n        1000 (8)\n        count = 2\n        ```\n    Iteration 3\n        ```python\n        n   = 1000 (8)\n        n-1 = 0111 (7)\n        ---------------- &\n        0000 (0)\n        count = 3\n        ```",
+          "intuition": "Brian Kernighan's algorithm:\n    counts the number of set bits (1s) in an integer efficiently by             repeatedly clearing the lowest set bit until the number becomes 0.\n\n    Deep Dive: Why this always works\n    When you subtract 1 from a binary number:\n            You flip the lowest set bit (1) to 0\n            And everything to the right of it flips to 1\n\n    Example:\n    Start\n        ```python\n            n = 13 (1101)\n            count = 0\n        ```\n    Iteration 1\n        ```python\n            n   = 1101 (13)\n            n-1 = 1100 (12)\n            ---------------- &\n                  1100 (12)\n            count = 1\n        ```\n    Iteration 2\n        ```python\n            n   = 1100 (12)\n            n-1 = 1011 (11)\n            ---------------- &\n                  1000 (8)\n            count = 2\n        ```\n    Iteration 3\n        ```python\n            n   = 1000 (8)\n            n-1 = 0111 (7)\n            ---------------- &\n                  0000 (0)\n            count = 3\n        ```",
           "time_complexity": "O(k):\n    where k = number of 1s (faster than looping 32 times)",
-          "code": "\ndef hammingWeight(n: int) -> int:\n    count = 0\n    while n:\n        n &= n - 1 # drop the lowest set bit\n        count += 1\n    return count\n    "
+          "code": "def hammingWeight(n: int) -> int:\n    count = 0\n    while n:\n        n &= n - 1\n        count += 1\n    return count"
         }
       },
       "title": "Number of 1 Bits",
@@ -783,7 +783,7 @@
       },
       "solutions": {
         "solution.py": {
-          "code": "def maximum_sum_of_circular_subarray(nums: list[int]) -> int:\n    total, max_end = min_end = 0\n    max_sum, min_sum = float(\"-inf\"), float(\"inf\")\n    for x in nums:\n        total += x\n        max_end = max(x, max_end + x)\n        max_sum = max(max_sum, max_end)  # Kadane (max)\n        min_end = min(x, min_end + x)\n        min_sum = min(min_sum, min_end)  # Kadane (min)\n    return max_sum if max_sum < 0 else max(max_sum, total - min_sum)"
+          "code": "def maximum_sum_of_circular_subarray(nums: list[int]) -> int:\n    total, max_end = min_end = 0\n    max_sum, min_sum = float(\"-inf\"), float(\"inf\")\n    for x in nums:\n        total += x\n        max_end = max(x, max_end + x)\n        max_sum = max(max_sum, max_end)\n        min_end = min(x, min_end + x)\n        min_sum = min(min_sum, min_end)\n    return max_sum if max_sum < 0 else max(max_sum, total - min_sum)"
         }
       },
       "title": "Maximum Sum of Circular Subarray",
@@ -803,7 +803,7 @@
           "expressions": {
             "heapreplace(h, x)": "replaces root with x, performs one sift-down          → O(log k) with ~½ the operations of heappush(sift-up)+heappop(sift-down) (≈ 2 × O(log k))"
           },
-          "code": "\nimport heapq\n\ndef findKthLargest(nums: list[int], k: int) -> int:\n    h = nums[:k]; heapq.heapify(h)\n    for x in nums[k:]:\n        if x > h[0]:\n            heapq.heapreplace(h, x) \n    return h[0]\n "
+          "code": "import heapq\n\ndef findKthLargest(nums: list[int], k: int) -> int:\n    h = nums[:k]; heapq.heapify(h)\n    for x in nums[k:]:\n        if x > h[0]:\n            heapq.heapreplace(h, x) \n    return h[0]"
         }
       },
       "title": "Kth Largest Element In An Array",
@@ -828,7 +828,7 @@
           "expressions": {
             "h2, h1 = h1, max(h1, h2 + h)": "choose best between:\n        - skipping this house → keep h1 (dp(i-1))\n        - robbing this house → add h to h2 (dp(i-2) + h)"
           },
-          "code": "\n\n\ndef rob(houses: list[int]) -> int:\n    h1, h2 = 0, 0\n    for h in houses:\n        h2, h1 = h1, max(h1, h2 + h)\n    return h1\n\n\n    "
+          "code": "def rob(houses: list[int]) -> int:\n    h1, h2 = 0, 0\n    for h in houses:\n        h2, h1 = h1, max(h1, h2 + h)\n    return h1"
         },
         "top-down-suffix.py": {
           "expressions": {
@@ -836,7 +836,7 @@
           },
           "intuition": "Deep Dive: Subproblems: dp(i) = maximum money obtainable robbing **suffix** `houses[i..n-1]`,             for 0 ≤ i ≤ n.  (*[4!]suffix ≙ starting from i until the end*)\n\n    Deep Dive: Relation: dp(i) = max(dp(i+1), houses[i] + dp(i+2))\n        Either skip house `i` (best stays `dp(i+1)`)\n        or rob it and skip `i+1` (best is `houses[i] + dp(i+2)`)\n\n    Deep Dive: Topo. order: Decreasing i\n        Subproblems `dp(i)` depend solely on strictly larger `i` so acyclic\n\n    Deep Dive: Base: dp(n)\n        max money obtainable robbing the empty suffix `houses[n..n]`\n\n    Deep Dive: Original: dp(0)\n        maximum money obtainable robbing suffix `houses[0..n-1]` (the whole array)",
           "time_complexity": "O(n):\n    *Θ(n)* subproblems, *Θ(1)* work each → *Θ(n)* total (with memoization)",
-          "code": "\n\n\ndef rob(houses: list[int]) -> int:\n\n    memo = {}\n    def dp(i: int) -> int:\n        if i >= len(houses):\n            return 0\n        if i not in memo:\n            memo[i] = max(dp(i + 1), houses[i] + dp(i + 2))\n        return memo[i]\n\n    return dp(0)\n"
+          "code": "def rob(houses: list[int]) -> int:\n\n    memo = {}\n    def dp(i: int) -> int:\n        if i >= len(houses):\n            return 0\n        if i not in memo:\n            memo[i] = max(dp(i + 1), houses[i] + dp(i + 2))\n        return memo[i]\n\n    return dp(0)"
         },
         "bottom-up-suffix.py": {
           "expressions": {
@@ -881,7 +881,7 @@
             "root": "Root node of the binary tree"
           },
           "returns": "`list[list[int]]`: List of lists, where each inner list contains values of nodes at the same level",
-          "code": "from collections import deque\n\ndef binary_tree_level_order_traversal(root) -> list[list[int]]:\n    \n    if not root:\n        return []\n    queue, result = deque([root]), []\n    while queue:\n        level = [] \n        for _ in range(len(queue)):  # Process nodes at the current level\n            node = queue.popleft()\n            level.append(node.val)\n            if node.left:\n                queue.append(node.left)\n            if node.right:\n                queue.append(node.right)\n        result.append(level)\n    return result"
+          "code": "from collections import deque\n\ndef binary_tree_level_order_traversal(root) -> list[list[int]]:\n\n    if not root:\n        return []\n    queue, result = deque([root]), []\n    while queue:\n        level = [] \n        for _ in range(len(queue)):\n            node = queue.popleft()\n            level.append(node.val)\n            if node.left:\n                queue.append(node.left)\n            if node.right:\n                queue.append(node.right)\n        result.append(level)\n    return result"
         }
       },
       "title": "Binary Tree Level Order Traversal",
@@ -929,7 +929,7 @@
     "207-course-schedule": {
       "time_stamps": {
         "created_at": "2025-10-28T10:30:03.325215",
-        "updated_at": "2025-10-28T11:25:20.818604"
+        "updated_at": "2025-10-29T17:12:44.194916"
       },
       "solutions": {
         "solution.py": {
@@ -961,7 +961,7 @@
       },
       "solutions": {
         "solution.py": {
-          "code": "def search(nums: list[int], target: int) -> int:\n    \n    l, r = 0, len(nums) - 1\n    while l <= r:\n        mid = (l + r) // 2\n        if nums[mid] == target:\n            return mid\n        # left half sorted\n        if nums[l] <= nums[mid]:\n            if nums[l] <= target < nums[mid]:\n                r = mid - 1\n            else:\n                l = mid + 1\n        # right half sorted\n        else:\n            if nums[mid] < target <= nums[r]:\n                l = mid + 1\n            else:\n                r = mid - 1\n    return -1"
+          "code": "def search(nums: list[int], target: int) -> int:\n\n    l, r = 0, len(nums) - 1\n    while l <= r:\n        mid = (l + r) // 2\n        if nums[mid] == target:\n            return mid\n        if nums[l] <= nums[mid]:\n            if nums[l] <= target < nums[mid]:\n                r = mid - 1\n            else:\n                l = mid + 1\n        else:\n            if nums[mid] < target <= nums[r]:\n                l = mid + 1\n            else:\n                r = mid - 1\n    return -1"
         }
       },
       "title": "Search In Rotated Sorted Array",
@@ -1011,12 +1011,12 @@
       },
       "solutions": {
         "solution.py": {
-          "intuition": "The goal is to find the *inflection point* in the rotated list (where the numbers switch from high to low) — this point is the minimum element.\n    We use a modified binary search to home in on this point.\n    The key is comparing the middle element `nums[mid]` with the rightmost element `nums[r]`. This comparison tells us which part of the array is currently sorted and can be discarded.\n        **Case 1: `nums[mid] < nums[r]`**\n        **Example:** In `[4, 5, 1, 2, 3]`, if `mid` points to `1`, `nums[mid]` (`1`) is less than `nums[r]` (`3`).\n        **Logic:** This indicates that the entire right portion of the array from `mid` to `r` (i.e., `[1, 2, 3]`) is sorted. The minimum element could be `nums[mid]` itself, or it could be to its left. We can safely search the left half (including `mid`) by setting `r = mid`.\n        **Case 2: `nums[mid] >= nums[r]`**\n        **Example:** In `[4, 5, 1, 2, 3]`, if `mid` points to `5` in an earlier step, `nums[mid]` (`5`) is greater than `nums[r]` (`3`).\n        **Logic:** This indicates that the inflection point (the minimum value) must lie to the right of `mid`. The left portion `[4, 5]` is sorted but contains values larger than the true minimum. We discard this left portion by setting `l = mid + 1`.\n    The loop terminates when `l` and `r` converge, at which point `nums[l]` is the smallest element.",
+          "intuition": "The goal is to find the *inflection point* in the rotated list (where the numbers switch from high to low) — this point is the minimum element.\n    We use a modified binary search to home in on this point.\n    The key is comparing the middle element `nums[mid]` with the rightmost element `nums[r]`. This comparison tells us which part of the array is currently sorted and can be discarded.\n        **Case 1: `nums[mid] < nums[r]`**\n            **Example:** In `[4, 5, 1, 2, 3]`, if `mid` points to `1`, `nums[mid]` (`1`) is less than `nums[r]` (`3`).\n            **Logic:** This indicates that the entire right portion of the array from `mid` to `r` (i.e., `[1, 2, 3]`) is sorted. The minimum element could be `nums[mid]` itself, or it could be to its left. We can safely search the left half (including `mid`) by setting `r = mid`.\n        **Case 2: `nums[mid] >= nums[r]`**\n            **Example:** In `[4, 5, 1, 2, 3]`, if `mid` points to `5` in an earlier step, `nums[mid]` (`5`) is greater than `nums[r]` (`3`).\n            **Logic:** This indicates that the inflection point (the minimum value) must lie to the right of `mid`. The left portion `[4, 5]` is sorted but contains values larger than the true minimum. We discard this left portion by setting `l = mid + 1`.\n    The loop terminates when `l` and `r` converge, at which point `nums[l]` is the smallest element.",
           "expressions": {
             "r = mid": "If nums[mid] is less than nums[r], the minimum is in the left half (inclusive of mid).",
             "l = mid + 1": "the smallest is on the right"
           },
-          "code": "def find_minimum_in_rotated_sorted_array(nums: list[int]) -> int:\n        \n    l, r = 0, len(nums) - 1\n    while l < r:\n        mid = (l + r) // 2\n        if nums[mid] < nums[r]:\n            r = mid\n        else:\n            l = mid + 1 \n    return nums[l]"
+          "code": "def find_minimum_in_rotated_sorted_array(nums: list[int]) -> int:\n\n    l, r = 0, len(nums) - 1\n    while l < r:\n        mid = (l + r) // 2\n        if nums[mid] < nums[r]:\n            r = mid\n        else:\n            l = mid + 1 \n    return nums[l]"
         }
       },
       "title": "Find Minimum in Rotated Sorted Array",
@@ -1034,7 +1034,7 @@
         "solution.py": {
           "intuition": "Multi-Source BFS 🍊:\n    The key is to initialize the queue with the coordinates of *all* initially rotten oranges. The BFS then naturally simulates the rotting process in parallel from all sources. Each \"level\" of the BFS corresponds to one minute passing. Finally, you must check if any `fresh_oranges` remain to handle cases where some are unreachable.",
           "time_complexity": "O(m * n):\n    where m and n are the dimensions of the grid. Each cell is enqueued and dequeued at most once, making the process highly efficient and optimal.",
-          "code": "from collections import deque\n\ndef rotting_oranges(grid: list[list[int]]) -> int:\n    m, n = len(grid), len(grid[0])\n    q, fresh = deque(), 0\n    dirs = [(0,1),(0,-1),(1,0),(-1,0)]\n    \n    for i in range(m):\n        for j in range(n):\n            if grid[i][j] == 2:\n                q.append((i, j))\n            elif grid[i][j] == 1:\n                fresh += 1\n    if fresh == 0:\n        return 0\n    \n    minutes = 0\n    while q and fresh:\n        minutes += 1\n        for _ in range(len(q)):\n            x, y = q.popleft()\n            for dx, dy in dirs:\n                nx, ny = x + dx, y + dy\n                if 0 <= nx < m and 0 <= ny < n and grid[nx][ny] == 1:\n                    grid[nx][ny] = 2\n                    fresh -= 1\n                    q.append((nx, ny))\n    \n    return minutes if fresh == 0 else -1"
+          "code": "from collections import deque\n\ndef rotting_oranges(grid: list[list[int]]) -> int:\n    m, n = len(grid), len(grid[0])\n    q, fresh = deque(), 0\n    dirs = [(0,1),(0,-1),(1,0),(-1,0)]\n\n    for i in range(m):\n        for j in range(n):\n            if grid[i][j] == 2:\n                q.append((i, j))\n            elif grid[i][j] == 1:\n                fresh += 1\n    if fresh == 0:\n        return 0\n\n    minutes = 0\n    while q and fresh:\n        minutes += 1\n        for _ in range(len(q)):\n            x, y = q.popleft()\n            for dx, dy in dirs:\n                nx, ny = x + dx, y + dy\n                if 0 <= nx < m and 0 <= ny < n and grid[nx][ny] == 1:\n                    grid[nx][ny] = 2\n                    fresh -= 1\n                    q.append((nx, ny))\n\n    return minutes if fresh == 0 else -1"
         }
       },
       "title": "Rotting Oranges",
@@ -1101,7 +1101,7 @@
             "nums: list[int]": "list of integers (can include negatives)"
           },
           "returns": "`int`: int: Maximum subarray sum",
-          "code": "def maximum_subarray(nums: list[int]) -> int:\n    max_sum = curr_sum = float(\"-inf\")\n    for num in nums:\n        curr_sum = max(num, curr_sum + num)\n        max_sum = max(max_sum, curr_sum)\n    return max_sum\n\n"
+          "code": "def maximum_subarray(nums: list[int]) -> int:\n    max_sum = curr_sum = float(\"-inf\")\n    for num in nums:\n        curr_sum = max(num, curr_sum + num)\n        max_sum = max(max_sum, curr_sum)\n    return max_sum"
         }
       },
       "title": "Maximum Subarray",
@@ -1117,7 +1117,7 @@
       },
       "solutions": {
         "solution.py": {
-          "code": "class SparseVector:\n    __slots__ = (\"m\",)\n    def __init__(self, nums: list[int]):\n        self.m = {i: v for i, v in enumerate(nums) if v}\n\n    def dotProduct(self, vec: 'SparseVector') -> int:  \n        a, b = (self.m, vec.m) if len(self.m) <= len(vec.m) else (vec.m, self.m)\n        s = 0\n        for i, v in a.items():          \n            if (w := b.get(i)) is not None:\n                s += v * w\n        return s\n\n\n\n# Your SparseVector object will be instantiated and called as such:\n# v1 = SparseVector(nums1)\n# v2 = SparseVector(nums2)\n# ans = v1.dotProduct(v2)"
+          "code": "class SparseVector:\n    __slots__ = (\"m\",)\n    def __init__(self, nums: list[int]):\n        self.m = {i: v for i, v in enumerate(nums) if v}\n\n    def dotProduct(self, vec: 'SparseVector') -> int:  \n        a, b = (self.m, vec.m) if len(self.m) <= len(vec.m) else (vec.m, self.m)\n        s = 0\n        for i, v in a.items():          \n            if (w := b.get(i)) is not None:\n                s += v * w\n        return s"
         }
       },
       "title": "Dot Product of Two Sparse Vectors",
@@ -1178,7 +1178,7 @@
           "variables": {
             "stack": "indices with strictly increasing heights"
           },
-          "code": "\ndef largestRectangleArea(heights: list[int]) -> int:\n    heights.append(0)\n    stack = [-1]; best = 0\n    for r, h in enumerate(heights):\n        while stack[-1] != -1 and heights[stack[-1]] > h:\n            l = stack.pop()\n            best = max(best, heights[l] * (r - stack[-1] - 1))\n        stack.append(r)\n    heights.pop()\n    return best"
+          "code": "def largestRectangleArea(heights: list[int]) -> int:\n    heights.append(0)\n    stack = [-1]; best = 0\n    for r, h in enumerate(heights):\n        while stack[-1] != -1 and heights[stack[-1]] > h:\n            l = stack.pop()\n            best = max(best, heights[l] * (r - stack[-1] - 1))\n        stack.append(r)\n    heights.pop()\n    return best"
         }
       },
       "title": "Largest Rectangle in Histogram",
@@ -1194,9 +1194,9 @@
       },
       "solutions": {
         "solution.py": {
-          "intuition": "Using bitwise XOR to cancel out the duplicates:\n    XOR cancels pairs (a^a=0, a^0=a; associative/commutative), so the lone element remains\n\n    Deep Dive: XOR Reminder\n    XOR properties:\n        a ^ a = 0 (a number XOR itself is zero)\n        a ^ 0 = a (a number XOR zero is itself)\n        Commutative: a ^ b = b ^ a\n        Associative: (a ^ b) ^ c = a ^ (b ^ c)\n    Meaning:\n        Because order and grouping don't matter, you can XOR all numbers in any sequence\n    Cancellation:\n        Each pair of identical numbers a ^ a becomes 0\n        XORing by zero doesn't change the result\n    Result:\n        After all pairs cancel, only the unpaired (single) element remains\n    Example:\n        nums = [**[1!]4**, **[10!]1**, **[14!]2**, **[10!]1**, **[14!]2**]\n        **[1!]4** ^ **[10!]1** ^ **[14!]2** ^ **[10!]1** ^ **[14!]2**\n        **[10!](1 ^ 1)** ^ **[14!](2 ^ 2)** ^ **[1!]4**\n        **[10!]0** ^ **[14!]0** ^ **[1!]4** = **[1!]4**",
+          "intuition": "Using bitwise XOR to cancel out the duplicates:\n    XOR cancels pairs (a^a=0, a^0=a; associative/commutative), so the lone element remains\n\n    Deep Dive: XOR Reminder\n    XOR properties:\n            a ^ a = 0 (a number XOR itself is zero)\n            a ^ 0 = a (a number XOR zero is itself)\n            Commutative: a ^ b = b ^ a\n            Associative: (a ^ b) ^ c = a ^ (b ^ c)\n        Meaning:\n        Because order and grouping don't matter, you can XOR all numbers in any sequence\n        Cancellation:\n        Each pair of identical numbers a ^ a becomes 0\n        XORing by zero doesn't change the result\n        Result:\n        After all pairs cancel, only the unpaired (single) element remains\n    Example:\n        nums = [**[1!]4**, **[10!]1**, **[14!]2**, **[10!]1**, **[14!]2**]\n        **[1!]4** ^ **[10!]1** ^ **[14!]2** ^ **[10!]1** ^ **[14!]2**\n        **[10!](1 ^ 1)** ^ **[14!](2 ^ 2)** ^ **[1!]4**\n        **[10!]0** ^ **[14!]0** ^ **[1!]4** = **[1!]4**",
           "time_complexity": "O(n):\n    where n is the number of elements in the nums array",
-          "code": "def singleNumber(nums: list[int]) -> int:\n    x = 0\n    for v in nums:\n        x ^= v\n    return x\n\n        \n        "
+          "code": "def singleNumber(nums: list[int]) -> int:\n    x = 0\n    for v in nums:\n        x ^= v\n    return x"
         }
       },
       "title": "Single Number",
@@ -1234,7 +1234,7 @@
             "edges: list[list[int]]": "edges[i] = [u, v] is an undirected edge connecting the nodes u and v with a probability of success of traversing that edge succProb[i].",
             "succProb: list[float]": "list of probabilities, e.g. [0.5,0.5,0.2],"
           },
-          "code": "def path_with_maximum_probability(n: int, edges: list[list[int]], succProb: list[float], start: int, end: int) -> float:\n    prob = [0.0] * n # rob[i] stores max probability to reach node i\n    prob[start] = 1.0  # Start with full certainty\n\n    for _ in range(n - 1):  # Perform up to n-1 rounds of relaxation\n        updated = False\n        for (u, v), p in zip(edges, succProb):\n            if prob[u] * p > prob[v]:  # Try to improve v through u\n                prob[v] = prob[u] * p\n                updated = True\n            if prob[v] * p > prob[u]:  # Try to improve u through v (undirected graph)\n                prob[u] = prob[v] * p\n                updated = True\n        if not updated:\n            break  # Early exit if no updates in this round\n\n    return prob[end]"
+          "code": "def path_with_maximum_probability(n: int, edges: list[list[int]], succProb: list[float], start: int, end: int) -> float:\n    prob = [0.0] * n\n    prob[start] = 1.0\n\n    for _ in range(n - 1):\n        updated = False\n        for (u, v), p in zip(edges, succProb):\n            if prob[u] * p > prob[v]:\n                prob[v] = prob[u] * p\n                updated = True\n            if prob[v] * p > prob[u]:\n                prob[u] = prob[v] * p\n                updated = True\n        if not updated:\n            break\n\n    return prob[end]"
         }
       },
       "title": "Path with Maximum Probability",
@@ -1310,11 +1310,11 @@
           "intuition": "Deep Dive:Paint House (k=3) — Top-down DP with explicit memoization:\n    **Subproblems:** dp(i, c) = min total cost to paint houses *[2!]suffix [i:]* given house i is painted color c\n    **Relate:** *$dp(i, c) = costs[i][c] + \\min_{c'!=c} dp(i+1, c')$*\n    **Topological order:** *[2!]decreasing i*, subproblem `dp(i)` depends only on strictly larger i, `dp(i+1)`, so acyclic\n    **Base case:** `dp(n) = [0, 0, 0]` (no houses left)\n    **Original problem:** `answer = min(dp(0))`",
           "time_complexity": "O(n):\n    number of subproblems is n (We compute dp(i) once for each i)\n    time per subproblem is O(1) (k=3).\n    → *Θ(n)* total",
           "returns": "`int`: Minimum total cost to paint all houses with no adjacent equal colors.",
-          "code": "class Solution:\n    def minCost(self, costs: list[list[int]]) -> int:\n        n, memo = len(costs), {}\n\n        def dp(i: int) -> list[int]:\n            if i == n:\n                return [0, 0, 0]  \n\n            if i not in memo:\n                nxt = dp(i + 1)  \n                \n                m1 = m2 = float(\"inf\"); c1 = -1\n                for c, v in enumerate(nxt):\n                    if v < m1:\n                        m2, m1, c1 = m1, v, c\n                    elif v < m2:\n                        m2 = v\n                memo[i] = [costs[i][c] + (m2 if c == c1 else m1) for c in range(3)]\n            return memo[i]\n\n        return min(dp(0))"
+          "code": "class Solution:\n    def minCost(self, costs: list[list[int]]) -> int:\n        n, memo = len(costs), {}\n\n        def dp(i: int) -> list[int]:\n            if i == n:\n                return [0, 0, 0]  \n\n            if i not in memo:\n                nxt = dp(i + 1)  \n\n                m1 = m2 = float(\"inf\"); c1 = -1\n                for c, v in enumerate(nxt):\n                    if v < m1:\n                        m2, m1, c1 = m1, v, c\n                    elif v < m2:\n                        m2 = v\n                memo[i] = [costs[i][c] + (m2 if c == c1 else m1) for c in range(3)]\n            return memo[i]\n\n        return min(dp(0))"
         },
         "scalar.py": {
           "intuition": "Deep Dive:Paint House (k=3) — Top-down DP with explicit memoization:\n    **Subproblems:** dp(i, c) = min total cost to paint houses *[2!]suffix [i:]* given house i is painted color c.\n    **Relate:** `[language=\"python\"]dp(i, c) = costs[i][c] + min(dp(i+1, other_color_1), dp(i+1, other_color_2))`                 *[19!]Choose the cheaper of the two other colors for the next house.*\n    **Topological order:** *[2!]decreasing i*, subproblem `dp(i, c)` depends only on strictly larger i, `dp(i+1, other_color_1)` and `dp(i+1, other_color_2)`, so acyclic\n    **Base case:**`dp(n, c) = 0` → no houses left to paint.\n    **Original problem:** return `min(dp(0, 0), dp(0, 1), dp(0, 2))` — start with any first color.\n    **Time complexity:** *O(n)*: each `(i, c)` computed once, constant work per state.\n    **Space:** *O(n)* for memo and recursion depth.\n    **Returns:** Minimum total cost to paint all houses so that no two adjacent share a color",
-          "code": "class Solution:\n    def minCost(self, costs: list[list[int]]) -> int:\n        n, memo = len(costs), {}\n\n        def dp(i: int, c: int) -> int:\n            if i == n:\n                return \n            if (i, c) not in memo:\n                \n                memo[i, c] = costs[i][c] + min(\n                    dp(i + 1, (c + 1) % 3), dp(i + 1, (c + 2) % 3)\n                )\n            return memo[i, c]\n\n        return min(dp(0, 0), dp(0, 1), dp(0, 2))"
+          "code": "class Solution:\n    def minCost(self, costs: list[list[int]]) -> int:\n        n, memo = len(costs), {}\n\n        def dp(i: int, c: int) -> int:\n            if i == n:\n                return \n            if (i, c) not in memo:\n\n                memo[i, c] = costs[i][c] + min(\n                    dp(i + 1, (c + 1) % 3), dp(i + 1, (c + 2) % 3)\n                )\n            return memo[i, c]\n\n        return min(dp(0, 0), dp(0, 1), dp(0, 2))"
         }
       },
       "title": "Paint House",
@@ -1332,7 +1332,7 @@
         "solution.py": {
           "intuition": "Multi-Source BFS from the Target 🎯:\n    Instead of starting a separate BFS from every `1` to find the nearest `0` (which would be slow), this approach inverts the problem. It starts a single, **multi-source BFS from all `0`s simultaneously**. The level of the BFS at which a cell is reached is, by definition, its shortest distance to any `0`. This \"start from the answer\" strategy is a powerful technique for shortest path problems.",
           "time_complexity": "O(m * n):\n    where m and n are the dimensions of the grid.\n    Every cell is enqueued and processed exactly once, making this the optimal solution.",
-          "code": "from collections import deque\n\ndef zero_one_matrix(mat: list[list[int]]) -> list[list[int]]:\n    m, n = len(mat), len(mat[0])\n    dist = [[-1] * n for _ in range(m)]\n    q = deque()\n    # Initialize queue with all zero-cells\n    for i in range(m):\n        for j in range(n):\n            if mat[i][j] == 0:\n                dist[i][j] = 0\n                q.append((i, j))\n    \n    while q:\n        i, j = q.popleft()\n        for di, dj in ((1,0),(-1,0),(0,1),(0,-1)):\n            ni, nj = i + di, j + dj\n            if 0 <= ni < m and 0 <= nj < n and dist[ni][nj] < 0:\n                dist[ni][nj] = dist[i][j] + 1\n                q.append((ni, nj))\n    return dist"
+          "code": "from collections import deque\n\ndef zero_one_matrix(mat: list[list[int]]) -> list[list[int]]:\n    m, n = len(mat), len(mat[0])\n    dist = [[-1] * n for _ in range(m)]\n    q = deque()\n    for i in range(m):\n        for j in range(n):\n            if mat[i][j] == 0:\n                dist[i][j] = 0\n                q.append((i, j))\n\n    while q:\n        i, j = q.popleft()\n        for di, dj in ((1,0),(-1,0),(0,1),(0,-1)):\n            ni, nj = i + di, j + dj\n            if 0 <= ni < m and 0 <= nj < n and dist[ni][nj] < 0:\n                dist[ni][nj] = dist[i][j] + 1\n                q.append((ni, nj))\n    return dist"
         }
       },
       "title": "01 Matrix",
@@ -1349,7 +1349,7 @@
       "solutions": {
         "solution.py": {
           "intuition": "Binary searching the answer space, (the ship's capacity)\n    The range of possible capacities is from `max(weights)` to `sum(weights)`.\n    The problem has a **monotonic property** ideal for binary search. The function `daysNeeded(capacity)` is monotonically non-increasing: as `capacity` grows, the days required can only decrease or stay the same.\n    This creates a predictable `\\[False, ..., False, True, ..., True\\]` sequence for our condition, `daysNeeded(capacity) <= days`. The goal is to find the leftmost `True`, which represents the minimal valid capacity.\n        If `daysNeeded(capacity) <= days` is `True`, then `capacity` is a potential answer, and we try for a better (smaller) one in the left half by setting `r = capacity`.\n        If it is `False`, then `capacity` is too small, and we must search for a larger capacity in the right half by setting `l = capacity + 1`.",
-          "code": "def capacity_to_ship_packages_within_d_days(weights: list[int], days: int) -> int:\n    def days_needed(capacity: int) -> int:\n        d, load = 1, 0\n        for w in weights:\n            if load + w <= capacity:\n                load += w\n            else:\n                d += 1\n                load = w\n        return d\n    \n\n    l, r = max(weights), sum(weights)\n    while l < r:\n        capacity = (l + r) // 2\n        if days_needed(capacity) <= days:\n            r = capacity\n        else:\n            l = capacity + 1\n    return l"
+          "code": "def capacity_to_ship_packages_within_d_days(weights: list[int], days: int) -> int:\n    def days_needed(capacity: int) -> int:\n        d, load = 1, 0\n        for w in weights:\n            if load + w <= capacity:\n                load += w\n            else:\n                d += 1\n                load = w\n        return d\n\n    l, r = max(weights), sum(weights)\n    while l < r:\n        capacity = (l + r) // 2\n        if days_needed(capacity) <= days:\n            r = capacity\n        else:\n            l = capacity + 1\n    return l"
         }
       },
       "title": "Capacity To Ship Packages Within D Days",
@@ -1365,7 +1365,7 @@
       },
       "solutions": {
         "solution.py": {
-          "code": "from collections import defaultdict\n\n\nclass TrieNode:\n\n    __slots__ = (\"children\", \"end\")\n\n    def __init__(self):\n\n        self.children: defaultdict[str, TrieNode] = defaultdict(TrieNode)\n        self.end = False\n\n\nclass Trie:\n\n    def __init__(self):\n\n        self.root = TrieNode()\n\n    def insert(self, word: str) -> None:\n\n        node = self.root\n        for ch in word:\n            node = node.children[ch]\n        node.end = True\n\n    def search(self, word: str) -> bool:\n        node = self.root\n        for ch in word:\n            if (node := node.children.get(ch)) is None:\n                return False\n        return node.end\n\n    def starts_with(self, prefix: str) -> bool:\n        node = self.root\n        for ch in prefix:\n            if (node := node.children.get(ch)) is None:\n                return False\n        return True\n"
+          "code": "from collections import defaultdict\n\nclass TrieNode:\n\n    __slots__ = (\"children\", \"end\")\n\n    def __init__(self):\n\n        self.children: defaultdict[str, TrieNode] = defaultdict(TrieNode)\n        self.end = False\n\nclass Trie:\n\n    def __init__(self):\n\n        self.root = TrieNode()\n\n    def insert(self, word: str) -> None:\n\n        node = self.root\n        for ch in word:\n            node = node.children[ch]\n        node.end = True\n\n    def search(self, word: str) -> bool:\n        node = self.root\n        for ch in word:\n            if (node := node.children.get(ch)) is None:\n                return False\n        return node.end\n\n    def starts_with(self, prefix: str) -> bool:\n        node = self.root\n        for ch in prefix:\n            if (node := node.children.get(ch)) is None:\n                return False\n        return True"
         }
       },
       "title": "Implement Trie (Prefix Tree)",
@@ -1501,7 +1501,7 @@
             "t2_profit": "profit of second trade"
           },
           "returns": "`int`: Maximum profit from at most two transactions",
-          "code": "def best_time_to_buy_and_sell_stock_III(prices: list[int]) -> int:\n\n    t1_cost = t2_cost = float(\"inf\")\n    t1_profit = t2_profit = 0\n\n    for p in prices:\n\n        # First trade\n        t1_cost = min(t1_cost, p) \n        t1_profit = max(t1_profit, p - t1_cost)\n\n        # Second trade\n        t2_cost = min(t2_cost, p - t1_profit)\n        t2_profit = max(t2_profit, p - t2_cost)\n\n    return t2_profit\n\n"
+          "code": "def best_time_to_buy_and_sell_stock_III(prices: list[int]) -> int:\n\n    t1_cost = t2_cost = float(\"inf\")\n    t1_profit = t2_profit = 0\n\n    for p in prices:\n\n        t1_cost = min(t1_cost, p) \n        t1_profit = max(t1_profit, p - t1_cost)\n\n        t2_cost = min(t2_cost, p - t1_profit)\n        t2_profit = max(t2_profit, p - t2_cost)\n\n    return t2_profit"
         },
         "state.py": {
           "expressions": {
@@ -1530,11 +1530,11 @@
       "solutions": {
         "heap.py": {
           "time_complexity": "O(n log k)",
-          "code": "import heapq\nfrom collections import Counter\n\n\ndef topKFrequent(nums: list[int], k: int) -> list[int]:\n    freq ,h= Counter(nums), []\n    for num, f in freq.items():\n        heapq.heappush(h, (f, num))\n        if len(h) > k:\n            heapq.heappop(h)\n    \n    return [num for _, num in h]\n\n\n\n"
+          "code": "import heapq\nfrom collections import Counter\n\ndef topKFrequent(nums: list[int], k: int) -> list[int]:\n    freq ,h= Counter(nums), []\n    for num, f in freq.items():\n        heapq.heappush(h, (f, num))\n        if len(h) > k:\n            heapq.heappop(h)\n\n    return [num for _, num in h]"
         },
         "sort-frequency-bucketing.py": {
           "time_complexity": "O(n):\n    Counter(nums) → O(n)\n    Build buckets → O(n) (each element placed once)\n    Flatten in reverse until k → O(n)",
-          "code": "from collections import Counter\n\ndef topKFrequent(nums: list[int], k: int) -> list[int]:\n    \n    bucket=[[] for _ in range(len(nums)+1)]\n    for n,f in Counter(nums).items():\n        bucket[f].append(n)\n        \n    return [num for f_bucket in reversed(bucket) for num in f_bucket][:k]\n        \n\n  "
+          "code": "from collections import Counter\n\ndef topKFrequent(nums: list[int], k: int) -> list[int]:\n\n    bucket=[[] for _ in range(len(nums)+1)]\n    for n,f in Counter(nums).items():\n        bucket[f].append(n)\n\n    return [num for f_bucket in reversed(bucket) for num in f_bucket][:k]"
         },
         "heap-nlargets.py": {
           "expressions": {
@@ -1542,7 +1542,7 @@
             "key=freq.get": "key → function that gives a value to rank by. freq.get(x) = frequency of x."
           },
           "time_complexity": "O(n log k)",
-          "code": "import heapq\nfrom collections import Counter\n\n\ndef topKFrequent(nums: list[int], k: int) -> list[int]:\n    freq = Counter(nums)\n    return heapq.nlargest(k, freq.keys(), key=freq.get)"
+          "code": "import heapq\nfrom collections import Counter\n\ndef topKFrequent(nums: list[int], k: int) -> list[int]:\n    freq = Counter(nums)\n    return heapq.nlargest(k, freq.keys(), key=freq.get)"
         }
       },
       "title": "Top K Frequent Elements",
@@ -1559,7 +1559,7 @@
       },
       "solutions": {
         "bottom-up.py": {
-          "intuition": "Deep Dive: 2D to 1D:\n    In the 2D DP table, each cell depends only on its top and left neighbors:\n        `dp[i][j] = grid[i][j] + min(dp[i-1][j], dp[i][j-1])`\n    That means to compute row i, you only need:\n        the current row's left value (`dp[i][j-1]`), and\n        the previous row's value at the same column (`dp[i-1][j]`).\n    So you can compress the table into one list of length c (number of columns):\n        `dp[j]` keeps the current min path sum at column j (effectively `dp[i][j]`),\n        `dp[j-1]` is the left cell,\n        and as you move row by row, `dp[j]` from the previous iteration serves as the top cell.",
+          "intuition": "Deep Dive: 2D to 1D:\n        In the 2D DP table, each cell depends only on its top and left neighbors:\n        `dp[i][j] = grid[i][j] + min(dp[i-1][j], dp[i][j-1])`\n        That means to compute row i, you only need:\n            the current row's left value (`dp[i][j-1]`), and\n            the previous row's value at the same column (`dp[i-1][j]`).\n        So you can compress the table into one list of length c (number of columns):\n            `dp[j]` keeps the current min path sum at column j (effectively `dp[i][j]`),\n            `dp[j-1]` is the left cell,\n            and as you move row by row, `dp[j]` from the previous iteration serves as the top cell.",
           "variables": {
             "dp": "dp has one extra slot (index 0) as a sentinel = ∞ to avoid boundary checks . `dp[j]` = min path sum to reach current cell in column `j-1`"
           },
@@ -1567,11 +1567,11 @@
             "'min(dp[j], dp[j - 1]) + grid[i][j - 1]'=  update current cell": "min(top, left) + cell value"
           },
           "time_complexity": "O(r * c)",
-          "code": "def minPathSum(grid: list[list[int]]) -> int:\n    r, c = len(grid), len(grid[0])\n    dp = [float(\"inf\")] * (c + 1); dp[1] = 0\n    for i in range(r):\n        for j in range(1, c + 1):\n            dp[j] = min(dp[j], dp[j - 1]) + grid[i][j - 1]\n    return dp[c]\n"
+          "code": "def minPathSum(grid: list[list[int]]) -> int:\n    r, c = len(grid), len(grid[0])\n    dp = [float(\"inf\")] * (c + 1); dp[1] = 0\n    for i in range(r):\n        for j in range(1, c + 1):\n            dp[j] = min(dp[j], dp[j - 1]) + grid[i][j - 1]\n    return dp[c]"
         },
         "top-down.py": {
           "time_complexity": "O(r * c)",
-          "code": "def minPathSum(grid: list[list[int]]) -> int:\n    r, c, memo = len(grid), len(grid[0]), {}\n    def dp(i, j):\n        if i == r - 1 and j == c - 1: return grid[i][j]\n        if i >= r or j >= c: return float(\"inf\")\n        if (k := (i, j)) not in memo:\n            memo[k] = grid[i][j] + min(dp(i + 1, j), dp(i, j + 1))\n        return memo[k]\n    return dp(0, 0)\n\n"
+          "code": "def minPathSum(grid: list[list[int]]) -> int:\n    r, c, memo = len(grid), len(grid[0]), {}\n    def dp(i, j):\n        if i == r - 1 and j == c - 1: return grid[i][j]\n        if i >= r or j >= c: return float(\"inf\")\n        if (k := (i, j)) not in memo:\n            memo[k] = grid[i][j] + min(dp(i + 1, j), dp(i, j + 1))\n        return memo[k]\n    return dp(0, 0)"
         }
       },
       "title": "Minimum Path Sum",
@@ -1594,7 +1594,7 @@
             "grid: list[list[str]]": "2D grid with '1' representing land and '0' representing water"
           },
           "returns": "`int`: Number of islands in the grid",
-          "code": "from collections import deque\n\ndef number_of_islands(grid: list[list[str]]) -> int:\n    if not grid or not grid[0]:\n        return 0\n    m, n = len(grid), len(grid[0])\n    dirs = ((1,0),(-1,0),(0,1),(0,-1))\n    islands = 0\n\n    for i in range(m):\n        for j in range(n):\n            if grid[i][j] == \"1\":\n                islands += 1\n                grid[i][j] = \"0\" # mark as visited\n                q = deque([(i, j)])\n                while q:\n                    r, c = q.popleft()\n                    for dr, dc in dirs:\n                        nr, nc = r + dr, c + dc\n                        if 0 <= nr < m and 0 <= nc < n and grid[nr][nc] == \"1\":\n                            grid[nr][nc] = \"0\" # mark as visited\n                            q.append((nr, nc)) \n    return islands"
+          "code": "from collections import deque\n\ndef number_of_islands(grid: list[list[str]]) -> int:\n    if not grid or not grid[0]:\n        return 0\n    m, n = len(grid), len(grid[0])\n    dirs = ((1,0),(-1,0),(0,1),(0,-1))\n    islands = 0\n\n    for i in range(m):\n        for j in range(n):\n            if grid[i][j] == \"1\":\n                islands += 1\n                grid[i][j] = \"0\"\n                q = deque([(i, j)])\n                while q:\n                    r, c = q.popleft()\n                    for dr, dc in dirs:\n                        nr, nc = r + dr, c + dc\n                        if 0 <= nr < m and 0 <= nc < n and grid[nr][nc] == \"1\":\n                            grid[nr][nc] = \"0\"\n                            q.append((nr, nc)) \n    return islands"
         }
       },
       "title": "Number of Islands",
@@ -1642,7 +1642,7 @@
         "solution.py": {
           "intuition": "Paradigm: This is a classic **Longest Path** problem on a Directed Acyclic Graph (DAG).\n    Insight: The maximum score obtainable *from* any question `i` is a fixed value, regardless of past choices. This allows a backward pass from the end of the exam (where the future score is 0), calculating the optimal future score for each question by simply choosing the `max()` of two pre-computed paths: the one from \"solving\" vs. the one from \"skipping\".",
           "time_complexity": "O(n)\n    where `n` is the number of questions.",
-          "code": "def most_points_solving_questions_with_brainpower(questions: list[list[int]]) -> int:\n\n\n    memo, n = {}, len(questions)\n\n    def dp(i):\n        if i >= n:\n            return 0\n\n        if i not in memo:\n            memo[i] = max(dp(i + 1), (q:=questions[i])[0] + dp(i + 1 + q[1]))\n        return memo[i]\n\n    return dp(0)"
+          "code": "def most_points_solving_questions_with_brainpower(questions: list[list[int]]) -> int:\n\n    memo, n = {}, len(questions)\n\n    def dp(i):\n        if i >= n:\n            return 0\n\n        if i not in memo:\n            memo[i] = max(dp(i + 1), (q:=questions[i])[0] + dp(i + 1 + q[1]))\n        return memo[i]\n\n    return dp(0)"
         }
       },
       "title": "Most Points Solving Questions With Brainpower",
@@ -1675,7 +1675,7 @@
             "board[i][j] = \"#\"": "Mark as visited",
             "board[i][j] = c": "Restore cell"
           },
-          "code": "def word_search_II(board: list[list[str]], words: list[str]) -> list[str]:\n    trie = {}  \n    for word in words:\n        node = trie\n        for c in word:\n            node = node.setdefault(c, {})\n        node[\"$\"] = word\n\n\n    def dfs(i, j, parent):\n        if not (0 <= i < m and 0 <= j < n) or (c := board[i][j]) not in parent:\n            return\n        node = parent[c]\n        if \"$\" in node:\n            res.append(node.pop(\"$\"))\n        board[i][j] = \"#\"\n        for x, y in ((i - 1, j), (i + 1, j), (i, j - 1), (i, j + 1)):\n            dfs(x, y, node)\n        board[i][j] = c\n        if not node:\n            parent.pop(c)\n            \n    m, n, res = len(board), len(board[0]), []\n    [dfs(i, j, trie) for i in range(m) for j in range(n) if board[i][j] in trie]\n\n    return res"
+          "code": "def word_search_II(board: list[list[str]], words: list[str]) -> list[str]:\n    trie = {}  \n    for word in words:\n        node = trie\n        for c in word:\n            node = node.setdefault(c, {})\n        node[\"$\"] = word\n\n    def dfs(i, j, parent):\n        if not (0 <= i < m and 0 <= j < n) or (c := board[i][j]) not in parent:\n            return\n        node = parent[c]\n        if \"$\" in node:\n            res.append(node.pop(\"$\"))\n        board[i][j] = \"#\"\n        for x, y in ((i - 1, j), (i + 1, j), (i, j - 1), (i, j + 1)):\n            dfs(x, y, node)\n        board[i][j] = c\n        if not node:\n            parent.pop(c)\n\n    m, n, res = len(board), len(board[0]), []\n    [dfs(i, j, trie) for i in range(m) for j in range(n) if board[i][j] in trie]\n\n    return res"
         }
       },
       "title": "Word Search II",
@@ -1708,7 +1708,7 @@
       },
       "solutions": {
         "solution.py": {
-          "intuition": "Cube index and think locally\n    **cube_index := **[pink!](r // 3) * 3** + **[purple!](c // 3)**** treats the 9×9 board as a 3×3 grid of 3×3 boxes:\n        `[pink!]r//3` gives which *[pink!]box-row* (0,1,2) you're in\n        `[purple!]c//3` gives which *[purple!]box-column* (0,1,2)\n        multiplying the *[pink!]box-row* by *[pink!]3* and adding the *[purple!]box-column* yields a unique index 0–8 for each 3×3 cube.",
+          "intuition": "Cube index and think locally\n    **cube_index := **[pink!](r // 3) * 3** + **[purple!](c // 3)**** treats the 9×9 board as a 3×3 grid of 3×3 boxes:\n        `[pink!]r//3` gives which *[pink!]box-row* (0,1,2) you're in\n        `[purple!]c//3` gives which *[purple!]box-column* (0,1,2)\n         multiplying the *[pink!]box-row* by *[pink!]3* and adding the *[purple!]box-column* yields a unique index 0–8 for each 3×3 cube.",
           "time_complexity": "O(81)\n    i.e., O(n^2). Fixed 9×9 boards scan at most 81 cells. Generalized n×n Sudoku validation runs in O(n^2) time.",
           "args": {
             "board: list[list[str]]": "9x9 Sudoku board with digits 1-9 and '.' for empty cells"
@@ -1716,10 +1716,10 @@
           "expressions": {
             "if (": "Check for duplicates",
             "if (num := board[r][c]) != \".\"": "Skip empty cells",
-            "cube_index := (r // 3) * 3 + (c // 3)": "The formula works by treating the *9×9* board as a *3×3* grid of *3×3* boxes:\n        - **[pink!]r//3** gives which *[pink!]box-row* (0,1,2) you're in;\n        - **[purple!]c//3** gives which *[purple!]box-column* (0,1,2).\n        - Multiplying the *[pink!]box-row* by *[pink!]3* and adding the *[purple!]box-column* yields a unique index 0–8 for each *3×3* cube."
+            "cube_index := (r // 3) * 3 + (c // 3)": "The formula works by treating the *9×9* board as a *3×3* grid of *3×3* boxes:\n         - **[pink!]r//3** gives which *[pink!]box-row* (0,1,2) you're in;\n         - **[purple!]c//3** gives which *[purple!]box-column* (0,1,2).\n         - Multiplying the *[pink!]box-row* by *[pink!]3* and adding the *[purple!]box-column* yields a unique index 0–8 for each *3×3* cube."
           },
           "returns": "`bool`: True if the board is valid, False otherwise",
-          "code": "def is_valid_sudoku(board: list[list[str]]) -> bool:\n\n    row = [set() for _ in range(9)]\n    col = [set() for _ in range(9)]\n    cube = [set() for _ in range(9)]\n\n    for r in range(9):\n        for c in range(9):\n            if (num := board[r][c]) != \".\": \n\n                if (\n                    num in col[c]\n                    or num in row[r]\n                    or num in cube[(cube_index := (r // 3) * 3 + (c // 3))]\n                ):\n                    return False\n                \n\n                col[c].add(num)\n                row[r].add(num)\n                cube[cube_index].add(num)\n    return True"
+          "code": "def is_valid_sudoku(board: list[list[str]]) -> bool:\n\n    row = [set() for _ in range(9)]\n    col = [set() for _ in range(9)]\n    cube = [set() for _ in range(9)]\n\n    for r in range(9):\n        for c in range(9):\n            if (num := board[r][c]) != \".\": \n\n                if (\n                    num in col[c]\n                    or num in row[r]\n                    or num in cube[(cube_index := (r // 3) * 3 + (c // 3))]\n                ):\n                    return False\n\n                col[c].add(num)\n                row[r].add(num)\n                cube[cube_index].add(num)\n    return True"
         }
       },
       "title": "Valid Sudoku",
@@ -1741,7 +1741,7 @@
             "k: int": "starting node"
           },
           "returns": "`int`: minimum time for a signal starting at node `k` to reach *all* nodes or -1 if impossible",
-          "code": "from collections import defaultdict\nimport heapq\n\n\ndef network_delay_time(times: list[list[int]], n: int, k: int) -> int:\n\n    adj = defaultdict(list)\n    for u, v, w in times:\n        adj[u].append((v, w))\n    pq, finalized, time = [(0, k)], set(), 0\n    while pq:\n        t, node = heapq.heappop(pq)\n        if node in finalized:\n            continue\n        finalized.add(node)\n        time = t\n        for neighbor, travel_time in adj[node]:\n            if neighbor not in finalized:\n                heapq.heappush(pq, (time + travel_time, neighbor))\n    return time if len(finalized) == n else -1\n\n"
+          "code": "from collections import defaultdict\nimport heapq\n\ndef network_delay_time(times: list[list[int]], n: int, k: int) -> int:\n\n    adj = defaultdict(list)\n    for u, v, w in times:\n        adj[u].append((v, w))\n    pq, finalized, time = [(0, k)], set(), 0\n    while pq:\n        t, node = heapq.heappop(pq)\n        if node in finalized:\n            continue\n        finalized.add(node)\n        time = t\n        for neighbor, travel_time in adj[node]:\n            if neighbor not in finalized:\n                heapq.heappush(pq, (time + travel_time, neighbor))\n    return time if len(finalized) == n else -1"
         }
       },
       "title": "Network Delay Time",
@@ -1759,7 +1759,7 @@
         "solution.py": {
           "intuition": "Bidirectional BFS Meets in the Middle 🤝:\n    This solution uses two  optimizations. First, it **pre-computes all possible generic transformations** (e.g., `h*t`) in a dictionary, allowing for instant lookups of neighboring words instead of generating them on the fly. Second, it performs a **bidirectional BFS**, launching one search from the `beginWord` and another from the `endWord`. By always expanding the smaller of the two frontiers, it drastically reduces the search space. The algorithm finishes when the two searches meet, at which point the shortest path is found.",
           "time_complexity": "O(N * L)\n    where N is the number of words and L is the length of each word. The dominant operation is the initial pre-computation step to build the `combos` dictionary. The subsequent bidirectional search is typically much faster than this initial setup.",
-          "code": "from collections import defaultdict\n\ndef word_ladder(beginWord: str, endWord: str, wordList: list[str]) -> int:\n    if endWord not in wordList:\n        return 0\n\n    L = len(beginWord)\n    combos: dict[str, list[str]] = defaultdict(list)\n    for w in wordList:\n        for i in range(L):\n            combos[w[:i] + \"*\" + w[i+1:]].append(w)\n\n    front, back = {beginWord}, {endWord}\n    dist_front, dist_back = {beginWord: 1}, {endWord: 1}\n\n    while front and back:\n        # expand smaller side to optimize\n        if len(front) > len(back):\n            front, back = back, front\n            dist_front, dist_back = dist_back, dist_front\n\n        next_front = set()\n        for word in front:\n            for i in range(L):\n                for n in combos[word[:i] + \"*\" + word[i+1:]]: # Use pre-computed neighbors\n                    if n in dist_back:\n                        return dist_front[word] + dist_back[n]\n                    if n not in dist_front:\n                        dist_front[n] = dist_front[word] + 1\n                        next_front.add(n)\n        front = next_front\n\n    return 0"
+          "code": "from collections import defaultdict\n\ndef word_ladder(beginWord: str, endWord: str, wordList: list[str]) -> int:\n    if endWord not in wordList:\n        return 0\n\n    L = len(beginWord)\n    combos: dict[str, list[str]] = defaultdict(list)\n    for w in wordList:\n        for i in range(L):\n            combos[w[:i] + \"*\" + w[i+1:]].append(w)\n\n    front, back = {beginWord}, {endWord}\n    dist_front, dist_back = {beginWord: 1}, {endWord: 1}\n\n    while front and back:\n        if len(front) > len(back):\n            front, back = back, front\n            dist_front, dist_back = dist_back, dist_front\n\n        next_front = set()\n        for word in front:\n            for i in range(L):\n                for n in combos[word[:i] + \"*\" + word[i+1:]]:\n                    if n in dist_back:\n                        return dist_front[word] + dist_back[n]\n                    if n not in dist_front:\n                        dist_front[n] = dist_front[word] + 1\n                        next_front.add(n)\n        front = next_front\n\n    return 0"
         }
       },
       "title": "Word Ladder",
@@ -1777,21 +1777,21 @@
       },
       "solutions": {
         "layered_dag.py": {
-          "intuition": "Compute k-edge shortest-path distances and detect negative cycles via layered relaxation.\n    1. δ₀(s,v): initialize distances (0 at source, ∞ elsewhere).\n    2. For i = 1…V: perform one pass of edge-relaxation to compute δᵢ(s,v),\n        the best cost using ≤ i edges.\n    3. Identify any vertex v where δ_V(s,v) < δ_{V−1}(s,v) as a negative-cycle witness.\n    4. Flood successors of those witnesses and mark their distances as −∞.",
+          "intuition": "Compute k-edge shortest-path distances and detect negative cycles via layered relaxation.\n    1. δ₀(s,v): initialize distances (0 at source, ∞ elsewhere).\n    2. For i = 1…V: perform one pass of edge-relaxation to compute δᵢ(s,v),\n       the best cost using ≤ i edges.\n    3. Identify any vertex v where δ_V(s,v) < δ_{V−1}(s,v) as a negative-cycle witness.\n    4. Flood successors of those witnesses and mark their distances as −∞.",
           "args": {
             "vertices: list[str]": "All hashable vertex identifiers.",
             "edges: list[tuple[str, str, float]]": "Iterable of (u, v, weight) tuples.",
             "source: str": "Starting vertex."
           },
-          "returns": "`dict[str, float]`: A dict mapping each vertex to its true shortest-path cost from `source`,\n        or float('-inf') if it's reachable from a negative-weight cycle.",
-          "code": "\nfrom collections import defaultdict\n\n\ndef bellman_ford_layered_dag(\n    vertices: list[str], edges: list[tuple[str, str, float]], source: str\n) -> dict[str, float]:\n\n    # 1) Initialize\n    d = {v: float(\"inf\") for v in vertices}\n    d[source], V = 0, len(vertices)\n\n    # 2) Layered relaxation: starting from δ₀, do V passes to compute δ₁…δ_V\n    for k in range(V):  # k = 0…V-1\n        d_k = {**d}  # snapshot of δ_k\n        for u, v, w in edges:\n            if d[u] + w < d_k[v]:\n                d_k[v] = d[u] + w\n        d = d_k  # now holds δ_{k+1}\n\n    # 3) Identify \"witnesses\" to negative cycles:\n    #    any v for which an extra relaxation is still possible\n    witnesses = {v for u, v, w in edges if d[u] + w < d[v]}\n\n    if not witnesses:\n        return d\n\n    # 4) Build adjacency list for negative-cycle propagation\n    adj = defaultdict(list)\n    for u, v, _ in edges:\n        adj[u].append(v)\n\n    # 5) DFS to propagate −∞ to all vertices reachable from any witness\n    stack = list(witnesses)\n    reachable = set(witnesses)\n\n    while stack:\n        u = stack.pop()\n        d[u] = float(\"-inf\")\n        for v in adj[u]:\n            if v not in reachable:\n                reachable.add(v)\n                stack.append(v)\n\n    return d"
+          "returns": "`dict[str, float]`: A dict mapping each vertex to its true shortest-path cost from `source`,\n      or float('-inf') if it's reachable from a negative-weight cycle.",
+          "code": "from collections import defaultdict\n\ndef bellman_ford_layered_dag(\n    vertices: list[str], edges: list[tuple[str, str, float]], source: str\n) -> dict[str, float]:\n\n    d = {v: float(\"inf\") for v in vertices}\n    d[source], V = 0, len(vertices)\n\n    for k in range(V):\n        d_k = {**d}\n        for u, v, w in edges:\n            if d[u] + w < d_k[v]:\n                d_k[v] = d[u] + w\n        d = d_k\n\n    witnesses = {v for u, v, w in edges if d[u] + w < d[v]}\n\n    if not witnesses:\n        return d\n\n    adj = defaultdict(list)\n    for u, v, _ in edges:\n        adj[u].append(v)\n\n    stack = list(witnesses)\n    reachable = set(witnesses)\n\n    while stack:\n        u = stack.pop()\n        d[u] = float(\"-inf\")\n        for v in adj[u]:\n            if v not in reachable:\n                reachable.add(v)\n                stack.append(v)\n\n    return d"
         },
         "classic.py": {
           "intuition": "Classic Bellman-Ford with early exit:\n    Raises on a reachable negative-weight cycle;\n    otherwise returns dist[v] = δ(s,v).",
           "expressions": {
             "range(V - 1)": "relax up to V-1 times, but return early if no update\n    'if not updated':  distances have stabilized—no negative cycles reachable"
           },
-          "code": "\n\n\n\ndef bellman_ford_classic(\n    vertices: list[str], edges: list[tuple[str, str, float]], source: str\n) -> dict[str, float]:\n\n    d = [float(\"inf\")] * (V := len(vertices))\n    d[source] = 0\n\n    for _ in range(V - 1):\n        updated = False\n        for u, v, w in edges:\n            if d[u] + w < d[v]:\n                d[v] = d[u] + w\n                updated = True\n        if not updated:\n            return d\n\n    # if we get here, we did all V-1 passes, so still need to check for cycles\n    for u, v, w in edges:\n        if d[u] + w < d[v]:\n            raise Exception(\"Negative-weight cycle\")\n\n    return d"
+          "code": "def bellman_ford_classic(\n    vertices: list[str], edges: list[tuple[str, str, float]], source: str\n) -> dict[str, float]:\n\n    d = [float(\"inf\")] * (V := len(vertices))\n    d[source] = 0\n\n    for _ in range(V - 1):\n        updated = False\n        for u, v, w in edges:\n            if d[u] + w < d[v]:\n                d[v] = d[u] + w\n                updated = True\n        if not updated:\n            return d\n\n    for u, v, w in edges:\n        if d[u] + w < d[v]:\n            raise Exception(\"Negative-weight cycle\")\n\n    return d"
         }
       },
       "title": "Bellman-Ford Algorithm",
@@ -1811,7 +1811,7 @@
             "n: int": "the modulus, the number by which we are dividing"
           },
           "returns": "`bool`: bool",
-          "code": "\ndef congruent2(a: int, b: int, n: int) -> bool:\n    return a % n == b % n"
+          "code": "def congruent2(a: int, b: int, n: int) -> bool:\n    return a % n == b % n"
         },
         "congruent1.py": {
           "args": {
@@ -1820,7 +1820,7 @@
             "n: int": "the modulus, the number by which we are dividing"
           },
           "returns": "`bool`: bool",
-          "code": "\n\ndef congruent1(a: int, b: int, n: int) -> bool:\n    return (a - b) % n == 0"
+          "code": "def congruent1(a: int, b: int, n: int) -> bool:\n    return (a - b) % n == 0"
         },
         "mod.py": {
           "args": {
@@ -1857,7 +1857,7 @@
             "graph: dict[str, dict[str, int]]": "A dictionary representing the graph.",
             "s: str": "The source vertex."
           },
-          "code": "\nimport heapq\n\ndef dijkstra(graph: dict[str, dict[str, int]], s: str):\n\n    d = {v: float('inf') for v in graph} | {s: 0}\n    p = {v: None for v in graph}\n\n    pq = [(0, s)]\n\n    while pq:\n        d_u, u = heapq.heappop(pq)\n        if d_u > d[u]:\n            continue\n        for v ,w in graph[u]:\n            if (weight := d_u + w) < d[v]:\n                d[v], p[v] = weight, u\n                heapq.heappush(pq, (weight, v))\n\n    return d, p"
+          "code": "import heapq\n\ndef dijkstra(graph: dict[str, dict[str, int]], s: str):\n\n    d = {v: float('inf') for v in graph} | {s: 0}\n    p = {v: None for v in graph}\n\n    pq = [(0, s)]\n\n    while pq:\n        d_u, u = heapq.heappop(pq)\n        if d_u > d[u]:\n            continue\n        for v ,w in graph[u]:\n            if (weight := d_u + w) < d[v]:\n                d[v], p[v] = weight, u\n                heapq.heappush(pq, (weight, v))\n\n    return d, p"
         }
       },
       "title": "Dijkstra's Algorithm",
@@ -1875,14 +1875,14 @@
           "expressions": {
             "l = mid + 1": "If the target `x` is greater than the middle element `a[mid]`, the insertion point must be to the right of `mid`.\n    'r = mid': If the target `x` is less than or equal to `a[mid]`, then `mid` is a potential answer, so we search the left half including `mid`."
           },
-          "code": "\n\ndef simple_bisect_left(a: list[int], x: int):\n    \n    l, r = 0, len(a)\n    while l < r:\n        mid = (l + r) // 2\n        if x > a[mid]:\n            l = mid + 1\n        else:\n            r = mid\n    return l"
+          "code": "def simple_bisect_left(a: list[int], x: int):\n\n    l, r = 0, len(a)\n    while l < r:\n        mid = (l + r) // 2\n        if x > a[mid]:\n            l = mid + 1\n        else:\n            r = mid\n    return l"
         },
         "bisect_right.py": {
           "intuition": "Return the index where to insert item x in list a, assuming a is sorted.",
           "expressions": {
             "r = mid": "If the x is less than the middle element, the insertion point could be `mid` or to its left. Shrink search space to the left half.\n    'l = mid + 1': If the x is >= middle element, the insertion point must be to the right of `mid`."
           },
-          "code": "\n\ndef simple_bisect_right(a, x):\n\n    l, r = 0, len(a)\n    while l < r:\n        mid = (l + r) // 2\n        if x < a[mid]:\n            r = mid\n        else: \n            l = mid + 1 \n    return l"
+          "code": "def simple_bisect_right(a, x):\n\n    l, r = 0, len(a)\n    while l < r:\n        mid = (l + r) // 2\n        if x < a[mid]:\n            r = mid\n        else: \n            l = mid + 1 \n    return l"
         }
       },
       "title": "Binary Search Algorithm",

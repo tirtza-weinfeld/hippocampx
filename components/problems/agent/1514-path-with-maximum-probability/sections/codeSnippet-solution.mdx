@@ -1,19 +1,19 @@
 ```python meta="source=problems/1514-path-with-maximum-probability/solution.py"
 def path_with_maximum_probability(n: int, edges: list[list[int]], succProb: list[float], start: int, end: int) -> float:
-    prob = [0.0] * n # rob[i] stores max probability to reach node i
-    prob[start] = 1.0  # Start with full certainty
+    prob = [0.0] * n
+    prob[start] = 1.0
 
-    for _ in range(n - 1):  # Perform up to n-1 rounds of relaxation
+    for _ in range(n - 1):
         updated = False
         for (u, v), p in zip(edges, succProb):
-            if prob[u] * p > prob[v]:  # Try to improve v through u
+            if prob[u] * p > prob[v]:
                 prob[v] = prob[u] * p
                 updated = True
-            if prob[v] * p > prob[u]:  # Try to improve u through v (undirected graph)
+            if prob[v] * p > prob[u]:
                 prob[u] = prob[v] * p
                 updated = True
         if not updated:
-            break  # Early exit if no updates in this round
+            break
 
     return prob[end]
 ```

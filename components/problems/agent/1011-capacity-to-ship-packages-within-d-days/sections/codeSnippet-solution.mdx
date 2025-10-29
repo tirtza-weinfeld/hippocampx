@@ -9,7 +9,6 @@ def capacity_to_ship_packages_within_d_days(weights: list[int], days: int) -> in
                 d += 1
                 load = w
         return d
-    
 
     l, r = max(weights), sum(weights)
     while l < r:

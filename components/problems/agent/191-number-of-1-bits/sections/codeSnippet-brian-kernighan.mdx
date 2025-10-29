@@ -2,7 +2,7 @@
 def hammingWeight(n: int) -> int:
     count = 0
     while n:
-        n &= n - 1 # drop the lowest set bit
+        n &= n - 1
         count += 1
     return count
 ```

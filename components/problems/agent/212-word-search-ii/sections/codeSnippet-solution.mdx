@@ -19,7 +19,7 @@ def word_search_II(board: list[list[str]], words: list[str]) -> list[str]:
         board[i][j] = c
         if not node:
             parent.pop(c)
-            
+
     m, n, res = len(board), len(board[0]), []
     [dfs(i, j, trie) for i in range(m) for j in range(n) if board[i][j] in trie]
 

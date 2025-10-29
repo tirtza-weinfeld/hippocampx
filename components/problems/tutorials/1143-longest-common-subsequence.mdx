@@ -63,7 +63,7 @@ def longestCommonSubsequence( text1: str, text2: str) -> int:
 
 ```python meta="source=problems/1143-longest-common-subsequence/bottom-up-prefix-1d.py"
 def longestCommonSubsequence(a: str, b: str) -> int:
-    if len(a) < len(b):  # keep b the shorter to save space
+    if len(a) < len(b):
         a, b = b, a
     dp = [0] * (len(b) + 1)
     for ca in a:

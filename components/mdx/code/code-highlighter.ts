@@ -3,6 +3,7 @@ import { cache } from 'react'
 import { codeToHast } from 'shiki'
 import { transformerCodeTooltipSource } from './transformers/meta-tooltip';
 import { transformerExpressionTooltips } from './transformers/meta-tooltip-expressions';
+import { transformerInlineCommentTooltips } from './transformers/meta-tooltip-comments-inline';
 // import { transformerAddIds } from './transformers/meta-add-ids';
 import { hastToJSX } from './hast-to-tsx';
 // import { getTooltipContent } from './tooltip-content';
@@ -11,9 +12,10 @@ import { transformerMetaWordHighlight } from './transformers/meta-highlight-word
 // import { transformerMetaAddIds } from './transformers/meta-auto-link';
 import usesData from '@/lib/extracted-metadata/uses.json';
 import expressionsData from '@/lib/extracted-metadata/expressions.json';
+import commentsInlineData from '@/lib/extracted-metadata/comments-inline.json';
 import lspData from '@/lib/extracted-metadata/lsp_index.json';
 import symbolTags from '@/lib/extracted-metadata/symbol_tags.json';
-import type { UsesData, LspData, ExpressionsData, SymbolTagsData } from './transformers/types';
+import type { UsesData, LspData, ExpressionsData, CommentsInlineData, SymbolTagsData } from './transformers/types';
 
 
 /**
@@ -67,6 +69,7 @@ const highlightCode = cache(async function highlightCode(code: string, lang: str
 
       transformerExpressionTooltips(expressionsData as ExpressionsData, lspData as LspData),
       transformerCodeTooltipSource(usesData as UsesData, lspData as LspData, symbolTags as SymbolTagsData),
+      transformerInlineCommentTooltips(commentsInlineData as CommentsInlineData, lspData as LspData),
       transformerMetaHighlight({className: 'line-highlight'}),
       transformerMetaWordHighlight({className: 'word-highlight'}),
     ] : [],

@@ -36,7 +36,7 @@ def binary_tree_level_order_traversal(root) -> list[list[int]]:
     queue, result = deque([root]), []
     while queue:
         level = [] 
-        for _ in range(len(queue)):  # Process nodes at the current level
+        for _ in range(len(queue)):
             node = queue.popleft()
             level.append(node.val)
             if node.left:
