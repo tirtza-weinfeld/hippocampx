@@ -38,6 +38,7 @@ const Problem460LfuCache = lazy(() => import('./460-lfu-cache'))
 const Problem133CloneGraph = lazy(() => import('./133-clone-graph'))
 const Problem238ProductOfArrayExceptSelf = lazy(() => import('./238-product-of-array-except-self'))
 const Problem523ContinuousSubarraySum = lazy(() => import('./523-continuous-subarray-sum'))
+const Problem1162AsFarFromLandAsPossible = lazy(() => import('./1162-as-far-from-land-as-possible'))
 const Problem547NumberOfProvinces = lazy(() => import('./547-number-of-provinces'))
 const Problem518CoinChangeIi = lazy(() => import('./518-coin-change-ii'))
 const Problem416PartitionEqualSubsetSum = lazy(() => import('./416-partition-equal-subset-sum'))
@@ -194,6 +195,11 @@ const problemComponents = {
     "523-continuous-subarray-sum": (
       <Suspense key="523-continuous-subarray-sum" fallback={<div className="p-4 text-gray-500">Loading...</div>}>
         <Problem523ContinuousSubarraySum />
+      </Suspense>
+    ),
+    "1162-as-far-from-land-as-possible": (
+      <Suspense key="1162-as-far-from-land-as-possible" fallback={<div className="p-4 text-gray-500">Loading...</div>}>
+        <Problem1162AsFarFromLandAsPossible />
       </Suspense>
     ),
     "547-number-of-provinces": (

@@ -383,6 +383,22 @@
       "difficulty": "medium",
       "topics": ["prefix-sum"]
     },
+    "1162-as-far-from-land-as-possible": {
+      "time_stamps": {
+        "created_at": "2025-11-02T16:06:57.892639",
+        "updated_at": "2025-11-02T16:15:35.448056"
+      },
+      "solutions": {
+        "solution.py": {
+          "code": "from collections import deque\n\nclass Solution:\n    def maxDistance(self, grid: list[list[int]]) -> int:\n\n        n = len(grid)\n        q = deque([(r, c) for r in range(n) for c in range(n) if grid[r][c]])\n\n        if not q or len(q) == n * n:\n            return -1\n\n        distance = 0\n        while q:\n            distance += 1\n            for _ in range(len(q)):\n                (y, x) = q.popleft()\n                for dy, dx in [(0, 1), (0, -1), (1, 0), (-1, 0)]:\n                    if 0 <= (i := y + dy) < n and 0 <= (j := x + dx) < n and not grid[i][j]:\n                        grid[i][j] = 1\n                        q.append((i, j))\n        return distance"
+        }
+      },
+      "title": "As Far from Land as Possible",
+      "definition": "Given an n x n grid of 0s (water) and 1s (land), find the maximum distance from any water cell to the nearest land cell. Return -1 if the grid has only land or only water",
+      "leetcode": "https://leetcode.com/problems/as-far-from-land-as-possible/",
+      "difficulty": "medium",
+      "topics": ["multi-source bfs", "bfs"]
+    },
     "547-number-of-provinces": {
       "time_stamps": {
         "created_at": "2025-10-27T11:31:50.829497",
@@ -1030,20 +1046,18 @@
     "994-rotting-oranges": {
       "time_stamps": {
         "created_at": "2025-09-12T16:06:03.946253",
-        "updated_at": "2025-09-30T19:05:08.952837"
+        "updated_at": "2025-11-02T15:36:46.468294"
       },
       "solutions": {
         "solution.py": {
-          "intuition": "Multi-Source BFS 🍊:\n    The key is to initialize the queue with the coordinates of *all* initially rotten oranges. The BFS then naturally simulates the rotting process in parallel from all sources. Each \"level\" of the BFS corresponds to one minute passing. Finally, you must check if any `fresh_oranges` remain to handle cases where some are unreachable.",
-          "time_complexity": "O(m * n):\n    where m and n are the dimensions of the grid. Each cell is enqueued and dequeued at most once, making the process highly efficient and optimal.",
-          "code": "from collections import deque\n\ndef rotting_oranges(grid: list[list[int]]) -> int:\n    m, n = len(grid), len(grid[0])\n    q, fresh = deque(), 0\n    dirs = [(0,1),(0,-1),(1,0),(-1,0)]\n\n    for i in range(m):\n        for j in range(n):\n            if grid[i][j] == 2:\n                q.append((i, j))\n            elif grid[i][j] == 1:\n                fresh += 1\n    if fresh == 0:\n        return 0\n\n    minutes = 0\n    while q and fresh:\n        minutes += 1\n        for _ in range(len(q)):\n            x, y = q.popleft()\n            for dx, dy in dirs:\n                nx, ny = x + dx, y + dy\n                if 0 <= nx < m and 0 <= ny < n and grid[nx][ny] == 1:\n                    grid[nx][ny] = 2\n                    fresh -= 1\n                    q.append((nx, ny))\n\n    return minutes if fresh == 0 else -1"
+          "code": "from collections import deque\n\nclass Solution:\n    def orangesRotting(self, grid: list[list[int]]) -> int:\n\n        R, C = len(grid), len(grid[0])\n        fresh, q = 0, deque()\n\n        for r in range(R):\n            for c in range(C):\n                if grid[r][c] == 1:\n                    fresh += 1\n                if grid[r][c] == 2:\n                    q.append((r, c))\n\n        if not fresh:\n            return 0\n\n        minute = 0\n        while q and fresh:\n            minute += 1\n            for _ in range(len(q)):\n                y, x = q.popleft()\n                for dy, dx in [(-1, 0), (1, 0), (0, -1), (0, 1)]:\n                    if 0 <= (i := y + dy) < R and 0 <= (j := x + dx) < C and grid[i][j] == 1:\n                        grid[i][j] = 2\n                        fresh -= 1\n                        q.append((i, j))\n        return -1 if fresh else minute"
         }
       },
       "title": "Rotting Oranges",
       "definition": "Given an `m x n` 2D grid of `0`s (empty), `1`s (fresh), and `2`s (rotten), every minute, any fresh orange adjacent to a rotten one becomes rotten. Return the minimum minutes required until no fresh oranges remain. If it's impossible, return -1.",
       "leetcode": "https://leetcode.com/problems/rotting-oranges",
       "difficulty": "medium",
-      "topics": ["bfs"]
+      "topics": ["bfs", "multi-source bfs"]
     },
     "1547-minimum-cost-to-cut-a-stick": {
       "time_stamps": {

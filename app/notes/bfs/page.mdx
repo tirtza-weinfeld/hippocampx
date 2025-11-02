@@ -61,9 +61,9 @@
 >
 > This problem is a classic multi-source BFS. The key is to initialize the queue with the coordinates of *all* initially rotten oranges. The BFS then naturally simulates the rotting process in parallel from all sources. Each "level" of the BFS corresponds to one minute passing. Finally, you must check if any `fresh_oranges` remain to handle cases where some are unreachable.
 
-> [\!timecomplexity:collapse] $O(m \cdot n)$
+> [\!timecomplexity:collapse] $O(R \cdot C)$
 >
-> where $m$ and $n$ are the grid dimensions. Each cell is enqueued and dequeued at most once, making the process highly efficient and optimal.
+> where $R$ and $C$ are the grid dimensions. Each cell is enqueued and dequeued at most once, making the process highly efficient and optimal.
 
 -----
 

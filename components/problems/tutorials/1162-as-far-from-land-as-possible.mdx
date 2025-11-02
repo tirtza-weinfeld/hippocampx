@@ -1,0 +1,40 @@
+# As Far from Land as Possible
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="medium" />
+
+<PillList pills={["multi-source bfs", "bfs"]} />
+
+[1162. As Far from Land as Possible](https://leetcode.com/problems/as-far-from-land-as-possible/)
+
+## [!(ProblemDefinition)] Definition
+
+Given an n x n grid of 0s (water) and 1s (land), find the maximum distance from any water cell to the nearest land cell. Return -1 if the grid has only land or only water
+
+## [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/1162-as-far-from-land-as-possible/solution.py"
+from collections import deque
+
+class Solution:
+    def maxDistance(self, grid: list[list[int]]) -> int:
+
+        n = len(grid)
+        q = deque([(r, c) for r in range(n) for c in range(n) if grid[r][c]])
+
+        if not q or len(q) == n * n:
+            return -1
+
+        distance = 0
+        while q:
+            distance += 1
+            for _ in range(len(q)):
+                (y, x) = q.popleft()
+                for dy, dx in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
+                    if 0 <= (i := y + dy) < n and 0 <= (j := x + dx) < n and not grid[i][j]:
+                        grid[i][j] = 1
+                        q.append((i, j))
+        return distance
+```
+

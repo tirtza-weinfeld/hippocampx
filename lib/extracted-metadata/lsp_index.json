@@ -561,6 +561,50 @@
       ]
     },
     {
+      "uri": "problems/1162-as-far-from-land-as-possible/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/1162-as-far-from-land-as-possible/solution.py",
+      "symbols": [
+        {
+          "name": "Solution",
+          "detail": "class Solution",
+          "kind": 5,
+          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 20, "character": 23}},
+          "nameRange": {
+            "start": {
+              "line": 2,
+              "character": 6
+            },
+            "end": {
+              "line": 2,
+              "character": 14
+            }
+          },
+          "children": [
+            {
+              "name": "maxDistance",
+              "detail": "maxDistance(grid: list[list[int]]) -> int",
+              "kind": 6,
+              "range": {"start": {"line": 3, "character": 4}, "end": {"line": 20, "character": 23}},
+              "nameRange": {
+                "start": {
+                  "line": 3,
+                  "character": 8
+                },
+                "end": {
+                  "line": 3,
+                  "character": 19
+                }
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
       "uri": "problems/120-triangle/__init__.py",
       "symbols": []
     },
@@ -4382,21 +4426,39 @@
       "uri": "problems/994-rotting-oranges/solution.py",
       "symbols": [
         {
-          "name": "rotting_oranges",
-          "detail": "rotting_oranges(grid: list[list[int]]) -> int",
-          "kind": 12,
-          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 28, "character": 40}},
+          "name": "Solution",
+          "detail": "class Solution",
+          "kind": 5,
+          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 28, "character": 38}},
           "nameRange": {
             "start": {
               "line": 2,
-              "character": 4
+              "character": 6
             },
             "end": {
               "line": 2,
-              "character": 19
+              "character": 14
             }
           },
-          "children": []
+          "children": [
+            {
+              "name": "orangesRotting",
+              "detail": "orangesRotting(grid: list[list[int]]) -> int",
+              "kind": 6,
+              "range": {"start": {"line": 3, "character": 4}, "end": {"line": 28, "character": 38}},
+              "nameRange": {
+                "start": {
+                  "line": 3,
+                  "character": 8
+                },
+                "end": {
+                  "line": 3,
+                  "character": 22
+                }
+              },
+              "children": []
+            }
+          ]
         }
       ]
     },

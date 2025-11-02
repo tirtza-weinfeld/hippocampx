@@ -16,6 +16,7 @@
     ],
     "bfs": [
       "102-binary-tree-level-order-traversal",
+      "1162-as-far-from-land-as-possible",
       "127-word-ladder",
       "1293-shortest-path-in-a-grid-with-obstacles-elimination",
       "133-clone-graph",
@@ -95,6 +96,10 @@
       "525-contiguous-array",
       "560-subarray-sum-equals-k",
       "974-subarray-sums-divisible-by-k"
+    ],
+    "multi-source bfs": [
+      "1162-as-far-from-land-as-possible",
+      "994-rotting-oranges"
     ],
     "dsu": [
       "547-number-of-provinces",
@@ -207,6 +212,7 @@
       "1011-capacity-to-ship-packages-within-d-days",
       "102-binary-tree-level-order-traversal",
       "1143-longest-common-subsequence",
+      "1162-as-far-from-land-as-possible",
       "120-triangle",
       "122-best-time-to-buy-and-sell-stock-ii",
       "133-clone-graph",
@@ -337,9 +343,6 @@
     ],
     "1510-stone-game-iv": [
       "$O(n  \\cdot  sqrt(n))$"
-    ],
-    "994-rotting-oranges": [
-      "$O(m  \\cdot  n)$"
     ],
     "121-best-time-to-buy-and-sell-stock": [
       "$O(n)$"

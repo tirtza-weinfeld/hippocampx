@@ -185,6 +185,17 @@
     "updatedAt": "2025-09-29T12:48:05.175290"
   },
   {
+    "id": "1162-as-far-from-land-as-possible",
+    "title": "As Far from Land as Possible",
+    "difficulty": "medium",
+    "topics": [
+      "multi-source bfs",
+      "bfs"
+    ],
+    "createdAt": "2025-11-02T16:06:57.892639",
+    "updatedAt": "2025-11-02T16:15:35.448056"
+  },
+  {
     "id": "547-number-of-provinces",
     "title": "Number of Provinces",
     "difficulty": "medium",
@@ -509,10 +520,11 @@
     "title": "Rotting Oranges",
     "difficulty": "medium",
     "topics": [
-      "bfs"
+      "bfs",
+      "multi-source bfs"
     ],
     "createdAt": "2025-09-12T16:06:03.946253",
-    "updatedAt": "2025-09-30T19:05:08.952837"
+    "updatedAt": "2025-11-02T15:36:46.468294"
   },
   {
     "id": "1547-minimum-cost-to-cut-a-stick",

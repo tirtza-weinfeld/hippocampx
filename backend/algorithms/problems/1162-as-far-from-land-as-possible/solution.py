@@ -1,0 +1,22 @@
+from collections import deque
+
+
+class Solution:
+    def maxDistance(self, grid: list[list[int]]) -> int:
+
+        n = len(grid)
+        q = deque([(r, c) for r in range(n) for c in range(n) if grid[r][c]])
+
+        if not q or len(q) == n * n:
+            return -1
+
+        distance = 0
+        while q:
+            distance += 1
+            for _ in range(len(q)):
+                (y, x) = q.popleft()
+                for dy, dx in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
+                    if 0 <= (i := y + dy) < n and 0 <= (j := x + dx) < n and not grid[i][j]:
+                        grid[i][j] = 1
+                        q.append((i, j))
+        return distance

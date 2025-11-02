@@ -6,6 +6,7 @@ export const PROBLEMS_ROUTES: NavigationItem[] = [
         title: 'Problems', href: '/problems', icon: SquareFunction, color: "text-yellow-500", bgColor: "bg-yellow-500/10",
         children: [
             { title: '01 Matrix', href: '/problems/542-01-matrix', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
+            { title: 'As Far from Land as Possible', href: '/problems/1162-as-far-from-land-as-possible', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
             { title: 'Best Time to Buy and Sell Stock', href: '/problems/121-best-time-to-buy-and-sell-stock', icon: Code, color: "text-green-500", bgColor: "bg-green-500/10" },
             { title: 'Best Time to Buy and Sell Stock II', href: '/problems/122-best-time-to-buy-and-sell-stock-ii', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
             { title: 'Best Time to Buy and Sell Stock III', href: '/problems/123-best-time-to-buy-and-sell-stock-iii', icon: Code, color: "text-red-500", bgColor: "bg-red-500/10" },
