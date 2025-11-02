@@ -4539,39 +4539,21 @@
       "uri": "problems/994-rotting-oranges/solution.py",
       "symbols": [
         {
-          "name": "Solution",
-          "detail": "class Solution",
-          "kind": 5,
-          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 28, "character": 38}},
+          "name": "orangesRotting",
+          "detail": "orangesRotting(grid: list[list[int]]) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 27, "character": 34}},
           "nameRange": {
             "start": {
               "line": 2,
-              "character": 6
+              "character": 4
             },
             "end": {
               "line": 2,
-              "character": 14
+              "character": 18
             }
           },
-          "children": [
-            {
-              "name": "orangesRotting",
-              "detail": "orangesRotting(grid: list[list[int]]) -> int",
-              "kind": 6,
-              "range": {"start": {"line": 3, "character": 4}, "end": {"line": 28, "character": 38}},
-              "nameRange": {
-                "start": {
-                  "line": 3,
-                  "character": 8
-                },
-                "end": {
-                  "line": 3,
-                  "character": 22
-                }
-              },
-              "children": []
-            }
-          ]
+          "children": []
         }
       ]
     },

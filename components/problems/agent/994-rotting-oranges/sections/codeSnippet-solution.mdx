@@ -1,31 +1,30 @@
 ```python meta="source=problems/994-rotting-oranges/solution.py"
 from collections import deque
 
-class Solution:
-    def orangesRotting(self, grid: list[list[int]]) -> int:
+def orangesRotting( grid: list[list[int]]) -> int:
 
-        R, C = len(grid), len(grid[0])
-        fresh, q = 0, deque()
+    R, C = len(grid), len(grid[0])
+    fresh, q = 0, deque()
 
-        for r in range(R):
-            for c in range(C):
-                if grid[r][c] == 1:
-                    fresh += 1
-                if grid[r][c] == 2:
-                    q.append((r, c))
+    for r in range(R):
+        for c in range(C):
+            if grid[r][c] == 1:
+                fresh += 1
+            if grid[r][c] == 2:
+                q.append((r, c))
 
-        if not fresh:
-            return 0
+    if not fresh:
+        return 0
 
-        minute = 0
-        while q and fresh:
-            minute += 1
-            for _ in range(len(q)):
-                y, x = q.popleft()
-                for dy, dx in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
-                    if 0 <= (i := y + dy) < R and 0 <= (j := x + dx) < C and grid[i][j] == 1:
-                        grid[i][j] = 2
-                        fresh -= 1
-                        q.append((i, j))
-        return -1 if fresh else minute
+    minute = 0
+    while q and fresh:
+        minute += 1
+        for _ in range(len(q)):
+            y, x = q.popleft()
+            for dy, dx in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+                if 0 <= (i := y + dy) < R and 0 <= (j := x + dx) < C and grid[i][j] == 1:
+                    grid[i][j] = 2
+                    fresh -= 1
+                    q.append((i, j))
+    return -1 if fresh else minute
 ```

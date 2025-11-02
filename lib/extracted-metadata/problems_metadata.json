@@ -1078,11 +1078,11 @@
     "994-rotting-oranges": {
       "time_stamps": {
         "created_at": "2025-09-12T16:06:03.946253",
-        "updated_at": "2025-11-02T15:36:46.468294"
+        "updated_at": "2025-11-02T20:08:52.754379"
       },
       "solutions": {
         "solution.py": {
-          "code": "from collections import deque\n\nclass Solution:\n    def orangesRotting(self, grid: list[list[int]]) -> int:\n\n        R, C = len(grid), len(grid[0])\n        fresh, q = 0, deque()\n\n        for r in range(R):\n            for c in range(C):\n                if grid[r][c] == 1:\n                    fresh += 1\n                if grid[r][c] == 2:\n                    q.append((r, c))\n\n        if not fresh:\n            return 0\n\n        minute = 0\n        while q and fresh:\n            minute += 1\n            for _ in range(len(q)):\n                y, x = q.popleft()\n                for dy, dx in [(-1, 0), (1, 0), (0, -1), (0, 1)]:\n                    if 0 <= (i := y + dy) < R and 0 <= (j := x + dx) < C and grid[i][j] == 1:\n                        grid[i][j] = 2\n                        fresh -= 1\n                        q.append((i, j))\n        return -1 if fresh else minute"
+          "code": "from collections import deque\n\ndef orangesRotting( grid: list[list[int]]) -> int:\n\n    R, C = len(grid), len(grid[0])\n    fresh, q = 0, deque()\n\n    for r in range(R):\n        for c in range(C):\n            if grid[r][c] == 1:\n                fresh += 1\n            if grid[r][c] == 2:\n                q.append((r, c))\n\n    if not fresh:\n        return 0\n\n    minute = 0\n    while q and fresh:\n        minute += 1\n        for _ in range(len(q)):\n            y, x = q.popleft()\n            for dy, dx in [(-1, 0), (1, 0), (0, -1), (0, 1)]:\n                if 0 <= (i := y + dy) < R and 0 <= (j := x + dx) < C and grid[i][j] == 1:\n                    grid[i][j] = 2\n                    fresh -= 1\n                    q.append((i, j))\n    return -1 if fresh else minute"
         }
       },
       "title": "Rotting Oranges",
