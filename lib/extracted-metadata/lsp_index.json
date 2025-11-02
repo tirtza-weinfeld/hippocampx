@@ -1190,24 +1190,82 @@
       "symbols": []
     },
     {
-      "uri": "problems/1514-path-with-maximum-probability/solution.py",
+      "uri": "problems/1514-path-with-maximum-probability/bellman-ford.py",
       "symbols": [
         {
-          "name": "path_with_maximum_probability",
-          "detail": "path_with_maximum_probability(n: int, edges: list[list[int]], succProb: list[float], start: int, end: int) -> float",
-          "kind": 12,
-          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 16, "character": 20}},
+          "name": "Solution",
+          "detail": "class Solution",
+          "kind": 5,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 17, "character": 24}},
           "nameRange": {
             "start": {
               "line": 0,
-              "character": 4
+              "character": 6
             },
             "end": {
               "line": 0,
-              "character": 33
+              "character": 14
             }
           },
-          "children": []
+          "children": [
+            {
+              "name": "maxProbability",
+              "detail": "maxProbability(n: int, edges: list[list[int]], succProb: list[float], start: int, end: int) -> float",
+              "kind": 6,
+              "range": {"start": {"line": 1, "character": 4}, "end": {"line": 17, "character": 24}},
+              "nameRange": {
+                "start": {
+                  "line": 1,
+                  "character": 8
+                },
+                "end": {
+                  "line": 1,
+                  "character": 22
+                }
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "uri": "problems/1514-path-with-maximum-probability/dijkstra.py",
+      "symbols": [
+        {
+          "name": "Solution",
+          "detail": "class Solution",
+          "kind": 5,
+          "range": {"start": {"line": 3, "character": 0}, "end": {"line": 26, "character": 18}},
+          "nameRange": {
+            "start": {
+              "line": 3,
+              "character": 6
+            },
+            "end": {
+              "line": 3,
+              "character": 14
+            }
+          },
+          "children": [
+            {
+              "name": "maxProbability",
+              "detail": "maxProbability(n: int, edges: list[list[int]], succProb: list[float], start: int, end: int) -> float",
+              "kind": 6,
+              "range": {"start": {"line": 4, "character": 4}, "end": {"line": 26, "character": 18}},
+              "nameRange": {
+                "start": {
+                  "line": 4,
+                  "character": 8
+                },
+                "end": {
+                  "line": 4,
+                  "character": 22
+                }
+              },
+              "children": []
+            }
+          ]
         }
       ]
     },
@@ -3820,24 +3878,82 @@
       "symbols": []
     },
     {
-      "uri": "problems/743-network-delay-time/solution.py",
+      "uri": "problems/743-network-delay-time/dijkstra-b.py",
       "symbols": [
         {
-          "name": "network_delay_time",
-          "detail": "network_delay_time(times: list[list[int]], n: int, k: int) -> int",
-          "kind": 12,
-          "range": {"start": {"line": 3, "character": 0}, "end": {"line": 18, "character": 46}},
+          "name": "Solution",
+          "detail": "class Solution",
+          "kind": 5,
+          "range": {"start": {"line": 3, "character": 0}, "end": {"line": 23, "character": 50}},
           "nameRange": {
             "start": {
               "line": 3,
-              "character": 4
+              "character": 6
             },
             "end": {
               "line": 3,
-              "character": 22
+              "character": 14
             }
           },
-          "children": []
+          "children": [
+            {
+              "name": "networkDelayTime",
+              "detail": "networkDelayTime(times: list[list[int]], n: int, k: int) -> int",
+              "kind": 6,
+              "range": {"start": {"line": 4, "character": 4}, "end": {"line": 23, "character": 50}},
+              "nameRange": {
+                "start": {
+                  "line": 4,
+                  "character": 8
+                },
+                "end": {
+                  "line": 4,
+                  "character": 24
+                }
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "uri": "problems/743-network-delay-time/dijkstra.py",
+      "symbols": [
+        {
+          "name": "Solution",
+          "detail": "class Solution",
+          "kind": 5,
+          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 23, "character": 72}},
+          "nameRange": {
+            "start": {
+              "line": 2,
+              "character": 6
+            },
+            "end": {
+              "line": 2,
+              "character": 14
+            }
+          },
+          "children": [
+            {
+              "name": "networkDelayTime",
+              "detail": "networkDelayTime(times: list[list[int]], n: int, k: int) -> int",
+              "kind": 6,
+              "range": {"start": {"line": 3, "character": 4}, "end": {"line": 23, "character": 72}},
+              "nameRange": {
+                "start": {
+                  "line": 3,
+                  "character": 8
+                },
+                "end": {
+                  "line": 3,
+                  "character": 24
+                }
+              },
+              "children": []
+            }
+          ]
         }
       ]
     },

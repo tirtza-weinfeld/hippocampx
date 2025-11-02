@@ -1,0 +1,26 @@
+```python meta="source=problems/743-network-delay-time/dijkstra-b.py"
+from heapq import heappush, heappop
+from collections import defaultdict
+
+class Solution:
+    def networkDelayTime(self, times: list[list[int]], n: int, k: int) -> int:
+
+        adj = defaultdict(list)
+        for u, v, w in times:
+            adj[u].append((v, w))
+
+        pq, finalized, time = [(0, k)], set(), 0
+
+        while pq:
+            t, node = heappop(pq)
+            if node in finalized:
+                continue
+            finalized.add(node)
+            time = t
+
+            for neighbor, travel_time in adj[node]:
+                if neighbor not in finalized:
+                    heappush(pq, (time + travel_time, neighbor))
+
+        return time if len(finalized) == n else -1
+```

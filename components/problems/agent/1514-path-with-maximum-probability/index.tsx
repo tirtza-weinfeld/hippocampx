@@ -3,8 +3,10 @@ import { AgentCard, AgentSection } from '@/components/agent'
 
 // Lazy imports for each section MDX
 const Definition = lazy(() => import('./sections/definition.mdx'))
-const CodeSnippetSolution = lazy(() => import('./sections/codeSnippet-solution.mdx'))
-const IntuitionSolution = lazy(() => import('./sections/intuition-solution.mdx'))
+const CodeSnippetBellmanFord = lazy(() => import('./sections/codeSnippet-bellman-ford.mdx'))
+const IntuitionBellmanFord = lazy(() => import('./sections/intuition-bellman-ford.mdx'))
+const CodeSnippetDijkstra = lazy(() => import('./sections/codeSnippet-dijkstra.mdx'))
+const IntuitionDijkstra = lazy(() => import('./sections/intuition-dijkstra.mdx'))
 
 export default async function Problem1514PathWithMaximumProbability() {
   return (
@@ -12,22 +14,30 @@ export default async function Problem1514PathWithMaximumProbability() {
       id="1514-path-with-maximum-probability"
       title="Path with Maximum Probability"
       difficulty="medium"
-      topics={["bellman-ford"]}
-      solutionFiles={["solution.py"]}
-      defaultFile="solution.py"
-      fileSectionMap={{"solution.py":["definition","codeSnippet","intuition"]}}
+      topics={["dijkstra","bellman-ford"]}
+      solutionFiles={["bellman-ford.py","dijkstra.py"]}
+      defaultFile="bellman-ford.py"
+      fileSectionMap={{"bellman-ford.py":["definition","codeSnippet","intuition"],"dijkstra.py":["definition","codeSnippet","intuition"]}}
       leetcodeUrl="https://leetcode.com/problems/path-with-maximum-probability"
     >
         <AgentSection section="definition">
           <Definition />
         </AgentSection>
 
-        <AgentSection section="codeSnippet" file="solution.py">
-          <CodeSnippetSolution />
+        <AgentSection section="codeSnippet" file="bellman-ford.py">
+          <CodeSnippetBellmanFord />
         </AgentSection>
 
-        <AgentSection section="intuition" file="solution.py">
-          <IntuitionSolution />
+        <AgentSection section="intuition" file="bellman-ford.py">
+          <IntuitionBellmanFord />
+        </AgentSection>
+
+        <AgentSection section="codeSnippet" file="dijkstra.py">
+          <CodeSnippetDijkstra />
+        </AgentSection>
+
+        <AgentSection section="intuition" file="dijkstra.py">
+          <IntuitionDijkstra />
         </AgentSection>
     </AgentCard>
   )

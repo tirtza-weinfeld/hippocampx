@@ -8,6 +8,7 @@
       "51-n-queens"
     ],
     "dijkstra": [
+      "1514-path-with-maximum-probability",
       "1631-path-with-minimum-effort",
       "743-network-delay-time",
       "778-swim-in-rising-water",
@@ -404,6 +405,7 @@
       "$O(81)$"
     ],
     "743-network-delay-time": [
+      "$O(E \\log V)$",
       "$O(E \\log V)$"
     ],
     "127-word-ladder": [

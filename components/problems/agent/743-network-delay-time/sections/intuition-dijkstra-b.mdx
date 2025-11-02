@@ -1,0 +1,6 @@
+- The signal starts at node k and spreads through the network.
+    - Each time we pop a node from the heap, we know this is the earliest
+    - possible moment the signal can reach it — its shortest travel time.
+    - We mark it as finalized and push its neighbors with updated times.
+    - When all nodes are finalized, the last recorded time is the total delay.
+    - If not all nodes can be reached, return -1.

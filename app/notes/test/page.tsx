@@ -8,11 +8,11 @@ import AgentWrapper from '@/components/problems/agent/wrapper'
 // import { SlowComponent } from '@/components/problems/agent/wrapper'
 // const SlowComponent = lazy(() => import('@/components/problems/agent/wrapper'))
 // const AgentWrapper = lazy(() => import('@/components/problems/agent/wrapper'))
-
+import N from './n.mdx'
 export default function TestPage() {
   return (
     <div>
-      
+      <N />
       {/* <AgentWrapperDialog>
         <AgentWrapper />
         </AgentWrapperDialog> */}

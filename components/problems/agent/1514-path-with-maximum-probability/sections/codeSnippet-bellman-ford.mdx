@@ -1,0 +1,20 @@
+```python meta="source=problems/1514-path-with-maximum-probability/bellman-ford.py"
+class Solution:
+    def maxProbability(self, n: int, edges: list[list[int]], succProb: list[float], start: int, end: int) -> float:
+        prob = [0.0] * n
+        prob[start] = 1.0
+
+        for _ in range(n - 1):
+            updated = False
+            for (u, v), p in zip(edges, succProb):
+                if prob[u] * p > prob[v]:
+                    prob[v] = prob[u] * p
+                    updated = True
+                if prob[v] * p > prob[u]:
+                    prob[u] = prob[v] * p
+                    updated = True
+            if not updated:
+                break
+
+        return prob[end]
+```

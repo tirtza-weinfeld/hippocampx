@@ -1,0 +1,9 @@
+- We want the path from `start` to `end` with the largest product of edge probabilities:
+    - This is equivalent to Dijkstra’s algorithm, replacing *sum of distances* with             *product of probabilities* and switching from a *[2!]min-heap* to a *[2!]max-heap*.
+
+- Deep Dive: Correctness:
+        - Each edge weight (probability) *$\in [0, 1]$*.
+        - Multiplying by a value *$\leq 1$* never increases the product, so the total probability                   along any path is monotonically non-increasing as the path length grows.
+        - This monotonicity guarantees that *once we extract a node with the current                   maximum probability from the heap, no later path can improve it.*
+            - same invariant that makes Dijkstra correct for nonnegative edge weights.
+            - By contrast, *longest path* problems fail this property because edge weights                 can be positive and cumulative, allowing cycles to increase total weight                 indefinitely (no monotonic bound), making them *NP-hard*.

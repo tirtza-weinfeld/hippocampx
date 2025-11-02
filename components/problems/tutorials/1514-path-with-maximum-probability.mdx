@@ -4,38 +4,94 @@
 
 <DifficultyBadge difficulty="medium" />
 
-<PillList pills={["bellman-ford"]} />
+<PillList pills={["dijkstra", "bellman-ford"]} />
 
 [1514. Path with Maximum Probability](https://leetcode.com/problems/path-with-maximum-probability)
 
 ## [!(ProblemDefinition)] Definition
 
-Given an undirected graph with edges representing traversal probabilities, find the path from a `start` to an `end` node with the highest success probability.
+Given an undirected graph with edges representing traversal probabilities, return the success probability of the path from a `start` to an `end` node with the highest success probability.
 
-## [!(ProblemIntuition)] Intuition
+## Dijkstra Solution
+
+### [!(ProblemIntuition)] Intuition
+
+- We want the path from `start` to `end` with the largest product of edge probabilities:
+    - This is equivalent to Dijkstra’s algorithm, replacing *sum of distances* with             *product of probabilities* and switching from a *[2!]min-heap* to a *[2!]max-heap*.
+
+- Deep Dive: Correctness:
+        - Each edge weight (probability) *$\in [0, 1]$*.
+        - Multiplying by a value *$\leq 1$* never increases the product, so the total probability                   along any path is monotonically non-increasing as the path length grows.
+        - This monotonicity guarantees that *once we extract a node with the current                   maximum probability from the heap, no later path can improve it.*
+            - same invariant that makes Dijkstra correct for nonnegative edge weights.
+            - By contrast, *longest path* problems fail this property because edge weights                 can be positive and cumulative, allowing cycles to increase total weight                 indefinitely (no monotonic bound), making them *NP-hard*.
+
+### [!(ProblemReturns)] Returns
+
+`float`: Maximum probability to reach `end` from `start`, or 0.0 if unreachable.
+
+### [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/1514-path-with-maximum-probability/dijkstra.py"
+from heapq import heappush, heappop
+from collections import defaultdict
+
+class Solution:
+    def maxProbability(self, n: int, edges: list[list[int]], succProb: list[float], start: int, end: int) -> float:
+
+        adj = defaultdict(list)
+        for (u, v), p in zip(edges, succProb):
+            adj[u].append((v, p))
+            adj[v].append((u, p))
+
+        pq, best = [(-1.0, start)], [0.0] * n
+        best[start] = 1.0
+
+        while pq:
+            p, u = heappop(pq)
+            p = -p
+            if u == end:
+                return p
+            if p < best[u]:
+                continue
+            for v, w in adj[u]:
+                new_p = p * w
+                if new_p > best[v]:
+                    best[v] = new_p
+                    heappush(pq, (-new_p, v))
+        return 0.0
+```
+
+
+---
+
+## Bellman Ford Solution
+
+### [!(ProblemIntuition)] Intuition
 
 - Bellman-Ford variant to maximize product of probabilities.
     - Each node tracks the maximum probability to reach it from `start`.
 
-## [!(ProblemCodeSnippet)] Code Snippet
+### [!(ProblemCodeSnippet)] Code Snippet
 
-```python meta="source=problems/1514-path-with-maximum-probability/solution.py"
-def path_with_maximum_probability(n: int, edges: list[list[int]], succProb: list[float], start: int, end: int) -> float:
-    prob = [0.0] * n
-    prob[start] = 1.0
+```python meta="source=problems/1514-path-with-maximum-probability/bellman-ford.py"
+class Solution:
+    def maxProbability(self, n: int, edges: list[list[int]], succProb: list[float], start: int, end: int) -> float:
+        prob = [0.0] * n
+        prob[start] = 1.0
 
-    for _ in range(n - 1):
-        updated = False
-        for (u, v), p in zip(edges, succProb):
-            if prob[u] * p > prob[v]:
-                prob[v] = prob[u] * p
-                updated = True
-            if prob[v] * p > prob[u]:
-                prob[u] = prob[v] * p
-                updated = True
-        if not updated:
-            break
+        for _ in range(n - 1):
+            updated = False
+            for (u, v), p in zip(edges, succProb):
+                if prob[u] * p > prob[v]:
+                    prob[v] = prob[u] * p
+                    updated = True
+                if prob[v] * p > prob[u]:
+                    prob[u] = prob[v] * p
+                    updated = True
+            if not updated:
+                break
 
-    return prob[end]
+        return prob[end]
 ```
 

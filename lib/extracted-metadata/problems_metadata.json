@@ -869,7 +869,7 @@
     "102-binary-tree-level-order-traversal": {
       "time_stamps": {
         "created_at": "2025-09-12T16:05:33.323765",
-        "updated_at": "2025-10-29T19:59:06.060579"
+        "updated_at": "2025-10-29T19:59:53.546365"
       },
       "solutions": {
         "solution.py": {
@@ -1226,24 +1226,30 @@
     "1514-path-with-maximum-probability": {
       "time_stamps": {
         "created_at": "2025-09-12T16:06:10.762600",
-        "updated_at": "2025-09-29T12:41:57.766704"
+        "updated_at": "2025-11-02T11:12:38.782248"
       },
       "solutions": {
-        "solution.py": {
+        "bellman-ford.py": {
           "intuition": "Bellman-Ford variant to maximize product of probabilities.\n    Each node tracks the maximum probability to reach it from `start`.",
           "args": {
             "n: int": "number of nodes",
             "edges: list[list[int]]": "edges[i] = [u, v] is an undirected edge connecting the nodes u and v with a probability of success of traversing that edge succProb[i].",
             "succProb: list[float]": "list of probabilities, e.g. [0.5,0.5,0.2],"
           },
-          "code": "def path_with_maximum_probability(n: int, edges: list[list[int]], succProb: list[float], start: int, end: int) -> float:\n    prob = [0.0] * n\n    prob[start] = 1.0\n\n    for _ in range(n - 1):\n        updated = False\n        for (u, v), p in zip(edges, succProb):\n            if prob[u] * p > prob[v]:\n                prob[v] = prob[u] * p\n                updated = True\n            if prob[v] * p > prob[u]:\n                prob[u] = prob[v] * p\n                updated = True\n        if not updated:\n            break\n\n    return prob[end]"
+          "code": "class Solution:\n    def maxProbability(self, n: int, edges: list[list[int]], succProb: list[float], start: int, end: int) -> float:\n        prob = [0.0] * n\n        prob[start] = 1.0\n\n        for _ in range(n - 1):\n            updated = False\n            for (u, v), p in zip(edges, succProb):\n                if prob[u] * p > prob[v]:\n                    prob[v] = prob[u] * p\n                    updated = True\n                if prob[v] * p > prob[u]:\n                    prob[u] = prob[v] * p\n                    updated = True\n            if not updated:\n                break\n\n        return prob[end]"
+        },
+        "dijkstra.py": {
+          "intuition": "We want the path from `start` to `end` with the largest product of edge probabilities:\n    This is equivalent to Dijkstra’s algorithm, replacing *sum of distances* with             *product of probabilities* and switching from a *[2!]min-heap* to a *[2!]max-heap*.\n\n    Deep Dive: Correctness:\n        Each edge weight (probability) *$\\in [0, 1]$*.\n        Multiplying by a value *$\\leq 1$* never increases the product, so the total probability                   along any path is monotonically non-increasing as the path length grows.\n        This monotonicity guarantees that *once we extract a node with the current                   maximum probability from the heap, no later path can improve it.*\n            same invariant that makes Dijkstra correct for nonnegative edge weights.\n            By contrast, *longest path* problems fail this property because edge weights                 can be positive and cumulative, allowing cycles to increase total weight                 indefinitely (no monotonic bound), making them *NP-hard*.",
+          "returns": "`float`: Maximum probability to reach `end` from `start`, or 0.0 if unreachable.",
+          "code": "from heapq import heappush, heappop\nfrom collections import defaultdict\n\nclass Solution:\n    def maxProbability(self, n: int, edges: list[list[int]], succProb: list[float], start: int, end: int) -> float:\n\n        adj = defaultdict(list)\n        for (u, v), p in zip(edges, succProb):\n            adj[u].append((v, p))\n            adj[v].append((u, p))\n\n        pq, best = [(-1.0, start)], [0.0] * n\n        best[start] = 1.0\n\n        while pq:\n            p, u = heappop(pq)\n            p = -p\n            if u == end:\n                return p\n            if p < best[u]:\n                continue\n            for v, w in adj[u]:\n                new_p = p * w\n                if new_p > best[v]:\n                    best[v] = new_p\n                    heappush(pq, (-new_p, v))\n        return 0.0"
         }
       },
       "title": "Path with Maximum Probability",
-      "definition": "Given an undirected graph with edges representing traversal probabilities, find the path from a `start` to an `end` node with the highest success probability.",
+      "definition": "Given an undirected graph with edges representing traversal probabilities, return the success probability of the path from a `start` to an `end` node with the highest success probability.",
       "leetcode": "https://leetcode.com/problems/path-with-maximum-probability",
       "difficulty": "medium",
-      "topics": ["bellman-ford"]
+      "topics": ["dijkstra", "bellman-ford"],
+      "group": [["dijkstra.py"], ["bellman-ford.py"]]
     },
     "72-edit-distance": {
       "time_stamps": {
@@ -1733,17 +1739,23 @@
     "743-network-delay-time": {
       "time_stamps": {
         "created_at": "2025-09-12T16:05:57.931423",
-        "updated_at": "2025-09-30T19:05:08.951925"
+        "updated_at": "2025-11-02T11:25:30.933620"
       },
       "solutions": {
-        "solution.py": {
-          "time_complexity": "O(E log V):\n    E is the number of edges (the length of the input list `times`)\n    V is the number of vertices (the number of nodes `n`)\n\n    By substituting these into the standard Dijkstra complexity formula, O(E log V), you get O(len(times) log n).",
+        "dijkstra.py": {
+          "intuition": "We track the shortest known time to reach every node from the source k:\n    Initially, all distances are infinite except for k (0).\n    At each step, we pop the node with the smallest known distance from the heap.\n    If we find a shorter path to one of its neighbors, we update (relax) that distance\n    and push the new state into the heap.\n\n    By the end, `dist[v]` holds the minimum time for the signal to reach each node `v`:\n    The total network delay is the longest of these shortest times\n        i.e., `max(dist.values())`. If some node remains unreachable, return - 1.",
+          "time_complexity": "O(E log V)",
+          "code": "from heapq import heappush, heappop\n\nclass Solution:\n    def networkDelayTime(self, times: list[list[int]], n: int, k: int) -> int:\n\n        g = {i: [] for i in range(1, n + 1)}\n        for u, v, w in times:\n            g[u].append((w, v))\n\n        dist = {i: float(\"inf\") for i in g}\n        dist[k] = 0\n\n        pq = [(0, k)]\n\n        while pq:\n            d, u = heappop(pq)\n            if d > dist[u]: continue\n\n            for w, v in g[u]:\n                if (nd := d + w) < dist[v]:\n                    dist[v] = nd\n                    heappush(pq, (nd, v))\n\n        return ans if (ans := max(dist.values())) < float(\"inf\") else -1"
+        },
+        "dijkstra-b.py": {
+          "intuition": "The signal starts at node k and spreads through the network.\n    Each time we pop a node from the heap, we know this is the earliest\n    possible moment the signal can reach it — its shortest travel time.\n    We mark it as finalized and push its neighbors with updated times.\n    When all nodes are finalized, the last recorded time is the total delay.\n    If not all nodes can be reached, return -1.",
+          "time_complexity": "O(E log V):\n    E is the number of edges (the length of the input list `times`)\n    V is the number of vertices (the number of nodes `n`)\n\n    By substituting these into the standard Dijkstra complexity formula, O(E log V), you get *O(len(times)logn)*.",
           "args": {
             "times: list[list[int]]": "list of lists of integers representing the edges and their weights",
             "k: int": "starting node"
           },
           "returns": "`int`: minimum time for a signal starting at node `k` to reach *all* nodes or -1 if impossible",
-          "code": "from collections import defaultdict\nimport heapq\n\ndef network_delay_time(times: list[list[int]], n: int, k: int) -> int:\n\n    adj = defaultdict(list)\n    for u, v, w in times:\n        adj[u].append((v, w))\n    pq, finalized, time = [(0, k)], set(), 0\n    while pq:\n        t, node = heapq.heappop(pq)\n        if node in finalized:\n            continue\n        finalized.add(node)\n        time = t\n        for neighbor, travel_time in adj[node]:\n            if neighbor not in finalized:\n                heapq.heappush(pq, (time + travel_time, neighbor))\n    return time if len(finalized) == n else -1"
+          "code": "from heapq import heappush, heappop\nfrom collections import defaultdict\n\nclass Solution:\n    def networkDelayTime(self, times: list[list[int]], n: int, k: int) -> int:\n\n        adj = defaultdict(list)\n        for u, v, w in times:\n            adj[u].append((v, w))\n\n        pq, finalized, time = [(0, k)], set(), 0\n\n        while pq:\n            t, node = heappop(pq)\n            if node in finalized:\n                continue\n            finalized.add(node)\n            time = t\n\n            for neighbor, travel_time in adj[node]:\n                if neighbor not in finalized:\n                    heappush(pq, (time + travel_time, neighbor))\n\n        return time if len(finalized) == n else -1"
         }
       },
       "title": "Network Delay Time",

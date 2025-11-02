@@ -1,0 +1,29 @@
+```python meta="source=problems/1514-path-with-maximum-probability/dijkstra.py"
+from heapq import heappush, heappop
+from collections import defaultdict
+
+class Solution:
+    def maxProbability(self, n: int, edges: list[list[int]], succProb: list[float], start: int, end: int) -> float:
+
+        adj = defaultdict(list)
+        for (u, v), p in zip(edges, succProb):
+            adj[u].append((v, p))
+            adj[v].append((u, p))
+
+        pq, best = [(-1.0, start)], [0.0] * n
+        best[start] = 1.0
+
+        while pq:
+            p, u = heappop(pq)
+            p = -p
+            if u == end:
+                return p
+            if p < best[u]:
+                continue
+            for v, w in adj[u]:
+                new_p = p * w
+                if new_p > best[v]:
+                    best[v] = new_p
+                    heappush(pq, (-new_p, v))
+        return 0.0
+```

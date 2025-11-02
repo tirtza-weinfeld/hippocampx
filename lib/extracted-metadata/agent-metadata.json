@@ -429,7 +429,7 @@
       "bfs"
     ],
     "createdAt": "2025-09-12T16:05:33.323765",
-    "updatedAt": "2025-10-29T19:59:06.060579"
+    "updatedAt": "2025-10-29T19:59:53.546365"
   },
   {
     "id": "974-subarray-sums-divisible-by-k",
@@ -613,10 +613,11 @@
     "title": "Path with Maximum Probability",
     "difficulty": "medium",
     "topics": [
+      "dijkstra",
       "bellman-ford"
     ],
     "createdAt": "2025-09-12T16:06:10.762600",
-    "updatedAt": "2025-09-29T12:41:57.766704"
+    "updatedAt": "2025-11-02T11:12:38.782248"
   },
   {
     "id": "72-edit-distance",
@@ -841,7 +842,7 @@
       "dijkstra"
     ],
     "createdAt": "2025-09-12T16:05:57.931423",
-    "updatedAt": "2025-09-30T19:05:08.951925"
+    "updatedAt": "2025-11-02T11:25:30.933620"
   },
   {
     "id": "127-word-ladder",

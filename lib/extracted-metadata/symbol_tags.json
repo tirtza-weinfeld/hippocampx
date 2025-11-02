@@ -45,8 +45,8 @@
   },
   "core.bellman-ford.layered_dag:bellman_ford_layered_dag": {
     "args": [
-      "vertices",
       "source",
+      "vertices",
       "edges"
     ],
     "code": "def bellman_ford_layered_dag(\n    vertices: list[str], edges: list[tuple[str, str, float]], source: str\n) -> dict[str, float]:\n\n    d = {v: float(\"inf\") for v in vertices}\n    d[source], V = 0, len(vertices)\n\n    for k in range(V):\n        d_k = {**d}\n        for u, v, w in edges:\n            if d[u] + w < d_k[v]:\n                d_k[v] = d[u] + w\n        d = d_k\n\n    witnesses = {v for u, v, w in edges if d[u] + w < d[v]}\n\n    if not witnesses:\n        return d\n\n    adj = defaultdict(list)\n    for u, v, _ in edges:\n        adj[u].append(v)\n\n    stack = list(witnesses)\n    reachable = set(witnesses)\n\n    while stack:\n        u = stack.pop()\n        d[u] = float(\"-inf\")\n        for v in adj[u]:\n            if v not in reachable:\n                reachable.add(v)\n                stack.append(v)\n\n    return d",
@@ -80,8 +80,8 @@
   },
   "core.binary-search.bisect_left:simple_bisect_left": {
     "args": [
-      "a",
-      "x"
+      "x",
+      "a"
     ],
     "code": "def simple_bisect_left(a: list[int], x: int):\n\n    l, r = 0, len(a)\n    while l < r:\n        mid = (l + r) // 2\n        if x > a[mid]:\n            l = mid + 1\n        else:\n            r = mid\n    return l",
     "expressions": {
@@ -158,8 +158,8 @@
   },
   "core.modular-arithmetic.congruent1:congruent1": {
     "args": [
-      "a",
       "n",
+      "a",
       "b"
     ],
     "code": "def congruent1(a: int, b: int, n: int) -> bool:\n    return (a - b) % n == 0",
@@ -193,8 +193,8 @@
   },
   "core.modular-arithmetic.congruent2:congruent2": {
     "args": [
-      "a",
       "n",
+      "a",
       "b"
     ],
     "code": "def congruent2(a: int, b: int, n: int) -> bool:\n    return a % n == b % n",
@@ -256,8 +256,8 @@
   },
   "problems.1-two-sum.solution:two_sum": {
     "args": [
-      "target",
-      "nums"
+      "nums",
+      "target"
     ],
     "code": "def two_sum(nums: list[int], target: int) -> list[int]:\n\n    seen = {}\n\n    for i, num in enumerate(nums):\n        if (x := target - num) in seen:\n            return seen[x], i\n        seen[num] = i",
     "file_path": "backend/algorithms/problems/1-two-sum/solution.py",
@@ -271,8 +271,8 @@
   },
   "problems.1000-minimum-cost-to-merge-stones.solution:Solution.mergeStones": {
     "args": [
-      "K",
-      "stones"
+      "stones",
+      "K"
     ],
     "code": "    def mergeStones(self, stones: list[int], K: int) -> int:\n        if ((n := len(stones)) - 1) % (K - 1):return -1\n\n        prefix, memo = [0], {}\n        for x in stones: prefix.append(prefix[-1] + x)\n        cost = lambda l, r: 0 if (r - l) % (K - 1) else prefix[r + 1] - prefix[l]\n\n        def dp(l, r):\n            if (key := (l, r)) not in memo:\n                memo[key] = min(\n                    (dp(l, t) + dp(t + 1, r) + cost(l, r) for t in range(l, r, K - 1)),\n                    default=0,\n                )\n            return memo[key]\n\n        return dp(0, n - 1)",
     "expressions": {
@@ -557,8 +557,8 @@
   },
   "problems.1293-shortest-path-in-a-grid-with-obstacles-elimination.a_star:shortest_path_in_a_grid_with_obstacles_elimination": {
     "args": [
-      "grid",
-      "k"
+      "k",
+      "grid"
     ],
     "code": "def shortest_path_in_a_grid_with_obstacles_elimination(grid: list[list[int]], k: int) -> int:\n\n    rows, cols = len(grid), len(grid[0])\n\n    def h(r: int, c: int) -> int:\n        return manhattan_distance((r, c), (rows - 1, cols - 1))\n\n    if k >= (md:= h(0, 0)) - 1:\n        return md\n\n    pq = [(md, 0, 0, 0, k)]\n\n    max_k = [[-1] * cols for _ in range(rows)]\n    max_k[0][0] = k\n\n    while pq:\n        _, steps, r, c, remaining_k = heapq.heappop(pq)\n\n        if (r, c) == (rows - 1, cols - 1):\n            return steps\n\n        if remaining_k < max_k[r][c]:\n            continue\n\n        for dr, dc in [(0, 1), (0, -1), (1, 0), (-1, 0)]:\n            if 0 <= (nr:= r + dr) < rows and 0 <= (nc:= c + dc) < cols:\n                if (new_remaining_k := remaining_k - grid[nr][nc] ) > max_k[nr][nc]:\n                    max_k[nr][nc] = new_remaining_k\n                    heapq.heappush(pq, ((steps + 1) + h(nr, nc), steps + 1, nr, nc, new_remaining_k))\n\n    return -1",
     "expressions": {
@@ -597,8 +597,8 @@
   },
   "problems.1293-shortest-path-in-a-grid-with-obstacles-elimination.bfs:shortest_path_in_a_grid_with_obstacles_elimination": {
     "args": [
-      "grid",
-      "k"
+      "k",
+      "grid"
     ],
     "code": "def shortest_path_in_a_grid_with_obstacles_elimination(grid: list[list[int]], k: int) -> int:\n\n    rows, cols = len(grid), len(grid[0])\n    min_steps = rows + cols - 3 \n    if k >= min_steps:\n        return min_steps\n\n    max_k = [[-1] * cols for _ in range(rows)]\n    max_k[0][0] = k\n\n    q = deque([(0, 0, 0, k)])\n\n    while q:\n        r, c, steps, remaining_k = q.popleft()\n        for dr, dc in [(1,0), (-1,0), (0,1), (0,-1)]:\n            nr, nc = r + dr, c + dc\n            if 0 <= nr < rows and 0 <= nc < cols:\n                new_remaining_k = remaining_k - grid[nr][nc]\n                if new_remaining_k > max_k[nr][nc]:\n                    if (nr, nc) == (rows - 1, cols - 1):\n                        return steps + 1\n                    max_k[nr][nc] = new_remaining_k\n                    q.append((nr, nc, steps + 1, new_remaining_k))\n    return -1",
     "file_path": "backend/algorithms/problems/1293-shortest-path-in-a-grid-with-obstacles-elimination/bfs.py",
@@ -635,8 +635,8 @@
   },
   "problems.1293-shortest-path-in-a-grid-with-obstacles-elimination.dijkstra:shortest_path_in_a_grid_with_obstacles_elimination": {
     "args": [
-      "grid",
-      "k"
+      "k",
+      "grid"
     ],
     "code": "def shortest_path_in_a_grid_with_obstacles_elimination(grid: list[list[int]], k: int) -> int:\n\n    rows, cols = len(grid), len(grid[0])\n    if k >= rows + cols - 3:\n        return rows + cols - 2\n\n    pq = [(0, 0, 0, k)]\n\n    max_k = [[-1] * cols for _ in range(rows)]\n    max_k[0][0] = k\n\n    while pq:\n\n        steps, r, c, k_rem = heapq.heappop(pq)\n\n        if (r, c) == (rows - 1, cols - 1):\n            return steps\n\n        if k_rem < max_k[r][c]:\n            continue\n\n        for dr, dc in [(0, 1), (0, -1), (1, 0), (-1, 0)]:\n            if 0 <= (nr:= r + dr) < rows and 0 <= (nc:= c + dc) < cols:\n                if (new_k:= k_rem - grid[nr][nc]) > max_k[nr][nc]:\n                    max_k[nr][nc] = new_k\n                    heapq.heappush(pq, (steps + 1, nr, nc, new_k))\n\n    return -1",
     "expressions": {
@@ -844,41 +844,60 @@
     },
     "time_complexity": "O(n * sqrt(n))\ntry all squares for each `x`"
   },
-  "problems.1514-path-with-maximum-probability.solution:path_with_maximum_probability": {
+  "problems.1514-path-with-maximum-probability.bellman-ford:Solution.maxProbability": {
     "args": [
       "start",
-      "n",
-      "edges",
       "succProb",
-      "end"
+      "end",
+      "edges",
+      "n"
     ],
-    "code": "def path_with_maximum_probability(n: int, edges: list[list[int]], succProb: list[float], start: int, end: int) -> float:\n    prob = [0.0] * n\n    prob[start] = 1.0\n\n    for _ in range(n - 1):\n        updated = False\n        for (u, v), p in zip(edges, succProb):\n            if prob[u] * p > prob[v]:\n                prob[v] = prob[u] * p\n                updated = True\n            if prob[v] * p > prob[u]:\n                prob[u] = prob[v] * p\n                updated = True\n        if not updated:\n            break\n\n    return prob[end]",
-    "file_path": "backend/algorithms/problems/1514-path-with-maximum-probability/solution.py",
+    "code": "    def maxProbability(self, n: int, edges: list[list[int]], succProb: list[float], start: int, end: int) -> float:\n        prob = [0.0] * n\n        prob[start] = 1.0\n\n        for _ in range(n - 1):\n            updated = False\n            for (u, v), p in zip(edges, succProb):\n                if prob[u] * p > prob[v]:\n                    prob[v] = prob[u] * p\n                    updated = True\n                if prob[v] * p > prob[u]:\n                    prob[u] = prob[v] * p\n                    updated = True\n            if not updated:\n                break\n\n        return prob[end]",
+    "file_path": "backend/algorithms/problems/1514-path-with-maximum-probability/bellman-ford.py",
     "intuition": "- Bellman-Ford variant to maximize product of probabilities.\n    - Each node tracks the maximum probability to reach it from `start`.",
-    "kind": "function",
-    "label": "def path_with_maximum_probability(n: int, edges: list[list[int]], succProb: list[float], start: int, end: int) -> float",
-    "name": "path_with_maximum_probability",
+    "kind": "method",
+    "label": "def maxProbability(self, n: int, edges: list[list[int]], succProb: list[float], start: int, end: int) -> float",
+    "name": "maxProbability",
     "returns": {
       "label": "float"
     }
   },
-  "problems.1514-path-with-maximum-probability.solution:path_with_maximum_probability.edges": {
+  "problems.1514-path-with-maximum-probability.bellman-ford:Solution.maxProbability.edges": {
     "kind": "parameter",
     "label": "edges: list[list[int]]",
     "name": "edges",
     "summary": "edges[i] = [u, v] is an undirected edge connecting the nodes u and v with a probability of success of traversing that edge succProb[i]."
   },
-  "problems.1514-path-with-maximum-probability.solution:path_with_maximum_probability.n": {
+  "problems.1514-path-with-maximum-probability.bellman-ford:Solution.maxProbability.n": {
     "kind": "parameter",
     "label": "n: int",
     "name": "n",
     "summary": "number of nodes"
   },
-  "problems.1514-path-with-maximum-probability.solution:path_with_maximum_probability.succProb": {
+  "problems.1514-path-with-maximum-probability.bellman-ford:Solution.maxProbability.succProb": {
     "kind": "parameter",
     "label": "succProb: list[float]",
     "name": "succProb",
     "summary": "list of probabilities, e.g. [0.5,0.5,0.2],"
+  },
+  "problems.1514-path-with-maximum-probability.dijkstra:Solution.maxProbability": {
+    "args": [
+      "start",
+      "n",
+      "succProb",
+      "end",
+      "edges"
+    ],
+    "code": "    def maxProbability(self, n: int, edges: list[list[int]], succProb: list[float], start: int, end: int) -> float:\n\n        adj = defaultdict(list)\n        for (u, v), p in zip(edges, succProb):\n            adj[u].append((v, p))\n            adj[v].append((u, p))\n\n        pq, best = [(-1.0, start)], [0.0] * n\n        best[start] = 1.0\n\n        while pq:\n            p, u = heappop(pq)\n            p = -p\n            if u == end:\n                return p\n            if p < best[u]:\n                continue\n            for v, w in adj[u]:\n                new_p = p * w\n                if new_p > best[v]:\n                    best[v] = new_p\n                    heappush(pq, (-new_p, v))\n        return 0.0",
+    "file_path": "backend/algorithms/problems/1514-path-with-maximum-probability/dijkstra.py",
+    "intuition": "- We want the path from `start` to `end` with the largest product of edge probabilities:\n    - This is equivalent to Dijkstra’s algorithm, replacing *sum of distances* with             *product of probabilities* and switching from a *[2!]min-heap* to a *[2!]max-heap*.\n\n    - Deep Dive: Correctness:\n        - Each edge weight (probability) *$\\in [0, 1]$*.\n        - Multiplying by a value *$\\leq 1$* never increases the product, so the total probability                   along any path is monotonically non-increasing as the path length grows.\n        - This monotonicity guarantees that *once we extract a node with the current                   maximum probability from the heap, no later path can improve it.*\n            - same invariant that makes Dijkstra correct for nonnegative edge weights.\n            - By contrast, *longest path* problems fail this property because edge weights                 can be positive and cumulative, allowing cycles to increase total weight                 indefinitely (no monotonic bound), making them *NP-hard*.",
+    "kind": "method",
+    "label": "def maxProbability(self, n: int, edges: list[list[int]], succProb: list[float], start: int, end: int) -> float",
+    "name": "maxProbability",
+    "returns": {
+      "label": "float",
+      "summary": "Maximum probability to reach `end` from `start`, or 0.0 if unreachable."
+    }
   },
   "problems.153-find-minimum-in-rotated-sorted-array.solution:find_minimum_in_rotated_sorted_array": {
     "args": [
@@ -1117,8 +1136,8 @@
   },
   "problems.207-course-schedule.solution:Solution.canFinish": {
     "args": [
-      "prerequisites",
-      "n"
+      "n",
+      "prerequisites"
     ],
     "code": "    def canFinish(self, n: int, prerequisites: list[list[int]]) -> bool:\n        g = [[] for _ in range(n)]     \n        indeg = [0] * n                \n        for a, b in prerequisites:\n            g[b].append(a)             \n            indeg[a] += 1              \n\n        q = deque(i for i, d in enumerate(indeg) if d == 0)\n        taken = 0                      \n\n        while q:\n            u = q.popleft()             \n            taken += 1\n            for v in g[u]:              \n                indeg[v] -= 1           \n                if indeg[v] == 0:       \n                    q.append(v)         \n\n        return taken == n",
     "expressions": {
@@ -1338,8 +1357,8 @@
   },
   "problems.212-word-search-ii.solution:word_search_II": {
     "args": [
-      "words",
-      "board"
+      "board",
+      "words"
     ],
     "code": "def word_search_II(board: list[list[str]], words: list[str]) -> list[str]:\n    trie = {}  \n    for word in words:\n        node = trie\n        for c in word:\n            node = node.setdefault(c, {})\n        node[\"$\"] = word\n\n    def dfs(i, j, parent):\n        if not (0 <= i < m and 0 <= j < n) or (c := board[i][j]) not in parent:\n            return\n        node = parent[c]\n        if \"$\" in node:\n            res.append(node.pop(\"$\"))\n        board[i][j] = \"#\"\n        for x, y in ((i - 1, j), (i + 1, j), (i, j - 1), (i, j + 1)):\n            dfs(x, y, node)\n        board[i][j] = c\n        if not node:\n            parent.pop(c)\n\n    m, n, res = len(board), len(board[0]), []\n    [dfs(i, j, trie) for i in range(m) for j in range(n) if board[i][j] in trie]\n\n    return res",
     "expressions": {
@@ -1470,8 +1489,8 @@
   "problems.2145-count-the-hidden-sequences.solution:numberOfArrays": {
     "args": [
       "lower",
-      "differences",
-      "upper"
+      "upper",
+      "differences"
     ],
     "code": "def numberOfArrays(differences: list[int], lower: int, upper: int) -> int:\n\n    prefix_sum = min_marker = max_marker = 0\n\n    for diff in differences:\n        prefix_sum += diff\n        min_marker = min(min_marker, prefix_sum)\n        max_marker = max(max_marker, prefix_sum)\n\n    return max(0, (upper - max_marker) - (lower - min_marker) + 1)",
     "file_path": "backend/algorithms/problems/2145-count-the-hidden-sequences/solution.py",
@@ -1906,8 +1925,8 @@
   },
   "problems.39-combination-sum.solution:combination_sum": {
     "args": [
-      "candidates",
-      "target"
+      "target",
+      "candidates"
     ],
     "code": "def combination_sum(candidates: list[int], target: int) -> list[list[int]]:\n\n    candidates.sort()\n    res, path = [], []\n\n    def dfs(i: int, rem: int) -> None:\n        if rem == 0:\n            res.append(path.copy())\n            return\n        for j in range(i, len(candidates)):\n            if (c := candidates[j]) > rem:\n                break\n            path.append(c)\n            dfs(j, rem - c)\n            path.pop()\n\n    dfs(0, target)\n    return res",
     "file_path": "backend/algorithms/problems/39-combination-sum/solution.py",
@@ -2096,8 +2115,8 @@
   },
   "problems.518-coin-change-ii.solution:coin_change_II": {
     "args": [
-      "amount",
-      "coins"
+      "coins",
+      "amount"
     ],
     "code": "def coin_change_II(amount: int, coins: list[int]) -> int:\n    memo, n = {}, len(coins)\n\n    def dp(c, amount):\n        if amount == 0:\n            return 1\n        if amount < 0 or c == n:\n            return 0\n        if (c, amount) not in memo:\n            memo[c, amount] = dp(c, amount - coins[c]) + dp(c + 1, amount)\n        return memo[c, amount]\n\n    return dp(0, amount)",
     "file_path": "backend/algorithms/problems/518-coin-change-ii/solution.py",
@@ -2372,34 +2391,52 @@
     },
     "time_complexity": "O(n)"
   },
-  "problems.743-network-delay-time.solution:network_delay_time": {
+  "problems.743-network-delay-time.dijkstra-b:Solution.networkDelayTime": {
     "args": [
       "n",
       "k",
       "times"
     ],
-    "code": "def network_delay_time(times: list[list[int]], n: int, k: int) -> int:\n\n    adj = defaultdict(list)\n    for u, v, w in times:\n        adj[u].append((v, w))\n    pq, finalized, time = [(0, k)], set(), 0\n    while pq:\n        t, node = heapq.heappop(pq)\n        if node in finalized:\n            continue\n        finalized.add(node)\n        time = t\n        for neighbor, travel_time in adj[node]:\n            if neighbor not in finalized:\n                heapq.heappush(pq, (time + travel_time, neighbor))\n    return time if len(finalized) == n else -1",
-    "file_path": "backend/algorithms/problems/743-network-delay-time/solution.py",
-    "kind": "function",
-    "label": "def network_delay_time(times: list[list[int]], n: int, k: int) -> int",
-    "name": "network_delay_time",
+    "code": "    def networkDelayTime(self, times: list[list[int]], n: int, k: int) -> int:\n\n        adj = defaultdict(list)\n        for u, v, w in times:\n            adj[u].append((v, w))\n\n        pq, finalized, time = [(0, k)], set(), 0\n\n        while pq:\n            t, node = heappop(pq)\n            if node in finalized:\n                continue\n            finalized.add(node)\n            time = t\n\n            for neighbor, travel_time in adj[node]:\n                if neighbor not in finalized:\n                    heappush(pq, (time + travel_time, neighbor))\n\n        return time if len(finalized) == n else -1",
+    "file_path": "backend/algorithms/problems/743-network-delay-time/dijkstra-b.py",
+    "intuition": "- The signal starts at node k and spreads through the network.\n    - Each time we pop a node from the heap, we know this is the earliest\n    - possible moment the signal can reach it — its shortest travel time.\n    - We mark it as finalized and push its neighbors with updated times.\n    - When all nodes are finalized, the last recorded time is the total delay.\n    - If not all nodes can be reached, return -1.",
+    "kind": "method",
+    "label": "def networkDelayTime(self, times: list[list[int]], n: int, k: int) -> int",
+    "name": "networkDelayTime",
     "returns": {
       "label": "int",
       "summary": "minimum time for a signal starting at node `k` to reach *all* nodes or -1 if impossible"
     },
-    "time_complexity": "O(E log V):\nE is the number of edges (the length of the input list `times`)\nV is the number of vertices (the number of nodes `n`)\n\nBy substituting these into the standard Dijkstra complexity formula, O(E log V), you get O(len(times) log n)."
+    "time_complexity": "O(E log V):\nE is the number of edges (the length of the input list `times`)\nV is the number of vertices (the number of nodes `n`)\n\nBy substituting these into the standard Dijkstra complexity formula, O(E log V), you get *O(len(times)logn)*."
   },
-  "problems.743-network-delay-time.solution:network_delay_time.k": {
+  "problems.743-network-delay-time.dijkstra-b:Solution.networkDelayTime.k": {
     "kind": "parameter",
     "label": "k: int",
     "name": "k",
     "summary": "starting node"
   },
-  "problems.743-network-delay-time.solution:network_delay_time.times": {
+  "problems.743-network-delay-time.dijkstra-b:Solution.networkDelayTime.times": {
     "kind": "parameter",
     "label": "times: list[list[int]]",
     "name": "times",
     "summary": "list of lists of integers representing the edges and their weights"
+  },
+  "problems.743-network-delay-time.dijkstra:Solution.networkDelayTime": {
+    "args": [
+      "k",
+      "n",
+      "times"
+    ],
+    "code": "    def networkDelayTime(self, times: list[list[int]], n: int, k: int) -> int:\n\n        g = {i: [] for i in range(1, n + 1)}\n        for u, v, w in times:\n            g[u].append((w, v))\n\n        dist = {i: float(\"inf\") for i in g}\n        dist[k] = 0\n\n        pq = [(0, k)]\n\n        while pq:\n            d, u = heappop(pq)\n            if d > dist[u]: continue\n\n\n            for w, v in g[u]:\n                if (nd := d + w) < dist[v]:\n                    dist[v] = nd\n                    heappush(pq, (nd, v))\n\n        return ans if (ans := max(dist.values())) < float(\"inf\") else -1",
+    "file_path": "backend/algorithms/problems/743-network-delay-time/dijkstra.py",
+    "intuition": "- We track the shortest known time to reach every node from the source k:\n    - Initially, all distances are infinite except for k (0).\n    - At each step, we pop the node with the smallest known distance from the heap.\n    - If we find a shorter path to one of its neighbors, we update (relax) that distance\n    - and push the new state into the heap.\n\n    - By the end, `dist[v]` holds the minimum time for the signal to reach each node `v`:\n    - The total network delay is the longest of these shortest times\n        - i.e., `max(dist.values())`. If some node remains unreachable, return - 1.",
+    "kind": "method",
+    "label": "def networkDelayTime(self, times: list[list[int]], n: int, k: int) -> int",
+    "name": "networkDelayTime",
+    "returns": {
+      "label": "int"
+    },
+    "time_complexity": "O(E log V)"
   },
   "problems.76-minimum-window-substring.solution:minWindow": {
     "args": [
@@ -2452,11 +2489,11 @@
   },
   "problems.787-cheapest-flights-within-k-stops.bellman_ford:cheapest_flights_with_at_most_k_stops": {
     "args": [
-      "dst",
-      "flights",
+      "n",
       "src",
       "k",
-      "n"
+      "dst",
+      "flights"
     ],
     "code": "def cheapest_flights_with_at_most_k_stops(\n    n: int, flights: list[list[int]], src: int, dst: int, k: int\n) -> int:\n    d = [float(\"inf\")] * n\n    d[src] = 0\n\n    for _ in range(k + 1):\n        tmp = d[:]\n        for u, v, w in flights:\n            if d[u] + w < tmp[v]:\n                tmp[v] = d[u] + w\n        d = tmp\n\n    return d[dst] if d[dst] < float(\"inf\") else -1",
     "file_path": "backend/algorithms/problems/787-cheapest-flights-within-k-stops/bellman_ford.py",
@@ -2470,8 +2507,8 @@
   },
   "problems.787-cheapest-flights-within-k-stops.dijkstra:cheapest_flights_with_at_most_k_stops": {
     "args": [
-      "dst",
       "src",
+      "dst",
       "k",
       "flights"
     ],
@@ -2504,8 +2541,8 @@
   },
   "problems.79-word-search.solution:word_search": {
     "args": [
-      "word",
-      "board"
+      "board",
+      "word"
     ],
     "code": "def word_search(board: list[list[str]], word: str) -> bool:\n    rows, cols, n = len(board), len(board[0]), len(word)\n    def dfs(r: int, c: int, i: int) -> bool:\n        if i == n:\n            return True\n        if not (0 <= r < rows and 0 <= c < cols and board[r][c] == word[i]):\n            return False\n        tmp, board[r][c] = board[r][c], \"#\"\n        for x, y in ((r + 1, c), (r - 1, c), (r, c + 1), (r, c - 1)):\n            if dfs(x, y, i + 1):\n                board[r][c] = tmp\n                return True\n        board[r][c] = tmp\n        return False\n    return any(\n        dfs(r, c, 0)\n        for r in range(rows)\n        for c in range(cols)\n        if board[r][c] == word[0]\n    )",
     "file_path": "backend/algorithms/problems/79-word-search/solution.py",
@@ -2642,8 +2679,8 @@
   },
   "problems.875-koko-eating-bananas.solution:koko_eating_bananas": {
     "args": [
-      "piles",
-      "h"
+      "h",
+      "piles"
     ],
     "code": "def koko_eating_bananas(piles: list[int], h: int) -> int:\n\n    def hours(k:int) -> int:\n        return sum((p + k - 1) // k for p in piles)\n\n    l, r = 1, max(piles)\n    while l < r:\n        k = (l + r) // 2\n        if hours(k) <= h:\n            r = k\n        else:\n            l = k + 1\n    return l",
     "file_path": "backend/algorithms/problems/875-koko-eating-bananas/solution.py",

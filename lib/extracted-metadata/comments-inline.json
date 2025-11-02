@@ -37,17 +37,27 @@
     9,
     10
   ],
-  "problems/1514-path-with-maximum-probability/solution.py": [
-    1,
+  "problems/1514-path-with-maximum-probability/bellman-ford.py": [
     2,
-    4,
-    7,
-    10,
-    14
+    3,
+    5,
+    8,
+    11,
+    15
+  ],
+  "problems/1514-path-with-maximum-probability/dijkstra.py": [
+    18
   ],
   "problems/200-number-of-islands/solution.py": [
     13,
     20
+  ],
+  "problems/743-network-delay-time/dijkstra.py": [
+    16
+  ],
+  "problems/743-network-delay-time/dijkstra-b.py": [
+    14,
+    17
   ],
   "problems/127-word-ladder/solution.py": [
     23

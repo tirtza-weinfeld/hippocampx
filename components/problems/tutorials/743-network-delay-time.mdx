@@ -12,39 +12,105 @@
 
 Given `n` nodes labeled `1` through `n` and directed travel times between them, find the minimum time for a signal starting at node `k` to reach *all* nodes. If impossible, return -1
 
-## [!(ProblemTimeComplexity)] Time Complexity
+## Dijkstra Solution
+
+### [!(ProblemIntuition)] Intuition
+
+- We track the shortest known time to reach every node from the source k:
+    - Initially, all distances are infinite except for k (0).
+    - At each step, we pop the node with the smallest known distance from the heap.
+    - If we find a shorter path to one of its neighbors, we update (relax) that distance
+    - and push the new state into the heap.
+
+- By the end, `dist[v]` holds the minimum time for the signal to reach each node `v`:
+    - The total network delay is the longest of these shortest times
+        - i.e., `max(dist.values())`. If some node remains unreachable, return - 1.
+
+### [!(ProblemTimeComplexity)] Time Complexity
+
+- $O(E \log V)$
+
+### [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/743-network-delay-time/dijkstra.py"
+from heapq import heappush, heappop
+
+class Solution:
+    def networkDelayTime(self, times: list[list[int]], n: int, k: int) -> int:
+
+        g = {i: [] for i in range(1, n + 1)}
+        for u, v, w in times:
+            g[u].append((w, v))
+
+        dist = {i: float("inf") for i in g}
+        dist[k] = 0
+
+        pq = [(0, k)]
+
+        while pq:
+            d, u = heappop(pq)
+            if d > dist[u]: continue
+
+            for w, v in g[u]:
+                if (nd := d + w) < dist[v]:
+                    dist[v] = nd
+                    heappush(pq, (nd, v))
+
+        return ans if (ans := max(dist.values())) < float("inf") else -1
+```
+
+
+---
+
+## Dijkstra B Solution
+
+### [!(ProblemIntuition)] Intuition
+
+- The signal starts at node k and spreads through the network.
+    - Each time we pop a node from the heap, we know this is the earliest
+    - possible moment the signal can reach it — its shortest travel time.
+    - We mark it as finalized and push its neighbors with updated times.
+    - When all nodes are finalized, the last recorded time is the total delay.
+    - If not all nodes can be reached, return -1.
+
+### [!(ProblemTimeComplexity)] Time Complexity
 
 - $O(E \log V)$:
     - E is the number of edges (the length of the input list `times`)
     - V is the number of vertices (the number of nodes `n`)
 
-- By substituting these into the standard Dijkstra complexity formula, $O(E \log V)$, you get $O(len(times)$ \log n).
+- By substituting these into the standard Dijkstra complexity formula, $O(E \log V)$, you get *$O(len(times)$logn)*.
 
-## [!(ProblemReturns)] Returns
+### [!(ProblemReturns)] Returns
 
 `int`: minimum time for a signal starting at node `k` to reach *all* nodes or -1 if impossible
 
-## [!(ProblemCodeSnippet)] Code Snippet
+### [!(ProblemCodeSnippet)] Code Snippet
 
-```python meta="source=problems/743-network-delay-time/solution.py"
+```python meta="source=problems/743-network-delay-time/dijkstra-b.py"
+from heapq import heappush, heappop
 from collections import defaultdict
-import heapq
 
-def network_delay_time(times: list[list[int]], n: int, k: int) -> int:
+class Solution:
+    def networkDelayTime(self, times: list[list[int]], n: int, k: int) -> int:
 
-    adj = defaultdict(list)
-    for u, v, w in times:
-        adj[u].append((v, w))
-    pq, finalized, time = [(0, k)], set(), 0
-    while pq:
-        t, node = heapq.heappop(pq)
-        if node in finalized:
-            continue
-        finalized.add(node)
-        time = t
-        for neighbor, travel_time in adj[node]:
-            if neighbor not in finalized:
-                heapq.heappush(pq, (time + travel_time, neighbor))
-    return time if len(finalized) == n else -1
+        adj = defaultdict(list)
+        for u, v, w in times:
+            adj[u].append((v, w))
+
+        pq, finalized, time = [(0, k)], set(), 0
+
+        while pq:
+            t, node = heappop(pq)
+            if node in finalized:
+                continue
+            finalized.add(node)
+            time = t
+
+            for neighbor, travel_time in adj[node]:
+                if neighbor not in finalized:
+                    heappush(pq, (time + travel_time, neighbor))
+
+        return time if len(finalized) == n else -1
 ```
 
