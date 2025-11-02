@@ -21,6 +21,7 @@ const getAgentMetadata = cache(() =>
 
 // Lazy imports for all problems
 const Problem37SudokuSolver = lazy(() => import('./37-sudoku-solver'))
+const Problem1275FindWinnerOnATicTacToeGame = lazy(() => import('./1275-find-winner-on-a-tic-tac-toe-game'))
 const Problem1631PathWithMinimumEffort = lazy(() => import('./1631-path-with-minimum-effort'))
 const Problem909SnakesAndLadders = lazy(() => import('./909-snakes-and-ladders'))
 const Problem265PaintHouseIi = lazy(() => import('./265-paint-house-ii'))
@@ -65,6 +66,7 @@ const Problem146LruCache = lazy(() => import('./146-lru-cache'))
 const Problem102BinaryTreeLevelOrderTraversal = lazy(() => import('./102-binary-tree-level-order-traversal'))
 const Problem974SubarraySumsDivisibleByK = lazy(() => import('./974-subarray-sums-divisible-by-k'))
 const Problem122BestTimeToBuyAndSellStockIi = lazy(() => import('./122-best-time-to-buy-and-sell-stock-ii'))
+const Problem794ValidTicTacToeState = lazy(() => import('./794-valid-tic-tac-toe-state'))
 const Problem207CourseSchedule = lazy(() => import('./207-course-schedule'))
 const Problem33SearchInRotatedSortedArray = lazy(() => import('./33-search-in-rotated-sorted-array'))
 const Problem124BinaryTreeMaximumPathSum = lazy(() => import('./124-binary-tree-maximum-path-sum'))
@@ -76,6 +78,7 @@ const Problem121BestTimeToBuyAndSellStock = lazy(() => import('./121-best-time-t
 const Problem53MaximumSubarray = lazy(() => import('./53-maximum-subarray'))
 const Problem1570DotProductOfTwoSparseVectors = lazy(() => import('./1570-dot-product-of-two-sparse-vectors'))
 const Problem34FindFirstAndLastPositionOfElementInSortedArray = lazy(() => import('./34-find-first-and-last-position-of-element-in-sorted-array'))
+const Problem348DesignTicTacToe = lazy(() => import('./348-design-tic-tac-toe'))
 const Problem76MinimumWindowSubstring = lazy(() => import('./76-minimum-window-substring'))
 const Problem84LargestRectangleInHistogram = lazy(() => import('./84-largest-rectangle-in-histogram'))
 const Problem136SingleNumber = lazy(() => import('./136-single-number'))
@@ -110,6 +113,11 @@ const problemComponents = {
     "37-sudoku-solver": (
       <Suspense key="37-sudoku-solver" fallback={<div className="p-4 text-gray-500">Loading...</div>}>
         <Problem37SudokuSolver />
+      </Suspense>
+    ),
+    "1275-find-winner-on-a-tic-tac-toe-game": (
+      <Suspense key="1275-find-winner-on-a-tic-tac-toe-game" fallback={<div className="p-4 text-gray-500">Loading...</div>}>
+        <Problem1275FindWinnerOnATicTacToeGame />
       </Suspense>
     ),
     "1631-path-with-minimum-effort": (
@@ -332,6 +340,11 @@ const problemComponents = {
         <Problem122BestTimeToBuyAndSellStockIi />
       </Suspense>
     ),
+    "794-valid-tic-tac-toe-state": (
+      <Suspense key="794-valid-tic-tac-toe-state" fallback={<div className="p-4 text-gray-500">Loading...</div>}>
+        <Problem794ValidTicTacToeState />
+      </Suspense>
+    ),
     "207-course-schedule": (
       <Suspense key="207-course-schedule" fallback={<div className="p-4 text-gray-500">Loading...</div>}>
         <Problem207CourseSchedule />
@@ -385,6 +398,11 @@ const problemComponents = {
     "34-find-first-and-last-position-of-element-in-sorted-array": (
       <Suspense key="34-find-first-and-last-position-of-element-in-sorted-array" fallback={<div className="p-4 text-gray-500">Loading...</div>}>
         <Problem34FindFirstAndLastPositionOfElementInSortedArray />
+      </Suspense>
+    ),
+    "348-design-tic-tac-toe": (
+      <Suspense key="348-design-tic-tac-toe" fallback={<div className="p-4 text-gray-500">Loading...</div>}>
+        <Problem348DesignTicTacToe />
       </Suspense>
     ),
     "76-minimum-window-substring": (

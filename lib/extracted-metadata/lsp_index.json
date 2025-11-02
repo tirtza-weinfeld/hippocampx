@@ -837,6 +837,32 @@
       ]
     },
     {
+      "uri": "problems/1275-find-winner-on-a-tic-tac-toe-game/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/1275-find-winner-on-a-tic-tac-toe-game/solution.py",
+      "symbols": [
+        {
+          "name": "find_winner_on_a_tic_tac_toe_game",
+          "detail": "find_winner_on_a_tic_tac_toe_game(moves: list[list[int]]) -> str",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 18, "character": 55}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 37
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
       "uri": "problems/1293-shortest-path-in-a-grid-with-obstacles-elimination/__init__.py",
       "symbols": []
     },
@@ -2865,6 +2891,67 @@
       ]
     },
     {
+      "uri": "problems/348-design-tic-tac-toe/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/348-design-tic-tac-toe/solution.py",
+      "symbols": [
+        {
+          "name": "TicTacToe",
+          "detail": "class TicTacToe",
+          "kind": 5,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 17, "character": 104}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 6
+            },
+            "end": {
+              "line": 0,
+              "character": 15
+            }
+          },
+          "children": [
+            {
+              "name": "__init__",
+              "detail": "__init__(n: int)",
+              "kind": 6,
+              "range": {"start": {"line": 2, "character": 4}, "end": {"line": 6, "character": 38}},
+              "nameRange": {
+                "start": {
+                  "line": 2,
+                  "character": 8
+                },
+                "end": {
+                  "line": 2,
+                  "character": 16
+                }
+              },
+              "children": []
+            },
+            {
+              "name": "move",
+              "detail": "move(r: int, c: int, player: int) -> int",
+              "kind": 6,
+              "range": {"start": {"line": 8, "character": 4}, "end": {"line": 17, "character": 104}},
+              "nameRange": {
+                "start": {
+                  "line": 8,
+                  "character": 8
+                },
+                "end": {
+                  "line": 8,
+                  "character": 12
+                }
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
       "uri": "problems/35-search-insert-position/__init__.py",
       "symbols": []
     },
@@ -4223,6 +4310,32 @@
               "children": []
             }
           ]
+        }
+      ]
+    },
+    {
+      "uri": "problems/794-valid-tic-tac-toe-state/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/794-valid-tic-tac-toe-state/solution.py",
+      "symbols": [
+        {
+          "name": "valid_tic_tac_toe_state",
+          "detail": "valid_tic_tac_toe_state(board: list[str]) -> bool",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 18, "character": 103}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 27
+            }
+          },
+          "children": []
         }
       ]
     },

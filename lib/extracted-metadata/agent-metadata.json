@@ -10,6 +10,18 @@
     "updatedAt": "2025-09-30T19:05:08.950126"
   },
   {
+    "id": "1275-find-winner-on-a-tic-tac-toe-game",
+    "title": "Find Winner on a Tic Tac Toe Game",
+    "difficulty": "easy",
+    "topics": [
+      "game",
+      "matrix",
+      "simulation"
+    ],
+    "createdAt": "2025-11-02T17:59:14.523145",
+    "updatedAt": "2025-11-02T18:30:13.468722"
+  },
+  {
     "id": "1631-path-with-minimum-effort",
     "title": "Path With Minimum Effort",
     "difficulty": "medium",
@@ -193,7 +205,7 @@
       "bfs"
     ],
     "createdAt": "2025-11-02T16:06:57.892639",
-    "updatedAt": "2025-11-02T16:15:35.448056"
+    "updatedAt": "2025-11-02T16:50:12.272026"
   },
   {
     "id": "547-number-of-provinces",
@@ -264,7 +276,7 @@
       "dp"
     ],
     "createdAt": "2025-09-12T16:05:33.323838",
-    "updatedAt": "2025-10-29T19:09:08.612126"
+    "updatedAt": "2025-11-02T16:50:17.419206"
   },
   {
     "id": "787-cheapest-flights-within-k-stops",
@@ -326,7 +338,7 @@
       "game"
     ],
     "createdAt": "2025-09-12T16:05:16.850151",
-    "updatedAt": "2025-09-30T19:05:08.951102"
+    "updatedAt": "2025-11-02T17:09:45.499196"
   },
   {
     "id": "684-redundant-connection",
@@ -440,7 +452,7 @@
       "bfs"
     ],
     "createdAt": "2025-09-12T16:05:33.323765",
-    "updatedAt": "2025-10-29T19:59:53.546365"
+    "updatedAt": "2025-11-02T16:49:49.156635"
   },
   {
     "id": "974-subarray-sums-divisible-by-k",
@@ -461,6 +473,17 @@
     ],
     "createdAt": "2025-09-12T16:05:33.323910",
     "updatedAt": "2025-09-17T16:17:51.939682"
+  },
+  {
+    "id": "794-valid-tic-tac-toe-state",
+    "title": "Valid Tic-Tac-Toe State",
+    "difficulty": "medium",
+    "topics": [
+      "game",
+      "matrix"
+    ],
+    "createdAt": "2025-11-02T18:02:04.046880",
+    "updatedAt": "2025-11-02T19:54:10.541172"
   },
   {
     "id": "207-course-schedule",
@@ -535,7 +558,7 @@
       "interval-dp"
     ],
     "createdAt": "2025-10-25T15:40:33.947699",
-    "updatedAt": "2025-10-26T20:59:54.168705"
+    "updatedAt": "2025-11-02T16:50:24.816871"
   },
   {
     "id": "121-best-time-to-buy-and-sell-stock",
@@ -578,6 +601,18 @@
     ],
     "createdAt": "2025-09-12T16:05:16.849941",
     "updatedAt": "2025-09-29T12:42:20.261137"
+  },
+  {
+    "id": "348-design-tic-tac-toe",
+    "title": "Design Tic-Tac-Toe",
+    "difficulty": "medium",
+    "topics": [
+      "game",
+      "matrix",
+      "simulation"
+    ],
+    "createdAt": "2025-11-02T18:03:24.304336",
+    "updatedAt": "2025-11-02T19:58:35.324908"
   },
   {
     "id": "76-minimum-window-substring",
@@ -629,7 +664,7 @@
       "bellman-ford"
     ],
     "createdAt": "2025-09-12T16:06:10.762600",
-    "updatedAt": "2025-11-02T11:12:38.782248"
+    "updatedAt": "2025-11-02T16:50:20.243683"
   },
   {
     "id": "72-edit-distance",
@@ -709,7 +744,7 @@
       "dp"
     ],
     "createdAt": "2025-10-26T09:36:22.594314",
-    "updatedAt": "2025-10-26T21:19:33.066319"
+    "updatedAt": "2025-11-02T16:49:27.775500"
   },
   {
     "id": "325-maximum-size-subarray-sum-equals-k",
@@ -793,7 +828,7 @@
       "bfs"
     ],
     "createdAt": "2025-09-12T16:05:43.508768",
-    "updatedAt": "2025-11-02T14:10:43.850674"
+    "updatedAt": "2025-11-02T16:50:30.475607"
   },
   {
     "id": "841-keys-and-rooms",

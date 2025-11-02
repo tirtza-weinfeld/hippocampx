@@ -2,6 +2,7 @@
 
 export const problemComponents = {
   '37-sudoku-solver': () => import('./37-sudoku-solver.mdx'),
+  '1275-find-winner-on-a-tic-tac-toe-game': () => import('./1275-find-winner-on-a-tic-tac-toe-game.mdx'),
   '1631-path-with-minimum-effort': () => import('./1631-path-with-minimum-effort.mdx'),
   '909-snakes-and-ladders': () => import('./909-snakes-and-ladders.mdx'),
   '265-paint-house-ii': () => import('./265-paint-house-ii.mdx'),
@@ -46,6 +47,7 @@ export const problemComponents = {
   '102-binary-tree-level-order-traversal': () => import('./102-binary-tree-level-order-traversal.mdx'),
   '974-subarray-sums-divisible-by-k': () => import('./974-subarray-sums-divisible-by-k.mdx'),
   '122-best-time-to-buy-and-sell-stock-ii': () => import('./122-best-time-to-buy-and-sell-stock-ii.mdx'),
+  '794-valid-tic-tac-toe-state': () => import('./794-valid-tic-tac-toe-state.mdx'),
   '207-course-schedule': () => import('./207-course-schedule.mdx'),
   '33-search-in-rotated-sorted-array': () => import('./33-search-in-rotated-sorted-array.mdx'),
   '124-binary-tree-maximum-path-sum': () => import('./124-binary-tree-maximum-path-sum.mdx'),
@@ -57,6 +59,7 @@ export const problemComponents = {
   '53-maximum-subarray': () => import('./53-maximum-subarray.mdx'),
   '1570-dot-product-of-two-sparse-vectors': () => import('./1570-dot-product-of-two-sparse-vectors.mdx'),
   '34-find-first-and-last-position-of-element-in-sorted-array': () => import('./34-find-first-and-last-position-of-element-in-sorted-array.mdx'),
+  '348-design-tic-tac-toe': () => import('./348-design-tic-tac-toe.mdx'),
   '76-minimum-window-substring': () => import('./76-minimum-window-substring.mdx'),
   '84-largest-rectangle-in-histogram': () => import('./84-largest-rectangle-in-histogram.mdx'),
   '136-single-number': () => import('./136-single-number.mdx'),
@@ -89,6 +92,7 @@ export const problemComponents = {
 
 export const problemSlugs = [
   '37-sudoku-solver',
+  '1275-find-winner-on-a-tic-tac-toe-game',
   '1631-path-with-minimum-effort',
   '909-snakes-and-ladders',
   '265-paint-house-ii',
@@ -133,6 +137,7 @@ export const problemSlugs = [
   '102-binary-tree-level-order-traversal',
   '974-subarray-sums-divisible-by-k',
   '122-best-time-to-buy-and-sell-stock-ii',
+  '794-valid-tic-tac-toe-state',
   '207-course-schedule',
   '33-search-in-rotated-sorted-array',
   '124-binary-tree-maximum-path-sum',
@@ -144,6 +149,7 @@ export const problemSlugs = [
   '53-maximum-subarray',
   '1570-dot-product-of-two-sparse-vectors',
   '34-find-first-and-last-position-of-element-in-sorted-array',
+  '348-design-tic-tac-toe',
   '76-minimum-window-substring',
   '84-largest-rectangle-in-histogram',
   '136-single-number',

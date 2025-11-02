@@ -18,6 +18,22 @@
       "difficulty": "hard",
       "topics": ["game"]
     },
+    "1275-find-winner-on-a-tic-tac-toe-game": {
+      "time_stamps": {
+        "created_at": "2025-11-02T17:59:14.523145",
+        "updated_at": "2025-11-02T18:30:13.468722"
+      },
+      "solutions": {
+        "solution.py": {
+          "code": "def find_winner_on_a_tic_tac_toe_game(moves: list[list[int]]) -> str:\n\n    n, p = 3, 1\n    rows, cols = [0] * n, [0] * n\n    diag = anti_diag = 0\n\n    for r, c in moves:\n\n        rows[r] += p\n        cols[c] += p\n        diag += (r == c) * p\n        anti_diag += (r + c == n - 1) * p\n\n        if any(line == n * p for line in (rows[r], cols[c], diag, anti_diag)):\n            return \"A\" if p == 1 else \"B\"\n\n        p *= -1\n\n    return \"Draw\" if len(moves) == n * n else \"Pending\""
+        }
+      },
+      "title": "Find Winner on a Tic Tac Toe Game",
+      "definition": "Given 3×3 Tic Tac Toe moves (A then B), determine the result: \"A\", \"B\", \"Draw\", or \"Pending\"",
+      "leetcode": "https://leetcode.com/problems/find-winner-on-a-tic-tac-toe-game",
+      "difficulty": "easy",
+      "topics": ["game", "matrix", "simulation"]
+    },
     "1631-path-with-minimum-effort": {
       "time_stamps": {
         "created_at": "2025-09-12T16:06:10.762743",
@@ -386,7 +402,7 @@
     "1162-as-far-from-land-as-possible": {
       "time_stamps": {
         "created_at": "2025-11-02T16:06:57.892639",
-        "updated_at": "2025-11-02T16:15:35.448056"
+        "updated_at": "2025-11-02T16:50:12.272026"
       },
       "solutions": {
         "solution.py": {
@@ -519,7 +535,7 @@
     "120-triangle": {
       "time_stamps": {
         "created_at": "2025-09-12T16:05:33.323838",
-        "updated_at": "2025-10-29T19:09:08.612126"
+        "updated_at": "2025-11-02T16:50:17.419206"
       },
       "solutions": {
         "solution.py": {
@@ -643,7 +659,7 @@
     "51-n-queens": {
       "time_stamps": {
         "created_at": "2025-09-12T16:05:16.850151",
-        "updated_at": "2025-09-30T19:05:08.951102"
+        "updated_at": "2025-11-02T17:09:45.499196"
       },
       "solutions": {
         "solution.py": {
@@ -885,7 +901,7 @@
     "102-binary-tree-level-order-traversal": {
       "time_stamps": {
         "created_at": "2025-09-12T16:05:33.323765",
-        "updated_at": "2025-10-29T19:59:53.546365"
+        "updated_at": "2025-11-02T16:49:49.156635"
       },
       "solutions": {
         "solution.py": {
@@ -943,6 +959,22 @@
       "leetcode": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock-ii",
       "difficulty": "medium",
       "topics": ["greedy"]
+    },
+    "794-valid-tic-tac-toe-state": {
+      "time_stamps": {
+        "created_at": "2025-11-02T18:02:04.046880",
+        "updated_at": "2025-11-02T19:54:10.541172"
+      },
+      "solutions": {
+        "solution.py": {
+          "code": "def valid_tic_tac_toe_state(board: list[str]) -> bool:\n\n    rows, cols = [0] * (n := 3), [0] * n\n    diag = anti_diag = diff = 0\n\n    for r, row in enumerate(board):\n        for c, p in enumerate(row):\n\n            diff += (d := 1 if p == \"X\" else -1 if p == \"O\" else 0)\n            rows[r] += d\n            cols[c] += d\n            diag += (r == c) * d\n            anti_diag += (r + c == n - 1) * d\n\n    win = lambda p: any(line == n * p for line in (diag, anti_diag, *rows, *cols))\n\n    x_win ,o_win = win(1), win(-1)\n\n    return not (diff < 0 or diff > 1 or x_win and o_win or x_win and diff != 1 or o_win and diff != 0 )"
+        }
+      },
+      "title": "Valid Tic-Tac-Toe State",
+      "definition": "Given a Tic Tac Toe board, check if it’s reachable from a valid game where X starts and turns alternate",
+      "leetcode": "https://leetcode.com/problems/valid-tic-tac-toe-state/",
+      "difficulty": "medium",
+      "topics": ["game", "matrix"]
     },
     "207-course-schedule": {
       "time_stamps": {
@@ -1062,7 +1094,7 @@
     "1547-minimum-cost-to-cut-a-stick": {
       "time_stamps": {
         "created_at": "2025-10-25T15:40:33.947699",
-        "updated_at": "2025-10-26T20:59:54.168705"
+        "updated_at": "2025-11-02T16:50:24.816871"
       },
       "solutions": {
         "solution.py": {
@@ -1158,6 +1190,22 @@
       "difficulty": "medium",
       "topics": ["binary-search"]
     },
+    "348-design-tic-tac-toe": {
+      "time_stamps": {
+        "created_at": "2025-11-02T18:03:24.304336",
+        "updated_at": "2025-11-02T19:58:35.324908"
+      },
+      "solutions": {
+        "solution.py": {
+          "code": "class TicTacToe:\n\n    def __init__(self, n: int):\n\n        self.n = n\n        self.rows, self.cols = [0] * n, [0] * n\n        self.diag = self.anti_diag = 0\n\n    def move(self, r: int, c: int, player: int) -> int:\n\n        p = 1 if player == 1 else -1\n\n        self.cols[c] += p\n        self.rows[r] += p\n        self.diag += (c == r) * p\n        self.anti_diag += (c == self.n - 1 - r) * p\n\n        return player if self.n*p in [ self.rows[r] , self.cols[c] , self.diag , self.anti_diag ] else 0"
+        }
+      },
+      "title": "Design Tic-Tac-Toe",
+      "definition": "Design an n×n Tic Tac Toe class with move(row, col, player) that records the move and returns 0 if no one won yet, or the winning player’s number",
+      "leetcode": "https://leetcode.com/problems/design-tic-tac-toe",
+      "difficulty": "medium",
+      "topics": ["game", "matrix", "simulation"]
+    },
     "76-minimum-window-substring": {
       "time_stamps": {
         "created_at": "2025-10-03T14:38:56.852556",
@@ -1240,7 +1288,7 @@
     "1514-path-with-maximum-probability": {
       "time_stamps": {
         "created_at": "2025-09-12T16:06:10.762600",
-        "updated_at": "2025-11-02T11:12:38.782248"
+        "updated_at": "2025-11-02T16:50:20.243683"
       },
       "solutions": {
         "bellman-ford.py": {
@@ -1399,7 +1447,7 @@
     "1000-minimum-cost-to-merge-stones": {
       "time_stamps": {
         "created_at": "2025-10-26T09:36:22.594314",
-        "updated_at": "2025-10-26T21:19:33.066319"
+        "updated_at": "2025-11-02T16:49:27.775500"
       },
       "solutions": {
         "solution.py": {
@@ -1606,7 +1654,7 @@
     "200-number-of-islands": {
       "time_stamps": {
         "created_at": "2025-09-12T16:05:43.508768",
-        "updated_at": "2025-11-02T14:10:43.850674"
+        "updated_at": "2025-11-02T16:50:30.475607"
       },
       "solutions": {
         "iterative-dfs.py": {

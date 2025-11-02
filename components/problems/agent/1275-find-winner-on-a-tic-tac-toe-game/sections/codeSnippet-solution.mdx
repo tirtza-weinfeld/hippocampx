@@ -1,0 +1,21 @@
+```python meta="source=problems/1275-find-winner-on-a-tic-tac-toe-game/solution.py"
+def find_winner_on_a_tic_tac_toe_game(moves: list[list[int]]) -> str:
+
+    n, p = 3, 1
+    rows, cols = [0] * n, [0] * n
+    diag = anti_diag = 0
+
+    for r, c in moves:
+
+        rows[r] += p
+        cols[c] += p
+        diag += (r == c) * p
+        anti_diag += (r + c == n - 1) * p
+
+        if any(line == n * p for line in (rows[r], cols[c], diag, anti_diag)):
+            return "A" if p == 1 else "B"
+
+        p *= -1
+
+    return "Draw" if len(moves) == n * n else "Pending"
+```
