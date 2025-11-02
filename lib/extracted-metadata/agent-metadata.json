@@ -264,7 +264,7 @@
       "bfs"
     ],
     "createdAt": "2025-09-12T16:06:03.945900",
-    "updatedAt": "2025-09-30T19:05:08.952064"
+    "updatedAt": "2025-11-02T12:08:08.835370"
   },
   {
     "id": "363-max-sum-of-rectangle-no-larger-than-k",
@@ -781,7 +781,7 @@
       "bfs"
     ],
     "createdAt": "2025-09-12T16:05:43.508768",
-    "updatedAt": "2025-10-10T11:47:47.788265"
+    "updatedAt": "2025-11-02T14:10:43.850674"
   },
   {
     "id": "841-keys-and-rooms",
@@ -791,7 +791,7 @@
       "dfs"
     ],
     "createdAt": "2025-10-27T12:25:09.752816",
-    "updatedAt": "2025-10-27T12:46:56.659753"
+    "updatedAt": "2025-11-02T12:23:09.699203"
   },
   {
     "id": "2140-solving-questions-with-brainpower",
@@ -842,7 +842,7 @@
       "dijkstra"
     ],
     "createdAt": "2025-09-12T16:05:57.931423",
-    "updatedAt": "2025-11-02T11:25:30.933620"
+    "updatedAt": "2025-11-02T11:33:33.358860"
   },
   {
     "id": "127-word-ladder",

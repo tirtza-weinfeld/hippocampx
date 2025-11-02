@@ -48,10 +48,6 @@
   "problems/1514-path-with-maximum-probability/dijkstra.py": [
     18
   ],
-  "problems/200-number-of-islands/solution.py": [
-    13,
-    20
-  ],
   "problems/743-network-delay-time/dijkstra.py": [
     16
   ],

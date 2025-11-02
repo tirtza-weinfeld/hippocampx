@@ -4,4 +4,8 @@ Definition: Given an `m x n` 2D grid of '1's (land) and '0's (water), return the
 Leetcode: https://leetcode.com/problems/number-of-islands
 Difficulty: medium
 Topics: [dfs, bfs]
+Group: [ bfs.py]
+       [iterative-dfs.py]
+       [ dfs.py]
+
 """

@@ -34,15 +34,15 @@
 
 [200. Number of Islands](https://leetcode.com/problems/number-of-islands/)
 
-```python file=problems/200-number-of-islands/solution.py   
+```python file=problems/200-number-of-islands/bfs.py
 ```
 > [\!insight:collapse] Find, Count, and Sink 🏝️
 >
 > The strategy is to scan every cell of the grid. If an unvisited piece of land (`1`) is found, you've discovered a new island, so you increment the `islands` counter. Then, immediately launch a BFS from that cell to find and "sink" all connected parts of that same island by changing their value to `0`. This modification of the grid ensures each island group is counted exactly once.
 
-> [\!timecomplexity:collapse] $O(m \cdot n)$
+> [\!timecomplexity:collapse] $O(R \cdot C)$
 >
-> where $m$ and $n$ are the dimensions of the grid. This is optimal as each cell is visited a constant number of times.
+> where $R$ and $C$ are the dimensions of the grid. This is optimal as each cell is visited a constant number of times.
 
 -----
 

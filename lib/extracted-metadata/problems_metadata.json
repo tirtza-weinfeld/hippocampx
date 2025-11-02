@@ -519,7 +519,7 @@
     "787-cheapest-flights-within-k-stops": {
       "time_stamps": {
         "created_at": "2025-09-12T16:06:03.945900",
-        "updated_at": "2025-09-30T19:05:08.952064"
+        "updated_at": "2025-11-02T12:08:08.835370"
       },
       "solutions": {
         "dijkstra.py": {
@@ -1592,47 +1592,54 @@
     "200-number-of-islands": {
       "time_stamps": {
         "created_at": "2025-09-12T16:05:43.508768",
-        "updated_at": "2025-10-10T11:47:47.788265"
+        "updated_at": "2025-11-02T14:10:43.850674"
       },
       "solutions": {
-        "solution.py": {
+        "iterative-dfs.py": {
+          "code": "class Solution:\n    def numIslands(self, grid: list[list[str]]) -> int:\n\n        R, C = len(grid), len(grid[0])\n        islands, directions = 0, [(1, 0), (-1, 0), (0, 1), (0, -1)]\n\n        for r in range(R):\n            for c in range(C):\n                if grid[r][c] == \"1\":\n                    islands += 1\n                    grid[r][c] = \"0\"\n\n                    stack = [(r, c)]\n                    while stack:\n                        y, x = stack.pop()\n                        for dy, dx in directions:\n                            if 0 <= (i := y + dy) < R and 0 <= (j := x + dx) < C and grid[i][j] == \"1\":\n                                grid[i][j] = \"0\"\n                                stack.append((i, j))\n\n        return islands"
+        },
+        "bfs.py": {
           "intuition": "Find, Count, and Sink 🏝️\n    The strategy is to scan every cell of the grid. If an unvisited piece of land (`1`) is found, you've discovered a new island, so you increment the `islands` counter. Then, immediately launch a BFS from that cell to find and \"sink\" all connected parts of that same island by changing their value to `0`. This modification of the grid ensures each island group is counted exactly once.",
-          "time_complexity": "O(m * n)\n    where m and n are the dimensions of the grid. This is optimal as each cell is visited a constant number of times.",
+          "time_complexity": "O(R * C)\n    where R and C are the dimensions of the grid. This is optimal as each cell is visited a constant number of times.",
           "args": {
             "grid: list[list[str]]": "2D grid with '1' representing land and '0' representing water"
           },
           "returns": "`int`: Number of islands in the grid",
-          "code": "from collections import deque\n\ndef number_of_islands(grid: list[list[str]]) -> int:\n    if not grid or not grid[0]:\n        return 0\n    m, n = len(grid), len(grid[0])\n    dirs = ((1,0),(-1,0),(0,1),(0,-1))\n    islands = 0\n\n    for i in range(m):\n        for j in range(n):\n            if grid[i][j] == \"1\":\n                islands += 1\n                grid[i][j] = \"0\"\n                q = deque([(i, j)])\n                while q:\n                    r, c = q.popleft()\n                    for dr, dc in dirs:\n                        nr, nc = r + dr, c + dc\n                        if 0 <= nr < m and 0 <= nc < n and grid[nr][nc] == \"1\":\n                            grid[nr][nc] = \"0\"\n                            q.append((nr, nc)) \n    return islands"
+          "code": "from collections import deque\n\nclass Solution:\n    def numIslands(self, grid: list[list[str]]) -> int:\n        R, C = len(grid), len(grid[0])\n        islands, directions = 0, [(1, 0), (-1, 0), (0, 1), (0, -1)]\n\n        for r in range(R):\n            for c in range(C):\n                if grid[r][c] == \"1\":\n                    islands += 1\n                    grid[r][c] = \"0\"\n\n                    q = deque([(r, c)])\n                    while q:\n                        y, x = q.popleft()\n                        for dy, dx in directions:\n                            if 0 <= (i := y + dy) < R and 0 <= (j := x + dx) < C and grid[i][j] == \"1\":\n                                grid[i][j] = \"0\"\n                                q.append((i, j))\n\n        return islands"
+        },
+        "dfs.py": {
+          "code": "from collections import deque\n\nclass Solution:\n\n    def numIslands(self, grid: list[list[str]]) -> int:\n\n        R, C = len(grid), len(grid[0])\n        islands = 0\n\n        def dfs(r, c):\n            if 0 <= r < R and 0 <= c < C and grid[r][c] == \"1\":\n                grid[r][c] = \"0\"\n                dfs(r - 1, c)\n                dfs(r + 1, c)\n                dfs(r, c - 1)\n                dfs(r, c + 1)\n\n        for r in range(R):\n            for c in range(C):\n                if grid[r][c] == \"1\":\n                    islands += 1\n                    dfs(r, c)\n        return islands"
         }
       },
       "title": "Number of Islands",
       "definition": "Given an `m x n` 2D grid of '1's (land) and '0's (water), return the number of islands. An island is formed by connecting adjacent lands horizontally or vertically. Assume all four edges of the grid are all surrounded by water.",
       "leetcode": "https://leetcode.com/problems/number-of-islands",
       "difficulty": "medium",
-      "topics": ["dfs", "bfs"]
+      "topics": ["dfs", "bfs"],
+      "group": [["bfs.py"], ["iterative-dfs.py"], ["dfs.py"]]
     },
     "841-keys-and-rooms": {
       "time_stamps": {
         "created_at": "2025-10-27T12:25:09.752816",
-        "updated_at": "2025-10-27T12:46:56.659753"
+        "updated_at": "2025-11-02T12:23:09.699203"
       },
       "solutions": {
         "solution.py": {
           "intuition": "Deep Dive:DFS reachability from room 0:\n    Goal: start from room 0 and reach every other room using the keys you find\n    Idea: DFS = “go as deep as possible before backtracking”\n        Each room is a node\n        Each key in that room is an edge to another node\n    Stack: we use a stack to track rooms we can explore next\n        Start with [0] (room 0 is unlocked)\n    Visited: mark rooms we’ve already opened so we don’t revisit them\n    Process:\n        Pop a room from the stack\n        For each key inside, if that room isn’t visited, mark it and push it on the stack\n    Finish: when the stack is empty, we’ve explored every reachable room\n    Check: if all rooms are visited → return True, else False",
-          "variables": {
-            "seen": "Track which rooms have been visited"
-          },
           "expressions": {
             "stack = [0]": "Start DFS from room 0",
-            "seen[0] = True": "Room 0 is unlocked by default",
+            "[True]": "Room 0 is unlocked by default",
             "while stack": "While there are rooms to explore",
             "room = stack.pop()": "Take the last added room (DFS = LIFO)",
             "for key in rooms[room]": "For each key found in this room",
             "if not seen[key]": "If the room it unlocks isn't visited yet",
             "stack.append(key)": "Push it onto the stack to explore later"
           },
-          "time_complexity": "O(n+E)",
-          "code": "class Solution:\n    def canVisitAllRooms(self, rooms: list[list[int]]) -> bool:\n\n        seen = [False] * len(rooms); stack = [0]\n        seen[0] = True\n        while stack:\n            for key in rooms[stack.pop()]:\n                if not seen[key]:\n                    seen[key] = True\n                    stack.append(key)\n        return all(seen)"
+          "variables": {
+            "seen": "Track which rooms have been visited"
+          },
+          "time_complexity": "O(N+E)",
+          "code": "class Solution:\n    def canVisitAllRooms(self, rooms: list[list[int]]) -> bool:\n        stack = [0]\n        seen = [True] + [False] * (len(rooms) - 1)\n        while stack:\n            for key in rooms[stack.pop()]:\n                if not seen[key]:\n                    seen[key] = True\n                    stack.append(key)\n        return all(seen)"
         }
       },
       "title": "Keys and Rooms",
@@ -1739,7 +1746,7 @@
     "743-network-delay-time": {
       "time_stamps": {
         "created_at": "2025-09-12T16:05:57.931423",
-        "updated_at": "2025-11-02T11:25:30.933620"
+        "updated_at": "2025-11-02T11:33:33.358860"
       },
       "solutions": {
         "dijkstra.py": {

@@ -176,6 +176,7 @@ pre {
     }
   }
   .variable-symbol {
+    
     --symbol-color: var(--color-purple-600);
     .dark & {
       --symbol-color: var(--color-purple-400);
@@ -267,6 +268,7 @@ pre {
   }
   /* &:not(.comment-symbol , .expression-symbol> .tooltip-symbol) { */
   &:not(.comment-symbol ) {
+    
     border-radius: 2rem;
     border-bottom: 2px dotted;
 
@@ -277,6 +279,7 @@ pre {
   } */
 }
   &:not(.comment-symbol) {
+    
 
   &:hover {
     background-color: --alpha(var(--symbol-color) / 20%);

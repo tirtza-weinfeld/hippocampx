@@ -12,45 +12,110 @@
 
 Given an `m x n` 2D grid of '1's (land) and '0's (water), return the number of islands. An island is formed by connecting adjacent lands horizontally or vertically. Assume all four edges of the grid are all surrounded by water.
 
-## [!(ProblemIntuition)] Intuition
+## Bfs Solution
+
+### [!(ProblemIntuition)] Intuition
 
 - Find, Count, and Sink 🏝️
     - The strategy is to scan every cell of the grid. If an unvisited piece of land (`1`) is found, you've discovered a new island, so you increment the `islands` counter. Then, immediately launch a BFS from that cell to find and "sink" all connected parts of that same island by changing their value to `0`. This modification of the grid ensures each island group is counted exactly once.
 
-## [!(ProblemTimeComplexity)] Time Complexity
+### [!(ProblemTimeComplexity)] Time Complexity
 
-- $O(m * n)$
-    - where m and n are the dimensions of the grid. This is optimal as each cell is visited a constant number of times.
+- $O(R * C)$
+    - where R and C are the dimensions of the grid. This is optimal as each cell is visited a constant number of times.
 
-## [!(ProblemReturns)] Returns
+### [!(ProblemReturns)] Returns
 
 `int`: Number of islands in the grid
 
-## [!(ProblemCodeSnippet)] Code Snippet
+### [!(ProblemCodeSnippet)] Code Snippet
 
-```python meta="source=problems/200-number-of-islands/solution.py"
+```python meta="source=problems/200-number-of-islands/bfs.py"
 from collections import deque
 
-def number_of_islands(grid: list[list[str]]) -> int:
-    if not grid or not grid[0]:
-        return 0
-    m, n = len(grid), len(grid[0])
-    dirs = ((1,0),(-1,0),(0,1),(0,-1))
-    islands = 0
+class Solution:
+    def numIslands(self, grid: list[list[str]]) -> int:
+        R, C = len(grid), len(grid[0])
+        islands, directions = 0, [(1, 0), (-1, 0), (0, 1), (0, -1)]
 
-    for i in range(m):
-        for j in range(n):
-            if grid[i][j] == "1":
-                islands += 1
-                grid[i][j] = "0"
-                q = deque([(i, j)])
-                while q:
-                    r, c = q.popleft()
-                    for dr, dc in dirs:
-                        nr, nc = r + dr, c + dc
-                        if 0 <= nr < m and 0 <= nc < n and grid[nr][nc] == "1":
-                            grid[nr][nc] = "0"
-                            q.append((nr, nc)) 
-    return islands
+        for r in range(R):
+            for c in range(C):
+                if grid[r][c] == "1":
+                    islands += 1
+                    grid[r][c] = "0"
+
+                    q = deque([(r, c)])
+                    while q:
+                        y, x = q.popleft()
+                        for dy, dx in directions:
+                            if 0 <= (i := y + dy) < R and 0 <= (j := x + dx) < C and grid[i][j] == "1":
+                                grid[i][j] = "0"
+                                q.append((i, j))
+
+        return islands
+```
+
+
+---
+
+## Iterative Dfs Solution
+
+### [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/200-number-of-islands/iterative-dfs.py"
+class Solution:
+    def numIslands(self, grid: list[list[str]]) -> int:
+
+        R, C = len(grid), len(grid[0])
+        islands, directions = 0, [(1, 0), (-1, 0), (0, 1), (0, -1)]
+
+        for r in range(R):
+            for c in range(C):
+                if grid[r][c] == "1":
+                    islands += 1
+                    grid[r][c] = "0"
+
+                    stack = [(r, c)]
+                    while stack:
+                        y, x = stack.pop()
+                        for dy, dx in directions:
+                            if 0 <= (i := y + dy) < R and 0 <= (j := x + dx) < C and grid[i][j] == "1":
+                                grid[i][j] = "0"
+                                stack.append((i, j))
+
+        return islands
+```
+
+
+---
+
+## Dfs Solution
+
+### [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/200-number-of-islands/dfs.py"
+from collections import deque
+
+class Solution:
+
+    def numIslands(self, grid: list[list[str]]) -> int:
+
+        R, C = len(grid), len(grid[0])
+        islands = 0
+
+        def dfs(r, c):
+            if 0 <= r < R and 0 <= c < C and grid[r][c] == "1":
+                grid[r][c] = "0"
+                dfs(r - 1, c)
+                dfs(r + 1, c)
+                dfs(r, c - 1)
+                dfs(r, c + 1)
+
+        for r in range(R):
+            for c in range(C):
+                if grid[r][c] == "1":
+                    islands += 1
+                    dfs(r, c)
+        return islands
 ```
 

@@ -26,8 +26,6 @@
   "problems/1514-path-with-maximum-probability/bellman-ford.py:comment-line:11": "Try to improve u through v (undirected graph)",
   "problems/1514-path-with-maximum-probability/bellman-ford.py:comment-line:15": "Early exit if no updates in this round",
   "problems/1514-path-with-maximum-probability/dijkstra.py:comment-line:18": "reached with max probability",
-  "problems/200-number-of-islands/solution.py:comment-line:13": "mark as visited",
-  "problems/200-number-of-islands/solution.py:comment-line:20": "mark as visited",
   "problems/743-network-delay-time/dijkstra.py:comment-line:16": "Skip outdated entries",
   "problems/743-network-delay-time/dijkstra-b.py:comment-line:14": "skip if already finalized",
   "problems/743-network-delay-time/dijkstra-b.py:comment-line:17": "current shortest time to reach this node",

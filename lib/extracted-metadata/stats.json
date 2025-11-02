@@ -387,10 +387,10 @@
       "$O(r  \\cdot  c)$"
     ],
     "200-number-of-islands": [
-      "$O(m  \\cdot  n)$"
+      "$O(R  \\cdot  C)$"
     ],
     "841-keys-and-rooms": [
-      "$O(n+E)$"
+      "$O(N+E)$"
     ],
     "2140-solving-questions-with-brainpower": [
       "$O(n)$"

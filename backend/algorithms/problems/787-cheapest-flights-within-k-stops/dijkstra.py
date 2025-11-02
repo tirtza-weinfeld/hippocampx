@@ -5,11 +5,6 @@ import heapq
 
 def cheapest_flights_with_at_most_k_stops( flights: list[list[int]], src: int, dst: int, k: int) -> int:
     """
-    Title:
-        Cheapest Flights With at Most K Stops Dijkstra
-        
-    Topics:
-        Dijkstra
 
     Variables:
         pq: Priority queue to store the state (cost, city, stops_taken)

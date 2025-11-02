@@ -1,9 +1,8 @@
 ```python meta="source=problems/841-keys-and-rooms/solution.py"
 class Solution:
     def canVisitAllRooms(self, rooms: list[list[int]]) -> bool:
-
-        seen = [False] * len(rooms); stack = [0]
-        seen[0] = True
+        stack = [0]
+        seen = [True] + [False] * (len(rooms) - 1)
         while stack:
             for key in rooms[stack.pop()]:
                 if not seen[key]:
