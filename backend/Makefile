@@ -1,5 +1,6 @@
 .PHONY: test test-unit test-integration test-api test-algorithms test-metadata test-e2e
 .PHONY: test-cov test-watch lint format type-check check install dev-install clean
+.PHONY: play-tictactoe
 
 # Python and virtual environment
 PYTHON := python3.13
@@ -73,6 +74,10 @@ clean: ## Clean up temporary files
 	find . -type d -name "*.egg-info" -exec rm -rf {} +
 	find . -type d -name "__pycache__" -exec rm -rf {} +
 	find . -name "*.pyc" -delete
+
+# Interactive demos
+play-tictactoe: ## Play Tic-Tac-Toe with AI (requires pygame)
+	@cd "algorithms/more/tictactoe" && ../../../$(VENV_BIN)/python runner.py
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'

@@ -1,0 +1,440 @@
+# Adversarial Search and Minimax
+
+## Resizable Table Of Contents
+
+Adversarial search addresses problems where an AI agent must make decisions while facing an intelligent opponent actively trying to achieve an opposing goal. This is fundamental to game-playing AI, from tic-tac-toe to chess.
+
+---
+
+## Game Representation
+
+To enable AI to reason about games, we need a formal mathematical representation with six core components:
+
+### 1. Initial State ($S_0$)
+
+The starting configuration of the game.
+
+**Example (Tic-Tac-Toe):**
+```python
+def initial_state():
+    """Returns starting state of the board."""
+    return [[EMPTY, EMPTY, EMPTY],
+            [EMPTY, EMPTY, EMPTY],
+            [EMPTY, EMPTY, EMPTY]]
+```
+
+### 2. PLAYER(s)
+
+A function that determines which player has the move in state `s`.
+
+**Example (Tic-Tac-Toe):**
+```python
+def player(board):
+    """Returns player who has the next turn on a board."""
+    x_count = sum(row.count(X) for row in board)
+    o_count = sum(row.count(O) for row in board)
+    return X if x_count == o_count else O
+```
+
+**Intuition:** X always moves first. If both players have made equal moves, it's X's turn. Otherwise, it's O's turn.
+
+### 3. ACTIONS(s)
+
+Returns all legal moves available from state `s`.
+
+**Example (Tic-Tac-Toe):**
+```python
+def actions(board):
+    """Returns set of all possible actions (i, j) available on the board."""
+    possible_actions = set()
+    for i in range(3):
+        for j in range(3):
+            if board[i][j] == EMPTY:
+                possible_actions.add((i, j))
+    return possible_actions
+```
+
+**Intuition:** Any empty cell is a valid move.
+
+### 4. RESULT(s, a)
+
+The state that results from taking action `a` in state `s`. This is also called the **transition model**.
+
+**Example (Tic-Tac-Toe):**
+```python
+def result(board, action):
+    """Returns the board that results from making move (i, j) on the board."""
+    i, j = action
+    if board[i][j] != EMPTY:
+        raise ValueError("Invalid action: cell already occupied")
+
+    current_player = player(board)
+    new_board = [row[:] for row in board]  # Deep copy
+    new_board[i][j] = current_player
+    return new_board
+```
+
+**Intuition:** Create a deep copy of the board and apply the current player's mark to the specified cell. Must validate that the cell is empty.
+
+### 5. TERMINAL(s)
+
+A function that checks if the game has ended (win, lose, or tie).
+
+**Example (Tic-Tac-Toe):**
+```python
+def terminal(board):
+    """Returns True if game is over, False otherwise."""
+    if winner(board) is not None:
+        return True
+    return all(cell is not None for row in board for cell in row)
+```
+
+**Intuition:** Game ends when someone wins or all cells are filled.
+
+### 6. UTILITY(s)
+
+A function that assigns a final numerical value to a terminal state. This defines the objective function for players.
+
+**Example (Tic-Tac-Toe):**
+```python
+def utility(board):
+    """Returns 1 if X has won the game, -1 if O has won, 0 otherwise."""
+    game_winner = winner(board)
+    if game_winner == X:
+        return 1
+    elif game_winner == O:
+        return -1
+    else:
+        return 0
+```
+
+**Convention:** +1 for MAX player win, -1 for MIN player win, 0 for tie.
+
+---
+
+## The Minimax Algorithm
+
+### Core Concept
+
+Minimax is a decision-making algorithm for two-player **zero-sum games** (one player's gain is the other's loss). It operates on two opposing player types:
+
+- **MAX Player (X)**: Seeks to maximize the utility score (aims for +1)
+- **MIN Player (O)**: Seeks to minimize the utility score (aims for -1)
+
+### How It Works
+
+The algorithm recursively simulates all possible games from the current state to terminal states:
+
+1. **At MAX nodes**: Select the action yielding the **highest** value
+2. **At MIN nodes**: Select the action yielding the **lowest** value
+3. **At terminal nodes**: Return the utility value
+4. **Backpropagate** values up the tree
+
+### Pseudocode
+
+```python
+function MAX-VALUE(state):
+    if TERMINAL(state):
+        return UTILITY(state)
+
+    v = -infinity
+    for action in ACTIONS(state):
+        v = max(v, MIN-VALUE(RESULT(state, action)))
+    return v
+
+function MIN-VALUE(state):
+    if TERMINAL(state):
+        return UTILITY(state)
+
+    v = +infinity
+    for action in ACTIONS(state):
+        v = min(v, MAX-VALUE(RESULT(state, action)))
+    return v
+```
+
+### Example: Tic-Tac-Toe Decision Tree
+
+Consider O's turn with two empty squares:
+
+```
+     O's move
+    /        \
+   []        []
+  (X wins)  (Tie)
+  utility=1 utility=0
+```
+
+O is the MIN player and must choose between:
+- Left branch: leads to utility = +1 (X wins, bad for O)
+- Right branch: leads to utility = 0 (tie, better for O)
+
+O chooses the right branch (utility = 0) because `min(1, 0) = 0`.
+
+### Implementation
+
+```python file=backend/algorithms/more/tictactoe/tictactoe.py:minimax
+```
+
+**Key Implementation Details:**
+
+1. **Base Case**: If the board is terminal, return `None` (no moves available)
+2. **Memoization**: Cache board states to avoid recomputing transpositions
+3. **MAX Logic**: X iterates through actions, computes MIN-VALUE for each successor, picks highest
+4. **MIN Logic**: O iterates through actions, computes MAX-VALUE for each successor, picks lowest
+
+### Time Complexity
+
+**Without Optimization:** $O(b^d)$ where:
+- $b$ = branching factor (average ~5 for tic-tac-toe)
+- $d$ = maximum depth (9 for tic-tac-toe)
+
+**With Memoization:** Much faster due to reusing results for transpositions (same board reached via different move orders).
+
+---
+
+## Alpha-Beta Pruning
+
+### The Problem
+
+Minimax explores **every** possible game path, even those that are clearly worse than already-evaluated options. This is wasteful.
+
+### The Solution
+
+**Alpha-Beta Pruning** eliminates branches that cannot affect the final decision without examining them.
+
+### Core Idea
+
+Maintain two values during search:
+
+- **alpha**: Best value the MAX player can guarantee so far
+- **beta**: Best value the MIN player can guarantee so far
+
+**Prune when:** alpha ≥ beta
+
+This means MAX has already found an option better than what MIN will allow on this branch.
+
+### Example
+
+```
+           MAX (alpha=-infinity, beta=+infinity)
+          /     |      \
+         3      ?       ?
+        / \
+    MIN  MIN
+   / \   / \
+  3  12 8  2
+```
+
+**Step-by-step:**
+
+1. MAX explores left branch, finds value = 3
+2. MAX updates alpha = 3
+3. MAX starts exploring middle branch
+4. Middle branch's first MIN child evaluates to 2
+5. MIN will pick ≤ 2 from remaining children
+6. But MAX already has 3 (better), so prune the rest of middle branch!
+
+### Pseudocode
+
+```python
+function MAX-VALUE(state, alpha, beta):
+    if TERMINAL(state):
+        return UTILITY(state)
+
+    v = -infinity
+    for action in ACTIONS(state):
+        v = max(v, MIN-VALUE(RESULT(state, action), alpha, beta))
+        if v >= beta:
+            return v  # beta cutoff: MIN won't allow this
+        alpha = max(alpha, v)
+    return v
+
+function MIN-VALUE(state, alpha, beta):
+    if TERMINAL(state):
+        return UTILITY(state)
+
+    v = +infinity
+    for action in ACTIONS(state):
+        v = min(v, MAX-VALUE(RESULT(state, action), alpha, beta))
+        if v <= alpha:
+            return v  # alpha cutoff: MAX has better option
+        beta = min(beta, v)
+    return v
+```
+
+### Optimization Impact
+
+- **Best Case**: $O(b^{d/2})$ - twice the solvable depth!
+- **Worst Case**: $O(b^d)$ - same as regular minimax
+- **Move Ordering Matters**: Evaluating better moves first improves pruning
+
+---
+
+## Depth-Limited Minimax
+
+### The Problem
+
+For complex games like chess, exploring to terminal states is computationally impossible:
+
+- Chess has ~$10^{29,000}$ possible games
+- Average branching factor ~35
+- Average game length ~80 moves
+
+Full minimax is infeasible.
+
+### The Solution
+
+**Depth-Limited Minimax** stops searching after a fixed depth and uses an **evaluation function** to estimate position strength.
+
+### Evaluation Functions
+
+An evaluation function estimates the utility of non-terminal states without playing to the end.
+
+**Requirements:**
+
+1. **Fast to compute** (called millions of times)
+2. **Correlates with winning chances**
+3. **Returns higher values for better MAX positions**
+
+**Examples:**
+
+#### Chess Evaluation Function
+```python
+def evaluate_chess(board):
+    """Simple material-based evaluation."""
+    material_values = {
+        'pawn': 1,
+        'knight': 3,
+        'bishop': 3,
+        'rook': 5,
+        'queen': 9,
+        'king': 0  # Invaluable
+    }
+
+    score = 0
+    for piece in board.pieces:
+        value = material_values[piece.type]
+        if piece.color == WHITE:
+            score += value
+        else:
+            score -= value
+
+    return score
+```
+
+#### Tic-Tac-Toe Evaluation Function
+```python
+def evaluate_tictactoe(board):
+    """Count two-in-a-rows for each player."""
+    x_two_in_rows = count_two_in_rows(board, X)
+    o_two_in_rows = count_two_in_rows(board, O)
+    return x_two_in_rows - o_two_in_rows
+```
+
+### Implementation
+
+```python
+def minimax_limited(state, depth):
+    """Minimax with depth limit."""
+
+    def max_value(state, depth):
+        if TERMINAL(state):
+            return UTILITY(state)
+        if depth == 0:
+            return EVALUATE(state)  # Estimation
+
+        v = -math.inf
+        for action in ACTIONS(state):
+            v = max(v, min_value(RESULT(state, action), depth - 1))
+        return v
+
+    def min_value(state, depth):
+        if TERMINAL(state):
+            return UTILITY(state)
+        if depth == 0:
+            return EVALUATE(state)  # Estimation
+
+        v = math.inf
+        for action in ACTIONS(state):
+            v = min(v, max_value(RESULT(state, action), depth - 1))
+        return v
+
+    # Return best action
+    best_action = None
+    best_value = -math.inf
+    for action in ACTIONS(state):
+        value = min_value(RESULT(state, action), depth - 1)
+        if value > best_value:
+            best_value = value
+            best_action = action
+    return best_action
+```
+
+### Trade-offs
+
+| Aspect | Deeper Search | Shallower Search |
+|--------|--------------|------------------|
+| **Accuracy** | More accurate | Less accurate |
+| **Time** | Much slower | Much faster |
+| **Tactics** | Finds deeper combinations | Misses complex tactics |
+| **Dependency** | Less reliant on evaluation | More reliant on evaluation |
+
+**Modern Practice:** Chess engines like Stockfish use:
+- Iterative deepening (search 1 ply, then 2, then 3...)
+- Variable depth based on position complexity
+- Quiescence search (extend tactical lines)
+- Advanced evaluation with neural networks
+
+---
+
+## Putting It All Together
+
+### Complete Tic-Tac-Toe AI
+
+Our implementation at `backend/algorithms/more/tictactoe/tictactoe.py` uses:
+
+1. **Game Representation**: All 6 components ($S_0$, PLAYER, ACTIONS, RESULT, TERMINAL, UTILITY)
+2. **Minimax Algorithm**: Recursive MAX-VALUE and MIN-VALUE functions
+3. **Optimization**: Memoization to cache board states
+
+```python file=backend/algorithms/more/tictactoe/tictactoe.py
+```
+
+### Performance Characteristics
+
+**Tic-Tac-Toe is "solved":**
+- With optimal play, the game always ends in a draw
+- Our AI never loses
+- First move has 9 options, but many are equivalent by symmetry
+- Total game tree: 255,168 possible games (but many fewer unique states)
+
+### Extensions
+
+**To optimize further, consider:**
+
+1. **Symmetry Detection**: Recognize equivalent boards via rotation/reflection
+2. **Opening Book**: Pre-compute optimal first moves
+3. **Alpha-Beta Pruning**: Add to reduce search space
+4. **Iterative Deepening**: Search progressively deeper (useful for time limits)
+
+---
+
+## Summary
+
+| Concept | Purpose | Key Insight |
+|---------|---------|-------------|
+| **Game Components** | Formal representation | 6 functions define any two-player game |
+| **Minimax** | Optimal decision-making | Recursively assume opponent plays optimally |
+| **Alpha-Beta Pruning** | Speed up search | Eliminate branches that can't affect result |
+| **Depth-Limited Minimax** | Handle complex games | Trade perfect analysis for feasibility |
+| **Evaluation Functions** | Estimate positions | Approximate utility for non-terminal states |
+
+**Paradigm:** Adversarial search treats games as search problems where the opponent controls half the transitions, requiring reasoning about worst-case opponent responses.
+
+---
+
+## See Also
+
+* [Stone Game III](../problems/1406-stone-game-iii) - Score-difference DP approach
+* [Stone Game IV](../problems/1510-stone-game-iv) - Impartial game with Minimax
+* [Dynamic Programming](../notes/dp) - Related optimization technique

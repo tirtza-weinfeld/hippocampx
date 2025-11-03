@@ -1,4 +1,5 @@
 {
+  "more/tictactoe/tictactoe.py:comment-line:96": "Prune: opponent won't allow this branch",
   "problems/909-snakes-and-ladders/solution.py:comment-line:4": "Dummy 0 for 1-based indexing",
   "problems/394-decode-string/solution.py:comment-line:7": "remove \"[\"",
   "problems/1143-longest-common-subsequence/bottom-up-prefix-1d.py:comment-line:1": "keep b the shorter to save space",
