@@ -13,7 +13,7 @@ export default async function Problem1406StoneGameIii() {
       id="1406-stone-game-iii"
       title="Stone Game III"
       difficulty="hard"
-      topics={["game","dynamic-programming"]}
+      topics={["game","dp","minimax"]}
       solutionFiles={["solution.py"]}
       defaultFile="solution.py"
       fileSectionMap={{"solution.py":["definition","codeSnippet","intuition","timeComplexity"]}}

@@ -42,8 +42,6 @@
       "1143-longest-common-subsequence",
       "121-best-time-to-buy-and-sell-stock",
       "123-best-time-to-buy-and-sell-stock-iii",
-      "1406-stone-game-iii",
-      "1510-stone-game-iv",
       "152-maximum-product-subarray",
       "188-best-time-to-buy-and-sell-stock-iv",
       "2140-solving-questions-with-brainpower",
@@ -70,6 +68,21 @@
       "20-valid-parentheses",
       "394-decode-string",
       "84-largest-rectangle-in-histogram"
+    ],
+    "dp": [
+      "1000-minimum-cost-to-merge-stones",
+      "120-triangle",
+      "1406-stone-game-iii",
+      "1510-stone-game-iv",
+      "1547-minimum-cost-to-cut-a-stick",
+      "256-paint-house",
+      "312-burst-balloons",
+      "53-maximum-subarray",
+      "72-edit-distance"
+    ],
+    "minimax": [
+      "1406-stone-game-iii",
+      "1510-stone-game-iv"
     ],
     "dynamic_programming": [
       "198-house-robber",
@@ -119,15 +132,6 @@
     ],
     "knapsack": [
       "518-coin-change-ii"
-    ],
-    "dp": [
-      "1000-minimum-cost-to-merge-stones",
-      "120-triangle",
-      "1547-minimum-cost-to-cut-a-stick",
-      "256-paint-house",
-      "312-burst-balloons",
-      "53-maximum-subarray",
-      "72-edit-distance"
     ],
     "kadane": [
       "124-binary-tree-maximum-path-sum",

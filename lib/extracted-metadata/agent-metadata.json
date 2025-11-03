@@ -118,10 +118,11 @@
     "difficulty": "hard",
     "topics": [
       "game",
-      "dynamic-programming"
+      "dp",
+      "minimax"
     ],
     "createdAt": "2025-09-12T16:06:03.946455",
-    "updatedAt": "2025-09-30T19:06:08.585939"
+    "updatedAt": "2025-11-03T12:08:47.427447"
   },
   {
     "id": "213-house-robber-ii",
@@ -522,11 +523,12 @@
     "title": "Stone Game IV",
     "difficulty": "hard",
     "topics": [
-      "dynamic-programming",
-      "game"
+      "dp",
+      "game",
+      "minimax"
     ],
     "createdAt": "2025-09-12T16:06:10.762509",
-    "updatedAt": "2025-09-30T19:05:08.948268"
+    "updatedAt": "2025-11-03T12:08:43.311609"
   },
   {
     "id": "153-find-minimum-in-rotated-sorted-array",
