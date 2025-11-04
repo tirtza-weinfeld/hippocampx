@@ -94,45 +94,45 @@ class TicTacToe(Game[Board, Action, Player]):
         return 1 if game_winner == X else (-1 if game_winner == O else 0)
 
     def minimax(self, board: Board) -> Action | None:
-        """Optimal move using minimax with alpha-beta pruning and memoization."""
         if self.terminal(board):
             return None
-
-        def dp(state: Board, curr_player: Player, alpha: float, beta: float) -> int:
-            """
-            Args:
-                alpha: α = the best value the maximizing player (X) can guarantee so far
-                beta: β = the best value the minimizing player (O) can guarantee so far
- 
-
-            """
-            state_key = (str(state), curr_player)
-            if state_key not in self._memo:
-
-                if self.terminal(state):
-                    w = self.winner(state)
-                    self._memo[state_key] = 1 if w == curr_player else (0 if w is None else -1)
-                    return self._memo[state_key]
-
-                # Try all moves with alpha-beta pruning
-                opponent = O if curr_player == X else X
-                value = float('-inf')
+    
+        memo: dict[str, int] = {}
+    
+        def eval_state(state: Board, alpha: int, beta: int) -> int:
+            key = str(state)
+            if key in memo:
+                return memo[key]
+            if self.terminal(state):
+                v = self.utility(state)  # 1 if X won, -1 if O won, 0 draw
+                memo[key] = v
+                return v
+    
+            curr = self.player(state)
+            if curr == X:
+                value = -2
                 for action in self.actions(state):
-                    value = max(value, -dp(self.result(state, action), opponent, -beta, -alpha))
+                    value = max(value, eval_state(self.result(state, action), alpha, beta))
                     alpha = max(alpha, value)
                     if alpha >= beta:
                         break
-
-                self._memo[state_key] = int(value)
-            return  self._memo[state_key] 
-
-        # Pick best action
+            else:  # O to move → minimize X’s outcome
+                value = 2
+                for action in self.actions(state):
+                    value = min(value, eval_state(self.result(state, action), alpha, beta))
+                    beta = min(beta, value)
+                    if alpha >= beta:
+                        break
+    
+            memo[key] = value
+            return value
+    
         curr = self.player(board)
-        opponent = O if curr == X else X
-        return max(
-            self.actions(board),
-            key=lambda action: -dp(self.result(board, action), opponent, float('-inf'), float('inf'))
-        )
+        acts = self.actions(board)
+        if curr == X:
+            return max(acts, key=lambda a: eval_state(self.result(board, a), -2, 2))
+        else:
+            return min(acts, key=lambda a: eval_state(self.result(board, a), -2, 2))
 
     def reset_cache(self) -> None:
         """Clear the memoization cache (useful when starting a new game)."""

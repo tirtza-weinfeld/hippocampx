@@ -215,7 +215,7 @@ This means MAX has already found an option better than what MIN will allow on th
 
 ### Example
 
-```
+```markdown
            MAX (alpha=-infinity, beta=+infinity)
           /     |      \
          3      ?       ?
@@ -224,6 +224,7 @@ This means MAX has already found an option better than what MIN will allow on th
    / \   / \
   3  12 8  2
 ```
+
 
 **Step-by-step:**
 
@@ -268,6 +269,16 @@ function MIN-VALUE(state, alpha, beta):
 - **Worst Case**: $O(b^d)$ - same as regular minimax
 - **Move Ordering Matters**: Evaluating better moves first improves pruning
 
+
+
+```markdown meta="{[red!]3 ,[green!]1,[green!]5}  /[green!]4/"
+                            4
+                   /        |         \
+                  4        <=3        <=2
+                / | \     / | \      / | \
+               4  8  5   9  3  ?    2  ?  ?     
+  
+```
 ---
 
 ## Depth-Limited Minimax

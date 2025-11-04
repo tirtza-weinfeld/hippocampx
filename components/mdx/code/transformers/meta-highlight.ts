@@ -24,16 +24,19 @@ export function parseMetaHighlightString(meta: string): LineHighlight[] | null {
     // Check if this part has a step specification like [red!]1-3, [1!]5, etc.
     // Only allow step colors before line numbers/ranges, not arbitrary text
     const stepMatch = trimmed.match(/^\[([a-zA-Z0-9]+)!\](\d+(?:-\d+)?)$/)
+    // console.log(stepMatch)
     
     if (stepMatch) {
       const stepSpec = stepMatch[1]
       const lineSpec = stepMatch[2]
+      // console.log(stepSpec, lineSpec)
       let stepColor: ColorName | undefined
       
       // Check if stepSpec is a number (step number) or color name
       const stepNumber = Number.parseInt(stepSpec, 10)
       if (!Number.isNaN(stepNumber) && isValidStepNumber(stepNumber)) {
         stepColor = getStepColor(stepNumber)
+        // console.log(stepColor)
       } else if (isValidColorName(stepSpec)) {
         stepColor = stepSpec as ColorName
       } else {
@@ -44,6 +47,7 @@ export function parseMetaHighlightString(meta: string): LineHighlight[] | null {
       const lines = parseLineSpec(lineSpec)
       for (const line of lines) {
         results.push({ line, stepColor })
+        // console.log(line, stepColor)
       }
     } else {
       // Regular line specification without step color

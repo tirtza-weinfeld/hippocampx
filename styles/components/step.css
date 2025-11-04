@@ -76,7 +76,7 @@
       --alpha(var(--color-yellow-800) / 30%) 50%,
       --alpha(var(--color-yellow-600) / 10%)
     );
-    /* --step-border: var(--color-yellow-300); */
+    --step-border: var(--color-yellow-300);
   }
 
   /* Step 5 - Lime */

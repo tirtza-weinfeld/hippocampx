@@ -27,6 +27,19 @@
         "uriFormat": "%s",
         "webRoot": "${workspaceFolder}"
       }
+    },
+    {
+      "name": "Python: Debug Tic-Tac-Toe",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "algorithms/more/tictactoe/runner.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}/backend",
+      "python": "${workspaceFolder}/backend/venv/bin/python",
+      "justMyCode": true,
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/backend"
+      }
     }
   ]
 }

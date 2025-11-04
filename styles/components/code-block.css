@@ -18,15 +18,24 @@
 :is(.line-highlight[data-step]) {
   background: linear-gradient(
     to right,
-    transparent 0%,
-    --alpha(var(--step-background) / 30%),
-    --alpha(var(--step-border) / 20%),
-    --alpha(var(--step-background) / 30%),
+    --alpha(var(--step) / 10%),
+    --alpha(var(--step) / 20%),
+    --alpha(var(--step) / 30%),
     transparent 100%
   );
-  border-left: 3px solid var(--step-border);
+  /* border-left: 3px solid var(--step-border);
   padding-left: 10px;
-  margin-left: -10px;
+  margin-left: -10px; */
+  &:hover { 
+    background: linear-gradient(
+    to left,
+    --alpha(var(--step) / 10%),
+    --alpha(var(--step) / 20%),
+    --alpha(var(--step) / 30%),
+    transparent 100%
+  );
+  }
+
 }
 
 /* styles/components/code-block.css or similar */

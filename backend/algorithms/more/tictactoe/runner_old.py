@@ -1,9 +1,8 @@
-import os
 import pygame
 import sys
 import time
 
-from tictactoe import TicTacToe, X, O, EMPTY
+import tictactoe_old as ttt
 
 pygame.init()
 size = width, height = 600, 400
@@ -14,19 +13,12 @@ white = (255, 255, 255)
 
 screen = pygame.display.set_mode(size)
 
-# Get the directory where this script is located
-script_dir = os.path.dirname(os.path.abspath(__file__))
-font_path = os.path.join(script_dir, "OpenSans-Regular.ttf")
-
-mediumFont = pygame.font.Font(font_path, 28)
-largeFont = pygame.font.Font(font_path, 40)
-moveFont = pygame.font.Font(font_path, 60)
-
-# Create game instance ONCE - persistent memoization across moves
-game = TicTacToe()
+mediumFont = pygame.font.Font("OpenSans-Regular.ttf", 28)
+largeFont = pygame.font.Font("OpenSans-Regular.ttf", 40)
+moveFont = pygame.font.Font("OpenSans-Regular.ttf", 60)
 
 user = None
-board = game.initial_state()
+board = ttt.initial_state()
 ai_turn = False
 
 while True:
@@ -67,10 +59,10 @@ while True:
             mouse = pygame.mouse.get_pos()
             if playXButton.collidepoint(mouse):
                 time.sleep(0.2)
-                user = X
+                user = ttt.X
             elif playOButton.collidepoint(mouse):
                 time.sleep(0.2)
-                user = O
+                user = ttt.O
 
     else:
 
@@ -89,7 +81,7 @@ while True:
                 )
                 pygame.draw.rect(screen, white, rect, 3)
 
-                if board[i][j] != EMPTY:
+                if board[i][j] != ttt.EMPTY:
                     move = moveFont.render(board[i][j], True, white)
                     moveRect = move.get_rect()
                     moveRect.center = rect.center
@@ -97,12 +89,12 @@ while True:
                 row.append(rect)
             tiles.append(row)
 
-        game_over = game.terminal(board)
-        player = game.player(board)
+        game_over = ttt.terminal(board)
+        player = ttt.player(board)
 
         # Show title
         if game_over:
-            winner = game.winner(board)
+            winner = ttt.winner(board)
             if winner is None:
                 title = f"Game Over: Tie."
             else:
@@ -120,9 +112,8 @@ while True:
         if user != player and not game_over:
             if ai_turn:
                 time.sleep(0.5)
-                # Uses persistent memoization - much faster on subsequent moves!
-                move = game.minimax(board)
-                board = game.result(board, move)
+                move = ttt.minimax(board)
+                board = ttt.result(board, move)
                 ai_turn = False
             else:
                 ai_turn = True
@@ -133,8 +124,8 @@ while True:
             mouse = pygame.mouse.get_pos()
             for i in range(3):
                 for j in range(3):
-                    if (board[i][j] == EMPTY and tiles[i][j].collidepoint(mouse)):
-                        board = game.result(board, (i, j))
+                    if (board[i][j] == ttt.EMPTY and tiles[i][j].collidepoint(mouse)):
+                        board = ttt.result(board, (i, j))
 
         if game_over:
             againButton = pygame.Rect(width / 3, height - 65, width / 3, 50)
@@ -149,9 +140,7 @@ while True:
                 if againButton.collidepoint(mouse):
                     time.sleep(0.2)
                     user = None
-                    board = game.initial_state()
+                    board = ttt.initial_state()
                     ai_turn = False
-                    # Optional: reset cache for new game
-                    # game.reset_cache()
 
     pygame.display.flip()

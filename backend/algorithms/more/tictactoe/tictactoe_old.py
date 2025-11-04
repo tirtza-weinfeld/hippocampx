@@ -8,12 +8,7 @@ EMPTY = None
 
 
 def initial_state():
-    """
-    Returns starting state of the board
-   
-    (**State**: A configuration of an agent in its environment.
-    **Initial State**: The state from which the search algorithm starts.) 
-    """
+    """Returns starting state of the board."""
     return [[EMPTY] * 3 for _ in range(3)]
 
 

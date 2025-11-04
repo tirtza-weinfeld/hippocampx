@@ -107,24 +107,25 @@ class TicTacToe(Game[Board, Action, Player]):
 
             """
             state_key = (str(state), curr_player)
-            if state_key not in self._memo:
+            if state_key in self._memo:
+                return self._memo[state_key]
 
-                if self.terminal(state):
-                    w = self.winner(state)
-                    self._memo[state_key] = 1 if w == curr_player else (0 if w is None else -1)
-                    return self._memo[state_key]
+            if self.terminal(state):
+                w = self.winner(state)
+                self._memo[state_key] = 1 if w == curr_player else (0 if w is None else -1)
+                return self._memo[state_key]
 
-                # Try all moves with alpha-beta pruning
-                opponent = O if curr_player == X else X
-                value = float('-inf')
-                for action in self.actions(state):
-                    value = max(value, -dp(self.result(state, action), opponent, -beta, -alpha))
-                    alpha = max(alpha, value)
-                    if alpha >= beta:
-                        break
+            # Try all moves with alpha-beta pruning
+            opponent = O if curr_player == X else X
+            value = float('-inf')
+            for action in self.actions(state):
+                value = max(value, -dp(self.result(state, action), opponent, -beta, -alpha))
+                alpha = max(alpha, value)
+                if alpha >= beta:
+                    break
 
-                self._memo[state_key] = int(value)
-            return  self._memo[state_key] 
+            self._memo[state_key] = int(value)
+            return int(value)
 
         # Pick best action
         curr = self.player(board)
