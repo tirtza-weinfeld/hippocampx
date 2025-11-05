@@ -2,8 +2,8 @@
   "core.bellman-ford.classic:bellman_ford_classic": {
     "args": [
       "edges",
-      "vertices",
-      "source"
+      "source",
+      "vertices"
     ],
     "code": "def bellman_ford_classic(\n    vertices: list[str], edges: list[tuple[str, str, float]], source: str\n) -> dict[str, float]:\n\n    d = [float(\"inf\")] * (V := len(vertices))\n    d[source] = 0\n\n    for _ in range(V - 1):\n        updated = False\n        for u, v, w in edges:\n            if d[u] + w < d[v]:\n                d[v] = d[u] + w\n                updated = True\n        if not updated:\n            return d\n\n    for u, v, w in edges:\n        if d[u] + w < d[v]:\n            raise Exception(\"Negative-weight cycle\")\n\n    return d",
     "expressions": {
@@ -31,8 +31,8 @@
   },
   "core.bellman-ford.layered_dag:bellman_ford_layered_dag": {
     "args": [
-      "source",
       "edges",
+      "source",
       "vertices"
     ],
     "code": "def bellman_ford_layered_dag(\n    vertices: list[str], edges: list[tuple[str, str, float]], source: str\n) -> dict[str, float]:\n\n    d = {v: float(\"inf\") for v in vertices}\n    d[source], V = 0, len(vertices)\n\n    for k in range(V):\n        d_k = {**d}\n        for u, v, w in edges:\n            if d[u] + w < d_k[v]:\n                d_k[v] = d[u] + w\n        d = d_k\n\n    witnesses = {v for u, v, w in edges if d[u] + w < d[v]}\n\n    if not witnesses:\n        return d\n\n    adj = defaultdict(list)\n    for u, v, _ in edges:\n        adj[u].append(v)\n\n    stack = list(witnesses)\n    reachable = set(witnesses)\n\n    while stack:\n        u = stack.pop()\n        d[u] = float(\"-inf\")\n        for v in adj[u]:\n            if v not in reachable:\n                reachable.add(v)\n                stack.append(v)\n\n    return d",
@@ -66,8 +66,8 @@
   },
   "core.binary-search.bisect_left:simple_bisect_left": {
     "args": [
-      "x",
-      "a"
+      "a",
+      "x"
     ],
     "code": "def simple_bisect_left(a: list[int], x: int):\n\n    l, r = 0, len(a)\n    while l < r:\n        mid = (l + r) // 2\n        if x > a[mid]:\n            l = mid + 1\n        else:\n            r = mid\n    return l",
     "expressions": {
@@ -120,8 +120,8 @@
   },
   "core.dijkstra.algorithm:dijkstra": {
     "args": [
-      "graph",
-      "s"
+      "s",
+      "graph"
     ],
     "code": "def dijkstra(graph: dict[str, dict[str, int]], s: str):\n\n    d = {v: float('inf') for v in graph} | {s: 0}\n    p = {v: None for v in graph}\n\n    pq = [(0, s)]\n\n    while pq:\n        d_u, u = heapq.heappop(pq)\n        if d_u > d[u]:\n            continue\n        for v ,w in graph[u]:\n            if (weight := d_u + w) < d[v]:\n                d[v], p[v] = weight, u\n                heapq.heappush(pq, (weight, v))\n\n    return d, p",
     "file_path": "backend/algorithms/core/dijkstra/algorithm.py",
@@ -144,8 +144,8 @@
   },
   "core.modular-arithmetic.congruent1:congruent1": {
     "args": [
-      "b",
       "a",
+      "b",
       "n"
     ],
     "code": "def congruent1(a: int, b: int, n: int) -> bool:\n    return (a - b) % n == 0",
@@ -179,8 +179,8 @@
   },
   "core.modular-arithmetic.congruent2:congruent2": {
     "args": [
-      "b",
       "a",
+      "b",
       "n"
     ],
     "code": "def congruent2(a: int, b: int, n: int) -> bool:\n    return a % n == b % n",
@@ -214,8 +214,8 @@
   },
   "core.modular-arithmetic.mod:mod": {
     "args": [
-      "b",
-      "a"
+      "a",
+      "b"
     ],
     "code": "def mod(a: int, b: int) -> int:\n    return a % b",
     "file_path": "backend/algorithms/core/modular-arithmetic/mod.py",
@@ -240,111 +240,293 @@
     "name": "b",
     "summary": "the second number"
   },
-  "more.tictactoe.tictactoe copy 2:actions": {
+  "more.tictactoe.game:Game": {
+    "code": "class Game(ABC, Generic[StateType, ActionType, PlayerType]):\n\n    @abstractmethod\n    def initial_state(self) -> StateType:\n        pass\n\n    @abstractmethod\n    def player(self, state: StateType) -> PlayerType:\n        pass\n\n    @abstractmethod\n    def actions(self, state: StateType) -> set[ActionType]:\n        pass\n\n    @abstractmethod\n    def result(self, state: StateType, action: ActionType) -> StateType:\n        pass\n\n    @abstractmethod\n    def terminal(self, state: StateType) -> bool:\n        pass\n\n    @abstractmethod\n    def utility(self, state: StateType) -> int | float:\n        pass\n\n    @abstractmethod\n    def minimax(self, state: StateType) -> ActionType | None:\n        pass",
+    "file_path": "backend/algorithms/more/tictactoe/game.py",
+    "kind": "class",
+    "name": "Game",
+    "summary": "Abstract base class for two-player, zero-sum, deterministic games.\nType Parameters:\n    StateType: The representation of a game state (e.g., board configuration)\n    ActionType: The representation of a move (e.g., (row, col) tuple)\n    PlayerType: The representation of a player (e.g., \"X\", \"O\", or enum)\nAll methods must be implemented by subclasses to define game-specific logic."
+  },
+  "more.tictactoe.game:Game.actions": {
     "args": [
-      "board"
+      "state"
     ],
-    "code": "def actions(board):\n    possible_actions = set()\n    for i in range(3):\n        for j in range(3):\n            if board[i][j] == EMPTY:\n                possible_actions.add((i, j))\n    return possible_actions",
-    "file_path": "backend/algorithms/more/tictactoe/tictactoe copy 2.py",
-    "intuition": "Find all empty cells. Each empty cell is a valid action.",
-    "kind": "function",
-    "label": "def actions(board)",
+    "code": "    def actions(self, state: StateType) -> set[ActionType]:",
+    "file_path": "backend/algorithms/more/tictactoe/game.py",
+    "kind": "method",
+    "label": "def actions(self, state: StateType) -> set[ActionType]",
     "name": "actions",
-    "summary": "Returns set of all possible actions (i, j) available on the board.",
-    "time_complexity": "O(n²) - iterate through all cells"
+    "returns": {
+      "label": "set[ActionType]"
+    },
+    "summary": "Set of all legal actions available in the given state."
   },
-  "more.tictactoe.tictactoe copy 2:initial_state": {
-    "code": "def initial_state():\n    return [[EMPTY, EMPTY, EMPTY],\n            [EMPTY, EMPTY, EMPTY],\n            [EMPTY, EMPTY, EMPTY]]",
-    "file_path": "backend/algorithms/more/tictactoe/tictactoe copy 2.py",
-    "kind": "function",
-    "label": "def initial_state()",
+  "more.tictactoe.game:Game.initial_state": {
+    "args": [
+      "self"
+    ],
+    "code": "    def initial_state(self) -> StateType:",
+    "file_path": "backend/algorithms/more/tictactoe/game.py",
+    "kind": "method",
+    "label": "def initial_state(self) -> StateType",
     "name": "initial_state",
-    "summary": "Returns starting state of the board."
+    "returns": {
+      "label": "StateType"
+    },
+    "summary": "Initial game state with empty/default configuration."
   },
-  "more.tictactoe.tictactoe copy 2:minimax": {
+  "more.tictactoe.game:Game.minimax": {
     "args": [
-      "board"
+      "state"
     ],
-    "code": "def minimax(board):\n    if terminal(board):\n        return None\n\n    memo = {}\n\n    def dp(state, curr_player):\n        state_key = (str(state), curr_player)\n        if state_key not in memo:\n            if terminal(state):\n                w = winner(state)\n                if w == curr_player:\n                    memo[state_key] = 1\n                elif w is None:\n                    memo[state_key] = 0\n                else:\n                    memo[state_key] = -1\n            else:\n                opponent = O if curr_player == X else X\n                memo[state_key] = max(\n                    -dp(result(state, action), opponent) for action in actions(state)\n                )\n        return memo[state_key]\n\n    curr = player(board)\n    opponent = O if curr == X else X\n    return max(actions(board), key=lambda action: -dp(result(board, action), opponent))",
-    "file_path": "backend/algorithms/more/tictactoe/tictactoe copy 2.py",
-    "intuition": "- Minimax (Negamax):\n    - *Paradigm*: Zero-sum game. Each player maximizes their own score.\n    - *Insight*: `dp(state, curr_player)` returns the best score curr_player can achieve from state.\n    - Transition: try all actions, recursively get opponent's best score (negate it), pick max.",
-    "kind": "function",
-    "label": "def minimax(board)",
+    "code": "    def minimax(self, state: StateType) -> ActionType | None:\n        pass",
+    "file_path": "backend/algorithms/more/tictactoe/game.py",
+    "kind": "method",
+    "label": "def minimax(self, state: StateType) -> ActionType | None",
     "name": "minimax",
-    "summary": "Returns the optimal action for the current player on the board.",
-    "time_complexity": "O(b^d) where b is branching factor (~5 avg), d is depth (~9 max)"
+    "returns": {
+      "label": "ActionType | None"
+    },
+    "summary": "Optimal action for the current player using minimax algorithm.\nReturns None if state is terminal."
   },
-  "more.tictactoe.tictactoe copy 2:player": {
+  "more.tictactoe.game:Game.player": {
     "args": [
-      "board"
+      "state"
     ],
-    "code": "def player(board):\n    x_count = sum(row.count(X) for row in board)\n    o_count = sum(row.count(O) for row in board)\n    return X if x_count == o_count else O",
-    "file_path": "backend/algorithms/more/tictactoe/tictactoe copy 2.py",
-    "intuition": "- Count moves: X goes first, so if X and O have equal counts, it's X's turn.\n    - Otherwise, it's O's turn.",
-    "kind": "function",
-    "label": "def player(board)",
+    "code": "    def player(self, state: StateType) -> PlayerType:",
+    "file_path": "backend/algorithms/more/tictactoe/game.py",
+    "kind": "method",
+    "label": "def player(self, state: StateType) -> PlayerType",
     "name": "player",
-    "summary": "Returns player who has the next turn on a board.",
-    "time_complexity": "O(n²) - iterate through all cells"
+    "returns": {
+      "label": "PlayerType"
+    },
+    "summary": "Which player has the next turn in the given state."
   },
-  "more.tictactoe.tictactoe copy 2:result": {
+  "more.tictactoe.game:Game.result": {
     "args": [
-      "board",
+      "state",
       "action"
     ],
-    "code": "def result(board, action):\n    i, j = action\n    if board[i][j] != EMPTY:\n        raise ValueError(\"Invalid action: cell already occupied\")\n\n    current_player = player(board)\n    new_board = [row[:] for row in board]\n    new_board[i][j] = current_player\n    return new_board",
-    "file_path": "backend/algorithms/more/tictactoe/tictactoe copy 2.py",
-    "intuition": "- Create deep copy of board, apply the action for current player.\n    - Validates action is legal.",
-    "kind": "function",
-    "label": "def result(board, action)",
+    "code": "    def result(self, state: StateType, action: ActionType) -> StateType:\n        pass",
+    "file_path": "backend/algorithms/more/tictactoe/game.py",
+    "kind": "method",
+    "label": "def result(self, state: StateType, action: ActionType) -> StateType",
     "name": "result",
-    "summary": "Returns the board that results from making move (i, j) on the board.",
-    "time_complexity": "O(n²) - deep copy the board"
-  },
-  "more.tictactoe.tictactoe copy 2:terminal": {
-    "args": [
-      "board"
+    "raises": [
+      "ValueError: If action is illegal in the given state"
     ],
-    "code": "def terminal(board):\n    if winner(board) is not None:\n        return True\n    return all(cell is not None for row in board for cell in row)",
-    "file_path": "backend/algorithms/more/tictactoe/tictactoe copy 2.py",
-    "intuition": "Game is over if there's a winner or no empty cells remain.",
-    "kind": "function",
-    "label": "def terminal(board)",
+    "returns": {
+      "label": "StateType"
+    },
+    "summary": "New state resulting from applying the action."
+  },
+  "more.tictactoe.game:Game.terminal": {
+    "args": [
+      "state"
+    ],
+    "code": "    def terminal(self, state: StateType) -> bool:",
+    "file_path": "backend/algorithms/more/tictactoe/game.py",
+    "kind": "method",
+    "label": "def terminal(self, state: StateType) -> bool",
     "name": "terminal",
-    "summary": "Returns True if game is over, False otherwise.",
-    "time_complexity": "O(1) for winner check, O(n²) for board full check"
+    "returns": {
+      "label": "bool"
+    },
+    "summary": "True if the game is over, False otherwise."
   },
-  "more.tictactoe.tictactoe copy 2:utility": {
+  "more.tictactoe.game:Game.utility": {
     "args": [
-      "board"
+      "state"
     ],
-    "code": "def utility(board):\n    game_winner = winner(board)\n    if game_winner == X:\n        return 1\n    elif game_winner == O:\n        return -1\n    else:\n        return 0",
-    "file_path": "backend/algorithms/more/tictactoe/tictactoe copy 2.py",
-    "intuition": "Terminal utility value for minimax. X maximizes, O minimizes.",
-    "kind": "function",
-    "label": "def utility(board)",
+    "code": "    def utility(self, state: StateType) -> int | float:\n        pass",
+    "file_path": "backend/algorithms/more/tictactoe/game.py",
+    "kind": "method",
+    "label": "def utility(self, state: StateType) -> int | float",
     "name": "utility",
-    "summary": "Returns 1 if X has won the game, -1 if O has won, 0 otherwise.",
-    "time_complexity": "O(1) - winner check is constant time"
+    "returns": {
+      "label": "int | float"
+    },
+    "summary": "Utility value of a terminal state.\nPositive for first player win, negative for second player win, zero for draw."
   },
-  "more.tictactoe.tictactoe copy 2:winner": {
+  "more.tictactoe.tictactoe copy 2:TicTacToe": {
+    "code": "class TicTacToe(Game[Board, Action, Player]):\n\n    def __init__(self):\n        self._memo: dict[tuple[str, str], int] = {}\n\n    def initial_state(self) -> Board:\n        return [[EMPTY] * 3 for _ in range(3)]\n\n    def player(self, board: Board) -> Player:\n        x_count = sum(row.count(X) for row in board)\n        o_count = sum(row.count(O) for row in board)\n        return X if x_count == o_count else O\n\n    def actions(self, board: Board) -> set[Action]:\n        return {(i, j) for i in range(3) for j in range(3) if board[i][j] == EMPTY}\n\n    def result(self, board: Board, action: Action) -> Board:\n        i, j = action\n        if board[i][j] != EMPTY:\n            raise ValueError(\"Invalid action: cell already occupied\")\n\n        current_player = self.player(board)\n        new_board = [row[:] for row in board]\n        new_board[i][j] = current_player\n        return new_board\n\n    def winner(self, board: Board) -> Player | None:\n        for row in board:\n            if row[0] == row[1] == row[2] != EMPTY:\n                return row[0]\n\n        for j in range(3):\n            if board[0][j] == board[1][j] == board[2][j] != EMPTY:\n                return board[0][j]\n\n        if board[0][0] == board[1][1] == board[2][2] != EMPTY:\n            return board[0][0]\n        if board[0][2] == board[1][1] == board[2][0] != EMPTY:\n            return board[0][2]\n\n        return None\n\n    def terminal(self, board: Board) -> bool:\n        return self.winner(board) is not None or all(cell != EMPTY for row in board for cell in row)\n\n    def utility(self, board: Board) -> int:\n        game_winner = self.winner(board)\n        return 1 if game_winner == X else (-1 if game_winner == O else 0)\n\n    def minimax(self, board: Board) -> Action | None:\n        if self.terminal(board):\n            return None\n\n        def dp(state: Board, curr_player: Player, alpha: float, beta: float) -> int:\n            state_key = (str(state), curr_player)\n            if state_key in self._memo:\n                return self._memo[state_key]\n\n            if self.terminal(state):\n                w = self.winner(state)\n                self._memo[state_key] = 1 if w == curr_player else (0 if w is None else -1)\n                return self._memo[state_key]\n\n            opponent = O if curr_player == X else X\n            value = float('-inf')\n            for action in self.actions(state):\n                value = max(value, -dp(self.result(state, action), opponent, -beta, -alpha))\n                alpha = max(alpha, value)\n                if alpha >= beta:\n                    break\n\n            self._memo[state_key] = int(value)\n            return int(value)\n\n        curr = self.player(board)\n        opponent = O if curr == X else X\n        return max(\n            self.actions(board),\n            key=lambda action: -dp(self.result(board, action), opponent, float('-inf'), float('inf'))\n        )\n\n    def reset_cache(self) -> None:\n        self._memo.clear()",
+    "file_path": "backend/algorithms/more/tictactoe/tictactoe copy 2.py",
+    "kind": "class",
+    "name": "TicTacToe",
+    "summary": "Tic-tac-toe game implementation with optimal AI player.\nGame Rules:\n    - 3x3 grid\n    - Players alternate placing X and O\n    - First to get 3 in a row (horizontal, vertical, diagonal) wins\n    - Draw if board fills without winner\nTime Complexity Summary:\n    - State generation: O(1)\n    - Move generation: O(1) - fixed 3x3 board\n    - Minimax: O(b^d) where b≈5 avg, d≈9 max\n    - With alpha-beta pruning: O(b^(d/2)) average case\n    - Persistent memoization across moves for performance"
+  },
+  "more.tictactoe.tictactoe copy 2:TicTacToe.__init__": {
+    "args": [
+      "self"
+    ],
+    "code": "    def __init__(self):",
+    "file_path": "backend/algorithms/more/tictactoe/tictactoe copy 2.py",
+    "kind": "method",
+    "label": "def __init__(self)",
+    "name": "__init__",
+    "summary": "Initialize with empty memoization cache for persistent optimization."
+  },
+  "more.tictactoe.tictactoe copy 2:TicTacToe.actions": {
     "args": [
       "board"
     ],
-    "code": "def winner(board):\n    for row in board:\n        if row[0] == row[1] == row[2] and row[0] is not None:\n            return row[0]\n\n    for j in range(3):\n        if board[0][j] == board[1][j] == board[2][j] and board[0][j] is not None:\n            return board[0][j]\n\n    if board[0][0] == board[1][1] == board[2][2] and board[0][0] is not None:\n        return board[0][0]\n    if board[0][2] == board[1][1] == board[2][0] and board[0][2] is not None:\n        return board[0][2]\n\n    return None",
+    "code": "    def actions(self, board: Board) -> set[Action]:",
     "file_path": "backend/algorithms/more/tictactoe/tictactoe copy 2.py",
-    "intuition": "- Check all possible winning lines: 3 rows, 3 columns, 2 diagonals.\n    - Return the player if they have 3 in a row.",
-    "kind": "function",
-    "label": "def winner(board)",
+    "kind": "method",
+    "label": "def actions(self, board: Board) -> set[Action]",
+    "name": "actions",
+    "returns": {
+      "label": "set[Action]"
+    },
+    "summary": "All empty cell positions (i, j) on the 3x3 board."
+  },
+  "more.tictactoe.tictactoe copy 2:TicTacToe.initial_state": {
+    "args": [
+      "self"
+    ],
+    "code": "    def initial_state(self) -> Board:",
+    "file_path": "backend/algorithms/more/tictactoe/tictactoe copy 2.py",
+    "kind": "method",
+    "label": "def initial_state(self) -> Board",
+    "name": "initial_state",
+    "returns": {
+      "label": "Board"
+    },
+    "summary": "3x3 grid filled with EMPTY (None) values."
+  },
+  "more.tictactoe.tictactoe copy 2:TicTacToe.minimax": {
+    "args": [
+      "board"
+    ],
+    "code": "    def minimax(self, board: Board) -> Action | None:\n            Args:\n                alpha: α = the best value the maximizing player (X) can guarantee so far\n                beta: β = the best value the minimizing player (O) can guarantee so far\n\n",
+    "file_path": "backend/algorithms/more/tictactoe/tictactoe copy 2.py",
+    "kind": "method",
+    "label": "def minimax(self, board: Board) -> Action | None",
+    "name": "minimax",
+    "returns": {
+      "label": "Action | None"
+    },
+    "summary": "Optimal move using minimax with alpha-beta pruning and memoization."
+  },
+  "more.tictactoe.tictactoe copy 2:TicTacToe.minimax.dp": {
+    "args": [
+      "beta",
+      "state",
+      "curr_player",
+      "alpha"
+    ],
+    "code": "        def dp(state: Board, curr_player: Player, alpha: float, beta: float) -> int:\n            state_key = (str(state), curr_player)\n            if state_key in self._memo:\n                return self._memo[state_key]\n\n            if self.terminal(state):\n                w = self.winner(state)\n                self._memo[state_key] = 1 if w == curr_player else (0 if w is None else -1)\n                return self._memo[state_key]\n\n            opponent = O if curr_player == X else X\n            value = float('-inf')\n            for action in self.actions(state):\n                value = max(value, -dp(self.result(state, action), opponent, -beta, -alpha))\n                alpha = max(alpha, value)\n                if alpha >= beta:\n                    break\n\n            self._memo[state_key] = int(value)\n            return int(value)",
+    "file_path": "backend/algorithms/more/tictactoe/tictactoe copy 2.py",
+    "kind": "method",
+    "label": "def dp(state: Board, curr_player: Player, alpha: float, beta: float) -> int",
+    "name": "dp",
+    "returns": {
+      "label": "int"
+    }
+  },
+  "more.tictactoe.tictactoe copy 2:TicTacToe.minimax.dp.alpha": {
+    "kind": "parameter",
+    "label": "alpha: float",
+    "name": "alpha",
+    "summary": "α = the best value the maximizing player (X) can guarantee so far"
+  },
+  "more.tictactoe.tictactoe copy 2:TicTacToe.minimax.dp.beta": {
+    "kind": "parameter",
+    "label": "beta: float",
+    "name": "beta",
+    "summary": "β = the best value the minimizing player (O) can guarantee so far"
+  },
+  "more.tictactoe.tictactoe copy 2:TicTacToe.player": {
+    "args": [
+      "board"
+    ],
+    "code": "    def player(self, board: Board) -> Player:",
+    "file_path": "backend/algorithms/more/tictactoe/tictactoe copy 2.py",
+    "kind": "method",
+    "label": "def player(self, board: Board) -> Player",
+    "name": "player",
+    "returns": {
+      "label": "Player"
+    },
+    "summary": "X if move counts are equal (X goes first), otherwise O."
+  },
+  "more.tictactoe.tictactoe copy 2:TicTacToe.reset_cache": {
+    "args": [
+      "self"
+    ],
+    "code": "    def reset_cache(self) -> None:",
+    "file_path": "backend/algorithms/more/tictactoe/tictactoe copy 2.py",
+    "kind": "method",
+    "label": "def reset_cache(self) -> None",
+    "name": "reset_cache",
+    "returns": {
+      "label": "None"
+    },
+    "summary": "Clear the memoization cache (useful when starting a new game)."
+  },
+  "more.tictactoe.tictactoe copy 2:TicTacToe.result": {
+    "args": [
+      "action",
+      "board"
+    ],
+    "code": "    def result(self, board: Board, action: Action) -> Board:",
+    "file_path": "backend/algorithms/more/tictactoe/tictactoe copy 2.py",
+    "kind": "method",
+    "label": "def result(self, board: Board, action: Action) -> Board",
+    "name": "result",
+    "returns": {
+      "label": "Board"
+    },
+    "summary": "Deep copy of board with current player's mark at action position."
+  },
+  "more.tictactoe.tictactoe copy 2:TicTacToe.terminal": {
+    "args": [
+      "board"
+    ],
+    "code": "    def terminal(self, board: Board) -> bool:",
+    "file_path": "backend/algorithms/more/tictactoe/tictactoe copy 2.py",
+    "kind": "method",
+    "label": "def terminal(self, board: Board) -> bool",
+    "name": "terminal",
+    "returns": {
+      "label": "bool"
+    },
+    "summary": "True if there's a winner or board is full."
+  },
+  "more.tictactoe.tictactoe copy 2:TicTacToe.utility": {
+    "args": [
+      "board"
+    ],
+    "code": "    def utility(self, board: Board) -> int:",
+    "file_path": "backend/algorithms/more/tictactoe/tictactoe copy 2.py",
+    "kind": "method",
+    "label": "def utility(self, board: Board) -> int",
+    "name": "utility",
+    "returns": {
+      "label": "int"
+    },
+    "summary": "1 if X won, -1 if O won, 0 for draw."
+  },
+  "more.tictactoe.tictactoe copy 2:TicTacToe.winner": {
+    "args": [
+      "board"
+    ],
+    "code": "    def winner(self, board: Board) -> Player | None:",
+    "file_path": "backend/algorithms/more/tictactoe/tictactoe copy 2.py",
+    "kind": "method",
+    "label": "def winner(self, board: Board) -> Player | None",
     "name": "winner",
-    "summary": "Returns the winner of the game, if there is one.",
-    "time_complexity": "O(1) - constant 8 lines to check"
+    "returns": {
+      "label": "Player | None"
+    },
+    "summary": "Player with 3-in-a-row (horizontal, vertical, or diagonal), or None."
   },
   "more.tictactoe.tictactoe copy:actions": {
     "args": [
       "board"
     ],
-    "code": "def actions(board):\n    possible_actions = set()\n    for i in range(3):\n        for j in range(3):\n            if board[i][j] == EMPTY:\n                possible_actions.add((i, j))\n    return possible_actions",
+    "code": "def actions(board):\n    return {(i, j) for i in range(3) for j in range(3) if board[i][j] == EMPTY}",
     "file_path": "backend/algorithms/more/tictactoe/tictactoe copy.py",
     "intuition": "Find all empty cells. Each empty cell is a valid action.",
     "kind": "function",
@@ -354,25 +536,25 @@
     "time_complexity": "O(n²) - iterate through all cells"
   },
   "more.tictactoe.tictactoe copy:initial_state": {
-    "code": "def initial_state():\n    return [[EMPTY, EMPTY, EMPTY],\n            [EMPTY, EMPTY, EMPTY],\n            [EMPTY, EMPTY, EMPTY]]",
+    "code": "def initial_state():\n    return [[EMPTY] * 3 for _ in range(3)]",
     "file_path": "backend/algorithms/more/tictactoe/tictactoe copy.py",
     "kind": "function",
     "label": "def initial_state()",
     "name": "initial_state",
-    "summary": "Returns starting state of the board."
+    "summary": "Returns starting state of the board\n(**State**: A configuration of an agent in its environment.\n**Initial State**: The state from which the search algorithm starts.)"
   },
   "more.tictactoe.tictactoe copy:minimax": {
     "args": [
       "board"
     ],
-    "code": "def minimax(board):\n    if terminal(board):\n        return None\n\n    memo = {}\n\n    def dp(state, curr_player):\n        state_key = (str(state), curr_player)\n        if state_key not in memo:\n            if terminal(state):\n                w = winner(state)\n                if w == curr_player:\n                    memo[state_key] = 1\n                elif w is None:\n                    memo[state_key] = 0\n                else:\n                    memo[state_key] = -1\n            else:\n                opponent = O if curr_player == X else X\n                memo[state_key] = max(\n                    -dp(result(state, action), opponent) for action in actions(state)\n                )\n        return memo[state_key]\n\n    curr = player(board)\n    opponent = O if curr == X else X\n    return max(actions(board), key=lambda action: -dp(result(board, action), opponent))",
+    "code": "def minimax(board):\n    if terminal(board):\n        return None\n\n    memo = {}\n\n    def dp(state, curr_player, alpha, beta):\n        state_key = (str(state), curr_player)\n        if state_key in memo:\n            return memo[state_key]\n\n        if terminal(state):\n            w = winner(state)\n            memo[state_key] = 1 if w == curr_player else (0 if w is None else -1)\n            return memo[state_key]\n\n        opponent = O if curr_player == X else X\n        value = float('-inf')\n        for action in actions(state):\n            value = max(value, -dp(result(state, action), opponent, -beta, -alpha))\n            alpha = max(alpha, value)\n            if alpha >= beta:\n                break\n\n        memo[state_key] = value\n        return value\n\n    curr = player(board)\n    opponent = O if curr == X else X\n    return max(\n        actions(board),\n        key=lambda action: -dp(result(board, action), opponent, float('-inf'), float('inf'))\n    )",
     "file_path": "backend/algorithms/more/tictactoe/tictactoe copy.py",
-    "intuition": "- Minimax (Negamax):\n    - *Paradigm*: Zero-sum game. Each player maximizes their own score.\n    - *Insight*: `dp(state, curr_player)` returns the best score curr_player can achieve from state.\n    - Transition: try all actions, recursively get opponent's best score (negate it), pick max.",
+    "intuition": "- Minimax with Alpha-Beta Pruning:\n    - *Paradigm*: Zero-sum game. Each player maximizes their own score.\n    - *Insight*: `dp(state, curr_player, alpha, beta)` returns best score with pruning.\n    - Alpha-beta prunes when alpha ≥ beta. Memoization caches repeated states.",
     "kind": "function",
     "label": "def minimax(board)",
     "name": "minimax",
     "summary": "Returns the optimal action for the current player on the board.",
-    "time_complexity": "O(b^d) where b is branching factor (~5 avg), d is depth (~9 max)"
+    "time_complexity": "O(b^(d/2)) average case with pruning\nwhere b is branching factor (~5 avg), d is depth (~9 max)"
   },
   "more.tictactoe.tictactoe copy:player": {
     "args": [
@@ -405,7 +587,7 @@
     "args": [
       "board"
     ],
-    "code": "def terminal(board):\n    if winner(board) is not None:\n        return True\n    return all(cell is not None for row in board for cell in row)",
+    "code": "def terminal(board):\n    return winner(board) is not None or all(cell != EMPTY for row in board for cell in row)",
     "file_path": "backend/algorithms/more/tictactoe/tictactoe copy.py",
     "intuition": "Game is over if there's a winner or no empty cells remain.",
     "kind": "function",
@@ -418,7 +600,7 @@
     "args": [
       "board"
     ],
-    "code": "def utility(board):\n    game_winner = winner(board)\n    if game_winner == X:\n        return 1\n    elif game_winner == O:\n        return -1\n    else:\n        return 0",
+    "code": "def utility(board):\n    game_winner = winner(board)\n    return 1 if game_winner == X else (-1 if game_winner == O else 0)",
     "file_path": "backend/algorithms/more/tictactoe/tictactoe copy.py",
     "intuition": "Terminal utility value for minimax. X maximizes, O minimizes.",
     "kind": "function",
@@ -431,7 +613,7 @@
     "args": [
       "board"
     ],
-    "code": "def winner(board):\n    for row in board:\n        if row[0] == row[1] == row[2] and row[0] is not None:\n            return row[0]\n\n    for j in range(3):\n        if board[0][j] == board[1][j] == board[2][j] and board[0][j] is not None:\n            return board[0][j]\n\n    if board[0][0] == board[1][1] == board[2][2] and board[0][0] is not None:\n        return board[0][0]\n    if board[0][2] == board[1][1] == board[2][0] and board[0][2] is not None:\n        return board[0][2]\n\n    return None",
+    "code": "def winner(board):\n    for row in board:\n        if row[0] == row[1] == row[2] != EMPTY:\n            return row[0]\n\n    for j in range(3):\n        if board[0][j] == board[1][j] == board[2][j] != EMPTY:\n            return board[0][j]\n\n    if board[0][0] == board[1][1] == board[2][2] != EMPTY:\n        return board[0][0]\n    if board[0][2] == board[1][1] == board[2][0] != EMPTY:\n        return board[0][2]\n\n    return None",
     "file_path": "backend/algorithms/more/tictactoe/tictactoe copy.py",
     "intuition": "- Check all possible winning lines: 3 rows, 3 columns, 2 diagonals.\n    - Return the player if they have 3 in a row.",
     "kind": "function",
@@ -440,12 +622,461 @@
     "summary": "Returns the winner of the game, if there is one.",
     "time_complexity": "O(1) - constant 8 lines to check"
   },
-  "more.tictactoe.tictactoe:actions": {
+  "more.tictactoe.tictactoe-minimax:TicTacToe": {
+    "code": "class TicTacToe(Game[Board, Action, Player]):\n\n    def __init__(self):\n        self._memo: dict[tuple[str, str], int] = {}\n\n    def initial_state(self) -> Board:\n        return [[EMPTY] * 3 for _ in range(3)]\n\n    def player(self, board: Board) -> Player:\n        x_count = sum(row.count(X) for row in board)\n        o_count = sum(row.count(O) for row in board)\n        return X if x_count == o_count else O\n\n    def actions(self, board: Board) -> set[Action]:\n        return {(i, j) for i in range(3) for j in range(3) if board[i][j] == EMPTY}\n\n    def result(self, board: Board, action: Action) -> Board:\n        i, j = action\n        if board[i][j] != EMPTY:\n            raise ValueError(\"Invalid action: cell already occupied\")\n\n        current_player = self.player(board)\n        new_board = [row[:] for row in board]\n        new_board[i][j] = current_player\n        return new_board\n\n    def winner(self, board: Board) -> Player | None:\n        for row in board:\n            if row[0] == row[1] == row[2] != EMPTY:\n                return row[0]\n\n        for j in range(3):\n            if board[0][j] == board[1][j] == board[2][j] != EMPTY:\n                return board[0][j]\n\n        if board[0][0] == board[1][1] == board[2][2] != EMPTY:\n            return board[0][0]\n        if board[0][2] == board[1][1] == board[2][0] != EMPTY:\n            return board[0][2]\n\n        return None\n\n    def terminal(self, board: Board) -> bool:\n        return self.winner(board) is not None or all(cell != EMPTY for row in board for cell in row)\n\n    def utility(self, board: Board) -> int:\n        game_winner = self.winner(board)\n        return 1 if game_winner == X else (-1 if game_winner == O else 0)\n\n    def minimax(self, board: Board) -> Action | None:\n        if self.terminal(board):\n            return None\n\n        def dp(state: Board, curr_player: Player, alpha: float, beta: float) -> int:\n            key = (str(state), curr_player)\n            if key in self._memo:\n                return self._memo[key]\n\n            if self.terminal(state):\n                val = self.utility(state)\n                self._memo[key] = val\n                return val\n\n            maximizing = (curr_player == X)\n            next_player = O if curr_player == X else X\n\n            if maximizing:\n                value = float(\"-inf\")\n                for action in self.actions(state):\n                    value = max(value, dp(self.result(state, action), next_player, alpha, beta))\n                    alpha = max(alpha, value)\n                    if alpha >= beta:\n                        break\n            else:\n                value = float(\"inf\")\n                for action in self.actions(state):\n                    value = min(value, dp(self.result(state, action), next_player, alpha, beta))\n                    beta = min(beta, value)\n                    if alpha >= beta:\n                        break\n\n            self._memo[key] = int(value)\n            return self._memo[key]\n\n        curr = self.player(board)\n        next_player = O if curr == X else X\n\n        if curr == X:\n            return max(\n                self.actions(board),\n                key=lambda action: dp(self.result(board, action), next_player, float(\"-inf\"), float(\"inf\")),\n            )\n        else:\n            return min(\n                self.actions(board),\n                key=lambda action: dp(self.result(board, action), next_player, float(\"-inf\"), float(\"inf\")),\n            )\n    def reset_cache(self) -> None:\n        self._memo.clear()",
+    "file_path": "backend/algorithms/more/tictactoe/tictactoe-minimax.py",
+    "kind": "class",
+    "name": "TicTacToe",
+    "summary": "Tic-tac-toe game implementation with optimal AI player.\nGame Rules:\n    - 3x3 grid\n    - Players alternate placing X and O\n    - First to get 3 in a row (horizontal, vertical, diagonal) wins\n    - Draw if board fills without winner\nTime Complexity Summary:\n    - State generation: O(1)\n    - Move generation: O(1) - fixed 3x3 board\n    - Minimax: O(b^d) where b≈5 avg, d≈9 max\n    - With alpha-beta pruning: O(b^(d/2)) average case\n    - Persistent memoization across moves for performance"
+  },
+  "more.tictactoe.tictactoe-minimax:TicTacToe.__init__": {
+    "args": [
+      "self"
+    ],
+    "code": "    def __init__(self):",
+    "file_path": "backend/algorithms/more/tictactoe/tictactoe-minimax.py",
+    "kind": "method",
+    "label": "def __init__(self)",
+    "name": "__init__",
+    "summary": "Initialize with empty memoization cache for persistent optimization."
+  },
+  "more.tictactoe.tictactoe-minimax:TicTacToe.actions": {
     "args": [
       "board"
     ],
-    "code": "def actions(board):\n    possible_actions = set()\n    for i in range(3):\n        for j in range(3):\n            if board[i][j] == EMPTY:\n                possible_actions.add((i, j))\n    return possible_actions",
+    "code": "    def actions(self, board: Board) -> set[Action]:",
+    "file_path": "backend/algorithms/more/tictactoe/tictactoe-minimax.py",
+    "kind": "method",
+    "label": "def actions(self, board: Board) -> set[Action]",
+    "name": "actions",
+    "returns": {
+      "label": "set[Action]"
+    },
+    "summary": "All empty cell positions (i, j) on the 3x3 board."
+  },
+  "more.tictactoe.tictactoe-minimax:TicTacToe.initial_state": {
+    "args": [
+      "self"
+    ],
+    "code": "    def initial_state(self) -> Board:",
+    "file_path": "backend/algorithms/more/tictactoe/tictactoe-minimax.py",
+    "kind": "method",
+    "label": "def initial_state(self) -> Board",
+    "name": "initial_state",
+    "returns": {
+      "label": "Board"
+    },
+    "summary": "3x3 grid filled with EMPTY (None) values."
+  },
+  "more.tictactoe.tictactoe-minimax:TicTacToe.minimax": {
+    "args": [
+      "board"
+    ],
+    "code": "    def minimax(self, board: Board) -> Action | None:",
+    "file_path": "backend/algorithms/more/tictactoe/tictactoe-minimax.py",
+    "kind": "method",
+    "label": "def minimax(self, board: Board) -> Action | None",
+    "name": "minimax",
+    "returns": {
+      "label": "Action | None"
+    },
+    "summary": "Optimal move using classical minimax with alpha-beta pruning."
+  },
+  "more.tictactoe.tictactoe-minimax:TicTacToe.player": {
+    "args": [
+      "board"
+    ],
+    "code": "    def player(self, board: Board) -> Player:",
+    "file_path": "backend/algorithms/more/tictactoe/tictactoe-minimax.py",
+    "kind": "method",
+    "label": "def player(self, board: Board) -> Player",
+    "name": "player",
+    "returns": {
+      "label": "Player"
+    },
+    "summary": "X if move counts are equal (X goes first), otherwise O."
+  },
+  "more.tictactoe.tictactoe-minimax:TicTacToe.reset_cache": {
+    "args": [
+      "self"
+    ],
+    "code": "    def reset_cache(self) -> None:",
+    "file_path": "backend/algorithms/more/tictactoe/tictactoe-minimax.py",
+    "kind": "method",
+    "label": "def reset_cache(self) -> None",
+    "name": "reset_cache",
+    "returns": {
+      "label": "None"
+    },
+    "summary": "Clear the memoization cache (useful when starting a new game)."
+  },
+  "more.tictactoe.tictactoe-minimax:TicTacToe.result": {
+    "args": [
+      "action",
+      "board"
+    ],
+    "code": "    def result(self, board: Board, action: Action) -> Board:",
+    "file_path": "backend/algorithms/more/tictactoe/tictactoe-minimax.py",
+    "kind": "method",
+    "label": "def result(self, board: Board, action: Action) -> Board",
+    "name": "result",
+    "returns": {
+      "label": "Board"
+    },
+    "summary": "Deep copy of board with current player's mark at action position."
+  },
+  "more.tictactoe.tictactoe-minimax:TicTacToe.terminal": {
+    "args": [
+      "board"
+    ],
+    "code": "    def terminal(self, board: Board) -> bool:",
+    "file_path": "backend/algorithms/more/tictactoe/tictactoe-minimax.py",
+    "kind": "method",
+    "label": "def terminal(self, board: Board) -> bool",
+    "name": "terminal",
+    "returns": {
+      "label": "bool"
+    },
+    "summary": "True if there's a winner or board is full."
+  },
+  "more.tictactoe.tictactoe-minimax:TicTacToe.utility": {
+    "args": [
+      "board"
+    ],
+    "code": "    def utility(self, board: Board) -> int:",
+    "file_path": "backend/algorithms/more/tictactoe/tictactoe-minimax.py",
+    "kind": "method",
+    "label": "def utility(self, board: Board) -> int",
+    "name": "utility",
+    "returns": {
+      "label": "int"
+    },
+    "summary": "1 if X won, -1 if O won, 0 for draw."
+  },
+  "more.tictactoe.tictactoe-minimax:TicTacToe.winner": {
+    "args": [
+      "board"
+    ],
+    "code": "    def winner(self, board: Board) -> Player | None:",
+    "file_path": "backend/algorithms/more/tictactoe/tictactoe-minimax.py",
+    "kind": "method",
+    "label": "def winner(self, board: Board) -> Player | None",
+    "name": "winner",
+    "returns": {
+      "label": "Player | None"
+    },
+    "summary": "Player with 3-in-a-row (horizontal, vertical, or diagonal), or None."
+  },
+  "more.tictactoe.tictactoe:TicTacToe": {
+    "code": "class TicTacToe(Game[Board, Action, Player]):\n\n    def __init__(self):\n        self._memo: dict[tuple[str, str], int] = {}\n\n    def initial_state(self) -> Board:\n        return [[EMPTY] * 3 for _ in range(3)]\n\n    def player(self, board: Board) -> Player:\n        x_count = sum(row.count(X) for row in board)\n        o_count = sum(row.count(O) for row in board)\n        return X if x_count == o_count else O\n\n    def actions(self, board: Board) -> set[Action]:\n        return {(i, j) for i in range(3) for j in range(3) if board[i][j] == EMPTY}\n\n    def result(self, board: Board, action: Action) -> Board:\n        i, j = action\n        if board[i][j] != EMPTY:\n            raise ValueError(\"Invalid action: cell already occupied\")\n\n        current_player = self.player(board)\n        new_board = [row[:] for row in board]\n        new_board[i][j] = current_player\n        return new_board\n\n    def winner(self, board: Board) -> Player | None:\n        for row in board:\n            if row[0] == row[1] == row[2] != EMPTY:\n                return row[0]\n\n        for j in range(3):\n            if board[0][j] == board[1][j] == board[2][j] != EMPTY:\n                return board[0][j]\n\n        if board[0][0] == board[1][1] == board[2][2] != EMPTY:\n            return board[0][0]\n        if board[0][2] == board[1][1] == board[2][0] != EMPTY:\n            return board[0][2]\n\n        return None\n\n    def terminal(self, board: Board) -> bool:\n        return self.winner(board) is not None or all(cell != EMPTY for row in board for cell in row)\n\n    def utility(self, board: Board) -> int:\n        game_winner = self.winner(board)\n        return 1 if game_winner == X else (-1 if game_winner == O else 0)\n\n    def minimax(self, board: Board) -> Action | None:\n        if self.terminal(board):\n            return None\n\n        def dp(state: Board, curr_player: Player, alpha: float, beta: float) -> int:\n            state_key = (str(state), curr_player)\n            if state_key not in self._memo:\n\n                if self.terminal(state):\n                    w = self.winner(state)\n                    self._memo[state_key] = 1 if w == curr_player else (0 if w is None else -1)\n                    return self._memo[state_key]\n\n                opponent = O if curr_player == X else X\n                value = float('-inf')\n                for action in self.actions(state):\n                    value = max(value, -dp(self.result(state, action), opponent, -beta, -alpha))\n                    alpha = max(alpha, value)\n                    if alpha >= beta:\n                        break\n\n                self._memo[state_key] = int(value)\n            return  self._memo[state_key] \n\n        curr = self.player(board)\n        opponent = O if curr == X else X\n        return max(\n            self.actions(board),\n            key=lambda action: -dp(self.result(board, action), opponent, float('-inf'), float('inf'))\n        )\n\n    def reset_cache(self) -> None:\n        self._memo.clear()",
     "file_path": "backend/algorithms/more/tictactoe/tictactoe.py",
+    "kind": "class",
+    "name": "TicTacToe",
+    "summary": "Tic-tac-toe game implementation with optimal AI player.\nGame Rules:\n    - 3x3 grid\n    - Players alternate placing X and O\n    - First to get 3 in a row (horizontal, vertical, diagonal) wins\n    - Draw if board fills without winner\nTime Complexity Summary:\n    - State generation: O(1)\n    - Move generation: O(1) - fixed 3x3 board\n    - Minimax: O(b^d) where b≈5 avg, d≈9 max\n    - With alpha-beta pruning: O(b^(d/2)) average case\n    - Persistent memoization across moves for performance"
+  },
+  "more.tictactoe.tictactoe:TicTacToe.__init__": {
+    "args": [
+      "self"
+    ],
+    "code": "    def __init__(self):",
+    "file_path": "backend/algorithms/more/tictactoe/tictactoe.py",
+    "kind": "method",
+    "label": "def __init__(self)",
+    "name": "__init__",
+    "summary": "Initialize with empty memoization cache for persistent optimization."
+  },
+  "more.tictactoe.tictactoe:TicTacToe.actions": {
+    "args": [
+      "board"
+    ],
+    "code": "    def actions(self, board: Board) -> set[Action]:",
+    "file_path": "backend/algorithms/more/tictactoe/tictactoe.py",
+    "kind": "method",
+    "label": "def actions(self, board: Board) -> set[Action]",
+    "name": "actions",
+    "returns": {
+      "label": "set[Action]"
+    },
+    "summary": "All empty cell positions (i, j) on the 3x3 board."
+  },
+  "more.tictactoe.tictactoe:TicTacToe.initial_state": {
+    "args": [
+      "self"
+    ],
+    "code": "    def initial_state(self) -> Board:",
+    "file_path": "backend/algorithms/more/tictactoe/tictactoe.py",
+    "kind": "method",
+    "label": "def initial_state(self) -> Board",
+    "name": "initial_state",
+    "returns": {
+      "label": "Board"
+    },
+    "summary": "3x3 grid filled with EMPTY (None) values."
+  },
+  "more.tictactoe.tictactoe:TicTacToe.minimax": {
+    "args": [
+      "board"
+    ],
+    "code": "    def minimax(self, board: Board) -> Action | None:\n            Args:\n                alpha: α = the best value the maximizing player (X) can guarantee so far\n                beta: β = the best value the minimizing player (O) can guarantee so far\n\n",
+    "file_path": "backend/algorithms/more/tictactoe/tictactoe.py",
+    "kind": "method",
+    "label": "def minimax(self, board: Board) -> Action | None",
+    "name": "minimax",
+    "returns": {
+      "label": "Action | None"
+    },
+    "summary": "Optimal move using minimax with alpha-beta pruning and memoization."
+  },
+  "more.tictactoe.tictactoe:TicTacToe.minimax.dp": {
+    "args": [
+      "beta",
+      "state",
+      "curr_player",
+      "alpha"
+    ],
+    "code": "        def dp(state: Board, curr_player: Player, alpha: float, beta: float) -> int:\n            state_key = (str(state), curr_player)\n            if state_key not in self._memo:\n\n                if self.terminal(state):\n                    w = self.winner(state)\n                    self._memo[state_key] = 1 if w == curr_player else (0 if w is None else -1)\n                    return self._memo[state_key]\n\n                opponent = O if curr_player == X else X\n                value = float('-inf')\n                for action in self.actions(state):\n                    value = max(value, -dp(self.result(state, action), opponent, -beta, -alpha))\n                    alpha = max(alpha, value)\n                    if alpha >= beta:\n                        break\n\n                self._memo[state_key] = int(value)\n            return  self._memo[state_key] ",
+    "file_path": "backend/algorithms/more/tictactoe/tictactoe.py",
+    "kind": "method",
+    "label": "def dp(state: Board, curr_player: Player, alpha: float, beta: float) -> int",
+    "name": "dp",
+    "returns": {
+      "label": "int"
+    }
+  },
+  "more.tictactoe.tictactoe:TicTacToe.minimax.dp.alpha": {
+    "kind": "parameter",
+    "label": "alpha: float",
+    "name": "alpha",
+    "summary": "α = the best value the maximizing player (X) can guarantee so far"
+  },
+  "more.tictactoe.tictactoe:TicTacToe.minimax.dp.beta": {
+    "kind": "parameter",
+    "label": "beta: float",
+    "name": "beta",
+    "summary": "β = the best value the minimizing player (O) can guarantee so far"
+  },
+  "more.tictactoe.tictactoe:TicTacToe.player": {
+    "args": [
+      "board"
+    ],
+    "code": "    def player(self, board: Board) -> Player:",
+    "file_path": "backend/algorithms/more/tictactoe/tictactoe.py",
+    "kind": "method",
+    "label": "def player(self, board: Board) -> Player",
+    "name": "player",
+    "returns": {
+      "label": "Player"
+    },
+    "summary": "X if move counts are equal (X goes first), otherwise O."
+  },
+  "more.tictactoe.tictactoe:TicTacToe.reset_cache": {
+    "args": [
+      "self"
+    ],
+    "code": "    def reset_cache(self) -> None:",
+    "file_path": "backend/algorithms/more/tictactoe/tictactoe.py",
+    "kind": "method",
+    "label": "def reset_cache(self) -> None",
+    "name": "reset_cache",
+    "returns": {
+      "label": "None"
+    },
+    "summary": "Clear the memoization cache (useful when starting a new game)."
+  },
+  "more.tictactoe.tictactoe:TicTacToe.result": {
+    "args": [
+      "action",
+      "board"
+    ],
+    "code": "    def result(self, board: Board, action: Action) -> Board:",
+    "file_path": "backend/algorithms/more/tictactoe/tictactoe.py",
+    "kind": "method",
+    "label": "def result(self, board: Board, action: Action) -> Board",
+    "name": "result",
+    "returns": {
+      "label": "Board"
+    },
+    "summary": "Deep copy of board with current player's mark at action position."
+  },
+  "more.tictactoe.tictactoe:TicTacToe.terminal": {
+    "args": [
+      "board"
+    ],
+    "code": "    def terminal(self, board: Board) -> bool:",
+    "file_path": "backend/algorithms/more/tictactoe/tictactoe.py",
+    "kind": "method",
+    "label": "def terminal(self, board: Board) -> bool",
+    "name": "terminal",
+    "returns": {
+      "label": "bool"
+    },
+    "summary": "True if there's a winner or board is full."
+  },
+  "more.tictactoe.tictactoe:TicTacToe.utility": {
+    "args": [
+      "board"
+    ],
+    "code": "    def utility(self, board: Board) -> int:",
+    "file_path": "backend/algorithms/more/tictactoe/tictactoe.py",
+    "kind": "method",
+    "label": "def utility(self, board: Board) -> int",
+    "name": "utility",
+    "returns": {
+      "label": "int"
+    },
+    "summary": "1 if X won, -1 if O won, 0 for draw."
+  },
+  "more.tictactoe.tictactoe:TicTacToe.winner": {
+    "args": [
+      "board"
+    ],
+    "code": "    def winner(self, board: Board) -> Player | None:",
+    "file_path": "backend/algorithms/more/tictactoe/tictactoe.py",
+    "kind": "method",
+    "label": "def winner(self, board: Board) -> Player | None",
+    "name": "winner",
+    "returns": {
+      "label": "Player | None"
+    },
+    "summary": "Player with 3-in-a-row (horizontal, vertical, or diagonal), or None."
+  },
+  "more.tictactoe.tictactoe_no_player_in_state:TicTacToe": {
+    "code": "class TicTacToe(Game[Board, Action, Player]):\n\n    def __init__(self):\n        self._memo: dict[tuple[str, str], int] = {}\n\n    def initial_state(self) -> Board:\n        return [[EMPTY] * 3 for _ in range(3)]\n\n    def player(self, board: Board) -> Player:\n        x_count = sum(row.count(X) for row in board)\n        o_count = sum(row.count(O) for row in board)\n        return X if x_count == o_count else O\n\n    def actions(self, board: Board) -> set[Action]:\n        return {(i, j) for i in range(3) for j in range(3) if board[i][j] == EMPTY}\n\n    def result(self, board: Board, action: Action) -> Board:\n        i, j = action\n        if board[i][j] != EMPTY:\n            raise ValueError(\"Invalid action: cell already occupied\")\n\n        current_player = self.player(board)\n        new_board = [row[:] for row in board]\n        new_board[i][j] = current_player\n        return new_board\n\n    def winner(self, board: Board) -> Player | None:\n        for row in board:\n            if row[0] == row[1] == row[2] != EMPTY:\n                return row[0]\n\n        for j in range(3):\n            if board[0][j] == board[1][j] == board[2][j] != EMPTY:\n                return board[0][j]\n\n        if board[0][0] == board[1][1] == board[2][2] != EMPTY:\n            return board[0][0]\n        if board[0][2] == board[1][1] == board[2][0] != EMPTY:\n            return board[0][2]\n\n        return None\n\n    def terminal(self, board: Board) -> bool:\n        return self.winner(board) is not None or all(cell != EMPTY for row in board for cell in row)\n\n    def utility(self, board: Board) -> int:\n        game_winner = self.winner(board)\n        return 1 if game_winner == X else (-1 if game_winner == O else 0)\n\n    def minimax(self, board: Board) -> Action | None:\n        if self.terminal(board):\n            return None\n\n        memo: dict[str, int] = {}\n\n        def eval_state(state: Board, alpha: int, beta: int) -> int:\n            key = str(state)\n            if key in memo:\n                return memo[key]\n            if self.terminal(state):\n                v = self.utility(state)\n                memo[key] = v\n                return v\n\n            curr = self.player(state)\n            if curr == X:\n                value = -2\n                for action in self.actions(state):\n                    value = max(value, eval_state(self.result(state, action), alpha, beta))\n                    alpha = max(alpha, value)\n                    if alpha >= beta:\n                        break\n            else:\n                value = 2\n                for action in self.actions(state):\n                    value = min(value, eval_state(self.result(state, action), alpha, beta))\n                    beta = min(beta, value)\n                    if alpha >= beta:\n                        break\n\n            memo[key] = value\n            return value\n\n        curr = self.player(board)\n        acts = self.actions(board)\n        if curr == X:\n            return max(acts, key=lambda a: eval_state(self.result(board, a), -2, 2))\n        else:\n            return min(acts, key=lambda a: eval_state(self.result(board, a), -2, 2))\n\n    def reset_cache(self) -> None:\n        self._memo.clear()",
+    "file_path": "backend/algorithms/more/tictactoe/tictactoe_no_player_in_state.py",
+    "kind": "class",
+    "name": "TicTacToe",
+    "summary": "Tic-tac-toe game implementation with optimal AI player.\nGame Rules:\n    - 3x3 grid\n    - Players alternate placing X and O\n    - First to get 3 in a row (horizontal, vertical, diagonal) wins\n    - Draw if board fills without winner\nTime Complexity Summary:\n    - State generation: O(1)\n    - Move generation: O(1) - fixed 3x3 board\n    - Minimax: O(b^d) where b≈5 avg, d≈9 max\n    - With alpha-beta pruning: O(b^(d/2)) average case\n    - Persistent memoization across moves for performance"
+  },
+  "more.tictactoe.tictactoe_no_player_in_state:TicTacToe.__init__": {
+    "args": [
+      "self"
+    ],
+    "code": "    def __init__(self):",
+    "file_path": "backend/algorithms/more/tictactoe/tictactoe_no_player_in_state.py",
+    "kind": "method",
+    "label": "def __init__(self)",
+    "name": "__init__",
+    "summary": "Initialize with empty memoization cache for persistent optimization."
+  },
+  "more.tictactoe.tictactoe_no_player_in_state:TicTacToe.actions": {
+    "args": [
+      "board"
+    ],
+    "code": "    def actions(self, board: Board) -> set[Action]:",
+    "file_path": "backend/algorithms/more/tictactoe/tictactoe_no_player_in_state.py",
+    "kind": "method",
+    "label": "def actions(self, board: Board) -> set[Action]",
+    "name": "actions",
+    "returns": {
+      "label": "set[Action]"
+    },
+    "summary": "All empty cell positions (i, j) on the 3x3 board."
+  },
+  "more.tictactoe.tictactoe_no_player_in_state:TicTacToe.initial_state": {
+    "args": [
+      "self"
+    ],
+    "code": "    def initial_state(self) -> Board:",
+    "file_path": "backend/algorithms/more/tictactoe/tictactoe_no_player_in_state.py",
+    "kind": "method",
+    "label": "def initial_state(self) -> Board",
+    "name": "initial_state",
+    "returns": {
+      "label": "Board"
+    },
+    "summary": "3x3 grid filled with EMPTY (None) values."
+  },
+  "more.tictactoe.tictactoe_no_player_in_state:TicTacToe.player": {
+    "args": [
+      "board"
+    ],
+    "code": "    def player(self, board: Board) -> Player:",
+    "file_path": "backend/algorithms/more/tictactoe/tictactoe_no_player_in_state.py",
+    "kind": "method",
+    "label": "def player(self, board: Board) -> Player",
+    "name": "player",
+    "returns": {
+      "label": "Player"
+    },
+    "summary": "X if move counts are equal (X goes first), otherwise O."
+  },
+  "more.tictactoe.tictactoe_no_player_in_state:TicTacToe.reset_cache": {
+    "args": [
+      "self"
+    ],
+    "code": "    def reset_cache(self) -> None:",
+    "file_path": "backend/algorithms/more/tictactoe/tictactoe_no_player_in_state.py",
+    "kind": "method",
+    "label": "def reset_cache(self) -> None",
+    "name": "reset_cache",
+    "returns": {
+      "label": "None"
+    },
+    "summary": "Clear the memoization cache (useful when starting a new game)."
+  },
+  "more.tictactoe.tictactoe_no_player_in_state:TicTacToe.result": {
+    "args": [
+      "action",
+      "board"
+    ],
+    "code": "    def result(self, board: Board, action: Action) -> Board:",
+    "file_path": "backend/algorithms/more/tictactoe/tictactoe_no_player_in_state.py",
+    "kind": "method",
+    "label": "def result(self, board: Board, action: Action) -> Board",
+    "name": "result",
+    "returns": {
+      "label": "Board"
+    },
+    "summary": "Deep copy of board with current player's mark at action position."
+  },
+  "more.tictactoe.tictactoe_no_player_in_state:TicTacToe.terminal": {
+    "args": [
+      "board"
+    ],
+    "code": "    def terminal(self, board: Board) -> bool:",
+    "file_path": "backend/algorithms/more/tictactoe/tictactoe_no_player_in_state.py",
+    "kind": "method",
+    "label": "def terminal(self, board: Board) -> bool",
+    "name": "terminal",
+    "returns": {
+      "label": "bool"
+    },
+    "summary": "True if there's a winner or board is full."
+  },
+  "more.tictactoe.tictactoe_no_player_in_state:TicTacToe.utility": {
+    "args": [
+      "board"
+    ],
+    "code": "    def utility(self, board: Board) -> int:",
+    "file_path": "backend/algorithms/more/tictactoe/tictactoe_no_player_in_state.py",
+    "kind": "method",
+    "label": "def utility(self, board: Board) -> int",
+    "name": "utility",
+    "returns": {
+      "label": "int"
+    },
+    "summary": "1 if X won, -1 if O won, 0 for draw."
+  },
+  "more.tictactoe.tictactoe_no_player_in_state:TicTacToe.winner": {
+    "args": [
+      "board"
+    ],
+    "code": "    def winner(self, board: Board) -> Player | None:",
+    "file_path": "backend/algorithms/more/tictactoe/tictactoe_no_player_in_state.py",
+    "kind": "method",
+    "label": "def winner(self, board: Board) -> Player | None",
+    "name": "winner",
+    "returns": {
+      "label": "Player | None"
+    },
+    "summary": "Player with 3-in-a-row (horizontal, vertical, or diagonal), or None."
+  },
+  "more.tictactoe.tictactoe_old:actions": {
+    "args": [
+      "board"
+    ],
+    "code": "def actions(board):\n    return {(i, j) for i in range(3) for j in range(3) if board[i][j] == EMPTY}",
+    "file_path": "backend/algorithms/more/tictactoe/tictactoe_old.py",
     "intuition": "Find all empty cells. Each empty cell is a valid action.",
     "kind": "function",
     "label": "def actions(board)",
@@ -453,47 +1084,33 @@
     "summary": "Returns set of all possible actions (i, j) available on the board.",
     "time_complexity": "O(n²) - iterate through all cells"
   },
-  "more.tictactoe.tictactoe:initial_state": {
-    "code": "def initial_state():\n    return [[EMPTY, EMPTY, EMPTY],\n            [EMPTY, EMPTY, EMPTY],\n            [EMPTY, EMPTY, EMPTY]]",
-    "file_path": "backend/algorithms/more/tictactoe/tictactoe.py",
+  "more.tictactoe.tictactoe_old:initial_state": {
+    "code": "def initial_state():\n    return [[EMPTY] * 3 for _ in range(3)]",
+    "file_path": "backend/algorithms/more/tictactoe/tictactoe_old.py",
     "kind": "function",
     "label": "def initial_state()",
     "name": "initial_state",
     "summary": "Returns starting state of the board."
   },
-  "more.tictactoe.tictactoe:minimax": {
+  "more.tictactoe.tictactoe_old:minimax": {
     "args": [
       "board"
     ],
-    "code": "def minimax(board):\n    if terminal(board):\n        return None\n\n    memo = {}\n\n    def alphabeta(state, curr_player, alpha, beta):\n        state_key = (str(state), curr_player)\n\n        if state_key in memo:\n            return memo[state_key]\n\n        if terminal(state):\n            w = winner(state)\n            if w == curr_player:\n                value = 1\n            elif w is None:\n                value = 0\n            else:\n                value = -1\n            memo[state_key] = value\n            return value\n\n        opponent = O if curr_player == X else X\n        value = float('-inf')\n\n        for action in actions(state):\n            value = max(value, -alphabeta(result(state, action), opponent, -beta, -alpha))\n            alpha = max(alpha, value)\n            if alpha >= beta:\n                break\n\n        memo[state_key] = value\n        return value\n\n    curr = player(board)\n    opponent = O if curr == X else X\n\n    return max(\n        actions(board),\n        key=lambda action: -alphabeta(result(board, action), opponent, float('-inf'), float('inf'))\n    )",
-    "file_path": "backend/algorithms/more/tictactoe/tictactoe.py",
-    "intuition": "- Minimax with Alpha-Beta Pruning:\n    - *Paradigm*: Zero-sum game. Each player maximizes their own score.\n    - *Insight*: `alphabeta()` recursively searches with pruning optimization.\n    - Memoization caches states, alpha-beta prunes branches when alpha ≥ beta.",
+    "code": "def minimax(board):\n    if terminal(board):\n        return None\n\n    memo = {}\n\n    def dp(state, curr_player, alpha, beta):\n        state_key = (str(state), curr_player)\n        if state_key in memo:\n            return memo[state_key]\n\n        if terminal(state):\n            w = winner(state)\n            memo[state_key] = 1 if w == curr_player else (0 if w is None else -1)\n            return memo[state_key]\n\n        opponent = O if curr_player == X else X\n        value = float('-inf')\n        for action in actions(state):\n            value = max(value, -dp(result(state, action), opponent, -beta, -alpha))\n            alpha = max(alpha, value)\n            if alpha >= beta:\n                break\n\n        memo[state_key] = value\n        return value\n\n    curr = player(board)\n    opponent = O if curr == X else X\n    return max(\n        actions(board),\n        key=lambda action: -dp(result(board, action), opponent, float('-inf'), float('inf'))\n    )",
+    "file_path": "backend/algorithms/more/tictactoe/tictactoe_old.py",
+    "intuition": "- Minimax with Alpha-Beta Pruning:\n    - *Paradigm*: Zero-sum game. Each player maximizes their own score.\n    - *Insight*: `dp(state, curr_player, alpha, beta)` returns best score with pruning.\n    - Alpha-beta prunes when alpha ≥ beta. Memoization caches repeated states.",
     "kind": "function",
     "label": "def minimax(board)",
     "name": "minimax",
     "summary": "Returns the optimal action for the current player on the board.",
     "time_complexity": "O(b^(d/2)) average case with pruning\nwhere b is branching factor (~5 avg), d is depth (~9 max)"
   },
-  "more.tictactoe.tictactoe:minimax.alphabeta": {
-    "args": [
-      "state",
-      "curr_player",
-      "alpha",
-      "beta"
-    ],
-    "code": "    def alphabeta(state, curr_player, alpha, beta):\n        state_key = (str(state), curr_player)\n\n        if state_key in memo:\n            return memo[state_key]\n\n        if terminal(state):\n            w = winner(state)\n            if w == curr_player:\n                value = 1\n            elif w is None:\n                value = 0\n            else:\n                value = -1\n            memo[state_key] = value\n            return value\n\n        opponent = O if curr_player == X else X\n        value = float('-inf')\n\n        for action in actions(state):\n            value = max(value, -alphabeta(result(state, action), opponent, -beta, -alpha))\n            alpha = max(alpha, value)\n            if alpha >= beta:\n                break\n\n        memo[state_key] = value\n        return value",
-    "file_path": "backend/algorithms/more/tictactoe/tictactoe.py",
-    "kind": "function",
-    "label": "def alphabeta(state, curr_player, alpha, beta)",
-    "name": "alphabeta",
-    "summary": "Alpha-beta pruning search with memoization.\nReturns best score curr_player can achieve from state."
-  },
-  "more.tictactoe.tictactoe:player": {
+  "more.tictactoe.tictactoe_old:player": {
     "args": [
       "board"
     ],
     "code": "def player(board):\n    x_count = sum(row.count(X) for row in board)\n    o_count = sum(row.count(O) for row in board)\n    return X if x_count == o_count else O",
-    "file_path": "backend/algorithms/more/tictactoe/tictactoe.py",
+    "file_path": "backend/algorithms/more/tictactoe/tictactoe_old.py",
     "intuition": "- Count moves: X goes first, so if X and O have equal counts, it's X's turn.\n    - Otherwise, it's O's turn.",
     "kind": "function",
     "label": "def player(board)",
@@ -501,13 +1118,13 @@
     "summary": "Returns player who has the next turn on a board.",
     "time_complexity": "O(n²) - iterate through all cells"
   },
-  "more.tictactoe.tictactoe:result": {
+  "more.tictactoe.tictactoe_old:result": {
     "args": [
       "board",
       "action"
     ],
     "code": "def result(board, action):\n    i, j = action\n    if board[i][j] != EMPTY:\n        raise ValueError(\"Invalid action: cell already occupied\")\n\n    current_player = player(board)\n    new_board = [row[:] for row in board]\n    new_board[i][j] = current_player\n    return new_board",
-    "file_path": "backend/algorithms/more/tictactoe/tictactoe.py",
+    "file_path": "backend/algorithms/more/tictactoe/tictactoe_old.py",
     "intuition": "- Create deep copy of board, apply the action for current player.\n    - Validates action is legal.",
     "kind": "function",
     "label": "def result(board, action)",
@@ -515,12 +1132,12 @@
     "summary": "Returns the board that results from making move (i, j) on the board.",
     "time_complexity": "O(n²) - deep copy the board"
   },
-  "more.tictactoe.tictactoe:terminal": {
+  "more.tictactoe.tictactoe_old:terminal": {
     "args": [
       "board"
     ],
-    "code": "def terminal(board):\n    if winner(board) is not None:\n        return True\n    return all(cell is not None for row in board for cell in row)",
-    "file_path": "backend/algorithms/more/tictactoe/tictactoe.py",
+    "code": "def terminal(board):\n    return winner(board) is not None or all(cell != EMPTY for row in board for cell in row)",
+    "file_path": "backend/algorithms/more/tictactoe/tictactoe_old.py",
     "intuition": "Game is over if there's a winner or no empty cells remain.",
     "kind": "function",
     "label": "def terminal(board)",
@@ -528,12 +1145,12 @@
     "summary": "Returns True if game is over, False otherwise.",
     "time_complexity": "O(1) for winner check, O(n²) for board full check"
   },
-  "more.tictactoe.tictactoe:utility": {
+  "more.tictactoe.tictactoe_old:utility": {
     "args": [
       "board"
     ],
-    "code": "def utility(board):\n    game_winner = winner(board)\n    if game_winner == X:\n        return 1\n    elif game_winner == O:\n        return -1\n    else:\n        return 0",
-    "file_path": "backend/algorithms/more/tictactoe/tictactoe.py",
+    "code": "def utility(board):\n    game_winner = winner(board)\n    return 1 if game_winner == X else (-1 if game_winner == O else 0)",
+    "file_path": "backend/algorithms/more/tictactoe/tictactoe_old.py",
     "intuition": "Terminal utility value for minimax. X maximizes, O minimizes.",
     "kind": "function",
     "label": "def utility(board)",
@@ -541,12 +1158,12 @@
     "summary": "Returns 1 if X has won the game, -1 if O has won, 0 otherwise.",
     "time_complexity": "O(1) - winner check is constant time"
   },
-  "more.tictactoe.tictactoe:winner": {
+  "more.tictactoe.tictactoe_old:winner": {
     "args": [
       "board"
     ],
-    "code": "def winner(board):\n    for row in board:\n        if row[0] == row[1] == row[2] and row[0] is not None:\n            return row[0]\n\n    for j in range(3):\n        if board[0][j] == board[1][j] == board[2][j] and board[0][j] is not None:\n            return board[0][j]\n\n    if board[0][0] == board[1][1] == board[2][2] and board[0][0] is not None:\n        return board[0][0]\n    if board[0][2] == board[1][1] == board[2][0] and board[0][2] is not None:\n        return board[0][2]\n\n    return None",
-    "file_path": "backend/algorithms/more/tictactoe/tictactoe.py",
+    "code": "def winner(board):\n    for row in board:\n        if row[0] == row[1] == row[2] != EMPTY:\n            return row[0]\n\n    for j in range(3):\n        if board[0][j] == board[1][j] == board[2][j] != EMPTY:\n            return board[0][j]\n\n    if board[0][0] == board[1][1] == board[2][2] != EMPTY:\n        return board[0][0]\n    if board[0][2] == board[1][1] == board[2][0] != EMPTY:\n        return board[0][2]\n\n    return None",
+    "file_path": "backend/algorithms/more/tictactoe/tictactoe_old.py",
     "intuition": "- Check all possible winning lines: 3 rows, 3 columns, 2 diagonals.\n    - Return the player if they have 3 in a row.",
     "kind": "function",
     "label": "def winner(board)",
@@ -571,8 +1188,8 @@
   },
   "problems.1000-minimum-cost-to-merge-stones.solution:Solution.mergeStones": {
     "args": [
-      "stones",
-      "K"
+      "K",
+      "stones"
     ],
     "code": "    def mergeStones(self, stones: list[int], K: int) -> int:\n        if ((n := len(stones)) - 1) % (K - 1):return -1\n\n        prefix, memo = [0], {}\n        for x in stones: prefix.append(prefix[-1] + x)\n        cost = lambda l, r: 0 if (r - l) % (K - 1) else prefix[r + 1] - prefix[l]\n\n        def dp(l, r):\n            if (key := (l, r)) not in memo:\n                memo[key] = min(\n                    (dp(l, t) + dp(t + 1, r) + cost(l, r) for t in range(l, r, K - 1)),\n                    default=0,\n                )\n            return memo[key]\n\n        return dp(0, n - 1)",
     "expressions": {
@@ -621,8 +1238,8 @@
   },
   "problems.1011-capacity-to-ship-packages-within-d-days.solution:capacity_to_ship_packages_within_d_days": {
     "args": [
-      "days",
-      "weights"
+      "weights",
+      "days"
     ],
     "code": "def capacity_to_ship_packages_within_d_days(weights: list[int], days: int) -> int:\n    def days_needed(capacity: int) -> int:\n        d, load = 1, 0\n        for w in weights:\n            if load + w <= capacity:\n                load += w\n            else:\n                d += 1\n                load = w\n        return d\n\n    l, r = max(weights), sum(weights)\n    while l < r:\n        capacity = (l + r) // 2\n        if days_needed(capacity) <= days:\n            r = capacity\n        else:\n            l = capacity + 1\n    return l",
     "file_path": "backend/algorithms/problems/1011-capacity-to-ship-packages-within-d-days/solution.py",
@@ -842,8 +1459,8 @@
   },
   "problems.1293-shortest-path-in-a-grid-with-obstacles-elimination.a_star:manhattan_distance": {
     "args": [
-      "b",
-      "a"
+      "a",
+      "b"
     ],
     "code": "def manhattan_distance(a: tuple[int, int], b: tuple[int, int]) -> int:\n    return abs(a[0] - b[0]) + abs(a[1] - b[1])",
     "file_path": "backend/algorithms/problems/1293-shortest-path-in-a-grid-with-obstacles-elimination/a_star.py",
@@ -857,8 +1474,8 @@
   },
   "problems.1293-shortest-path-in-a-grid-with-obstacles-elimination.a_star:shortest_path_in_a_grid_with_obstacles_elimination": {
     "args": [
-      "k",
-      "grid"
+      "grid",
+      "k"
     ],
     "code": "def shortest_path_in_a_grid_with_obstacles_elimination(grid: list[list[int]], k: int) -> int:\n\n    rows, cols = len(grid), len(grid[0])\n\n    def h(r: int, c: int) -> int:\n        return manhattan_distance((r, c), (rows - 1, cols - 1))\n\n    if k >= (md:= h(0, 0)) - 1:\n        return md\n\n    pq = [(md, 0, 0, 0, k)]\n\n    max_k = [[-1] * cols for _ in range(rows)]\n    max_k[0][0] = k\n\n    while pq:\n        _, steps, r, c, remaining_k = heapq.heappop(pq)\n\n        if (r, c) == (rows - 1, cols - 1):\n            return steps\n\n        if remaining_k < max_k[r][c]:\n            continue\n\n        for dr, dc in [(0, 1), (0, -1), (1, 0), (-1, 0)]:\n            if 0 <= (nr:= r + dr) < rows and 0 <= (nc:= c + dc) < cols:\n                if (new_remaining_k := remaining_k - grid[nr][nc] ) > max_k[nr][nc]:\n                    max_k[nr][nc] = new_remaining_k\n                    heapq.heappush(pq, ((steps + 1) + h(nr, nc), steps + 1, nr, nc, new_remaining_k))\n\n    return -1",
     "expressions": {
@@ -897,8 +1514,8 @@
   },
   "problems.1293-shortest-path-in-a-grid-with-obstacles-elimination.bfs:shortest_path_in_a_grid_with_obstacles_elimination": {
     "args": [
-      "k",
-      "grid"
+      "grid",
+      "k"
     ],
     "code": "def shortest_path_in_a_grid_with_obstacles_elimination(grid: list[list[int]], k: int) -> int:\n\n    rows, cols = len(grid), len(grid[0])\n    min_steps = rows + cols - 3 \n    if k >= min_steps:\n        return min_steps\n\n    max_k = [[-1] * cols for _ in range(rows)]\n    max_k[0][0] = k\n\n    q = deque([(0, 0, 0, k)])\n\n    while q:\n        r, c, steps, remaining_k = q.popleft()\n        for dr, dc in [(1,0), (-1,0), (0,1), (0,-1)]:\n            nr, nc = r + dr, c + dc\n            if 0 <= nr < rows and 0 <= nc < cols:\n                new_remaining_k = remaining_k - grid[nr][nc]\n                if new_remaining_k > max_k[nr][nc]:\n                    if (nr, nc) == (rows - 1, cols - 1):\n                        return steps + 1\n                    max_k[nr][nc] = new_remaining_k\n                    q.append((nr, nc, steps + 1, new_remaining_k))\n    return -1",
     "file_path": "backend/algorithms/problems/1293-shortest-path-in-a-grid-with-obstacles-elimination/bfs.py",
@@ -935,8 +1552,8 @@
   },
   "problems.1293-shortest-path-in-a-grid-with-obstacles-elimination.dijkstra:shortest_path_in_a_grid_with_obstacles_elimination": {
     "args": [
-      "k",
-      "grid"
+      "grid",
+      "k"
     ],
     "code": "def shortest_path_in_a_grid_with_obstacles_elimination(grid: list[list[int]], k: int) -> int:\n\n    rows, cols = len(grid), len(grid[0])\n    if k >= rows + cols - 3:\n        return rows + cols - 2\n\n    pq = [(0, 0, 0, k)]\n\n    max_k = [[-1] * cols for _ in range(rows)]\n    max_k[0][0] = k\n\n    while pq:\n\n        steps, r, c, k_rem = heapq.heappop(pq)\n\n        if (r, c) == (rows - 1, cols - 1):\n            return steps\n\n        if k_rem < max_k[r][c]:\n            continue\n\n        for dr, dc in [(0, 1), (0, -1), (1, 0), (-1, 0)]:\n            if 0 <= (nr:= r + dr) < rows and 0 <= (nc:= c + dc) < cols:\n                if (new_k:= k_rem - grid[nr][nc]) > max_k[nr][nc]:\n                    max_k[nr][nc] = new_k\n                    heapq.heappush(pq, (steps + 1, nr, nc, new_k))\n\n    return -1",
     "expressions": {
@@ -1146,11 +1763,11 @@
   },
   "problems.1514-path-with-maximum-probability.bellman-ford:Solution.maxProbability": {
     "args": [
-      "succProb",
       "edges",
-      "start",
       "n",
-      "end"
+      "end",
+      "start",
+      "succProb"
     ],
     "code": "    def maxProbability(self, n: int, edges: list[list[int]], succProb: list[float], start: int, end: int) -> float:\n        prob = [0.0] * n\n        prob[start] = 1.0\n\n        for _ in range(n - 1):\n            updated = False\n            for (u, v), p in zip(edges, succProb):\n                if prob[u] * p > prob[v]:\n                    prob[v] = prob[u] * p\n                    updated = True\n                if prob[v] * p > prob[u]:\n                    prob[u] = prob[v] * p\n                    updated = True\n            if not updated:\n                break\n\n        return prob[end]",
     "file_path": "backend/algorithms/problems/1514-path-with-maximum-probability/bellman-ford.py",
@@ -1182,11 +1799,11 @@
   },
   "problems.1514-path-with-maximum-probability.dijkstra:Solution.maxProbability": {
     "args": [
-      "succProb",
-      "start",
-      "n",
       "edges",
-      "end"
+      "succProb",
+      "n",
+      "end",
+      "start"
     ],
     "code": "    def maxProbability(self, n: int, edges: list[list[int]], succProb: list[float], start: int, end: int) -> float:\n\n        adj = defaultdict(list)\n        for (u, v), p in zip(edges, succProb):\n            adj[u].append((v, p))\n            adj[v].append((u, p))\n\n        pq, best = [(-1.0, start)], [0.0] * n\n        best[start] = 1.0\n\n        while pq:\n            p, u = heappop(pq)\n            p = -p\n            if u == end:\n                return p\n            if p < best[u]:\n                continue\n            for v, w in adj[u]:\n                new_p = p * w\n                if new_p > best[v]:\n                    best[v] = new_p\n                    heappush(pq, (-new_p, v))\n        return 0.0",
     "file_path": "backend/algorithms/problems/1514-path-with-maximum-probability/dijkstra.py",
@@ -1229,8 +1846,8 @@
   },
   "problems.1590-make-sum-divisible-by-p.solution:minSubarrayToMakeSumDivisibleByP": {
     "args": [
-      "segments",
-      "p"
+      "p",
+      "segments"
     ],
     "code": "def minSubarrayToMakeSumDivisibleByP(segments: list[int], p: int) -> int:\n\n    total_remainder = sum(segments) % p\n    if total_remainder == 0:\n        return 0\n\n    remainder_idx = {0: -1}\n    prefix_remainder, min_length = 0, len(segments)\n\n    for i, segment in enumerate(segments):\n        prefix_remainder = (prefix_remainder + segment) % p\n        need = (prefix_remainder - total_remainder + p) % p\n        if need in remainder_idx:\n            min_length = min(min_length, i - remainder_idx[need])\n        remainder_idx[prefix_remainder] = i\n\n    return min_length if min_length < len(segments) else -1",
     "file_path": "backend/algorithms/problems/1590-make-sum-divisible-by-p/solution.py",
@@ -1635,8 +2252,8 @@
   },
   "problems.211-design-add-and-search-words-data-structure.solution:WordDictionary.search.dfs": {
     "args": [
-      "node",
-      "i"
+      "i",
+      "node"
     ],
     "code": "        def dfs(node: dict, i: int) -> bool:\n\n            if i == len(word):\n                return self.END_MARKER in node\n\n            if (c := word[i]) == \".\":\n\n                return any(\n                    dfs(child, i + 1)\n                    for k, child in node.items()\n                    if k != self.END_MARKER\n                )\n            child = node.get(c)\n            return bool(child) and dfs(child, i + 1)",
     "expressions": {
@@ -1657,8 +2274,8 @@
   },
   "problems.212-word-search-ii.solution:word_search_II": {
     "args": [
-      "board",
-      "words"
+      "words",
+      "board"
     ],
     "code": "def word_search_II(board: list[list[str]], words: list[str]) -> list[str]:\n    trie = {}  \n    for word in words:\n        node = trie\n        for c in word:\n            node = node.setdefault(c, {})\n        node[\"$\"] = word\n\n    def dfs(i, j, parent):\n        if not (0 <= i < m and 0 <= j < n) or (c := board[i][j]) not in parent:\n            return\n        node = parent[c]\n        if \"$\" in node:\n            res.append(node.pop(\"$\"))\n        board[i][j] = \"#\"\n        for x, y in ((i - 1, j), (i + 1, j), (i, j - 1), (i, j + 1)):\n            dfs(x, y, node)\n        board[i][j] = c\n        if not node:\n            parent.pop(c)\n\n    m, n, res = len(board), len(board[0]), []\n    [dfs(i, j, trie) for i in range(m) for j in range(n) if board[i][j] in trie]\n\n    return res",
     "expressions": {
@@ -1788,9 +2405,9 @@
   },
   "problems.2145-count-the-hidden-sequences.solution:numberOfArrays": {
     "args": [
+      "differences",
       "upper",
-      "lower",
-      "differences"
+      "lower"
     ],
     "code": "def numberOfArrays(differences: list[int], lower: int, upper: int) -> int:\n\n    prefix_sum = min_marker = max_marker = 0\n\n    for diff in differences:\n        prefix_sum += diff\n        min_marker = min(min_marker, prefix_sum)\n        max_marker = max(max_marker, prefix_sum)\n\n    return max(0, (upper - max_marker) - (lower - min_marker) + 1)",
     "file_path": "backend/algorithms/problems/2145-count-the-hidden-sequences/solution.py",
@@ -1858,6 +2475,55 @@
     },
     "time_complexity": "O(n)\nwhere n is the length of the nums array. We iterate through the array twice."
   },
+  "problems.2402-meeting-rooms-iii.solution:mostBooked": {
+    "args": [
+      "meetings",
+      "n"
+    ],
+    "code": "def mostBooked(n: int, meetings: list[list[int]]) -> int:\n\n    busy = []\n    heapify((free := [*range(n)]))\n    count = [0] * n\n\n    for s, e in sorted(meetings):\n        while busy and busy[0][0] <= s:\n            _, r = heappop(busy)\n            heappush(free, r)\n        if free:\n            r = heappop(free)\n            heappush(busy, (e, r))\n        else:\n            next_end, r = heappop(busy)\n            heappush(busy, (next_end + (e - s), r))\n        count[r] += 1\n\n    return max(range(n), key=count.__getitem__)",
+    "expressions": {
+      "max(range(n), key=count.__getitem__)": "`range(n)` :creates `indices 0…n-1`, then for each `index i`, calls `count.__getitem__(i)` (same as `count[i]`) to fetch the value; after comparing all, returns the `index i` whose `count[i]` is largest."
+    },
+    "file_path": "backend/algorithms/problems/2402-meeting-rooms-iii/solution.py",
+    "kind": "function",
+    "label": "def mostBooked(n: int, meetings: list[list[int]]) -> int",
+    "name": "mostBooked",
+    "returns": {
+      "label": "int"
+    }
+  },
+  "problems.2402-meeting-rooms-iii.solution:mostBooked.max(range(n), key=count.__getitem__)": {
+    "kind": "expression",
+    "name": "max(range(n), key=count.__getitem__)",
+    "summary": "`range(n)` :creates `indices 0…n-1`, then for each `index i`, calls `count.__getitem__(i)` (same as `count[i]`) to fetch the value; after comparing all, returns the `index i` whose `count[i]` is largest."
+  },
+  "problems.253-meeting-rooms-ii.sweep-line:minMeetingRooms": {
+    "args": [
+      "intervals"
+    ],
+    "code": "def minMeetingRooms(intervals):\n\n    time = defaultdict(int)\n    for s, e in intervals:\n        time[s] += 1\n        time[e] -= 1\n\n    active = rooms = 0\n    for _, d in sorted(time.items()):\n        active += d\n        rooms = max(active, rooms)\n    return rooms",
+    "file_path": "backend/algorithms/problems/253-meeting-rooms-ii/sweep-line.py",
+    "intuition": "- Each start adds a room (+1), each end frees one (-1).\n    - Sweeping sorted times, track active meetings; the peak is the answer.",
+    "kind": "function",
+    "label": "def minMeetingRooms(intervals)",
+    "name": "minMeetingRooms",
+    "time_complexity": "O(n log n)"
+  },
+  "problems.253-meeting-rooms-ii.two-pointer-interval-sort-and-scan:minMeetingRooms": {
+    "args": [
+      "intervals"
+    ],
+    "code": "def minMeetingRooms(intervals: list[list[int]]) -> int:\n    starts = sorted(s for s, _ in intervals)\n    ends = sorted(e for _, e in intervals)\n    rooms = e = 0\n    for s in starts:\n        if s < ends[e]:\n            rooms += 1\n        else:\n            e += 1\n    return rooms",
+    "file_path": "backend/algorithms/problems/253-meeting-rooms-ii/two-pointer-interval-sort-and-scan.py",
+    "intuition": "1. Sort all *start times* and all *end times*\n\n    2. For each start time:\n        - if it is earlier than the earliest end time we haven't used yet,                no room has freed -> take a new room.\n        - otherwise, advance the end pointer -> reuse that freed room\n\n    - `rooms` becomes the maximum number of simultaneous meetings",
+    "kind": "function",
+    "label": "def minMeetingRooms(intervals: list[list[int]]) -> int",
+    "name": "minMeetingRooms",
+    "returns": {
+      "label": "int"
+    },
+    "time_complexity": "O(n log n) for sorting"
+  },
   "problems.256-paint-house.scalar:Solution.minCost": {
     "args": [
       "costs"
@@ -1874,8 +2540,8 @@
   },
   "problems.256-paint-house.scalar:Solution.minCost.dp": {
     "args": [
-      "c",
-      "i"
+      "i",
+      "c"
     ],
     "code": "        def dp(i: int, c: int) -> int:\n            if i == n:\n                return \n            if (i, c) not in memo:\n\n                memo[i, c] = costs[i][c] + min(\n                    dp(i + 1, (c + 1) % 3), dp(i + 1, (c + 2) % 3)\n                )\n            return memo[i, c]",
     "expressions": {
@@ -2225,8 +2891,8 @@
   },
   "problems.39-combination-sum.solution:combination_sum": {
     "args": [
-      "target",
-      "candidates"
+      "candidates",
+      "target"
     ],
     "code": "def combination_sum(candidates: list[int], target: int) -> list[list[int]]:\n\n    candidates.sort()\n    res, path = [], []\n\n    def dfs(i: int, rem: int) -> None:\n        if rem == 0:\n            res.append(path.copy())\n            return\n        for j in range(i, len(candidates)):\n            if (c := candidates[j]) > rem:\n                break\n            path.append(c)\n            dfs(j, rem - c)\n            path.pop()\n\n    dfs(0, target)\n    return res",
     "file_path": "backend/algorithms/problems/39-combination-sum/solution.py",
@@ -2694,8 +3360,8 @@
   "problems.743-network-delay-time.dijkstra-b:Solution.networkDelayTime": {
     "args": [
       "k",
-      "times",
-      "n"
+      "n",
+      "times"
     ],
     "code": "    def networkDelayTime(self, times: list[list[int]], n: int, k: int) -> int:\n\n        adj = defaultdict(list)\n        for u, v, w in times:\n            adj[u].append((v, w))\n\n        pq, finalized, time = [(0, k)], set(), 0\n\n        while pq:\n            t, node = heappop(pq)\n            if node in finalized:\n                continue\n            finalized.add(node)\n            time = t\n\n            for neighbor, travel_time in adj[node]:\n                if neighbor not in finalized:\n                    heappush(pq, (time + travel_time, neighbor))\n\n        return time if len(finalized) == n else -1",
     "file_path": "backend/algorithms/problems/743-network-delay-time/dijkstra-b.py",
@@ -2723,9 +3389,9 @@
   },
   "problems.743-network-delay-time.dijkstra:Solution.networkDelayTime": {
     "args": [
-      "n",
+      "times",
       "k",
-      "times"
+      "n"
     ],
     "code": "    def networkDelayTime(self, times: list[list[int]], n: int, k: int) -> int:\n\n        g = {i: [] for i in range(1, n + 1)}\n        for u, v, w in times:\n            g[u].append((w, v))\n\n        dist = {i: float(\"inf\") for i in g}\n        dist[k] = 0\n\n        pq = [(0, k)]\n\n        while pq:\n            d, u = heappop(pq)\n            if d > dist[u]: continue\n\n\n            for w, v in g[u]:\n                if (nd := d + w) < dist[v]:\n                    dist[v] = nd\n                    heappush(pq, (nd, v))\n\n        return ans if (ans := max(dist.values())) < float(\"inf\") else -1",
     "file_path": "backend/algorithms/problems/743-network-delay-time/dijkstra.py",
@@ -2740,8 +3406,8 @@
   },
   "problems.76-minimum-window-substring.solution:minWindow": {
     "args": [
-      "t",
-      "s"
+      "s",
+      "t"
     ],
     "code": "def minWindow(s: str, t: str) -> str:\n    t_count, have = Counter(t), defaultdict(int)\n    letters_needed, min_idx, l = len(t_count), None, 0\n    for r, c in enumerate(s):\n        have[c] += 1\n        if have[c] == t_count[c]:\n            letters_needed -= 1\n            while letters_needed == 0:\n                if not min_idx or r - l + 1 < min_idx[1] - min_idx[0]:\n                    min_idx = l, r + 1\n                have[s[l]] -= 1\n                if have[s[l]] < t_count[s[l]]:\n                    letters_needed += 1\n                l += 1\n    return \"\" if min_idx == None else s[min_idx[0] : min_idx[1]]",
     "file_path": "backend/algorithms/problems/76-minimum-window-substring/solution.py",
@@ -2789,10 +3455,10 @@
   },
   "problems.787-cheapest-flights-within-k-stops.bellman_ford:cheapest_flights_with_at_most_k_stops": {
     "args": [
-      "k",
       "dst",
       "flights",
       "n",
+      "k",
       "src"
     ],
     "code": "def cheapest_flights_with_at_most_k_stops(\n    n: int, flights: list[list[int]], src: int, dst: int, k: int\n) -> int:\n    d = [float(\"inf\")] * n\n    d[src] = 0\n\n    for _ in range(k + 1):\n        tmp = d[:]\n        for u, v, w in flights:\n            if d[u] + w < tmp[v]:\n                tmp[v] = d[u] + w\n        d = tmp\n\n    return d[dst] if d[dst] < float(\"inf\") else -1",
@@ -2807,10 +3473,10 @@
   },
   "problems.787-cheapest-flights-within-k-stops.dijkstra:cheapest_flights_with_at_most_k_stops": {
     "args": [
+      "dst",
       "flights",
-      "src",
       "k",
-      "dst"
+      "src"
     ],
     "code": "def cheapest_flights_with_at_most_k_stops( flights: list[list[int]], src: int, dst: int, k: int) -> int:\n\n    graph = defaultdict(list)\n    for u, v, price in flights:\n        graph[u].append((v, price))\n\n    pq, min_stops = [(0, src, 0)], {}\n\n    while pq:\n        cost, city, stops = heapq.heappop(pq)\n\n        if stops > min_stops.get(city, float(\"inf\")): continue\n        if city == dst: return cost\n\n        min_stops[city] = stops\n        if stops <= k:\n            for neighbor, price in graph[city]:\n                heapq.heappush(pq, (cost + price, neighbor, stops + 1))\n    return -1",
     "file_path": "backend/algorithms/problems/787-cheapest-flights-within-k-stops/dijkstra.py",
@@ -2837,8 +3503,8 @@
   },
   "problems.79-word-search.solution:word_search": {
     "args": [
-      "board",
-      "word"
+      "word",
+      "board"
     ],
     "code": "def word_search(board: list[list[str]], word: str) -> bool:\n    rows, cols, n = len(board), len(board[0]), len(word)\n    def dfs(r: int, c: int, i: int) -> bool:\n        if i == n:\n            return True\n        if not (0 <= r < rows and 0 <= c < cols and board[r][c] == word[i]):\n            return False\n        tmp, board[r][c] = board[r][c], \"#\"\n        for x, y in ((r + 1, c), (r - 1, c), (r, c + 1), (r, c - 1)):\n            if dfs(x, y, i + 1):\n                board[r][c] = tmp\n                return True\n        board[r][c] = tmp\n        return False\n    return any(\n        dfs(r, c, 0)\n        for r in range(rows)\n        for c in range(cols)\n        if board[r][c] == word[0]\n    )",
     "file_path": "backend/algorithms/problems/79-word-search/solution.py",

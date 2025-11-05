@@ -65,6 +65,7 @@ const Problem198HouseRobber = lazy(() => import('./198-house-robber'))
 const Problem146LruCache = lazy(() => import('./146-lru-cache'))
 const Problem102BinaryTreeLevelOrderTraversal = lazy(() => import('./102-binary-tree-level-order-traversal'))
 const Problem974SubarraySumsDivisibleByK = lazy(() => import('./974-subarray-sums-divisible-by-k'))
+const Problem2402MeetingRoomsIii = lazy(() => import('./2402-meeting-rooms-iii'))
 const Problem122BestTimeToBuyAndSellStockIi = lazy(() => import('./122-best-time-to-buy-and-sell-stock-ii'))
 const Problem794ValidTicTacToeState = lazy(() => import('./794-valid-tic-tac-toe-state'))
 const Problem207CourseSchedule = lazy(() => import('./207-course-schedule'))
@@ -84,6 +85,7 @@ const Problem84LargestRectangleInHistogram = lazy(() => import('./84-largest-rec
 const Problem136SingleNumber = lazy(() => import('./136-single-number'))
 const Problem210CourseScheduleIi = lazy(() => import('./210-course-schedule-ii'))
 const Problem1514PathWithMaximumProbability = lazy(() => import('./1514-path-with-maximum-probability'))
+const Problem253MeetingRoomsIi = lazy(() => import('./253-meeting-rooms-ii'))
 const Problem72EditDistance = lazy(() => import('./72-edit-distance'))
 const Problem79WordSearch = lazy(() => import('./79-word-search'))
 const Problem39CombinationSum = lazy(() => import('./39-combination-sum'))
@@ -97,6 +99,7 @@ const Problem2145CountTheHiddenSequences = lazy(() => import('./2145-count-the-h
 const Problem35SearchInsertPosition = lazy(() => import('./35-search-insert-position'))
 const Problem46Permutations = lazy(() => import('./46-permutations'))
 const Problem123BestTimeToBuyAndSellStockIii = lazy(() => import('./123-best-time-to-buy-and-sell-stock-iii'))
+const Problem252MeetingRooms = lazy(() => import('./252-meeting-rooms'))
 const Problem347TopKFrequentElements = lazy(() => import('./347-top-k-frequent-elements'))
 const Problem64MinimumPathSum = lazy(() => import('./64-minimum-path-sum'))
 const Problem200NumberOfIslands = lazy(() => import('./200-number-of-islands'))
@@ -335,6 +338,11 @@ const problemComponents = {
         <Problem974SubarraySumsDivisibleByK />
       </Suspense>
     ),
+    "2402-meeting-rooms-iii": (
+      <Suspense key="2402-meeting-rooms-iii" fallback={<div className="p-4 text-gray-500">Loading...</div>}>
+        <Problem2402MeetingRoomsIii />
+      </Suspense>
+    ),
     "122-best-time-to-buy-and-sell-stock-ii": (
       <Suspense key="122-best-time-to-buy-and-sell-stock-ii" fallback={<div className="p-4 text-gray-500">Loading...</div>}>
         <Problem122BestTimeToBuyAndSellStockIi />
@@ -430,6 +438,11 @@ const problemComponents = {
         <Problem1514PathWithMaximumProbability />
       </Suspense>
     ),
+    "253-meeting-rooms-ii": (
+      <Suspense key="253-meeting-rooms-ii" fallback={<div className="p-4 text-gray-500">Loading...</div>}>
+        <Problem253MeetingRoomsIi />
+      </Suspense>
+    ),
     "72-edit-distance": (
       <Suspense key="72-edit-distance" fallback={<div className="p-4 text-gray-500">Loading...</div>}>
         <Problem72EditDistance />
@@ -493,6 +506,11 @@ const problemComponents = {
     "123-best-time-to-buy-and-sell-stock-iii": (
       <Suspense key="123-best-time-to-buy-and-sell-stock-iii" fallback={<div className="p-4 text-gray-500">Loading...</div>}>
         <Problem123BestTimeToBuyAndSellStockIii />
+      </Suspense>
+    ),
+    "252-meeting-rooms": (
+      <Suspense key="252-meeting-rooms" fallback={<div className="p-4 text-gray-500">Loading...</div>}>
+        <Problem252MeetingRooms />
       </Suspense>
     ),
     "347-top-k-frequent-elements": (

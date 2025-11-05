@@ -10,7 +10,7 @@ function TooltipHeader({ meta }: { meta: TooltipMeta }) {
   if (meta.kind === 'parameter') {
     return (
       <div className="mb-4 rounded-lg">
-          <div className="
+        <div className="
           absolute
           right-3
           top-1.5
@@ -19,10 +19,10 @@ function TooltipHeader({ meta }: { meta: TooltipMeta }) {
           shadow-sm backdrop-blur-s
            hover:bg-linear-to-l 
            ">
-            parameter
-          </div>
+          parameter
+        </div>
 
-    
+
 
         {/* Modern parameter signature */}
         {meta.label && (
@@ -45,7 +45,7 @@ function TooltipHeader({ meta }: { meta: TooltipMeta }) {
         </div>
 
         <MarkdownRenderer >
-       {`[purple!]${meta.name}`}
+          {`[purple!]${meta.name}`}
         </MarkdownRenderer>
       </div>
     );
@@ -55,16 +55,16 @@ function TooltipHeader({ meta }: { meta: TooltipMeta }) {
   if (meta.kind === 'expression') {
     return (
       <div className="mb-4 mt-3">
-          <div className=" absolute right-3 top-1.5  bg-linear-to-r from-cyan-50 to-teal-100 dark:from-cyan-900/40 dark:to-teal-800/40 text-cyan-700 dark:text-cyan-300 rounded-full text-xs font-semibold border border-cyan-200/60 dark:border-cyan-700/60 shadow-sm backdrop-blur-sm hover:bg-linear-to-l">
-            expression
-          </div>
+        <div className=" absolute right-3 top-1.5  bg-linear-to-r from-cyan-50 to-teal-100 dark:from-cyan-900/40 dark:to-teal-800/40 text-cyan-700 dark:text-cyan-300 rounded-full text-xs font-semibold border border-cyan-200/60 dark:border-cyan-700/60 shadow-sm backdrop-blur-sm hover:bg-linear-to-l">
+          expression
+        </div>
 
         {/* Expression code block */}
         <div className="font-mono text-sm 
          rounded  backdrop-blur-sm">
           <div className="break-all">
             <MarkdownRenderer>{`[language="python"] ${meta.name}`}</MarkdownRenderer>
-            
+
           </div>
         </div>
       </div>
@@ -111,7 +111,7 @@ function TooltipHeader({ meta }: { meta: TooltipMeta }) {
             {meta.kind}
           </div>
         </div>
-   
+
       </div>
       {/* <div className={`font-bold text-md
         text-xl bg-linear-to-r ${kindStyles.title} bg-clip-text text-transparent mb-3 hover:bg-linear-to-l `}>
@@ -297,15 +297,15 @@ function TooltipReturns({ meta }: { meta: TooltipMeta }) {
     
        ">
         {/* <div className="space-y-2 "> */}
-          <span className=" absolute right-3 top-1.5 inline-flex items-center font-mono text-indigo-800 dark:text-indigo-200 font-medium bg-indigo-100/80 
+        <span className=" absolute right-3 top-1.5 inline-flex items-center font-mono text-indigo-800 dark:text-indigo-200 font-medium bg-indigo-100/80 
           dark:bg-indigo-900/60 rounded-lg  text-sm">
-            {meta.returns.label}
-          </span>
-          <div className="text-indigo-800 dark:text-indigo-200 leading-relaxed">
-            <MarkdownRenderer>{meta.returns.summary}</MarkdownRenderer>
-          </div>
+          {meta.returns.label}
+        </span>
+        <div className="text-indigo-800 dark:text-indigo-200 leading-relaxed">
+          <MarkdownRenderer>{meta.returns.summary}</MarkdownRenderer>
         </div>
       </div>
+    </div>
     // </div>
   ) : null;
 }
@@ -379,11 +379,11 @@ function TooltipTimeComplexity({ meta }: { meta: TooltipMeta }) {
       </div>
       <div className="px-3">
 
-       
+
         <MarkdownRenderer className="text-sky-800 dark:text-sky-200">
-         {convertMathToKatex(meta.time_complexity.split('\n')[0].replace(/:\s*$/, ''))}
+          {convertMathToKatex(meta.time_complexity.split('\n')[0].replace(/:\s*$/, ''))}
         </MarkdownRenderer>
-        
+
       </div>
     </div>
   ) : null;
@@ -474,7 +474,10 @@ export function renderTooltipContent(
       return (
         <div className="min-w-[280px] max-w-[420px] bg-white/90 dark:bg-gray-900/90 backdrop-blur-md shadow-lg  p-4">
           <div className="text-sm text-green-700 dark:text-green-300 ">
-            {commentText}
+            <MarkdownRenderer>
+              {commentText}
+
+            </MarkdownRenderer>
           </div>
         </div>
       );

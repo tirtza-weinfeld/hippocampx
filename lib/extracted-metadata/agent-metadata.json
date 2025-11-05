@@ -466,6 +466,17 @@
     "updatedAt": "2025-09-29T12:50:27.977945"
   },
   {
+    "id": "2402-meeting-rooms-iii",
+    "title": "Meeting Rooms III",
+    "difficulty": "hard",
+    "topics": [
+      "heap",
+      "interval"
+    ],
+    "createdAt": "2025-11-05T10:38:18.353277",
+    "updatedAt": "2025-11-05T13:40:33.475953"
+  },
+  {
     "id": "122-best-time-to-buy-and-sell-stock-ii",
     "title": "Best Time to Buy and Sell Stock II",
     "difficulty": "medium",
@@ -669,6 +680,18 @@
     "updatedAt": "2025-11-02T16:50:20.243683"
   },
   {
+    "id": "253-meeting-rooms-ii",
+    "title": "Meeting Rooms II",
+    "difficulty": "medium",
+    "topics": [
+      "sort",
+      "sweep-line",
+      "interval"
+    ],
+    "createdAt": "2025-11-05T10:36:51.032260",
+    "updatedAt": "2025-11-05T12:08:54.085850"
+  },
+  {
     "id": "72-edit-distance",
     "title": "Edit Distance",
     "difficulty": "medium",
@@ -799,6 +822,18 @@
     ],
     "createdAt": "2025-09-12T16:05:33.323948",
     "updatedAt": "2025-09-30T19:05:08.947077"
+  },
+  {
+    "id": "252-meeting-rooms",
+    "title": "Meeting Rooms",
+    "difficulty": "easy",
+    "topics": [
+      "sort",
+      "sweep-line",
+      "interval"
+    ],
+    "createdAt": "2025-11-05T10:34:46.851058",
+    "updatedAt": "2025-11-05T12:06:08.589816"
   },
   {
     "id": "347-top-k-frequent-elements",

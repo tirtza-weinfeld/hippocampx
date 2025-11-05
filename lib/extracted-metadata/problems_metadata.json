@@ -944,6 +944,25 @@
       "difficulty": "medium",
       "topics": ["prefix-sum"]
     },
+    "2402-meeting-rooms-iii": {
+      "time_stamps": {
+        "created_at": "2025-11-05T10:38:18.353277",
+        "updated_at": "2025-11-05T13:40:33.475953"
+      },
+      "solutions": {
+        "solution.py": {
+          "expressions": {
+            "max(range(n), key=count.__getitem__)": "`range(n)` :creates `indices 0…n-1`, then for each `index i`, calls `count.__getitem__(i)` (same as `count[i]`) to fetch the value; after comparing all, returns the `index i` whose `count[i]` is largest."
+          },
+          "code": "from heapq import heappush, heappop, heapify\n\ndef mostBooked(n: int, meetings: list[list[int]]) -> int:\n\n    busy = []\n    heapify((free := [*range(n)]))\n    count = [0] * n\n\n    for s, e in sorted(meetings):\n        while busy and busy[0][0] <= s:\n            _, r = heappop(busy)\n            heappush(free, r)\n        if free:\n            r = heappop(free)\n            heappush(busy, (e, r))\n        else:\n            next_end, r = heappop(busy)\n            heappush(busy, (next_end + (e - s), r))\n        count[r] += 1\n\n    return max(range(n), key=count.__getitem__)"
+        }
+      },
+      "title": "Meeting Rooms III",
+      "definition": "Given n rooms (0…n-1) and meetings[i] = [startᵢ, endᵢ), assign each meeting to the lowest-numbered available room or delay it if none are free. Return the room that hosted the most meetings (tie → smallest index). (Constraints: 1 ≤ n ≤ 100, 1 ≤ m ≤ 10⁵, 0 ≤ startᵢ < endᵢ ≤ 5×10⁵)",
+      "leetcode": "https://leetcode.com/problems/meeting-rooms-iii/",
+      "difficulty": "hard",
+      "topics": ["heap", "interval"]
+    },
     "122-best-time-to-buy-and-sell-stock-ii": {
       "time_stamps": {
         "created_at": "2025-09-12T16:05:33.323910",
@@ -1313,6 +1332,29 @@
       "topics": ["dijkstra", "bellman-ford"],
       "group": [["dijkstra.py"], ["bellman-ford.py"]]
     },
+    "253-meeting-rooms-ii": {
+      "time_stamps": {
+        "created_at": "2025-11-05T10:36:51.032260",
+        "updated_at": "2025-11-05T12:08:54.085850"
+      },
+      "solutions": {
+        "two-pointer-interval-sort-and-scan.py": {
+          "intuition": "1. Sort all *start times* and all *end times*\n\n    2. For each start time:\n        if it is earlier than the earliest end time we haven't used yet,                no room has freed -> take a new room.\n        otherwise, advance the end pointer -> reuse that freed room\n\n    `rooms` becomes the maximum number of simultaneous meetings",
+          "time_complexity": "O(n log n) for sorting",
+          "code": "def minMeetingRooms(intervals: list[list[int]]) -> int:\n    starts = sorted(s for s, _ in intervals)\n    ends = sorted(e for _, e in intervals)\n    rooms = e = 0\n    for s in starts:\n        if s < ends[e]:\n            rooms += 1\n        else:\n            e += 1\n    return rooms"
+        },
+        "sweep-line.py": {
+          "intuition": "Each start adds a room (+1), each end frees one (-1).\n    Sweeping sorted times, track active meetings; the peak is the answer.",
+          "time_complexity": "O(n log n)",
+          "code": "from collections import defaultdict\n\ndef minMeetingRooms(intervals):\n\n    time = defaultdict(int)\n    for s, e in intervals:\n        time[s] += 1\n        time[e] -= 1\n\n    active = rooms = 0\n    for _, d in sorted(time.items()):\n        active += d\n        rooms = max(active, rooms)\n    return rooms"
+        }
+      },
+      "title": "Meeting Rooms II",
+      "definition": "Given `intervals[i] = [startᵢ, endᵢ]`, return the minimum number of conference rooms required so that no meetings overlap (Constraints: 1 ≤ intervals.length ≤ 10⁴ ,0 ≤ startᵢ < endᵢ ≤ 10⁶)",
+      "leetcode": "https://leetcode.com/problems/meeting-rooms-ii",
+      "difficulty": "medium",
+      "topics": ["sort", "sweep-line", "interval"]
+    },
     "72-edit-distance": {
       "time_stamps": {
         "created_at": "2025-10-25T11:37:09.566865",
@@ -1591,6 +1633,25 @@
       "leetcode": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock-iii",
       "difficulty": "hard",
       "topics": ["dynamic-programming", "array"]
+    },
+    "252-meeting-rooms": {
+      "time_stamps": {
+        "created_at": "2025-11-05T10:34:46.851058",
+        "updated_at": "2025-11-05T12:06:08.589816"
+      },
+      "solutions": {
+        "sweep-line.py": {
+          "code": "from collections import defaultdict\n\ndef canAttendMeetings(self, intervals: list[list[int]]) -> bool:\n    time, count = defaultdict(int), 0\n    for s, e in intervals:\n        time[s] += 1\n        time[e] -= 1\n    for _, v in sorted(time.items()):\n        count += v\n        if count > 1:\n            return False\n    return True"
+        },
+        "Interval-sort-and-scan.py": {
+          "code": "def canAttendMeetings( intervals: list[list[int]]) -> bool:\n        intervals.sort()\n        return all(intervals[i][0] >= intervals[i - 1][1] for i in range(1, len(intervals)))"
+        }
+      },
+      "title": "Meeting Rooms",
+      "definition": "Given `intervals[i] = [startᵢ, endᵢ]`,    determine if a person can attend all meetings (no overlaps).\n\n    **Constraints**: `0 ≤ len(intervals) ≤ 10⁴`, `len(intervals[i]) = 2`, `0 ≤ startᵢ < endᵢ ≤ 10⁶`",
+      "leetcode": "https://leetcode.com/problems/meeting-rooms/",
+      "difficulty": "easy",
+      "topics": ["sort", "sweep-line", "interval"]
     },
     "347-top-k-frequent-elements": {
       "time_stamps": {

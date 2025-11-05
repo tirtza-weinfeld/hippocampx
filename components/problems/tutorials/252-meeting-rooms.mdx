@@ -1,0 +1,48 @@
+# Meeting Rooms
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="easy" />
+
+<PillList pills={["sort", "sweep-line", "interval"]} />
+
+[252. Meeting Rooms](https://leetcode.com/problems/meeting-rooms/)
+
+## [!(ProblemDefinition)] Definition
+
+Given `intervals[i] = [startᵢ, endᵢ]`,    determine if a person can attend all meetings (no overlaps).
+
+    **Constraints**: `0 ≤ len(intervals) ≤ 10⁴`, `len(intervals[i]) = 2`, `0 ≤ startᵢ < endᵢ ≤ 10⁶`
+
+## Sweep Line Solution
+
+### [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/252-meeting-rooms/sweep-line.py"
+from collections import defaultdict
+
+def canAttendMeetings(self, intervals: list[list[int]]) -> bool:
+    time, count = defaultdict(int), 0
+    for s, e in intervals:
+        time[s] += 1
+        time[e] -= 1
+    for _, v in sorted(time.items()):
+        count += v
+        if count > 1:
+            return False
+    return True
+```
+
+
+---
+
+## Interval Sort And Scan Solution
+
+### [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/252-meeting-rooms/Interval-sort-and-scan.py"
+def canAttendMeetings( intervals: list[list[int]]) -> bool:
+        intervals.sort()
+        return all(intervals[i][0] >= intervals[i - 1][1] for i in range(1, len(intervals)))
+```
+

@@ -1,0 +1,78 @@
+# Meeting Rooms II
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="medium" />
+
+<PillList pills={["sort", "sweep-line", "interval"]} />
+
+[253. Meeting Rooms II](https://leetcode.com/problems/meeting-rooms-ii)
+
+## [!(ProblemDefinition)] Definition
+
+Given `intervals[i] = [startᵢ, endᵢ]`, return the minimum number of conference rooms required so that no meetings overlap (Constraints: 1 ≤ intervals.length ≤ 10⁴ ,0 ≤ startᵢ < endᵢ ≤ 10⁶)
+
+## Two Pointer Interval Sort And Scan Solution
+
+### [!(ProblemIntuition)] Intuition
+
+1. Sort all *start times* and all *end times*
+
+2. For each start time:
+        - if it is earlier than the earliest end time we haven't used yet,                no room has freed -> take a new room.
+        - otherwise, advance the end pointer -> reuse that freed room
+
+- `rooms` becomes the maximum number of simultaneous meetings
+
+### [!(ProblemTimeComplexity)] Time Complexity
+
+- $O(n \log n)$ for sorting
+
+### [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/253-meeting-rooms-ii/two-pointer-interval-sort-and-scan.py"
+def minMeetingRooms(intervals: list[list[int]]) -> int:
+    starts = sorted(s for s, _ in intervals)
+    ends = sorted(e for _, e in intervals)
+    rooms = e = 0
+    for s in starts:
+        if s < ends[e]:
+            rooms += 1
+        else:
+            e += 1
+    return rooms
+```
+
+
+---
+
+## Sweep Line Solution
+
+### [!(ProblemIntuition)] Intuition
+
+- Each start adds a room (+1), each end frees one (-1).
+    - Sweeping sorted times, track active meetings; the peak is the answer.
+
+### [!(ProblemTimeComplexity)] Time Complexity
+
+- $O(n \log n)$
+
+### [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/253-meeting-rooms-ii/sweep-line.py"
+from collections import defaultdict
+
+def minMeetingRooms(intervals):
+
+    time = defaultdict(int)
+    for s, e in intervals:
+        time[s] += 1
+        time[e] -= 1
+
+    active = rooms = 0
+    for _, d in sorted(time.items()):
+        active += d
+        rooms = max(active, rooms)
+    return rooms
+```
+

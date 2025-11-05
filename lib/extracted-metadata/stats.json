@@ -161,6 +161,7 @@
     ],
     "heap": [
       "215-kth-largest-element-in-an-array",
+      "2402-meeting-rooms-iii",
       "347-top-k-frequent-elements"
     ],
     "min-heap": [
@@ -169,6 +170,11 @@
     ],
     "binary-tree": [
       "102-binary-tree-level-order-traversal"
+    ],
+    "interval": [
+      "2402-meeting-rooms-iii",
+      "252-meeting-rooms",
+      "253-meeting-rooms-ii"
     ],
     "greedy": [
       "122-best-time-to-buy-and-sell-stock-ii"
@@ -189,6 +195,14 @@
     ],
     "bellman-ford": [
       "1514-path-with-maximum-probability"
+    ],
+    "sort": [
+      "252-meeting-rooms",
+      "253-meeting-rooms-ii"
+    ],
+    "sweep-line": [
+      "252-meeting-rooms",
+      "253-meeting-rooms-ii"
     ],
     "array": [
       "123-best-time-to-buy-and-sell-stock-iii",
@@ -214,6 +228,7 @@
       "1547-minimum-cost-to-cut-a-stick",
       "188-best-time-to-buy-and-sell-stock-iv",
       "212-word-search-ii",
+      "2402-meeting-rooms-iii",
       "265-paint-house-ii",
       "312-burst-balloons",
       "363-max-sum-of-rectangle-no-larger-than-k",
@@ -231,6 +246,7 @@
       "136-single-number",
       "191-number-of-1-bits",
       "20-valid-parentheses",
+      "252-meeting-rooms",
       "35-search-insert-position",
       "70-climbing-stairs"
     ],
@@ -260,6 +276,7 @@
       "2145-count-the-hidden-sequences",
       "215-kth-largest-element-in-an-array",
       "238-product-of-array-except-self",
+      "253-meeting-rooms-ii",
       "256-paint-house",
       "3-longest-substring-without-repeating-characters",
       "325-maximum-size-subarray-sum-equals-k",
@@ -377,6 +394,10 @@
     ],
     "136-single-number": [
       "$O(n)$"
+    ],
+    "253-meeting-rooms-ii": [
+      "$O(n \\log n) for sorting$",
+      "$O(n \\log n)$"
     ],
     "79-word-search": [
       "$O(M  \\cdot  N  \\cdot  3^L)$"

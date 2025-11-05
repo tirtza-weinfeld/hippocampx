@@ -47,6 +47,9 @@
   "problems/198-house-robber/bottom-up-suffix.py": [
     {"range": {"start": {"line": 2, "character": 13}, "end": {"line": 2, "character": 41}}, "nameRange": {"start": {"line": 2, "character": 13}, "end": {"line": 2, "character": 41}}, "qname": "problems.198-house-robber.bottom-up-suffix:rob.reversed(range(len(houses)))", "kind": "expression"}
   ],
+  "problems/2402-meeting-rooms-iii/solution.py": [
+    {"range": {"start": {"line": 20, "character": 11}, "end": {"line": 20, "character": 47}}, "nameRange": {"start": {"line": 20, "character": 11}, "end": {"line": 20, "character": 47}}, "qname": "problems.2402-meeting-rooms-iii.solution:mostBooked.max(range(n), key=count.__getitem__)", "kind": "expression"}
+  ],
   "problems/207-course-schedule/solution.py": [
     {"range": {"start": {"line": 7, "character": 12}, "end": {"line": 7, "character": 26}}, "nameRange": {"start": {"line": 7, "character": 12}, "end": {"line": 7, "character": 26}}, "qname": "problems.207-course-schedule.solution:Solution.canFinish.g[b].append(a)", "kind": "expression"},
     {"range": {"start": {"line": 8, "character": 12}, "end": {"line": 8, "character": 25}}, "nameRange": {"start": {"line": 8, "character": 12}, "end": {"line": 8, "character": 25}}, "qname": "problems.207-course-schedule.solution:Solution.canFinish.indeg[a] += 1", "kind": "expression"},

@@ -1,0 +1,16 @@
+```python meta="source=problems/253-meeting-rooms-ii/sweep-line.py"
+from collections import defaultdict
+
+def minMeetingRooms(intervals):
+
+    time = defaultdict(int)
+    for s, e in intervals:
+        time[s] += 1
+        time[e] -= 1
+
+    active = rooms = 0
+    for _, d in sorted(time.items()):
+        active += d
+        rooms = max(active, rooms)
+    return rooms
+```
