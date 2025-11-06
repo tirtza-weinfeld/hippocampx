@@ -91,6 +91,7 @@ const Problem79WordSearch = lazy(() => import('./79-word-search'))
 const Problem39CombinationSum = lazy(() => import('./39-combination-sum'))
 const Problem256PaintHouse = lazy(() => import('./256-paint-house'))
 const Problem54201Matrix = lazy(() => import('./542-01-matrix'))
+const Problem56MergeIntervals = lazy(() => import('./56-merge-intervals'))
 const Problem1011CapacityToShipPackagesWithinDDays = lazy(() => import('./1011-capacity-to-ship-packages-within-d-days'))
 const Problem208ImplementTriePrefixTree = lazy(() => import('./208-implement-trie-prefix-tree'))
 const Problem1000MinimumCostToMergeStones = lazy(() => import('./1000-minimum-cost-to-merge-stones'))
@@ -466,6 +467,11 @@ const problemComponents = {
     "542-01-matrix": (
       <Suspense key="542-01-matrix" fallback={<div className="p-4 text-gray-500">Loading...</div>}>
         <Problem54201Matrix />
+      </Suspense>
+    ),
+    "56-merge-intervals": (
+      <Suspense key="56-merge-intervals" fallback={<div className="p-4 text-gray-500">Loading...</div>}>
+        <Problem56MergeIntervals />
       </Suspense>
     ),
     "1011-capacity-to-ship-packages-within-d-days": (

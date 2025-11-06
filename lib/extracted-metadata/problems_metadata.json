@@ -1335,7 +1335,7 @@
     "253-meeting-rooms-ii": {
       "time_stamps": {
         "created_at": "2025-11-05T10:36:51.032260",
-        "updated_at": "2025-11-05T12:08:54.085850"
+        "updated_at": "2025-11-06T11:48:32.309893"
       },
       "solutions": {
         "two-pointer-interval-sort-and-scan.py": {
@@ -1452,6 +1452,25 @@
       "leetcode": "https://leetcode.com/problems/01-matrix",
       "difficulty": "medium",
       "topics": ["bfs"]
+    },
+    "56-merge-intervals": {
+      "time_stamps": {
+        "created_at": "2025-11-06T11:51:03.332938",
+        "updated_at": "2025-11-06T12:45:37.392018"
+      },
+      "solutions": {
+        "solution.py": {
+          "code": "def merge(intervals: list[list[int]]) -> list[list[int]]:\n    intervals.sort()\n    merged = []\n    start, end = intervals[0]\n    for s, e in intervals[1:]:\n        if s > end:\n            merged.append([start, end])\n            start, end = s, e\n        else:\n            end = max(e, end)\n    merged.append(start,end)        \n    return merged        "
+        },
+        "same_idea.py": {
+          "code": "def merge(intervals: list[list[int]]) -> list[list[int]]:\n    intervals.sort()\n    merged = [intervals[0]]\n    for s, e in intervals[1:]:\n        if s > merged[-1][1]:\n            merged.append([s, e])\n        else:\n            merged[-1][1] = max(merged[-1][1], e)\n    return merged"
+        }
+      },
+      "title": "Merge Intervals",
+      "definition": "Given an array of intervals where intervals[i] = [starti, endi], merge all overlapping intervals, and return an array of the non-overlapping intervals that cover all the intervals in the input",
+      "leetcode": "https://leetcode.com/problems/merge-intervals/",
+      "difficulty": "medium",
+      "topics": ["interval"]
     },
     "1011-capacity-to-ship-packages-within-d-days": {
       "time_stamps": {

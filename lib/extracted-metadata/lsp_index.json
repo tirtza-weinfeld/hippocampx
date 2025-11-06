@@ -5080,6 +5080,54 @@
       ]
     },
     {
+      "uri": "problems/56-merge-intervals/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/56-merge-intervals/same_idea.py",
+      "symbols": [
+        {
+          "name": "merge",
+          "detail": "merge(intervals: list[list[int]]) -> list[list[int]]",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 8, "character": 17}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 9
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/56-merge-intervals/solution.py",
+      "symbols": [
+        {
+          "name": "merge",
+          "detail": "merge(intervals: list[list[int]]) -> list[list[int]]",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 11, "character": 17}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 9
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
       "uri": "problems/560-subarray-sum-equals-k/__init__.py",
       "symbols": []
     },

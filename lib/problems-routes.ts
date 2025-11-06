@@ -53,6 +53,7 @@ export const PROBLEMS_ROUTES: NavigationItem[] = [
             { title: 'Meeting Rooms', href: '/problems/252-meeting-rooms', icon: Code, color: "text-green-500", bgColor: "bg-green-500/10" },
             { title: 'Meeting Rooms II', href: '/problems/253-meeting-rooms-ii', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
             { title: 'Meeting Rooms III', href: '/problems/2402-meeting-rooms-iii', icon: Code, color: "text-red-500", bgColor: "bg-red-500/10" },
+            { title: 'Merge Intervals', href: '/problems/56-merge-intervals', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
             { title: 'Minimum Cost to Cut a Stick', href: '/problems/1547-minimum-cost-to-cut-a-stick', icon: Code, color: "text-red-500", bgColor: "bg-red-500/10" },
             { title: 'Minimum Cost to Merge Stones', href: '/problems/1000-minimum-cost-to-merge-stones', icon: Code, color: "text-red-500", bgColor: "bg-red-500/10" },
             { title: 'Minimum Path Sum', href: '/problems/64-minimum-path-sum', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },

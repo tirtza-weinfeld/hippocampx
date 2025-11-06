@@ -174,7 +174,8 @@
     "interval": [
       "2402-meeting-rooms-iii",
       "252-meeting-rooms",
-      "253-meeting-rooms-ii"
+      "253-meeting-rooms-ii",
+      "56-merge-intervals"
     ],
     "greedy": [
       "122-best-time-to-buy-and-sell-stock-ii"
@@ -296,6 +297,7 @@
       "53-maximum-subarray",
       "542-01-matrix",
       "547-number-of-provinces",
+      "56-merge-intervals",
       "560-subarray-sum-equals-k",
       "64-minimum-path-sum",
       "648-replace-words",
