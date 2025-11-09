@@ -1,0 +1,106 @@
+# Maximum Profit in Job Scheduling
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="hard" />
+
+<PillList pills={["interval", "binary-search", "dp"]} />
+
+[1235. Maximum Profit in Job Scheduling](https://leetcode.com/problems/maximum-profit-in-job-scheduling/)
+
+## [!(ProblemDefinition)] Definition
+
+Schedule non-overlapping jobs with given start, end, and profit to maximize total profit
+
+## Top Down Solution
+
+### [!(ProblemTimeComplexity)] Time Complexity
+
+- $O(n \log n)$:
+    - Sorting the jobs → $O(n \log n)$
+    - For each of the `n` jobs, the top-down DP does one binary search (`bisect_left`) → $O(\log n)$ per call.
+    - Each state is memoized once → total $O(n \log n)$.
+
+### [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/1235-maximum-profit-in-job-scheduling/top_down.py"
+from bisect import bisect_left
+
+def maximum_profit_in_job_scheduling(
+    startTime: list[int], endTime: list[int], profit: list[int]
+) -> int:
+
+    jobs = sorted(zip(startTime, endTime, profit))
+    memo = {}
+
+    def dp(i: int) -> int:
+        if i == len(jobs):
+            return 0
+        if i not in memo:
+            _, e, p = jobs[i]
+            memo[i] = max(dp(i + 1), p + dp(bisect_left(jobs, e, key=lambda x: x[0])))
+        return memo[i]
+
+    return dp(0)
+```
+
+
+---
+
+## Bottom Up Solution
+
+### [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/1235-maximum-profit-in-job-scheduling/bottom_up.py"
+from bisect import bisect_right
+
+def maximum_profit_in_job_scheduling(
+    startTime: list[int], endTime: list[int], profit: list[int]
+) -> int:
+
+    jobs = sorted(zip(startTime, endTime, profit), key=lambda x: x[1])
+
+    ends, dp = [0], [0]
+
+    for s, e, p in jobs:
+
+        i = bisect_right(ends, s) - 1
+        take = dp[i] + p
+
+        if take > dp[-1]:
+            ends.append(e)
+            dp.append(take)
+
+    return dp[-1]
+```
+
+
+---
+
+## Top Down Explicit Solution
+
+### [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/1235-maximum-profit-in-job-scheduling/top_down_explicit.py"
+from bisect import bisect_left
+
+def maximum_profit_in_job_scheduling(
+    startTime: list[int], endTime: list[int], profit: list[int]
+) -> int:
+
+    jobs = sorted([x for x in zip(startTime, endTime, profit)], key=lambda x: x[0])
+    starts = [s for s, _, _ in jobs]
+
+    n, memo = len(startTime), {}
+    nextIdx = [bisect_left(starts, jobs[i][1]) for i in range(n)]
+
+    def dp(i):
+        if i >= n:
+            return 0
+        if i not in memo:
+            memo[i] = max(jobs[i][2] + dp(nextIdx[i]), dp(i + 1))
+        return memo[i]
+
+    return dp(0)
+```
+

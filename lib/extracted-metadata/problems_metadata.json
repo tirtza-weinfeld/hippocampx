@@ -415,6 +415,35 @@
       "difficulty": "medium",
       "topics": ["multi-source bfs", "bfs"]
     },
+    "1235-maximum-profit-in-job-scheduling": {
+      "time_stamps": {
+        "created_at": "2025-11-09T11:21:22.314054",
+        "updated_at": "2025-11-09T14:10:10.607119"
+      },
+      "solutions": {
+        "top_down.py": {
+          "expressions": {
+            "dp(i + 1)": "Skip this job and move to the next one\n    'bisect_left(jobs, e, key=lambda x: x[0]))': Find the index of the first job whose start time is greater than or equal to the end time `e` of this job\n    'p + dp(': Take this job and move accordingly\n    'sorted(zip(startTime, endTime, profit))': pack and sort by start so we can jump to the next non-overlapping job"
+          },
+          "variables": {
+            "memo": "memo[i] = max profit starting from job i"
+          },
+          "time_complexity": "O(n log n):\n    Sorting the jobs → O(n log n)\n    For each of the `n` jobs, the top-down DP does one binary search (`bisect_left`) → O(log n) per call.\n    Each state is memoized once → total O(n log n).",
+          "code": "from bisect import bisect_left\n\ndef maximum_profit_in_job_scheduling(\n    startTime: list[int], endTime: list[int], profit: list[int]\n) -> int:\n\n    jobs = sorted(zip(startTime, endTime, profit))\n    memo = {}\n\n    def dp(i: int) -> int:\n        if i == len(jobs):\n            return 0\n        if i not in memo:\n            _, e, p = jobs[i]\n            memo[i] = max(dp(i + 1), p + dp(bisect_left(jobs, e, key=lambda x: x[0])))\n        return memo[i]\n\n    return dp(0)"
+        },
+        "bottom_up.py": {
+          "code": "from bisect import bisect_right\n\ndef maximum_profit_in_job_scheduling(\n    startTime: list[int], endTime: list[int], profit: list[int]\n) -> int:\n\n    jobs = sorted(zip(startTime, endTime, profit), key=lambda x: x[1])\n\n    ends, dp = [0], [0]\n\n    for s, e, p in jobs:\n\n        i = bisect_right(ends, s) - 1\n        take = dp[i] + p\n\n        if take > dp[-1]:\n            ends.append(e)\n            dp.append(take)\n\n    return dp[-1]"
+        },
+        "top_down_explicit.py": {
+          "code": "from bisect import bisect_left\n\ndef maximum_profit_in_job_scheduling(\n    startTime: list[int], endTime: list[int], profit: list[int]\n) -> int:\n\n    jobs = sorted([x for x in zip(startTime, endTime, profit)], key=lambda x: x[0])\n    starts = [s for s, _, _ in jobs]\n\n    n, memo = len(startTime), {}\n    nextIdx = [bisect_left(starts, jobs[i][1]) for i in range(n)]\n\n    def dp(i):\n        if i >= n:\n            return 0\n        if i not in memo:\n            memo[i] = max(jobs[i][2] + dp(nextIdx[i]), dp(i + 1))\n        return memo[i]\n\n    return dp(0)"
+        }
+      },
+      "title": "Maximum Profit in Job Scheduling",
+      "definition": "Schedule non-overlapping jobs with given start, end, and profit to maximize total profit",
+      "leetcode": "https://leetcode.com/problems/maximum-profit-in-job-scheduling/",
+      "difficulty": "hard",
+      "topics": ["interval", "binary-search", "dp"]
+    },
     "547-number-of-provinces": {
       "time_stamps": {
         "created_at": "2025-10-27T11:31:50.829497",

@@ -1,0 +1,22 @@
+```python meta="source=problems/1235-maximum-profit-in-job-scheduling/bottom_up.py"
+from bisect import bisect_right
+
+def maximum_profit_in_job_scheduling(
+    startTime: list[int], endTime: list[int], profit: list[int]
+) -> int:
+
+    jobs = sorted(zip(startTime, endTime, profit), key=lambda x: x[1])
+
+    ends, dp = [0], [0]
+
+    for s, e, p in jobs:
+
+        i = bisect_right(ends, s) - 1
+        take = dp[i] + p
+
+        if take > dp[-1]:
+            ends.append(e)
+            dp.append(take)
+
+    return dp[-1]
+```

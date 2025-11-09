@@ -2109,6 +2109,112 @@
       ]
     },
     {
+      "uri": "problems/1235-maximum-profit-in-job-scheduling/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/1235-maximum-profit-in-job-scheduling/bottom_up.py",
+      "symbols": [
+        {
+          "name": "maximum_profit_in_job_scheduling",
+          "detail": "maximum_profit_in_job_scheduling(startTime: list[int], endTime: list[int], profit: list[int]) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 19, "character": 17}},
+          "nameRange": {
+            "start": {
+              "line": 2,
+              "character": 4
+            },
+            "end": {
+              "line": 2,
+              "character": 36
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/1235-maximum-profit-in-job-scheduling/top_down.py",
+      "symbols": [
+        {
+          "name": "maximum_profit_in_job_scheduling",
+          "detail": "maximum_profit_in_job_scheduling(startTime: list[int], endTime: list[int], profit: list[int]) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 17, "character": 16}},
+          "nameRange": {
+            "start": {
+              "line": 2,
+              "character": 4
+            },
+            "end": {
+              "line": 2,
+              "character": 36
+            }
+          },
+          "children": [
+            {
+              "name": "dp",
+              "detail": "dp(i: int) -> int",
+              "kind": 12,
+              "range": {"start": {"line": 9, "character": 4}, "end": {"line": 15, "character": 22}},
+              "nameRange": {
+                "start": {
+                  "line": 9,
+                  "character": 8
+                },
+                "end": {
+                  "line": 9,
+                  "character": 10
+                }
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "uri": "problems/1235-maximum-profit-in-job-scheduling/top_down_explicit.py",
+      "symbols": [
+        {
+          "name": "maximum_profit_in_job_scheduling",
+          "detail": "maximum_profit_in_job_scheduling(startTime: list[int], endTime: list[int], profit: list[int]) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 19, "character": 16}},
+          "nameRange": {
+            "start": {
+              "line": 2,
+              "character": 4
+            },
+            "end": {
+              "line": 2,
+              "character": 36
+            }
+          },
+          "children": [
+            {
+              "name": "dp",
+              "detail": "dp(i)",
+              "kind": 12,
+              "range": {"start": {"line": 12, "character": 4}, "end": {"line": 17, "character": 22}},
+              "nameRange": {
+                "start": {
+                  "line": 12,
+                  "character": 8
+                },
+                "end": {
+                  "line": 12,
+                  "character": 10
+                }
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
       "uri": "problems/124-binary-tree-maximum-path-sum/__init__.py",
       "symbols": []
     },

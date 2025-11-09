@@ -209,6 +209,18 @@
     "updatedAt": "2025-11-02T16:50:12.272026"
   },
   {
+    "id": "1235-maximum-profit-in-job-scheduling",
+    "title": "Maximum Profit in Job Scheduling",
+    "difficulty": "hard",
+    "topics": [
+      "interval",
+      "binary-search",
+      "dp"
+    ],
+    "createdAt": "2025-11-09T11:21:22.314054",
+    "updatedAt": "2025-11-09T14:10:10.607119"
+  },
+  {
     "id": "547-number-of-provinces",
     "title": "Number of Provinces",
     "difficulty": "medium",

@@ -18,6 +18,17 @@
     7,
     18
   ],
+  "problems/1235-maximum-profit-in-job-scheduling/top_down.py": [
+    10
+  ],
+  "problems/1235-maximum-profit-in-job-scheduling/bottom_up.py": [
+    6,
+    8,
+    12,
+    13,
+    15,
+    19
+  ],
   "problems/363-max-sum-of-rectangle-no-larger-than-k/solution.py": [
     11,
     14,

@@ -49,6 +49,7 @@ export const PROBLEMS_ROUTES: NavigationItem[] = [
             { title: 'Make Sum Divisible by P', href: '/problems/1590-make-sum-divisible-by-p', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
             { title: 'Max Sum of Rectangle No Larger Than K', href: '/problems/363-max-sum-of-rectangle-no-larger-than-k', icon: Code, color: "text-red-500", bgColor: "bg-red-500/10" },
             { title: 'Maximum Product Subarray', href: '/problems/152-maximum-product-subarray', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
+            { title: 'Maximum Profit in Job Scheduling', href: '/problems/1235-maximum-profit-in-job-scheduling', icon: Code, color: "text-red-500", bgColor: "bg-red-500/10" },
             { title: 'Maximum Size Subarray Sum Equals k', href: '/problems/325-maximum-size-subarray-sum-equals-k', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
             { title: 'Maximum Subarray', href: '/problems/53-maximum-subarray', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
             { title: 'Maximum Sum of Circular Subarray', href: '/problems/918-maximum-sum-of-circular-subarray', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },

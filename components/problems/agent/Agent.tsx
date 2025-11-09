@@ -40,6 +40,7 @@ const Problem133CloneGraph = lazy(() => import('./133-clone-graph'))
 const Problem238ProductOfArrayExceptSelf = lazy(() => import('./238-product-of-array-except-self'))
 const Problem523ContinuousSubarraySum = lazy(() => import('./523-continuous-subarray-sum'))
 const Problem1162AsFarFromLandAsPossible = lazy(() => import('./1162-as-far-from-land-as-possible'))
+const Problem1235MaximumProfitInJobScheduling = lazy(() => import('./1235-maximum-profit-in-job-scheduling'))
 const Problem547NumberOfProvinces = lazy(() => import('./547-number-of-provinces'))
 const Problem518CoinChangeIi = lazy(() => import('./518-coin-change-ii'))
 const Problem416PartitionEqualSubsetSum = lazy(() => import('./416-partition-equal-subset-sum'))
@@ -215,6 +216,11 @@ const problemComponents = {
     "1162-as-far-from-land-as-possible": (
       <Suspense key="1162-as-far-from-land-as-possible" fallback={<div className="p-4 text-gray-500">Loading...</div>}>
         <Problem1162AsFarFromLandAsPossible />
+      </Suspense>
+    ),
+    "1235-maximum-profit-in-job-scheduling": (
+      <Suspense key="1235-maximum-profit-in-job-scheduling" fallback={<div className="p-4 text-gray-500">Loading...</div>}>
+        <Problem1235MaximumProfitInJobScheduling />
       </Suspense>
     ),
     "547-number-of-provinces": (

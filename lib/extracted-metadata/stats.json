@@ -72,6 +72,7 @@
     "dp": [
       "1000-minimum-cost-to-merge-stones",
       "120-triangle",
+      "1235-maximum-profit-in-job-scheduling",
       "1406-stone-game-iii",
       "1510-stone-game-iv",
       "1547-minimum-cost-to-cut-a-stick",
@@ -94,6 +95,7 @@
     ],
     "binary-search": [
       "1011-capacity-to-ship-packages-within-d-days",
+      "1235-maximum-profit-in-job-scheduling",
       "153-find-minimum-in-rotated-sorted-array",
       "33-search-in-rotated-sorted-array",
       "34-find-first-and-last-position-of-element-in-sorted-array",
@@ -125,6 +127,16 @@
     "multi-source bfs": [
       "1162-as-far-from-land-as-possible",
       "994-rotting-oranges"
+    ],
+    "interval": [
+      "1094-car-pooling",
+      "1235-maximum-profit-in-job-scheduling",
+      "2402-meeting-rooms-iii",
+      "252-meeting-rooms",
+      "253-meeting-rooms-ii",
+      "435-non-overlapping-intervals",
+      "56-merge-intervals",
+      "57-insert-interval"
     ],
     "dsu": [
       "547-number-of-provinces",
@@ -171,15 +183,6 @@
     "binary-tree": [
       "102-binary-tree-level-order-traversal"
     ],
-    "interval": [
-      "1094-car-pooling",
-      "2402-meeting-rooms-iii",
-      "252-meeting-rooms",
-      "253-meeting-rooms-ii",
-      "435-non-overlapping-intervals",
-      "56-merge-intervals",
-      "57-insert-interval"
-    ],
     "greedy": [
       "122-best-time-to-buy-and-sell-stock-ii",
       "435-non-overlapping-intervals"
@@ -225,6 +228,7 @@
     "hard": [
       "1000-minimum-cost-to-merge-stones",
       "123-best-time-to-buy-and-sell-stock-iii",
+      "1235-maximum-profit-in-job-scheduling",
       "124-binary-tree-maximum-path-sum",
       "127-word-ladder",
       "1293-shortest-path-in-a-grid-with-obstacles-elimination",
@@ -351,6 +355,9 @@
     ],
     "238-product-of-array-except-self": [
       "$O(n)$"
+    ],
+    "1235-maximum-profit-in-job-scheduling": [
+      "$O(n \\log n)$"
     ],
     "547-number-of-provinces": [
       "$O(n^2)$"
