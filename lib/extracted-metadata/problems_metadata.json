@@ -1371,6 +1371,28 @@
       "difficulty": "medium",
       "topics": ["dp"]
     },
+    "435-non-overlapping-intervals": {
+      "time_stamps": {
+        "created_at": "2025-11-09T08:42:36.949255",
+        "updated_at": "2025-11-09T11:15:21.168322"
+      },
+      "solutions": {
+        "concise.py": {
+          "code": "def eraseOverlapIntervals(intervals: list[list[int]]) -> int:\n    intervals.sort(key=lambda x: x[1])\n    end, count = intervals[0][1], 0\n    for s, e in intervals[1:]:\n        count += s < end\n        end = end if s < end else e\n    return count"
+        },
+        "solution.py": {
+          "intuition": "This greedy solution is correct because sorting by *[1!]end* time ensures each interval chosen leaves the most room for future ones\n    Reasoning:\n            After sorting by *end* time, *end* tracks the boundary of the last non-overlapping interval.\n                If the next start `s < end`, it *[1!]overlaps* → must remove one *[1!](increment count)*.\n                Otherwise, update `end = e` *[3!](keep this interval).*\n    This guarantees the maximum number of non-overlapping intervals remain — equivalently, minimum removals.",
+          "time_complexity": "O(n log n):\n        for the sorting",
+          "code": "def eraseOverlapIntervals(intervals: list[list[int]]) -> int:\n\n    intervals.sort(key=lambda x: x[1])\n    end, count = intervals[0][1], 0\n\n    for s, e in intervals[1:]:\n        if s < end:\n            count += 1\n        else:\n            end = e\n    return count"
+        }
+      },
+      "title": "Non-overlapping Intervals",
+      "definition": "Given an array of intervals intervals where intervals[i] = [starti, endi], return the minimum number of intervals you need to remove to make the rest of the intervals non-overlapping",
+      "leetcode": "https://leetcode.com/problems/non-overlapping-intervals/",
+      "difficulty": "medium",
+      "topics": ["interval", "greedy"],
+      "group": [["solution.py"], ["concise.py"]]
+    },
     "79-word-search": {
       "time_stamps": {
         "created_at": "2025-09-12T16:05:16.850224",
@@ -1452,6 +1474,26 @@
       "leetcode": "https://leetcode.com/problems/01-matrix",
       "difficulty": "medium",
       "topics": ["bfs"]
+    },
+    "57-insert-interval": {
+      "time_stamps": {
+        "created_at": "2025-11-09T09:49:28.315597",
+        "updated_at": "2025-11-09T10:40:40.476457"
+      },
+      "solutions": {
+        "concise.py": {
+          "code": "def insert(intervals: list[list[int]], new: list[int]) -> list[list[int]]:\n    s, e = new\n    left  = [i for i in intervals if i[1] < s]\n    right = [i for i in intervals if i[0] > e]\n    mid   = [i for i in intervals if not (i[1] < s or i[0] > e)]\n\n    if mid:\n        s = min(s, mid[0][0])\n        e = max(e, mid[-1][1])\n    return left + [[s, e]] + right"
+        },
+        "solution.py": {
+          "code": "def insert(intervals: list[list[int]], new: list[int]) -> list[list[int]]:\n    res = []\n    s, e = new\n    i, n = 0, len(intervals)\n\n    while i < n and intervals[i][1] < s:\n        res.append(intervals[i])\n        i += 1\n\n    while i < n and intervals[i][0] <= e:\n        s = min(s, intervals[i][0])\n        e = max(e, intervals[i][1])\n        i += 1\n    res.append([s, e])\n\n    res.extend(intervals[i:])\n    return res"
+        }
+      },
+      "title": "Insert Interval",
+      "definition": "Insert a new interval into a sorted list of non-overlapping intervals, merging any overlaps so the result stays sorted and disjoint",
+      "leetcode": "https://leetcode.com/problems/insert-interval",
+      "difficulty": "medium",
+      "topics": ["interval"],
+      "group": [["solution.py"], ["concise.py"]]
     },
     "56-merge-intervals": {
       "time_stamps": {
@@ -1930,6 +1972,22 @@
       "leetcode": "https://leetcode.com/problems/word-ladder",
       "difficulty": "hard",
       "topics": ["bfs"]
+    },
+    "1094-car-pooling": {
+      "time_stamps": {
+        "created_at": "2025-11-09T10:43:42.393056",
+        "updated_at": "2025-11-09T11:14:45.653176"
+      },
+      "solutions": {
+        "solution.py": {
+          "code": "from collections import defaultdict\n\ndef car_pooling(trips, capacity):\n    location = defaultdict(int)\n    for p, s, e in trips:\n        location[s] += p\n        location[e] -= p\n\n    onboard = 0\n    for _, p in sorted(location.items()):\n        onboard += p\n        if onboard > capacity:\n            return False\n    return True"
+        }
+      },
+      "title": "Car Pooling",
+      "definition": "Given **$trips[i] = [numPassengers_i, from_i, to_i]$** and a **car capacity**,     determine if the car ever exceeds its capacity while moving east\n    *[19!]The locations  *[2!]$from_i$, $to_i$*  are given as the number of kilometers due east from the car's *[2!]initial* location*",
+      "leetcode": "https://leetcode.com/problems/car-pooling",
+      "difficulty": "medium",
+      "topics": ["interval"]
     }
   },
   "core": {

@@ -68,10 +68,12 @@ export const problemComponents = {
   '1514-path-with-maximum-probability': () => import('./1514-path-with-maximum-probability.mdx'),
   '253-meeting-rooms-ii': () => import('./253-meeting-rooms-ii.mdx'),
   '72-edit-distance': () => import('./72-edit-distance.mdx'),
+  '435-non-overlapping-intervals': () => import('./435-non-overlapping-intervals.mdx'),
   '79-word-search': () => import('./79-word-search.mdx'),
   '39-combination-sum': () => import('./39-combination-sum.mdx'),
   '256-paint-house': () => import('./256-paint-house.mdx'),
   '542-01-matrix': () => import('./542-01-matrix.mdx'),
+  '57-insert-interval': () => import('./57-insert-interval.mdx'),
   '56-merge-intervals': () => import('./56-merge-intervals.mdx'),
   '1011-capacity-to-ship-packages-within-d-days': () => import('./1011-capacity-to-ship-packages-within-d-days.mdx'),
   '208-implement-trie-prefix-tree': () => import('./208-implement-trie-prefix-tree.mdx'),
@@ -92,6 +94,7 @@ export const problemComponents = {
   '36-valid-sudoku': () => import('./36-valid-sudoku.mdx'),
   '743-network-delay-time': () => import('./743-network-delay-time.mdx'),
   '127-word-ladder': () => import('./127-word-ladder.mdx'),
+  '1094-car-pooling': () => import('./1094-car-pooling.mdx'),
 } as const
 
 export const problemSlugs = [
@@ -162,10 +165,12 @@ export const problemSlugs = [
   '1514-path-with-maximum-probability',
   '253-meeting-rooms-ii',
   '72-edit-distance',
+  '435-non-overlapping-intervals',
   '79-word-search',
   '39-combination-sum',
   '256-paint-house',
   '542-01-matrix',
+  '57-insert-interval',
   '56-merge-intervals',
   '1011-capacity-to-ship-packages-within-d-days',
   '208-implement-trie-prefix-tree',
@@ -186,6 +191,7 @@ export const problemSlugs = [
   '36-valid-sudoku',
   '743-network-delay-time',
   '127-word-ladder',
+  '1094-car-pooling',
 ] as const
 
 export type ProblemSlug = typeof problemSlugs[number]

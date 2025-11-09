@@ -1,0 +1,10 @@
+"""
+Title: Car Pooling
+Definition: Given **$trips[i] = [numPassengers_i, from_i, to_i]$** and a **car capacity**, \
+    determine if the car ever exceeds its capacity while moving east
+    *[19!]The locations  *[2!]$from_i$, $to_i$*  are given as the number of kilometers due east from the car's *[2!]initial* location*
+Leetcode: https://leetcode.com/problems/car-pooling
+Difficulty: medium
+Topics: [interval]
+"""
+

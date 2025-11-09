@@ -1,0 +1,12 @@
+```python meta="source=problems/57-insert-interval/concise.py"
+def insert(intervals: list[list[int]], new: list[int]) -> list[list[int]]:
+    s, e = new
+    left  = [i for i in intervals if i[1] < s]
+    right = [i for i in intervals if i[0] > e]
+    mid   = [i for i in intervals if not (i[1] < s or i[0] > e)]
+
+    if mid:
+        s = min(s, mid[0][0])
+        e = max(e, mid[-1][1])
+    return left + [[s, e]] + right
+```

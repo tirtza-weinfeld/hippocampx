@@ -172,13 +172,17 @@
       "102-binary-tree-level-order-traversal"
     ],
     "interval": [
+      "1094-car-pooling",
       "2402-meeting-rooms-iii",
       "252-meeting-rooms",
       "253-meeting-rooms-ii",
-      "56-merge-intervals"
+      "435-non-overlapping-intervals",
+      "56-merge-intervals",
+      "57-insert-interval"
     ],
     "greedy": [
-      "122-best-time-to-buy-and-sell-stock-ii"
+      "122-best-time-to-buy-and-sell-stock-ii",
+      "435-non-overlapping-intervals"
     ],
     "topological-sort": [
       "207-course-schedule",
@@ -254,6 +258,7 @@
     "medium": [
       "1011-capacity-to-ship-packages-within-d-days",
       "102-binary-tree-level-order-traversal",
+      "1094-car-pooling",
       "1143-longest-common-subsequence",
       "1162-as-far-from-land-as-possible",
       "120-triangle",
@@ -290,6 +295,7 @@
       "39-combination-sum",
       "394-decode-string",
       "416-partition-equal-subset-sum",
+      "435-non-overlapping-intervals",
       "46-permutations",
       "518-coin-change-ii",
       "523-continuous-subarray-sum",
@@ -299,6 +305,7 @@
       "547-number-of-provinces",
       "56-merge-intervals",
       "560-subarray-sum-equals-k",
+      "57-insert-interval",
       "64-minimum-path-sum",
       "648-replace-words",
       "684-redundant-connection",
@@ -399,6 +406,9 @@
     ],
     "253-meeting-rooms-ii": [
       "$O(n \\log n) for sorting$",
+      "$O(n \\log n)$"
+    ],
+    "435-non-overlapping-intervals": [
       "$O(n \\log n)$"
     ],
     "79-word-search": [

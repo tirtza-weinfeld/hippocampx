@@ -1,0 +1,58 @@
+# Insert Interval
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="medium" />
+
+<PillList pills={["interval"]} />
+
+[57. Insert Interval](https://leetcode.com/problems/insert-interval)
+
+## [!(ProblemDefinition)] Definition
+
+Insert a new interval into a sorted list of non-overlapping intervals, merging any overlaps so the result stays sorted and disjoint
+
+## Solution Solution
+
+### [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/57-insert-interval/solution.py"
+def insert(intervals: list[list[int]], new: list[int]) -> list[list[int]]:
+    res = []
+    s, e = new
+    i, n = 0, len(intervals)
+
+    while i < n and intervals[i][1] < s:
+        res.append(intervals[i])
+        i += 1
+
+    while i < n and intervals[i][0] <= e:
+        s = min(s, intervals[i][0])
+        e = max(e, intervals[i][1])
+        i += 1
+    res.append([s, e])
+
+    res.extend(intervals[i:])
+    return res
+```
+
+
+---
+
+## Concise Solution
+
+### [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/57-insert-interval/concise.py"
+def insert(intervals: list[list[int]], new: list[int]) -> list[list[int]]:
+    s, e = new
+    left  = [i for i in intervals if i[1] < s]
+    right = [i for i in intervals if i[0] > e]
+    mid   = [i for i in intervals if not (i[1] < s or i[0] > e)]
+
+    if mid:
+        s = min(s, mid[0][0])
+        e = max(e, mid[-1][1])
+    return left + [[s, e]] + right
+```
+

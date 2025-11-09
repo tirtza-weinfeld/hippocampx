@@ -52,6 +52,18 @@
   "problems/1514-path-with-maximum-probability/dijkstra.py": [
     18
   ],
+  "problems/435-non-overlapping-intervals/solution.py": [
+    2,
+    3,
+    6,
+    8,
+    10
+  ],
+  "problems/57-insert-interval/solution.py": [
+    5,
+    9,
+    15
+  ],
   "problems/252-meeting-rooms/Interval-sort-and-scan.py": [
     1
   ],

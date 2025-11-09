@@ -1789,6 +1789,32 @@
       ]
     },
     {
+      "uri": "problems/1094-car-pooling/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/1094-car-pooling/solution.py",
+      "symbols": [
+        {
+          "name": "car_pooling",
+          "detail": "car_pooling(trips, capacity)",
+          "kind": 12,
+          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 13, "character": 15}},
+          "nameRange": {
+            "start": {
+              "line": 2,
+              "character": 4
+            },
+            "end": {
+              "line": 2,
+              "character": 15
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
       "uri": "problems/1143-longest-common-subsequence/__init__.py",
       "symbols": []
     },
@@ -4670,6 +4696,54 @@
       ]
     },
     {
+      "uri": "problems/435-non-overlapping-intervals/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/435-non-overlapping-intervals/concise.py",
+      "symbols": [
+        {
+          "name": "eraseOverlapIntervals",
+          "detail": "eraseOverlapIntervals(intervals: list[list[int]]) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 6, "character": 16}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 25
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/435-non-overlapping-intervals/solution.py",
+      "symbols": [
+        {
+          "name": "eraseOverlapIntervals",
+          "detail": "eraseOverlapIntervals(intervals: list[list[int]]) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 10, "character": 16}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 25
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
       "uri": "problems/46-permutations/__init__.py",
       "symbols": []
     },
@@ -5147,6 +5221,54 @@
             "end": {
               "line": 2,
               "character": 22
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/57-insert-interval/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/57-insert-interval/concise.py",
+      "symbols": [
+        {
+          "name": "insert",
+          "detail": "insert(intervals: list[list[int]], new: list[int]) -> list[list[int]]",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 9, "character": 34}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 10
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/57-insert-interval/solution.py",
+      "symbols": [
+        {
+          "name": "insert",
+          "detail": "insert(intervals: list[list[int]], new: list[int]) -> list[list[int]]",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 16, "character": 14}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 10
             }
           },
           "children": []

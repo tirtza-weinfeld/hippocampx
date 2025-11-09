@@ -87,10 +87,12 @@ const Problem210CourseScheduleIi = lazy(() => import('./210-course-schedule-ii')
 const Problem1514PathWithMaximumProbability = lazy(() => import('./1514-path-with-maximum-probability'))
 const Problem253MeetingRoomsIi = lazy(() => import('./253-meeting-rooms-ii'))
 const Problem72EditDistance = lazy(() => import('./72-edit-distance'))
+const Problem435NonOverlappingIntervals = lazy(() => import('./435-non-overlapping-intervals'))
 const Problem79WordSearch = lazy(() => import('./79-word-search'))
 const Problem39CombinationSum = lazy(() => import('./39-combination-sum'))
 const Problem256PaintHouse = lazy(() => import('./256-paint-house'))
 const Problem54201Matrix = lazy(() => import('./542-01-matrix'))
+const Problem57InsertInterval = lazy(() => import('./57-insert-interval'))
 const Problem56MergeIntervals = lazy(() => import('./56-merge-intervals'))
 const Problem1011CapacityToShipPackagesWithinDDays = lazy(() => import('./1011-capacity-to-ship-packages-within-d-days'))
 const Problem208ImplementTriePrefixTree = lazy(() => import('./208-implement-trie-prefix-tree'))
@@ -111,6 +113,7 @@ const Problem713SubarrayProductLessThanK = lazy(() => import('./713-subarray-pro
 const Problem36ValidSudoku = lazy(() => import('./36-valid-sudoku'))
 const Problem743NetworkDelayTime = lazy(() => import('./743-network-delay-time'))
 const Problem127WordLadder = lazy(() => import('./127-word-ladder'))
+const Problem1094CarPooling = lazy(() => import('./1094-car-pooling'))
 
 // Problem components mapped by ID for O(1) lookup
 const problemComponents = {
@@ -449,6 +452,11 @@ const problemComponents = {
         <Problem72EditDistance />
       </Suspense>
     ),
+    "435-non-overlapping-intervals": (
+      <Suspense key="435-non-overlapping-intervals" fallback={<div className="p-4 text-gray-500">Loading...</div>}>
+        <Problem435NonOverlappingIntervals />
+      </Suspense>
+    ),
     "79-word-search": (
       <Suspense key="79-word-search" fallback={<div className="p-4 text-gray-500">Loading...</div>}>
         <Problem79WordSearch />
@@ -467,6 +475,11 @@ const problemComponents = {
     "542-01-matrix": (
       <Suspense key="542-01-matrix" fallback={<div className="p-4 text-gray-500">Loading...</div>}>
         <Problem54201Matrix />
+      </Suspense>
+    ),
+    "57-insert-interval": (
+      <Suspense key="57-insert-interval" fallback={<div className="p-4 text-gray-500">Loading...</div>}>
+        <Problem57InsertInterval />
       </Suspense>
     ),
     "56-merge-intervals": (
@@ -567,6 +580,11 @@ const problemComponents = {
     "127-word-ladder": (
       <Suspense key="127-word-ladder" fallback={<div className="p-4 text-gray-500">Loading...</div>}>
         <Problem127WordLadder />
+      </Suspense>
+    ),
+    "1094-car-pooling": (
+      <Suspense key="1094-car-pooling" fallback={<div className="p-4 text-gray-500">Loading...</div>}>
+        <Problem1094CarPooling />
       </Suspense>
     )
   }

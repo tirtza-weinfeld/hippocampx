@@ -1,0 +1,63 @@
+# Non-overlapping Intervals
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="medium" />
+
+<PillList pills={["interval", "greedy"]} />
+
+[435. Non-overlapping Intervals](https://leetcode.com/problems/non-overlapping-intervals/)
+
+## [!(ProblemDefinition)] Definition
+
+Given an array of intervals intervals where intervals[i] = [starti, endi], return the minimum number of intervals you need to remove to make the rest of the intervals non-overlapping
+
+## Solution Solution
+
+### [!(ProblemIntuition)] Intuition
+
+- This greedy solution is correct because sorting by *[1!]end* time ensures each interval chosen leaves the most room for future ones
+    - Reasoning:
+            - After sorting by *end* time, *end* tracks the boundary of the last non-overlapping interval.
+                - If the next start `s < end`, it *[1!]overlaps* → must remove one *[1!](increment count)*.
+                - Otherwise, update `end = e` *[3!](keep this interval).*
+    - This guarantees the maximum number of non-overlapping intervals remain — equivalently, minimum removals.
+
+### [!(ProblemTimeComplexity)] Time Complexity
+
+- $O(n \log n)$:
+        - for the sorting
+
+### [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/435-non-overlapping-intervals/solution.py"
+def eraseOverlapIntervals(intervals: list[list[int]]) -> int:
+
+    intervals.sort(key=lambda x: x[1])
+    end, count = intervals[0][1], 0
+
+    for s, e in intervals[1:]:
+        if s < end:
+            count += 1
+        else:
+            end = e
+    return count
+```
+
+
+---
+
+## Concise Solution
+
+### [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/435-non-overlapping-intervals/concise.py"
+def eraseOverlapIntervals(intervals: list[list[int]]) -> int:
+    intervals.sort(key=lambda x: x[1])
+    end, count = intervals[0][1], 0
+    for s, e in intervals[1:]:
+        count += s < end
+        end = end if s < end else e
+    return count
+```
+

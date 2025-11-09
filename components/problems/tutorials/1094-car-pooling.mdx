@@ -1,0 +1,34 @@
+# Car Pooling
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="medium" />
+
+<PillList pills={["interval"]} />
+
+[1094. Car Pooling](https://leetcode.com/problems/car-pooling)
+
+## [!(ProblemDefinition)] Definition
+
+Given **$trips[i] = [numPassengers_i, from_i, to_i]$** and a **car capacity**,     determine if the car ever exceeds its capacity while moving east
+    *[19!]The locations  *[2!]$from_i$, $to_i$*  are given as the number of kilometers due east from the car's *[2!]initial* location*
+
+## [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/1094-car-pooling/solution.py"
+from collections import defaultdict
+
+def car_pooling(trips, capacity):
+    location = defaultdict(int)
+    for p, s, e in trips:
+        location[s] += p
+        location[e] -= p
+
+    onboard = 0
+    for _, p in sorted(location.items()):
+        onboard += p
+        if onboard > capacity:
+            return False
+    return True
+```
+

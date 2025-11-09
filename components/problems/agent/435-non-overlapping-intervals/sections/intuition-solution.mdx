@@ -1,0 +1,6 @@
+- This greedy solution is correct because sorting by *[1!]end* time ensures each interval chosen leaves the most room for future ones
+    - Reasoning:
+            - After sorting by *end* time, *end* tracks the boundary of the last non-overlapping interval.
+                - If the next start `s < end`, it *[1!]overlaps* → must remove one *[1!](increment count)*.
+                - Otherwise, update `end = e` *[3!](keep this interval).*
+    - This guarantees the maximum number of non-overlapping intervals remain — equivalently, minimum removals.
