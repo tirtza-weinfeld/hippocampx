@@ -11,7 +11,7 @@ export default async function Problem407TrappingRainWaterIi() {
       id="407-trapping-rain-water-ii"
       title="Trapping Rain Water II"
       difficulty="hard"
-      topics={["TODO"]}
+      topics={["dijkstra","heap"]}
       solutionFiles={["solution.py"]}
       defaultFile="solution.py"
       fileSectionMap={{"solution.py":["definition","codeSnippet"]}}

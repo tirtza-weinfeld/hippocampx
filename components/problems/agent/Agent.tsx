@@ -87,6 +87,7 @@ const Problem76MinimumWindowSubstring = lazy(() => import('./76-minimum-window-s
 const Problem84LargestRectangleInHistogram = lazy(() => import('./84-largest-rectangle-in-histogram'))
 const Problem136SingleNumber = lazy(() => import('./136-single-number'))
 const Problem210CourseScheduleIi = lazy(() => import('./210-course-schedule-ii'))
+const Problem1563StoneGameV = lazy(() => import('./1563-stone-game-v'))
 const Problem1514PathWithMaximumProbability = lazy(() => import('./1514-path-with-maximum-probability'))
 const Problem253MeetingRoomsIi = lazy(() => import('./253-meeting-rooms-ii'))
 const Problem72EditDistance = lazy(() => import('./72-edit-distance'))
@@ -453,6 +454,11 @@ const problemComponents = {
     "210-course-schedule-ii": (
       <Suspense key="210-course-schedule-ii" fallback={<div className="p-4 text-gray-500">Loading...</div>}>
         <Problem210CourseScheduleIi />
+      </Suspense>
+    ),
+    "1563-stone-game-v": (
+      <Suspense key="1563-stone-game-v" fallback={<div className="p-4 text-gray-500">Loading...</div>}>
+        <Problem1563StoneGameV />
       </Suspense>
     ),
     "1514-path-with-maximum-probability": (

@@ -4,6 +4,7 @@
       "1275-find-winner-on-a-tic-tac-toe-game",
       "1406-stone-game-iii",
       "1510-stone-game-iv",
+      "1563-stone-game-v",
       "348-design-tic-tac-toe",
       "36-valid-sudoku",
       "37-sudoku-solver",
@@ -22,6 +23,7 @@
     "dijkstra": [
       "1514-path-with-maximum-probability",
       "1631-path-with-minimum-effort",
+      "407-trapping-rain-water-ii",
       "743-network-delay-time",
       "778-swim-in-rising-water",
       "787-cheapest-flights-within-k-stops"
@@ -76,6 +78,7 @@
       "1406-stone-game-iii",
       "1510-stone-game-iv",
       "1547-minimum-cost-to-cut-a-stick",
+      "1563-stone-game-v",
       "256-paint-house",
       "312-burst-balloons",
       "53-maximum-subarray",
@@ -142,9 +145,11 @@
       "547-number-of-provinces",
       "684-redundant-connection"
     ],
-    "TODO": [
-      "407-trapping-rain-water-ii",
-      "42-trapping-rain-water"
+    "heap": [
+      "215-kth-largest-element-in-an-array",
+      "2402-meeting-rooms-iii",
+      "347-top-k-frequent-elements",
+      "407-trapping-rain-water-ii"
     ],
     "knapsack": [
       "518-coin-change-ii"
@@ -167,6 +172,9 @@
       "51-n-queens",
       "79-word-search"
     ],
+    "two-pointer": [
+      "42-trapping-rain-water"
+    ],
     "interval-dp": [
       "1547-minimum-cost-to-cut-a-stick",
       "312-burst-balloons"
@@ -174,11 +182,6 @@
     "bit-manipulation": [
       "136-single-number",
       "191-number-of-1-bits"
-    ],
-    "heap": [
-      "215-kth-largest-element-in-an-array",
-      "2402-meeting-rooms-iii",
-      "347-top-k-frequent-elements"
     ],
     "min-heap": [
       "215-kth-largest-element-in-an-array",
@@ -239,6 +242,7 @@
       "1406-stone-game-iii",
       "1510-stone-game-iv",
       "1547-minimum-cost-to-cut-a-stick",
+      "1563-stone-game-v",
       "188-best-time-to-buy-and-sell-stock-iv",
       "212-word-search-ii",
       "2402-meeting-rooms-iii",
@@ -420,6 +424,9 @@
     ],
     "136-single-number": [
       "$O(n)$"
+    ],
+    "1563-stone-game-v": [
+      "$O(n^2)$"
     ],
     "253-meeting-rooms-ii": [
       "$O(n \\log n) for sorting$",

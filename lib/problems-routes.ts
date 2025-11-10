@@ -87,6 +87,7 @@ export const PROBLEMS_ROUTES: NavigationItem[] = [
             { title: 'Snakes and Ladders', href: '/problems/909-snakes-and-ladders', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
             { title: 'Stone Game III', href: '/problems/1406-stone-game-iii', icon: Code, color: "text-red-500", bgColor: "bg-red-500/10" },
             { title: 'Stone Game IV', href: '/problems/1510-stone-game-iv', icon: Code, color: "text-red-500", bgColor: "bg-red-500/10" },
+            { title: 'Stone Game V', href: '/problems/1563-stone-game-v', icon: Code, color: "text-red-500", bgColor: "bg-red-500/10" },
             { title: 'Subarray Sum Equals K', href: '/problems/560-subarray-sum-equals-k', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
             { title: 'Subarray Sums Divisible by K', href: '/problems/974-subarray-sums-divisible-by-k', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
             { title: 'Sudoku Solver', href: '/problems/37-sudoku-solver', icon: Code, color: "text-red-500", bgColor: "bg-red-500/10" },

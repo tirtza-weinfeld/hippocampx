@@ -235,10 +235,11 @@
     "title": "Trapping Rain Water II",
     "difficulty": "hard",
     "topics": [
-      "TODO"
+      "dijkstra",
+      "heap"
     ],
     "createdAt": "2025-11-10T09:05:17.629545",
-    "updatedAt": "2025-11-10T12:40:33.604407"
+    "updatedAt": "2025-11-10T19:18:19.976012"
   },
   {
     "id": "518-coin-change-ii",
@@ -378,10 +379,10 @@
     "title": "Trapping Rain Water",
     "difficulty": "hard",
     "topics": [
-      "TODO"
+      "two-pointer"
     ],
     "createdAt": "2025-11-10T09:04:29.440058",
-    "updatedAt": "2025-11-10T11:14:34.561646"
+    "updatedAt": "2025-11-10T19:21:27.871578"
   },
   {
     "id": "560-subarray-sum-equals-k",
@@ -699,6 +700,17 @@
     ],
     "createdAt": "2025-10-28T11:22:57.625379",
     "updatedAt": "2025-10-28T11:32:15.910635"
+  },
+  {
+    "id": "1563-stone-game-v",
+    "title": "Stone Game V",
+    "difficulty": "hard",
+    "topics": [
+      "dp",
+      "game"
+    ],
+    "createdAt": "2025-11-10T19:31:01.397119",
+    "updatedAt": "2025-11-10T21:44:00.716672"
   },
   {
     "id": "1514-path-with-maximum-probability",

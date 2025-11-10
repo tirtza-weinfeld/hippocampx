@@ -15,7 +15,7 @@ export default async function Problem42TrappingRainWater() {
       id="42-trapping-rain-water"
       title="Trapping Rain Water"
       difficulty="hard"
-      topics={["TODO"]}
+      topics={["two-pointer"]}
       solutionFiles={["two-pointer.py","forward-fill-with-tail-closure.py"]}
       defaultFile="two-pointer.py"
       fileSectionMap={{"two-pointer.py":["definition","codeSnippet","intuition","timeComplexity"],"forward-fill-with-tail-closure.py":["definition","codeSnippet","timeComplexity"]}}
