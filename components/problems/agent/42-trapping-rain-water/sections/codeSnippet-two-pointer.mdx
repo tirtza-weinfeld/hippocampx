@@ -1,0 +1,16 @@
+```python meta="source=problems/42-trapping-rain-water/two-pointer.py"
+def trap(height: list[int]) -> int:
+    l, r = 0, len(height) - 1
+    lmax = rmax = water = 0
+
+    while l < r:
+        if (hl:=height[l]) < (hr:=height[r]):
+            lmax = max(lmax, hl)
+            water += lmax - hl
+            l += 1
+        else:
+            rmax = max(rmax, hr)
+            water += rmax - hr
+            r -= 1
+    return water
+```

@@ -42,6 +42,7 @@ const Problem523ContinuousSubarraySum = lazy(() => import('./523-continuous-suba
 const Problem1162AsFarFromLandAsPossible = lazy(() => import('./1162-as-far-from-land-as-possible'))
 const Problem1235MaximumProfitInJobScheduling = lazy(() => import('./1235-maximum-profit-in-job-scheduling'))
 const Problem547NumberOfProvinces = lazy(() => import('./547-number-of-provinces'))
+const Problem407TrappingRainWaterIi = lazy(() => import('./407-trapping-rain-water-ii'))
 const Problem518CoinChangeIi = lazy(() => import('./518-coin-change-ii'))
 const Problem416PartitionEqualSubsetSum = lazy(() => import('./416-partition-equal-subset-sum'))
 const Problem188BestTimeToBuyAndSellStockIv = lazy(() => import('./188-best-time-to-buy-and-sell-stock-iv'))
@@ -55,6 +56,7 @@ const Problem525ContiguousArray = lazy(() => import('./525-contiguous-array'))
 const Problem3LongestSubstringWithoutRepeatingCharacters = lazy(() => import('./3-longest-substring-without-repeating-characters'))
 const Problem51NQueens = lazy(() => import('./51-n-queens'))
 const Problem684RedundantConnection = lazy(() => import('./684-redundant-connection'))
+const Problem42TrappingRainWater = lazy(() => import('./42-trapping-rain-water'))
 const Problem560SubarraySumEqualsK = lazy(() => import('./560-subarray-sum-equals-k'))
 const Problem312BurstBalloons = lazy(() => import('./312-burst-balloons'))
 const Problem1590MakeSumDivisibleByP = lazy(() => import('./1590-make-sum-divisible-by-p'))
@@ -228,6 +230,11 @@ const problemComponents = {
         <Problem547NumberOfProvinces />
       </Suspense>
     ),
+    "407-trapping-rain-water-ii": (
+      <Suspense key="407-trapping-rain-water-ii" fallback={<div className="p-4 text-gray-500">Loading...</div>}>
+        <Problem407TrappingRainWaterIi />
+      </Suspense>
+    ),
     "518-coin-change-ii": (
       <Suspense key="518-coin-change-ii" fallback={<div className="p-4 text-gray-500">Loading...</div>}>
         <Problem518CoinChangeIi />
@@ -291,6 +298,11 @@ const problemComponents = {
     "684-redundant-connection": (
       <Suspense key="684-redundant-connection" fallback={<div className="p-4 text-gray-500">Loading...</div>}>
         <Problem684RedundantConnection />
+      </Suspense>
+    ),
+    "42-trapping-rain-water": (
+      <Suspense key="42-trapping-rain-water" fallback={<div className="p-4 text-gray-500">Loading...</div>}>
+        <Problem42TrappingRainWater />
       </Suspense>
     ),
     "560-subarray-sum-equals-k": (

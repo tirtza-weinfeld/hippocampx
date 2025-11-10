@@ -142,6 +142,10 @@
       "547-number-of-provinces",
       "684-redundant-connection"
     ],
+    "TODO": [
+      "407-trapping-rain-water-ii",
+      "42-trapping-rain-water"
+    ],
     "knapsack": [
       "518-coin-change-ii"
     ],
@@ -242,6 +246,8 @@
       "312-burst-balloons",
       "363-max-sum-of-rectangle-no-larger-than-k",
       "37-sudoku-solver",
+      "407-trapping-rain-water-ii",
+      "42-trapping-rain-water",
       "460-lfu-cache",
       "51-n-queens",
       "76-minimum-window-substring",
@@ -379,6 +385,10 @@
     ],
     "51-n-queens": [
       "$O(N!)$"
+    ],
+    "42-trapping-rain-water": [
+      "$O(n)$",
+      "$O(n)$"
     ],
     "191-number-of-1-bits": [
       "$O(k)$"

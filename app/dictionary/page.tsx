@@ -1,7 +1,7 @@
 import { Suspense } from "react";
-import { searchWords } from "@/lib/db/dictionary-query";
-import { DictionarySearch } from "@/components/dictionary/dictionary-search";
-import { WordList } from "@/components/dictionary/word-list";
+// import { searchWords } from "@/lib/db/dictionary-query";
+// import { DictionarySearch } from "@/components/dictionary/dictionary-search";
+// import { WordList } from "@/components/dictionary/word-list";
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -20,25 +20,25 @@ export default async function DictionaryPage({ searchParams }: DictionaryPagePro
   const query = params.q ?? '';
 
   // Pass promise instead of awaiting - enables streaming
-  const wordsPromise = searchWords({ query, limit: 100 });
+  // const wordsPromise = searchWords({ query, limit: 100 });
 
   return (
     <>
       <div className="mb-8">
         <h1 className="text-4xl font-bold mb-4">Dictionary</h1>
-        <DictionarySearch initialQuery={query} />
+        {/* <DictionarySearch initialQuery={query} /> */}
       </div>
 
       <Suspense fallback={<WordListSkeleton />}>
-        <WordListWrapper wordsPromise={wordsPromise} />
+        {/* <WordListWrapper wordsPromise={wordsPromise} /> */}
       </Suspense>
     </>
   );
 }
 
-function WordListWrapper({ wordsPromise }: { wordsPromise: ReturnType<typeof searchWords> }) {
-  return <WordList wordsPromise={wordsPromise} />;
-}
+// function WordListWrapper({ wordsPromise }: { wordsPromise: ReturnType<typeof searchWords> }) {
+//   return <WordList wordsPromise={wordsPromise} />;
+// }
 
 function WordListSkeleton() {
   return (

@@ -465,6 +465,22 @@
       "difficulty": "medium",
       "topics": ["dsu"]
     },
+    "407-trapping-rain-water-ii": {
+      "time_stamps": {
+        "created_at": "2025-11-10T09:05:17.629545",
+        "updated_at": "2025-11-10T12:40:33.604407"
+      },
+      "solutions": {
+        "solution.py": {
+          "code": "from heapq import heapify, heappush, heappop\n\ndef trapRainWater(heightMap: list[list[int]]) -> int:\n\n    R, C = len(heightMap), len(heightMap[0])\n    is_border = lambda r, c: r in (0, R - 1) or c in (0, C - 1)\n    heapify(heap := [(heightMap[r][c], r, c)for r in range(R)for c in range(C)if is_border(r, c)])\n    vis = [[is_border(r, c) for c in range(C)] for r in range(R)]\n\n    water = 0\n    while heap:\n        h, r, c = heappop(heap)\n        for nr, nc in ((r + 1, c), (r - 1, c), (r, c + 1), (r, c - 1)):\n            if 0 <= nr < R and 0 <= nc < C and not vis[nr][nc]:\n                vis[nr][nc] = True\n                if (nh := heightMap[nr][nc]) < h:\n                    water += h - nh\n                heappush(heap, (h if h > nh else nh, nr, nc))\n    return water"
+        }
+      },
+      "title": "Trapping Rain Water II",
+      "definition": "Given an m x n integer matrix heightMap representing the height of each unit cell in a 2D elevation map, return the volume of water it can trap after raining",
+      "leetcode": "https://leetcode.com/problems/trapping-rain-water-ii/",
+      "difficulty": "hard",
+      "topics": ["TODO"]
+    },
     "518-coin-change-ii": {
       "time_stamps": {
         "created_at": "2025-09-12T16:05:57.931034",
@@ -736,6 +752,28 @@
       "leetcode": "https://leetcode.com/problems/redundant-connection",
       "difficulty": "medium",
       "topics": ["dsu"]
+    },
+    "42-trapping-rain-water": {
+      "time_stamps": {
+        "created_at": "2025-11-10T09:04:29.440058",
+        "updated_at": "2025-11-10T11:14:34.561646"
+      },
+      "solutions": {
+        "two-pointer.py": {
+          "intuition": "Water trapped above each bar depends on the smaller of the tallest walls to its left and right:\n    By keeping two pointers—one at each end—and always moving the smaller side inward, we ensure that the limiting wall for that side is already known.\n        When the left bar is shorter, we can safely compute water at left using lmax (its tallest left wall), because a taller or equal wall must exist on the right.\n        Symmetrically, when the right bar is shorter, we compute water using rmax.\n    This invariant guarantees every position’s water level is computed exactly once in O(n) time and O(1) space",
+          "time_complexity": "O(n)",
+          "code": "def trap(height: list[int]) -> int:\n    l, r = 0, len(height) - 1\n    lmax = rmax = water = 0\n\n    while l < r:\n        if (hl:=height[l]) < (hr:=height[r]):\n            lmax = max(lmax, hl)\n            water += lmax - hl\n            l += 1\n        else:\n            rmax = max(rmax, hr)\n            water += rmax - hr\n            r -= 1\n    return water"
+        },
+        "forward-fill-with-tail-closure.py": {
+          "time_complexity": "O(n)",
+          "code": "def trapping_rain_water(height: list[int]) -> int:\n    l = trapped = 0\n\n    for r, h in enumerate(height):\n        if h >= (wall := height[l]):\n            for v in height[l:r]:\n                trapped += wall - v\n            l = r\n\n    maxr = height[-1]\n    for v in reversed(height[l:]):\n        maxr = max(maxr, v)\n        trapped += max(0, maxr - v)\n\n    return trapped"
+        }
+      },
+      "title": "Trapping Rain Water",
+      "definition": "Given a list of n non-negative integers representing an elevation map where the width of each bar is 1, compute how much water it can trap after raining.",
+      "leetcode": "https://leetcode.com/problems/trapping-rain-water/",
+      "difficulty": "hard",
+      "topics": ["TODO"]
     },
     "560-subarray-sum-equals-k": {
       "time_stamps": {

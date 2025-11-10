@@ -231,6 +231,16 @@
     "updatedAt": "2025-10-27T12:18:50.369449"
   },
   {
+    "id": "407-trapping-rain-water-ii",
+    "title": "Trapping Rain Water II",
+    "difficulty": "hard",
+    "topics": [
+      "TODO"
+    ],
+    "createdAt": "2025-11-10T09:05:17.629545",
+    "updatedAt": "2025-11-10T12:40:33.604407"
+  },
+  {
     "id": "518-coin-change-ii",
     "title": "Coin Change II",
     "difficulty": "medium",
@@ -362,6 +372,16 @@
     ],
     "createdAt": "2025-10-28T11:35:49.425325",
     "updatedAt": "2025-10-28T12:11:32.263782"
+  },
+  {
+    "id": "42-trapping-rain-water",
+    "title": "Trapping Rain Water",
+    "difficulty": "hard",
+    "topics": [
+      "TODO"
+    ],
+    "createdAt": "2025-11-10T09:04:29.440058",
+    "updatedAt": "2025-11-10T11:14:34.561646"
   },
   {
     "id": "560-subarray-sum-equals-k",

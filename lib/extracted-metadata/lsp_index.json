@@ -4758,6 +4758,32 @@
       ]
     },
     {
+      "uri": "problems/407-trapping-rain-water-ii/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/407-trapping-rain-water-ii/solution.py",
+      "symbols": [
+        {
+          "name": "trapRainWater",
+          "detail": "trapRainWater(heightMap: list[list[int]]) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 18, "character": 16}},
+          "nameRange": {
+            "start": {
+              "line": 2,
+              "character": 4
+            },
+            "end": {
+              "line": 2,
+              "character": 17
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
       "uri": "problems/416-partition-equal-subset-sum/__init__.py",
       "symbols": []
     },
@@ -4798,6 +4824,54 @@
               "children": []
             }
           ]
+        }
+      ]
+    },
+    {
+      "uri": "problems/42-trapping-rain-water/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/42-trapping-rain-water/forward-fill-with-tail-closure.py",
+      "symbols": [
+        {
+          "name": "trapping_rain_water",
+          "detail": "trapping_rain_water(height: list[int]) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 14, "character": 18}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 23
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/42-trapping-rain-water/two-pointer.py",
+      "symbols": [
+        {
+          "name": "trap",
+          "detail": "trap(height: list[int]) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 13, "character": 16}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 8
+            }
+          },
+          "children": []
         }
       ]
     },

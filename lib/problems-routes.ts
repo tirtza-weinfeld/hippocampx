@@ -92,6 +92,8 @@ export const PROBLEMS_ROUTES: NavigationItem[] = [
             { title: 'Sudoku Solver', href: '/problems/37-sudoku-solver', icon: Code, color: "text-red-500", bgColor: "bg-red-500/10" },
             { title: 'Swim in Rising Water', href: '/problems/778-swim-in-rising-water', icon: Code, color: "text-red-500", bgColor: "bg-red-500/10" },
             { title: 'Top K Frequent Elements', href: '/problems/347-top-k-frequent-elements', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
+            { title: 'Trapping Rain Water', href: '/problems/42-trapping-rain-water', icon: Code, color: "text-red-500", bgColor: "bg-red-500/10" },
+            { title: 'Trapping Rain Water II', href: '/problems/407-trapping-rain-water-ii', icon: Code, color: "text-red-500", bgColor: "bg-red-500/10" },
             { title: 'Triangle Minimum Path Sum', href: '/problems/120-triangle', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
             { title: 'Two Sum', href: '/problems/1-two-sum', icon: Code, color: "text-green-500", bgColor: "bg-green-500/10" },
             { title: 'Valid Parentheses', href: '/problems/20-valid-parentheses', icon: Code, color: "text-green-500", bgColor: "bg-green-500/10" },
