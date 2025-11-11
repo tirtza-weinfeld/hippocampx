@@ -17,5 +17,8 @@ DROP TABLE IF EXISTS words CASCADE;
 -- Algorithm complexity table
 DROP TABLE IF EXISTS algorithms CASCADE;
 
+-- Old agent symbols table (being removed)
+DROP TABLE IF EXISTS symbols CASCADE;
+
 -- Drop enums
 DROP TYPE IF EXISTS part_of_speech CASCADE;

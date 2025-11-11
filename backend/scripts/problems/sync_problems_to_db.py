@@ -1,41 +1,34 @@
 #!/usr/bin/env python3
 
 """
-Sync problem metadata from backend/algorithms/problems/ directly to PostgreSQL database.
+Sync problem metadata from backend/algorithms/problems/ to PostgreSQL database.
 
-New Clean Architecture:
-1. problems table: All problem metadata
-2. solutions table: Just code for each solution file
-3. symbols table: ALL tooltip metadata (args, variables, expressions, functions)
+Reads directly from Python files (not JSON) and extracts:
+- Problem metadata from __init__.py docstrings
+- Solution code and metadata from *.py files
 
-This replaces the old generate-agent-mdx.ts workflow entirely.
+Schema:
+1. problems table: Problem metadata from __init__.py
+2. solutions table: Code + analysis from *.py files
 """
 
-import ast
-import json
 import os
 import sys
+import ast
+import json
 from pathlib import Path
 from datetime import datetime
 import psycopg2
-from psycopg2.extras import execute_values
+import psycopg2.extras
 from dotenv import load_dotenv
 
 # Load environment variables from .env.local in project root
 env_path = Path(__file__).parent.parent.parent.parent / '.env.local'
 load_dotenv(env_path)
 
-# Import existing helper functions
-from code_cleaner import clean_code
-from get_directory_timestamps import get_directory_timestamps
-
-# Import extraction functions from existing script
+# Import code cleaner
 sys.path.append(str(Path(__file__).parent))
-from extract_problems_metadata import (
-    extract_problem_metadata,
-    extract_function_metadata,
-    parse_simple_docstring,
-)
+from code_cleaner import clean_code
 
 
 def get_db_connection():
@@ -46,6 +39,173 @@ def get_db_connection():
         raise ValueError("POSTGRES_URL environment variable not set in .env.local")
 
     return psycopg2.connect(database_url)
+
+
+def parse_simple_docstring(docstring: str, expected_sections: list[str]) -> dict[str, str]:
+    """Parse simplified docstring format extracting sections."""
+    if not docstring:
+        return {}
+
+    result = {}
+    lines = docstring.strip().splitlines()
+    current_section = None
+    current_content = []
+
+    for line in lines:
+        stripped = line.strip()
+        if not stripped:
+            if current_section and current_content:
+                current_content.append("")
+            continue
+
+        # Check if this line starts a new section
+        section_found = False
+        for section in expected_sections:
+            if stripped.lower().startswith(f"{section.lower()}:"):
+                # Save previous section
+                if current_section and current_content:
+                    result[current_section.lower().replace(' ', '_')] = '\n'.join(current_content).strip()
+
+                # Start new section
+                current_section = section
+                current_content = []
+
+                # Check if value is on the same line
+                value_part = stripped[len(f"{section}:"):].strip()
+                if value_part:
+                    current_content.append(value_part)
+
+                section_found = True
+                break
+
+        if not section_found and current_section:
+            current_content.append(stripped)
+
+    # Save last section
+    if current_section and current_content:
+        result[current_section.lower().replace(' ', '_')] = '\n'.join(current_content).strip()
+
+    return result
+
+
+def extract_problem_from_init(init_file: Path) -> dict:
+    """Extract problem metadata from __init__.py docstring."""
+    try:
+        with open(init_file, 'r', encoding='utf-8') as f:
+            content = f.read()
+
+        tree = ast.parse(content)
+        docstring = ast.get_docstring(tree, clean=True)
+        if not docstring:
+            return {}
+
+        expected_sections = ['Title', 'Definition', 'Leetcode', 'Difficulty', 'Topics', 'Group']
+        metadata = parse_simple_docstring(docstring, expected_sections)
+
+        # Parse topics list
+        if 'topics' in metadata:
+            topics_str = metadata['topics']
+            if topics_str.startswith('[') and topics_str.endswith(']'):
+                topics_str = topics_str[1:-1].strip()
+                if topics_str:
+                    metadata['topics'] = [t.strip() for t in topics_str.split(',')]
+            else:
+                metadata['topics'] = [t.strip() for t in topics_str.split(',')]
+
+        # Remove 'group' since we're not storing it in DB
+        if 'group' in metadata:
+            del metadata['group']
+
+        return metadata
+
+    except Exception as e:
+        print(f"Error parsing {init_file}: {e}")
+        return {}
+
+
+def extract_solution_from_file(py_file: Path) -> dict:
+    """Extract solution code and metadata from a .py file."""
+    try:
+        with open(py_file, 'r', encoding='utf-8') as f:
+            content = f.read()
+
+        tree = ast.parse(content)
+
+        # Find first function
+        for node in ast.walk(tree):
+            if isinstance(node, ast.FunctionDef):
+                docstring = ast.get_docstring(node, clean=True) or ""
+
+                # Clean code (remove docstrings)
+                code = clean_code(content)
+
+                # Parse docstring
+                expected_sections = ['Intuition', 'Time Complexity', 'Args', 'Variables', 'Expressions', 'Returns']
+                result = parse_simple_docstring(docstring, expected_sections)
+                result['code'] = code
+
+                # Parse args to dict
+                if 'args' in result:
+                    args_dict = {}
+                    for line in result['args'].split('\n'):
+                        line = line.strip()
+                        if ':' in line and not line.startswith('`'):
+                            param_name = line.split(':')[0].strip()
+                            description = ':'.join(line.split(':')[1:]).strip()
+                            args_dict[param_name] = description
+                    if args_dict:
+                        result['args'] = args_dict
+
+                # Parse variables to dict
+                if 'variables' in result:
+                    variables_dict = {}
+                    for line in result['variables'].split('\n'):
+                        line = line.strip()
+                        if ':' in line:
+                            var_name = line.split(':')[0].strip()
+                            description = ':'.join(line.split(':')[1:]).strip()
+                            # Remove quotes
+                            if var_name.startswith("'") and var_name.endswith("'"):
+                                var_name = var_name[1:-1]
+                            elif var_name.startswith('"') and var_name.endswith('"'):
+                                var_name = var_name[1:-1]
+                            variables_dict[var_name] = description
+                    if variables_dict:
+                        result['variables'] = variables_dict
+
+                # Parse expressions to dict (simplified - just key:value)
+                if 'expressions' in result:
+                    expressions_dict = {}
+                    for line in result['expressions'].split('\n'):
+                        line = line.strip()
+                        if ':' in line:
+                            # Handle quoted expressions
+                            if line.startswith("'") and "': " in line:
+                                quote_end = line.find("': ", 1)
+                                if quote_end != -1:
+                                    expr_name = line[1:quote_end]
+                                    description = line[quote_end + 3:]
+                                    expressions_dict[expr_name] = description
+                            else:
+                                expr_name = line.split(':')[0].strip()
+                                description = ':'.join(line.split(':')[1:]).strip()
+                                # Remove quotes
+                                if expr_name.startswith("'") and expr_name.endswith("'"):
+                                    expr_name = expr_name[1:-1]
+                                elif expr_name.startswith('"') and expr_name.endswith('"'):
+                                    expr_name = expr_name[1:-1]
+                                expressions_dict[expr_name] = description
+                    if expressions_dict:
+                        result['expressions'] = expressions_dict
+
+                return result
+
+        # No function found - still clean the code
+        return {'code': clean_code(content)}
+
+    except Exception as e:
+        print(f"Error parsing {py_file}: {e}")
+        return {}
 
 
 def extract_difficulty(difficulty: str | None) -> str:
@@ -59,11 +219,20 @@ def extract_difficulty(difficulty: str | None) -> str:
     return 'medium'
 
 
-def upsert_problem(conn, slug: str, problem_data: dict) -> str:
+def get_directory_timestamps(directory: Path) -> dict:
+    """Get created/updated timestamps for directory."""
+    stat = directory.stat()
+    return {
+        'created_at': datetime.fromtimestamp(stat.st_birthtime).isoformat(),
+        'updated_at': datetime.fromtimestamp(stat.st_mtime).isoformat()
+    }
+
+
+def upsert_problem(conn, slug: str, problem_dir: Path, problem_metadata: dict) -> str:
     """Insert or update a problem and return its UUID."""
     cursor = conn.cursor()
 
-    # Extract number from slug (e.g., "713-subarray..." -> 713)
+    # Extract number from slug
     number = None
     if slug[0].isdigit():
         number_str = slug.split('-')[0]
@@ -71,17 +240,17 @@ def upsert_problem(conn, slug: str, problem_data: dict) -> str:
             number = int(number_str)
 
     # Generate title if not provided
-    title = problem_data.get('title')
+    title = problem_metadata.get('title')
     if not title:
         title = ' '.join(word.capitalize() for word in slug.split('-')[1:])
 
-    # Extract timestamps
-    timestamps = problem_data.get('time_stamps', {})
-    created_at = timestamps.get('created_at', datetime.now().isoformat())
-    updated_at = timestamps.get('updated_at', datetime.now().isoformat())
+    # Get timestamps
+    timestamps = get_directory_timestamps(problem_dir)
+    created_at = timestamps['created_at']
+    updated_at = timestamps['updated_at']
 
-    # Convert topics list to PostgreSQL array format
-    topics = problem_data.get('topics', [])
+    # Topics
+    topics = problem_metadata.get('topics', [])
 
     # Upsert problem
     cursor.execute("""
@@ -101,9 +270,9 @@ def upsert_problem(conn, slug: str, problem_data: dict) -> str:
         slug,
         number,
         title,
-        problem_data.get('definition'),
-        problem_data.get('leetcode'),
-        extract_difficulty(problem_data.get('difficulty')),
+        problem_metadata.get('definition'),
+        problem_metadata.get('leetcode'),
+        extract_difficulty(problem_metadata.get('difficulty')),
         topics,
         created_at,
         updated_at
@@ -116,16 +285,27 @@ def upsert_problem(conn, slug: str, problem_data: dict) -> str:
 
 
 def upsert_solution(conn, problem_id: str, file_name: str, solution_data: dict, order_index: int) -> str:
-    """Insert or update a solution (just code) and return its UUID."""
+    """Insert or update a solution and return its UUID."""
     cursor = conn.cursor()
 
-    # Upsert solution with ONLY code
+    # Convert dicts to JSON for PostgreSQL
+    args = psycopg2.extras.Json(solution_data.get('args')) if solution_data.get('args') else None
+    variables = psycopg2.extras.Json(solution_data.get('variables')) if solution_data.get('variables') else None
+    expressions = psycopg2.extras.Json(solution_data.get('expressions')) if solution_data.get('expressions') else None
+
+    # Upsert solution
     cursor.execute("""
-        INSERT INTO solutions (problem_id, file_name, code, order_index)
-        VALUES (%s, %s, %s, %s)
+        INSERT INTO solutions (problem_id, file_name, code, intuition, time_complexity, args, variables, expressions, returns, order_index)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         ON CONFLICT (problem_id, file_name)
         DO UPDATE SET
             code = EXCLUDED.code,
+            intuition = EXCLUDED.intuition,
+            time_complexity = EXCLUDED.time_complexity,
+            args = EXCLUDED.args,
+            variables = EXCLUDED.variables,
+            expressions = EXCLUDED.expressions,
+            returns = EXCLUDED.returns,
             order_index = EXCLUDED.order_index,
             updated_at = NOW()
         RETURNING id
@@ -133,6 +313,12 @@ def upsert_solution(conn, problem_id: str, file_name: str, solution_data: dict, 
         problem_id,
         file_name,
         solution_data.get('code', ''),
+        solution_data.get('intuition'),
+        solution_data.get('time_complexity'),
+        args,
+        variables,
+        expressions,
+        solution_data.get('returns'),
         order_index
     ))
 
@@ -142,161 +328,34 @@ def upsert_solution(conn, problem_id: str, file_name: str, solution_data: dict, 
     return solution_id
 
 
-def sync_symbols_for_solution(conn, solution_id: str, slug: str, file_name: str, solution_data: dict):
-    """
-    Sync all symbols for a solution to the symbols table.
-
-    Symbol types:
-    - function: The main function (with intuition, time_complexity, etc in metadata)
-    - parameter: Function arguments
-    - variable: Variables inside the function
-    - expression: Key expressions/conditions
-    """
-    cursor = conn.cursor()
-
-    # Delete existing symbols for this solution
-    cursor.execute("DELETE FROM symbols WHERE solution_id = %s", (solution_id,))
-
-    symbols_to_insert = []
-
-    # Get problem number from slug (e.g., "1235-max-profit" -> "1235")
-    problem_number = slug.split('-')[0] if slug[0].isdigit() else slug
-
-    # Extract base filename without extension (e.g., "top_down.py" -> "top_down")
-    file_base = file_name.replace('.py', '')
-
-    # 1. Create function-level symbol (if there's a main function)
-    # For now, we'll assume the first function is the main one
-    # qname format: "1235:top_down.py:maximum_profit_in_job_scheduling"
-
-    # We need to extract the function name from the code
-    function_name = extract_main_function_name(solution_data.get('code', ''))
-
-    if function_name:
-        function_qname = f"{problem_number}:{file_name}:{function_name}"
-
-        # Build metadata for function symbol
-        function_metadata = {}
-        if solution_data.get('intuition'):
-            function_metadata['intuition'] = solution_data['intuition']
-        if solution_data.get('time_complexity'):
-            function_metadata['time_complexity'] = solution_data['time_complexity']
-        if solution_data.get('space_complexity'):
-            function_metadata['space_complexity'] = solution_data['space_complexity']
-        if solution_data.get('returns'):
-            function_metadata['returns'] = solution_data['returns']
-
-        symbols_to_insert.append((
-            solution_id,
-            function_qname,
-            'function',
-            function_name,
-            solution_data.get('intuition'),  # main content
-            json.dumps(function_metadata) if function_metadata else None,
-            None  # no parent
-        ))
-
-        # 2. Add parameter symbols (args)
-        if isinstance(solution_data.get('args'), dict):
-            for arg_name, arg_description in solution_data['args'].items():
-                # Clean up arg_name (remove type annotations if present)
-                clean_arg_name = arg_name.split(':')[0].strip()
-                arg_qname = f"{problem_number}:{file_name}:{function_name}.{clean_arg_name}"
-
-                symbols_to_insert.append((
-                    solution_id,
-                    arg_qname,
-                    'parameter',
-                    clean_arg_name,
-                    arg_description,
-                    json.dumps({'label': arg_name}),  # preserve full arg signature
-                    None  # Could link to function symbol via parent_id
-                ))
-
-        # 3. Add variable symbols
-        if isinstance(solution_data.get('variables'), dict):
-            for var_name, var_description in solution_data['variables'].items():
-                var_qname = f"{problem_number}:{file_name}:{function_name}.{var_name}"
-
-                symbols_to_insert.append((
-                    solution_id,
-                    var_qname,
-                    'variable',
-                    var_name,
-                    var_description,
-                    None,
-                    None
-                ))
-
-        # 4. Add expression symbols
-        if isinstance(solution_data.get('expressions'), dict):
-            for expr, expr_description in solution_data['expressions'].items():
-                expr_qname = f"{problem_number}:{file_name}:{function_name}.{expr}"
-
-                symbols_to_insert.append((
-                    solution_id,
-                    expr_qname,
-                    'expression',
-                    expr,
-                    expr_description,
-                    None,
-                    None
-                ))
-
-    # Bulk insert all symbols
-    if symbols_to_insert:
-        execute_values(
-            cursor,
-            """
-            INSERT INTO symbols (solution_id, qname, kind, name, content, metadata, parent_id)
-            VALUES %s
-            ON CONFLICT (qname) DO UPDATE SET
-                content = EXCLUDED.content,
-                metadata = EXCLUDED.metadata,
-                updated_at = NOW()
-            """,
-            symbols_to_insert
-        )
-
-    conn.commit()
-
-
-def extract_main_function_name(code: str) -> str | None:
-    """Extract the name of the first function definition from Python code."""
-    try:
-        tree = ast.parse(code)
-        for node in ast.walk(tree):
-            if isinstance(node, ast.FunctionDef):
-                return node.name
-    except:
-        pass
-    return None
-
-
 def sync_problem_to_db(conn, slug: str, problem_dir: Path):
     """Sync a single problem to the database."""
     print(f"Syncing: {slug}")
 
-    # Extract problem metadata using existing function
-    problem_data = extract_problem_metadata(problem_dir)
+    # Extract from __init__.py
+    init_file = problem_dir / '__init__.py'
+    if not init_file.exists():
+        print(f"  ⚠️  No __init__.py found for {slug}")
+        return
 
-    if not problem_data:
-        print(f"  ⚠️  No metadata found for {slug}")
+    problem_metadata = extract_problem_from_init(init_file)
+    if not problem_metadata:
+        print(f"  ⚠️  No metadata found in __init__.py for {slug}")
         return
 
     # Upsert problem
-    problem_id = upsert_problem(conn, slug, problem_data)
+    problem_id = upsert_problem(conn, slug, problem_dir, problem_metadata)
 
-    # Sync solutions and symbols
-    solutions = problem_data.get('solutions', {})
-    for order_index, (file_name, solution_data) in enumerate(solutions.items()):
-        # Upsert solution (code only)
-        solution_id = upsert_solution(conn, problem_id, file_name, solution_data, order_index)
+    # Extract solutions from *.py files
+    solution_files = [f for f in problem_dir.glob('*.py')
+                      if f.name != '__init__.py' and not f.name.startswith('_')]
 
-        # Sync all symbols for this solution
-        sync_symbols_for_solution(conn, solution_id, slug, file_name, solution_data)
+    for order_index, py_file in enumerate(sorted(solution_files)):
+        solution_data = extract_solution_from_file(py_file)
+        if solution_data:
+            upsert_solution(conn, problem_id, py_file.name, solution_data, order_index)
 
-    print(f"  ✅ Synced {slug} with {len(solutions)} solution(s)")
+    print(f"  ✅ Synced {slug} with {len(solution_files)} solution(s)")
 
 
 def main():
