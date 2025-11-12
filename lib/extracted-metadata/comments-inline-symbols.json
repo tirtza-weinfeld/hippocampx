@@ -28,6 +28,8 @@
   "problems/102-binary-tree-level-order-traversal/similar.py:comment-line:7": "queue for BFS traversal",
   "problems/102-binary-tree-level-order-traversal/similar.py:comment-line:9": "collect current level values",
   "problems/102-binary-tree-level-order-traversal/similar.py:comment-line:10": "process all nodes at this level",
+  "problems/69-sqrt/newtons-method.py:comment-line:4": "Stops once r is small enough that its square fits under x",
+  "problems/69-sqrt/newtons-method.py:comment-line:5": "Replace r with a refined, closer guess",
   "problems/1563-stone-game-v/bottom-up.py:comment-line:5": "sum of single element",
   "problems/1563-stone-game-v/bottom-up.py:comment-line:19": "equal → can pick better side",
   "problems/1563-stone-game-v/bottom-up.py:comment-line:21": "pick left side",

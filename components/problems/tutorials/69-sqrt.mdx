@@ -1,0 +1,82 @@
+# Sqrt(x)
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="easy" />
+
+<PillList pills={["math", "binary search", "newton's method"]} />
+
+[69. Sqrt(x)](https://leetcode.com/problems/sqrtx/)
+
+## [!(ProblemDefinition)] Definition
+
+Given a non-negative integer x, compute and return the integer part of its square root (i.e., the floor value of √x)     without using any built-in tools that directly compute powers or roots
+
+## Binary Search Solution
+
+### [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/69-sqrt/binary-search.py"
+def mySqrt(x: int) -> int:
+    l, r = 0, x // 2
+    while l <= r:
+        m = (l + r) // 2
+        if (p:=m * m) <= x < (m + 1) * (m + 1):
+            return m
+        (l, r) = (m + 1, r) if p < x else (l, m - 1)
+    return l
+```
+
+
+---
+
+## Newtons Method Solution
+
+### [!(ProblemIntuition)] Intuition
+
+- We need the integer part of √x:
+        - Start with a guess `r = x`.
+            - If `r` is **too large**, `r²` exceeds `x`.
+            - Dividing `x // r` gives a value **too small**, since dividing by something too big shrinks the result.
+            - The true √x lies **between** these two — `x//r` and `r`.
+            - Averaging them, $r_{\text{new}} = \left\lfloor \frac{r + \lfloor x / r \rfloor}{2} \right\rfloor$,
+            - moves the guess to the midpoint, cutting the error sharply.
+        - Each step refines the balance:
+            - if `r² > x`, the average drops lower;
+            - once `r² ≤ x`, we stop.
+        - This “balance-and-refine” loop homes in on √x extremely fast — often in under 6–7 steps.
+
+- Correctness follows from the invariant:
+        - √x always remains between `x//r` and `r`.
+            - Since `r² > x ⇒ r > √x ⇒ √x > x/r ⇒ x//r ≤ √x < r`.
+            - The update average stays inside that interval: *$x//r ≤ r_{\text{new}} < r$*,
+            - ensuring `r` decreases but never falls below √x.
+            - Because r strictly drops while staying ≥ 1, the loop must stop when `r² ≤ x`.
+            - At that point, r is the largest integer with `r² ≤ x`, i.e. ⌊√x⌋.
+
+### [!(ProblemTimeComplexity)] Time Complexity
+
+- $O(\log x)$ iterations in the worst case, typically constant for 32-bit inputs.
+    - Each update:
+    - $$r_{\text{new}} = \frac{r + x//r}{2}$$
+    - halves the relative error — the method shows **quadratic convergence**:
+    - $$E_{k+1} ≈ c·E_k^2$$
+    - meaning the number of correct digits doubles each step.
+    - Space is constant, storing only `x` and `r`.
+
+### [!(ProblemReturns)] Returns
+
+`int`: The floor of √x.
+
+### [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/69-sqrt/newtons-method.py"
+def mySqrt(x: int) -> int:
+
+    if x < 2: return x
+    r = x
+    while r * r > x:
+        r = (r + x // r) // 2
+    return r
+```
+

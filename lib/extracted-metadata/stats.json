@@ -179,6 +179,13 @@
       "1547-minimum-cost-to-cut-a-stick",
       "312-burst-balloons"
     ],
+    "math": [
+      "50-pow",
+      "69-sqrt"
+    ],
+    "binary exponentiation": [
+      "50-pow"
+    ],
     "bit-manipulation": [
       "136-single-number",
       "191-number-of-1-bits"
@@ -204,6 +211,12 @@
     ],
     "rotated-array": [
       "33-search-in-rotated-sorted-array"
+    ],
+    "binary search": [
+      "69-sqrt"
+    ],
+    "newton's method": [
+      "69-sqrt"
     ],
     "vector": [
       "1570-dot-product-of-two-sparse-vectors"
@@ -267,6 +280,7 @@
       "20-valid-parentheses",
       "252-meeting-rooms",
       "35-search-insert-position",
+      "69-sqrt",
       "70-climbing-stairs"
     ],
     "medium": [
@@ -311,6 +325,7 @@
       "416-partition-equal-subset-sum",
       "435-non-overlapping-intervals",
       "46-permutations",
+      "50-pow",
       "518-coin-change-ii",
       "523-continuous-subarray-sum",
       "525-contiguous-array",
@@ -394,6 +409,9 @@
       "$O(n)$",
       "$O(n)$"
     ],
+    "50-pow": [
+      "$O(\\log |n|) iterations since n halves each step.$"
+    ],
     "191-number-of-1-bits": [
       "$O(k)$"
     ],
@@ -406,6 +424,9 @@
     ],
     "102-binary-tree-level-order-traversal": [
       "$O(n)$"
+    ],
+    "69-sqrt": [
+      "$O(\\log x) iterations in the worst case, typically constant for 32-bit inputs.$"
     ],
     "1510-stone-game-iv": [
       "$O(n  \\cdot  sqrt(n))$"

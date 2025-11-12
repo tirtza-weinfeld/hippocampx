@@ -5186,6 +5186,32 @@
       ]
     },
     {
+      "uri": "problems/50-pow/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/50-pow/solution.py",
+      "symbols": [
+        {
+          "name": "myPow",
+          "detail": "myPow(x: float, n: int) -> float",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 9, "character": 17}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 9
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
       "uri": "problems/51-n-queens/__init__.py",
       "symbols": []
     },
@@ -5839,6 +5865,54 @@
               ]
             }
           ]
+        }
+      ]
+    },
+    {
+      "uri": "problems/69-sqrt/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/69-sqrt/binary-search.py",
+      "symbols": [
+        {
+          "name": "mySqrt",
+          "detail": "mySqrt(x: int) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 7, "character": 12}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 10
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/69-sqrt/newtons-method.py",
+      "symbols": [
+        {
+          "name": "mySqrt",
+          "detail": "mySqrt(x: int) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 6, "character": 12}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 10
+            }
+          },
+          "children": []
         }
       ]
     },

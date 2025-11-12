@@ -265,7 +265,7 @@ def _symbol_entry(node: ast.AST, cleaned_text_lines: list[str], parent_is_class:
     kind = _symbol_kind(node, parent_is_class)
     detail = _detail_for(node, is_method=(kind == SymbolKind.METHOD))
     rng = _make_range(node)
-    
+
     # For name range, use the cleaned code line (consistent with generate_uses.py)
     cleaned_line_idx = node.lineno - 1
     if cleaned_line_idx < len(cleaned_text_lines):
@@ -276,6 +276,12 @@ def _symbol_entry(node: ast.AST, cleaned_text_lines: list[str], parent_is_class:
         # Fallback to full range if line not found
         name_range = rng
 
+    # NOTE: Field usage analysis (2025-11-12):
+    # USED fields: name, range, children
+    # UNUSED fields: detail, kind, nameRange
+    # The output is only consumed by utils.ts:getFunctionRange() which searches for
+    # function symbols by name and uses their range for scope filtering.
+    # Could be optimized by removing unused fields to reduce file size.
     entry: dict = {
         "name": getattr(node, "name", ""),
         "detail": detail,

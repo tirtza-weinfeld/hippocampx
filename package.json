@@ -31,7 +31,7 @@
     "problems:generate-stats": "tsx scripts/generate-stats.ts",
     "problems:generate-mdx": "pnpm problems:extract-metadata  && tsx scripts/generate-problem-mdx.ts",
     "problems:generate-agent": "pnpm problems:extract-metadata && tsx scripts/generate-agent-mdx.ts",
-    "problems:generate": "pnpm problems:generate-tooltips-metadata  && pnpm problems:generate-mdx && pnpm problems:generate-stats && pnpm problems:generate-agent",
+    "problems:generate": "pnpm problems:generate-tooltips-metadata  && pnpm problems:generate-mdx && pnpm problems:generate-stats ",
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",

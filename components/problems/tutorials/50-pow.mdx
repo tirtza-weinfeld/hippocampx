@@ -1,0 +1,67 @@
+# Pow(x, n)
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="medium" />
+
+<PillList pills={["math", "binary exponentiation"]} />
+
+[50. Pow(x, n)](https://leetcode.com/problems/powx-n/)
+
+## [!(ProblemDefinition)] Definition
+
+Given a floating-point number x and an integer n, return xⁿ (i.e., x raised to the power n). Constraints: -100.0 < x < 100.0, -2³¹ ≤ n ≤ 2³¹ − 1, and -10⁴ ≤ xⁿ ≤ 10⁴
+
+## [!(ProblemIntuition)] Intuition
+
+- We need to compute $x^n$ efficiently (for both positive and negative n):
+        - The naive O(n) approach multiplies x repeatedly — too slow.
+        - Instead, use **binary exponentiation** (exponentiation by squaring):
+            - Express n in binary; each bit decides whether to include a corresponding power of x.
+            - When n is even:
+                - $x^n = (x^2)^{n/2}$
+            - When n is odd:
+                - $x^n = x \times x^{n-1}$
+            - Repeatedly square the base (x → x² → x⁴ → x⁸ ...) and halve n each step.
+            - If n is odd, multiply the current base into the result.
+        - For negative exponents:
+            - $x^n = \frac{1}{x^{-n}}$
+        - This reduces multiplications from O(n) to O(log |n|).
+
+- Correctness:
+        - The base case: any $x^0 = 1$.
+        - If n < 0, we use the reciprocal to invert the result.
+        - Each iteration processes one bit of n’s binary representation while maintaining the invariant:
+        - $$\text{result} \times \text{base}^{\text{remaining bits}} = x^n$$
+        - After all bits are processed, result = $x^n$.
+        - Squaring ensures every power-of-two component appears exactly once.
+
+## [!(ProblemTimeComplexity)] Time Complexity
+
+- $O(log |n|)$ iterations since n halves each step.
+    - $O(1)$ space for the iterative version, or $O(log |n|)$ if recursive.
+    - Each update:
+    - $$\text{if bit = 1: } result \times= base$$
+    - $$base \times= base$$
+    - $$n \div= 2$$
+    - Each loop handles one binary digit of n.
+
+## [!(ProblemReturns)] Returns
+
+`float`: The value of $x^n$.
+
+## [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/50-pow/solution.py"
+def myPow(x: float, n: int) -> float:
+    if n == 0: return 1.0
+    if n < 0: return 1.0 / myPow(x, -n)
+    result, base = 1.0, x
+    while n:
+        if n & 1:
+            result *= base
+        base *= base
+        n //= 2
+    return result
+```
+

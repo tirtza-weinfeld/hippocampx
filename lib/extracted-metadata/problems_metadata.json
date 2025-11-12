@@ -133,7 +133,7 @@
     "1293-shortest-path-in-a-grid-with-obstacles-elimination": {
       "time_stamps": {
         "created_at": "2025-09-12T16:06:03.946398",
-        "updated_at": "2025-11-11T21:00:43.063283"
+        "updated_at": "2025-11-12T15:49:15.798082"
       },
       "solutions": {
         "dijkstra.py": {
@@ -812,6 +812,37 @@
       "difficulty": "hard",
       "topics": ["dp", "interval-dp"]
     },
+    "50-pow": {
+      "time_stamps": {
+        "created_at": "2025-11-12T16:08:37.700913",
+        "updated_at": "2025-11-12T19:37:16.944467"
+      },
+      "solutions": {
+        "solution.py": {
+          "intuition": "We need to compute $x^n$ efficiently (for both positive and negative n):\n        The naive O(n) approach multiplies x repeatedly — too slow.\n        Instead, use **binary exponentiation** (exponentiation by squaring):\n            Express n in binary; each bit decides whether to include a corresponding power of x.\n            When n is even:\n                $x^n = (x^2)^{n/2}$\n            When n is odd:\n                $x^n = x \\times x^{n-1}$\n            Repeatedly square the base (x → x² → x⁴ → x⁸ ...) and halve n each step.\n            If n is odd, multiply the current base into the result.\n        For negative exponents:\n            $x^n = \\frac{1}{x^{-n}}$\n        This reduces multiplications from O(n) to O(log |n|).\n\n    Correctness:\n        The base case: any $x^0 = 1$.\n        If n < 0, we use the reciprocal to invert the result.\n        Each iteration processes one bit of n’s binary representation while maintaining the invariant:\n        $$\\text{result} \\times \\text{base}^{\\text{remaining bits}} = x^n$$\n        After all bits are processed, result = $x^n$.\n        Squaring ensures every power-of-two component appears exactly once.",
+          "time_complexity": "O(log |n|) iterations since n halves each step.\n    O(1) space for the iterative version, or O(log |n|) if recursive.\n    Each update:\n    $$\\text{if bit = 1: } result \\times= base$$\n    $$base \\times= base$$\n    $$n \\div= 2$$\n    Each loop handles one binary digit of n.",
+          "args": {
+            "x: float": "Base (float)",
+            "n: int": "Exponent (integer, may be negative)"
+          },
+          "returns": "`float`: The value of $x^n$.",
+          "expressions": {
+            "if n < 0: return 1 / myPow(x, -n)": "handle negative exponents via reciprocal\n    'while n > 0: if n & 1: result *= base': multiply when the bit is 1\n    'base *= base': square the base for the next bit\n    'n >>= 1': shift exponent right (integer divide by 2)"
+          },
+          "variables": {
+            "base": "current power of x being considered (x, x², x⁴, …)",
+            "result": "cumulative product for bits set to 1 in n",
+            "n": "remaining exponent to process"
+          },
+          "code": "def myPow(x: float, n: int) -> float:\n    if n == 0: return 1.0\n    if n < 0: return 1.0 / myPow(x, -n)\n    result, base = 1.0, x\n    while n:\n        if n & 1:\n            result *= base\n        base *= base\n        n //= 2\n    return result"
+        }
+      },
+      "title": "Pow(x, n)",
+      "definition": "Given a floating-point number x and an integer n, return xⁿ (i.e., x raised to the power n). Constraints: -100.0 < x < 100.0, -2³¹ ≤ n ≤ 2³¹ − 1, and -10⁴ ≤ xⁿ ≤ 10⁴",
+      "leetcode": "https://leetcode.com/problems/powx-n/",
+      "difficulty": "medium",
+      "topics": ["math", "binary exponentiation"]
+    },
     "1590-make-sum-divisible-by-p": {
       "time_stamps": {
         "created_at": "2025-09-12T16:06:10.762653",
@@ -1121,6 +1152,37 @@
       "leetcode": "https://leetcode.com/problems/binary-tree-maximum-path-sum",
       "difficulty": "hard",
       "topics": ["kadane"]
+    },
+    "69-sqrt": {
+      "time_stamps": {
+        "created_at": "2025-11-12T16:06:51.559341",
+        "updated_at": "2025-11-12T19:30:21.146437"
+      },
+      "solutions": {
+        "binary-search.py": {
+          "code": "def mySqrt(x: int) -> int:\n    l, r = 0, x // 2\n    while l <= r:\n        m = (l + r) // 2\n        if (p:=m * m) <= x < (m + 1) * (m + 1):\n            return m\n        (l, r) = (m + 1, r) if p < x else (l, m - 1)\n    return l"
+        },
+        "newtons-method.py": {
+          "intuition": "We need the integer part of √x:\n        Start with a guess `r = x`.\n            If `r` is **too large**, `r²` exceeds `x`.\n            Dividing `x // r` gives a value **too small**, since dividing by something too big shrinks the result.\n            The true √x lies **between** these two — `x//r` and `r`.\n            Averaging them, $r_{\\text{new}} = \\left\\lfloor \\frac{r + \\lfloor x / r \\rfloor}{2} \\right\\rfloor$,\n            moves the guess to the midpoint, cutting the error sharply.\n        Each step refines the balance:\n            if `r² > x`, the average drops lower;\n            once `r² ≤ x`, we stop.\n        This “balance-and-refine” loop homes in on √x extremely fast — often in under 6–7 steps.\n\n    Correctness follows from the invariant:\n        √x always remains between `x//r` and `r`.\n            Since `r² > x ⇒ r > √x ⇒ √x > x/r ⇒ x//r ≤ √x < r`.\n            The update average stays inside that interval: *$x//r ≤ r_{\\text{new}} < r$*,\n            ensuring `r` decreases but never falls below √x.\n            Because r strictly drops while staying ≥ 1, the loop must stop when `r² ≤ x`.\n            At that point, r is the largest integer with `r² ≤ x`, i.e. ⌊√x⌋.",
+          "time_complexity": "O(log x) iterations in the worst case, typically constant for 32-bit inputs.\n    Each update:\n    $$r_{\\text{new}} = \\frac{r + x//r}{2}$$\n    halves the relative error — the method shows **quadratic convergence**:\n    $$E_{k+1} ≈ c·E_k^2$$\n    meaning the number of correct digits doubles each step.\n    Space is constant, storing only `x` and `r`.",
+          "args": {
+            "x: int": "Non-negative integer to take the square root of"
+          },
+          "returns": "`int`: The floor of √x.",
+          "expressions": {
+            "r * r > x": "Loop continues while r is an overestimate of √x\n    '(r + x // r) // 2':  Integer form of Newton’s update — averages the overestimate (r) and the underestimate (x//r)"
+          },
+          "variables": {
+            "r": "Current approximation of √x, refined each step"
+          },
+          "code": "def mySqrt(x: int) -> int:\n\n    if x < 2: return x\n    r = x\n    while r * r > x:\n        r = (r + x // r) // 2\n    return r"
+        }
+      },
+      "title": "Sqrt(x)",
+      "definition": "Given a non-negative integer x, compute and return the integer part of its square root (i.e., the floor value of √x)     without using any built-in tools that directly compute powers or roots",
+      "leetcode": "https://leetcode.com/problems/sqrtx/",
+      "difficulty": "easy",
+      "topics": ["math", "binary search", "newton's method"]
     },
     "1510-stone-game-iv": {
       "time_stamps": {
