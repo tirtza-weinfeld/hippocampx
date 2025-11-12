@@ -1,20 +1,19 @@
 "use client"
 
 import { cn } from "@/lib/utils"
-import { ChevronDown, ExternalLink, LinkIcon } from "lucide-react"
+import { ChevronDown } from "lucide-react"
 import Link from "next/link"
-import { useProblemState } from './problem-state-context'
-import { DifficultyBadge } from '../mdx/difficulty-badge'
 import { Leetcode } from './leetcode'
 type AgentHeaderProps = {
   title: string
   id: string
   leetcodeUrl: string
   difficulty: 'easy' | 'medium' | 'hard'
+  isExpanded: boolean
+  onToggle: () => void
 }
 
-export function AgentHeader({ title, id, leetcodeUrl, difficulty }: AgentHeaderProps) {
-  const { isExpanded, setExpanded } = useProblemState()
+export function AgentHeader({ title, id, leetcodeUrl, difficulty, isExpanded, onToggle }: AgentHeaderProps) {
 
   // Extract problem number from id (e.g., "1011-capacity-to-ship..." -> "1011")
   const problemNumber = id.match(/^(\d+)-/)?.[1]
@@ -66,7 +65,7 @@ export function AgentHeader({ title, id, leetcodeUrl, difficulty }: AgentHeaderP
           "hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40"
         )}
-        onClick={() => setExpanded(!isExpanded)}
+        onClick={onToggle}
         aria-expanded={isExpanded}
         aria-label={isExpanded ? "Collapse problem" : "Expand problem"}
         type="button"

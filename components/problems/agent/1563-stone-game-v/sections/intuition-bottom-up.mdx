@@ -1,8 +1,0 @@
-- Split i..j into two parts; you can only keep the smaller-sum side,
-    - or either if equal. dp[i][j] = best score in a[i..j].
-    - mx[i][j] = best score + sum for a[i..j], to reuse quickly.
-
-- Deep Dive:
-    - Each move divides the array into left and right parts. You can only continue with the side whose total sum is smaller; if equal, you may choose either. The goal is to maximize the total score gained from chosen parts.
-    - We iterate over all subarrays i..j, expanding outward and adjusting a pointer mid so that the right part stays as large as possible without exceeding half of the total. This ensures we check only balanced splits instead of every possible index.
-    - dp[i][j] stores the best score for i..j, while mx[i][j] caches the best “score + sum” prefix or suffix to quickly reuse.

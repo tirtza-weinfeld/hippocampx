@@ -1,8 +1,0 @@
-```python meta="source=problems/198-house-robber/bottom-up.py"
-# Dynamic Programming Algorithm — use prefixes
-def rob(houses: list[int]) -> int:
-    h1, h2 = 0, 0
-    for h in houses:
-        h2, h1 = h1, max(h1, h2 + h)
-    return h1
-```

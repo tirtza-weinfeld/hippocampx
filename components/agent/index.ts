@@ -1,6 +1,6 @@
 // Main components
-export { AgentCard } from './agent-card'
-export { AgentCardSkeleton } from './agent-card'
+export { AgentCardShell } from './agent-card-shell'
+export { AgentCardShellContent } from './agent-card-shell-content'
 export { default as AgentProblemsView, type AgentMetadata } from './agent-problems-view'
 
 // Section content wrapper
@@ -17,3 +17,4 @@ export { AgentTooltip } from './agent-tooltip'
 
 // Context
 export { ProblemStateProvider, useProblemState } from './problem-state-context'
+export { ProblemsExpandProvider, useProblemsExpand } from './problems-expand-context'

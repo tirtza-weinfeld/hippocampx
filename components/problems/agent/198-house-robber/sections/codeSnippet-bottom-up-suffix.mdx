@@ -1,7 +1,0 @@
-```python meta="source=problems/198-house-robber/bottom-up-suffix.py"
-def rob(houses: list[int]) -> int:
-    h1 = h2 = 0
-    for i in reversed(range(len(houses))):
-        h1, h2 = max(h1, houses[i] + h2), h1
-    return h1
-```

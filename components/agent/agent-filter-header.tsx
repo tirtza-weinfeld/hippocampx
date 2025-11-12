@@ -3,7 +3,7 @@
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import { X, Target, Hash, ArrowUpDown, ArrowUp, ArrowDown, RotateCcw, BookOpen, Zap, TrendingUp } from "lucide-react"
+import { X, Target, Hash, ArrowUpDown, ArrowUp, ArrowDown, RotateCcw, BookOpen, Zap, TrendingUp, ChevronsDown, ChevronsUp } from "lucide-react"
 import { useState } from "react"
 import { Dropdown, DropdownItem } from "./dropdown"
 import { AgentTooltip } from "./agent-tooltip"
@@ -34,9 +34,11 @@ type AgentFilterHeaderProps = {
     medium: number
     hard: number
   }
+  hasExpandedProblems: boolean
+  onToggleExpandAll: () => void
 }
 
-export function AgentFilterHeader({ filters, onFiltersChange, topics, stats }: AgentFilterHeaderProps) {
+export function AgentFilterHeader({ filters, onFiltersChange, topics, stats, hasExpandedProblems, onToggleExpandAll }: AgentFilterHeaderProps) {
   const [isResetting, setIsResetting] = useState(false)
 
   function updateFilter(key: keyof FilterState, value: string) {
@@ -344,6 +346,33 @@ export function AgentFilterHeader({ filters, onFiltersChange, topics, stats }: A
               </div>
             )}
             </div>
+          </AgentTooltip>
+
+          {/* Toggle Expand/Collapse All Button */}
+          <AgentTooltip
+            content={hasExpandedProblems ? "Collapse all problems" : "Expand all problems"}
+            side="top"
+          >
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onToggleExpandAll}
+              disabled={stats.totalFiltered === 0}
+              className={cn(
+                "h-8 w-8 p-0 rounded-lg border border-border/20 bg-gradient-to-br transition-all duration-200",
+                stats.totalFiltered === 0
+                  ? "from-gray-50 to-gray-100 dark:from-gray-900/50 dark:to-gray-800/50 text-muted-foreground/40 cursor-not-allowed"
+                  : hasExpandedProblems
+                    ? "from-orange-50 to-orange-100 dark:from-orange-950/50 dark:to-orange-900/50 hover:from-orange-100 hover:to-orange-200 dark:hover:from-orange-900/70 dark:hover:to-orange-800/70 hover:text-orange-600 dark:hover:text-orange-400 text-orange-700 dark:text-orange-300 hover:scale-105 hover:shadow-sm active:scale-95"
+                    : "from-green-50 to-green-100 dark:from-green-950/50 dark:to-green-900/50 hover:from-green-100 hover:to-green-200 dark:hover:from-green-900/70 dark:hover:to-green-800/70 hover:text-green-600 dark:hover:text-green-400 text-green-700 dark:text-green-300 hover:scale-105 hover:shadow-sm active:scale-95"
+              )}
+            >
+              {hasExpandedProblems ? (
+                <ChevronsUp className="h-4 w-4" />
+              ) : (
+                <ChevronsDown className="h-4 w-4" />
+              )}
+            </Button>
           </AgentTooltip>
         </div>
       </div>

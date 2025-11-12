@@ -1,9 +1,0 @@
-- We track the shortest known time to reach every node from the source k:
-    - Initially, all distances are infinite except for k (0).
-    - At each step, we pop the node with the smallest known distance from the heap.
-    - If we find a shorter path to one of its neighbors, we update (relax) that distance
-    - and push the new state into the heap.
-
-- By the end, `dist[v]` holds the minimum time for the signal to reach each node `v`:
-    - The total network delay is the longest of these shortest times
-        - i.e., `max(dist.values())`. If some node remains unreachable, return - 1.

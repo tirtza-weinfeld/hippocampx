@@ -1,9 +1,0 @@
-- Deep Dive:Paint House (k=3) — Top-down DP with explicit memoization:
-    - **Subproblems:** dp(i, c) = min total cost to paint houses *[2!]suffix [i:]* given house i is painted color c.
-    - **Relate:** `[language="python"]dp(i, c) = costs[i][c] + min(dp(i+1, other_color_1), dp(i+1, other_color_2))`                 *[19!]Choose the cheaper of the two other colors for the next house.*
-    - **Topological order:** *[2!]decreasing i*, subproblem `dp(i, c)` depends only on strictly larger i, `dp(i+1, other_color_1)` and `dp(i+1, other_color_2)`, so acyclic
-    - **Base case:**`dp(n, c) = 0` → no houses left to paint.
-    - **Original problem:** return `min(dp(0, 0), dp(0, 1), dp(0, 2))` — start with any first color.
-    - **Time complexity:** *O(n)*: each `(i, c)` computed once, constant work per state.
-    - **Space:** *O(n)* for memo and recursion depth.
-    - **Returns:** Minimum total cost to paint all houses so that no two adjacent share a color

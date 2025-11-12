@@ -1,15 +1,17 @@
 import { AgentProblemsView } from '@/components/agent';
 import { getProblems } from '@/lib/db/queries/agent-problems';
 import { AgentProblemCard } from './agent-problem-card';
+import { Suspense } from 'react';
 
 /**
  * Server component - renders all problem cards from database.
  *
- * Database-driven Architecture:
+ * Modern React 19 Architecture:
  * 1. Fetch all problems (lightweight metadata only)
  * 2. Transform to filtering metadata
- * 3. Create problem card components (each fetches its own solutions independently)
- * 4. Pass to AgentProblemsView for filtering/display
+ * 3. Create problem components (server components passed as ReactNode)
+ * 4. Client wrapper provides expand context, manages filtering
+ * 5. Each card shell reads expand state from context
  */
 
 export default async function Agent() {
@@ -26,14 +28,13 @@ export default async function Agent() {
     updatedAt: problem.updated_at.toISOString(),
   }));
 
-  // Create problem components map - each card will fetch its own solutions
+  // Create problem components map - each card fetches its own solutions
   const problemComponents = Object.fromEntries(
     problems.map(problem => [
       problem.slug,
-      <AgentProblemCard
-        key={problem.slug}
-        problem={problem}
-      />
+      <Suspense key={problem.slug} fallback={<div className="p-4 text-gray-500">Loading...</div>}>
+        <AgentProblemCard problem={problem} />
+      </Suspense>
     ])
   );
 

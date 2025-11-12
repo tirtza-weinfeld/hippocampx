@@ -1,8 +1,0 @@
-```python meta="source=problems/122-best-time-to-buy-and-sell-stock-ii/solution.py"
-def best_time_to_buy_and_sell_stock_II(prices: list[int]) -> int:
-    profit = 0
-    for i in range(1, len(prices)):
-        if prices[i] > prices[i - 1]:
-            profit += prices[i] - prices[i - 1]
-    return profit
-```

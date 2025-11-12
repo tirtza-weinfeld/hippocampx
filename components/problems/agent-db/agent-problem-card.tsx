@@ -1,7 +1,8 @@
 import { Suspense } from 'react';
 import { getSolutionsByProblemId } from '@/lib/db/queries/agent-problems';
-import { AgentCard, AgentSection } from '@/components/agent';
-import type { Problem } from '@/lib/db/schema-problems';
+import { AgentCardShell, AgentSection } from '@/components/agent';
+import { AgentCardShellContent } from '@/components/agent/agent-card-shell-content';
+import type { Problem, Solution } from '@/lib/db/schema-problems';
 import type { SectionType } from '@/components/agent/agent-section-tab';
 import { MarkdownRenderer } from '@/components/mdx/parse/markdown-renderer';
 import CodeBlock from '@/components/mdx/code/code-block';
@@ -11,12 +12,35 @@ export type AgentProblemCardProps = {
 };
 
 /**
- * Server component that renders a single problem card.
- * Fetches its own solutions independently - streams as it loads.
+ * Server component wrapper - renders shell immediately, suspends content.
+ * Header shows instantly, solutions stream in when ready.
  */
-export async function AgentProblemCard({ problem }: AgentProblemCardProps) {
-  // Fetch solutions for this problem only
-  const solutionsList = await getSolutionsByProblemId(problem.id);
+export function AgentProblemCard({ problem }: AgentProblemCardProps) {
+  // Create promise but DON'T await - allows header to render instantly
+  const solutionsPromise = getSolutionsByProblemId(problem.id);
+
+  return (
+    <AgentCardShell problem={problem}>
+      <Suspense fallback={<div className="p-4 text-gray-500">Loading solutions...</div>}>
+        <AgentProblemCardContent problem={problem} solutionsPromise={solutionsPromise} />
+      </Suspense>
+    </AgentCardShell>
+  );
+}
+
+/**
+ * Server component that awaits solutions promise and renders content.
+ * Wrapped in Suspense - streams independently.
+ */
+async function AgentProblemCardContent({
+  problem,
+  solutionsPromise
+}: {
+  problem: Problem;
+  solutionsPromise: Promise<Solution[]>
+}) {
+  // Await the promise in this suspended component
+  const solutionsList = await solutionsPromise;
 
   // Build file list and section map
   const solutionFiles = solutionsList.map(s => s.file_name);
@@ -49,17 +73,11 @@ export async function AgentProblemCard({ problem }: AgentProblemCardProps) {
     fileSectionMap[solution.file_name] = sections;
   }
 
-
   return (
-    <AgentCard
-      id={problem.slug}
-      title={problem.title}
-      difficulty={problem.difficulty}
-      topics={problem.topics || []}
+    <AgentCardShellContent
       solutionFiles={solutionFiles}
       defaultFile={defaultFile}
       fileSectionMap={fileSectionMap}
-      leetcodeUrl={problem.leetcode_url || ''}
     >
       {/* Definition section (shared across all solutions) */}
       {problem.definition && (
@@ -115,6 +133,6 @@ export async function AgentProblemCard({ problem }: AgentProblemCardProps) {
           )}
         </Suspense>
       ))}
-    </AgentCard>
+    </AgentCardShellContent>
   );
 }

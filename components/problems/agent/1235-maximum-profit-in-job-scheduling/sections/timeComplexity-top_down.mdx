@@ -1,4 +1,0 @@
-- $O(n \log n)$:
-    - Sorting the jobs → $O(n \log n)$
-    - For each of the `n` jobs, the top-down DP does one binary search (`bisect_left`) → $O(\log n)$ per call.
-    - Each state is memoized once → total $O(n \log n)$.
