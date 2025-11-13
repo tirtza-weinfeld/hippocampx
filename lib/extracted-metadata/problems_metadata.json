@@ -815,26 +815,21 @@
     "50-pow": {
       "time_stamps": {
         "created_at": "2025-11-12T16:08:37.700913",
-        "updated_at": "2025-11-12T19:37:16.944467"
+        "updated_at": "2025-11-13T10:22:08.312102"
       },
       "solutions": {
         "solution.py": {
-          "intuition": "We need to compute $x^n$ efficiently (for both positive and negative n):\n        The naive O(n) approach multiplies x repeatedly — too slow.\n        Instead, use **binary exponentiation** (exponentiation by squaring):\n            Express n in binary; each bit decides whether to include a corresponding power of x.\n            When n is even:\n                $x^n = (x^2)^{n/2}$\n            When n is odd:\n                $x^n = x \\times x^{n-1}$\n            Repeatedly square the base (x → x² → x⁴ → x⁸ ...) and halve n each step.\n            If n is odd, multiply the current base into the result.\n        For negative exponents:\n            $x^n = \\frac{1}{x^{-n}}$\n        This reduces multiplications from O(n) to O(log |n|).\n\n    Correctness:\n        The base case: any $x^0 = 1$.\n        If n < 0, we use the reciprocal to invert the result.\n        Each iteration processes one bit of n’s binary representation while maintaining the invariant:\n        $$\\text{result} \\times \\text{base}^{\\text{remaining bits}} = x^n$$\n        After all bits are processed, result = $x^n$.\n        Squaring ensures every power-of-two component appears exactly once.",
-          "time_complexity": "O(log |n|) iterations since n halves each step.\n    O(1) space for the iterative version, or O(log |n|) if recursive.\n    Each update:\n    $$\\text{if bit = 1: } result \\times= base$$\n    $$base \\times= base$$\n    $$n \\div= 2$$\n    Each loop handles one binary digit of n.",
-          "args": {
-            "x: float": "Base (float)",
-            "n: int": "Exponent (integer, may be negative)"
-          },
-          "returns": "`float`: The value of $x^n$.",
+          "intuition": "Compute $(x^n)$ using **binary exponentiation**:\n    Each iteration inspects the lowest bit of n:\n        if the bit is 1 → include the current power (base) in the result,\n        square the base for the next power-of-two,\n        shift n right to move to the next bit.\n    For negative n, take the reciprocal and reuse the same logic.\n\n    Example:\n        x = 2, n = 13 → 13 (1101₂):\n            bit 1 → multiply 2¹\n            bit 0 → skip 2²\n            bit 1 → multiply 2⁴\n            bit 1 → multiply 2⁸\n        Result = 2¹ × 2⁴ × 2⁸ = 8192",
+          "time_complexity": "O(log n):\n    one step per binary digit of n, (The number of bits in n is *$\\lfloor \\log₂ n \\rfloor + 1$* — fixed by the value of n itself.\n    It doesn’t matter whether those bits are 0 or 1; the loop processes one bit per iteration, so the total work is always proportional to the bit-length of n, not the bit pattern.)",
           "expressions": {
-            "if n < 0: return 1 / myPow(x, -n)": "handle negative exponents via reciprocal\n    'while n > 0: if n & 1: result *= base': multiply when the bit is 1\n    'base *= base': square the base for the next bit\n    'n >>= 1': shift exponent right (integer divide by 2)"
+            "if n < 0": "return 1 / myPow(x, -n)   (handle negative exponent)\n    'n & 1' :            check lowest bit          (1 → use base)\n    'base *= base' :     move to next power-of-two (`x` → `x²` → `x⁴` → `x⁸` …)\n    'n >>= 1' :          bitwise right shift; same effect as `n //= 2` for `n ≥ 0`"
           },
-          "variables": {
-            "base": "current power of x being considered (x, x², x⁴, …)",
-            "result": "cumulative product for bits set to 1 in n",
-            "n": "remaining exponent to process"
+          "args": {
+            "x: float": "base (float)",
+            "n: int": "exponent (int)"
           },
-          "code": "def myPow(x: float, n: int) -> float:\n    if n == 0: return 1.0\n    if n < 0: return 1.0 / myPow(x, -n)\n    result, base = 1.0, x\n    while n:\n        if n & 1:\n            result *= base\n        base *= base\n        n //= 2\n    return result"
+          "returns": "`float`: x raised to the power n.",
+          "code": "def myPow(x: float, n: int) -> float:\n    if n == 0: return 1.0\n    if n < 0: return 1.0 / myPow(x, -n)\n\n    result, base = 1.0, x\n    while n:\n        if n & 1:\n            result *= base\n        base *= base\n        n >>= 1     \n    return result"
         }
       },
       "title": "Pow(x, n)",
@@ -1416,6 +1411,26 @@
       "leetcode": "https://leetcode.com/problems/single-number",
       "difficulty": "Easy",
       "topics": ["bit-manipulation"]
+    },
+    "311-sparse-matrix-multiplication": {
+      "time_stamps": {
+        "created_at": "2025-11-13T10:31:46.730091",
+        "updated_at": "2025-11-13T11:57:47.360958"
+      },
+      "solutions": {
+        "naive.py": {
+          "code": "def sparse_matrix_multiplication( mat1: list[list[int]], mat2: list[list[int]] ) -> list[list[int]]:\n\n    m, k, n = len(mat1), len(mat1[0]), len(mat2[0])\n    res = [[0] * n for _ in range(m)]\n\n    for i in range(m):\n        for j in range(n):\n            for t in range(k):\n                res[i][j] += mat1[i][t] * mat2[t][j]\n    return res"
+        },
+        "optimized.py": {
+          "code": "def sparse_matrix_multiplication(A: list[list[int]], B: list[list[int]]) -> list[list[int]]:\n\n    m, n = len(A), len(B[0])\n    C = [[0] * n for _ in range(m)]\n\n    A_rows = [[(c, v) for c, v in enumerate(row) if v] for row in A]\n    B_rows = [[(c, v) for c, v in enumerate(row) if v] for row in B]\n\n    for i, row in enumerate(A_rows):\n        for k, a in row:\n            for j, b in B_rows[k]:\n                C[i][j] += a * b\n\n    return C"
+        }
+      },
+      "title": "Sparse Matrix Multiplication",
+      "definition": "Given two sparse matrices mat1 of size m x k and mat2 of size k x n, return the result of mat1 x mat2.You may assume that multiplication is always possible",
+      "leetcode": "https://leetcode.com/problems/sparse-matrix-multiplication/",
+      "difficulty": "medium",
+      "topics": ["matrix"],
+      "group": [["optimized.py"], ["naive.py"]]
     },
     "210-course-schedule-ii": {
       "time_stamps": {

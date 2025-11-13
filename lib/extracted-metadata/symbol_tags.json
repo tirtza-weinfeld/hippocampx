@@ -1,9 +1,9 @@
 {
   "core.bellman-ford.classic:bellman_ford_classic": {
     "args": [
-      "vertices",
       "edges",
-      "source"
+      "source",
+      "vertices"
     ],
     "code": "def bellman_ford_classic(\n    vertices: list[str], edges: list[tuple[str, str, float]], source: str\n) -> dict[str, float]:\n\n    d = [float(\"inf\")] * (V := len(vertices))\n    d[source] = 0\n\n    for _ in range(V - 1):\n        updated = False\n        for u, v, w in edges:\n            if d[u] + w < d[v]:\n                d[v] = d[u] + w\n                updated = True\n        if not updated:\n            return d\n\n    for u, v, w in edges:\n        if d[u] + w < d[v]:\n            raise Exception(\"Negative-weight cycle\")\n\n    return d",
     "expressions": {
@@ -31,9 +31,9 @@
   },
   "core.bellman-ford.layered_dag:bellman_ford_layered_dag": {
     "args": [
-      "vertices",
       "edges",
-      "source"
+      "source",
+      "vertices"
     ],
     "code": "def bellman_ford_layered_dag(\n    vertices: list[str], edges: list[tuple[str, str, float]], source: str\n) -> dict[str, float]:\n\n    d = {v: float(\"inf\") for v in vertices}\n    d[source], V = 0, len(vertices)\n\n    for k in range(V):\n        d_k = {**d}\n        for u, v, w in edges:\n            if d[u] + w < d_k[v]:\n                d_k[v] = d[u] + w\n        d = d_k\n\n    witnesses = {v for u, v, w in edges if d[u] + w < d[v]}\n\n    if not witnesses:\n        return d\n\n    adj = defaultdict(list)\n    for u, v, _ in edges:\n        adj[u].append(v)\n\n    stack = list(witnesses)\n    reachable = set(witnesses)\n\n    while stack:\n        u = stack.pop()\n        d[u] = float(\"-inf\")\n        for v in adj[u]:\n            if v not in reachable:\n                reachable.add(v)\n                stack.append(v)\n\n    return d",
     "file_path": "backend/algorithms/core/bellman-ford/layered_dag.py",
@@ -145,8 +145,8 @@
   "core.modular-arithmetic.congruent1:congruent1": {
     "args": [
       "b",
-      "n",
-      "a"
+      "a",
+      "n"
     ],
     "code": "def congruent1(a: int, b: int, n: int) -> bool:\n    return (a - b) % n == 0",
     "file_path": "backend/algorithms/core/modular-arithmetic/congruent1.py",
@@ -180,8 +180,8 @@
   "core.modular-arithmetic.congruent2:congruent2": {
     "args": [
       "b",
-      "n",
-      "a"
+      "a",
+      "n"
     ],
     "code": "def congruent2(a: int, b: int, n: int) -> bool:\n    return a % n == b % n",
     "file_path": "backend/algorithms/core/modular-arithmetic/congruent2.py",
@@ -214,8 +214,8 @@
   },
   "core.modular-arithmetic.mod:mod": {
     "args": [
-      "b",
-      "a"
+      "a",
+      "b"
     ],
     "code": "def mod(a: int, b: int) -> int:\n    return a % b",
     "file_path": "backend/algorithms/core/modular-arithmetic/mod.py",
@@ -411,10 +411,10 @@
   },
   "more.tictactoe.tictactoe copy 2:TicTacToe.minimax.dp": {
     "args": [
-      "alpha",
+      "beta",
       "curr_player",
       "state",
-      "beta"
+      "alpha"
     ],
     "code": "        def dp(state: Board, curr_player: Player, alpha: float, beta: float) -> int:\n            state_key = (str(state), curr_player)\n            if state_key in self._memo:\n                return self._memo[state_key]\n\n            if self.terminal(state):\n                w = self.winner(state)\n                self._memo[state_key] = 1 if w == curr_player else (0 if w is None else -1)\n                return self._memo[state_key]\n\n            opponent = O if curr_player == X else X\n            value = float('-inf')\n            for action in self.actions(state):\n                value = max(value, -dp(self.result(state, action), opponent, -beta, -alpha))\n                alpha = max(alpha, value)\n                if alpha >= beta:\n                    break\n\n            self._memo[state_key] = int(value)\n            return int(value)",
     "file_path": "backend/algorithms/more/tictactoe/tictactoe copy 2.py",
@@ -467,8 +467,8 @@
   },
   "more.tictactoe.tictactoe copy 2:TicTacToe.result": {
     "args": [
-      "action",
-      "board"
+      "board",
+      "action"
     ],
     "code": "    def result(self, board: Board, action: Action) -> Board:",
     "file_path": "backend/algorithms/more/tictactoe/tictactoe copy 2.py",
@@ -712,8 +712,8 @@
   },
   "more.tictactoe.tictactoe-minimax:TicTacToe.result": {
     "args": [
-      "action",
-      "board"
+      "board",
+      "action"
     ],
     "code": "    def result(self, board: Board, action: Action) -> Board:",
     "file_path": "backend/algorithms/more/tictactoe/tictactoe-minimax.py",
@@ -829,10 +829,10 @@
   },
   "more.tictactoe.tictactoe:TicTacToe.minimax.dp": {
     "args": [
-      "alpha",
+      "beta",
       "curr_player",
       "state",
-      "beta"
+      "alpha"
     ],
     "code": "        def dp(state: Board, curr_player: Player, alpha: float, beta: float) -> int:\n            state_key = (str(state), curr_player)\n            if state_key not in self._memo:\n\n                if self.terminal(state):\n                    w = self.winner(state)\n                    self._memo[state_key] = 1 if w == curr_player else (0 if w is None else -1)\n                    return self._memo[state_key]\n\n                opponent = O if curr_player == X else X\n                value = float('-inf')\n                for action in self.actions(state):\n                    value = max(value, -dp(self.result(state, action), opponent, -beta, -alpha))\n                    alpha = max(alpha, value)\n                    if alpha >= beta:\n                        break\n\n                self._memo[state_key] = int(value)\n            return  self._memo[state_key] ",
     "file_path": "backend/algorithms/more/tictactoe/tictactoe.py",
@@ -885,8 +885,8 @@
   },
   "more.tictactoe.tictactoe:TicTacToe.result": {
     "args": [
-      "action",
-      "board"
+      "board",
+      "action"
     ],
     "code": "    def result(self, board: Board, action: Action) -> Board:",
     "file_path": "backend/algorithms/more/tictactoe/tictactoe.py",
@@ -1016,8 +1016,8 @@
   },
   "more.tictactoe.tictactoe_no_player_in_state:TicTacToe.result": {
     "args": [
-      "action",
-      "board"
+      "board",
+      "action"
     ],
     "code": "    def result(self, board: Board, action: Action) -> Board:",
     "file_path": "backend/algorithms/more/tictactoe/tictactoe_no_player_in_state.py",
@@ -1173,8 +1173,8 @@
   },
   "problems.1-two-sum.solution:two_sum": {
     "args": [
-      "target",
-      "nums"
+      "nums",
+      "target"
     ],
     "code": "def two_sum(nums: list[int], target: int) -> list[int]:\n\n    seen = {}\n\n    for i, num in enumerate(nums):\n        if (x := target - num) in seen:\n            return seen[x], i\n        seen[num] = i",
     "file_path": "backend/algorithms/problems/1-two-sum/solution.py",
@@ -1404,8 +1404,8 @@
   },
   "problems.1235-maximum-profit-in-job-scheduling.top_down:maximum_profit_in_job_scheduling": {
     "args": [
-      "profit",
       "endTime",
+      "profit",
       "startTime"
     ],
     "code": "def maximum_profit_in_job_scheduling(\n    startTime: list[int], endTime: list[int], profit: list[int]\n) -> int:\n\n    jobs = sorted(zip(startTime, endTime, profit))\n    memo = {}\n\n    def dp(i: int) -> int:\n        if i == len(jobs):\n            return 0\n        if i not in memo:\n            _, e, p = jobs[i]\n            memo[i] = max(dp(i + 1), p + dp(bisect_left(jobs, e, key=lambda x: x[0])))\n        return memo[i]\n\n    return dp(0)",
@@ -1503,9 +1503,9 @@
   },
   "problems.127-word-ladder.solution:word_ladder": {
     "args": [
-      "endWord",
+      "wordList",
       "beginWord",
-      "wordList"
+      "endWord"
     ],
     "code": "def word_ladder(beginWord: str, endWord: str, wordList: list[str]) -> int:\n    if endWord not in wordList:\n        return 0\n\n    L = len(beginWord)\n    combos: dict[str, list[str]] = defaultdict(list)\n    for w in wordList:\n        for i in range(L):\n            combos[w[:i] + \"*\" + w[i+1:]].append(w)\n\n    front, back = {beginWord}, {endWord}\n    dist_front, dist_back = {beginWord: 1}, {endWord: 1}\n\n    while front and back:\n        if len(front) > len(back):\n            front, back = back, front\n            dist_front, dist_back = dist_back, dist_front\n\n        next_front = set()\n        for word in front:\n            for i in range(L):\n                for n in combos[word[:i] + \"*\" + word[i+1:]]:\n                    if n in dist_back:\n                        return dist_front[word] + dist_back[n]\n                    if n not in dist_front:\n                        dist_front[n] = dist_front[word] + 1\n                        next_front.add(n)\n        front = next_front\n\n    return 0",
     "file_path": "backend/algorithms/problems/127-word-ladder/solution.py",
@@ -1520,8 +1520,8 @@
   },
   "problems.1293-shortest-path-in-a-grid-with-obstacles-elimination.a_star:manhattan_distance": {
     "args": [
-      "b",
-      "a"
+      "a",
+      "b"
     ],
     "code": "def manhattan_distance(a: tuple[int, int], b: tuple[int, int]) -> int:\n    return abs(a[0] - b[0]) + abs(a[1] - b[1])",
     "file_path": "backend/algorithms/problems/1293-shortest-path-in-a-grid-with-obstacles-elimination/a_star.py",
@@ -1826,8 +1826,8 @@
     "args": [
       "start",
       "n",
-      "end",
       "edges",
+      "end",
       "succProb"
     ],
     "code": "    def maxProbability(self, n: int, edges: list[list[int]], succProb: list[float], start: int, end: int) -> float:\n        prob = [0.0] * n\n        prob[start] = 1.0\n\n        for _ in range(n - 1):\n            updated = False\n            for (u, v), p in zip(edges, succProb):\n                if prob[u] * p > prob[v]:\n                    prob[v] = prob[u] * p\n                    updated = True\n                if prob[v] * p > prob[u]:\n                    prob[u] = prob[v] * p\n                    updated = True\n            if not updated:\n                break\n\n        return prob[end]",
@@ -1860,11 +1860,11 @@
   },
   "problems.1514-path-with-maximum-probability.dijkstra:Solution.maxProbability": {
     "args": [
-      "start",
-      "end",
       "edges",
-      "n",
-      "succProb"
+      "end",
+      "succProb",
+      "start",
+      "n"
     ],
     "code": "    def maxProbability(self, n: int, edges: list[list[int]], succProb: list[float], start: int, end: int) -> float:\n\n        adj = defaultdict(list)\n        for (u, v), p in zip(edges, succProb):\n            adj[u].append((v, p))\n            adj[v].append((u, p))\n\n        pq, best = [(-1.0, start)], [0.0] * n\n        best[start] = 1.0\n\n        while pq:\n            p, u = heappop(pq)\n            p = -p\n            if u == end:\n                return p\n            if p < best[u]:\n                continue\n            for v, w in adj[u]:\n                new_p = p * w\n                if new_p > best[v]:\n                    best[v] = new_p\n                    heappush(pq, (-new_p, v))\n        return 0.0",
     "file_path": "backend/algorithms/problems/1514-path-with-maximum-probability/dijkstra.py",
@@ -2143,8 +2143,8 @@
   },
   "problems.207-course-schedule.solution:Solution.canFinish": {
     "args": [
-      "n",
-      "prerequisites"
+      "prerequisites",
+      "n"
     ],
     "code": "    def canFinish(self, n: int, prerequisites: list[list[int]]) -> bool:\n        g = [[] for _ in range(n)]     \n        indeg = [0] * n                \n        for a, b in prerequisites:\n            g[b].append(a)             \n            indeg[a] += 1              \n\n        q = deque(i for i, d in enumerate(indeg) if d == 0)\n        taken = 0                      \n\n        while q:\n            u = q.popleft()             \n            taken += 1\n            for v in g[u]:              \n                indeg[v] -= 1           \n                if indeg[v] == 0:       \n                    q.append(v)         \n\n        return taken == n",
     "expressions": {
@@ -2342,8 +2342,8 @@
   },
   "problems.211-design-add-and-search-words-data-structure.solution:WordDictionary.search.dfs": {
     "args": [
-      "i",
-      "node"
+      "node",
+      "i"
     ],
     "code": "        def dfs(node: dict, i: int) -> bool:\n\n            if i == len(word):\n                return self.END_MARKER in node\n\n            if (c := word[i]) == \".\":\n\n                return any(\n                    dfs(child, i + 1)\n                    for k, child in node.items()\n                    if k != self.END_MARKER\n                )\n            child = node.get(c)\n            return bool(child) and dfs(child, i + 1)",
     "expressions": {
@@ -2364,8 +2364,8 @@
   },
   "problems.212-word-search-ii.solution:word_search_II": {
     "args": [
-      "words",
-      "board"
+      "board",
+      "words"
     ],
     "code": "def word_search_II(board: list[list[str]], words: list[str]) -> list[str]:\n    trie = {}  \n    for word in words:\n        node = trie\n        for c in word:\n            node = node.setdefault(c, {})\n        node[\"$\"] = word\n\n    def dfs(i, j, parent):\n        if not (0 <= i < m and 0 <= j < n) or (c := board[i][j]) not in parent:\n            return\n        node = parent[c]\n        if \"$\" in node:\n            res.append(node.pop(\"$\"))\n        board[i][j] = \"#\"\n        for x, y in ((i - 1, j), (i + 1, j), (i, j - 1), (i, j + 1)):\n            dfs(x, y, node)\n        board[i][j] = c\n        if not node:\n            parent.pop(c)\n\n    m, n, res = len(board), len(board[0]), []\n    [dfs(i, j, trie) for i in range(m) for j in range(n) if board[i][j] in trie]\n\n    return res",
     "expressions": {
@@ -2496,8 +2496,8 @@
   "problems.2145-count-the-hidden-sequences.solution:numberOfArrays": {
     "args": [
       "differences",
-      "lower",
-      "upper"
+      "upper",
+      "lower"
     ],
     "code": "def numberOfArrays(differences: list[int], lower: int, upper: int) -> int:\n\n    prefix_sum = min_marker = max_marker = 0\n\n    for diff in differences:\n        prefix_sum += diff\n        min_marker = min(min_marker, prefix_sum)\n        max_marker = max(max_marker, prefix_sum)\n\n    return max(0, (upper - max_marker) - (lower - min_marker) + 1)",
     "file_path": "backend/algorithms/problems/2145-count-the-hidden-sequences/solution.py",
@@ -2567,8 +2567,8 @@
   },
   "problems.2402-meeting-rooms-iii.solution:mostBooked": {
     "args": [
-      "n",
-      "meetings"
+      "meetings",
+      "n"
     ],
     "code": "def mostBooked(n: int, meetings: list[list[int]]) -> int:\n\n    busy = []\n    heapify((free := [*range(n)]))\n    count = [0] * n\n\n    for s, e in sorted(meetings):\n        while busy and busy[0][0] <= s:\n            _, r = heappop(busy)\n            heappush(free, r)\n        if free:\n            r = heappop(free)\n            heappush(busy, (e, r))\n        else:\n            next_end, r = heappop(busy)\n            heappush(busy, (next_end + (e - s), r))\n        count[r] += 1\n\n    return max(range(n), key=count.__getitem__)",
     "expressions": {
@@ -3147,73 +3147,58 @@
   },
   "problems.50-pow.solution:myPow": {
     "args": [
-      "n",
-      "x"
+      "x",
+      "n"
     ],
-    "code": "def myPow(x: float, n: int) -> float:\n    if n == 0: return 1.0\n    if n < 0: return 1.0 / myPow(x, -n)\n    result, base = 1.0, x\n    while n:\n        if n & 1:\n            result *= base\n        base *= base\n        n //= 2\n    return result",
+    "code": "def myPow(x: float, n: int) -> float:\n    if n == 0: return 1.0\n    if n < 0: return 1.0 / myPow(x, -n)\n\n    result, base = 1.0, x\n    while n:\n        if n & 1:\n            result *= base\n        base *= base\n        n >>= 1     \n    return result",
     "expressions": {
-      "base *= base": "square the base for the next bit",
-      "if n < 0: return 1 / myPow(x, -n)": "handle negative exponents via reciprocal",
-      "n >>= 1": "shift exponent right (integer divide by 2)",
-      "while n > 0: if n & 1: result *= base": "multiply when the bit is 1"
+      "base *= base": "move to next power-of-two (`x` → `x²` → `x⁴` → `x⁸` …)",
+      "if n < 0": "return 1 / myPow(x, -n)   (handle negative exponent)",
+      "n & 1": "check lowest bit          (1 → use base)",
+      "n >>= 1": "bitwise right shift; same effect as `n //= 2` for `n ≥ 0`"
     },
     "file_path": "backend/algorithms/problems/50-pow/solution.py",
-    "intuition": "- We need to compute $x^n$ efficiently (for both positive and negative n):\n        - The naive O(n) approach multiplies x repeatedly — too slow.\n        - Instead, use **binary exponentiation** (exponentiation by squaring):\n            - Express n in binary; each bit decides whether to include a corresponding power of x.\n            - When n is even:\n                - $x^n = (x^2)^{n/2}$\n            - When n is odd:\n                - $x^n = x \\times x^{n-1}$\n            - Repeatedly square the base (x → x² → x⁴ → x⁸ ...) and halve n each step.\n            - If n is odd, multiply the current base into the result.\n        - For negative exponents:\n            - $x^n = \\frac{1}{x^{-n}}$\n        - This reduces multiplications from O(n) to O(log |n|).\n\n    - Correctness:\n        - The base case: any $x^0 = 1$.\n        - If n < 0, we use the reciprocal to invert the result.\n        - Each iteration processes one bit of n’s binary representation while maintaining the invariant:\n        - $$\\text{result} \\times \\text{base}^{\\text{remaining bits}} = x^n$$\n        - After all bits are processed, result = $x^n$.\n        - Squaring ensures every power-of-two component appears exactly once.",
+    "intuition": "- Compute $(x^n)$ using **binary exponentiation**:\n    - Each iteration inspects the lowest bit of n:\n        - if the bit is 1 → include the current power (base) in the result,\n        - square the base for the next power-of-two,\n        - shift n right to move to the next bit.\n    - For negative n, take the reciprocal and reuse the same logic.\n\n    - Example:\n        - x = 2, n = 13 → 13 (1101₂):\n            - bit 1 → multiply 2¹\n            - bit 0 → skip 2²\n            - bit 1 → multiply 2⁴\n            - bit 1 → multiply 2⁸\n        - Result = 2¹ × 2⁴ × 2⁸ = 8192",
     "kind": "function",
     "label": "def myPow(x: float, n: int) -> float",
     "name": "myPow",
     "returns": {
       "label": "float",
-      "summary": "The value of $x^n$."
+      "summary": "x raised to the power n."
     },
-    "time_complexity": "O(log |n|) iterations since n halves each step.\nO(1) space for the iterative version, or O(log |n|) if recursive.\nEach update:\n$$\\text{if bit = 1: } result \\times= base$$\n$$base \\times= base$$\n$$n \\div= 2$$\nEach loop handles one binary digit of n.",
-    "variables": [
-      "base",
-      "result",
-      "n"
-    ]
-  },
-  "problems.50-pow.solution:myPow.base": {
-    "kind": "variable",
-    "name": "base",
-    "summary": "current power of x being considered (x, x², x⁴, …)"
+    "time_complexity": "O(log n):\none step per binary digit of n, (The number of bits in n is *$\\lfloor \\log₂ n \\rfloor + 1$* — fixed by the value of n itself.\nIt doesn’t matter whether those bits are 0 or 1; the loop processes one bit per iteration, so the total work is always proportional to the bit-length of n, not the bit pattern.)"
   },
   "problems.50-pow.solution:myPow.base *= base": {
     "kind": "expression",
     "name": "base *= base",
-    "summary": "square the base for the next bit"
+    "summary": "move to next power-of-two (`x` → `x²` → `x⁴` → `x⁸` …)"
   },
-  "problems.50-pow.solution:myPow.if n < 0: return 1 / myPow(x, -n)": {
+  "problems.50-pow.solution:myPow.if n < 0": {
     "kind": "expression",
-    "name": "if n < 0: return 1 / myPow(x, -n)",
-    "summary": "handle negative exponents via reciprocal"
+    "name": "if n < 0",
+    "summary": "return 1 / myPow(x, -n)   (handle negative exponent)"
   },
   "problems.50-pow.solution:myPow.n": {
     "kind": "parameter",
     "label": "n: int",
     "name": "n",
-    "summary": "Exponent (integer, may be negative)"
+    "summary": "exponent (int)"
+  },
+  "problems.50-pow.solution:myPow.n & 1": {
+    "kind": "expression",
+    "name": "n & 1",
+    "summary": "check lowest bit          (1 → use base)"
   },
   "problems.50-pow.solution:myPow.n >>= 1": {
     "kind": "expression",
     "name": "n >>= 1",
-    "summary": "shift exponent right (integer divide by 2)"
-  },
-  "problems.50-pow.solution:myPow.result": {
-    "kind": "variable",
-    "name": "result",
-    "summary": "cumulative product for bits set to 1 in n"
-  },
-  "problems.50-pow.solution:myPow.while n > 0: if n & 1: result *= base": {
-    "kind": "expression",
-    "name": "while n > 0: if n & 1: result *= base",
-    "summary": "multiply when the bit is 1"
+    "summary": "bitwise right shift; same effect as `n //= 2` for `n ≥ 0`"
   },
   "problems.50-pow.solution:myPow.x": {
     "kind": "parameter",
     "label": "x: float",
     "name": "x",
-    "summary": "Base (float)"
+    "summary": "base (float)"
   },
   "problems.51-n-queens.solution:n_queens": {
     "args": [
@@ -3285,8 +3270,8 @@
   },
   "problems.518-coin-change-ii.solution:coin_change_II": {
     "args": [
-      "coins",
-      "amount"
+      "amount",
+      "coins"
     ],
     "code": "def coin_change_II(amount: int, coins: list[int]) -> int:\n    memo, n = {}, len(coins)\n\n    def dp(c, amount):\n        if amount == 0:\n            return 1\n        if amount < 0 or c == n:\n            return 0\n        if (c, amount) not in memo:\n            memo[c, amount] = dp(c, amount - coins[c]) + dp(c + 1, amount)\n        return memo[c, amount]\n\n    return dp(0, amount)",
     "file_path": "backend/algorithms/problems/518-coin-change-ii/solution.py",
@@ -3607,8 +3592,8 @@
   },
   "problems.743-network-delay-time.dijkstra-b:Solution.networkDelayTime": {
     "args": [
-      "times",
       "k",
+      "times",
       "n"
     ],
     "code": "    def networkDelayTime(self, times: list[list[int]], n: int, k: int) -> int:\n\n        adj = defaultdict(list)\n        for u, v, w in times:\n            adj[u].append((v, w))\n\n        pq, finalized, time = [(0, k)], set(), 0\n\n        while pq:\n            t, node = heappop(pq)\n            if node in finalized:\n                continue\n            finalized.add(node)\n            time = t\n\n            for neighbor, travel_time in adj[node]:\n                if neighbor not in finalized:\n                    heappush(pq, (time + travel_time, neighbor))\n\n        return time if len(finalized) == n else -1",
@@ -3654,8 +3639,8 @@
   },
   "problems.76-minimum-window-substring.solution:minWindow": {
     "args": [
-      "t",
-      "s"
+      "s",
+      "t"
     ],
     "code": "def minWindow(s: str, t: str) -> str:\n    t_count, have = Counter(t), defaultdict(int)\n    letters_needed, min_idx, l = len(t_count), None, 0\n    for r, c in enumerate(s):\n        have[c] += 1\n        if have[c] == t_count[c]:\n            letters_needed -= 1\n            while letters_needed == 0:\n                if not min_idx or r - l + 1 < min_idx[1] - min_idx[0]:\n                    min_idx = l, r + 1\n                have[s[l]] -= 1\n                if have[s[l]] < t_count[s[l]]:\n                    letters_needed += 1\n                l += 1\n    return \"\" if min_idx == None else s[min_idx[0] : min_idx[1]]",
     "file_path": "backend/algorithms/problems/76-minimum-window-substring/solution.py",
@@ -3703,11 +3688,11 @@
   },
   "problems.787-cheapest-flights-within-k-stops.bellman_ford:cheapest_flights_with_at_most_k_stops": {
     "args": [
+      "dst",
+      "k",
       "flights",
       "src",
-      "k",
-      "n",
-      "dst"
+      "n"
     ],
     "code": "def cheapest_flights_with_at_most_k_stops(\n    n: int, flights: list[list[int]], src: int, dst: int, k: int\n) -> int:\n    d = [float(\"inf\")] * n\n    d[src] = 0\n\n    for _ in range(k + 1):\n        tmp = d[:]\n        for u, v, w in flights:\n            if d[u] + w < tmp[v]:\n                tmp[v] = d[u] + w\n        d = tmp\n\n    return d[dst] if d[dst] < float(\"inf\") else -1",
     "file_path": "backend/algorithms/problems/787-cheapest-flights-within-k-stops/bellman_ford.py",
@@ -3721,10 +3706,10 @@
   },
   "problems.787-cheapest-flights-within-k-stops.dijkstra:cheapest_flights_with_at_most_k_stops": {
     "args": [
-      "k",
       "dst",
+      "src",
       "flights",
-      "src"
+      "k"
     ],
     "code": "def cheapest_flights_with_at_most_k_stops( flights: list[list[int]], src: int, dst: int, k: int) -> int:\n\n    graph = defaultdict(list)\n    for u, v, price in flights:\n        graph[u].append((v, price))\n\n    pq, min_stops = [(0, src, 0)], {}\n\n    while pq:\n        cost, city, stops = heapq.heappop(pq)\n\n        if stops > min_stops.get(city, float(\"inf\")): continue\n        if city == dst: return cost\n\n        min_stops[city] = stops\n        if stops <= k:\n            for neighbor, price in graph[city]:\n                heapq.heappush(pq, (cost + price, neighbor, stops + 1))\n    return -1",
     "file_path": "backend/algorithms/problems/787-cheapest-flights-within-k-stops/dijkstra.py",

@@ -1,0 +1,55 @@
+# Sparse Matrix Multiplication
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="medium" />
+
+<PillList pills={["matrix"]} />
+
+[311. Sparse Matrix Multiplication](https://leetcode.com/problems/sparse-matrix-multiplication/)
+
+## [!(ProblemDefinition)] Definition
+
+Given two sparse matrices mat1 of size m x k and mat2 of size k x n, return the result of mat1 x mat2.You may assume that multiplication is always possible
+
+## Optimized Solution
+
+### [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/311-sparse-matrix-multiplication/optimized.py"
+def sparse_matrix_multiplication(A: list[list[int]], B: list[list[int]]) -> list[list[int]]:
+
+    m, n = len(A), len(B[0])
+    C = [[0] * n for _ in range(m)]
+
+    A_rows = [[(c, v) for c, v in enumerate(row) if v] for row in A]
+    B_rows = [[(c, v) for c, v in enumerate(row) if v] for row in B]
+
+    for i, row in enumerate(A_rows):
+        for k, a in row:
+            for j, b in B_rows[k]:
+                C[i][j] += a * b
+
+    return C
+```
+
+
+---
+
+## Naive Solution
+
+### [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/311-sparse-matrix-multiplication/naive.py"
+def sparse_matrix_multiplication( mat1: list[list[int]], mat2: list[list[int]] ) -> list[list[int]]:
+
+    m, k, n = len(mat1), len(mat1[0]), len(mat2[0])
+    res = [[0] * n for _ in range(m)]
+
+    for i in range(m):
+        for j in range(n):
+            for t in range(k):
+                res[i][j] += mat1[i][t] * mat2[t][j]
+    return res
+```
+

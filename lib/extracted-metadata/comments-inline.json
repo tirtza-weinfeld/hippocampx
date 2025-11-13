@@ -56,6 +56,16 @@
     4,
     5
   ],
+  "problems/311-sparse-matrix-multiplication/_optimized.py": [
+    15
+  ],
+  "problems/311-sparse-matrix-multiplication/optimized.py": [
+    3,
+    5,
+    6,
+    8,
+    11
+  ],
   "problems/1563-stone-game-v/bottom-up.py": [
     5,
     19,

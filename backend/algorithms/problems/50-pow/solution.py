@@ -1,62 +1,47 @@
 def myPow(x: float, n: int) -> float:
     r"""
     Intuition:
-    
-        We need to compute $x^n$ efficiently (for both positive and negative n):
-            The naive O(n) approach multiplies x repeatedly — too slow.
-            Instead, use **binary exponentiation** (exponentiation by squaring):
-                Express n in binary; each bit decides whether to include a corresponding power of x.
-                When n is even:
-                    $x^n = (x^2)^{n/2}$
-                When n is odd:
-                    $x^n = x \times x^{n-1}$
-                Repeatedly square the base (x → x² → x⁴ → x⁸ ...) and halve n each step.
-                If n is odd, multiply the current base into the result.
-            For negative exponents:
-                $x^n = \frac{1}{x^{-n}}$
-            This reduces multiplications from O(n) to O(log |n|).
+        Compute $(x^n)$ using **binary exponentiation**:
+        Each iteration inspects the lowest bit of n:
+            if the bit is 1 → include the current power (base) in the result,
+            square the base for the next power-of-two,
+            shift n right to move to the next bit.
+        For negative n, take the reciprocal and reuse the same logic.
 
-        Correctness:
-            The base case: any $x^0 = 1$.
-            If n < 0, we use the reciprocal to invert the result.
-            Each iteration processes one bit of n’s binary representation while maintaining the invariant:
-            $$\text{result} \times \text{base}^{\text{remaining bits}} = x^n$$
-            After all bits are processed, result = $x^n$.
-            Squaring ensures every power-of-two component appears exactly once.
+        Example:
+            x = 2, n = 13 → 13 (1101₂):
+                bit 1 → multiply 2¹
+                bit 0 → skip 2²
+                bit 1 → multiply 2⁴
+                bit 1 → multiply 2⁸
+            Result = 2¹ × 2⁴ × 2⁸ = 8192
 
     Time Complexity:
-        O(log |n|) iterations since n halves each step.
-        O(1) space for the iterative version, or O(log |n|) if recursive.
-        Each update:
-        $$\text{if bit = 1: } result \times= base$$
-        $$base \times= base$$
-        $$n \div= 2$$
-        Each loop handles one binary digit of n.
+        O(log n):
+        one step per binary digit of n, (The number of bits in n is *$\lfloor \log₂ n \rfloor + 1$* — fixed by the value of n itself.
+        It doesn’t matter whether those bits are 0 or 1; the loop processes one bit per iteration, so the total work is always proportional to the bit-length of n, not the bit pattern.)
 
-    Args:
-        x: Base (float)
-        n: Exponent (integer, may be negative)
-
-    Returns:
-        The value of $x^n$.
 
     Expressions:
-        'if n < 0: return 1 / myPow(x, -n)': handle negative exponents via reciprocal
-        'while n > 0: if n & 1: result *= base': multiply when the bit is 1
-        'base *= base': square the base for the next bit
-        'n >>= 1': shift exponent right (integer divide by 2)
+        'if n < 0':         return 1 / myPow(x, -n)   (handle negative exponent)
+        'n & 1' :            check lowest bit          (1 → use base)
+        'base *= base' :     move to next power-of-two (`x` → `x²` → `x⁴` → `x⁸` …)
+        'n >>= 1' :          bitwise right shift; same effect as `n //= 2` for `n ≥ 0` 
 
-    Variables:
-        base: current power of x being considered (x, x², x⁴, …)
-        result: cumulative product for bits set to 1 in n
-        n: remaining exponent to process
+    Args:
+        x: base (float)
+        n: exponent (int)
+
+    Returns:
+        x raised to the power n.
     """
     if n == 0: return 1.0
     if n < 0: return 1.0 / myPow(x, -n)
+
     result, base = 1.0, x
     while n:
         if n & 1:
             result *= base
         base *= base
-        n //= 2
+        n >>= 1     
     return result

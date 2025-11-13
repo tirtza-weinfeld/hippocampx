@@ -13,6 +13,7 @@
     ],
     "matrix": [
       "1275-find-winner-on-a-tic-tac-toe-game",
+      "311-sparse-matrix-multiplication",
       "348-design-tic-tac-toe",
       "794-valid-tic-tac-toe-state"
     ],
@@ -313,6 +314,7 @@
       "253-meeting-rooms-ii",
       "256-paint-house",
       "3-longest-substring-without-repeating-characters",
+      "311-sparse-matrix-multiplication",
       "325-maximum-size-subarray-sum-equals-k",
       "33-search-in-rotated-sorted-array",
       "34-find-first-and-last-position-of-element-in-sorted-array",
@@ -410,7 +412,7 @@
       "$O(n)$"
     ],
     "50-pow": [
-      "$O(\\log |n|) iterations since n halves each step.$"
+      "$O(\\log n)$"
     ],
     "191-number-of-1-bits": [
       "$O(k)$"

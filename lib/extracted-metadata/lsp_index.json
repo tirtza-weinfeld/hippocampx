@@ -4352,6 +4352,76 @@
       ]
     },
     {
+      "uri": "problems/311-sparse-matrix-multiplication/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/311-sparse-matrix-multiplication/_optimized.py",
+      "symbols": [
+        {
+          "name": "sparse_matrix_multiplication",
+          "detail": "sparse_matrix_multiplication(A: list[list[int]], B: list[list[int]]) -> list[list[int]]",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 17, "character": 12}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 32
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/311-sparse-matrix-multiplication/naive.py",
+      "symbols": [
+        {
+          "name": "sparse_matrix_multiplication",
+          "detail": "sparse_matrix_multiplication(mat1: list[list[int]], mat2: list[list[int]]) -> list[list[int]]",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 9, "character": 14}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 32
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/311-sparse-matrix-multiplication/optimized.py",
+      "symbols": [
+        {
+          "name": "sparse_matrix_multiplication",
+          "detail": "sparse_matrix_multiplication(A: list[list[int]], B: list[list[int]]) -> list[list[int]]",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 13, "character": 12}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 32
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
       "uri": "problems/312-burst-balloons/__init__.py",
       "symbols": []
     },
@@ -5196,7 +5266,7 @@
           "name": "myPow",
           "detail": "myPow(x: float, n: int) -> float",
           "kind": 12,
-          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 9, "character": 17}},
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 10, "character": 17}},
           "nameRange": {
             "start": {
               "line": 0,
