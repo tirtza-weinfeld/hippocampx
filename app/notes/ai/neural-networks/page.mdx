@@ -1,145 +1,110 @@
-import { NeuralNetworkPlayground } from "@/components/neural-networks/neural-network-playground";
+# Neural Networks   
 
-# Neural Networks: Interactive Learning
+## Resizable Table of Contents
 
-Explore how neural networks learn to recognize handwritten digits through interactive visualizations. Build, train, and test your own network using the MNIST dataset.
 
-## Interactive Playground
+## 1. A neural network is a composition of functions
 
-Create your own neural network, watch it train in real-time, and test its predictions. Draw digits or use samples from the MNIST dataset to see how well it performs.
+A neural network is a stack of functions applied one after another:
 
-<NeuralNetworkPlayground />
+$$
+f(\mathbf{x}) = f_L\circ f_{L-1}\circ \dots \circ f_1(\mathbf{x})
+$$
 
-## How It Works
-
-### Neural Network Architecture
-
-A neural network is composed of layers of interconnected neurons. The default architecture uses:
-
-- **Input layer:** 784 neurons (28×28 pixels from MNIST images)
-- **Hidden layer:** 30 neurons (customizable)
-- **Output layer:** 10 neurons (one for each digit 0-9)
-
-### Training Process
-
-The network learns through a process called **backpropagation**:
-
-1. Show the network an image and its correct label
-2. Calculate how wrong the network&apos;s prediction was (the error)
-3. Adjust the weights and biases to reduce this error
-4. Repeat for thousands of images
-
-### Key Parameters
-
-- **Epochs:** How many times to see all 60,000 training images
-- **Mini-batch size:** Update weights after processing N images
-- **Learning rate:** How aggressively to adjust weights (3.0 works well for MNIST)
-
-## Understanding the Visualization
-
-### Network Graph
-
-The animated network visualization shows:
-
-- **Neurons** as circles (larger for input/output layers)
-- **Connections** as lines between neurons
-- **Activation strength** shown by color intensity
-- **Data flow** animated from input → hidden → output layers
-
-Use the play/pause and speed controls to explore how signals propagate through the network.
-
-### Prediction Confidence
-
-When you make a prediction, you&apos;ll see:
-
-- **Predicted digit** displayed prominently
-- **Confidence percentage** (0-100%)
-- **Probability distribution** for all 10 digits (0-9)
-
-The bars show how confident the network is for each possible digit. The highest bar corresponds to the prediction.
-
-### Training Progress
-
-As the network trains, watch:
-
-- **Live accuracy updates** each epoch
-- **Progress bar** showing completion
-- **Accuracy chart** showing improvement over time
-
-Typical progression: 80% → 90% → 95% accuracy over 30 epochs.
-
-## Tips for Best Results
-
-### Drawing Your Own Digits
-
-**Do:**
-- Draw large and centered
-- Use thick, clear strokes
-- Keep it simple (like MNIST style)
-
-L **Avoid:**
-- Tiny digits in corners
-- Overly stylized handwriting
-- Multiple disconnected strokes
-
-### Experimenting with Architecture
-
-Try different configurations:
-
-- More hidden neurons: `784, 100, 10` (more capacity, slower)
-- Deeper networks: `784, 50, 30, 10` (more layers)
-- ReLU activation: Often faster than sigmoid
-- Different learning rates: 2.0-4.0 range
-
-### Understanding Training Behavior
-
-**Important:** Training is cumulative!
-
-- First training session: Random weights  ~90% accuracy
-- Second training session: Continues from 90%  ~93%
-- To start fresh: Create a new network first
-
-## The Mathematics Behind It
-
-### Forward Pass
-
-For each layer, the network computes:
-
-```
-activation = σ(weights × input + bias)
-```
-
-Where σ is the activation function (sigmoid or ReLU).
-
-### Backward Pass (Backpropagation)
-
-The network adjusts weights based on the error:
-
-```
-new_weight = old_weight - learning_rate × gradient
-```
-
-This process repeats thousands of times until the network learns to recognize patterns.
-
-## Real-World Applications
-
-While this demo uses handwritten digits, the same principles apply to:
-
-- **Image recognition** - Identifying objects in photos
-- **Natural language processing** - Understanding text
-- **Speech recognition** - Converting audio to text
-- **Medical diagnosis** - Analyzing medical images
-- **Autonomous vehicles** - Recognizing road signs and obstacles
-
-## Further Learning
-
-Want to dive deeper?
-
-- **3Blue1Brown** - Excellent video series on neural networks
-- **Michael Nielsen&apos;s Book** - "Neural Networks and Deep Learning"
-- **Fast.ai** - Practical deep learning courses
-- **Papers with Code** - Latest research and implementations
+Each function transforms a vector into another vector.
 
 ---
 
-**Ready to start?** Create a network above and begin training!
+## 2. Each layer is a linear transformation plus a nonlinearity
+
+* A layer is defined by:
+    * Two parameters:
+        * **$W$** weight matrix
+        * **$\mathbf{b}$** bias vector
+    
+    * An activation function ( $\sigma$ )
+    
+        **$f(\mathbf{a}) = \sigma(W\mathbf{a} + \mathbf{b})$**
+    
+
+
+* Deep Dive: a is the input vector to a layer
+
+    For layer $l$:
+    
+    * $\mathbf{a}^{(l-1)}$ = the vector produced by the previous layer
+    * $\mathbf{a}^{(l)}$ = the vector after applying
+      $$
+      \mathbf{a}^{(l)} = \sigma\left(W^{(l)} \mathbf{a}^{(l-1)} + \mathbf{b}^{(l)}\right)
+      $$
+    
+    So **each $\mathbf{a}$** is simply the **current activation vector**, i.e., the current layer’s output.
+
+
+
+---
+
+## 3. The whole network is just repeated application of this rule
+
+For layer ( l ):
+
+$$
+\mathbf{a}^{(l)} = \sigma\left(W^{(l)} \mathbf{a}^{(l-1)} + \mathbf{b}^{(l)}\right)
+$$
+
+Starting from the input vector
+$$
+\mathbf{a}^{(0)} = \mathbf{x}
+$$
+
+
+
+
+---
+
+## 4. Training is minimizing a loss over these parameters
+
+Given training examples ($(\mathbf{x}, \mathbf{y})$), training chooses the matrices and biases that minimize a loss:
+
+$$
+\mathcal{L} = \text{Loss}(f(\mathbf{x}), \mathbf{y})
+$$
+
+Optimization uses gradients:
+
+$$
+W \leftarrow W - \eta \frac{\partial \mathcal{L}}{\partial W}, \qquad
+b \leftarrow b - \eta \frac{\partial \mathcal{L}}{\partial b}.
+$$
+
+---
+
+## 5. Activation functions introduce nonlinearity
+
+Examples:
+
+* ReLU:
+  $$
+  \sigma(z) = \max(0, z)
+  $$
+
+* Sigmoid:
+  $$
+  \sigma(z) = \frac{1}{1+e^{-z}}
+  $$
+
+They enable the network to represent complex functions.
+
+---
+
+## 6. The network computes a differentiable function
+
+Because the entire structure is:
+
+* matrix multiplication → affine transformation
+* elementwise nonlinearity
+* repeated composition
+
+the full network ( $f(\mathbf{x})$ ) is **differentiable**, which makes gradient-based learning possible.
+
+---
