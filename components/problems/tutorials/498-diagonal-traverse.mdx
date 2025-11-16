@@ -1,0 +1,53 @@
+# Diagonal Traverse
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="medium" />
+
+<PillList pills={["matrix"]} />
+
+[498. Diagonal Traverse](https://leetcode.com/problems/diagonal-traverse)
+
+## [!(ProblemDefinition)] Definition
+
+Given an m x n matrix mat, return an array of all the elements of the array in a diagonal order
+
+## [!(ProblemIntuition)] Intuition
+
+- Each diagonal is defined by `r + c = d`.
+    - (note: always diagonal `r+c=d` ↗️ ,not anti-diagonal `[red!]r-c=d` ↙️)
+    - Even-indexed diagonals `( d % 2 == 0)` must be read up-right ↗️  ,
+        - so we start from the lowest valid `(r,c)`.
+    - Odd-indexed diagonals go down-left ↙️,
+        - so we start from the rightmost valid `(r,c)`.
+    - Each diagonal is traversed once in its direction, collecting every cell exactly once.
+
+## [!(ProblemTimeComplexity)] Time Complexity
+
+- $O(m x n)$:
+        - Every matrix cell is visited exactly once across all diagonals.
+
+## [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/498-diagonal-traverse/solution.py"
+def diagonal_traverse(mat: list[list[int]]) -> list[int]:
+    m, n = len(mat), len(mat[0])
+    res = []
+    for d in range(m + n - 1):
+        if d % 2 == 0:
+            r = min(d, m - 1)
+            c = d - r
+            while r >= 0 and c < n:
+                res.append(mat[r][c])
+                r -= 1
+                c += 1
+        else:
+            c = min(d, n - 1)
+            r = d - c
+            while c >= 0 and r < m:
+                res.append(mat[r][c])
+                r += 1
+                c -= 1
+    return res
+```
+

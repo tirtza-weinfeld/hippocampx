@@ -1,0 +1,61 @@
+# 3sum
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="medium" />
+
+<PillList pills={["k-sum"]} />
+
+[15. 3sum](https://leetcode.com/problems/3sum/)
+
+## [!(ProblemDefinition)] Definition
+
+Given an integer array nums, return all the triplets [nums[i], nums[j], nums[k]] such that i != j, i != k, and j != k, and nums[i] + nums[j] + nums[k] == 0. Notice that the solution set must not contain duplicate triplets.
+
+## [!(ProblemIntuition)] Intuition
+
+- Sort the array and use two pointers to find the triplets:
+        - After sorting, each value `a[i]` becomes a fixed anchor
+        - We then need a pair `(l, r)` such that:
+            - `a[i] + a[l] + a[r] == 0`
+        - Because the array is sorted
+            - increasing `l` raises the sum
+            - decreasing `r` lowers it
+        - This turns the inner search into a classic two-pointer sweep
+
+- Duplicate handling:
+        - Skip repeated anchors `i`.
+        - After finding one valid triplet, advance `l` past duplicates, because those pairs cannot form new distinct triplets.
+
+## [!(ProblemTimeComplexity)] Time Complexity
+
+- $O(n ^ 2)$:
+        - The outer loop runs `n` times, and for each anchor `i` the `(l, r)` pointers move at most `n` total steps, because each pointer only moves forward/backward and never resets → $O(n²)$ overall.
+
+## [!(ProblemReturns)] Returns
+
+`list[list[int]]`: All unique triplets `[x, y, z]` with `x + y + z = 0`.
+
+## [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/15-3sum/solution.py"
+def three_sum(a: list[int]) -> list[list[int]]:
+
+    a.sort()
+    out: list[list[int]] = []
+
+    for i, x in enumerate(a):
+        if i and x == a[i - 1]: continue
+        l, r = i + 1, len(a) - 1
+        while l < r:
+            s = x + a[l] + a[r]
+            if s < 0: l += 1
+            elif s > 0: r -= 1
+            else:
+                out.append([x, a[l], a[r]])
+                l += 1 ; r -= 1
+                while l < r and a[l] == a[l - 1]:
+                    l += 1
+    return out
+```
+

@@ -1,0 +1,51 @@
+# Coin Change
+
+## Resizable Table Of contents
+
+[322. Coin Change](https://leetcode.com/problems/coin-change/)
+
+## [!(ProblemDefinition)] Definition
+
+Given `coins:list[int]` representing coins of different *denominations* and `amount:int` representing a total *amount* of money.    Return the *fewest* number of coins that you need to make up that amount or `-1` if it is not possible to make up that amount.    You may assume that you have an infinite number of each kind of coin.
+
+## Bottom Up Solution
+
+### [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/322-coin-change/bottom-up.py"
+def coin_change(coins: list[int], amount: int) -> int:
+
+    dp = [0] + [float("inf")] * amount
+    for coin in reversed(coins):
+        for r in range(coin, amount + 1):
+            dp[r] = min(dp[r], 1 + dp[r - coin])
+
+    return dp[amount] if dp[amount] != float("inf") else -1
+```
+
+
+---
+
+## Top Down Solution
+
+### [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/322-coin-change/top-down.py"
+def coin_change(coins: list[int], amount: int) -> int:
+
+    memo, n = {}, len(coins)
+
+    def dp(i, r):
+        if r == 0: return 0
+        if i ==n or r < 0: return float("inf")
+
+        if (i, r) not in memo:
+            memo[(i, r)] = min(
+                1 + dp(i, r - coins[i]),
+                dp(i + 1, r),
+            )
+        return memo[(i, r)]
+
+    return m if (m := dp(0, amount)) < float("inf") else -1
+```
+

@@ -1,0 +1,57 @@
+# Spiral Matrix
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="medium" />
+
+<PillList pills={["matrix"]} />
+
+[54. Spiral Matrix](https://leetcode.com/problems/spiral-matrix/)
+
+## [!(ProblemDefinition)] Definition
+
+Given an m x n matrix, return all elements of the matrix in spiral order
+
+## [!(ProblemIntuition)] Intuition
+
+- A spiral is formed by peeling the matrix layer by layer.
+    - Each layer has four edges:
+        - `→` top row  (left → right)
+        - `↓` right col (top → bottom)
+        - `←` bottom row (right → left)
+        - `↑` left col  (bottom → top)
+    - After traversing each edge, the boundaries (top, bottom, left, right) shrink inward. The process repeats until the boundaries cross        (Every cell is visited exactly once).
+
+## [!(ProblemTimeComplexity)] Time Complexity
+
+- $O(m x n)$:
+        - Every cell is visited exactly once.
+
+## [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/54-spiral-matrix/solution.py"
+def spiral_matrix(matrix: list[list[int]]) -> list[int]:
+    res = []
+    top, bottom, left, right = 0, len(matrix) - 1, 0, len(matrix[0]) - 1
+
+    while top <= bottom and left <= right:
+
+        res += matrix[top][left : right + 1]
+        top += 1
+
+        for i in range(top, bottom + 1):
+            res.append(matrix[i][right])
+        right -= 1
+
+        if top <= bottom:
+            res += matrix[bottom][left : right + 1][::-1]
+            bottom -= 1
+
+        if left <= right:
+            for i in range(bottom, top - 1, -1):
+                res.append(matrix[i][left])
+            left += 1
+
+    return res
+```
+

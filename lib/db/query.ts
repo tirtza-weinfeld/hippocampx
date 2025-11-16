@@ -3,9 +3,7 @@ import 'server-only';
 
 import { drizzle } from 'drizzle-orm/vercel-postgres';
 import { sql } from '@vercel/postgres';
-// import { algorithms, categories, Question, questions, Term, terms } from './schema';
-// import { cache } from 'react';
-// import { eq, inArray } from 'drizzle-orm';
+
 
 export const db = drizzle(sql)
 

@@ -1,50 +1,120 @@
+import Link from "next/link";
 import { Suspense } from "react";
-// import { searchWords } from "@/lib/db/dictionary-query";
-// import { DictionarySearch } from "@/components/dictionary/dictionary-search";
-// import { WordList } from "@/components/dictionary/word-list";
-import type { Metadata } from 'next';
+import { fetchWords, searchWordsByPrefix } from "@/lib/api/railway-vocabulary-client";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { SearchBar } from "@/components/dictionary/search-bar";
 
-export const metadata: Metadata = {
-  title: 'Dictionary | HippocampX',
-  description: 'Search and explore word definitions, synonyms, and usage examples.',
-};
-
-type DictionaryPageProps = {
-  searchParams: Promise<{
-    q?: string;
-  }>;
-};
-
-export default async function DictionaryPage({ searchParams }: DictionaryPageProps) {
-  const params = await searchParams;
-  const query = params.q ?? '';
-
-  // Pass promise instead of awaiting - enables streaming
-  // const wordsPromise = searchWords({ query, limit: 100 });
+export default async function DictionaryPage(props: {
+  searchParams: Promise<{ q?: string; lang?: string }>;
+}) {
+  const searchParams = await props.searchParams;
+  const query = searchParams.q;
+  const language = searchParams.lang || "en";
 
   return (
-    <>
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold mb-4">Dictionary</h1>
-        {/* <DictionarySearch initialQuery={query} /> */}
-      </div>
+    <div className="container mx-auto py-8 px-4">
+      <div className="flex flex-col space-y-6">
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-4xl font-bold tracking-tight">Dictionary</h1>
+            <p className="text-muted-foreground mt-2">
+              Browse and search vocabulary words
+            </p>
+          </div>
+          <Link href="/dictionary/new">
+            <Button>Add New Word</Button>
+          </Link>
+        </div>
 
-      <Suspense fallback={<WordListSkeleton />}>
-        {/* <WordListWrapper wordsPromise={wordsPromise} /> */}
-      </Suspense>
-    </>
+        <SearchBar initialQuery={query} initialLanguage={language} />
+
+        <Suspense
+          key={query || "all"}
+          fallback={<WordListSkeleton />}
+        >
+          <WordList query={query} language={language} />
+        </Suspense>
+      </div>
+    </div>
   );
 }
 
-// function WordListWrapper({ wordsPromise }: { wordsPromise: ReturnType<typeof searchWords> }) {
-//   return <WordList wordsPromise={wordsPromise} />;
-// }
+async function WordList({
+  query,
+  language,
+}: {
+  query?: string;
+  language: string;
+}) {
+  const words = query
+    ? await searchWordsByPrefix(query, language, 50)
+    : await fetchWords(language, 50, 0);
+
+  if (words.length === 0) {
+    return (
+      <Card>
+        <CardContent className="flex flex-col items-center justify-center py-12">
+          <p className="text-muted-foreground text-center">
+            {query
+              ? `No words found matching "${query}"`
+              : "No words in dictionary yet"}
+          </p>
+          {!query && (
+            <Link href="/dictionary/new" className="mt-4">
+              <Button>Add Your First Word</Button>
+            </Link>
+          )}
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      {words.map((word) => (
+        <Link key={word.id} href={`/dictionary/${word.id}`}>
+          <Card className="transition-colors hover:bg-accent cursor-pointer h-full">
+            <CardHeader>
+              <CardTitle className="text-xl">{word.word_text}</CardTitle>
+              <CardDescription className="text-xs uppercase tracking-wide">
+                {word.language_code}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">
+                {word.created_at
+                  ? `Added ${new Date(word.created_at).toLocaleDateString()}`
+                  : "Recently added"}
+              </p>
+            </CardContent>
+          </Card>
+        </Link>
+      ))}
+    </div>
+  );
+}
 
 function WordListSkeleton() {
   return (
-    <div className="space-y-2">
-      {Array.from({ length: 10 }).map((_, i) => (
-        <div key={i} className="h-16 bg-neutral-100 dark:bg-neutral-800 rounded-lg animate-pulse" />
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      {Array.from({ length: 6 }).map((_, i) => (
+        <Card key={i}>
+          <CardHeader>
+            <Skeleton className="h-6 w-32" />
+            <Skeleton className="h-4 w-16" />
+          </CardHeader>
+          <CardContent>
+            <Skeleton className="h-4 w-24" />
+          </CardContent>
+        </Card>
       ))}
     </div>
   );

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { z } from "zod"
 
 const RAILWAY_API_URL = "https://hippo.up.railway.app/predict"
-
+// NEXT_PUBLIC_HIPPO_API=https://hippo.up.railway.app
 
 const PredictionInputSchema = z.object({
   pixels: z.array(z.number().min(0).max(1)).length(784),

@@ -2625,6 +2625,32 @@
       ]
     },
     {
+      "uri": "problems/15-3sum/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/15-3sum/solution.py",
+      "symbols": [
+        {
+          "name": "three_sum",
+          "detail": "three_sum(a: list[int]) -> list[list[int]]",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 17, "character": 14}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 13
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
       "uri": "problems/1510-stone-game-iv/__init__.py",
       "symbols": []
     },
@@ -4484,6 +4510,72 @@
       ]
     },
     {
+      "uri": "problems/322-coin-change/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/322-coin-change/bottom-up.py",
+      "symbols": [
+        {
+          "name": "coin_change",
+          "detail": "coin_change(coins: list[int], amount: int) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 7, "character": 59}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 15
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/322-coin-change/top-down.py",
+      "symbols": [
+        {
+          "name": "coin_change",
+          "detail": "coin_change(coins: list[int], amount: int) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 15, "character": 59}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 15
+            }
+          },
+          "children": [
+            {
+              "name": "dp",
+              "detail": "dp(i, r)",
+              "kind": 12,
+              "range": {"start": {"line": 4, "character": 4}, "end": {"line": 13, "character": 27}},
+              "nameRange": {
+                "start": {
+                  "line": 4,
+                  "character": 8
+                },
+                "end": {
+                  "line": 4,
+                  "character": 10
+                }
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
       "uri": "problems/325-maximum-size-subarray-sum-equals-k/__init__.py",
       "symbols": []
     },
@@ -5256,6 +5348,32 @@
       ]
     },
     {
+      "uri": "problems/498-diagonal-traverse/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/498-diagonal-traverse/solution.py",
+      "symbols": [
+        {
+          "name": "diagonal_traverse",
+          "detail": "diagonal_traverse(mat: list[list[int]]) -> list[int]",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 18, "character": 14}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 21
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
       "uri": "problems/50-pow/__init__.py",
       "symbols": []
     },
@@ -5441,6 +5559,32 @@
             "end": {
               "line": 0,
               "character": 20
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/54-spiral-matrix/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/54-spiral-matrix/solution.py",
+      "symbols": [
+        {
+          "name": "spiral_matrix",
+          "detail": "spiral_matrix(matrix: list[list[int]]) -> list[int]",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 22, "character": 14}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 17
             }
           },
           "children": []

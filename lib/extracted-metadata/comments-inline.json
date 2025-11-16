@@ -37,6 +37,22 @@
     39,
     40
   ],
+  "problems/498-diagonal-traverse/solution.py": [
+    3,
+    4,
+    5,
+    6,
+    7,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    16,
+    17,
+    18
+  ],
   "problems/191-number-of-1-bits/brian-kernighan.py": [
     3
   ],
@@ -108,6 +124,26 @@
   ],
   "problems/252-meeting-rooms/Interval-sort-and-scan.py": [
     1
+  ],
+  "problems/15-3sum/solution.py": [
+    2,
+    6,
+    10,
+    11,
+    15
+  ],
+  "problems/54-spiral-matrix/solution.py": [
+    2,
+    4,
+    6,
+    7,
+    9,
+    11,
+    14,
+    15,
+    18,
+    20,
+    22
   ],
   "problems/743-network-delay-time/dijkstra.py": [
     16

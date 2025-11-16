@@ -15,6 +15,8 @@
       "1275-find-winner-on-a-tic-tac-toe-game",
       "311-sparse-matrix-multiplication",
       "348-design-tic-tac-toe",
+      "498-diagonal-traverse",
+      "54-spiral-matrix",
       "794-valid-tic-tac-toe-state"
     ],
     "simulation": [
@@ -50,7 +52,6 @@
       "2140-solving-questions-with-brainpower",
       "265-paint-house-ii",
       "416-partition-equal-subset-sum",
-      "518-coin-change-ii",
       "64-minimum-path-sum",
       "70-climbing-stairs"
     ],
@@ -59,7 +60,8 @@
       "1570-dot-product-of-two-sparse-vectors"
     ],
     "k-sum": [
-      "1-two-sum"
+      "1-two-sum",
+      "15-3sum"
     ],
     "trie": [
       "208-implement-trie-prefix-tree",
@@ -82,6 +84,7 @@
       "1563-stone-game-v",
       "256-paint-house",
       "312-burst-balloons",
+      "518-coin-change-ii",
       "53-maximum-subarray",
       "72-edit-distance"
     ],
@@ -151,9 +154,6 @@
       "2402-meeting-rooms-iii",
       "347-top-k-frequent-elements",
       "407-trapping-rain-water-ii"
-    ],
-    "knapsack": [
-      "518-coin-change-ii"
     ],
     "kadane": [
       "124-binary-tree-maximum-path-sum",
@@ -294,6 +294,7 @@
       "122-best-time-to-buy-and-sell-stock-ii",
       "133-clone-graph",
       "146-lru-cache",
+      "15-3sum",
       "1514-path-with-maximum-probability",
       "152-maximum-product-subarray",
       "153-find-minimum-in-rotated-sorted-array",
@@ -327,11 +328,13 @@
       "416-partition-equal-subset-sum",
       "435-non-overlapping-intervals",
       "46-permutations",
+      "498-diagonal-traverse",
       "50-pow",
       "518-coin-change-ii",
       "523-continuous-subarray-sum",
       "525-contiguous-array",
       "53-maximum-subarray",
+      "54-spiral-matrix",
       "542-01-matrix",
       "547-number-of-provinces",
       "56-merge-intervals",
@@ -352,6 +355,9 @@
       "918-maximum-sum-of-circular-subarray",
       "974-subarray-sums-divisible-by-k",
       "994-rotting-oranges"
+    ],
+    "mediumtopics: [dp]": [
+      "322-coin-change"
     ]
   },
   "time_complexity": {
@@ -410,6 +416,9 @@
     "42-trapping-rain-water": [
       "$O(n)$",
       "$O(n)$"
+    ],
+    "498-diagonal-traverse": [
+      "$O(m x n)$"
     ],
     "50-pow": [
       "$O(\\log n)$"
@@ -494,6 +503,9 @@
     "841-keys-and-rooms": [
       "$O(N+E)$"
     ],
+    "15-3sum": [
+      "$O(n ^ 2)$"
+    ],
     "2140-solving-questions-with-brainpower": [
       "$O(n)$"
     ],
@@ -505,6 +517,9 @@
     ],
     "36-valid-sudoku": [
       "$O(81)$"
+    ],
+    "54-spiral-matrix": [
+      "$O(m x n)$"
     ],
     "743-network-delay-time": [
       "$O(E \\log V)$",
