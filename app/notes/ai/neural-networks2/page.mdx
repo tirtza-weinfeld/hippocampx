@@ -1,0 +1,404 @@
+# Neural Networks 2
+
+## Resizable Table of Contents
+
+
+1. Executive Summary
+
+Neural networks are computational models built from layers of simple units (neurons) that apply linear transformations followed by nonlinear activations. By stacking many layers and training their weights using gradient descent and backpropagation, neural networks can approximate highly complex functions.
+
+A neuron computes a weighted sum of inputs,
+$$
+z = b + \sum_i w_i x_i,
+$$
+$$
+a = \sigma(z)
+$$
+where $\sigma$ is an activation function (ReLU, sigmoid, tanh, softmax).
+
+A network performs:
+- Forward propagation: compute outputs layer by layer
+- Loss computation: measure prediction error
+- Backpropagation: compute gradients of loss w.r.t. every weight
+- Weight updates: using gradient descent
+- Iteration: repeat for many epochs
+
+Main architectures include multilayer perceptrons, convolutional neural networks, and recurrent models.
+Training stability and generalization depend on activations, initialization, regularization, and optimization choices.
+
+⸻
+
+2. Foundations of Neural Networks
+
+2.1 What is a neuron?
+
+A neuron takes inputs $x_1, \dots, x_n$ , computes a linear score:
+$z = w_0 + w_1 x_1 + \cdots + w_n x_n$
+and applies a nonlinearity:
+$$
+a = \sigma(z)
+$$
+
+The vectorized form for a batch:
+$$
+\mathbf{a} = \sigma(W\mathbf{x} + \mathbf{b})
+$$
+
+2.2 Why nonlinearity is required
+
+Without activation functions, stacking layers collapses into a single linear map:
+$$
+W_2(W_1 x) = (W_2 W_1)x
+$$
+Nonlinearity allows hierarchical, compositional feature learning.
+
+⸻
+
+3. Activation Functions
+
+3.1 Sigmoid
+
+$$
+\sigma(z) = \frac{1}{1 + e^{-z}}
+$$
+Maps real values to (0, 1). Used for binary classification.
+
+Derivative:
+$$
+\sigma’(z) = \sigma(z)(1 - \sigma(z))
+$$
+
+3.2 Tanh
+
+$$
+\tanh(z) = \frac{e^z - e^{-z}}{e^z + e^{-z}}
+$$
+
+3.3 ReLU
+
+$$
+\text{ReLU}(z) = \max(0, z)
+$$
+Often the default in modern networks.
+
+Derivative:
+$$
+\text{ReLU}'(z)=
+\begin{cases}
+1 & z>0 \\
+0 & z \le 0
+\end{cases}
+$$
+
+3.4 Softmax
+
+For vector $z \in \mathbb{R}^K$:
+$$
+\text{softmax}(z_i) = \frac{e^{z_i}}{\sum_j e^{z_j}}
+Produces a probability distribution for multiclass classification.
+$$
+⸻
+
+4. Multilayer Perceptrons (MLPs)
+
+4.1 Architecture
+
+A typical fully connected network:
+- Input layer: dimension $D$
+- Hidden layers: arbitrary widths $H_1, H_2, \ldots$   
+- Output layer: dimension $K$
+
+Forward pass:
+$$
+a^{(1)} = \sigma(W^{(1)} x + b^{(1)})
+$$
+
+$$
+a^{(2)} = \sigma(W^{(2)} a^{(1)} + b^{(2)})
+$$
+
+$$
+\hat{y} = \text{softmax}(W^{(L)} a^{(L-1)} + b^{(L)})
+$$
+
+⸻
+
+5. Forward Propagation
+
+Given inputs x:
+1.	Compute linear scores:
+$$
+z^{(l)} = W^{(l)} a^{(l-1)} + b^{(l)}
+$$
+2.	Apply activation:
+$$
+a^{(l)} = \sigma(z^{(l)})
+$$
+
+At output:
+	•	For regression: 
+$$
+\hat{y} = z
+$$
+	•	For binary classification: 
+$$
+\hat{y} = \sigma(z)
+$$
+	•	For multiclass: 
+$$
+\hat{y} = \text{softmax}(z)
+$$
+
+⸻
+
+6. Loss Functions
+
+6.1 Mean Squared Error (MSE)
+
+$$
+L = \frac{1}{2}\|\hat{y} - y\|^2
+$$
+
+6.2 Binary Cross-Entropy
+
+$$
+L = -\big[ y\log(\hat{y}) + (1-y)\log(1-\hat{y}) \big]
+$$
+
+6.3 Categorical Cross-Entropy
+
+For one-hot y, softmax predictions p:
+$$
+L = -\sum_i y_i \log p_i
+$$
+For class label k:
+$$
+L = -\log(p_k)
+$$
+
+⸻
+
+7. Backpropagation
+
+Backpropagation uses the chain rule to compute gradients.
+
+Let:
+$$
+    z^{(l)} = W^{(l)} a^{(l-1)} + b^{(l)},
+$$
+
+$$
+a^{(l)} = \sigma(z^{(l)})
+$$
+
+For output layer:
+$$
+\delta^{(L)} = \frac{\partial L}{\partial z^{(L)}}
+$$
+
+For hidden layers:
+$$
+\delta^{(l)} = \big((W^{(l+1)})^T \delta^{(l+1)} \big) \odot \sigma’(z^{(l)})
+$$
+
+Gradients:
+$$
+\frac{\partial L}{\partial W^{(l)}} = \delta^{(l)} (a^{(l-1)})^T,
+$$
+\qquad
+$$
+\frac{\partial L}{\partial b^{(l)}} = \delta^{(l)}
+$$
+
+Weight updates:
+$$
+W^{(l)} := W^{(l)} - \alpha \frac{\partial L}{\partial W^{(l)}}
+$$
+$$
+b^{(l)} := b^{(l)} - \alpha \frac{\partial L}{\partial b^{(l)}}
+$$
+
+⸻
+
+8. Convolutional Neural Networks (CNNs)
+
+8.1 Convolution Operation
+
+Given input image X and filter K:
+
+$$
+(X * K){i,j} = \sum{u,v} X_{i+u,\, j+v} \cdot K_{u,v}
+$$
+
+The same filter is applied across spatial positions → weight sharing.
+
+8.2 Stride and Padding
+	•	Stride s: step size
+	•	Padding: extra border to preserve spatial size
+If input is $n \times n$, kernel $f \times f$, stride $s$, padding $p$:
+
+Output size:
+$$
+\frac{n - f + 2p}{s} + 1
+$$
+
+8.3 Pooling
+
+Max pooling:
+$$
+    \text{maxpool}(X){i,j} = \max_{(u,v)\in \text{window}} X_{i+u, j+v}
+$$
+
+Reduces spatial size → faster computation + translation robustness.
+
+8.4 CNN Architecture Summary
+
+Typical image pipeline:
+	1.	Convolution → ReLU
+	2.	Convolution → ReLU
+	3.	Pooling
+	4.	Fully connected layers
+	5.	Softmax output
+
+⸻
+
+9. Training: Optimization, Initialization, Regularization
+
+9.1 Gradient Descent
+
+Basic update:
+$$
+\theta := \theta - \alpha \nabla_\theta L
+$$
+
+9.2 Variants
+	•	SGD
+	•	Momentum
+	•	RMSProp
+	•	Adam (adaptive learning rate + momentum)
+
+9.3 Weight Initialization
+
+To avoid vanishing/exploding activations:
+	•	Xavier/Glorot initialization
+	•	He initialization (for ReLU)
+
+9.4 Regularization
+	•	L2 weight decay
+	•	Dropout: disable random activations during training
+	•	Batch normalization
+	•	Early stopping
+
+⸻
+
+10. PyTorch Implementation Examples
+
+10.1 Simple MLP Classification Example
+```python
+import torch
+import torch.nn as nn
+import torch.optim as optim
+
+class MLP(nn.Module):
+    def __init__(self, input_dim, hidden_dim, num_classes):
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Linear(input_dim, hidden_dim),
+            nn.ReLU(),
+            nn.Linear(hidden_dim, num_classes)
+        )
+
+    def forward(self, x):
+        return self.net(x)
+
+# example usage
+model = MLP(input_dim=784, hidden_dim=128, num_classes=10)
+criterion = nn.CrossEntropyLoss()
+optimizer = optim.Adam(model.parameters(), lr=1e-3)
+
+for epoch in range(5):
+    for X, y in dataloader:
+        optimizer.zero_grad()
+        logits = model(X)
+        loss = criterion(logits, y)
+        loss.backward()
+        optimizer.step()
+```
+10.2 Simple CNN Example
+
+```python
+class CNN(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.conv = nn.Sequential(
+            nn.Conv2d(1, 16, kernel_size=3, padding=1),
+            nn.ReLU(),
+            nn.Conv2d(16, 32, kernel_size=3, padding=1),
+            nn.ReLU(),
+            nn.MaxPool2d(2)
+        )
+        self.fc = nn.Sequential(
+            nn.Linear(32 * 14 * 14, 128),
+            nn.ReLU(),
+            nn.Linear(128, 10)
+        )
+
+    def forward(self, x):
+        x = self.conv(x)
+        x = x.view(x.size(0), -1)
+        return self.fc(x)
+```
+
+⸻
+
+11. Reference Sheet
+
+Forward Propagation
+
+$$
+z^{(l)} = W^{(l)} a^{(l-1)} + b^{(l)},\quad
+$$
+
+$$
+a^{(l)} = \sigma(z^{(l)})
+$$
+
+Losses
+
+$$
+L_{\text{binary}} = -[y\log p + (1-y)\log(1-p)]
+$$
+$$
+L_{\text{cross-entropy}} = -\log(p_k)
+$$
+
+Backpropagation
+
+$$
+\delta^{(L)} = \frac{\partial L}{\partial z^{(L)}}
+$$
+$$
+\delta^{(l)} = (W^{(l+1)})^T \delta^{(l+1)} \odot \sigma’(z^{(l)})
+$$
+$$
+\frac{\partial L}{\partial W^{(l)}} = \delta^{(l)} (a^{(l-1)})^T
+$$
+Convolution
+
+$$
+(X * K){i,j} = \sum{u,v} X_{i+u,\, j+v} K_{u,v}
+$$
+
+Softmax
+
+$$
+p_i = \frac{e^{z_i}}{\sum_j e^{z_j}}
+$$
+
+Optimization
+
+$$
+\theta := \theta - \alpha \nabla_\theta L
+$$
+
+⸻

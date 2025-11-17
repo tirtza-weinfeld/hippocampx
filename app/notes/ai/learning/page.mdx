@@ -1,0 +1,260 @@
+# Machine Learning
+
+## Resizable Table of Contents
+
+Machine learning is the discipline of building systems that **learn patterns from data** rather than relying on explicitly programmed rules.  
+A machine-learning system receives **examples** and tries to infer a function that generalizes beyond those examples.
+
+There are three major paradigms:
+
+- **Supervised Learning** — learning from labeled examples  
+- **Unsupervised Learning** — finding structure without labels  
+- **Reinforcement Learning** — learning by interacting with an environment and receiving rewards  
+
+---
+
+## 1. Supervised Learning
+
+Supervised learning provides the model with **input–output pairs**.  
+The goal is to learn a mapping:
+$$
+h(x) \; \rightarrow \; y
+$$
+
+where:
+- $x$ = input features  
+- $y$ = correct label  
+- $h$ = hypothesis/model  
+
+Supervised learning generally splits into **classification** and **regression**.
+
+---
+
+### 1.1 Classification
+
+Task: assign each input to **one of several discrete categories**.
+
+Examples:
+- Email → spam / not spam  
+- Image → “cat”, “dog”, or “bird”  
+- Medical record → “disease present” / “disease absent”  
+
+A classifier tries to find boundaries in the feature space that separate classes.
+
+---
+
+### 1.2 Regression
+
+Task: output a **continuous numeric value**.
+
+Examples:
+- Predicting house price  
+- Forecasting temperature  
+- Estimating probability that it rains tomorrow  
+
+A regression model fits a function like a line or curve that best approximates the data.
+
+---
+
+## 2. Core Algorithms in Supervised Learning
+
+### 2.1 k-Nearest Neighbors (k-NN)
+
+- Store the training data.  
+- For a new point, find the **k closest training points**.  
+- Predict the majority class (classification) or mean value (regression).  
+
+No training step — all computation happens during prediction.
+
+---
+
+### 2.2 Perceptron (Linear Classifier)
+
+The perceptron learns a linear decision boundary:
+
+$$
+h(x) = \text{sign}(w \cdot x + b)
+$$
+
+- $w$ = weights  
+- $b$ = bias  
+- Update rule adjusts \(w\) and \(b\) when a classification mistake is made.  
+- Capable of learning linearly separable classes.
+
+---
+
+### 2.3 Support Vector Machines (SVMs)
+
+The goal of an SVM is to find a separating hyperplane with the **largest possible margin**.
+
+Key idea:
+- The optimal boundary is the one farthest from the closest points of each class.
+- Leads to better generalization and robustness.
+
+Often solved using convex optimization.
+
+---
+
+### 2.4 Loss Functions
+
+A **loss function** measures how wrong a prediction is.
+
+Examples:
+- **0–1 Loss** (classification): 1 if incorrect, 0 if correct  
+- **L1 Loss** (regression): $|\hat{y} - y|$  
+- **L2 Loss** (regression): $(\hat{y} - y)^2$
+
+A learning algorithm attempts to **minimize** total loss over training data.
+
+---
+
+### 2.5 Regularization & Model Complexity
+
+Goal: prevent overly complex models that memorize the training data.
+
+A **regularized cost** might be:
+
+$$
+\text{Cost}(h) = \text{Loss}(h) + \lambda \cdot \text{Complexity}(h)
+$$
+
+Common complexity measures:
+- Size of weights  
+- Depth of model  
+- Number of parameters  
+
+Regularization reduces overfitting.
+
+---
+
+### 2.6 Training, Validation, Testing
+
+To evaluate how well a model generalizes:
+
+1. **Training Set** — used to learn parameters  
+2. **Validation Set** — used to tune hyperparameters  
+3. **Test Set** — used only at the end to measure true performance  
+
+**k-Fold Cross-Validation** repeats training/testing across multiple splits for more reliable evaluation.
+
+---
+
+## 3. Unsupervised Learning
+
+Unsupervised learning uses **unlabeled data**.  
+The model tries to uncover **patterns or structure** within the dataset.
+
+Common tasks:
+- Clustering  
+- Dimensionality reduction  
+- Density estimation  
+
+---
+
+### 3.1 k-Means Clustering
+
+    k-Means partitions data into $k$ clusters based on distance.
+
+Algorithm:
+1. Choose $k$ initial cluster centers (centroids).  
+2. Assign each point to the nearest centroid.  
+3. Recompute each centroid as the mean of its assigned points.  
+4. Repeat steps 2–3 until assignments stop changing.
+
+Outputs:
+- A set of clusters  
+- Centroids representing group centers  
+
+Used heavily in segmentation, compression, and exploratory analysis.
+
+---
+
+## 4. Reinforcement Learning
+
+Reinforcement learning features an **agent** interacting with an **environment** over time.
+
+At each step:
+- The agent observes state $s$.  
+- Takes an action $a$.  
+- Receives a reward $r$.  
+- Moves to a new state $s'$.  
+
+The goal is to **maximize cumulative long-term reward**.
+
+---
+
+### 4.1 Markov Decision Processes (MDPs)
+
+An MDP is defined by:
+- **States** $S$  
+- **Actions** $A(s)$ available in each state  
+- **Transition probabilities** $P(s' | s, a)$  
+- **Reward function** $R(s, a, s')$  
+- **Discount factor** $\gamma$ determining how much future rewards matter  
+
+Reinforcement-learning algorithms operate on top of this structure.
+
+---
+
+### 4.2 Q-Learning
+
+Q-Learning learns a function:
+
+$$
+Q(s, a) = \text{expected long-term reward when taking action } a \text{ in state } s
+$$
+
+Core update rule:
+
+$$
+Q(s,a) \leftarrow Q(s,a)
++ \alpha \Big( r + \gamma \max_{a'} Q(s',a') - Q(s,a) \Big)
+$$
+
+Where:
+- $\alpha$ = learning rate  
+- $\gamma$ = discount factor  
+- $r$ = reward  
+- $s'$ = next state  
+
+This update gradually improves the agent’s value estimates.
+
+---
+
+### 4.3 Exploration vs. Exploitation
+
+A fundamental tradeoff:
+
+- **Exploit**: choose the currently best-estimated action  
+- **Explore**: try new actions to gather more information  
+
+A common strategy is **ε-greedy**:
+- With probability $\epsilon$ → random action  
+- With probability $1 - \epsilon$ → best known action  
+
+Balancing these leads to optimal learning.
+
+---
+
+## 5. Summary Table
+
+| Category               | Uses Labels? | Purpose                             | Representative Methods |
+|------------------------|--------------|--------------------------------------|-------------------------|
+| **Supervised**         | Yes          | Predict labels/values                | k-NN, Perceptron, SVM, Regression |
+| **Unsupervised**       | No           | Discover structure                    | k-Means, clustering     |
+| **Reinforcement**      | Reward only  | Maximize long-term reward             | Q-Learning, MDP         |
+
+---
+
+## 6. Key Concepts Cheatsheet
+
+- **Hypothesis**: a model that maps inputs to outputs  
+- **Loss**: error on a single example  
+- **Cost**: total error (plus regularization)  
+- **Overfitting**: memorizing training data instead of generalizing  
+- **Underfitting**: model too simple to learn patterns  
+- **Bias term**: allows shifting the decision boundary  
+- **Features**: measurable attributes of data  
+- **State** (RL): snapshot of environment  
+- **Policy**: maps states → actions  
+

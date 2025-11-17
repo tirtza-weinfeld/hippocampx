@@ -6539,6 +6539,72 @@
       ]
     },
     {
+      "uri": "problems/837-new-21-game/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/837-new-21-game/bottom-up.py",
+      "symbols": [
+        {
+          "name": "new21Game",
+          "detail": "new21Game(n: int, k: int, maxPts: int) -> float",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 17, "character": 22}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 13
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/837-new-21-game/top-down.py",
+      "symbols": [
+        {
+          "name": "new21Game",
+          "detail": "new21Game(n: int, k: int, maxPts: int) -> float",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 20, "character": 17}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 13
+            }
+          },
+          "children": [
+            {
+              "name": "dfs",
+              "detail": "dfs(t: int) -> float",
+              "kind": 12,
+              "range": {"start": {"line": 6, "character": 4}, "end": {"line": 18, "character": 22}},
+              "nameRange": {
+                "start": {
+                  "line": 6,
+                  "character": 8
+                },
+                "end": {
+                  "line": 6,
+                  "character": 11
+                }
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
       "uri": "problems/84-largest-rectangle-in-histogram/__init__.py",
       "symbols": []
     },

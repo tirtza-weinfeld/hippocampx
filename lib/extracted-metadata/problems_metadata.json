@@ -617,6 +617,38 @@
       "difficulty": "medium",
       "topics": ["dijkstra", "bfs"]
     },
+    "837-new-21-game": {
+      "time_stamps": {
+        "created_at": "2025-11-17T12:14:05.140565",
+        "updated_at": "2025-11-17T12:57:17.967228"
+      },
+      "solutions": {
+        "bottom-up.py": {
+          "args": {
+            "n: int": "Maximum allowed final score when counting a win.",
+            "k: int": "Stopping threshold; drawing stops as soon as the total reaches ≥ k.",
+            "maxPts: int": "Each draw is an integer in [1, maxPts], uniformly at random."
+          },
+          "returns": "`float`: Probability that the final total score is at most n.",
+          "code": "def new21Game(n: int, k: int, maxPts: int) -> float:\n    if k == 0 or n >= k + maxPts:\n        return 1.0\n\n    dp = [0.0] * (n + 1)\n    dp[0] = 1.0\n    win = 1.0\n\n    for i in range(1, n + 1):\n        dp[i] = win / maxPts\n\n        if i < k:\n            win += dp[i]\n\n        if i - maxPts >= 0:\n            win -= dp[i - maxPts]\n\n    return sum(dp[k:])"
+        },
+        "top-down.py": {
+          "intuition": "Problem:\n    Compute $P(\\text{final total} \\le n)$ given that you start at total 0, drawing uniformly from $\\{1, \\ldots, \\text{maxPts}\\}$, and stop when total $\\ge k$.\n\n    Subproblems:\n    dp[x] = $P(\\text{eventually end} \\le n \\mid \\text{current total}=x)$\n\n    Relation:\n    If x < k we must draw again:\n    dp[x] = $\\frac{1}{\\text{maxPts}} \\sum_{d=1}^{\\text{maxPts}} dp[x+d]$\n    Pure average over next reachable states.",
+          "args": {
+            "n: int": "Count a win if final total ≤ n.",
+            "k: int": "Stopping threshold; drawing ends when total ≥ k.",
+            "maxPts: int": "Draws are integers in [1, maxPts]."
+          },
+          "returns": "`float`: Probability of final score ≤ n.",
+          "code": "def new21Game(n: int, k: int, maxPts: int) -> float:\n    if k == 0 or n >= k + maxPts:\n        return 1.0\n\n    memo = {}\n\n    def dfs(t: int) -> float:\n        if t in memo:\n            return memo[t]\n\n        if t >= k:\n            return 1.0 if t <= n else 0.0\n\n        s = 0.0\n        for d in range(1, maxPts + 1):\n            s += dfs(t + d)\n\n        memo[t] = s / maxPts\n        return memo[t]\n\n    return dfs(0)"
+        }
+      },
+      "title": "New 21 Game",
+      "definition": "You start at 0. Keep adding a random number from 1…n while your total < k.\n    Find P(final total ≤ maxPts).",
+      "leetcode": "https://leetcode.com/problems/new-21-game/",
+      "difficulty": "medium",
+      "topics": ["game"]
+    },
     "363-max-sum-of-rectangle-no-larger-than-k": {
       "time_stamps": {
         "created_at": "2025-09-12T16:05:43.509273",

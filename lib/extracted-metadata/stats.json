@@ -9,7 +9,8 @@
       "36-valid-sudoku",
       "37-sudoku-solver",
       "51-n-queens",
-      "794-valid-tic-tac-toe-state"
+      "794-valid-tic-tac-toe-state",
+      "837-new-21-game"
     ],
     "matrix": [
       "1275-find-winner-on-a-tic-tac-toe-game",
@@ -349,6 +350,7 @@
       "787-cheapest-flights-within-k-stops",
       "79-word-search",
       "794-valid-tic-tac-toe-state",
+      "837-new-21-game",
       "841-keys-and-rooms",
       "875-koko-eating-bananas",
       "909-snakes-and-ladders",
