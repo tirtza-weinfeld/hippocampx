@@ -409,6 +409,9 @@
     "787-cheapest-flights-within-k-stops": [
       "$O(kE)$"
     ],
+    "837-new-21-game": [
+      "$O(n + maxPts)$"
+    ],
     "3-longest-substring-without-repeating-characters": [
       "$O(n)$"
     ],

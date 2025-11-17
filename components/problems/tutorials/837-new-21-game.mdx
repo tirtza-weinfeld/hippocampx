@@ -13,80 +13,43 @@
 You start at 0. Keep adding a random number from 1…n while your total < k.
     Find P(final total ≤ maxPts).
 
-## Bottom Up Solution
+## [!(ProblemIntuition)] Intuition
 
-### [!(ProblemReturns)] Returns
+- `dp[i]` is the probability that the game **ends** with total score `i`:
+    - To end at score `i` in one draw, you must have been at some score `j` that:
+        - was **still active** (`j < k`, so drawing is allowed), and
+        - was **close enough to reach i** in a single draw (`i - maxPts ≤ j ≤ i - 1`).
+    - All such `j` values form a sliding window behind `i`.
+    - The variable `s` keeps the **sum of dp[j] over exactly those valid j**.
+    - Since every draw 1..maxPts is equally likely, the transition is: *$dp[i] = \frac{s}{\text{maxPts}}$*
+    - And the answer is the total probability of all **terminal scores** *$i \ge k$* that are also ≤ n.
 
-`float`: Probability that the final total score is at most n.
+## [!(ProblemTimeComplexity)] Time Complexity
 
-### [!(ProblemCodeSnippet)] Code Snippet
+- $O(n + maxPts)$:
+    - Each index enters and leaves the sliding window once
 
-```python meta="source=problems/837-new-21-game/bottom-up.py"
+## [!(ProblemReturns)] Returns
+
+`float`: The total probability that the final stopped score is ≤ n (i.e., sum over i ≥ k).
+
+## [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/837-new-21-game/solution.py"
 def new21Game(n: int, k: int, maxPts: int) -> float:
+
     if k == 0 or n >= k + maxPts:
         return 1.0
 
-    dp = [0.0] * (n + 1)
-    dp[0] = 1.0
-    win = 1.0
+    dp = [0] * (n + 1)
+    dp[0] = s = 1
 
     for i in range(1, n + 1):
-        dp[i] = win / maxPts
-
+        dp[i] = s / maxPts
         if i < k:
-            win += dp[i]
-
-        if i - maxPts >= 0:
-            win -= dp[i - maxPts]
-
+            s += dp[i]
+        if i - maxPts >= 0 and i - maxPts < k:
+            s -= dp[i - maxPts]
     return sum(dp[k:])
-```
-
-
----
-
-## Top Down Solution
-
-### [!(ProblemIntuition)] Intuition
-
-- Problem:
-    - Compute $P(\text{final total} \le n)$ given that you start at total 0, drawing uniformly from $\{1, \ldots, \text{maxPts}\}$, and stop when total $\ge k$.
-
-- Subproblems:
-    - dp[x] = $P(\text{eventually end} \le n \mid \text{current total}=x)$
-
-- Relation:
-    - If x < k we must draw again:
-    - dp[x] = $\frac{1}{\text{maxPts}} \sum_{d=1}^{\text{maxPts}} dp[x+d]$
-    - Pure average over next reachable states.
-
-### [!(ProblemReturns)] Returns
-
-`float`: Probability of final score ≤ n.
-
-### [!(ProblemCodeSnippet)] Code Snippet
-
-```python meta="source=problems/837-new-21-game/top-down.py"
-def new21Game(n: int, k: int, maxPts: int) -> float:
-    if k == 0 or n >= k + maxPts:
-        return 1.0
-
-    memo = {}
-
-    def dfs(t: int) -> float:
-        if t in memo:
-            return memo[t]
-
-        if t >= k:
-            return 1.0 if t <= n else 0.0
-
-        s = 0.0
-        for d in range(1, maxPts + 1):
-            s += dfs(t + d)
-
-        memo[t] = s / maxPts
-        return memo[t]
-
-    return dfs(0)
 ```
 

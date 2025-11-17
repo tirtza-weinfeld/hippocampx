@@ -29,14 +29,12 @@
     15,
     19
   ],
-  "problems/837-new-21-game/bottom-up.py": [
-    2,
+  "problems/837-new-21-game/solution.py": [
     6,
     9,
-    11,
+    10,
     12,
-    14,
-    17
+    14
   ],
   "problems/363-max-sum-of-rectangle-no-larger-than-k/solution.py": [
     11,
