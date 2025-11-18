@@ -1,0 +1,490 @@
+
+
+# AI / ML Cheat Sheet of Key Terms (with Math)
+
+## Resizable Table of Contents
+
+## Basic Setup and Notation
+
+* **Feature vector** $x$
+  Input to a model, written as a column vector
+  $$
+  x \in \mathbb{R}^d,\quad x = (x_1,\dots,x_d)^\top
+  $$
+  Each coordinate $x_j$ is a **feature** (numeric description of the object).
+
+* **Label / Target** $y$
+  The quantity we want the model to output for $x$.
+
+  * **Binary classification:** $y \in \{0,1\}$ or $\{-1,+1\}$
+  * **Multiclass classification:** $y \in \{1,\dots,K\}$
+  * **Regression:** $y \in \mathbb{R}$
+
+* **Example**
+  A single pair $(x_i, y_i)$: one input and its label.
+
+* **Dataset**
+  Finite collection of examples:
+  $$
+  \mathcal{D} = \{(x_i, y_i)\}_{i=1}^n
+  $$
+  Here, each $x_i \in \mathbb{R}^d$, each $y_i$ is the corresponding label.
+
+* **Model / Hypothesis** $f_\theta$
+  A parametric function that maps inputs to outputs:
+  $$
+  f_\theta : \mathbb{R}^d \to \mathcal{Y}, \quad \hat y = f_\theta(x).
+  $$
+
+  * $\theta$ = parameters (weights, biases, etc.)
+  * $\hat y$ = prediction for input $x$.
+
+* **Prediction** $\hat y_i$ vs **true label** $y_i$
+  For each example $(x_i, y_i)$:
+  $$
+  \hat y_i = f_\theta(x_i)
+  $$
+  We want $\hat y_i$ to be "close" to $y_i$ in a sense defined by a **loss**.
+
+---
+
+## Types of Problems
+
+* **Classification**
+  Predict a discrete label:
+  $$
+  y \in \{1,\dots,K\}.
+  $$
+  Examples: spam vs non-spam, disease vs no disease, which digit $0,\dots,9$.
+
+* **Regression**
+  Predict a real value:
+  $$
+  y \in \mathbb{R}.
+  $$
+  Examples: house price, temperature, probability of default.
+
+* **Binary vs. Multiclass classification**
+
+  * **Binary:** $y \in \{0,1\}$ (or $\{-1,+1\}$)
+  * **Multiclass:** $y \in \{1,\dots,K\}$ with $K > 2$.
+
+* **Decision boundary**
+  The set of inputs where the classifier is "undecided".
+  For a classifier of the form
+  $$
+  \hat y = \mathrm{sign}(w^\top x + b),
+  $$
+  the decision boundary is the hyperplane
+  $$
+  w^\top x + b = 0.
+  $$
+
+---
+
+## 3. Types of Learning
+
+### Supervised Learning
+  We observe labeled data $\{(x_i, y_i)\}_{i=1}^n$ and learn a model that maps
+  $$
+  x \mapsto y.
+  $$
+  Examples: classification, regression.
+
+### Unsupervised Learning
+  We observe only inputs $\{x_i\}_{i=1}^n$ and try to discover structure:
+
+  * **Clustering:** group similar points
+  * **Dimensionality reduction:** find low-dimensional representations
+    No explicit labels $y_i$ are given.
+
+### Reinforcement Learning (RL)
+  Learning by interaction. At each time step $t$:
+
+  * State $s_t$
+  * Agent chooses action $a_t$
+  * Environment returns reward $r_t$ and next state $s_{t+1}$.
+
+  The agent wants to learn a **policy** $\pi(a \mid s)$ that maximizes expected cumulative reward:
+  $$
+  \mathbb{E}\Big[\sum_{t=0}^\infty \gamma^t r_t\Big]
+  $$
+  with discount factor $\gamma \in [0,1)$.
+
+---
+
+## Linear Models and Linear Classifiers
+
+### Linear model (general idea)
+
+A **linear model** predicts by an affine function of $x$:
+$$
+f_\theta(x) = w^\top x + b,
+$$
+where
+
+* $w \in \mathbb{R}^d$ = **weight vector**,
+* $b \in \mathbb{R}$ = **bias** (intercept),
+* $\theta = (w,b)$.
+
+This is the basic building block for linear regression, perceptron, and logistic regression (they differ in what $y$ means and which loss we use).
+
+---
+
+### Linear classifier
+
+A **linear classifier** uses a linear score and then turns it into a discrete class.
+For binary classification with labels $\{-1,+1\}$:
+$$
+\hat y = \mathrm{sign}(w^\top x + b).
+$$
+
+* If $w^\top x + b > 0$, classify as $+1$.
+* If $w^\top x + b < 0$, classify as $-1$.
+
+Geometrically:
+
+* The decision boundary is the hyperplane $w^\top x + b = 0$.
+* The sign tells which side of the hyperplane you are on.
+
+---
+
+### Perceptron
+
+* **Perceptron model (binary classification)**
+  Same form as a linear classifier:
+  $$
+  \hat y = \mathrm{sign}(w^\top x + b), \quad y \in \{-1,+1\}.
+  $$
+
+* **Perceptron learning rule (informal)**
+  For each misclassified example $(x_i,y_i)$:
+  $$
+  w \leftarrow w + \eta y_i x_i,\quad
+  b \leftarrow b + \eta y_i,
+  $$
+  with step size $\eta > 0$.
+
+  Intuition:
+
+  * If $y_i = +1$ but we predicted $-1$, we add $x_i$ to $w$ to make $w^\top x_i$ larger.
+  * If $y_i = -1$ and we predicted $+1$, we subtract $x_i$ to make $w^\top x_i$ smaller.
+
+---
+
+### Logistic Regression (for classification)
+
+Despite the name, **logistic regression** is used for **classification**.
+
+* **Binary logistic regression**
+  We model the conditional probability:
+  $$
+  p_\theta(y=1 \mid x) = \sigma(w^\top x + b),
+  $$
+  where
+  $$
+  \sigma(z) = \frac{1}{1 + e^{-z}}
+  $$
+  is the **logistic (sigmoid) function**.
+
+  Then a typical classifier is:
+  $$
+  \hat y =
+  \begin{cases}
+  1 & \text{if } p_\theta(y=1 \mid x) \ge 0.5,\\
+  0 & \text{otherwise.}
+  \end{cases}
+  $$
+
+* **Multiclass logistic regression (softmax regression)**
+  For $K$ classes, we have weight vectors $w_1,\dots,w_K$ and biases $b_1,\dots,b_K$.
+  For each class $k$,
+  $$
+  s_k(x) = w_k^\top x + b_k
+  $$
+  (a score), and probabilities:
+  $$
+  p_\theta(y = k \mid x)
+  = \frac{\exp(s_k(x))}{\sum_{j=1}^K \exp(s_j(x))}.
+  $$
+
+---
+
+### Linear Regression (for regression)
+
+* **Linear regression model**
+  $$
+  f_\theta(x) = w^\top x + b,\quad y \in \mathbb{R}.
+  $$
+
+* **Squared loss**
+  For one example:
+  $$
+  \ell(f_\theta(x_i), y_i)
+  = (f_\theta(x_i) - y_i)^2.
+  $$
+  Over the dataset:
+  $$
+  L(\theta) = \frac{1}{n} \sum_{i=1}^n (w^\top x_i + b - y_i)^2.
+  $$
+
+Linear regression chooses $\theta$ to *minimize* this average squared error.
+
+---
+
+## Neural Networks and “Networks”
+
+### Neuron
+
+A **neuron** is one unit that:
+
+1. Computes a weighted sum plus bias:
+   $$
+   z = w^\top x + b,
+   $$
+2. Applies a nonlinear **activation function** $\phi$:
+   $$
+   a = \phi(z).
+   $$
+
+Examples of activation functions:
+
+* ReLU: $\phi(z) = \max(0, z)$
+* Sigmoid: $\phi(z) = \frac{1}{1 + e^{-z}}$
+* Tanh: $\phi(z) = \tanh(z)$
+
+---
+
+### Layer
+
+A **layer** takes a vector input and produces a vector output:
+
+* Linear layer:
+  $$
+  z = W x + b, \quad W \in \mathbb{R}^{m \times d},\ b \in \mathbb{R}^m,
+  $$
+* Then activation applied element-wise:
+  $$
+  a = \phi(z).
+  $$
+
+So a layer is typically: **linear map + nonlinearity**.
+
+---
+
+### Neural Network (Feedforward Network)
+
+A **(feedforward) neural network** is a composition of layers:
+$$
+f_\theta(x) =
+L_L \big(
+L_{L-1}(
+\dots L_2(L_1(x))
+)
+\big),
+$$
+where each $L_\ell$ is "linear + activation".
+Parameters $\theta$ = all weights and biases in all layers.
+
+* **Input layer** – receives the feature vector $x$.
+* **Hidden layers** – intermediate layers whose outputs are not directly observed.
+* **Output layer** – final layer producing logits, probabilities, or regression outputs.
+
+---
+
+##  Loss, Gradient, and Gradient Descent
+
+### Loss function
+
+A **loss function** measures how bad predictions are compared to true labels.
+
+* Per-example loss: $\ell(\hat y_i, y_i)$.
+* Overall loss (empirical risk):
+  $$
+  L(\theta)
+  = \frac{1}{n} \sum_{i=1}^n \ell(f_\theta(x_i), y_i).
+  $$
+
+Common choices:
+
+* **Square loss (regression)**:
+  $$
+  \ell(\hat y, y) = (\hat y - y)^2.
+  $$
+* **Logistic / cross-entropy loss (binary classification)**:
+  With $y \in \{0,1\}$ and $p = p_\theta(y=1\mid x)$,
+  $$
+  \ell(p,y) = -\big(y \log p + (1-y)\log(1-p)\big).
+  $$
+* **Cross-entropy for multiclass**:
+  If $y$ is one-hot and $\hat p_k = p_\theta(y=k\mid x)$,
+  $$
+  \ell(\hat p, y) = -\sum_{k=1}^K y_k \log \hat p_k.
+  $$
+
+---
+
+### Gradient
+
+For a differentiable loss $L(\theta)$, the **gradient** is:
+$$
+\nabla_\theta L(\theta)
+=
+\left(
+\frac{\partial L}{\partial \theta_1},
+\dots,
+\frac{\partial L}{\partial \theta_m}
+\right)^\top.
+$$
+
+Intuition:
+
+* $\nabla_\theta L(\theta)$ points in the direction of **steepest increase**.
+* $-\nabla_\theta L(\theta)$ points in the direction of **steepest decrease**.
+
+---
+
+### Gradient Descent
+
+An iterative method to minimize $L(\theta)$.
+
+* **Full-batch gradient descent**:
+  $$
+  \theta^{(t+1)}
+  = \theta^{(t)} - \eta \nabla_\theta L(\theta^{(t)}),
+  $$
+  where $\eta > 0$ is the **learning rate** (step size).
+
+* **Stochastic Gradient Descent (SGD)**:
+  Instead of using all examples at once, use one (or a small batch) at each step:
+  $$
+  \theta^{(t+1)}
+  = \theta^{(t)} - \eta \nabla_\theta \ell(f_\theta(x_i), y_i).
+  $$
+  This is cheaper per step and commonly used for large datasets and neural networks.
+
+* **Mini-batch SGD**:
+  Use a small batch $B_t$ at step $t$:
+  $$
+  \theta^{(t+1)}
+  = \theta^{(t)} - \eta \cdot
+  \frac{1}{|B_t|}\sum_{i \in B_t}
+  \nabla_\theta \ell(f_\theta(x_i), y_i).
+  $$
+
+---
+
+### Learning Rate
+
+* **Learning rate** $\eta$: scalar controlling how big each gradient step is.
+
+  * Too large $\Rightarrow$ divergence or oscillation.
+  * Too small $\Rightarrow$ very slow convergence.
+
+---
+
+## Generalization, Overfitting, Regularization
+
+* **Training set**
+  Subset of data used directly to fit parameters $\theta$.
+
+* **Validation set**
+  Held-out data used to tune hyperparameters (e.g. learning rate, network size, regularization strength) and to detect overfitting.
+
+* **Test set**
+  Final held-out data used only once at the end to estimate performance on truly unseen data.
+
+* **Generalization**
+  How well the model performs on **new** examples (not used during training). Good generalization means low loss / high accuracy on test data.
+
+* **Overfitting**
+  Model fits training data **too well**, including noise, and generalizes poorly.
+  Symptoms:
+
+  * Training loss very low
+  * Validation / test loss much higher.
+
+* **Underfitting**
+  Model is too simple or not trained enough; performs poorly both on training and test data.
+
+* **Regularization**
+  Techniques to prevent overfitting by penalizing complexity. Examples:
+
+  * **L2 regularization** (weight decay):
+    Add a term $\lambda \|w\|_2^2$ to the loss:
+    $$
+    L_{\text{reg}}(\theta) = L(\theta) + \lambda \|w\|_2^2.
+    $$
+  * **L1 regularization**:
+    Add $\lambda \|w\|_1$, encourages sparsity.
+
+---
+
+## Probabilistic Terms
+
+* **Probability model**
+  Instead of outputting a single label, the model outputs a distribution:
+  $$
+  p_\theta(y \mid x).
+  $$
+
+* **Likelihood**
+  Given data $\mathcal{D} = \{(x_i,y_i)\}$ and parameters $\theta$, the likelihood is:
+  $$
+  \mathcal{L}(\theta)
+  = \prod_{i=1}^n p_\theta(y_i \mid x_i).
+  $$
+
+* **Log-likelihood**
+  Often we maximize the log of the likelihood:
+  $$
+  \log \mathcal{L}(\theta)
+  = \sum_{i=1}^n \log p_\theta(y_i \mid x_i).
+  $$
+
+* **Maximum likelihood estimation (MLE)**
+  Choose $\theta$ to maximize $\log \mathcal{L}(\theta)$.
+  In many models (e.g. logistic regression), minimizing cross-entropy loss is equivalent to maximizing log-likelihood.
+
+---
+
+## Reinforcement Learning: Core Terms
+
+* **State** $s$
+  Mathematical representation of the environment at a given time (position, velocity, etc.).
+
+* **Action** $a$
+  Choice available to the agent in a given state.
+
+* **Reward** $r$
+  Scalar feedback after an action, indicating how good that action was locally.
+
+* **Policy** $\pi$
+  A rule that maps states to actions (possibly probabilistically):
+  $$
+  \pi(a \mid s) = \Pr(A_t = a \mid S_t = s).
+  $$
+
+* **Return**
+  Discounted sum of future rewards:
+  $$
+  G_t = \sum_{k=0}^{\infty} \gamma^k R_{t+k+1},\quad \gamma \in [0,1).
+  $$
+
+* **Value function** $V^\pi(s)$
+  Expected return starting from state $s$ and following policy $\pi$:
+  $$
+  V^\pi(s)
+  = \mathbb{E}_\pi \big[ G_t \mid S_t = s \big].
+  $$
+
+* **Action-value function** $Q^\pi(s,a)$
+  Expected return starting from state $s$, taking action $a$, then following $\pi$:
+  $$
+  Q^\pi(s,a)
+  = \mathbb{E}_\pi \big[ G_t \mid S_t = s, A_t = a \big].
+  $$
+
+* **Optimal policy** $\pi^*$
+  Policy that maximizes the value from every state.
+

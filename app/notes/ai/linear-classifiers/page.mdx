@@ -1,0 +1,133 @@
+
+
+# Linear Classifiers
+
+## Resizable Table of Contents
+
+## Definition
+
+A **linear classifier** is a model that makes predictions using a **linear function of the input features**.
+
+It computes a score
+$$
+s(x) = W \cdot x + b
+$$
+and classifies an input based on this score (for binary classification, typically predicting one class if (s(x) \ge 0) and the other if (s(x) < 0)).
+
+The **decision boundary** is the set of points where the score is zero:
+
+$$
+W \cdot x + b = 0.
+$$
+
+### What “linear” means
+
+This equation describes a **flat, straight surface** in feature space:
+
+* In **2D**, it is a **line**
+* In **3D**, it is a **plane**
+* In **higher dimensions**, it is a **hyperplane**
+
+A linear classifier can only draw **straight (flat) boundaries**; it cannot bend or curve them.
+It splits the space into two **half-spaces**: one on each side of the boundary.
+
+That is why it is called *linear*.
+
+---
+
+## What it’s used for
+
+Linear classifiers are used when the relationship between features and classes can be captured reasonably well by a straight boundary.
+They are fast, interpretable, and widely used in:
+
+* text classification
+* spam detection
+* sentiment analysis
+* basic image classification
+* medical diagnosis with simple features
+* any problem where a straight boundary roughly separates the classes
+
+They are one of the simplest and most important building blocks in machine learning.
+
+---
+
+## Types of Linear Classifiers
+
+All the models below use the **same geometric idea** (a linear decision boundary), but differ in **how they learn the weights** and **how they express uncertainty**.
+
+---
+
+### **1. Hard-Threshold Perceptron**
+
+* Binary classifier with a **step (hard-threshold) decision rule**
+  $$
+  h(x) =
+  \begin{cases}
+  1 & \text{if } W \cdot x + b \ge 0 \\
+  0 & \text{otherwise}
+  \end{cases}
+  $$
+* In the standard online algorithm, the weights are updated **only on misclassified examples** (when $$h(x) \neq y$$)
+* Has a convergence guarantee only when the data are **linearly separable**
+* Produces **hard decisions** (no probabilities, just 0 or 1)
+
+---
+
+### **2. Logistic Regression (Soft Perceptron)**
+
+Logistic regression is a **probabilistic linear classifier**. It is often viewed as a “soft” version of the perceptron.
+
+* Uses the **sigmoid** to output a probability
+  $$
+  h(x) = \sigma(W \cdot x + b),
+  \qquad
+  \sigma(z) = \frac{1}{1 + e^{-z}}
+  $$
+* Trained by minimizing **logistic loss** (equivalently, maximizing likelihood), usually via **gradient descent** or its variants
+* Can handle non–perfectly separable data and provides **$$P(y=1 \mid x)$$**
+* Decision boundary is still **linear**: thresholding at $$h(x) = 0.5$$ gives the same type of hyperplane $$W \cdot x + b = 0$$
+
+---
+
+### **3. Linear SVM (Support Vector Machine)**
+
+* Learns a **maximum-margin hyperplane**: it chooses (W, b) so that the boundary is as far as possible from the closest training points
+* Uses a **hinge loss + regularization** objective; the solution depends mainly on the **support vectors** (points near or violating the margin)
+* Very robust, often generalizes well
+* Prediction still uses a linear score
+  $$
+  s(x) = W \cdot x + b
+  $$
+  and a sign decision
+
+---
+
+### **4. Linear Discriminant Analysis (LDA)**
+
+* A **generative** linear classifier: assumes each class is drawn from a multivariate Gaussian distribution
+* With equal covariance matrices across classes, the resulting decision boundary is **linear**
+* Often used in statistics and medical or biological applications
+* Has a **closed-form solution** (no iterative gradient-based training) and is relatively easy to interpret
+
+---
+
+### **Summary**
+
+**Linear classifier = general idea**
+
+* Uses a linear score
+  $$
+  s(x) = W \cdot x + b
+  $$
+* Decision boundary is the hyperplane
+  $$
+  W \cdot x + b = 0
+  $$
+* Fast, interpretable, widely used
+
+**Different types = different learning rules and outputs**
+
+* **Perceptron** → step function, updates on mistakes
+* **Logistic regression** → sigmoid outputs, logistic loss + gradient descent
+* **Linear SVM** → maximize margin with hinge loss
+* **LDA** → assumes Gaussian classes and computes a linear rule analytically

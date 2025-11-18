@@ -81,6 +81,7 @@ export const PROBLEMS_ROUTES: NavigationItem[] = [
             { title: 'Permutations', href: '/problems/46-permutations', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
             { title: 'Pow(x, n)', href: '/problems/50-pow', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
             { title: 'Product of Array Except Self', href: '/problems/238-product-of-array-except-self', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
+            { title: 'Random Pick with Weight', href: '/problems/528-random-pick-with-weight', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
             { title: 'Range Addition', href: '/problems/370-range-addition', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
             { title: 'Redundant Connection', href: '/problems/684-redundant-connection', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
             { title: 'Replace Words', href: '/problems/648-replace-words', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },

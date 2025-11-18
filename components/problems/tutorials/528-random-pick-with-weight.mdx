@@ -1,0 +1,56 @@
+# Random Pick with Weight
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="medium" />
+
+<PillList pills={["probability"]} />
+
+[528. Random Pick with Weight](https://leetcode.com/problems/random-pick-with-weight/)
+
+## [!(ProblemDefinition)] Definition
+
+Given an array `w` of positive weights, build a class that returns an index `i` with probability `P(i) = w[i] / sum(w)`
+
+## [!(ProblemIntuition)] Intuition
+
+- Prefix sums:
+        - Each weight `w[i]` represents how "wide" index `i` should be on a number line.
+        - Build prefix sums so that:
+            - `prefix[i] = w[0] + ... + w[i]`
+        - This turns the array of weights into contiguous segments on [1, total].
+        - Example:
+            - w = [2, 5, 3] -> `prefix = [2, 7, 10]`
+            - Segments:
+                - 1-2   → index 0
+                - 3-7   → index 1
+                - 8-10  → index 2
+        - To pick an index with probability proportional to its weight:
+            - Draw a random integer `target ∈ [1, total]`.
+            - Find the first `prefix[i] ≥ target`.
+            - That `i` is the index whose segment contains `target`.
+        - Bigger weight → bigger segment → higher chance of being hit.
+
+## [!(ProblemTimeComplexity)] Time Complexity
+
+- $O(n)$
+
+## [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/528-random-pick-with-weight/solution.py"
+import random
+import bisect
+
+class Solution:
+
+    def __init__(self, w: list[int]):
+        self.prefix, total = [], 0
+        for x in w:
+            total += x
+            self.prefix.append(total)
+        self.total = total
+
+    def pickIndex(self) -> int:
+        return bisect.bisect_left(self.prefix, random.randint(1, self.total))
+```
+

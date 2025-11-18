@@ -101,6 +101,9 @@
       "198-house-robber",
       "213-house-robber-ii"
     ],
+    "probability": [
+      "528-random-pick-with-weight"
+    ],
     "binary-search": [
       "1011-capacity-to-ship-packages-within-d-days",
       "1235-maximum-profit-in-job-scheduling",
@@ -334,6 +337,7 @@
       "518-coin-change-ii",
       "523-continuous-subarray-sum",
       "525-contiguous-array",
+      "528-random-pick-with-weight",
       "53-maximum-subarray",
       "54-spiral-matrix",
       "542-01-matrix",
@@ -380,6 +384,9 @@
       "$O(m  \\cdot  n  \\cdot  k)$"
     ],
     "1406-stone-game-iii": [
+      "$O(n)$"
+    ],
+    "528-random-pick-with-weight": [
       "$O(n)$"
     ],
     "875-koko-eating-bananas": [

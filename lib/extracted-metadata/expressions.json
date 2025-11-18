@@ -17,6 +17,10 @@
   "problems/211-design-add-and-search-words-data-structure/solution.py": [
     {"range": {"start": {"line": 24, "character": 20}, "end": {"line": 24, "character": 43}}, "nameRange": {"start": {"line": 24, "character": 20}, "end": {"line": 24, "character": 43}}, "qname": "problems.211-design-add-and-search-words-data-structure.solution:WordDictionary.search.dfs.if k != self.END_MARKER", "kind": "expression"}
   ],
+  "problems/528-random-pick-with-weight/solution.py": [
+    {"range": {"start": {"line": 13, "character": 47}, "end": {"line": 13, "character": 76}}, "nameRange": {"start": {"line": 13, "character": 47}, "end": {"line": 13, "character": 76}}, "qname": "problems.528-random-pick-with-weight.solution:Solution.pickIndex.random.randint(1, self.total)", "kind": "expression"},
+    {"range": {"start": {"line": 13, "character": 15}, "end": {"line": 13, "character": 33}}, "nameRange": {"start": {"line": 13, "character": 15}, "end": {"line": 13, "character": 33}}, "qname": "problems.528-random-pick-with-weight.solution:Solution.pickIndex.bisect.bisect_left", "kind": "expression"}
+  ],
   "problems/133-clone-graph/solution.py": [
     {"range": {"start": {"line": 15, "character": 12}, "end": {"line": 15, "character": 30}}, "nameRange": {"start": {"line": 15, "character": 12}, "end": {"line": 15, "character": 30}}, "qname": "problems.133-clone-graph.solution:clone_graph.if n not in cloned", "kind": "expression"},
     {"range": {"start": {"line": 16, "character": 16}, "end": {"line": 16, "character": 39}}, "nameRange": {"start": {"line": 16, "character": 16}, "end": {"line": 16, "character": 39}}, "qname": "problems.133-clone-graph.solution:clone_graph.cloned[n] = Node(n.val)", "kind": "expression"},

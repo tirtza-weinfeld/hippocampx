@@ -468,7 +468,7 @@ export function TableOfContents({ headings: rawHeadings, className, maxHeight = 
                                 "shadow-sm shadow-sky-500/20 rounded-lg",
                                 "text-xs sm:text-sm lg:text-base transition-all duration-200 ease-in-out group",
                                 "focus-within:text-foreground",
-                                "cursor-pointer rounded-xl px-2 py-0.5 sm:py-1",
+                                "cursor-pointer rounded-xl px-2  py-0.5 sm:py-1",
                                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                                 "active:bg-toc-gradient",
                                 "relative",
@@ -479,9 +479,9 @@ export function TableOfContents({ headings: rawHeadings, className, maxHeight = 
                                 isParent && `bg-toc-gradient `,
                                 (isActive && !isParent) && "border-b-1 border-sky-500 border-dashed",
                                 child.level === 3 && "ml-3",
-                                child.level === 4 && "ml-6",
-                                child.level === 5 && "ml-[2.25rem]",
-                                child.level === 6 && "ml-[3rem]",
+                                child.level === 4 && "ml-9",
+                                child.level === 5 && "ml-[3rem]",
+                                child.level === 6 && "ml-[4rem]",
                          
                      
                                 "w-fit"

@@ -38,13 +38,14 @@ export const CustomLink = ({ href, children, className, onClick, ...rest }: Link
               <ExternalLink className="w-4 h-4" />
             </span>
           ) : (
-            <span className={cn(
-              "link-marker group-hover:-translate-y-1 transition-transform duration-300 ml-1 inline-block",
-              "text-teal-400 dark:text-teal-600",
-              "[h1_&]:hidden [h2_&]:hidden [h3_&]:hidden [h4_&]:hidden [h5_&]:hidden [h6_&]:hidden"
-            )}>
-              <ArrowUpRight className="w-4 h-4" />
-            </span>
+            <></>
+            // <span className={cn(
+            //   "link-marker group-hover:-translate-y-1 transition-transform duration-300 ml-1 inline-block",
+            //   "text-teal-400 dark:text-teal-600",
+            //   "[h1_&]:hidden [h2_&]:hidden [h3_&]:hidden [h4_&]:hidden [h5_&]:hidden [h6_&]:hidden"
+            // )}>
+            //   <ArrowUpRight className="w-4 h-4" />
+            // </span>
           )}
         </span>
         <span className={cn(
