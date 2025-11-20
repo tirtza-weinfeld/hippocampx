@@ -21,6 +21,18 @@ function renderBlockToken(token: ParsedToken, key: number): React.ReactNode {
     case 'list':
       return <ListRenderer key={key} token={token} />
 
+    case 'codeBlock':
+      return (
+        <pre key={key} className="overflow-x-auto rounded-md 
+        
+        my-4  bg-gray-100 shadow-2xl dark:bg-gray-800
+        p-4 text-sm">
+          <code className={token.language ? `language-${token.language}` : undefined}>
+            {token.content}
+          </code>
+        </pre>
+      )
+
     default:
       // For non-block tokens, use inline renderer
       return <InlineRenderer key={key} tokens={[token]} />

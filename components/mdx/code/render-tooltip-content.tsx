@@ -178,11 +178,8 @@ function TooltipDescription({ meta }: { meta: TooltipMeta }) {
             from-slate-50/80 via-gray-50/60 to-transparent dark:from-slate-900/30 dark:via-gray-900/20 
             dark:to-transparent 
          shadow-sm backdrop-blur-sm">
-            {/* <div className="flex items-center gap-2 mb-3">
-              <div className="w-1.5 h-1.5 bg-slate-500 rounded-full"></div>
-              <div className="font-semibold text-slate-900 dark:text-slate-100 text-xs uppercase tracking-wider">Summary</div>
-            </div> */}
-            <MarkdownRenderer className=" leading-relaxed text-em-gradient font-bold">
+            {/* <MarkdownRenderer className=" leading-relaxed text-em-gradient font-bold"> */}
+            <MarkdownRenderer>
               {meta.summary}
             </MarkdownRenderer>
           </div>

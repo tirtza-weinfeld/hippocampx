@@ -1,4 +1,4 @@
-import type { ParsedToken, ListToken, ListItemToken } from '../types'
+import type { ParsedToken, ListToken, ListItemToken, CodeBlockToken } from '../types'
 import { InlineParser } from './inline-parser'
 import { cleanTextContent } from '@/lib/list-processing-utils'
 
@@ -39,12 +39,58 @@ export class BlockParser {
 
     const currentLine = this.lines[this.position]
 
+    // Check if this line starts a fenced code block
+    if (this.isCodeBlockStart(currentLine)) {
+      return this.parseCodeBlock()
+    }
+
     // Check if this line starts a list
     if (this.isListStart(currentLine)) {
       return this.parseList(currentLevel)
     }
 
     return null
+  }
+
+  private isCodeBlockStart(line: string): boolean {
+    return /^[ \t]*```/.test(line)
+  }
+
+  private parseCodeBlock(): CodeBlockToken {
+    const start = this.position
+    const openingLine = this.lines[this.position]
+
+    // Extract language and meta from opening fence
+    const match = openingLine.match(/^[ \t]*```(\w*)(.*)$/)
+    const language = match?.[1] || undefined
+    const meta = match?.[2]?.trim() || undefined
+
+    this.position++
+
+    // Collect content until closing fence
+    const contentLines: string[] = []
+
+    while (this.position < this.lines.length) {
+      const line = this.lines[this.position]
+
+      // Check for closing fence
+      if (/^[ \t]*```\s*$/.test(line)) {
+        this.position++
+        break
+      }
+
+      contentLines.push(line)
+      this.position++
+    }
+
+    return {
+      type: 'codeBlock',
+      content: contentLines.join('\n'),
+      language,
+      meta,
+      start,
+      end: this.position
+    }
   }
 
   private isListStart(line: string): boolean {

@@ -10,6 +10,7 @@ export type TokenType =
   | 'strong'
   | 'emphasis'
   | 'inlineCode'
+  | 'codeBlock'
   | 'link'
   | 'math'
   | 'mathDisplay'
@@ -81,11 +82,18 @@ export interface ListItemToken extends Token {
   displayNumber?: string
 }
 
+export interface CodeBlockToken extends Token {
+  type: 'codeBlock'
+  language?: string
+  meta?: string
+}
+
 export type ParsedToken =
   | TextToken
   | StrongToken
   | EmphasisToken
   | InlineCodeToken
+  | CodeBlockToken
   | LinkToken
   | MathToken
   | MathDisplayToken

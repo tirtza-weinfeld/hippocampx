@@ -21,9 +21,32 @@ class TrieNode:
 
 
 class Trie:
+    """
+    Example:   
+    ```markdown
+            ["apple", "app", "apt", "bat"]
+            
+                                       (root)
+                                          |
+                             --------------------------
+                             |                        |
+                             a                        b
+                             |                        |
+                      -----------------                a
+                      |               |                |
+                      p               t(end)           t(end)
+                      |
+                  ---------
+                  |       |
+                  p(end)  l
+                          |
+                          e(end)
+            ```
+        """
     def __init__(self):
         """
         Initializes the Trie with an empty root node.
+        
 
         Variables:
             root: the root `TrieNode`, representing the empty prefix

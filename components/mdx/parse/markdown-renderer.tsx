@@ -21,13 +21,12 @@ export function MarkdownRenderer({ children, className }: MarkdownRendererProps)
     return <InlineCode>{text}</InlineCode>
   }
 
-  // Check if the text contains list markers (block-level content)
-  // const hasLists = /^[ \t]*(?:\d+\.|\s*[-*+])\s/m.test(text)
-  // const hasLists = /^[ \t]*(?:\d+\.|\s*[-*+])\s/m.test(text)
+  // Check if the text contains block-level content (lists or fenced code blocks)
   const hasLists = /^[ \t]*[-*+]\s|^\d+\.\s/m.test(text)
+  const hasCodeBlocks = /^[ \t]*```/m.test(text)
 
-  if (hasLists) {
-    // Use block parser for content with lists
+  if (hasLists || hasCodeBlocks) {
+    // Use block parser for block-level content
     const blockParser = new BlockParser(text)
     const tokens = blockParser.parse()
 
