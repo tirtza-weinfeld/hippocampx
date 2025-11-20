@@ -31,6 +31,8 @@ _SECTION_CONFIG = {
     "Note": {"output_key": "note", "type": "block"},
     "Variables": {"output_key": "variables", "type": "variables_dict"},
     "Expressions": {"output_key": "expressions", "type": "expressions_dict"},
+    "Instance Attributes": {"output_key": "instance_attributes", "type": "variables_dict"},
+    "Class Attributes": {"output_key": "class_attributes", "type": "variables_dict"},
 }
 
 # Generate section heads dynamically

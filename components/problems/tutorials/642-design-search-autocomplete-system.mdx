@@ -26,6 +26,7 @@ class TrieNode:
         self.hot: list[str] = []
 
 class AutocompleteSystem:
+
     def __init__(self, sentences: list[str], times: list[int]):
         self.root = TrieNode()                 
         self.freq = defaultdict(int)          
@@ -39,7 +40,7 @@ class AutocompleteSystem:
         node = self.root
         for ch in s:
             node = node.children[ch]
-            self._update_hot(node, s)
+            self._update_hot(node, s)          
 
     def _update_hot(self, node: TrieNode, s: str) -> None:
         if s not in node.hot:

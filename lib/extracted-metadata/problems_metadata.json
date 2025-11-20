@@ -1689,11 +1689,11 @@
     "642-design-search-autocomplete-system": {
       "time_stamps": {
         "created_at": "2025-11-20T08:48:17.339143",
-        "updated_at": "2025-11-20T12:15:10.467975"
+        "updated_at": "2025-11-20T19:31:41.984213"
       },
       "solutions": {
         "solution.py": {
-          "code": "from collections import defaultdict\n\nclass TrieNode:\n    __slots__ = (\"children\", \"hot\")\n    def __init__(self):\n        self.children = defaultdict(TrieNode)\n        self.hot: list[str] = []\n\nclass AutocompleteSystem:\n    def __init__(self, sentences: list[str], times: list[int]):\n        self.root = TrieNode()                 \n        self.freq = defaultdict(int)          \n        self.cur: TrieNode | None = self.root  \n        self.buf = \"\"                          \n        for s, t in zip(sentences, times):\n            self._add(s, t)\n\n    def _add(self, s: str, delta: int) -> None:\n        self.freq[s] += delta\n        node = self.root\n        for ch in s:\n            node = node.children[ch]\n            self._update_hot(node, s)\n\n    def _update_hot(self, node: TrieNode, s: str) -> None:\n        if s not in node.hot:\n            node.hot.append(s)\n        node.hot.sort(key=lambda x: (-self.freq[x], x))\n        if len(node.hot) > 3:\n            node.hot.pop()\n\n    def input(self, c: str) -> list[str]:\n        if c == \"#\":\n            if self.buf:\n                self._add(self.buf, 1)\n            self.buf = \"\"\n            self.cur = self.root\n            return []\n\n        self.buf += c\n        self.cur = self.cur.children[c]\n        return self.cur.hot"
+          "code": "from collections import defaultdict\n\nclass TrieNode:\n    __slots__ = (\"children\", \"hot\")\n    def __init__(self):\n        self.children = defaultdict(TrieNode)\n        self.hot: list[str] = []\n\nclass AutocompleteSystem:\n\n    def __init__(self, sentences: list[str], times: list[int]):\n        self.root = TrieNode()                 \n        self.freq = defaultdict(int)          \n        self.cur: TrieNode | None = self.root  \n        self.buf = \"\"                          \n        for s, t in zip(sentences, times):\n            self._add(s, t)\n\n    def _add(self, s: str, delta: int) -> None:\n        self.freq[s] += delta\n        node = self.root\n        for ch in s:\n            node = node.children[ch]\n            self._update_hot(node, s)          \n\n    def _update_hot(self, node: TrieNode, s: str) -> None:\n        if s not in node.hot:\n            node.hot.append(s)\n        node.hot.sort(key=lambda x: (-self.freq[x], x))\n        if len(node.hot) > 3:\n            node.hot.pop()\n\n    def input(self, c: str) -> list[str]:\n        if c == \"#\":\n            if self.buf:\n                self._add(self.buf, 1)\n            self.buf = \"\"\n            self.cur = self.root\n            return []\n\n        self.buf += c\n        self.cur = self.cur.children[c]\n        return self.cur.hot"
         }
       },
       "title": "Design Search Autocomplete System",
@@ -1779,7 +1779,7 @@
     "208-implement-trie-prefix-tree": {
       "time_stamps": {
         "created_at": "2025-09-12T16:05:43.508813",
-        "updated_at": "2025-11-20T09:20:55.254305"
+        "updated_at": "2025-11-20T20:05:03.986766"
       },
       "solutions": {
         "solution.py": {
@@ -1787,7 +1787,7 @@
             "children": "`defaultdict[str, TrieNode]` maps characters to child TrieNodes, auto-created on first access",
             "end": "bool flag indicating this node marks the end of a valid word"
           },
-          "code": "from collections import defaultdict\n\nclass TrieNode:\n    __slots__ = (\"children\", \"end\")\n    def __init__(self):\n        self.children = defaultdict(TrieNode)\n        self.end = False\n\nclass Trie:\n    def __init__(self):\n        self.root = TrieNode()\n\n    def insert(self, word: str) -> None:\n        node = self.root\n        for ch in word:\n            node = node.children[ch]\n        node.end = True\n\n    def search(self, word: str) -> bool:\n        node = self.root\n        for ch in word:\n            if (node := node.children.get(ch)) is None:\n                return False\n        return node.end\n\n    def starts_with(self, prefix: str) -> bool:\n        node = self.root\n        for ch in prefix:\n            if (node := node.children.get(ch)) is None:\n                return False\n        return True"
+          "code": "from collections import defaultdict\n\nclass TrieNode:\n    __slots__ = (\"children\", \"end\")\n\n    def __init__(self):\n        self.children = defaultdict(TrieNode)\n        self.end = False\n\nclass Trie:\n    def __init__(self):\n        self.root = TrieNode()\n\n    def insert(self, word: str) -> None:\n        node = self.root\n        for ch in word:\n            node = node.children[ch]\n        node.end = True\n\n    def search(self, word: str) -> bool:\n        node = self.root\n        for ch in word:\n            if (node := node.children.get(ch)) is None:\n                return False\n        return node.end\n\n    def starts_with(self, prefix: str) -> bool:\n        node = self.root\n        for ch in prefix:\n            if (node := node.children.get(ch)) is None:\n                return False\n        return True"
         }
       },
       "title": "Implement Trie (Prefix Tree)",

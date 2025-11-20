@@ -5,10 +5,11 @@ class TrieNode:
     """
     A node in the Trie.
 
-    Variables:
+    Class Attributes:
         __slots__: restrict instances to only these attributes (no __dict__) to save memory and speed up attribute access
     """
     __slots__ = ("children", "end")
+    
     def __init__(self):
         """
         Variables:

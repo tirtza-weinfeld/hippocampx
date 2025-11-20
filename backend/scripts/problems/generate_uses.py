@@ -80,11 +80,12 @@ class LocalDef:      # def/class/assigned name in this file
 Binding = ImportModule | ImportSymbol | LocalDef
 
 class Scope:
-    def __init__(self, module: str, qual: list[str] | None = None, is_class: bool = False, is_comprehension: bool = False):
+    def __init__(self, module: str, qual: list[str] | None = None, is_class: bool = False, is_comprehension: bool = False, class_name: str | None = None):
         self.module, self.qual = module, (qual or [])
         self.bind: dict[str, Binding] = {}
         self.is_class = is_class
         self.is_comprehension = is_comprehension
+        self.class_name = class_name  # Track enclosing class for self.attr resolution
     def q_of(self, name: str) -> str:
         return f"{self.module}:{'.'.join(self.qual + [name]) if self.qual else name}"
 
@@ -99,8 +100,10 @@ class Uses(ast.NodeVisitor):
     # scope helpers
     @property
     def cur(self) -> Scope: return self.scopes[-1]
-    def push(self, name: str | None = None, is_class: bool = False, is_comprehension: bool = False):
-        self.scopes.append(Scope(self.mod, self.cur.qual + ([name] if name else []), is_class, is_comprehension))
+    def push(self, name: str | None = None, is_class: bool = False, is_comprehension: bool = False, class_name: str | None = None):
+        # Inherit class_name from parent scope if not specified
+        inherited_class = class_name if class_name is not None else self.cur.class_name
+        self.scopes.append(Scope(self.mod, self.cur.qual + ([name] if name else []), is_class, is_comprehension, inherited_class))
     def pop(self): self.scopes.pop()
     def define(self, name: str, b: Binding): self.cur.bind[name] = b
 
@@ -269,7 +272,7 @@ class Uses(ast.NodeVisitor):
         for b in node.bases: self.visit(b)
         for kw in node.keywords: self.visit(kw.value)
         for dec in node.decorator_list: self.visit(dec)
-        self.push(node.name, is_class=True)  # Mark that we're entering a class scope
+        self.push(node.name, is_class=True, class_name=node.name)  # Mark class scope with class name
         for stmt in node.body: self.visit(stmt)
         self.pop()
 
@@ -277,15 +280,24 @@ class Uses(ast.NodeVisitor):
     def visit_Assign(self, node: ast.Assign):
         for t in node.targets:
             self._handle_assignment_target(t)
-        self.generic_visit(node)
+        # Only visit the value, not the targets (already handled above)
+        self.visit(node.value)
     
     def _handle_assignment_target(self, target, is_comprehension=False):
-        """Handle assignment targets including tuple unpacking"""
+        """Handle assignment targets including tuple unpacking and self.attr"""
         if isinstance(target, ast.Name):
             q = self.cur.q_of(target.id)
             if not is_comprehension:  # Don't track comprehension variables
                 self.add_use(target, q, "variable")  # Record the assignment as a use
             self.define(target.id, LocalDef(q, "variable"))
+        elif isinstance(target, ast.Attribute):
+            # Handle self.attr = value (instance attribute assignment)
+            if isinstance(target.value, ast.Name) and target.value.id == "self" and self.cur.class_name:
+                qname = f"{self.mod}:{self.cur.class_name}.{target.attr}"
+                self.add_use(target, qname, "attribute")
+            else:
+                # For other attribute assignments, visit normally
+                self.visit(target)
         elif isinstance(target, (ast.Tuple, ast.List)):
             # Handle tuple/list unpacking like: l, r = 1, max(piles)
             for elt in target.elts:
@@ -294,8 +306,24 @@ class Uses(ast.NodeVisitor):
     def visit_AnnAssign(self, node: ast.AnnAssign):
         if isinstance(node.target, ast.Name):
             q = self.cur.q_of(node.target.id)
+            self.add_use(node.target, q, "variable")
             self.define(node.target.id, LocalDef(q, "variable"))
+        elif isinstance(node.target, ast.Attribute):
+            # Handle self.attr: Type = value (annotated instance attribute)
+            if isinstance(node.target.value, ast.Name) and node.target.value.id == "self" and self.cur.class_name:
+                qname = f"{self.mod}:{self.cur.class_name}.{node.target.attr}"
+                self.add_use(node.target, qname, "attribute")
         if node.value: self.visit(node.value)  # skip node.annotation
+
+    def visit_AugAssign(self, node: ast.AugAssign):
+        # Handle augmented assignments like self.buf += c
+        if isinstance(node.target, ast.Attribute):
+            if isinstance(node.target.value, ast.Name) and node.target.value.id == "self" and self.cur.class_name:
+                qname = f"{self.mod}:{self.cur.class_name}.{node.target.attr}"
+                self.add_use(node.target, qname, "attribute")
+                self.visit(node.value)
+                return
+        self.generic_visit(node)
 
     def visit_arg(self, node: ast.arg):
         # Define the parameter name as a local binding, but skip the annotation
@@ -332,10 +360,16 @@ class Uses(ast.NodeVisitor):
         self.generic_visit(node)
 
     def visit_Attribute(self, node: ast.Attribute):
-        # visit children first, then record the full attr span
-        self.generic_visit(node)
-        # For attribute access, we don't know the kind from context alone
-        self.add_use(node, self.resolve_attr_chain(node))
+        # Check if this is a self.attr pattern (instance attribute)
+        if isinstance(node.value, ast.Name) and node.value.id == "self" and self.cur.class_name:
+            # Don't visit the 'self' Name node to avoid duplicate tracking
+            qname = f"{self.mod}:{self.cur.class_name}.{node.attr}"
+            self.add_use(node, qname, "attribute")
+        else:
+            # visit children first, then record the full attr span
+            self.generic_visit(node)
+            # For attribute access, we don't know the kind from context alone
+            self.add_use(node, self.resolve_attr_chain(node))
 
     # ---------- Comprehensions ----------
     def visit_ListComp(self, node: ast.ListComp):

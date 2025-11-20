@@ -8,14 +8,15 @@ class TrieNode:
 
 
 class AutocompleteSystem:
-    """
-    Variables:
-        self.root: Trie root
-        self.freq : global frequencies of full sentences
-        self.cur:  current node while typing
-        self.buf: current sentence being typed
-    """
+   
     def __init__(self, sentences: list[str], times: list[int]):
+        """
+        Instance Attributes:
+            root: Trie root
+            freq : global frequencies of full sentences
+            cur : current node while typing
+            buf: current sentence being typed
+        """
         self.root = TrieNode()                 
         self.freq = defaultdict(int)          
         self.cur: TrieNode | None = self.root  
@@ -28,7 +29,7 @@ class AutocompleteSystem:
         node = self.root
         for ch in s:                           # walk prefix path for the sentence
             node = node.children[ch]           # defaultdict creates node if missing
-            self._update_hot(node, s)          # update top-3 for this prefix
+            self._update_hot(node, s)          
 
     def _update_hot(self, node: TrieNode, s: str) -> None:
         """

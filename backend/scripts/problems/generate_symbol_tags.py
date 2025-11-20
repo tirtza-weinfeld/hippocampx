@@ -262,6 +262,52 @@ def build_symbol_tags(root: Path) -> dict[str, dict[str, object]]:
                         "kind": "expression"
                     }
 
+            # Create individual entries for instance attributes
+            # Can appear in class docstrings or __init__ docstrings
+            instance_attrs_dict = meta.get("instance_attributes")
+            if isinstance(instance_attrs_dict, dict):
+                # Strip "self." prefix from keys and add to parent entry
+                cleaned_attrs = {}
+                for attr_name, attr_desc in instance_attrs_dict.items():
+                    # Strip "self." prefix if present
+                    clean_name = attr_name[5:] if attr_name.startswith("self.") else attr_name
+                    cleaned_attrs[clean_name] = attr_desc
+
+                if cleaned_attrs:
+                    main_entry["instance_attributes"] = list(cleaned_attrs.keys())
+
+                    # Determine the base qname for attributes
+                    # If this is __init__, use parent class qname; otherwise use current qname
+                    if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name == "__init__":
+                        # qname is "mod:Class.__init__" -> base is "mod:Class"
+                        attr_base_qname = qname.rsplit(".", 1)[0] if "." in qname.split(":")[-1] else qname
+                    else:
+                        attr_base_qname = qname
+
+                    # Create individual entries for each attribute
+                    for attr_name, attr_desc in cleaned_attrs.items():
+                        attr_qname = f"{attr_base_qname}.{attr_name}"
+                        tags[attr_qname] = {
+                            "name": attr_name,
+                            "summary": attr_desc,
+                            "kind": "attribute"
+                        }
+
+            # Create individual entries for class attributes (only for classes)
+            class_attrs_dict = meta.get("class_attributes")
+            if isinstance(class_attrs_dict, dict) and isinstance(node, ast.ClassDef):
+                if class_attrs_dict:
+                    main_entry["class_attributes"] = list(class_attrs_dict.keys())
+
+                    # Create individual entries for each class attribute
+                    for attr_name, attr_desc in class_attrs_dict.items():
+                        attr_qname = f"{qname}.{attr_name}"
+                        tags[attr_qname] = {
+                            "name": attr_name,
+                            "summary": attr_desc,
+                            "kind": "class_attribute"
+                        }
+
     return tags
 
 

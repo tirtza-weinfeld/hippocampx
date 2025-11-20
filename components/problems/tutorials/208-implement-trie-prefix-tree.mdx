@@ -19,6 +19,7 @@ from collections import defaultdict
 
 class TrieNode:
     __slots__ = ("children", "end")
+
     def __init__(self):
         self.children = defaultdict(TrieNode)
         self.end = False

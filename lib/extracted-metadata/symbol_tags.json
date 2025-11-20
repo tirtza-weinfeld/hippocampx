@@ -1,8 +1,8 @@
 {
   "core.bellman-ford.classic:bellman_ford_classic": {
     "args": [
-      "vertices",
       "source",
+      "vertices",
       "edges"
     ],
     "code": "def bellman_ford_classic(\n    vertices: list[str], edges: list[tuple[str, str, float]], source: str\n) -> dict[str, float]:\n\n    d = [float(\"inf\")] * (V := len(vertices))\n    d[source] = 0\n\n    for _ in range(V - 1):\n        updated = False\n        for u, v, w in edges:\n            if d[u] + w < d[v]:\n                d[v] = d[u] + w\n                updated = True\n        if not updated:\n            return d\n\n    for u, v, w in edges:\n        if d[u] + w < d[v]:\n            raise Exception(\"Negative-weight cycle\")\n\n    return d",
@@ -120,8 +120,8 @@
   },
   "core.dijkstra.algorithm:dijkstra": {
     "args": [
-      "graph",
-      "s"
+      "s",
+      "graph"
     ],
     "code": "def dijkstra(graph: dict[str, dict[str, int]], s: str):\n\n    d = {v: float('inf') for v in graph} | {s: 0}\n    p = {v: None for v in graph}\n\n    pq = [(0, s)]\n\n    while pq:\n        d_u, u = heapq.heappop(pq)\n        if d_u > d[u]:\n            continue\n        for v ,w in graph[u]:\n            if (weight := d_u + w) < d[v]:\n                d[v], p[v] = weight, u\n                heapq.heappush(pq, (weight, v))\n\n    return d, p",
     "file_path": "backend/algorithms/core/dijkstra/algorithm.py",
@@ -144,9 +144,9 @@
   },
   "core.modular-arithmetic.congruent1:congruent1": {
     "args": [
+      "a",
       "n",
-      "b",
-      "a"
+      "b"
     ],
     "code": "def congruent1(a: int, b: int, n: int) -> bool:\n    return (a - b) % n == 0",
     "file_path": "backend/algorithms/core/modular-arithmetic/congruent1.py",
@@ -179,9 +179,9 @@
   },
   "core.modular-arithmetic.congruent2:congruent2": {
     "args": [
+      "a",
       "n",
-      "b",
-      "a"
+      "b"
     ],
     "code": "def congruent2(a: int, b: int, n: int) -> bool:\n    return a % n == b % n",
     "file_path": "backend/algorithms/core/modular-arithmetic/congruent2.py",
@@ -411,10 +411,10 @@
   },
   "more.tictactoe.tictactoe copy 2:TicTacToe.minimax.dp": {
     "args": [
-      "state",
       "beta",
       "curr_player",
-      "alpha"
+      "alpha",
+      "state"
     ],
     "code": "        def dp(state: Board, curr_player: Player, alpha: float, beta: float) -> int:\n            state_key = (str(state), curr_player)\n            if state_key in self._memo:\n                return self._memo[state_key]\n\n            if self.terminal(state):\n                w = self.winner(state)\n                self._memo[state_key] = 1 if w == curr_player else (0 if w is None else -1)\n                return self._memo[state_key]\n\n            opponent = O if curr_player == X else X\n            value = float('-inf')\n            for action in self.actions(state):\n                value = max(value, -dp(self.result(state, action), opponent, -beta, -alpha))\n                alpha = max(alpha, value)\n                if alpha >= beta:\n                    break\n\n            self._memo[state_key] = int(value)\n            return int(value)",
     "file_path": "backend/algorithms/more/tictactoe/tictactoe copy 2.py",
@@ -829,10 +829,10 @@
   },
   "more.tictactoe.tictactoe:TicTacToe.minimax.dp": {
     "args": [
-      "state",
       "beta",
       "curr_player",
-      "alpha"
+      "alpha",
+      "state"
     ],
     "code": "        def dp(state: Board, curr_player: Player, alpha: float, beta: float) -> int:\n            state_key = (str(state), curr_player)\n            if state_key not in self._memo:\n\n                if self.terminal(state):\n                    w = self.winner(state)\n                    self._memo[state_key] = 1 if w == curr_player else (0 if w is None else -1)\n                    return self._memo[state_key]\n\n                opponent = O if curr_player == X else X\n                value = float('-inf')\n                for action in self.actions(state):\n                    value = max(value, -dp(self.result(state, action), opponent, -beta, -alpha))\n                    alpha = max(alpha, value)\n                    if alpha >= beta:\n                        break\n\n                self._memo[state_key] = int(value)\n            return  self._memo[state_key] ",
     "file_path": "backend/algorithms/more/tictactoe/tictactoe.py",
@@ -1188,8 +1188,8 @@
   },
   "problems.1000-minimum-cost-to-merge-stones.solution:Solution.mergeStones": {
     "args": [
-      "stones",
-      "K"
+      "K",
+      "stones"
     ],
     "code": "    def mergeStones(self, stones: list[int], K: int) -> int:\n        if ((n := len(stones)) - 1) % (K - 1):return -1\n\n        prefix, memo = [0], {}\n        for x in stones: prefix.append(prefix[-1] + x)\n        cost = lambda l, r: 0 if (r - l) % (K - 1) else prefix[r + 1] - prefix[l]\n\n        def dp(l, r):\n            if (key := (l, r)) not in memo:\n                memo[key] = min(\n                    (dp(l, t) + dp(t + 1, r) + cost(l, r) for t in range(l, r, K - 1)),\n                    default=0,\n                )\n            return memo[key]\n\n        return dp(0, n - 1)",
     "expressions": {
@@ -1238,8 +1238,8 @@
   },
   "problems.1011-capacity-to-ship-packages-within-d-days.solution:capacity_to_ship_packages_within_d_days": {
     "args": [
-      "days",
-      "weights"
+      "weights",
+      "days"
     ],
     "code": "def capacity_to_ship_packages_within_d_days(weights: list[int], days: int) -> int:\n    def days_needed(capacity: int) -> int:\n        d, load = 1, 0\n        for w in weights:\n            if load + w <= capacity:\n                load += w\n            else:\n                d += 1\n                load = w\n        return d\n\n    l, r = max(weights), sum(weights)\n    while l < r:\n        capacity = (l + r) // 2\n        if days_needed(capacity) <= days:\n            r = capacity\n        else:\n            l = capacity + 1\n    return l",
     "file_path": "backend/algorithms/problems/1011-capacity-to-ship-packages-within-d-days/solution.py",
@@ -1404,9 +1404,9 @@
   },
   "problems.1235-maximum-profit-in-job-scheduling.top_down:maximum_profit_in_job_scheduling": {
     "args": [
-      "startTime",
       "profit",
-      "endTime"
+      "endTime",
+      "startTime"
     ],
     "code": "def maximum_profit_in_job_scheduling(\n    startTime: list[int], endTime: list[int], profit: list[int]\n) -> int:\n\n    jobs = sorted(zip(startTime, endTime, profit))\n    memo = {}\n\n    def dp(i: int) -> int:\n        if i == len(jobs):\n            return 0\n        if i not in memo:\n            _, e, p = jobs[i]\n            memo[i] = max(dp(i + 1), p + dp(bisect_left(jobs, e, key=lambda x: x[0])))\n        return memo[i]\n\n    return dp(0)",
     "expressions": {
@@ -1504,8 +1504,8 @@
   "problems.127-word-ladder.solution:word_ladder": {
     "args": [
       "wordList",
-      "endWord",
-      "beginWord"
+      "beginWord",
+      "endWord"
     ],
     "code": "def word_ladder(beginWord: str, endWord: str, wordList: list[str]) -> int:\n    if endWord not in wordList:\n        return 0\n\n    L = len(beginWord)\n    combos: dict[str, list[str]] = defaultdict(list)\n    for w in wordList:\n        for i in range(L):\n            combos[w[:i] + \"*\" + w[i+1:]].append(w)\n\n    front, back = {beginWord}, {endWord}\n    dist_front, dist_back = {beginWord: 1}, {endWord: 1}\n\n    while front and back:\n        if len(front) > len(back):\n            front, back = back, front\n            dist_front, dist_back = dist_back, dist_front\n\n        next_front = set()\n        for word in front:\n            for i in range(L):\n                for n in combos[word[:i] + \"*\" + word[i+1:]]:\n                    if n in dist_back:\n                        return dist_front[word] + dist_back[n]\n                    if n not in dist_front:\n                        dist_front[n] = dist_front[word] + 1\n                        next_front.add(n)\n        front = next_front\n\n    return 0",
     "file_path": "backend/algorithms/problems/127-word-ladder/solution.py",
@@ -1840,10 +1840,10 @@
   },
   "problems.1514-path-with-maximum-probability.bellman-ford:Solution.maxProbability": {
     "args": [
-      "start",
+      "succProb",
       "n",
       "end",
-      "succProb",
+      "start",
       "edges"
     ],
     "code": "    def maxProbability(self, n: int, edges: list[list[int]], succProb: list[float], start: int, end: int) -> float:\n        prob = [0.0] * n\n        prob[start] = 1.0\n\n        for _ in range(n - 1):\n            updated = False\n            for (u, v), p in zip(edges, succProb):\n                if prob[u] * p > prob[v]:\n                    prob[v] = prob[u] * p\n                    updated = True\n                if prob[v] * p > prob[u]:\n                    prob[u] = prob[v] * p\n                    updated = True\n            if not updated:\n                break\n\n        return prob[end]",
@@ -1876,11 +1876,11 @@
   },
   "problems.1514-path-with-maximum-probability.dijkstra:Solution.maxProbability": {
     "args": [
-      "start",
+      "edges",
+      "succProb",
       "n",
       "end",
-      "edges",
-      "succProb"
+      "start"
     ],
     "code": "    def maxProbability(self, n: int, edges: list[list[int]], succProb: list[float], start: int, end: int) -> float:\n\n        adj = defaultdict(list)\n        for (u, v), p in zip(edges, succProb):\n            adj[u].append((v, p))\n            adj[v].append((u, p))\n\n        pq, best = [(-1.0, start)], [0.0] * n\n        best[start] = 1.0\n\n        while pq:\n            p, u = heappop(pq)\n            p = -p\n            if u == end:\n                return p\n            if p < best[u]:\n                continue\n            for v, w in adj[u]:\n                new_p = p * w\n                if new_p > best[v]:\n                    best[v] = new_p\n                    heappush(pq, (-new_p, v))\n        return 0.0",
     "file_path": "backend/algorithms/problems/1514-path-with-maximum-probability/dijkstra.py",
@@ -1952,8 +1952,8 @@
   },
   "problems.1590-make-sum-divisible-by-p.solution:minSubarrayToMakeSumDivisibleByP": {
     "args": [
-      "p",
-      "segments"
+      "segments",
+      "p"
     ],
     "code": "def minSubarrayToMakeSumDivisibleByP(segments: list[int], p: int) -> int:\n\n    total_remainder = sum(segments) % p\n    if total_remainder == 0:\n        return 0\n\n    remainder_idx = {0: -1}\n    prefix_remainder, min_length = 0, len(segments)\n\n    for i, segment in enumerate(segments):\n        prefix_remainder = (prefix_remainder + segment) % p\n        need = (prefix_remainder - total_remainder + p) % p\n        if need in remainder_idx:\n            min_length = min(min_length, i - remainder_idx[need])\n        remainder_idx[prefix_remainder] = i\n\n    return min_length if min_length < len(segments) else -1",
     "file_path": "backend/algorithms/problems/1590-make-sum-divisible-by-p/solution.py",
@@ -2159,8 +2159,8 @@
   },
   "problems.207-course-schedule.solution:Solution.canFinish": {
     "args": [
-      "prerequisites",
-      "n"
+      "n",
+      "prerequisites"
     ],
     "code": "    def canFinish(self, n: int, prerequisites: list[list[int]]) -> bool:\n        g = [[] for _ in range(n)]     \n        indeg = [0] * n                \n        for a, b in prerequisites:\n            g[b].append(a)             \n            indeg[a] += 1              \n\n        q = deque(i for i, d in enumerate(indeg) if d == 0)\n        taken = 0                      \n\n        while q:\n            u = q.popleft()             \n            taken += 1\n            for v in g[u]:              \n                indeg[v] -= 1           \n                if indeg[v] == 0:       \n                    q.append(v)         \n\n        return taken == n",
     "expressions": {
@@ -2330,14 +2330,14 @@
     "summary": "string to insert into the Trie"
   },
   "problems.208-implement-trie-prefix-tree.solution:TrieNode": {
-    "code": "class TrieNode:\n    __slots__ = (\"children\", \"end\")\n    def __init__(self):\n        self.children = defaultdict(TrieNode)\n        self.end = False",
+    "class_attributes": [
+      "__slots__"
+    ],
+    "code": "class TrieNode:\n    __slots__ = (\"children\", \"end\")\n\n    def __init__(self):\n        self.children = defaultdict(TrieNode)\n        self.end = False",
     "file_path": "backend/algorithms/problems/208-implement-trie-prefix-tree/solution.py",
     "kind": "class",
     "name": "TrieNode",
-    "summary": "A node in the Trie.",
-    "variables": [
-      "__slots__"
-    ]
+    "summary": "A node in the Trie."
   },
   "problems.208-implement-trie-prefix-tree.solution:TrieNode.__init__": {
     "args": [
@@ -2364,14 +2364,14 @@
     "summary": "bool flag indicating this node marks the end of a valid word"
   },
   "problems.208-implement-trie-prefix-tree.solution:TrieNode.__slots__": {
-    "kind": "variable",
+    "kind": "class_attribute",
     "name": "__slots__",
     "summary": "restrict instances to only these attributes (no __dict__) to save memory and speed up attribute access"
   },
   "problems.211-design-add-and-search-words-data-structure.solution:WordDictionary.search.dfs": {
     "args": [
-      "i",
-      "node"
+      "node",
+      "i"
     ],
     "code": "        def dfs(node: dict, i: int) -> bool:\n\n            if i == len(word):\n                return self.END_MARKER in node\n\n            if (c := word[i]) == \".\":\n\n                return any(\n                    dfs(child, i + 1)\n                    for k, child in node.items()\n                    if k != self.END_MARKER\n                )\n            child = node.get(c)\n            return bool(child) and dfs(child, i + 1)",
     "expressions": {
@@ -2523,9 +2523,9 @@
   },
   "problems.2145-count-the-hidden-sequences.solution:numberOfArrays": {
     "args": [
-      "upper",
+      "lower",
       "differences",
-      "lower"
+      "upper"
     ],
     "code": "def numberOfArrays(differences: list[int], lower: int, upper: int) -> int:\n\n    prefix_sum = min_marker = max_marker = 0\n\n    for diff in differences:\n        prefix_sum += diff\n        min_marker = min(min_marker, prefix_sum)\n        max_marker = max(max_marker, prefix_sum)\n\n    return max(0, (upper - max_marker) - (lower - min_marker) + 1)",
     "file_path": "backend/algorithms/problems/2145-count-the-hidden-sequences/solution.py",
@@ -2658,8 +2658,8 @@
   },
   "problems.256-paint-house.scalar:Solution.minCost.dp": {
     "args": [
-      "i",
-      "c"
+      "c",
+      "i"
     ],
     "code": "        def dp(i: int, c: int) -> int:\n            if i == n:\n                return \n            if (i, c) not in memo:\n\n                memo[i, c] = costs[i][c] + min(\n                    dp(i + 1, (c + 1) % 3), dp(i + 1, (c + 2) % 3)\n                )\n            return memo[i, c]",
     "expressions": {
@@ -3629,17 +3629,22 @@
     },
     "time_complexity": "O(r * c)"
   },
-  "problems.642-design-search-autocomplete-system.solution:AutocompleteSystem": {
-    "code": "class AutocompleteSystem:\n    def __init__(self, sentences: list[str], times: list[int]):\n        self.root = TrieNode()                 \n        self.freq = defaultdict(int)          \n        self.cur: TrieNode | None = self.root  \n        self.buf = \"\"                          \n        for s, t in zip(sentences, times):\n            self._add(s, t)\n\n    def _add(self, s: str, delta: int) -> None:\n        self.freq[s] += delta\n        node = self.root\n        for ch in s:\n            node = node.children[ch]\n            self._update_hot(node, s)\n\n    def _update_hot(self, node: TrieNode, s: str) -> None:\n        if s not in node.hot:\n            node.hot.append(s)\n        node.hot.sort(key=lambda x: (-self.freq[x], x))\n        if len(node.hot) > 3:\n            node.hot.pop()\n\n    def input(self, c: str) -> list[str]:\n        if c == \"#\":\n            if self.buf:\n                self._add(self.buf, 1)\n            self.buf = \"\"\n            self.cur = self.root\n            return []\n\n        self.buf += c\n        self.cur = self.cur.children[c]\n        return self.cur.hot",
+  "problems.642-design-search-autocomplete-system.solution:AutocompleteSystem.__init__": {
+    "args": [
+      "sentences",
+      "times"
+    ],
+    "code": "    def __init__(self, sentences: list[str], times: list[int]):\n        self.root = TrieNode()                 \n        self.freq = defaultdict(int)          \n        self.cur: TrieNode | None = self.root  \n        self.buf = \"\"                          \n        for s, t in zip(sentences, times):\n            self._add(s, t)",
     "file_path": "backend/algorithms/problems/642-design-search-autocomplete-system/solution.py",
-    "kind": "class",
-    "name": "AutocompleteSystem",
-    "variables": [
-      "self.root",
-      "self.freq",
-      "self.cur",
-      "self.buf"
-    ]
+    "instance_attributes": [
+      "root",
+      "freq",
+      "cur",
+      "buf"
+    ],
+    "kind": "method",
+    "label": "def __init__(self, sentences: list[str], times: list[int])",
+    "name": "__init__"
   },
   "problems.642-design-search-autocomplete-system.solution:AutocompleteSystem._update_hot": {
     "args": [
@@ -3663,23 +3668,23 @@
     "name": "(-self.freq[x], x)",
     "summary": "sorts by:\n            - Higher frequency first (using -freq to invert Python's ascending sort)\n            - Lexicographically smaller sentence on ties"
   },
-  "problems.642-design-search-autocomplete-system.solution:AutocompleteSystem.self.buf": {
-    "kind": "variable",
+  "problems.642-design-search-autocomplete-system.solution:AutocompleteSystem.buf": {
+    "kind": "attribute",
     "name": "buf",
     "summary": "current sentence being typed"
   },
-  "problems.642-design-search-autocomplete-system.solution:AutocompleteSystem.self.cur": {
-    "kind": "variable",
+  "problems.642-design-search-autocomplete-system.solution:AutocompleteSystem.cur": {
+    "kind": "attribute",
     "name": "cur",
     "summary": "current node while typing"
   },
-  "problems.642-design-search-autocomplete-system.solution:AutocompleteSystem.self.freq": {
-    "kind": "variable",
+  "problems.642-design-search-autocomplete-system.solution:AutocompleteSystem.freq": {
+    "kind": "attribute",
     "name": "freq",
     "summary": "global frequencies of full sentences"
   },
-  "problems.642-design-search-autocomplete-system.solution:AutocompleteSystem.self.root": {
-    "kind": "variable",
+  "problems.642-design-search-autocomplete-system.solution:AutocompleteSystem.root": {
+    "kind": "attribute",
     "name": "root",
     "summary": "Trie root"
   },
@@ -3840,11 +3845,11 @@
   },
   "problems.787-cheapest-flights-within-k-stops.bellman_ford:cheapest_flights_with_at_most_k_stops": {
     "args": [
-      "n",
       "dst",
+      "n",
+      "k",
       "src",
-      "flights",
-      "k"
+      "flights"
     ],
     "code": "def cheapest_flights_with_at_most_k_stops(\n    n: int, flights: list[list[int]], src: int, dst: int, k: int\n) -> int:\n    d = [float(\"inf\")] * n\n    d[src] = 0\n\n    for _ in range(k + 1):\n        tmp = d[:]\n        for u, v, w in flights:\n            if d[u] + w < tmp[v]:\n                tmp[v] = d[u] + w\n        d = tmp\n\n    return d[dst] if d[dst] < float(\"inf\") else -1",
     "file_path": "backend/algorithms/problems/787-cheapest-flights-within-k-stops/bellman_ford.py",
@@ -3858,10 +3863,10 @@
   },
   "problems.787-cheapest-flights-within-k-stops.dijkstra:cheapest_flights_with_at_most_k_stops": {
     "args": [
-      "flights",
       "dst",
+      "k",
       "src",
-      "k"
+      "flights"
     ],
     "code": "def cheapest_flights_with_at_most_k_stops( flights: list[list[int]], src: int, dst: int, k: int) -> int:\n\n    graph = defaultdict(list)\n    for u, v, price in flights:\n        graph[u].append((v, price))\n\n    pq, min_stops = [(0, src, 0)], {}\n\n    while pq:\n        cost, city, stops = heapq.heappop(pq)\n\n        if stops > min_stops.get(city, float(\"inf\")): continue\n        if city == dst: return cost\n\n        min_stops[city] = stops\n        if stops <= k:\n            for neighbor, price in graph[city]:\n                heapq.heappush(pq, (cost + price, neighbor, stops + 1))\n    return -1",
     "file_path": "backend/algorithms/problems/787-cheapest-flights-within-k-stops/dijkstra.py",
@@ -3888,8 +3893,8 @@
   },
   "problems.79-word-search.solution:word_search": {
     "args": [
-      "board",
-      "word"
+      "word",
+      "board"
     ],
     "code": "def word_search(board: list[list[str]], word: str) -> bool:\n    rows, cols, n = len(board), len(board[0]), len(word)\n    def dfs(r: int, c: int, i: int) -> bool:\n        if i == n:\n            return True\n        if not (0 <= r < rows and 0 <= c < cols and board[r][c] == word[i]):\n            return False\n        tmp, board[r][c] = board[r][c], \"#\"\n        for x, y in ((r + 1, c), (r - 1, c), (r, c + 1), (r, c - 1)):\n            if dfs(x, y, i + 1):\n                board[r][c] = tmp\n                return True\n        board[r][c] = tmp\n        return False\n    return any(\n        dfs(r, c, 0)\n        for r in range(rows)\n        for c in range(cols)\n        if board[r][c] == word[0]\n    )",
     "file_path": "backend/algorithms/problems/79-word-search/solution.py",
