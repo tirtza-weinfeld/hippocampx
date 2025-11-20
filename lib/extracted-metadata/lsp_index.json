@@ -3535,7 +3535,7 @@
           "name": "TrieNode",
           "detail": "class TrieNode",
           "kind": 5,
-          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 9, "character": 24}},
+          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 6, "character": 24}},
           "nameRange": {
             "start": {
               "line": 2,
@@ -3551,14 +3551,14 @@
               "name": "__init__",
               "detail": "__init__()",
               "kind": 6,
-              "range": {"start": {"line": 6, "character": 4}, "end": {"line": 9, "character": 24}},
+              "range": {"start": {"line": 4, "character": 4}, "end": {"line": 6, "character": 24}},
               "nameRange": {
                 "start": {
-                  "line": 6,
+                  "line": 4,
                   "character": 8
                 },
                 "end": {
-                  "line": 6,
+                  "line": 4,
                   "character": 16
                 }
               },
@@ -3570,14 +3570,14 @@
           "name": "Trie",
           "detail": "class Trie",
           "kind": 5,
-          "range": {"start": {"line": 11, "character": 0}, "end": {"line": 36, "character": 19}},
+          "range": {"start": {"line": 8, "character": 0}, "end": {"line": 30, "character": 19}},
           "nameRange": {
             "start": {
-              "line": 11,
+              "line": 8,
               "character": 6
             },
             "end": {
-              "line": 11,
+              "line": 8,
               "character": 10
             }
           },
@@ -3586,14 +3586,14 @@
               "name": "__init__",
               "detail": "__init__()",
               "kind": 6,
-              "range": {"start": {"line": 13, "character": 4}, "end": {"line": 15, "character": 30}},
+              "range": {"start": {"line": 9, "character": 4}, "end": {"line": 10, "character": 30}},
               "nameRange": {
                 "start": {
-                  "line": 13,
+                  "line": 9,
                   "character": 8
                 },
                 "end": {
-                  "line": 13,
+                  "line": 9,
                   "character": 16
                 }
               },
@@ -3603,14 +3603,14 @@
               "name": "insert",
               "detail": "insert(word: str) -> None",
               "kind": 6,
-              "range": {"start": {"line": 17, "character": 4}, "end": {"line": 22, "character": 23}},
+              "range": {"start": {"line": 12, "character": 4}, "end": {"line": 16, "character": 23}},
               "nameRange": {
                 "start": {
-                  "line": 17,
+                  "line": 12,
                   "character": 8
                 },
                 "end": {
-                  "line": 17,
+                  "line": 12,
                   "character": 14
                 }
               },
@@ -3620,14 +3620,14 @@
               "name": "search",
               "detail": "search(word: str) -> bool",
               "kind": 6,
-              "range": {"start": {"line": 24, "character": 4}, "end": {"line": 29, "character": 23}},
+              "range": {"start": {"line": 18, "character": 4}, "end": {"line": 23, "character": 23}},
               "nameRange": {
                 "start": {
-                  "line": 24,
+                  "line": 18,
                   "character": 8
                 },
                 "end": {
-                  "line": 24,
+                  "line": 18,
                   "character": 14
                 }
               },
@@ -3637,14 +3637,14 @@
               "name": "starts_with",
               "detail": "starts_with(prefix: str) -> bool",
               "kind": 6,
-              "range": {"start": {"line": 31, "character": 4}, "end": {"line": 36, "character": 19}},
+              "range": {"start": {"line": 25, "character": 4}, "end": {"line": 30, "character": 19}},
               "nameRange": {
                 "start": {
-                  "line": 31,
+                  "line": 25,
                   "character": 8
                 },
                 "end": {
-                  "line": 31,
+                  "line": 25,
                   "character": 19
                 }
               },
@@ -5937,6 +5937,136 @@
                 "end": {
                   "line": 2,
                   "character": 10
+                }
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "uri": "problems/642-design-search-autocomplete-system/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/642-design-search-autocomplete-system/solution.py",
+      "symbols": [
+        {
+          "name": "TrieNode",
+          "detail": "class TrieNode",
+          "kind": 5,
+          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 6, "character": 32}},
+          "nameRange": {
+            "start": {
+              "line": 2,
+              "character": 6
+            },
+            "end": {
+              "line": 2,
+              "character": 14
+            }
+          },
+          "children": [
+            {
+              "name": "__init__",
+              "detail": "__init__()",
+              "kind": 6,
+              "range": {"start": {"line": 4, "character": 4}, "end": {"line": 6, "character": 32}},
+              "nameRange": {
+                "start": {
+                  "line": 4,
+                  "character": 8
+                },
+                "end": {
+                  "line": 4,
+                  "character": 16
+                }
+              },
+              "children": []
+            }
+          ]
+        },
+        {
+          "name": "AutocompleteSystem",
+          "detail": "class AutocompleteSystem",
+          "kind": 5,
+          "range": {"start": {"line": 8, "character": 0}, "end": {"line": 41, "character": 27}},
+          "nameRange": {
+            "start": {
+              "line": 8,
+              "character": 6
+            },
+            "end": {
+              "line": 8,
+              "character": 24
+            }
+          },
+          "children": [
+            {
+              "name": "__init__",
+              "detail": "__init__(sentences: list[str], times: list[int])",
+              "kind": 6,
+              "range": {"start": {"line": 9, "character": 4}, "end": {"line": 15, "character": 27}},
+              "nameRange": {
+                "start": {
+                  "line": 9,
+                  "character": 8
+                },
+                "end": {
+                  "line": 9,
+                  "character": 16
+                }
+              },
+              "children": []
+            },
+            {
+              "name": "_add",
+              "detail": "_add(s: str, delta: int) -> None",
+              "kind": 6,
+              "range": {"start": {"line": 17, "character": 4}, "end": {"line": 22, "character": 37}},
+              "nameRange": {
+                "start": {
+                  "line": 17,
+                  "character": 8
+                },
+                "end": {
+                  "line": 17,
+                  "character": 12
+                }
+              },
+              "children": []
+            },
+            {
+              "name": "_update_hot",
+              "detail": "_update_hot(node: TrieNode, s: str) -> None",
+              "kind": 6,
+              "range": {"start": {"line": 24, "character": 4}, "end": {"line": 29, "character": 26}},
+              "nameRange": {
+                "start": {
+                  "line": 24,
+                  "character": 8
+                },
+                "end": {
+                  "line": 24,
+                  "character": 19
+                }
+              },
+              "children": []
+            },
+            {
+              "name": "input",
+              "detail": "input(c: str) -> list[str]",
+              "kind": 6,
+              "range": {"start": {"line": 31, "character": 4}, "end": {"line": 41, "character": 27}},
+              "nameRange": {
+                "start": {
+                  "line": 31,
+                  "character": 8
+                },
+                "end": {
+                  "line": 31,
+                  "character": 13
                 }
               },
               "children": []

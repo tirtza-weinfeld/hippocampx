@@ -30,6 +30,7 @@ export const PROBLEMS_ROUTES: NavigationItem[] = [
             { title: 'Course Schedule II', href: '/problems/210-course-schedule-ii', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
             { title: 'Decode String', href: '/problems/394-decode-string', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
             { title: 'Design Add and Search Words Data Structure', href: '/problems/211-design-add-and-search-words-data-structure', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
+            { title: 'Design Search Autocomplete System', href: '/problems/642-design-search-autocomplete-system', icon: Code, color: "text-red-500", bgColor: "bg-red-500/10" },
             { title: 'Design Tic-Tac-Toe', href: '/problems/348-design-tic-tac-toe', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
             { title: 'Diagonal Traverse', href: '/problems/498-diagonal-traverse', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
             { title: 'Dot Product of Two Sparse Vectors', href: '/problems/1570-dot-product-of-two-sparse-vectors', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },

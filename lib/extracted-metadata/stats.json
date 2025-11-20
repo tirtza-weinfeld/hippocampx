@@ -68,6 +68,7 @@
       "208-implement-trie-prefix-tree",
       "211-design-add-and-search-words-data-structure",
       "212-word-search-ii",
+      "642-design-search-autocomplete-system",
       "648-replace-words"
     ],
     "stack": [
@@ -104,6 +105,16 @@
     "probability": [
       "528-random-pick-with-weight"
     ],
+    "prefix-sum": [
+      "1590-make-sum-divisible-by-p",
+      "325-maximum-size-subarray-sum-equals-k",
+      "370-range-addition",
+      "523-continuous-subarray-sum",
+      "525-contiguous-array",
+      "528-random-pick-with-weight",
+      "560-subarray-sum-equals-k",
+      "974-subarray-sums-divisible-by-k"
+    ],
     "binary-search": [
       "1011-capacity-to-ship-packages-within-d-days",
       "1235-maximum-profit-in-job-scheduling",
@@ -125,15 +136,6 @@
     ],
     "two-pass-scan": [
       "238-product-of-array-except-self"
-    ],
-    "prefix-sum": [
-      "1590-make-sum-divisible-by-p",
-      "325-maximum-size-subarray-sum-equals-k",
-      "370-range-addition",
-      "523-continuous-subarray-sum",
-      "525-contiguous-array",
-      "560-subarray-sum-equals-k",
-      "974-subarray-sums-divisible-by-k"
     ],
     "multi-source bfs": [
       "1162-as-far-from-land-as-possible",
@@ -272,6 +274,7 @@
       "42-trapping-rain-water",
       "460-lfu-cache",
       "51-n-queens",
+      "642-design-search-autocomplete-system",
       "76-minimum-window-substring",
       "778-swim-in-rising-water",
       "84-largest-rectangle-in-histogram"

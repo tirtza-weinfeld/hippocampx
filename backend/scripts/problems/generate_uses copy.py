@@ -85,6 +85,7 @@ class Scope:
         self.bind: dict[str, Binding] = {}
         self.is_class = is_class
         self.is_comprehension = is_comprehension
+        self.instance_vars: dict[str, str] = {}  # Track self.x instance variables
     def q_of(self, name: str) -> str:
         return f"{self.module}:{'.'.join(self.qual + [name]) if self.qual else name}"
 
@@ -95,7 +96,6 @@ class Uses(ast.NodeVisitor):
         self.scopes: list[Scope] = [Scope(modname)]
         self.uses: list[dict] = []
         self.sys_path_additions: list[str] = []  # Track dynamic sys.path additions
-        self.definitions: dict[str, dict] = {}  # Track where symbols are defined
 
     # scope helpers
     @property
@@ -127,6 +127,13 @@ class Uses(ast.NodeVisitor):
             parts.append(cur.attr)
             cur = cur.value
         if isinstance(cur, ast.Name):
+            # Handle self.x access - look up in class instance_vars
+            if cur.id == "self" and parts:
+                attr_name = parts[-1]  # The attribute being accessed (e.g., "root" in self.root)
+                for scope in reversed(self.scopes):
+                    if scope.is_class and attr_name in scope.instance_vars:
+                        return scope.instance_vars[attr_name]
+
             base_q = self.resolve_name(cur.id)
             if base_q is None: return None
             if base_q.endswith(":"):                # module
@@ -222,21 +229,13 @@ class Uses(ast.NodeVisitor):
                 return module_name
         return module_name
 
-    def add_definition(self, qname: str, node: ast.AST):
-        """Track where a symbol is defined"""
-        self.definitions[qname] = {
-            "range": lsp_range(node),
-            "nameRange": name_range(node)
-        }
-
     def add_use(self, node: ast.AST, qname: str | None, kind: str | None = None):
         if qname:
             use_entry = {
                 "range": lsp_range(node),
                 "nameRange": name_range(node),
                 "qname": qname,
-                "kind": kind,
-                "definedAt": self.definitions.get(qname)
+                "kind": kind
             }
             self.uses.append(use_entry)
 
@@ -260,7 +259,6 @@ class Uses(ast.NodeVisitor):
         q = self.cur.q_of(node.name)
         # Determine if this is a method (inside a class) or a function
         kind = "method" if self.cur.is_class else "function"
-        self.add_definition(q, node)
         self.add_use(node, q, kind)
         self.define(node.name, LocalDef(q, kind))
         for dec in node.decorator_list: self.visit(dec)
@@ -274,7 +272,6 @@ class Uses(ast.NodeVisitor):
 
     def visit_ClassDef(self, node: ast.ClassDef):
         q = self.cur.q_of(node.name)
-        self.add_definition(q, node)
         self.add_use(node, q, "class")
         self.define(node.name, LocalDef(q, "class"))
         for b in node.bases: self.visit(b)
@@ -295,9 +292,19 @@ class Uses(ast.NodeVisitor):
         if isinstance(target, ast.Name):
             q = self.cur.q_of(target.id)
             if not is_comprehension:  # Don't track comprehension variables
-                self.add_definition(q, target)
                 self.add_use(target, q, "variable")  # Record the assignment as a use
             self.define(target.id, LocalDef(q, "variable"))
+        elif isinstance(target, ast.Attribute):
+            # Handle self.x = ... instance variable assignments
+            if isinstance(target.value, ast.Name) and target.value.id == "self":
+                attr_name = target.attr
+                # Find enclosing class scope and register instance var
+                for scope in reversed(self.scopes):
+                    if scope.is_class:
+                        qname = f"{self.mod}:{'.'.join(scope.qual)}.{attr_name}"
+                        scope.instance_vars[attr_name] = qname
+                        self.add_use(target, qname, "instance_variable")
+                        break
         elif isinstance(target, (ast.Tuple, ast.List)):
             # Handle tuple/list unpacking like: l, r = 1, max(piles)
             for elt in target.elts:
@@ -306,14 +313,22 @@ class Uses(ast.NodeVisitor):
     def visit_AnnAssign(self, node: ast.AnnAssign):
         if isinstance(node.target, ast.Name):
             q = self.cur.q_of(node.target.id)
-            self.add_definition(q, node.target)
             self.define(node.target.id, LocalDef(q, "variable"))
+        elif isinstance(node.target, ast.Attribute):
+            # Handle self.x: Type = ... instance variable assignments
+            if isinstance(node.target.value, ast.Name) and node.target.value.id == "self":
+                attr_name = node.target.attr
+                for scope in reversed(self.scopes):
+                    if scope.is_class:
+                        qname = f"{self.mod}:{'.'.join(scope.qual)}.{attr_name}"
+                        scope.instance_vars[attr_name] = qname
+                        self.add_use(node.target, qname, "instance_variable")
+                        break
         if node.value: self.visit(node.value)  # skip node.annotation
 
     def visit_arg(self, node: ast.arg):
         # Define the parameter name as a local binding, but skip the annotation
         q = self.cur.q_of(node.arg)
-        self.add_definition(q, node)
         self.add_use(node, q, "parameter")  # Record as a use for IDE navigation
         self.define(node.arg, LocalDef(q, "parameter"))
         # Don't visit the annotation (node.annotation) to skip type annotations
@@ -364,7 +379,7 @@ class Uses(ast.NodeVisitor):
     def visit_GeneratorExp(self, node: ast.GeneratorExp):
         self._visit_comprehension(node, node.generators, node.elt)
     
-    def _visit_comprehension(self, _node: ast.AST, generators: list, *elements):
+    def _visit_comprehension(self, node: ast.AST, generators: list, *elements):
         """Handle comprehensions with proper scoping for iteration variables"""
         # Create a new scope for the comprehension
         self.push(is_comprehension=True)
@@ -427,7 +442,7 @@ def main():
     # Custom compact formatting for ranges
     def compact_json(obj, indent=0):
         if isinstance(obj, dict):
-            if "range" in obj and "qname" in obj:  # use object with range, nameRange, qname, kind, and definedAt
+            if "range" in obj and "qname" in obj:  # use object with range, nameRange, qname, and kind
                 range_obj = obj["range"]
                 name_range_obj = obj["nameRange"]
                 start = range_obj["start"]
@@ -436,22 +451,7 @@ def main():
                 name_end = name_range_obj["end"]
                 qname = json.dumps(obj["qname"])
                 kind = json.dumps(obj["kind"])
-                defined_at = obj.get("definedAt")
-
-                # Format definedAt if present
-                defined_at_str = ""
-                if defined_at:
-                    def_range = defined_at["range"]
-                    def_name_range = defined_at["nameRange"]
-                    def_start = def_range["start"]
-                    def_end = def_range["end"]
-                    def_name_start = def_name_range["start"]
-                    def_name_end = def_name_range["end"]
-                    defined_at_str = f', "definedAt": {{"range": {{"start": {{"line": {def_start["line"]}, "character": {def_start["character"]}}}, "end": {{"line": {def_end["line"]}, "character": {def_end["character"]}}}}}, "nameRange": {{"start": {{"line": {def_name_start["line"]}, "character": {def_name_start["character"]}}}, "end": {{"line": {def_name_end["line"]}, "character": {def_name_end["character"]}}}}}}}'
-                else:
-                    defined_at_str = ', "definedAt": null'
-
-                return f'{{"range": {{"start": {{"line": {start["line"]}, "character": {start["character"]}}}, "end": {{"line": {end["line"]}, "character": {end["character"]}}}}}, "nameRange": {{"start": {{"line": {name_start["line"]}, "character": {name_start["character"]}}}, "end": {{"line": {name_end["line"]}, "character": {name_end["character"]}}}}}, "qname": {qname}, "kind": {kind}{defined_at_str}}}'
+                return f'{{"range": {{"start": {{"line": {start["line"]}, "character": {start["character"]}}}, "end": {{"line": {end["line"]}, "character": {end["character"]}}}}}, "nameRange": {{"start": {{"line": {name_start["line"]}, "character": {name_start["character"]}}}, "end": {{"line": {name_end["line"]}, "character": {name_end["character"]}}}}}, "qname": {qname}, "kind": {kind}}}'
             else:
                 items = []
                 for k, v in obj.items():

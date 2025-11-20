@@ -106,9 +106,12 @@
   "problems/256-paint-house/scalar.py": [
     {"range": {"start": {"line": 10, "character": 20}, "end": {"line": 10, "character": 66}}, "nameRange": {"start": {"line": 10, "character": 20}, "end": {"line": 10, "character": 66}}, "qname": "problems.256-paint-house.scalar:Solution.minCost.dp.dp(i + 1, (c + 1) % 3), dp(i + 1, (c + 2) % 3)", "kind": "expression"}
   ],
+  "problems/642-design-search-autocomplete-system/solution.py": [
+    {"range": {"start": {"line": 27, "character": 36}, "end": {"line": 27, "character": 54}}, "nameRange": {"start": {"line": 27, "character": 36}, "end": {"line": 27, "character": 54}}, "qname": "problems.642-design-search-autocomplete-system.solution:AutocompleteSystem._update_hot.(-self.freq[x], x)", "kind": "expression"}
+  ],
   "problems/208-implement-trie-prefix-tree/solution.py": [
-    {"range": {"start": {"line": 21, "character": 12}, "end": {"line": 21, "character": 36}}, "nameRange": {"start": {"line": 21, "character": 12}, "end": {"line": 21, "character": 36}}, "qname": "problems.208-implement-trie-prefix-tree.solution:Trie.insert.node = node.children[ch]", "kind": "expression"},
-    {"range": {"start": {"line": 22, "character": 8}, "end": {"line": 22, "character": 23}}, "nameRange": {"start": {"line": 22, "character": 8}, "end": {"line": 22, "character": 23}}, "qname": "problems.208-implement-trie-prefix-tree.solution:Trie.insert.node.end = True", "kind": "expression"}
+    {"range": {"start": {"line": 15, "character": 12}, "end": {"line": 15, "character": 36}}, "nameRange": {"start": {"line": 15, "character": 12}, "end": {"line": 15, "character": 36}}, "qname": "problems.208-implement-trie-prefix-tree.solution:Trie.insert.node = node.children[ch]", "kind": "expression"},
+    {"range": {"start": {"line": 16, "character": 8}, "end": {"line": 16, "character": 23}}, "nameRange": {"start": {"line": 16, "character": 8}, "end": {"line": 16, "character": 23}}, "qname": "problems.208-implement-trie-prefix-tree.solution:Trie.insert.node.end = True", "kind": "expression"}
   ],
   "problems/1000-minimum-cost-to-merge-stones/solution.py": [
     {"range": {"start": {"line": 6, "character": 33}, "end": {"line": 6, "character": 50}}, "nameRange": {"start": {"line": 6, "character": 33}, "end": {"line": 6, "character": 50}}, "qname": "problems.1000-minimum-cost-to-merge-stones.solution:Solution.mergeStones.(r - l) % (K - 1)", "kind": "expression"},
