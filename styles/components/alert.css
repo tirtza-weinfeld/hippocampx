@@ -6,7 +6,8 @@
   --color-alert-tip: oklch(65% 0.15 150);      /* Teal */
   --color-alert-note: var(--color-sky-600);    /* Blue */
   --color-alert-warning: oklch(75% 0.2 80);    /* Amber */
-  --color-alert-important: oklch(65% 0.2 25);  /* Red */
+  --color-alert-caution: var(--color-red-500);
+  --color-alert-important: var(--color-pink-500);
   --color-alert-caution: oklch(70% 0.2 300);   /* Fuchsia */
   --color-alert-example: oklch(65% 0.15 230);   /* Blue */
   --color-alert-comment: var(--color-emerald-500);

@@ -1,0 +1,142 @@
+import Image from 'next/image';
+
+# Intro to Deep Learning
+
+## Resizable Table of Contents
+
+## The Perceptron
+
+The fundamental building blocks of every neural network is a single neuron, a perceptron.
+
+### The Perceptron: Forward Propagation
+
+*given an input how does a perceptron compute an output?*
+
+>[!important]
+> how do you pass information throiugh a neuron (calculate $\hat{y}$)?
+>     1. take a dot product ($ \mathbf{X}^T \mathbf{W}  = \sum_{i=1}^m x_i w_i$ )
+>     2. apply a bias ($w_0$) 
+>     3. apply a nonlinearity ($g$) 
+
+lets start by defining a set of inputs $x_1$ to $x_m$,
+and each of these inputs will be multiplied by a corresponding weight $w_1$ through $w_m$.
+than will add up all of these products to get a single value. 
+add a Bias term $w_0$ to the sum.
+which will than pass through a non-linear activation function to get the final output.
+
+
+$$
+{\color{purple}\hat{y}} = {\color{yellow}g}\left({\color{green}w_0} + {\color{orange}\sum_{i=1}^m {\color{lightblue}x_i} {\color{blue}w_i}}\right)
+$$
+
+with linear algebra we can rewrite this as:
+
+$$
+{\color{purple}\hat{y}} = {\color{yellow}g}\left({\color{green}w_0} + {\color{orange}\mathbf{X}^T \mathbf{W}}\right)
+$$
+
+
+*[purple!]$\hat{y}$* output, 
+*[yellow!]$g$* Non-linear activation function,
+*[green!]$w_0$* Bias , enables us to shift left and right along our (*[yellow!]non-linear*) activation function ${\color{yellow}g}$,
+*[sky!]$x_i$* Input,
+*[blue!]$w_i$* Weight,
+*[orange!]$\sum_{i=1}^m x_i w_i$* Linear Combination of Inputs,
+
+* Deep Dive: non linear activation function:
+    
+    * Deep Dive: sigmoid function  
+        $$
+        g(z) = \sigma(z) = \frac{1}{1 + e^{-z}}
+        $$
+        where:
+        * g(z) is the output of the sigmoid function
+        * z is the input to the sigmoid function
+        * e is Euler's number: a mathematical constant ≈ 2.71828.
+        * sigmoid means "s-shaped"
+        * e is Euler's number: a mathematical constant ≈ 2.71828.
+        * its part of a family of functions called *logistic functions* whose output has the characteristics of a probability, always outputting a value between 0 and 1 , great for probability.
+        * As the input, $z$, increases, the output of the sigmoid function approaches but never reaches 1. Similarly, as the input decreases, the sigmoid function's output approaches but never reaches 0.
+
+
+    * Deep Dive: Rectified Linear Unit (ReLU):
+
+        It is piecewise linear (linear before and after 0 but has a single non linearity at x=0)
+        $$
+        g(z) = \max(0, z)
+        $$
+        where:
+        * ReLU is a non-linear activation function that maps any real-valued number to a value between 0 and infinity.
+         
+        
+* Deep Dive: X
+    $X=\begin{bmatrix} x_1 \\ \vdots \\ x_m \end{bmatrix}$  
+* Deep Dive: W 
+    $W=\begin{bmatrix} w_1 \\ \vdots \\ w_m \end{bmatrix}$
+* Deep Dive: Transpose X
+    *$X^T$* means transpose, It flips the feature vector $X$ from a column into a row so you can do a valid dot product with the weight vector $W$.
+    
+        $X = \begin{bmatrix} x_1 \\ x_2 \\ \vdots \\ x_m \end{bmatrix}$
+        This is an *[sky!]$m \times 1$* column vector.
+        
+        Transpose → turn rows into columns: *$X^\top = \begin{bmatrix} x_1 \;\; x_2 \;\; \cdots \;\; x_m \end{bmatrix}$*,  Now it is a *[sky!]$1 \times m$* row vector.
+        
+* Deep Dive: Dot product             
+        $$
+        
+        X^\top W=
+        \begin{bmatrix}
+        x_1 \;\; x_2 \;\; \cdots \;\; x_m
+        \end{bmatrix}
+        \begin{bmatrix}
+        w_1 \\ w_2 \\ \vdots \\ w_m
+        \end{bmatrix}
+        =x_1 w_1 + x_2 w_2 + \cdots + x_m w_m
+        $$ 
+        This is a single number (a scalar)
+    
+
+
+
+
+
+#### Important of Activation Functions
+The purpose of activation functions is to *introduce non-linearities* into the network.
+
+Without a nonlinear activation function, you have a linear model , and real world data is heavily
+nonlinear.
+* Linear activation functions produce linear decisions no matter the network size
+* Non-linearities allow us to approximate arbitrarily complex functions
+
+---
+
+## Multi Output Perceptron
+Because all inputs are densely connected to all outputs, these layers are called Dense layers
+<Image src="/notes/ai/deep-learning/1-intro-to-deep/multi-output-perceptron.png" alt="Multi Output Perceptron" width={1000} height={1000} />  
+## Single Layer Neural Network
+<Image src="/deep-learning/1-intro-to-deep/single-layer-neural-network.png" alt="Single Layer Neural Network" width={1000} height={1000} />  
+
+## Applying Neural Networks
+
+training the neural network is done by adjusting the weights and biases of the network to minimize the loss function.
+### Quantifying Loss
+
+The loss of our network measures the cost incurred from incorrect predictions
+
+### Empirical Loss
+The empirical loss measures the total loss over our entire dataset
+
+### Binary Cross Entropy Loss
+Cross entropy loss can be used with models that output a probability between 0 and I
+
+### Mean Squared Error Loss
+Mean squared error loss can be used with regression models that output continuous real numbers
+
+
+
+## The Perceptron: Backward Propagation
+the procces of computing the gradient in a neural network is called backpropagation.
+
+$$
+\frac{\partial \mathcal{L}}{\partial w_i} = \frac{\partial \mathcal{L}}{\partial \hat{y}} \cdot \frac{\partial \hat{y}}{\partial w_i}
+$$

@@ -26,6 +26,8 @@
 ### PACKAGE.JSON SCRIPTS ONLY
 ### TYPE SAFETY REQUIRED
 ### TEST-DRIVEN DEVELOPMENT
+### NO UNICODE SPECIAL CHARACTERS IN CODE
+Never use Unicode special characters (subscripts, superscripts, Greek letters, math symbols like ₀, ₁, Σ, ∫, ŷ) directly in code. Render all math symbols via KaTeX only.
 
 
 ## IMMEDIATE REFUSAL

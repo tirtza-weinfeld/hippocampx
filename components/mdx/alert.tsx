@@ -1,7 +1,7 @@
 "use client"; // Required for Framer Motion components
 
 import { AlertCircle, Info, Lightbulb, Notebook, AlertTriangle, ChevronDown, Clock, Database,
-   ListChecks } from "lucide-react";
+   ListChecks, Bell } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "motion/react";
 import React, {  useState } from "react";
@@ -11,7 +11,7 @@ const ICONS = {
   tip: Lightbulb,
   note: Notebook,
   warning: AlertTriangle,
-  important: AlertCircle,
+  important: Bell,
   caution: Info,
   example: Notebook,
   comment: Notebook,

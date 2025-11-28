@@ -5,6 +5,7 @@
   "private": true,
   "files": ["dist"],
   "exports": {
+    "./remark-alert-preprocessor": "./dist/remark-alert-preprocessor.js",
     "./remark-typography": "./dist/remark-typography.js",
     "./remark-code-tabs": "./dist/remark-code-tabs.js",
     "./remark-header-section": "./dist/remark-header-section.js",

@@ -26,7 +26,7 @@
     /* --step-shadow: --alpha(var(--color-orange-400) / 20%); */
     --step-gradient: linear-gradient(
       to right,
-      --alpha(var(--color-orange-500) / 60%),
+      --alpha(var(--color-orange-600) / 60%),
       --alpha(var(--color-orange-800) / 80%) 50%,
       --alpha(var(--color-orange-600) / 60%)
     );
@@ -61,19 +61,19 @@
 
   /* Step 4 - Yellow */
   :is([data-step="yellow"]) {
-    --step: var(--color-yellow-500);
+    --step: var(--color-yellow-400);
     /* --step: var(--color-yellow-600); */
     /* --step-shadow: --alpha(var(--color-yellow-400) / 20%); */
     --step-gradient: linear-gradient(
       to right,
       --alpha(var(--color-yellow-500) / 60%),
-      --alpha(var(--color-yellow-800) / 80%) 50%,
-      --alpha(var(--color-yellow-600) / 60%)
+      --alpha(var(--color-yellow-300) / 80%) 50%,
+      --alpha(var(--color-yellow-400) / 60%)
     );
     --step-background: linear-gradient(
       to left,
       --alpha(var(--color-yellow-500) / 10%),
-      --alpha(var(--color-yellow-800) / 30%) 50%,
+      --alpha(var(--color-yellow-500) / 30%) 50%,
       --alpha(var(--color-yellow-600) / 10%)
     );
     --step-border: var(--color-yellow-300);

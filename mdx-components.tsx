@@ -42,7 +42,7 @@ import { ProblemComponents, ProblemHeaders, ProblemItems } from '@/components/md
 // All Problems Components
 import { CodeEditor } from '@/components/editor'
 import { ProblemDeepDive } from "@/components/mdx/problem/problem-deepdive"
-import  CollapsibleListItem from '@/components/mdx/list/collapsible-list-item';
+import CollapsibleListItem from '@/components/mdx/list/collapsible-list-item';
 import CollapsibleIntuitionListItem from '@/components/mdx/list/collapsible-intuition-list-item';
 import { CustomLists } from '@/components/mdx/custom/list'
 import { PillList } from '@/components/mdx/list/pill-list';
@@ -60,18 +60,21 @@ import { ProblemActive } from "@/components/mdx/problem/problem-active";
 import { ProblemCodeTabs } from "@/components/mdx/problem/problem-code-tabs";
 import { ProblemCodeTabsList } from "@/components/mdx/problem/problem-code-tabs-list";
 import { ProblemCodeTabTrigger } from "@/components/mdx/problem/problem-code-tab-trigger";
-import { ProblemCodeTab } from "@/components/mdx/problem/problem-code-tab"; 
+import { ProblemCodeTab } from "@/components/mdx/problem/problem-code-tab";
 import { ProblemCard, FabButton, FabGroup, ProblemCardProvider, FilterProvider, ProblemCardFilterHeader, ProblemCardContent, ProblemCardHeader, ProblemCardDialog, ProblemCardTab } from '@/components/mdx/problem/card'
-import { ProblemTimeComplexityBadge ,ProblemCardDifficultyBadge, ProblemCardLeetCodeBadge} from '@/components/mdx/problem/card/badge';
-
+import { ProblemTimeComplexityBadge, ProblemCardDifficultyBadge, ProblemCardLeetCodeBadge } from '@/components/mdx/problem/card/badge';
+import * as CardComponents from "@/components/mdx/card"
 
 export const customComponents = {
+  ...CardComponents,
+
+
   ProblemCardContent,
   ProblemCardHeader,
   ProblemCardDialog,
   ProblemCard,
   ProblemCardTab,
-  
+
   FabButton,
   FabGroup,
   // ProblemFileList,
@@ -132,12 +135,12 @@ export const customComponents = {
   em: Em,
   hr: HorizontalRule,
   blockquote: Blockquote,
-  Alert:({ children, ...props }: ComponentPropsWithoutRef<'div'> & AlertProps) => {
+  Alert: ({ children, ...props }: ComponentPropsWithoutRef<'div'> & AlertProps) => {
     return (
-      <Suspense fallback={<AlertSuspense />}>  
-      <Alert {...props}>
-        {children}
-      </Alert>
+      <Suspense fallback={<AlertSuspense />}>
+        <Alert {...props}>
+          {children}
+        </Alert>
       </Suspense>
     );
   },
@@ -169,7 +172,7 @@ export const customComponents = {
   CodeTab,
   CodeTabsList,
   CodeTabTrigger,
-  
+
 
   // Code components with proper handling
   code: ({ children, className, ...props }: ComponentPropsWithoutRef<'code'>) => {

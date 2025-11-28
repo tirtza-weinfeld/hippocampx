@@ -5880,6 +5880,107 @@
       ]
     },
     {
+      "uri": "problems/616-add-bold-tag-in-string/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/616-add-bold-tag-in-string/solution.py",
+      "symbols": [
+        {
+          "name": "addBoldTag",
+          "detail": "addBoldTag(s: str, words: list[str]) -> str",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 18, "character": 23}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 14
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/616-add-bold-tag-in-string/trie.py",
+      "symbols": [
+        {
+          "name": "ACNode",
+          "detail": "class ACNode",
+          "kind": 5,
+          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 7, "character": 21}},
+          "nameRange": {
+            "start": {
+              "line": 2,
+              "character": 6
+            },
+            "end": {
+              "line": 2,
+              "character": 12
+            }
+          },
+          "children": [
+            {
+              "name": "__init__",
+              "detail": "__init__()",
+              "kind": 6,
+              "range": {"start": {"line": 4, "character": 4}, "end": {"line": 7, "character": 21}},
+              "nameRange": {
+                "start": {
+                  "line": 4,
+                  "character": 8
+                },
+                "end": {
+                  "line": 4,
+                  "character": 16
+                }
+              },
+              "children": []
+            }
+          ]
+        },
+        {
+          "name": "Solution",
+          "detail": "class Solution",
+          "kind": 5,
+          "range": {"start": {"line": 9, "character": 0}, "end": {"line": 66, "character": 27}},
+          "nameRange": {
+            "start": {
+              "line": 9,
+              "character": 6
+            },
+            "end": {
+              "line": 9,
+              "character": 14
+            }
+          },
+          "children": [
+            {
+              "name": "addBoldTag",
+              "detail": "addBoldTag(s: str, words: list[str]) -> str",
+              "kind": 6,
+              "range": {"start": {"line": 10, "character": 4}, "end": {"line": 66, "character": 27}},
+              "nameRange": {
+                "start": {
+                  "line": 10,
+                  "character": 8
+                },
+                "end": {
+                  "line": 10,
+                  "character": 18
+                }
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
       "uri": "problems/64-minimum-path-sum/__init__.py",
       "symbols": []
     },

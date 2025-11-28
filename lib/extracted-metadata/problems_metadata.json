@@ -747,6 +747,25 @@
       "difficulty": "medium",
       "topics": ["sliding-window"]
     },
+    "616-add-bold-tag-in-string": {
+      "time_stamps": {
+        "created_at": "2025-11-21T17:11:39.618476",
+        "updated_at": "2025-11-23T13:19:32.023808"
+      },
+      "solutions": {
+        "solution.py": {
+          "code": "def addBoldTag(s: str, words: list[str]) -> str:\n\n    bold, end = [False] * (n := len(s)), 0\n    for i in range(n):\n        for w in words:\n            if s.startswith(w, i):\n                end = max(end, i + len(w))\n        bold[i] = i < end\n\n    out, i = [], 0\n    while i < n:\n        if not bold[i]:\n            out.append(s[i]); i += 1\n        else:\n            out.append(\"<b>\")\n            while i < n and bold[i]:\n                out.append(s[i]); i += 1\n            out.append(\"</b>\")\n    return \"\".join(out)"
+        },
+        "trie.py": {
+          "code": "from collections import deque\n\nclass ACNode:\n    __slots__ = (\"next\", \"fail\", \"out\")\n    def __init__(self):\n        self.next = {}\n        self.fail = None\n        self.out = []\n\nclass Solution:\n    def addBoldTag(self, s: str, words: list[str]) -> str:\n        root = ACNode()\n        for w in words:\n            cur = root\n            for c in w:\n                cur = cur.next.setdefault(c, ACNode())\n            cur.out.append(len(w))\n\n        q = deque()\n        root.fail = root\n        for c, nxt in root.next.items():\n            nxt.fail = root\n            q.append(nxt)\n\n        while q:\n            u = q.popleft()\n            for c, v in u.next.items():\n                f = u.fail\n                while f is not root and c not in f.next:\n                    f = f.fail\n                v.fail = f.next.get(c, root)\n                v.out += v.fail.out\n                q.append(v)\n\n        intervals = []\n        cur = root\n        for i, ch in enumerate(s):\n            while cur is not root and ch not in cur.next:\n                cur = cur.fail\n            cur = cur.next.get(ch, root)\n            for L in cur.out:\n                intervals.append((i - L + 1, i))\n\n        if not intervals:\n            return s\n\n        intervals.sort()\n        merged = []\n        a, b = intervals[0]\n        for x, y in intervals[1:]:\n            if x <= b + 1:\n                b = max(b, y)\n            else:\n                merged.append((a, b))\n                a, b = x, y\n        merged.append((a, b))\n\n        out = []\n        idx = 0\n        for a, b in merged:\n            out.append(s[idx:a])\n            out.append(\"<b>\")\n            out.append(s[a:b+1])\n            out.append(\"</b>\")\n            idx = b + 1\n        out.append(s[idx:])\n        return \"\".join(out)"
+        }
+      },
+      "title": "Add Bold Tag in String",
+      "definition": "Given a string s and a list of words words, wrap every substring in s that matches any word in words with HTML bold tags <b> and </b>. If two such substrings overlap or are adjacent, merge them into one continuous bold-tagged region",
+      "leetcode": "https://leetcode.com/problems/add-bold-tag-in-string/",
+      "difficulty": "medium",
+      "topics": ["TODO"]
+    },
     "51-n-queens": {
       "time_stamps": {
         "created_at": "2025-09-12T16:05:16.850151",

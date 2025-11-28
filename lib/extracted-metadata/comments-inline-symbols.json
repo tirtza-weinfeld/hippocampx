@@ -26,6 +26,7 @@
   "problems/363-max-sum-of-rectangle-no-larger-than-k/solution.py:comment-line:35": "find smallest prefix ≥ s-k",
   "problems/363-max-sum-of-rectangle-no-larger-than-k/solution.py:comment-line:39": "[Early Exit]",
   "problems/363-max-sum-of-rectangle-no-larger-than-k/solution.py:comment-line:40": "keep prefixes sorted for future queries",
+  "problems/616-add-bold-tag-in-string/trie.py:comment-line:7": "store lengths",
   "problems/498-diagonal-traverse/solution.py:comment-line:3": "each diagonal is all (r,c) with r+c=d",
   "problems/498-diagonal-traverse/solution.py:comment-line:4": "even d → traverse up-right",
   "problems/498-diagonal-traverse/solution.py:comment-line:5": "largest r allowed: r≤m−1 (bottom) and r≤d (else c=d−r<0)",

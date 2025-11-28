@@ -1,0 +1,695 @@
+
+
+# THE LLAMA-4 AI SYSTEMS TEXTBOOK (2026 EDITION)
+
+**Teaching AI From First Principles, Through the Architecture of Llama-4**
+
+-----
+
+## PART I: THE ARCHITECTURE OF LLAMA-4
+
+### CHAPTER 1: What an AI Model Actually Is
+
+**(Teaching AI top-down, using Llama-4 as the running example)**
+
+#### 1.1 The Single Problem Every LLM Solves
+
+A large language model like Llama-4 is, at its core, a function[cite: 1]:
+$$f_\theta: x_{<t} \rightarrow P(x_t \mid x_{<t})$$
+
+[cite\_start]It takes all tokens before position $t$, and outputs a probability distribution over the next token[cite: 1]. [cite\_start]This is called **autoregressive next-token prediction**[cite: 2]. [cite\_start]Everything else—attention, MoE, positional encodings, vision—exists only to make this function perform better[cite: 3].
+
+#### 1.2 Tokens and the Tokenizer (With Real Code)
+
+[cite\_start]Llama-4 uses a SentencePiece tokenizer to turn text into integers[cite: 3].
+[cite\_start]**[File: tokenizer.py](https://github.com/meta-llama/llama-models/blob/main/models/llama4/tokenizer.py)** [cite: 4]
+
+The tokenizer is a function:
+$$T: \text{string} \rightarrow \mathbb{Z}^n$$
+
+[cite\_start]This produces integer IDs, not words[cite: 4]. Why? [cite\_start]Because the model operates entirely on vectors and matrices[cite: 5]. [cite\_start]You cannot multiply the word "cat," but you can multiply the vector representing token 5271[cite: 6].
+
+#### 1.3 Embeddings: Turning Tokens Into Vectors
+
+[cite\_start]After tokenization, each integer is mapped to a vector[cite: 6].
+[cite\_start]**[File: model.py](https://github.com/meta-llama/llama-models/blob/main/models/llama4/model.py)** [cite: 7]
+
+```python
+self.tok_embeddings = nn.Embedding(vocab_size, dim)
+```
+
+[cite\_start]This creates a matrix[cite: 7]:
+$$E \in \mathbb{R}^{V \times d}$$
+
+The embedding for token $t$ is:
+$$x_t = E[t]$$
+
+**Teaching:** Why map tokens to vectors? [cite\_start]Because geometry encodes meaning[cite: 9]:
+
+  * Similar meanings $\rightarrow$ nearby vectors
+  * Opposites $\rightarrow$ far apart
+  * Analogies $\rightarrow$ linear structure
+
+#### 1.4 The Transformer Architecture (Top-Down)
+
+[cite\_start]A Transformer has only three building blocks[cite: 10]:
+
+1.  **Self-attention** (decides what matters)
+2.  **FFN** (nonlinear reasoning)
+3.  **Normalization + Residuals** (stability + gradient flow)
+
+[cite\_start]Llama-4 is a decoder-only Transformer, meaning every layer sees only past tokens[cite: 10].
+
+#### 1.5 Self-Attention: The Core Algorithm
+
+[cite\_start]Self-attention computes how much each token should attend to others[cite: 12].
+[cite\_start]**[File: model.py](https://github.com/meta-llama/llama-models/blob/main/models/llama4/model.py)** [cite: 13]
+
+```python
+q = self.wq(x)
+k = self.wk(x)
+v = self.wv(x)
+```
+
+[cite\_start]This corresponds exactly to the math[cite: 13]:
+$$Q=X W_Q, \quad K=X W_K, \quad V=X W_V$$
+
+Where $x$ is the batch of embeddings and $W_Q, W_K, W_V$ are learned matrices.
+
+**Teaching the Dot Product:**
+The attention score between token $i$ and $j$ is:
+$$\text{score}_{ij} = \frac{Q_i \cdot K_j}{\sqrt{d}}$$
+
+The dot product measures similarity of direction. [cite\_start]A small angle results in a large dot product, which means high attention[cite: 14].
+
+#### 1.6 Softmax Makes It a Probability Distribution
+
+$$\alpha_{ij} = \frac{\exp(\text{score}_{ij})}{\sum_k \exp(\text{score}_{ik})}$$
+
+[cite\_start]Softmax ensures values are non-negative and sum to 1[cite: 14]. [cite\_start]It acts like "how much should I copy from token $j$?"[cite: 15]. The self-attention output is:
+$$\text{Attention}(Q,K,V) = A V$$
+
+#### 1.7 Multi-Head Attention (With Code)
+
+[cite\_start]**[File: model.py](https://github.com/meta-llama/llama-models/blob/main/models/llama4/model.py)** [cite: 16]
+
+[cite\_start]Each head learns a different subspace: syntax, semantics, positional patterns, domain-specific cues, and MoE routing signals[cite: 16].
+Mathematically:
+$$\text{MHA}(X) = \text{Concat}(h_1, h_2, \dots, h_H) W_O$$
+
+#### 1.8 RMSNorm and Residuals
+
+[cite\_start]**[File: model.py](https://github.com/meta-llama/llama-models/blob/main/models/llama4/model.py)** [cite: 16]
+
+```python
+h = x + self.attention(self.attn_norm(x))
+out = h + self.feed_forward(self.ffn_norm(h))
+```
+
+[cite\_start]This corresponds to[cite: 17]:
+$$x = x + \text{Attention}(\text{RMSNorm}(x))$$
+$$x = x + \text{FFN}(\text{RMSNorm}(x))$$
+
+[cite\_start]RMSNorm stabilizes activations without subtracting the mean (unlike LayerNorm)[cite: 17].
+
+-----
+
+### CHAPTER 2: Positional Encoding in Llama-4 (RoPE, iRoPE, NoPE)
+
+[cite\_start]Transformers need positional information because attention is permutation-invariant[cite: 18]. [cite\_start]Llama-4 uses a hybrid approach[cite: 19]:
+
+  * **RoPE** (Rotary Positional Embeddings)
+  * **iRoPE** (Interpolated RoPE)
+  * **NoPE** (No Position Encoding layers)
+  * Alternating RoPE / NoPE for ultra-long context (1M-10M tokens).
+
+#### 2.1 Why Positions Matter
+
+[cite\_start]Without position encoding, "dog bites man" and "man bites dog" look identical to attention because vectors could shuffle with no penalty[cite: 19, 20].
+
+#### 2.2 RoPE: Rotating Vectors in Complex Space
+
+[cite\_start]RoPE injects position by rotating $Q$ and $K$ vectors[cite: 20]:
+
+$$\begin{pmatrix} x^{(1)} \\ x^{(2)} \end{pmatrix} \rightarrow \begin{pmatrix} x^{(1)}\cos\theta - x^{(2)}\sin\theta \\ x^{(1)}\sin\theta + x^{(2)}\cos\theta \end{pmatrix}$$
+
+Where $\theta$ increases with token position.
+[cite\_start]**[File: model.py](https://github.com/meta-llama/llama-models/blob/main/models/llama4/model.py)** [cite: 21]
+
+```python
+q, k = apply_rope(q, k, positions)
+```
+
+[cite\_start]RoPE preserves distance and angle, allows multiplicative scaling, and works extremely well for attention[cite: 21].
+
+#### 2.3 iRoPE: Extending Context Length
+
+[cite\_start]iRoPE scales $\theta$ to allow 1M-10M tokens[cite: 22].
+$$\theta' = \theta \cdot r$$
+Where $r$ is a learned or fixed interpolation factor. [cite\_start]This avoids catastrophic extrapolation[cite: 23].
+
+#### 2.4 NoPE Layers
+
+Some layers skip positional encoding entirely. [cite\_start]This stabilizes long contexts, reduces positional drift, and lets the model build implicit hierarchical structure[cite: 25]. Llama-4 alternates: **RoPE $\rightarrow$ NoPE $\rightarrow$ RoPE**.
+
+-----
+
+### CHAPTER 3: Feed-Forward Networks & SwiGLU
+
+[cite\_start]The FFN is the "thinking" part of a transformer[cite: 25].
+
+#### 3.1 The FFN Structure
+
+$$\text{FFN}(x) = W_2 \cdot \text{SwiGLU}(W_1 x)$$
+
+Where:
+$$\text{SwiGLU}(u, v) = u \cdot \sigma(v)$$
+
+[cite\_start]**[File: ffn.py](https://github.com/meta-llama/llama-models/blob/main/models/llama4/ffn.py)** [cite: 26]
+
+```python
+gate = self.w1(x)
+up = self.w2(x)
+return gate * torch.sigmoid(up)
+```
+
+[cite\_start]This is a gated linear unit: one projection controls magnitude, the other gates it[cite: 26].
+
+-----
+
+### CHAPTER 4: Mixture of Experts (MoE) in Llama-4
+
+[cite\_start]MoE is the biggest architectural difference from dense transformers[cite: 27].
+
+#### 4.1 The High-Level Idea
+
+Instead of one FFN per layer, Llama-4 has many experts, and a router chooses which expert(s) each token uses. [cite\_start]Benefits include higher capacity, lower FLOPs, and sparse activation[cite: 29].
+
+#### 4.2 Routing Mathematics
+
+1.  Compute router logits: $r = W_r x$
+2.  Softmax to get routing probabilities: $p = \text{softmax}(r)$
+3.  Select top-k experts.
+      * [cite\_start]For Llama-4: **1 shared expert + 1 routed expert**[cite: 30].
+
+#### 4.3 Real Code From MoE
+
+[cite\_start]**[File: moe.py](https://github.com/meta-llama/llama-models/blob/main/models/llama4/moe.py)** [cite: 30]
+
+```python
+scores = self.router(x)
+topk = torch.topk(scores, k=self.top_k, dim=-1)
+```
+
+#### 4.4 Load Balancing Loss
+
+To avoid "hot experts":
+$$\mathcal{L}_{balance} = \frac{1}{E} \sum_e \left(\frac{n_e}{N} \right)^2$$
+Where $E$ is the number of experts and $n_e$ is tokens routed to expert $e$. [cite\_start]Balancing ensures efficiency[cite: 31].
+
+-----
+
+### CHAPTER 5: Vision in Llama-4
+
+[cite\_start]Llama-4 is multimodal through early fusion[cite: 32].
+
+#### 5.1 Vision Transformer (ViT) Encoder
+
+[cite\_start]**[File: vision/encoder.py](https://github.com/meta-llama/llama-models/blob/main/models/llama4/vision/encoder.py)** [cite: 33]
+
+```python
+x = self.patch_embed(image)
+x = self.transformer(x)
+```
+
+**Teaching:** Image $\rightarrow$ patches $\rightarrow$ embeddings. [cite\_start]ViT encoder produces image tokens, which are concatenated with text tokens[cite: 33].
+
+-----
+
+### CHAPTER 6: Training Llama-4
+
+[cite\_start]**Objective:** [cite: 33]
+$$\mathcal{L} = \text{CrossEntropy}(f_\theta(x_{<t}), x_t) + \lambda \mathcal{L}_{balance}$$
+
+**Precision:** BF16 tensors, FP8 mixed precision.
+**Parallelism:** Data, Tensor, Pipeline, and Expert Parallelism.
+
+-----
+
+### CHAPTER 7: Long-Context Mechanisms
+
+[cite\_start]Includes: iRoPE, NoPE, chunked attention, sliding-window layers, and sharded KV-cache during inference[cite: 34].
+
+-----
+
+### CHAPTER 8: Generation & Sampling
+
+[cite\_start]**[File: generation.py](https://github.com/meta-llama/llama-models/blob/main/models/llama4/generation.py)** [cite: 34]
+
+```python
+logits = self.model(input_ids)
+next_token = sample(logits, top_p, temperature)
+```
+
+Covers: Top-k, Top-p, temperature, repetition penalty, and speculative decoding.
+
+-----
+
+### CHAPTER 9: Quantization
+
+**Techniques:** BF16 / FP8 $\rightarrow$ INT4 inference. [cite\_start]Fused QKV, Fused FFN, and quantized matmul kernels[cite: 35].
+**Files:** `quantization/loader.py`
+
+-----
+
+### CHAPTER 10: Prompting & Chat Format
+
+[cite\_start]**[File: chat\_format.py](https://github.com/meta-llama/llama-models/blob/main/models/llama4/chat_format.py)** [cite: 35]
+
+```python
+prompt = f"<|user|>{user}\n<|assistant|>"
+```
+
+Covers system/user/assistant roles and multimodal prompts.
+
+-----
+
+### CHAPTER 11: The Full Forward Pass of Llama-4 (Detailed Walkthrough)
+
+[cite\_start]This chapter ties everything together showing the complete mathematical and algorithmic pipeline[cite: 36].
+
+#### 11.1 Overview
+
+[cite\_start]Mathematically: $\text{logits} = f_\theta(x_{0:t})$[cite: 37].
+
+#### 11.2 Step 1 - Token Embedding
+
+Math: $e_i = E[i]$.
+[cite\_start]**[File: model.py](https://github.com/meta-llama/llama-models/blob/main/models/llama4/model.py)** [cite: 39]
+
+```python
+h = self.tok_embeddings(tokens)
+```
+
+#### 11.3 Step 2 - Add Image Tokens
+
+[cite\_start]If the user includes `<image>` tokens, the vision encoder produces patch embeddings which are projected and concatenated[cite: 40].
+[cite\_start]**[File: vision/embedding.py](https://github.com/meta-llama/llama-models/blob/main/models/llama4/vision/embedding.py)** [cite: 41]
+
+```python
+tokens = torch.cat([image_tokens, text_tokens], dim=1)
+```
+
+#### 11.4 Step 3 - Add Positional Encoding
+
+Even layers apply RoPE; odd layers are NoPE.
+[cite\_start]Math: $Q' = Q \cdot \cos\theta + \text{rotate}(Q) \cdot \sin\theta$[cite: 42].
+**[File: model.py](https://github.com/meta-llama/llama-models/blob/main/models/llama4/model.py)**
+
+```python
+q, k = apply_rope(q, k, positions) if self.use_rope else (q, k)
+```
+
+#### 11.5 Step 4 - Self-Attention
+
+1.  [cite\_start]**Compute Q, K, V:** $Q=XW_Q, K=XW_K, V=XW_V$[cite: 43].
+2.  [cite\_start]**Attention Logits:** $\text{scores} = \frac{QK^\top}{\sqrt{d}}$[cite: 43].
+3.  [cite\_start]**Causal Mask:** $\text{scores}_{ij} = -\infty$ if $j > i$[cite: 44].
+4.  **Softmax:** $A = \text{softmax}(\text{scores})$.
+5.  **Aggregate:** $\text{output} = AV$.
+
+#### 11.6 Step 5 - Feed-Forward Network
+
+[cite\_start]**Dense FFN:** $\text{FFN}(x) = W_2(\text{SwiGLU}(W_1 x))$[cite: 44].
+**MoE FFN (Default):**
+Routing math: $p = \text{softmax}(W_r x)$; Experts = TopK($p$).
+[cite\_start]Output: $\text{MoE}(x) = \sum_{e \in \text{experts}} p_e \cdot \text{FFN}_e(x)$[cite: 45].
+
+#### 11.7 Step 6 - Residual Connections
+
+$h \leftarrow x + \text{Attention}(x)$
+$h \leftarrow x + \text{FFN}(x)$
+[cite\_start]These "skip connections" prevent gradients from vanishing[cite: 46].
+
+#### 11.8 Step 7 - Final RMSNorm
+
+[cite\_start]$h = \text{RMSNorm}(h)$[cite: 48].
+
+#### 11.9 Step 8 - Final LM Head
+
+[cite\_start]$\text{logits} = h W_{\text{LM}}$[cite: 48].
+
+#### 11.10 Step 9 - Sampling
+
+[cite\_start]**[File: generation.py](https://github.com/meta-llama/llama-models/blob/main/models/llama4/generation.py)** [cite: 50]
+`next_token = sample(logits, top_k, top_p, temperature)`
+
+#### 11.11 Step 10 - Update KV-Cache
+
+$K_{cache} \leftarrow \text{append}(K)$; $V_{cache} \leftarrow \text{append}(V)$.
+[cite\_start]This allows $O(1)$ cost per new token[cite: 51].
+
+-----
+
+### CHAPTER 12: Training Llama-4 From Scratch
+
+#### 12.1 Objective Function
+
+[cite\_start]$\mathcal{L} = \text{CrossEntropy}(f_\theta(x_{<t}), x_t) + \lambda \mathcal{L}_{\text{MoE}}$[cite: 54].
+
+#### 12.2 Data Pipeline
+
+[cite\_start]**[File: preprocess.py](https://github.com/meta-llama/llama-models/blob/main/models/llama4/preprocess.py)** [cite: 55, 56]
+Steps: Normalize $\rightarrow$ Tokenize $\rightarrow$ Pack $\rightarrow$ Mask.
+
+#### 12.4 Parallelism Modes
+
+To train trillion-parameter models:
+
+  * [cite\_start]**Data Parallel:** Different GPUs get different batches[cite: 57].
+  * [cite\_start]**Tensor Parallel:** Split matrices across GPUs[cite: 58].
+  * [cite\_start]**Pipeline Parallel:** Split layers across GPUs[cite: 59].
+  * [cite\_start]**Expert Parallel:** Experts live on different GPUs[cite: 59].
+
+-----
+
+### CHAPTER 13: Ultra-Long Context (1M-10M Tokens)
+
+[cite\_start]Mechanisms: iRoPE, Alternating RoPE/NoPE, Chunked attention, KV-cache sharding, Sliding-window layers[cite: 61].
+
+#### 13.1 iRoPE (Math)
+
+$\theta_{\text{long}} = \theta_{\text{short}} \cdot r$. [cite\_start]Scaling factor $r$ allows extrapolation[cite: 62].
+
+#### 13.2 Chunked Attention
+
+Split sequence into chunks; attend locally; attend to summary vectors globally. [cite\_start]Keeps memory $\sim$linear[cite: 63].
+
+#### 13.3 KV-Cache Sharding
+
+[cite\_start]KV-cache is split across GPUs horizontally[cite: 64].
+
+-----
+
+### CHAPTER 14: Quantization (BF16 $\rightarrow$ FP8 $\rightarrow$ INT4)
+
+#### 14.1 Quantized Linear Layers
+
+[cite\_start]**[File: quantization/loader.py](https://github.com/meta-llama/llama-models/blob/main/models/llama4/quantization/loader.py)** [cite: 65]
+`weights = load_int4(checkpoint)`
+[cite\_start]INT4 reduces memory by 4x and compute footprint drastically[cite: 65].
+
+#### 14.2 Fused Kernels
+
+[cite\_start]Used for QKV projections and FFN (gate + up simultaneously)[cite: 67].
+
+-----
+
+### CHAPTER 15: Prompting & Chat Interface
+
+[cite\_start]**[File: chat\_format.py](https://github.com/meta-llama/llama-models/blob/main/models/llama4/chat_format.py)** [cite: 69]
+Defines roles: system, user, assistant.
+
+-----
+
+### CHAPTER 16: Bringing It All Together
+
+[cite\_start]Llama-4 combines Transformers, MoE, Multimodal Fusion, and extreme parallelism to represent the 2026 state-of-the-art architecture[cite: 70].
+
+-----
+
+## PART II: ADVANCED DEEP DIVE (THEORY)
+
+### CHAPTER 17: The Mathematics of Attention: A Complete Derivation
+
+[cite\_start]This chapter teaches attention as a mathematically inevitable consequence of computing adaptive relevance[cite: 72].
+
+#### 17.1 Why Attention Exists (From First Principles)
+
+We need to compute a representation $h_t$ for token $t$. [cite\_start]A naïve function $f(x_1, \dots, x_t)$ is impossible to compute efficiently[cite: 73, 74].
+Attention constructs:
+$$h_t = \sum_{i=1}^{t} \alpha_{t,i} v_i$$
+The problem reduces to: "How do we compute good importance weights $\alpha_{t,i}$?"
+[cite\_start]Answer: Via similarity (dot products) and softmax[cite: 74, 75].
+
+#### 17.2 Deriving Q, K, V From Optimization Principles
+
+Importance depends on what token $i$ is "asking" (Query $Q_i$) and what token $j$ "offers" (Key $K_j$).
+$$Q_i = W_Q x_i, \quad K_j = W_K x_j$$
+Score should be large when $Q_i$ and $K_j$ align.
+$$\text{score}(i,j) = \frac{Q_i \cdot K_j}{\sqrt{d}}$$
+[cite\_start][cite: 76, 77].
+
+#### 17.4 Why Dot Products? (Geometric Interpretation)
+
+$$Q_i \cdot K_j = \|Q_i\| \|K_j\| \cos(\theta)$$
+[cite\_start]This encodes semantic similarity in geometric form[cite: 79].
+
+#### 17.5 Why Softmax?
+
+Softmax arises from the optimization problem: $\text{maximize } \sum_i \alpha_i \cdot \text{score}_i - H(\alpha)$. [cite\_start]The solution is the Boltzmann distribution: $\alpha_i = \frac{e^{\text{score}_i}}{\sum e^{\text{score}_j}}$[cite: 80, 81].
+
+-----
+
+### CHAPTER 18: The Full Theory of RoPE
+
+#### 18.1 Multiplicative vs. Additive
+
+Additive encodings do not preserve rotation invariance or dot product structure naturally. [cite\_start]RoPE rotates vectors in complex space[cite: 83].
+
+#### 18.2 RoPE Mathematical Definition
+
+Each pair of dimensions $(x_{2i}, x_{2i+1})$ is rotated:
+$$\begin{aligned} x'_{2i} &= x_{2i}\cos(p\theta_i) - x_{2i+1}\sin(p\theta_i) \\ x'_{2i+1} &= x_{2i}\sin(p\theta_i) + x_{2i+1}\cos(p\theta_i) \end{aligned}$$
+[cite\_start]Where $\theta_i = 10000^{-2i/d}$[cite: 84].
+
+#### 18.3 Why RoPE Works for Attention
+
+The rotated vectors satisfy:
+$$Q'_p \cdot K'_q = Q_p \cdot R^{p-q} K_q$$
+[cite\_start]This means attention depends on **relative position** ($p-q$), not absolute[cite: 86].
+
+-----
+
+### CHAPTER 19: Mixture-of-Experts: Deep Internal Theory
+
+#### 19.1 Why MoE Exists
+
+Dense FFNs scale like $O(n \cdot d^2)$. [cite\_start]MoE replaces one big FFN with many small ones, keeping FLOPs per token low while increasing total capacity[cite: 91, 94].
+
+#### 19.2 Routing: The Mathematical Backbone
+
+Each token $x$ gets routing scores $r = W_r x$. Softmax yields probabilities $p_i$. [cite\_start]We choose top-k experts ($k=2$ in Llama-4)[cite: 95, 96].
+
+#### 19.3 MoE Output
+
+$$\text{MoE}(x) = \sum_{e \in \text{TopK}} p_e \cdot \text{FFN}_e(x)$$
+
+#### 19.5 Real MoE Code
+
+[cite\_start]**[File: moe.py](https://github.com/meta-llama/llama-models/blob/main/models/llama4/moe.py)** [cite: 98]
+Autograd handles the backprop through the weighted sum: `output += weight * expert_out`.
+
+-----
+
+### CHAPTER 20: Vision Encoder Deep Dive
+
+#### 20.1 Patchification
+
+Image $H \times W \times C$ is cut into $14 \times 14$ patches. [cite\_start]Each patch is projected: $z = W_p \cdot \text{patch}$[cite: 100].
+
+#### 20.2 Transformer Encoder
+
+[cite\_start]A ViT processes the patches: $h = \text{TransformerEncoder}(z)$[cite: 101].
+
+#### 20.4 Early Fusion
+
+[cite\_start]**[File: vision/embedding.py](https://github.com/meta-llama/llama-models/blob/main/models/llama4/vision/embedding.py)** [cite: 102]
+`tokens = torch.cat([image_tokens, text_tokens], dim=1)`.
+
+-----
+
+### CHAPTER 21: The Mathematics of Training Llama-4
+
+#### 21.1 Objective Function
+
+[cite\_start]$\mathcal{L} = \text{CrossEntropy} + \lambda \mathcal{L}_{balance}$[cite: 104].
+
+#### 21.2 Cross-Entropy Defined
+
+$$p_i = \frac{e^{z_i}}{\sum_j e^{z_j}}, \quad \mathcal{L}_{CE} = -\log p_y$$
+[cite\_start]This is the negative log-likelihood[cite: 104].
+
+#### 21.4 Scaling Laws
+
+$\text{Loss} \propto N^{-\alpha}$ ($\alpha \approx 0.1$). [cite\_start]Huge datasets are needed for SOTA[cite: 107].
+
+-----
+
+### CHAPTER 22: Inference Optimization
+
+[cite\_start]**KV-Cache:** Reduces cost per token from $O(n^2 d)$ to $O(nd)$[cite: 109].
+[cite\_start]**Fused Kernels:** `qkv = self.wqkv(x)` performs single matmul for Q, K, V[cite: 111].
+[cite\_start]**Speculative Decoding:** Predicts multiple tokens ahead and verifies[cite: 111].
+
+-----
+
+## PART III: INTERNAL MECHANICS (BACKPROP, TRAINING MATH)
+
+### CHAPTER 24: Backpropagation in Llama-4: The Full Math
+
+[cite\_start]Everything Llama-4 learns comes from gradient descent minimizing $\mathcal{L}$[cite: 114].
+
+#### 24.1 Gradient of Cross-Entropy Through Softmax
+
+$$\frac{\partial \mathcal{L}}{\partial z_i} = p_i - \mathbf{1}(i = y)$$
+[cite\_start]This is foundational: softmax + cross-entropy yields a simple gradient[cite: 116].
+
+#### 24.2 Gradient Through the Output Projection
+
+$$\frac{\partial \mathcal{L}}{\partial h} = (p - \text{onehot}(y)) W_{LM}^\top$$
+[cite\_start]This gradient flows backward into the final Transformer block[cite: 118].
+
+#### 24.4 Backprop Through RMSNorm
+
+RMSNorm normalizes by $x / \sqrt{\text{mean}(x^2)}$. [cite\_start]It does **not** subtract the mean, so gradients do not depend on covariance terms, making it stable for long contexts[cite: 123].
+
+#### 24.5 Backprop Through Self-Attention
+
+We need derivatives through matrix multiplication, softmax, and dot products.
+[cite\_start]**dLoss/dA (attention weights):** $\frac{\partial \mathcal{L}}{\partial A} = \frac{\partial \mathcal{L}}{\partial \text{output}} V^\top$[cite: 127].
+**dLoss/dScores (Softmax):** $\frac{\partial \mathcal{L}}{\partial s} = A \odot (\dots)$. [cite\_start]This is one of the heaviest gradients[cite: 127].
+
+-----
+
+### CHAPTER 25: Backprop Through MoE Layers
+
+#### 25.1 Gradient Through Expert Outputs
+
+$$\frac{\partial \mathcal{L}}{\partial \text{FFN}_e(x)} = p_e \cdot \frac{\partial \mathcal{L}}{\partial \text{MoE}(x)}$$
+The shared expert always receives gradients. Routed experts receive weighted gradients. [cite\_start]Inactive experts receive zero gradients[cite: 131].
+
+#### 25.3 Load Balancing Backprop
+
+$$\frac{\partial \mathcal{L}_{balance}}{\partial n_e} = \frac{2}{E} \frac{n_e}{N^2}$$
+[cite\_start]If an expert is underused, this encourages routing to it[cite: 133].
+
+-----
+
+### CHAPTER 26: RMSNorm Backprop Stability
+
+[cite\_start]RMSNorm has no mean subtraction $\rightarrow$ fewer gradient interactions $\rightarrow$ more stable for extremely long sequences[cite: 135].
+
+-----
+
+### CHAPTER 27: The Training Loop in Practice
+
+Steps: `optimizer.step()`, `optimizer.zero_grad()`. [cite\_start]Distributed training uses ZeRO, FSDP, and DeepSpeed[cite: 139].
+
+-----
+
+### CHAPTER 28: Annotated Code: Layer-by-Layer Walkthrough
+
+[cite\_start]**[File: model.py](https://github.com/meta-llama/llama-models/blob/main/models/llama4/model.py)** [cite: 141]
+[cite\_start]Class `Transformer`: contains `tok_embeddings`, `layers` (stack of attention + MoE), `norm`, and `output`[cite: 142].
+[cite\_start]Class `TransformerBlock`: Normalizes $\rightarrow$ Attention $\rightarrow$ Normalizes $\rightarrow$ FFN[cite: 143].
+
+-----
+
+## PART IV: FROM THEORY TO IMPLEMENTATION
+
+### CHAPTER 29: Why the Transformer Is the Natural Sequence Model
+
+[cite\_start]The Transformer falls out naturally if you want: Parallel processing, long-range dependencies, and stable optimization[cite: 157].
+
+#### 29.3 Scores as Dot Products
+
+We want scores $s_{t,i}$ to depend on "what I want" (Query) and "what I offer" (Key).
+$$s_{t,i} = \frac{Q_t^\top K_i}{\sqrt{d}}$$
+Linear maps ($W_Q, W_K$) are the simplest choice. [cite\_start]This reinvents scaled dot-product attention[cite: 165, 166].
+
+-----
+
+### CHAPTER 30: A Minimal Llama-Style Transformer + MoE (Pseudocode)
+
+#### 30.2 RMSNorm
+
+```python
+# x: (batch, seq, dim)
+rms = x.pow(2).mean(dim=-1, keepdim=True).add(self.eps).sqrt()
+return self.gain * (x / rms)
+```
+
+[cite\_start]Matches formula: $\frac{x}{\sqrt{\frac{1}{d}\sum x^2 + \epsilon}} \cdot g$[cite: 170, 171].
+
+#### 30.3 RoPE Hook
+
+```python
+q_rot = rope_rotate(q, freqs)
+k_rot = rope_rotate(k, freqs)
+```
+
+[cite\_start]Conceptually rotates pairs in the last dim[cite: 171].
+
+#### 30.4 Self-Attention
+
+```python
+# Scaled dot-product attention
+attn_scores = torch.einsum("bthd,bshd->bhts", q, k) / self.head_dim**0.5
+attn_scores = attn_scores.masked_fill(causal_mask, float("-inf"))
+attn = torch.softmax(attn_scores, dim=-1)
+out = torch.einsum("bhts,bshd->bthd", attn, v)
+```
+
+[cite\_start]Embodies all attention theory: Projections, RoPE, Masking, Softmax, Recombination[cite: 173].
+
+#### 30.5 Dense SwiGLU FFN
+
+```python
+return self.w3(u * torch.sigmoid(v))
+```
+
+[cite\_start]Corresponds to $\text{FFN}(x) = W_3((W_1 x) \odot \sigma(W_2 x))$[cite: 175].
+
+#### 30.6 MoE FFN Wrapper
+
+```python
+scores = self.router(x)
+probs = torch.softmax(scores, dim=-1)
+top_vals, top_idx = probs.topk(self.top_k, dim=-1)
+# ... apply experts ...
+out += w * expert_outputs
+```
+
+[cite\_start]Conceptually: $\sum p_e \cdot \text{FFN}_e(x)$[cite: 176, 179].
+
+#### 30.7 Transformer Block
+
+```python
+h = x + self.attn(self.attn_norm(x), ...)
+h = h + self.ffn(self.ffn_norm(h))
+```
+
+[cite\_start]Matches the pattern: $x \leftarrow x + \text{Attention}(\text{RMSNorm}(x))$[cite: 181].
+
+-----
+
+### CHAPTER 31: How to Read the Real Llama-4 Repo With This Mental Model
+
+1.  **Start with `model.py`:** Find `TransformerBlock`. [cite\_start]Compare `attn_norm`, `attention`, `feed_forward`[cite: 185, 187].
+2.  [cite\_start]**Follow the FFN path (`ffn.py`):** Locate `SwiGLU`[cite: 188].
+3.  [cite\_start]**Follow the MoE path (`moe.py`):** Look for router logits and `topk` calls[cite: 190].
+4.  [cite\_start]**Read `tokenizer.py`:** Confirm `encode`/`decode` methods[cite: 191].
+5.  [cite\_start]**Read `generation.py`:** Find the core loop (logits $\rightarrow$ sample $\rightarrow$ update cache)[cite: 193].
+
+-----
+
+### CHAPTER 32: How to Use This Book to Actually Learn State-of-the-Art AI
+
+1.  [cite\_start]**Read top-down:** Use Parts I-III as conceptual scaffold[cite: 195].
+2.  **Open the repo:** Treat it like a lab manual. [cite\_start]`model.py` beside the theory[cite: 196].
+3.  [cite\_start]**Re-implement:** Write your own RMSNorm, RoPE, and Toy MoE[cite: 198].
+4.  **Scale up:** Then move to distributed training and quantization.
+5.  [cite\_start]**Compare:** Compare Llama-4 to other SOTA models (GPT-5.1, Gemini 3)[cite: 198].
+
+-----
