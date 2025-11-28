@@ -10,28 +10,32 @@
 .katex span[style*="color:gray"] { --step: var(--color-gray-500)  }
 .katex span[style*="color:black"] { --step: var(--color-gray-900)  }
 .katex span[style*="color:white"] { --step: var(--color-gray-100)  }
-.katex span[style*="color:white"] { --step: var(--color-gray-100)  }
+.katex span[style*="color:orange"] { --step: var(--color-orange-500)  }
 
+/* em .katex *,strong .katex * */
 .alert .katex,
 .table-of-contents .katex,
-strong .katex,
-em .katex{
+em .katex,
+strong .katex{
+ 
   background: inherit !important;
   color: inherit !important;
+  -webkit-text-fill-color: inherit !important;
 }
-
-
   
+/* .mop, mord{
+  background: inherit !important;
+} */
 
 /* Basic KaTeX styles */
 .katex {
   font-size: 1.1em;
   text-rendering: auto;
-  background: linear-gradient(to right, --alpha(var(--color-background) / 100%), --alpha(var(--color-background) /100%)) ;
+  background: linear-gradient(to right, var(--color-background), var(--color-background)) ;
   /* background: linear-gradient(to right, --alpha(var(--color-background) / 100%), --alpha(var(--color-background) /100%)) */
   background-size: 200% 100%;
   background-position: 0% 50%;
-  display: inline-block;
+  /* display: inline-block; */
 
 
   *{
