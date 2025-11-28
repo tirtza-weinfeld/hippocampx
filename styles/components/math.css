@@ -31,7 +31,8 @@ strong .katex{
 .katex {
   font-size: 1.1em;
   text-rendering: auto;
-  background: linear-gradient(to right, var(--color-background), var(--color-background)) ;
+  /* background: linear-gradient(to right, var(--color-background), var(--color-background)) ; */
+  background: transparent;
   /* background: linear-gradient(to right, --alpha(var(--color-background) / 100%), --alpha(var(--color-background) /100%)) */
   background-size: 200% 100%;
   background-position: 0% 50%;
@@ -46,7 +47,7 @@ strong .katex{
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     color: transparent;
-    display: inline-block;
+    /* display: inline-block; */
     &:hover span{
       background-position: 100% 20%;
     }
