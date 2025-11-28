@@ -21,8 +21,15 @@ strong .katex{
   background: inherit !important;
   color: inherit !important;
   -webkit-text-fill-color: inherit !important;
-}
+
   
+}
+
+.katex svg * {
+  color: var(--step) !important;
+  /* fill: currentColor !important; */
+  /* stroke: currentColor !important; */
+}
 /* .mop, mord{
   background: inherit !important;
 } */
