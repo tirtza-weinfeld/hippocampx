@@ -235,6 +235,7 @@ function calculateDisplayNumber(
 
 // Collapsible item patterns - each with pattern and default title
 const COLLAPSIBLE_PATTERNS = [
+  { pattern: /^(Collapsible):\s*(.*)/, defaultTitle: 'Collapsible' },
   { pattern: /^(Deep Dive):\s*(.*)/, defaultTitle: 'Deep Dive' },
   { pattern: /^(Example):\s*(.*)/, defaultTitle: 'Example' }
 ]

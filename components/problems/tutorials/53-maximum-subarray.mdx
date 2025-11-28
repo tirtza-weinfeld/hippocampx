@@ -15,11 +15,11 @@ Given an array of integers, return the maximum sum of any contiguous subarray.
 ## [!(ProblemIntuition)] Intuition
 
 - This is essentially *Kadane's Algorithm*:
-    - Kadane’s Algorithm is an $O(n)$ dynamic programming method for finding the maximum subarray sum in a list of integers (contiguous elements).
-    - Core idea:
-        - Keep track of the best sum ending at the current position
-        - If adding the current number hurts the sum, start fresh from the current number
-        - Track the overall maximum as you go
+        - Kadane’s Algorithm is an $O(n)$ dynamic programming method for finding the maximum subarray sum in a list of integers (contiguous elements).
+        - Core idea:
+            - Keep track of the best sum ending at the current position
+            - If adding the current number hurts the sum, start fresh from the current number
+            - Track the overall maximum as you go
 
 - Deep Dive: SRT BOT:
         - Subproblem: `dp(i) = max(nums[i], nums[i] + dp(i-1))`

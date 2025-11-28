@@ -3,11 +3,11 @@ def maximum_subarray(nums: list[int]) -> int:
     Intuition:
 
         This is essentially *Kadane's Algorithm*:
-        Kadane’s Algorithm is an $O(n)$ dynamic programming method for finding the maximum subarray sum in a list of integers (contiguous elements).
-        Core idea:
-            Keep track of the best sum ending at the current position
-            If adding the current number hurts the sum, start fresh from the current number
-            Track the overall maximum as you go
+            Kadane’s Algorithm is an $O(n)$ dynamic programming method for finding the maximum subarray sum in a list of integers (contiguous elements).
+            Core idea:
+                Keep track of the best sum ending at the current position
+                If adding the current number hurts the sum, start fresh from the current number
+                Track the overall maximum as you go
 
 
         Deep Dive: SRT BOT:

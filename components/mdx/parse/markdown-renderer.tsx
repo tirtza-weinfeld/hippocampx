@@ -4,6 +4,7 @@ import type { ReactNode } from 'react'
 import { InlineParser, MathParser, BlockParser } from './parsers'
 import { InlineRenderer, BlockRenderer } from './renderers'
 import InlineCode from '../code/code-inline'
+import type { ParsedToken } from './types'
 
 interface MarkdownRendererProps {
   children: ReactNode
@@ -11,7 +12,18 @@ interface MarkdownRendererProps {
 }
 
 export function MarkdownRenderer({ children, className }: MarkdownRendererProps) {
-  const text = typeof children === 'string' ? children : String(children || '')
+  // Handle array children (e.g., [' ', content]) by filtering and joining
+  let text: string
+  if (typeof children === 'string') {
+    text = children
+  } else if (Array.isArray(children)) {
+    // Filter out empty strings and whitespace-only strings, then join without separator
+    text = children
+      .filter(child => typeof child === 'string' && child.trim())
+      .join('')
+  } else {
+    text = String(children || '')
+  }
 
   if (!text) return null
 
@@ -39,33 +51,71 @@ export function MarkdownRenderer({ children, className }: MarkdownRendererProps)
 
   // Check if text contains math expressions
   if (MathParser.hasMath(text)) {
-    // Extract math tokens first to protect them from markdown parsing
-    const { tokens: mathTokens, remaining } = MathParser.extractMathTokens(text)
+    // Extract math tokens and replace with placeholders
+    const mathParser = new MathParser(text)
+    const allParsedTokens = mathParser.parse()
+    const mathTokens = allParsedTokens.filter(t => t.type === 'math' || t.type === 'mathDisplay')
+    const sortedMath = [...mathTokens].sort((a, b) => b.start - a.start) // reverse order for replacement
 
-    // Parse the remaining text (without math) for inline markdown
-    const parser = new InlineParser(remaining)
-    const inlineTokens = parser.parse()
+    // Create placeholder map
+    const placeholderMap = new Map<string, ParsedToken>()
+    let textWithPlaceholders = text
 
-    // Adjust inline token positions to account for removed math content
-    const adjustedInlineTokens = inlineTokens.map(token => {
-      // Find how many math tokens come before this token's original position in the remaining text
-      let adjustment = 0
+    // Replace math expressions with unique placeholders (from right to left)
+    sortedMath.forEach((mathToken, index) => {
+      const placeholder = `___MATH${sortedMath.length - 1 - index}___`
+      placeholderMap.set(placeholder, mathToken)
+      textWithPlaceholders =
+        textWithPlaceholders.slice(0, mathToken.start) +
+        placeholder +
+        textWithPlaceholders.slice(mathToken.end)
+    })
 
-      for (const mathToken of mathTokens) {
-        if (mathToken.start <= token.start + adjustment) {
-          adjustment += mathToken.content.length
+    // Parse the text with placeholders
+    const parser = new InlineParser(textWithPlaceholders)
+    const tokensWithPlaceholders = parser.parse()
+
+    // Recursively replace placeholders with math tokens
+    function replaceInTokens(tokens: ParsedToken[]): ParsedToken[] {
+      const result: ParsedToken[] = []
+
+      for (const token of tokens) {
+        if (token.type === 'text' && token.content.includes('___MATH')) {
+          // Split text token by placeholders
+          const parts = token.content.split(/(___MATH\d+___)/)
+          let position = token.start
+
+          for (const part of parts) {
+            if (part.startsWith('___MATH')) {
+              const mathToken = placeholderMap.get(part)
+              if (mathToken) {
+                result.push(mathToken)
+                position = mathToken.end
+              }
+            } else if (part) {
+              result.push({
+                type: 'text',
+                content: part,
+                start: position,
+                end: position + part.length
+              } as ParsedToken)
+              position += part.length
+            }
+          }
+        } else if ('children' in token && Array.isArray(token.children) && token.children.length > 0) {
+          result.push({
+            ...token,
+            children: replaceInTokens(token.children as ParsedToken[])
+          } as ParsedToken)
+        } else {
+          result.push(token)
         }
       }
 
-      return {
-        ...token,
-        start: token.start + adjustment,
-        end: token.end + adjustment
-      }
-    })
+      return result
+    }
 
-    // Merge and sort all tokens by their original position
-    const allTokens = [...adjustedInlineTokens, ...mathTokens].sort((a, b) => a.start - b.start)
+    const allTokens = replaceInTokens(tokensWithPlaceholders)
 
     return (
       <span className={className}>

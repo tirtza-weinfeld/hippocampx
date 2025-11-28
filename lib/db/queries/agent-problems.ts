@@ -8,6 +8,7 @@ import { sql as vercelSql } from '@vercel/postgres';
 import { eq } from 'drizzle-orm';
 import { problems, solutions } from '../schema-problems';
 import type { Problem, Solution } from '../schema-problems';
+import { formatIntuitionContent, formatTimeComplexity } from '@/lib/utils/format-problem-content';
 
 const db = drizzle(vercelSql);
 
@@ -24,9 +25,16 @@ export const getProblems = cache(async function getProblems(): Promise<Problem[]
 export const getSolutionsByProblemId = cache(async function getSolutionsByProblemId(
   problemId: string
 ): Promise<Solution[]> {
-  return db
+  const rawSolutions = await db
     .select()
     .from(solutions)
     .where(eq(solutions.problem_id, problemId))
     .orderBy(solutions.order_index);
+
+  // Format intuition and time_complexity fields
+  return rawSolutions.map(solution => ({
+    ...solution,
+    intuition: solution.intuition ? formatIntuitionContent(solution.intuition) : null,
+    time_complexity: solution.time_complexity ? formatTimeComplexity(solution.time_complexity) : null,
+  }));
 });

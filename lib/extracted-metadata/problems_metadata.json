@@ -281,7 +281,7 @@
     "875-koko-eating-bananas": {
       "time_stamps": {
         "created_at": "2025-09-12T16:06:03.945955",
-        "updated_at": "2025-09-30T19:05:08.952372"
+        "updated_at": "2025-11-28T14:40:44.335844"
       },
       "solutions": {
         "solution.py": {
@@ -1357,11 +1357,11 @@
     "53-maximum-subarray": {
       "time_stamps": {
         "created_at": "2025-09-12T16:05:16.850187",
-        "updated_at": "2025-10-27T11:09:32.574428"
+        "updated_at": "2025-11-28T17:40:12.545297"
       },
       "solutions": {
         "solution.py": {
-          "intuition": "This is essentially *Kadane's Algorithm*:\n    Kadane’s Algorithm is an $O(n)$ dynamic programming method for finding the maximum subarray sum in a list of integers (contiguous elements).\n    Core idea:\n        Keep track of the best sum ending at the current position\n        If adding the current number hurts the sum, start fresh from the current number\n        Track the overall maximum as you go\n\n\n    Deep Dive: SRT BOT:\n        Subproblem: `dp(i) = max(nums[i], nums[i] + dp(i-1))`\n        Relate: `dp(i)` depends only on `dp(i-1)`\n        Topological order: increasing `i`\n        Base case: `dp(0) = nums[0]`\n        Original problem: `max(dp(i))` over all i",
+          "intuition": "This is essentially *Kadane's Algorithm*:\n        Kadane’s Algorithm is an $O(n)$ dynamic programming method for finding the maximum subarray sum in a list of integers (contiguous elements).\n        Core idea:\n            Keep track of the best sum ending at the current position\n            If adding the current number hurts the sum, start fresh from the current number\n            Track the overall maximum as you go\n\n\n    Deep Dive: SRT BOT:\n        Subproblem: `dp(i) = max(nums[i], nums[i] + dp(i-1))`\n        Relate: `dp(i)` depends only on `dp(i-1)`\n        Topological order: increasing `i`\n        Base case: `dp(0) = nums[0]`\n        Original problem: `max(dp(i))` over all i",
           "time_complexity": "O(n)",
           "space_complexity": "O(1)",
           "variables": {

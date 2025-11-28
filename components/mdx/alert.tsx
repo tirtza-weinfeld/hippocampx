@@ -227,6 +227,7 @@ export default function Alert({ type, children, collapse = false }: AlertProps) 
           "border-l-2",
           "bg-linear-to-br",
           "my-2 p-0",
+          "alert"
 
 
         )}

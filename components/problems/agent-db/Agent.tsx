@@ -28,6 +28,9 @@ export default async function Agent() {
     updatedAt: problem.updated_at.toISOString(),
   }));
 
+
+ 
+
   // Create problem components map - each card fetches its own solutions
   const problemComponents = Object.fromEntries(
     problems.map(problem => [

@@ -1,6 +1,13 @@
 import type { ParsedToken, ListToken, ListItemToken, CodeBlockToken } from '../types'
 import { InlineParser } from './inline-parser'
-import { cleanTextContent } from '@/lib/list-processing-utils'
+import { cleanTextContent, calculateDisplayNumber } from '@/lib/list-processing-utils'
+
+// Collapsible item patterns - each with pattern and default title
+const COLLAPSIBLE_PATTERNS = [
+  { pattern: /^(Collapsible):\s*(.*)/, defaultTitle: 'Collapsible' },
+  { pattern: /^(Deep Dive):\s*(.*)/, defaultTitle: 'Deep Dive' },
+  { pattern: /^(Example):\s*(.*)/, defaultTitle: 'Example' }
+] as const
 
 export class BlockParser {
   private lines: string[]
@@ -115,6 +122,49 @@ export class BlockParser {
     return currentLevel + 1
   }
 
+  private extractMarker(line: string): string {
+    const trimmed = line.trim()
+
+    // Match ordered list markers: 1., 2), 1), etc.
+    const orderedMatch = trimmed.match(/^(\d+(?:\.\d+)?[.)])/)
+    if (orderedMatch) {
+      return orderedMatch[1]
+    }
+
+    // Match unordered list markers: -, +, *
+    const unorderedMatch = trimmed.match(/^([-+*])/)
+    if (unorderedMatch) {
+      return unorderedMatch[1]
+    }
+
+    return '-' // Default fallback
+  }
+
+  private detectCollapsible(content: string): { isCollapsible: boolean; title: string | null; cleanedContent: string } {
+    const trimmedContent = content.trim()
+
+    // Check all collapsible patterns
+    for (const { pattern, defaultTitle } of COLLAPSIBLE_PATTERNS) {
+      const match = trimmedContent.match(pattern)
+      if (match) {
+        // Use provided text or fallback to default title
+        const title = match[2].trim() || defaultTitle
+        return {
+          isCollapsible: true,
+          title,
+          cleanedContent: '' // Content is removed for collapsible items
+        }
+      }
+    }
+
+    return {
+      isCollapsible: false,
+      title: null,
+      cleanedContent: trimmedContent
+    }
+  }
+
+
   private isListItemAtLevel(line: string, baseIndent: number): boolean {
     const trimmed = line.trim()
     const currentIndent = this.getIndentationLevel(line)
@@ -122,6 +172,38 @@ export class BlockParser {
     // Must be a list marker and at the expected indentation level
     const isListMarker = /^[-*+]\s/.test(trimmed) || /^\d+\.\s/.test(trimmed)
     return isListMarker && currentIndent === baseIndent
+  }
+
+  private extractNumberFromMarker(marker: string): number {
+    const numberMatch = marker.match(/^(\d+(?:\.\d+)?)/)
+    if (numberMatch) {
+      const num = numberMatch[1]
+      return num.includes('.') ? parseFloat(num) : parseInt(num, 10)
+    }
+    return 0
+  }
+
+  private detectRestartPoints(originalNumbers: number[]): number[] {
+    const restartPoints: number[] = []
+
+    for (let i = 0; i < originalNumbers.length; i++) {
+      const currentNumber = originalNumbers[i]
+      if (currentNumber === 1 && i > 0) {
+        // Check if this is a restart (1 after higher numbers)
+        let isRestart = false
+        for (let j = i - 1; j >= 0; j--) {
+          if (originalNumbers[j] > 1) {
+            isRestart = true
+            break
+          }
+        }
+        if (isRestart) {
+          restartPoints.push(i)
+        }
+      }
+    }
+
+    return restartPoints
   }
 
   private parseList(currentLevel: number): ListToken {
@@ -173,6 +255,22 @@ export class BlockParser {
       }
     }
 
+    // Calculate display numbers for ordered lists
+    if (ordered && items.length > 0) {
+      // Extract original numbers from markers
+      const originalNumbers = items.map(item =>
+        item.marker ? this.extractNumberFromMarker(item.marker) : 0
+      )
+
+      // Detect restart points
+      const restartPoints = this.detectRestartPoints(originalNumbers)
+
+      // Calculate and assign display numbers
+      items.forEach((item, index) => {
+        item.displayNumber = calculateDisplayNumber(index, originalNumbers, restartPoints)
+      })
+    }
+
     return {
       type: 'list',
       content: items.map(item => item.content).join('\n'),
@@ -189,8 +287,11 @@ export class BlockParser {
     const line = this.lines[this.position]
     const trimmed = line.trim()
 
+    // Extract marker from the line
+    const marker = this.extractMarker(line)
+
     // Extract content after the list marker
-    const markerMatch = trimmed.match(/^(?:\d+\.|\s*[-*+])\s(.*)/)
+    const markerMatch = trimmed.match(/^(?:\d+(?:\.\d+)?[.)]|[-*+])\s(.*)/)
     const immediateContent = markerMatch ? markerMatch[1] : ''
 
     this.position++
@@ -237,14 +338,19 @@ export class BlockParser {
     // Join all content and process it
     const fullContent = allContent.join(' ').trim()
 
-    // Only clean if there's actual content
+    // Detect collapsible patterns before cleaning
+    const collapsibleInfo = this.detectCollapsible(fullContent)
+
+    // Only clean if there's actual content and it's not collapsible
     let cleanedText = fullContent
     let hasTrailingColon = false
 
-    if (fullContent) {
+    if (fullContent && !collapsibleInfo.isCollapsible) {
       const cleaned = cleanTextContent(fullContent)
       cleanedText = cleaned.cleanedText
       hasTrailingColon = cleaned.hasTrailingColon
+    } else if (collapsibleInfo.isCollapsible) {
+      cleanedText = collapsibleInfo.cleanedContent
     }
 
     // Parse the cleaned content as inline markdown
@@ -260,6 +366,9 @@ export class BlockParser {
       level: currentLevel,
       headerItem: hasTrailingColon,
       displayNumber: undefined, // Will be set later if needed
+      marker,
+      isCollapsible: collapsibleInfo.isCollapsible,
+      collapsibleTitle: collapsibleInfo.title || undefined,
       start,
       end: this.position
     }

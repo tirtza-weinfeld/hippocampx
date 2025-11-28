@@ -23,6 +23,7 @@ export function ProblemStateProvider({
   children,
   defaultFile,
   defaultSection = 'codeSnippet'
+  // defaultSection = 'definition'
 }: ProblemStateProviderProps) {
   const [isExpanded, setExpanded] = useState(false)
   const [activeFile, setActiveFile] = useState(defaultFile)

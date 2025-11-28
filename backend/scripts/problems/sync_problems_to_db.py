@@ -16,6 +16,7 @@ import os
 import sys
 import ast
 import json
+import argparse
 from pathlib import Path
 from datetime import datetime
 import psycopg2
@@ -41,6 +42,59 @@ def get_db_connection():
     return psycopg2.connect(database_url)
 
 
+def _process_section_lines(lines: list[tuple[str, str] | str]) -> str:
+    """Process section lines and convert to MDX-ready indentation."""
+    if not lines:
+        return ""
+
+    processed_lines = []
+
+    # Convert any string entries to tuples for consistency
+    normalized_lines = []
+    for line in lines:
+        if isinstance(line, str):
+            if line == "":
+                normalized_lines.append(("", ""))
+            else:
+                normalized_lines.append(("", line))
+        else:
+            normalized_lines.append(line)
+
+    # Find base indentation (minimum indentation among non-empty lines)
+    base_indent = float('inf')
+    for indent, content in normalized_lines:
+        if content.strip() and indent:
+            base_indent = min(base_indent, len(indent))
+
+    if base_indent == float('inf'):
+        base_indent = 0
+
+    # Process all lines, mapping to MDX indentation
+    for indent, content in normalized_lines:
+        if not content.strip():  # Empty line
+            processed_lines.append("")
+            continue
+
+        # Calculate original indentation level
+        original_indent = len(indent) if indent else 0
+
+        # Same-line content (no indent) stays at 0
+        if original_indent == 0:
+            processed_lines.append(content)
+            continue
+
+        # Calculate relative indent from base
+        relative_indent = original_indent - base_indent
+
+        # Mapping: preserve relative indentation as-is
+        # - Items at base level (relative 0) → 0 spaces
+        # - Items one level deeper (relative 4) → 4 spaces
+        # - And so on...
+        processed_lines.append(' ' * relative_indent + content)
+
+    return '\n'.join(processed_lines).strip()
+
+
 def parse_simple_docstring(docstring: str, expected_sections: list[str]) -> dict[str, str]:
     """Parse simplified docstring format extracting sections."""
     if not docstring:
@@ -49,41 +103,47 @@ def parse_simple_docstring(docstring: str, expected_sections: list[str]) -> dict
     result = {}
     lines = docstring.strip().splitlines()
     current_section = None
-    current_content = []
+    current_lines = []
 
     for line in lines:
         stripped = line.strip()
         if not stripped:
-            if current_section and current_content:
-                current_content.append("")
+            if current_section and current_lines:
+                current_lines.append("")
             continue
 
         # Check if this line starts a new section
         section_found = False
         for section in expected_sections:
             if stripped.lower().startswith(f"{section.lower()}:"):
-                # Save previous section
-                if current_section and current_content:
-                    result[current_section.lower().replace(' ', '_')] = '\n'.join(current_content).strip()
+                # Process previous section if exists
+                if current_section and current_lines:
+                    processed_content = _process_section_lines(current_lines)
+                    if processed_content:
+                        result[current_section.lower().replace(' ', '_')] = processed_content
 
                 # Start new section
                 current_section = section
-                current_content = []
+                current_lines = []
 
                 # Check if value is on the same line
                 value_part = stripped[len(f"{section}:"):].strip()
                 if value_part:
-                    current_content.append(value_part)
+                    current_lines.append((" " * 0, value_part))  # No indentation for same-line content
 
                 section_found = True
                 break
 
         if not section_found and current_section:
-            current_content.append(stripped)
+            # This line belongs to current section - store with original indentation
+            leading_spaces = len(line) - len(line.lstrip())
+            current_lines.append((line[:leading_spaces], stripped))
 
-    # Save last section
-    if current_section and current_content:
-        result[current_section.lower().replace(' ', '_')] = '\n'.join(current_content).strip()
+    # Don't forget the last section
+    if current_section and current_lines:
+        processed_content = _process_section_lines(current_lines)
+        if processed_content:
+            result[current_section.lower().replace(' ', '_')] = processed_content
 
     return result
 
@@ -360,7 +420,10 @@ def sync_problem_to_db(conn, slug: str, problem_dir: Path):
 
 def main():
     """Main sync function."""
-    print("🔄 Syncing problems to database...\n")
+    # Parse command-line arguments
+    parser = argparse.ArgumentParser(description='Sync problem metadata to PostgreSQL database')
+    parser.add_argument('problem_slug', nargs='?', help='Specific problem slug to sync (e.g., "53-maximum-subarray"). If not provided, syncs all problems.')
+    args = parser.parse_args()
 
     # Path to problems directory
     problems_dir = Path(__file__).parent.parent.parent / 'algorithms' / 'problems'
@@ -377,28 +440,49 @@ def main():
         print(f"❌ Database connection failed: {e}")
         sys.exit(1)
 
-    # Process each problem directory
-    success_count = 0
-    error_count = 0
+    # Determine which problems to sync
+    if args.problem_slug:
+        # Sync specific problem
+        problem_dir = problems_dir / args.problem_slug
+        if not problem_dir.exists() or not problem_dir.is_dir():
+            print(f"❌ Problem not found: {args.problem_slug}")
+            conn.close()
+            sys.exit(1)
 
-    for problem_dir in sorted(problems_dir.iterdir()):
-        if not problem_dir.is_dir() or problem_dir.name.startswith('.'):
-            continue
-
+        print(f"🔄 Syncing single problem: {args.problem_slug}\n")
         try:
-            sync_problem_to_db(conn, problem_dir.name, problem_dir)
-            success_count += 1
+            sync_problem_to_db(conn, args.problem_slug, problem_dir)
+            print(f"\n🎉 Successfully synced {args.problem_slug}")
         except Exception as e:
-            print(f"  ❌ Error syncing {problem_dir.name}: {e}")
+            print(f"❌ Error syncing {args.problem_slug}: {e}")
             import traceback
             traceback.print_exc()
-            error_count += 1
+            conn.close()
+            sys.exit(1)
+    else:
+        # Sync all problems
+        print("🔄 Syncing all problems to database...\n")
+        success_count = 0
+        error_count = 0
+
+        for problem_dir in sorted(problems_dir.iterdir()):
+            if not problem_dir.is_dir() or problem_dir.name.startswith('.'):
+                continue
+
+            try:
+                sync_problem_to_db(conn, problem_dir.name, problem_dir)
+                success_count += 1
+            except Exception as e:
+                print(f"  ❌ Error syncing {problem_dir.name}: {e}")
+                import traceback
+                traceback.print_exc()
+                error_count += 1
+
+        print(f"\n🎉 Sync complete!")
+        print(f"   ✅ Success: {success_count}")
+        print(f"   ❌ Errors: {error_count}")
 
     conn.close()
-
-    print(f"\n🎉 Sync complete!")
-    print(f"   ✅ Success: {success_count}")
-    print(f"   ❌ Errors: {error_count}")
 
 
 if __name__ == '__main__':

@@ -80,6 +80,9 @@ export interface ListItemToken extends Token {
   level: number
   headerItem?: boolean
   displayNumber?: string
+  marker?: string
+  isCollapsible?: boolean
+  collapsibleTitle?: string
 }
 
 export interface CodeBlockToken extends Token {

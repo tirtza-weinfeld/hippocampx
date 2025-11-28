@@ -16,6 +16,8 @@ export type AgentProblemCardProps = {
  * Header shows instantly, solutions stream in when ready.
  */
 export function AgentProblemCard({ problem }: AgentProblemCardProps) {
+
+
   // Create promise but DON'T await - allows header to render instantly
   const solutionsPromise = getSolutionsByProblemId(problem.id);
 
@@ -50,6 +52,7 @@ async function AgentProblemCardContent({
   const fileSectionMap: Record<string, SectionType[]> = {};
 
   for (const solution of solutionsList) {
+
     const sections: SectionType[] = [];
 
     // Definition is shared across all files
@@ -73,6 +76,7 @@ async function AgentProblemCardContent({
     fileSectionMap[solution.file_name] = sections;
   }
 
+  
   return (
     <AgentCardShellContent
       solutionFiles={solutionFiles}
@@ -83,6 +87,7 @@ async function AgentProblemCardContent({
       {problem.definition && (
         <AgentSection section="definition">
           <MarkdownRenderer>{problem.definition}</MarkdownRenderer>
+          {/* <div>{problem.definition}</div> */}
         </AgentSection>
       )}
 
@@ -99,7 +104,8 @@ async function AgentProblemCardContent({
           {/* Intuition */}
           {solution.intuition && (
             <AgentSection section="intuition" file={solution.file_name}>
-              <MarkdownRenderer>{solution.intuition}</MarkdownRenderer>
+              <MarkdownRenderer> {solution.intuition}</MarkdownRenderer>
+              {/* <pre> {solution.intuition}</pre> */}
             </AgentSection>
           )}
 

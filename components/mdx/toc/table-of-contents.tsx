@@ -321,7 +321,7 @@ export function TableOfContents({ headings: rawHeadings, className, maxHeight = 
   }
 
   return (
-    <nav className={cn("space-y-1 sm:space-y-2 ", className)} aria-label="Table of Contents">
+    <nav className={cn("space-y-1 sm:space-y-2 table-of-contents", className)} aria-label="Table of Contents" >
       <div className="flex items-center justify-between mb-2 sm:mb-3 lg:mb-4">
         <h3 className={cn("text-sm sm:text-base lg:text-lg",
           "text-toc-gradient",
