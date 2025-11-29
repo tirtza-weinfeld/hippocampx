@@ -162,13 +162,14 @@ export function AgentFilterHeader({ filters, onFiltersChange, topics, stats, has
               centerContainerSelector="[data-filter-controls]"
               tooltipContent="Filter by difficulty"
               tooltipSide="top"
+              tooltipClassName="bg-blue-500/5 text-blue-500 fill-blue-500"
               trigger={
                 <div
                   className={cn(
                     "h-8 w-8 p-0 border border-border/20 bg-gradient-to-br flex items-center justify-center cursor-pointer",
                     "transition-all duration-200 rounded-lg relative hover:scale-105 hover:shadow-sm active:scale-95",
                     `from-${DIFFICULTY_COLORS[filters.difficulty]}-50 to-${DIFFICULTY_COLORS[filters.difficulty]}-100`,
-                    `dark:from-${DIFFICULTY_COLORS[filters.difficulty]}-950/50 dark:to-${DIFFICULTY_COLORS[filters.difficulty]}-900/50`,
+                    `dark:from-${DIFFICULTY_COLORS[filters.difficulty]}-950 dark:to-${DIFFICULTY_COLORS[filters.difficulty]}-900`,
                     `text-${DIFFICULTY_COLORS[filters.difficulty]}-700 dark:text-${DIFFICULTY_COLORS[filters.difficulty]}-300`,
                     filters.difficulty !== "all" && "ring-2 ring-offset-1 ring-offset-background ring-current/30"
                   )}
@@ -232,6 +233,7 @@ export function AgentFilterHeader({ filters, onFiltersChange, topics, stats, has
             centerContainerSelector="[data-filter-controls]"
             tooltipContent="Filter by topic"
             tooltipSide="top"
+            tooltipClassName="bg-purple-500/5 text-purple-500 "
             trigger={
               <div className={cn(
                 "h-8 w-8 p-0 border border-border/20 bg-gradient-to-br flex items-center justify-center cursor-pointer rounded-lg relative",
@@ -269,6 +271,7 @@ export function AgentFilterHeader({ filters, onFiltersChange, topics, stats, has
             centerContainerSelector="[data-filter-controls]"
             tooltipContent="Sort problems"
             tooltipSide="top"
+            tooltipClassName="bg-indigo-500/5 text-indigo-500 fill-indigo-500"
             trigger={
               <div className={cn(
                 "h-8 w-8 p-0 border border-border/20 bg-gradient-to-br flex items-center justify-center cursor-pointer rounded-lg relative",
@@ -321,6 +324,7 @@ export function AgentFilterHeader({ filters, onFiltersChange, topics, stats, has
           <AgentTooltip
             content={hasActiveFilters ? `Clear ${activeFilterCount} filter${activeFilterCount > 1 ? 's' : ''}` : "No active filters"}
             side="top"
+            className="bg-red-500/5 text-red-500 fill-red-500"
           >
             <div className="relative ml-0.5">
               <Button
@@ -352,6 +356,9 @@ export function AgentFilterHeader({ filters, onFiltersChange, topics, stats, has
           <AgentTooltip
             content={hasExpandedProblems ? "Collapse all problems" : "Expand all problems"}
             side="top"
+            className={
+              cn(hasExpandedProblems ? "bg-orange-500/5 text-orange-500 fill-orange-500" : "bg-green-500/5 text-green-500 fill-green-500")
+            }
           >
             <Button
               variant="ghost"

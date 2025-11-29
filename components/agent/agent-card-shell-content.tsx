@@ -25,9 +25,15 @@ export function AgentCardShellContent({
 }: AgentCardShellContentProps) {
   return (
     <ProblemStateProvider defaultFile={defaultFile}>
-      <SectionTabs fileSectionMap={fileSectionMap} />
+      <div className=" flex flex-row gap-1 justify-between overflow-x-auto overflow-y-hidden">
+
+        <SectionTabs fileSectionMap={fileSectionMap} />
       <FileTabs files={solutionFiles} fileSectionMap={fileSectionMap} />
+
+
+      </div>
       {children}
+
     </ProblemStateProvider>
   )
 }

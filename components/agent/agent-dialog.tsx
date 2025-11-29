@@ -141,6 +141,7 @@ export function AgentDialog({ children, isOpen, onClose, excludeClickOutsideRefs
                         ease: [0.4, 0, 0.2, 1]
                     }}
                     className={cn(
+                        '@container',
                         'fixed z-50',
                         'bg-background',
                         'rounded-xl',
@@ -201,6 +202,7 @@ export function AgentDialog({ children, isOpen, onClose, excludeClickOutsideRefs
                         <AgentTooltip
                             content={easyDismiss ? 'Light Dismiss Enabled' : 'Light Dismiss Disabled'}
                             side="bottom"
+                            className="bg-blue-500/5 text-blue-500 fill-blue-500"
                         >
                             <button
                                 type="button"
@@ -219,7 +221,8 @@ export function AgentDialog({ children, isOpen, onClose, excludeClickOutsideRefs
                                     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
                                     'shadow-sm hover:shadow-md',
                                     easyDismiss
-                                        ? 'bg-gradient-to-r from-blue-500/20 via-sky-800/20 to-teal-500/20 dark:from-teal-600 dark:via-cyan-600 dark:to-blue-600 focus-visible:ring-cyan-500/50'
+                                      ? `bg-gradient-to-r from-blue-500/20 via-sky-800/20 to-teal-500/20
+                                         dark:from-blue-900/80 dark:via-sky-950/80 dark:to-blue-950/80 focus-visible:ring-cyan-900`
                                         : 'bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 dark:from-gray-600 dark:via-gray-700 dark:to-gray-600 focus-visible:ring-gray-400/50'
                                 )}
                             >

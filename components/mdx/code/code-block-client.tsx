@@ -5,11 +5,12 @@ import { Maximize2, Minimize2 } from 'lucide-react';
 import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
 import CopyCode from './copy-code';
-
+import { cn } from '@/lib/utils';
 type CodeBlockClientProps = {
   code: string;
   highlightedCodeWithTooltips: React.ReactNode;
   totalLines: number;
+  className?: string
 };
 
 const MAX_LINES_COLLAPSED = 20;
@@ -28,7 +29,8 @@ const ICON_ANIMATION = {
 export function CodeBlockClient({
   code,
   highlightedCodeWithTooltips,
-  totalLines
+  totalLines,
+  className
 }: CodeBlockClientProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [heights, setHeights] = useState({ collapsed: MAX_LINES_COLLAPSED * LINE_HEIGHT, expanded: MAX_LINES_COLLAPSED * LINE_HEIGHT });
@@ -50,7 +52,7 @@ export function CodeBlockClient({
   }
 
   return (
-    <div className="my-4 rounded-md bg-gray-100 p-4 shadow-2xl dark:bg-gray-800">
+    <div className={cn("my-1 rounded-md bg-gray-100 px-4 py-1 shadow-2xl dark:bg-gray-800", className)}>
       <div className="relative">
         <CopyCode code={code} className="absolute right-2 top-2 z-20" />
 

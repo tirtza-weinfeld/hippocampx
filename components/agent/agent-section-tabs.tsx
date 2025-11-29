@@ -3,12 +3,13 @@
 import { SectionTab , SectionType} from './agent-section-tab'
 import { useProblemState } from './problem-state-context'
 import { useMemo } from 'react'
-
+import { cn } from '@/lib/utils'
 type SectionTabsProps = {
   fileSectionMap: Record<string, SectionType[]>
+  className?: string
 }
 
-export function SectionTabs({ fileSectionMap }: SectionTabsProps) {
+export function SectionTabs({ fileSectionMap, className }: SectionTabsProps) {
   const { activeSection, setActiveSection, activeFile } = useProblemState()
 
   // Derive unique sections from fileSectionMap
@@ -21,8 +22,8 @@ export function SectionTabs({ fileSectionMap }: SectionTabsProps) {
   }, [fileSectionMap])
 
   return (
-    <div className="overflow-x-auto overflow-y-hidden border-b border-gray-200 dark:border-gray-700">
-      <div className="flex gap-2 px-5 py-3 min-w-min">
+    <div className={cn("overflow-x-auto overflow-y-hidden border-b border-gray-200 dark:border-gray-700", className)}>
+      <div className="flex gap-2 px-5 pt-1 min-w-min">
         {allSections.map(section => {
           const hasInActiveFile = fileSectionMap[activeFile]?.includes(section)
 

@@ -15,7 +15,9 @@ export function FileTab({ file, isActive, onClick, className }: FileTabProps) {
       onClick={onClick}
       aria-current={isActive}
       className={cn(
-        "px-3 py-1.5 text-sm font-medium rounded-md transition-all duration-200",
+        "rounded-none!",
+        "rounded-t-lg! ",
+        "px-1 pb-1 pt-1.5 text-sm font-medium transition-all duration-200",
         "border border-transparent",
         isActive
           ? "bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800"

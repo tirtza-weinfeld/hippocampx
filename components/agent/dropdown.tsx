@@ -16,13 +16,14 @@ type DropdownProps = {
   centerContainerSelector?: string
   tooltipContent?: string
   tooltipSide?: TooltipSide
+  tooltipClassName?: string
 }
 
 /**
  * Dropdown component that renders content as a portal to avoid clipping.
  * Calculates position relative to trigger element.
  */
-export function Dropdown({ trigger, children, align = "start", className, centerContainerSelector, tooltipContent, tooltipSide = "top" }: DropdownProps) {
+export function Dropdown({ trigger, children, align = "start", className, centerContainerSelector, tooltipContent, tooltipSide = "top", tooltipClassName }: DropdownProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [position, setPosition] = useState({ top: 0, left: 0 })
   const triggerRef = useRef<HTMLDivElement>(null)
@@ -130,7 +131,7 @@ export function Dropdown({ trigger, children, align = "start", className, center
   return (
     <div ref={triggerRef} className="relative inline-block">
       {tooltipContent ? (
-        <AgentTooltip content={tooltipContent} side={tooltipSide}>
+        <AgentTooltip content={tooltipContent} side={tooltipSide} className={tooltipClassName}>
           {triggerElement}
         </AgentTooltip>
       ) : (
