@@ -16,7 +16,16 @@ export function useClickOutside(
     useEffect(() => {
         if (!enabled) return
 
+        // Track if this is the first render to prevent immediate dismissal
+        let isInitialRender = true
+        const initialTimeoutId = setTimeout(() => {
+            isInitialRender = false
+        }, 50)
+
         function handleClickOutside(e: MouseEvent) {
+            // Skip if initial render period
+            if (isInitialRender) return
+
             const target = e.target as Node
 
             // Check if click is on an excluded element
@@ -47,13 +56,11 @@ export function useClickOutside(
             }
         }
 
-        // Add delay to prevent immediate dismissal on open
-        const timeoutId = setTimeout(() => {
-            document.addEventListener('mousedown', handleClickOutside)
-        }, 100)
+        // Add listener immediately but protect with isInitialRender flag
+        document.addEventListener('mousedown', handleClickOutside)
 
         return () => {
-            clearTimeout(timeoutId)
+            clearTimeout(initialTimeoutId)
             document.removeEventListener('mousedown', handleClickOutside)
         }
     }, [enabled, ref, onClickOutside, excludeRefs])

@@ -1,7 +1,6 @@
 import React from 'react'
 import { ProblemsFilterWrapper } from './problems-filter-wrapper'
 import { ProblemCard } from './problem-card'
-import { ProblemCode } from './problem-code'
 import { getProblems, getTimeComplexities, getTopics } from './data'
 // import { CodeBlockSkeleton } from '@/components/mdx/code/code-block'
 

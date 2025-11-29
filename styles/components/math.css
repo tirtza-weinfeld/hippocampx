@@ -20,7 +20,6 @@ strong .katex{
  
   background: inherit !important;
   color: inherit !important;
-  -webkit-text-fill-color: inherit !important;
 
   
 }
@@ -30,17 +29,13 @@ strong .katex{
   /* fill: currentColor !important; */
   /* stroke: currentColor !important; */
 }
-/* .mop, mord{
-  background: inherit !important;
-} */
+
 
 /* Basic KaTeX styles */
 .katex {
   font-size: 1.1em;
   text-rendering: auto;
-  /* background: linear-gradient(to right, var(--color-background), var(--color-background)) ; */
   background: transparent;
-  /* background: linear-gradient(to right, --alpha(var(--color-background) / 100%), --alpha(var(--color-background) /100%)) */
   background-size: 200% 100%;
   background-position: 0% 50%;
   /* display: inline-block; */
@@ -51,8 +46,6 @@ strong .katex{
     background-size: 200% 100%;
     background-position: 0% 50%;
     background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
     color: transparent;
     /* display: inline-block; */
     &:hover span{
@@ -77,10 +70,3 @@ strong .katex{
   vertical-align: middle;
 }
 
-
-/* 
-.katex-display .base{
-  padding: 0.2rem;
-  border-radius: 0.5rem;
-  background: linear-gradient(to right, --alpha(var(--color-blue-500) / 10%), --alpha(var(--color-red-800) / 10%) ) !important; 
-} */

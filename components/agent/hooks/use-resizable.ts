@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from "react"
+import { useAgentDialogStore } from "../store/agent-dialog-store"
 
-type Size = { width: number; height: number }
-type Position = { x: number; y: number }
 type ResizeDirection = 'n' | 's' | 'e' | 'w' | 'ne' | 'nw' | 'se' | 'sw' | null
 
 type ResizeConstraints = {
@@ -11,16 +10,18 @@ type ResizeConstraints = {
 
 /**
  * Custom hook for resizable functionality from all edges and corners.
- * Handles mouse resize events to update size and position.
+ * Integrates with Zustand store for persistent size and position state.
  */
 export function useResizable(
-    initialSize: Size,
-    position: Position,
-    onPositionChange: (position: Position) => void,
     constraints: ResizeConstraints = { minWidth: 300, minHeight: 200 },
     enabled: boolean = true
 ) {
-    const [size, setSize] = useState(initialSize)
+    const size = useAgentDialogStore((state) => state.size)
+    const setSize = useAgentDialogStore((state) => state.setSize)
+    const position = useAgentDialogStore((state) => state.position)
+    const setPosition = useAgentDialogStore((state) => state.setPosition)
+    const setSizeAndPosition = useAgentDialogStore((state) => state.setSizeAndPosition)
+
     const [resizeDirection, setResizeDirection] = useState<ResizeDirection>(null)
 
     const resizeStartRef = useRef({
@@ -58,7 +59,6 @@ export function useResizable(
 
         const direction = resizeDirection
         const constraintsRef = { ...constraints }
-        const positionChangeCallback = onPositionChange
 
         function handleMove(e: MouseEvent | TouchEvent) {
             const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX
@@ -80,6 +80,10 @@ export function useResizable(
                 if (potentialWidth >= constraintsRef.minWidth) {
                     newWidth = potentialWidth
                     newX = resizeStartRef.current.x + deltaX
+                } else {
+                    // At minimum width, don't move position
+                    newWidth = constraintsRef.minWidth
+                    newX = resizeStartRef.current.x + (resizeStartRef.current.width - constraintsRef.minWidth)
                 }
             }
 
@@ -91,12 +95,21 @@ export function useResizable(
                 if (potentialHeight >= constraintsRef.minHeight) {
                     newHeight = potentialHeight
                     newY = resizeStartRef.current.y + deltaY
+                } else {
+                    // At minimum height, don't move position
+                    newHeight = constraintsRef.minHeight
+                    newY = resizeStartRef.current.y + (resizeStartRef.current.height - constraintsRef.minHeight)
                 }
             }
 
-            setSize({ width: newWidth, height: newHeight })
-            if (newX !== resizeStartRef.current.x || newY !== resizeStartRef.current.y) {
-                positionChangeCallback({ x: newX, y: newY })
+            // Batch updates using Zustand's atomic update to avoid visual jumps
+            const positionChanged = newX !== resizeStartRef.current.x || newY !== resizeStartRef.current.y
+
+            if (positionChanged) {
+                // Update both size and position atomically
+                setSizeAndPosition({ width: newWidth, height: newHeight }, { x: newX, y: newY })
+            } else {
+                setSize({ width: newWidth, height: newHeight })
             }
         }
 
@@ -115,12 +128,11 @@ export function useResizable(
             document.removeEventListener('touchmove', handleMove)
             document.removeEventListener('touchend', handleEnd)
         }
-    }, [resizeDirection])
+    }, [resizeDirection, constraints, setSize, setPosition, setSizeAndPosition])
 
     return {
         size,
         resizeDirection,
-        handleMouseDownResize,
-        setSize
+        handleMouseDownResize
     }
 }

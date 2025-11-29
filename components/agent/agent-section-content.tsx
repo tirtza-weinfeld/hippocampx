@@ -1,6 +1,6 @@
 "use client"
 
-import { type ReactNode, Suspense } from 'react'
+import { type ReactNode } from 'react'
 import { Activity } from 'react'
 import { useProblemState } from './problem-state-context'
 

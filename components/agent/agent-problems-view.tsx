@@ -1,9 +1,10 @@
 "use client"
 
-import { type ReactNode, useState } from 'react'
+import { type ReactNode } from 'react'
 import { Activity } from 'react'
 import { AgentFilterHeader } from './agent-filter-header'
-import { ProblemsExpandProvider, useProblemsExpand } from './problems-expand-context'
+import { useAgentDialogStore } from './store/agent-dialog-store'
+import { useHydration } from './store/use-hydration'
 
 export type AgentMetadata = {
   id: string
@@ -14,42 +15,26 @@ export type AgentMetadata = {
   updatedAt: string
 }
 
-type FilterState = {
-  search: string
-  difficulty: "all" | "easy" | "medium" | "hard"
-  topic: string
-  sort: "number" | "difficulty" | "alpha" | "date-created" | "date-updated"
-  order: "asc" | "desc"
-}
-
 type AgentProblemsViewProps = {
   metadata: AgentMetadata[] // Streamed, non-blocking
   problemComponents: Record<string, ReactNode> // Problem ID -> Component mapping
 }
 
 /**
- * Client wrapper that manages filtering/sorting state and provides expand context.
+ * Client wrapper that manages filtering/sorting state using Zustand store.
  * Problems are server-rendered components mapped by ID for O(1) lookup.
  * Modern React 19 with Compiler - no manual memoization needed.
+ * State persists across dialog open/close via sessionStorage.
  */
 export default function AgentProblemsView({ metadata, problemComponents }: AgentProblemsViewProps) {
-  return (
-    <ProblemsExpandProvider>
-      <AgentProblemsViewContent metadata={metadata} problemComponents={problemComponents} />
-    </ProblemsExpandProvider>
-  )
-}
+  // Hydrate store from sessionStorage
+  useHydration()
 
-function AgentProblemsViewContent({ metadata, problemComponents }: AgentProblemsViewProps) {
-  const { expandAll, collapseAll, expandedIds } = useProblemsExpand()
-
-  const [filters, setFilters] = useState<FilterState>({
-    search: "",
-    difficulty: "all",
-    topic: "all",
-    sort: "number",
-    order: "asc",
-  })
+  // Get state and actions from Zustand store
+  const filters = useAgentDialogStore((state) => state.filters)
+  const setFilters = useAgentDialogStore((state) => state.setFilters)
+  const expandAll = useAgentDialogStore((state) => state.expandAll)
+  const collapseAll = useAgentDialogStore((state) => state.collapseAll)
 
   // Extract unique topics from metadata - React Compiler handles memoization
   const topicsSet = new Set<string>()
@@ -114,8 +99,10 @@ function AgentProblemsViewContent({ metadata, problemComponents }: AgentProblems
     hard: filteredAndSorted.filter(m => m.difficulty === "hard").length,
   }
 
-  // Check if any problems are expanded
-  const hasExpandedProblems = filteredAndSorted.some(m => expandedIds.has(m.id))
+  // Check if any problems are expanded - derived selector only triggers when result changes
+  const hasExpandedProblems = useAgentDialogStore((state) =>
+    filteredAndSorted.some(m => state.expandedIds.includes(m.id))
+  )
 
   return (
     <div className="flex flex-col w-full">

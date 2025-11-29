@@ -3,7 +3,7 @@
 import { type ReactNode } from 'react'
 import { Activity } from 'react'
 import { AgentHeader } from './agent-header'
-import { useProblemsExpand } from './problems-expand-context'
+import { useAgentDialogStore } from './store/agent-dialog-store'
 import type { Problem } from '@/lib/db/schema-problems'
 
 type AgentCardShellProps = {
@@ -17,8 +17,9 @@ type AgentCardShellProps = {
  * Content (children) streams in when ready, wrapped in Suspense by parent.
  */
 export function AgentCardShell({ children, problem }: AgentCardShellProps) {
-  const { isExpanded, toggle } = useProblemsExpand()
-  const expanded = isExpanded(problem.slug)
+  // Use derived selector - only re-render when THIS card's state changes
+  const expanded = useAgentDialogStore((state) => state.expandedIds.includes(problem.slug))
+  const toggleExpanded = useAgentDialogStore((state) => state.toggleExpanded)
 
   return (
     <div className="relative rounded-md overflow-hidden bg-gray-50/80 dark:bg-gray-950/30 shadow-md mb-4">
@@ -29,7 +30,7 @@ export function AgentCardShell({ children, problem }: AgentCardShellProps) {
         leetcodeUrl={problem.leetcode_url || ''}
         difficulty={problem.difficulty}
         isExpanded={expanded}
-        onToggle={() => toggle(problem.slug)}
+        onToggle={() => toggleExpanded(problem.slug)}
       />
 
       <Activity mode={expanded ? 'visible' : 'hidden'}>

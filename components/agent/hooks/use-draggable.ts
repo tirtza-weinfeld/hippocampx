@@ -1,13 +1,14 @@
 import { useState, useEffect, useRef } from "react"
-
-type Position = { x: number; y: number }
+import { useAgentDialogStore } from "../store/agent-dialog-store"
 
 /**
  * Custom hook for draggable functionality.
- * Handles mouse drag events to update position.
+ * Integrates with Zustand store for persistent position state.
  */
-export function useDraggable(initialPosition: Position | (() => Position), enabled: boolean = true) {
-    const [position, setPosition] = useState(initialPosition)
+export function useDraggable(enabled: boolean = true) {
+    const position = useAgentDialogStore((state) => state.position)
+    const setPosition = useAgentDialogStore((state) => state.setPosition)
+
     const [isDragging, setIsDragging] = useState(false)
     const dragStartRef = useRef({ x: 0, y: 0 })
 
@@ -52,12 +53,11 @@ export function useDraggable(initialPosition: Position | (() => Position), enabl
             document.removeEventListener('touchmove', handleMove)
             document.removeEventListener('touchend', handleEnd)
         }
-    }, [isDragging])
+    }, [isDragging, setPosition])
 
     return {
         position,
         isDragging,
-        handleMouseDown,
-        setPosition
+        handleMouseDown
     }
 }

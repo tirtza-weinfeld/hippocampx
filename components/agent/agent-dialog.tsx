@@ -2,13 +2,14 @@
 
 import { cn } from "@/lib/utils"
 import { X, Maximize2, Minimize2, GripVertical } from 'lucide-react'
-import { useState, useRef, type ReactNode } from "react"
+import { useRef, useEffect, type ReactNode } from "react"
 import { motion, AnimatePresence, useReducedMotion } from "motion/react"
 import { useDraggable } from "./hooks/use-draggable"
 import { useResizable } from "./hooks/use-resizable"
 import { useClickOutside } from "./hooks/use-click-outside"
 import { ResizeHandle } from "./resize-handle"
 import { AgentTooltip } from "./agent-tooltip"
+import { useAgentDialogStore } from "./store/agent-dialog-store"
 
 type AgentDialogProps = {
     children: ReactNode
@@ -30,43 +31,27 @@ type AgentDialogProps = {
  */
 export function AgentDialog({ children, isOpen, onClose, excludeClickOutsideRefs = [] }: AgentDialogProps) {
 
-    const [isMaximized, setIsMaximized] = useState(false)
-    const [easyDismiss, setEasyDismiss] = useState(false)
     const shouldReduceMotion = useReducedMotion()
 
     const dialogRef = useRef<HTMLDivElement>(null)
+    const contentRef = useRef<HTMLDivElement>(null)
+    const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
-    // Draggable logic - use lazy initializer to avoid hydration mismatch
-    const { position, isDragging, handleMouseDown: handleDragStart, setPosition } = useDraggable(
-        () => {
-            if (typeof window === 'undefined') return { x: 0, y: 80 }
+    // Get all state from Zustand store
+    const scrollPosition = useAgentDialogStore((state) => state.scrollPosition)
+    const setScrollPosition = useAgentDialogStore((state) => state.setScrollPosition)
+    const isMaximized = useAgentDialogStore((state) => state.isMaximized)
+    const toggleMaximized = useAgentDialogStore((state) => state.toggleMaximized)
+    const easyDismiss = useAgentDialogStore((state) => state.easyDismiss)
+    const toggleEasyDismiss = useAgentDialogStore((state) => state.toggleEasyDismiss)
+    const position = useAgentDialogStore((state) => state.position)
+    const size = useAgentDialogStore((state) => state.size)
 
-            // Responsive positioning based on screen size
-            const isMobile = window.innerWidth < 768
-            if (isMobile) {
-                return { x: 16, y: 80 }
-            }
-            return { x: window.innerWidth - 650, y: 80 }
-        },
-        !isMaximized
-    )
+    // Draggable logic
+    const { isDragging, handleMouseDown: handleDragStart } = useDraggable(!isMaximized)
 
-    // Resizable logic - responsive sizing
-    const { size, resizeDirection, handleMouseDownResize } = useResizable(
-        (() => {
-            if (typeof window === 'undefined') return { width: 600, height: 700 }
-
-            const isMobile = window.innerWidth < 768
-            if (isMobile) {
-                return {
-                    width: Math.min(window.innerWidth - 32, 600),
-                    height: Math.min(window.innerHeight - 160, 700)
-                }
-            }
-            return { width: 600, height: 700 }
-        })(),
-        position,
-        setPosition,
+    // Resizable logic
+    const { resizeDirection, handleMouseDownResize } = useResizable(
         {
             minWidth: typeof window !== 'undefined' && window.innerWidth < 768 ? 280 : 400,
             minHeight: 300
@@ -87,9 +72,44 @@ export function AgentDialog({ children, isOpen, onClose, excludeClickOutsideRefs
 
     useClickOutside(dialogRef, handleClose, easyDismiss && isOpen, excludeClickOutsideRefs)
 
-    function handleMaximize() {
-        setIsMaximized(!isMaximized)
-    }
+    // Restore scroll position when dialog opens
+    useEffect(() => {
+        if (isOpen && contentRef.current && scrollPosition > 0) {
+            // Use requestAnimationFrame for smooth restoration
+            requestAnimationFrame(() => {
+                if (contentRef.current) {
+                    contentRef.current.scrollTop = scrollPosition
+                }
+            })
+        }
+    }, [isOpen, scrollPosition])
+
+    // Save scroll position with debouncing
+    useEffect(() => {
+        const contentElement = contentRef.current
+        if (!contentElement || !isOpen) return
+
+        function handleScroll() {
+            if (scrollTimeoutRef.current) {
+                clearTimeout(scrollTimeoutRef.current)
+            }
+
+            scrollTimeoutRef.current = setTimeout(() => {
+                if (contentRef.current) {
+                    setScrollPosition(contentRef.current.scrollTop)
+                }
+            }, 300) // 300ms debounce
+        }
+
+        contentElement.addEventListener('scroll', handleScroll, { passive: true })
+
+        return () => {
+            contentElement.removeEventListener('scroll', handleScroll)
+            if (scrollTimeoutRef.current) {
+                clearTimeout(scrollTimeoutRef.current)
+            }
+        }
+    }, [isOpen, setScrollPosition])
 
     function getCursorClass() {
         if (isDragging) return 'cursor-move'
@@ -187,9 +207,11 @@ export function AgentDialog({ children, isOpen, onClose, excludeClickOutsideRefs
                                 role="switch"
                                 aria-checked={easyDismiss}
                                 aria-label="Click outside to close"
+                                onMouseDown={(e) => e.stopPropagation()}
+                                onTouchStart={(e) => e.stopPropagation()}
                                 onClick={(e) => {
                                     e.stopPropagation()
-                                    setEasyDismiss(!easyDismiss)
+                                    toggleEasyDismiss()
                                 }}
                                 className={cn(
                                     'relative inline-flex h-6 w-10  items-center rounded-full',
@@ -216,7 +238,7 @@ export function AgentDialog({ children, isOpen, onClose, excludeClickOutsideRefs
                         {/* Window Controls */}
                         <div className="flex items-center gap-1">
                             <button
-                                onClick={handleMaximize}
+                                onClick={toggleMaximized}
                                 aria-label={isMaximized ? "Restore" : "Maximize"}
                                 className={cn(
                                     'p-2 rounded-lg',
@@ -247,7 +269,7 @@ export function AgentDialog({ children, isOpen, onClose, excludeClickOutsideRefs
                 </header>
 
                 {/* Content Area - Scrollable */}
-                <div className="flex-1 overflow-y-auto overflow-x-hidden m-2">
+                <div ref={contentRef} className="flex-1 overflow-y-auto overflow-x-hidden m-2">
                     {children}
                 </div>
             </motion.div>
