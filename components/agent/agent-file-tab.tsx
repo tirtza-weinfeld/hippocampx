@@ -15,10 +15,13 @@ export function FileTab({ file, isActive, onClick, className }: FileTabProps) {
       onClick={onClick}
       aria-current={isActive}
       className={cn(
+        // "overflow-hidden",
+        // "text-ellipsis",
+        "whitespace-nowrap",
         "rounded-none!",
         "rounded-t-lg! ",
         "px-1 pb-1 pt-1.5 text-sm font-medium transition-all duration-200",
-        "border border-transparent",
+        "border border-transparent ",
         isActive
           ? "bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800"
           : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100",

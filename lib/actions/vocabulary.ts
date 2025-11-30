@@ -1,16 +1,8 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import * as railwayApi from "@/lib/api/railway-vocabulary-client";
-
-// ============================================================================
-// Types
-// ============================================================================
-
-type ActionResult<T = void> =
-  | { success: true; data?: T }
-  | { success: false; error: string };
 
 // ============================================================================
 // Word Actions
@@ -30,7 +22,7 @@ export async function createWord(formData: FormData) {
       languageCode
     );
 
-    revalidatePath("/dictionary");
+    revalidateTag("dictionary-words", "hours");
     return { success: true, wordId: word.id };
   } catch (error) {
     console.error("Failed to create word:", error);
@@ -46,8 +38,8 @@ export async function updateWord(
   try {
     await railwayApi.updateWord(wordId, wordText, languageCode);
 
-    revalidatePath("/dictionary");
-    revalidatePath(`/dictionary/${wordId}`);
+    revalidateTag("dictionary-words", "hours");
+    revalidateTag(`word-${wordId}`, "hours");
     return { success: true };
   } catch (error) {
     console.error("Failed to update word:", error);
@@ -64,7 +56,7 @@ export async function deleteWord(wordId: number) {
   }
 
   // Don't catch redirect - it needs to throw to work
-  revalidatePath("/dictionary");
+  revalidateTag("dictionary-words", "hours");
   redirect("/dictionary");
 }
 
@@ -90,7 +82,7 @@ export async function createDefinition(formData: FormData) {
       order
     );
 
-    revalidatePath(`/dictionary/${wordId}`);
+    revalidateTag(`word-${wordId}`, "hours");
     return { success: true, definitionId: definition.id };
   } catch (error) {
     console.error("Failed to create definition:", error);
@@ -111,7 +103,7 @@ export async function updateDefinition(
       partOfSpeech || null
     );
 
-    revalidatePath(`/dictionary/${wordId}`);
+    revalidateTag(`word-${wordId}`, "hours");
     return { success: true };
   } catch (error) {
     console.error("Failed to update definition:", error);
@@ -123,7 +115,7 @@ export async function deleteDefinition(definitionId: number, wordId: number) {
   try {
     await railwayApi.deleteDefinition(definitionId);
 
-    revalidatePath(`/dictionary/${wordId}`);
+    revalidateTag(`word-${wordId}`, "hours");
     return { success: true };
   } catch (error) {
     console.error("Failed to delete definition:", error);
@@ -152,7 +144,7 @@ export async function createExample(formData: FormData) {
       source?.trim()
     );
 
-    revalidatePath(`/dictionary/${wordId}`);
+    revalidateTag(`word-${wordId}`, "hours");
     return { success: true, exampleId: example.id };
   } catch (error) {
     console.error("Failed to create example:", error);
@@ -160,11 +152,28 @@ export async function createExample(formData: FormData) {
   }
 }
 
+export async function updateExample(
+  exampleId: number,
+  wordId: number,
+  exampleText: string,
+  source?: string
+) {
+  try {
+    await railwayApi.updateExample(exampleId, exampleText, source);
+
+    revalidateTag(`word-${wordId}`, "hours");
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to update example:", error);
+    return { error: "Failed to update example" };
+  }
+}
+
 export async function deleteExample(exampleId: number, wordId: number) {
   try {
     await railwayApi.deleteExample(exampleId);
 
-    revalidatePath(`/dictionary/${wordId}`);
+    revalidateTag(`word-${wordId}`, "hours");
     return { success: true };
   } catch (error) {
     console.error("Failed to delete example:", error);
@@ -183,7 +192,7 @@ export async function createTag(name: string, description?: string) {
       description?.trim()
     );
 
-    revalidatePath("/dictionary");
+    revalidateTag("dictionary-words", "hours");
     return { success: true, tagId: tag.id };
   } catch (error) {
     console.error("Failed to create tag:", error);
@@ -195,7 +204,7 @@ export async function addTagToWord(wordId: number, tagId: number) {
   try {
     await railwayApi.addTagToWord(wordId, tagId);
 
-    revalidatePath(`/dictionary/${wordId}`);
+    revalidateTag(`word-${wordId}`, "hours");
     return { success: true };
   } catch (error) {
     console.error("Failed to add tag to word:", error);
@@ -207,10 +216,20 @@ export async function removeTagFromWord(wordId: number, tagId: number) {
   try {
     await railwayApi.removeTagFromWord(wordId, tagId);
 
-    revalidatePath(`/dictionary/${wordId}`);
+    revalidateTag(`word-${wordId}`, "hours");
     return { success: true };
   } catch (error) {
     console.error("Failed to remove tag from word:", error);
     return { error: "Failed to remove tag from word" };
+  }
+}
+
+export async function fetchAllTags() {
+  try {
+    const tags = await railwayApi.fetchAllTags();
+    return { success: true, tags };
+  } catch (error) {
+    console.error("Failed to fetch tags:", error);
+    return { success: false, error: "Failed to fetch tags", tags: [] };
   }
 }

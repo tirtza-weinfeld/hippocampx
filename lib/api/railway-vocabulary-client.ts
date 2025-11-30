@@ -9,7 +9,7 @@ import { z } from "zod";
 const RAILWAY_API_BASE = process.env.NEXT_PUBLIC_HIPPO_API || "https://hippo.up.railway.app";
 
 // ============================================================================
-// Schemas - Match your Railway API response types
+// Schemas - Match Hippo API response types
 // ============================================================================
 
 const WordSchema = z.object({
@@ -19,6 +19,25 @@ const WordSchema = z.object({
   created_at: z.string().optional(),
 });
 
+const WordFullSchema = z.object({
+  id: z.number(),
+  word_text: z.string(),
+  language_code: z.string(),
+  created_at: z.string().optional(),
+  definitions: z.array(z.lazy(() => DefinitionSchema)).default([]),
+  tags: z.array(z.lazy(() => TagSchema)).default([]),
+});
+
+const PaginatedResponseSchema = <T extends z.ZodTypeAny>(itemSchema: T) =>
+  z.object({
+    data: z.array(itemSchema),
+    total: z.number(),
+    page: z.number(),
+    page_size: z.number(),
+    total_pages: z.number(),
+    has_more: z.boolean(),
+  });
+
 const DefinitionSchema = z.object({
   id: z.number(),
   word_id: z.number(),
@@ -26,6 +45,7 @@ const DefinitionSchema = z.object({
   part_of_speech: z.string().nullable(),
   order: z.number(),
   created_at: z.string().optional(),
+  examples: z.array(z.lazy(() => ExampleSchema)).default([]),
 });
 
 const ExampleSchema = z.object({
@@ -101,7 +121,7 @@ export async function createWord(
   wordText: string,
   languageCode: string = "en"
 ): Promise<Word> {
-  const data = await railwayFetch<Word>("/vocabulary/words", {
+  const data = await railwayFetch<Word>("/v1/dictionary/words", {
     method: "POST",
     body: JSON.stringify({
       word_text: wordText,
@@ -119,18 +139,24 @@ export async function fetchWords(
 ): Promise<Word[]> {
   const params = new URLSearchParams();
   if (languageCode) params.append("language", languageCode);
-  params.append("limit", limit.toString());
-  params.append("skip", offset.toString()); // Railway uses 'skip' not 'offset'
+  params.append("page_size", limit.toString());
+  params.append("page", (Math.floor(offset / limit) + 1).toString());
 
-  const data = await railwayFetch<Word[]>(
-    `/vocabulary/words?${params.toString()}`
+  const response = await railwayFetch<unknown>(
+    `/v1/dictionary/words?${params.toString()}`,
+    {
+      next: { tags: ["dictionary-words"] }
+    }
   );
 
-  return z.array(WordSchema).parse(data);
+  const parsed = PaginatedResponseSchema(WordSchema).parse(response);
+  return parsed.data;
 }
 
 export async function fetchWordById(wordId: number): Promise<Word> {
-  const data = await railwayFetch<Word>(`/vocabulary/words/${wordId}`);
+  const data = await railwayFetch<Word>(`/v1/dictionary/words/${wordId}`, {
+    next: { tags: [`word-${wordId}`, "dictionary-words"] }
+  });
   return WordSchema.parse(data);
 }
 
@@ -139,7 +165,7 @@ export async function updateWord(
   wordText: string,
   languageCode: string
 ): Promise<Word> {
-  const data = await railwayFetch<Word>(`/vocabulary/words/${wordId}`, {
+  const data = await railwayFetch<Word>(`/v1/dictionary/words/${wordId}`, {
     method: "PATCH",
     body: JSON.stringify({
       word_text: wordText,
@@ -151,7 +177,7 @@ export async function updateWord(
 }
 
 export async function deleteWord(wordId: number): Promise<void> {
-  await railwayFetch<void>(`/vocabulary/words/${wordId}`, {
+  await railwayFetch<void>(`/v1/dictionary/words/${wordId}`, {
     method: "DELETE",
   });
 }
@@ -162,17 +188,21 @@ export async function searchWordsByPrefix(
   limit: number = 20
 ): Promise<Word[]> {
   const params = new URLSearchParams({
-    q: prefix,
+    search: prefix,
     language: languageCode,
-    skip: "0",
-    limit: limit.toString(),
+    page: "1",
+    page_size: limit.toString(),
   });
 
-  const data = await railwayFetch<Word[]>(
-    `/vocabulary/words/search?${params.toString()}`
+  const response = await railwayFetch<unknown>(
+    `/v1/dictionary/words?${params.toString()}`,
+    {
+      next: { tags: ["dictionary-words"] }
+    }
   );
 
-  return z.array(WordSchema).parse(data);
+  const parsed = PaginatedResponseSchema(WordSchema).parse(response);
+  return parsed.data;
 }
 
 // ============================================================================
@@ -185,10 +215,9 @@ export async function createDefinition(
   partOfSpeech: string | null,
   order: number = 0
 ): Promise<Definition> {
-  const data = await railwayFetch<Definition>("/vocabulary/definitions", {
+  const data = await railwayFetch<Definition>(`/v1/dictionary/words/${wordId}/definitions`, {
     method: "POST",
     body: JSON.stringify({
-      word_id: wordId,
       definition_text: definitionText,
       part_of_speech: partOfSpeech,
       order,
@@ -201,20 +230,31 @@ export async function createDefinition(
 export async function fetchDefinitionsByWordId(
   wordId: number
 ): Promise<Definition[]> {
-  const params = new URLSearchParams({ word_id: wordId.toString() });
+  const params = new URLSearchParams({
+    word_id: wordId.toString(),
+    page_size: "1000",
+  });
 
-  const data = await railwayFetch<Definition[]>(
-    `/vocabulary/definitions?${params.toString()}`
+  const response = await railwayFetch<unknown>(
+    `/v1/dictionary/definitions?${params.toString()}`,
+    {
+      next: { tags: [`word-${wordId}`] }
+    }
   );
 
-  return z.array(DefinitionSchema).parse(data);
+  const DefinitionWithExamplesSchema = DefinitionSchema.extend({
+    examples: z.array(ExampleSchema).default([]),
+  });
+
+  const parsed = PaginatedResponseSchema(DefinitionWithExamplesSchema).parse(response);
+  return parsed.data;
 }
 
 export async function fetchDefinitionById(
   definitionId: number
 ): Promise<Definition> {
   const data = await railwayFetch<Definition>(
-    `/vocabulary/definitions/${definitionId}`
+    `/v1/dictionary/definitions/${definitionId}`
   );
 
   return DefinitionSchema.parse(data);
@@ -226,7 +266,7 @@ export async function updateDefinition(
   partOfSpeech: string | null
 ): Promise<Definition> {
   const data = await railwayFetch<Definition>(
-    `/vocabulary/definitions/${definitionId}`,
+    `/v1/dictionary/definitions/${definitionId}`,
     {
       method: "PATCH",
       body: JSON.stringify({
@@ -240,7 +280,7 @@ export async function updateDefinition(
 }
 
 export async function deleteDefinition(definitionId: number): Promise<void> {
-  await railwayFetch<void>(`/vocabulary/definitions/${definitionId}`, {
+  await railwayFetch<void>(`/v1/dictionary/definitions/${definitionId}`, {
     method: "DELETE",
   });
 }
@@ -254,10 +294,9 @@ export async function createExample(
   exampleText: string,
   source?: string
 ): Promise<Example> {
-  const data = await railwayFetch<Example>("/vocabulary/examples", {
+  const data = await railwayFetch<Example>(`/v1/dictionary/definitions/${definitionId}/examples`, {
     method: "POST",
     body: JSON.stringify({
-      definition_id: definitionId,
       example_text: exampleText,
       source: source || null,
     }),
@@ -271,13 +310,18 @@ export async function fetchExamplesByDefinitionId(
 ): Promise<Example[]> {
   const params = new URLSearchParams({
     definition_id: definitionId.toString(),
+    page_size: "1000",
   });
 
-  const data = await railwayFetch<Example[]>(
-    `/vocabulary/examples?${params.toString()}`
+  const response = await railwayFetch<unknown>(
+    `/v1/dictionary/examples?${params.toString()}`,
+    {
+      next: { tags: ["dictionary-examples"] }
+    }
   );
 
-  return z.array(ExampleSchema).parse(data);
+  const parsed = PaginatedResponseSchema(ExampleSchema).parse(response);
+  return parsed.data;
 }
 
 export async function updateExample(
@@ -285,7 +329,7 @@ export async function updateExample(
   exampleText: string,
   source?: string
 ): Promise<Example> {
-  const data = await railwayFetch<Example>(`/vocabulary/examples/${exampleId}`, {
+  const data = await railwayFetch<Example>(`/v1/dictionary/examples/${exampleId}`, {
     method: "PATCH",
     body: JSON.stringify({
       example_text: exampleText,
@@ -297,7 +341,7 @@ export async function updateExample(
 }
 
 export async function deleteExample(exampleId: number): Promise<void> {
-  await railwayFetch<void>(`/vocabulary/examples/${exampleId}`, {
+  await railwayFetch<void>(`/v1/dictionary/examples/${exampleId}`, {
     method: "DELETE",
   });
 }
@@ -310,7 +354,7 @@ export async function createTag(
   name: string,
   description?: string
 ): Promise<Tag> {
-  const data = await railwayFetch<Tag>("/vocabulary/tags", {
+  const data = await railwayFetch<Tag>("/v1/dictionary/tags", {
     method: "POST",
     body: JSON.stringify({
       name,
@@ -322,12 +366,15 @@ export async function createTag(
 }
 
 export async function fetchAllTags(): Promise<Tag[]> {
-  const data = await railwayFetch<Tag[]>("/vocabulary/tags");
-  return z.array(TagSchema).parse(data);
+  const params = new URLSearchParams({ page_size: "1000" });
+  const response = await railwayFetch<unknown>(`/v1/dictionary/tags?${params.toString()}`);
+
+  const parsed = PaginatedResponseSchema(TagSchema).parse(response);
+  return parsed.data;
 }
 
 export async function fetchTagById(tagId: number): Promise<Tag> {
-  const data = await railwayFetch<Tag>(`/vocabulary/tags/${tagId}`);
+  const data = await railwayFetch<Tag>(`/v1/dictionary/tags/${tagId}`);
   return TagSchema.parse(data);
 }
 
@@ -336,7 +383,7 @@ export async function updateTag(
   name: string,
   description?: string
 ): Promise<Tag> {
-  const data = await railwayFetch<Tag>(`/vocabulary/tags/${tagId}`, {
+  const data = await railwayFetch<Tag>(`/v1/dictionary/tags/${tagId}`, {
     method: "PATCH",
     body: JSON.stringify({
       name,
@@ -348,16 +395,19 @@ export async function updateTag(
 }
 
 export async function deleteTag(tagId: number): Promise<void> {
-  await railwayFetch<void>(`/vocabulary/tags/${tagId}`, {
+  await railwayFetch<void>(`/v1/dictionary/tags/${tagId}`, {
     method: "DELETE",
   });
 }
 
 export async function fetchTagsByWordId(wordId: number): Promise<Tag[]> {
   const data = await railwayFetch<{ tags: Tag[] }>(
-    `/vocabulary/words/${wordId}/tags`
+    `/v1/dictionary/words/${wordId}?include_tags=true&include_definitions=false&include_examples=false`,
+    {
+      next: { tags: [`word-${wordId}`] }
+    }
   );
-  // API returns WordWithTags which has { tags: Tag[] }
+  // API returns WordFull which has { tags: Tag[] }
   return z.array(TagSchema).parse(data.tags);
 }
 
@@ -365,17 +415,37 @@ export async function addTagToWord(
   wordId: number,
   tagId: number
 ): Promise<void> {
-  await railwayFetch<void>(`/vocabulary/words/${wordId}/tags/${tagId}`, {
-    method: "POST",
-  });
+  // Fetch current tags
+  const currentTags = await fetchTagsByWordId(wordId);
+  const currentTagIds = currentTags.map(t => t.id);
+
+  // Add new tag if not already present
+  if (!currentTagIds.includes(tagId)) {
+    await railwayFetch<void>(`/v1/dictionary/words/${wordId}`, {
+      method: "PATCH",
+      body: JSON.stringify({
+        tag_ids: [...currentTagIds, tagId],
+      }),
+    });
+  }
 }
 
 export async function removeTagFromWord(
   wordId: number,
   tagId: number
 ): Promise<void> {
-  await railwayFetch<void>(`/vocabulary/words/${wordId}/tags/${tagId}`, {
-    method: "DELETE",
+  // Fetch current tags
+  const currentTags = await fetchTagsByWordId(wordId);
+  const currentTagIds = currentTags.map(t => t.id);
+
+  // Remove tag if present
+  const updatedTagIds = currentTagIds.filter(id => id !== tagId);
+
+  await railwayFetch<void>(`/v1/dictionary/words/${wordId}`, {
+    method: "PATCH",
+    body: JSON.stringify({
+      tag_ids: updatedTagIds,
+    }),
   });
 }
 
@@ -388,7 +458,7 @@ export async function createWordRelation(
   wordId2: number,
   relationType: string
 ): Promise<WordRelation> {
-  const data = await railwayFetch<WordRelation>("/vocabulary/word-relations", {
+  const data = await railwayFetch<WordRelation>("/v1/dictionary/relations", {
     method: "POST",
     body: JSON.stringify({
       word_id_1: wordId1,
@@ -404,22 +474,30 @@ export async function fetchRelatedWords(
   wordId: number,
   relationType?: string
 ): Promise<WordRelation[]> {
-  const params = new URLSearchParams({ word_id: wordId.toString() });
+  const params = new URLSearchParams({
+    word_id: wordId.toString(),
+    page_size: "1000",
+  });
   if (relationType) params.append("relation_type", relationType);
 
-  const data = await railwayFetch<WordRelation[]>(
-    `/vocabulary/word-relations?${params.toString()}`
+  const response = await railwayFetch<unknown>(
+    `/v1/dictionary/relations?${params.toString()}`,
+    {
+      next: { tags: [`word-${wordId}`] }
+    }
   );
 
-  return z.array(WordRelationSchema).parse(data);
+  const parsed = PaginatedResponseSchema(WordRelationSchema).parse(response);
+  return parsed.data;
 }
 
 export async function deleteWordRelation(
   wordId1: number,
-  wordId2: number
+  wordId2: number,
+  relationType: string
 ): Promise<void> {
   await railwayFetch<void>(
-    `/vocabulary/word-relations/${wordId1}/${wordId2}`,
+    `/v1/dictionary/relations/${wordId1}/${wordId2}/${relationType}`,
     {
       method: "DELETE",
     }
@@ -511,24 +589,18 @@ export async function fetchWordComplete(
   wordId: number
 ): Promise<WordComplete | null> {
   try {
-    // Fetch word first to check if it exists
-    const word = await fetchWordById(wordId);
-
-    const [definitions, tags, rawRelations] = await Promise.all([
-      fetchDefinitionsByWordId(wordId),
-      fetchTagsByWordId(wordId),
-      fetchRelatedWords(wordId),
-    ]);
-
-    const definitionsWithExamples = await Promise.all(
-      definitions.map(async (def) => {
-        const examples = await fetchExamplesByDefinitionId(def.id);
-        return {
-          ...def,
-          examples,
-        };
-      })
+    // Single request to get word with all nested data (definitions with examples, tags)
+    const wordFullData = await railwayFetch<unknown>(
+      `/v1/dictionary/words/${wordId}?include_all=true`,
+      {
+        next: { tags: [`word-${wordId}`, "dictionary-words"] }
+      }
     );
+
+    const wordFull = WordFullSchema.parse(wordFullData);
+
+    // Fetch relations separately (handle 404s gracefully)
+    const rawRelations = await fetchRelatedWords(wordId).catch(() => []);
 
     // Transform relations to include related word data
     const relations = await Promise.all(
@@ -545,9 +617,56 @@ export async function fetchWordComplete(
     );
 
     return {
-      ...word,
-      definitions: definitionsWithExamples,
-      tags,
+      ...wordFull,
+      definitions: wordFull.definitions,
+      tags: wordFull.tags,
+      relations,
+    };
+  } catch {
+    // Return null for 404s or any other errors
+    return null;
+  }
+}
+
+/**
+ * Fetch word by text and language with all related data
+ */
+export async function fetchWordCompleteByText(
+  wordText: string,
+  languageCode: string = "en"
+): Promise<WordComplete | null> {
+  try {
+    // Single request to get word with all nested data (definitions with examples, tags)
+    const wordFullData = await railwayFetch<unknown>(
+      `/v1/dictionary/words/${languageCode}/${encodeURIComponent(wordText)}?include_all=true`,
+      {
+        next: { tags: [`word-${languageCode}-${wordText}`, "dictionary-words"] }
+      }
+    );
+
+    const wordFull = WordFullSchema.parse(wordFullData);
+
+    // Fetch relations separately (handle 404s gracefully)
+    const rawRelations = await fetchRelatedWords(wordFull.id).catch(() => []);
+
+    // Transform relations to include related word data
+    const relations = await Promise.all(
+      rawRelations.map(async (relation) => {
+        const relatedWord = await fetchWordById(relation.word_id_2);
+        return {
+          word_id_1: relation.word_id_1,
+          word_id_2: relation.word_id_2,
+          relation_type: relation.relation_type,
+          related_word_text: relatedWord.word_text,
+          related_word_id: relatedWord.id,
+        };
+      })
+    );
+
+    return {
+      ...wordFull,
+      definitions: wordFull.definitions,
+      tags: wordFull.tags,
       relations,
     };
   } catch {

@@ -1,16 +1,14 @@
 import Link from "next/link";
 import { Suspense } from "react";
-import { fetchWords, searchWordsByPrefix } from "@/lib/api/railway-vocabulary-client";
-import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+  fetchWords,
+  searchWordsByPrefix,
+} from "@/lib/api/railway-vocabulary-client";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { SearchBar } from "@/components/dictionary/search-bar";
+import { DictionarySearchWrapper } from "@/components/dictionary/dictionary-search-wrapper";
+import * as motion from "motion/react-client";
+import { BookOpen, Plus, AlertTriangle } from "lucide-react";
 
 export default async function DictionaryPage(props: {
   searchParams: Promise<{ q?: string; lang?: string }>;
@@ -19,102 +17,83 @@ export default async function DictionaryPage(props: {
   const query = searchParams.q;
   const language = searchParams.lang || "en";
 
-  return (
-    <div className="container mx-auto py-8 px-4">
-      <div className="flex flex-col space-y-6">
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-4xl font-bold tracking-tight">Dictionary</h1>
-            <p className="text-muted-foreground mt-2">
-              Browse and search vocabulary words
-            </p>
-          </div>
-          <Link href="/dictionary/new">
-            <Button>Add New Word</Button>
-          </Link>
-        </div>
-
-        <SearchBar initialQuery={query} initialLanguage={language} />
-
-        <Suspense
-          key={query || "all"}
-          fallback={<WordListSkeleton />}
-        >
-          <WordList query={query} language={language} />
-        </Suspense>
-      </div>
-    </div>
-  );
-}
-
-async function WordList({
-  query,
-  language,
-}: {
-  query?: string;
-  language: string;
-}) {
-  const words = query
-    ? await searchWordsByPrefix(query, language, 50)
-    : await fetchWords(language, 50, 0);
-
-  if (words.length === 0) {
+  let words;
+  try {
+    words = query
+      ? await searchWordsByPrefix(query, language, 50)
+      : await fetchWords(language, 50, 0);
+  } catch {
     return (
-      <Card>
-        <CardContent className="flex flex-col items-center justify-center py-12">
-          <p className="text-muted-foreground text-center">
-            {query
-              ? `No words found matching "${query}"`
-              : "No words in dictionary yet"}
+      <div className="min-h-screen">
+        <div className="flex flex-col items-center justify-center py-12">
+          <div className="rounded-md bg-red-50 dark:bg-red-950/20 p-3 mb-3">
+            <AlertTriangle className="h-5 w-5 text-red-600 dark:text-red-400" />
+          </div>
+          <p className="text-foreground font-medium text-sm mb-1">
+            Failed to load dictionary
           </p>
-          {!query && (
-            <Link href="/dictionary/new" className="mt-4">
-              <Button>Add Your First Word</Button>
-            </Link>
-          )}
-        </CardContent>
-      </Card>
+          <p className="text-muted-foreground text-xs">
+            Please try again later.
+          </p>
+        </div>
+      </div>
     );
   }
 
+  const headerContent = (
+    <motion.div
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
+    >
+      <div className="flex items-center gap-3">
+        <div className="flex h-9 w-9 items-center justify-center rounded-md bg-sky-50 dark:bg-sky-950/30">
+          <BookOpen className="h-4 w-4 text-sky-600 dark:text-sky-400" />
+        </div>
+        <div>
+          <h1 className="text-lg font-medium bg-linear-to-r from-blue-600 via-sky-500 to-blue-500 dark:from-blue-400 dark:via-sky-400 dark:to-blue-400 bg-clip-text text-transparent">
+            Dictionary
+          </h1>
+          <p className="text-muted-foreground text-sm">
+            Browse and search vocabulary
+          </p>
+        </div>
+      </div>
+      <Link href="/dictionary/new">
+        <Button variant="outline" className="gap-2">
+          <Plus className="h-4 w-4" />
+          Add Word
+        </Button>
+      </Link>
+    </motion.div>
+  );
+
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-      {words.map((word) => (
-        <Link key={word.id} href={`/dictionary/${word.id}`}>
-          <Card className="transition-colors hover:bg-accent cursor-pointer h-full">
-            <CardHeader>
-              <CardTitle className="text-xl">{word.word_text}</CardTitle>
-              <CardDescription className="text-xs uppercase tracking-wide">
-                {word.language_code}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                {word.created_at
-                  ? `Added ${new Date(word.created_at).toLocaleDateString()}`
-                  : "Recently added"}
-              </p>
-            </CardContent>
-          </Card>
-        </Link>
-      ))}
+    <div className="min-h-screen">
+      <Suspense fallback={<WordListSkeleton />}>
+        <DictionarySearchWrapper
+          words={words}
+          initialQuery={query}
+          initialLanguage={language}
+          serverQuery={query}
+          headerContent={headerContent}
+        />
+      </Suspense>
     </div>
   );
 }
 
 function WordListSkeleton() {
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-      {Array.from({ length: 6 }).map((_, i) => (
-        <Card key={i}>
-          <CardHeader>
-            <Skeleton className="h-6 w-32" />
-            <Skeleton className="h-4 w-16" />
-          </CardHeader>
-          <CardContent>
-            <Skeleton className="h-4 w-24" />
-          </CardContent>
-        </Card>
+    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      {Array.from({ length: 8 }).map((_, i) => (
+        <div key={i} className="rounded-md overflow-hidden bg-gray-50/80 dark:bg-gray-950/30 border border-border/50">
+          <div className="h-px bg-gray-200 dark:bg-gray-800" />
+          <div className="p-3">
+            <Skeleton className="h-4 w-20 mb-2" />
+            <Skeleton className="h-3 w-12" />
+          </div>
+        </div>
       ))}
     </div>
   );
