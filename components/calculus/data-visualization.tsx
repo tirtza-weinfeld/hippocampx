@@ -38,36 +38,52 @@ export function PieChart({ data }: { data: ChartData[] }) {
   const svgRef = useRef<SVGSVGElement>(null)
   const total = data.reduce((sum, item) => sum + item.value, 0) || 1
 
-  // Calculate pie slices
-  let startAngle = 0
-  const slices = data.map((item, index) => {
-    const percentage = item.value / total
-    const angle = percentage * 360
-    const endAngle = startAngle + angle
+  // Calculate pie slices using reduce to avoid variable reassignment
+  const slices = data.reduce<{
+    slices: Array<{
+      path: string
+      color: string
+      percentage: number
+      startAngle: number
+      endAngle: number
+      name: string
+      value: number
+    }>
+    currentAngle: number
+  }>(
+    (acc, item, index) => {
+      const percentage = item.value / total
+      const angle = percentage * 360
+      const startAngle = acc.currentAngle
+      const endAngle = startAngle + angle
 
-    // Calculate SVG arc path
-    const x1 = 100 + 80 * Math.cos((startAngle * Math.PI) / 180)
-    const y1 = 100 + 80 * Math.sin((startAngle * Math.PI) / 180)
-    const x2 = 100 + 80 * Math.cos((endAngle * Math.PI) / 180)
-    const y2 = 100 + 80 * Math.sin((endAngle * Math.PI) / 180)
+      // Calculate SVG arc path
+      const x1 = 100 + 80 * Math.cos((startAngle * Math.PI) / 180)
+      const y1 = 100 + 80 * Math.sin((startAngle * Math.PI) / 180)
+      const x2 = 100 + 80 * Math.cos((endAngle * Math.PI) / 180)
+      const y2 = 100 + 80 * Math.sin((endAngle * Math.PI) / 180)
 
-    const largeArcFlag = angle > 180 ? 1 : 0
+      const largeArcFlag = angle > 180 ? 1 : 0
 
-    const pathData = [`M 100 100`, `L ${x1} ${y1}`, `A 80 80 0 ${largeArcFlag} 1 ${x2} ${y2}`, `Z`].join(" ")
+      const pathData = [`M 100 100`, `L ${x1} ${y1}`, `A 80 80 0 ${largeArcFlag} 1 ${x2} ${y2}`, `Z`].join(" ")
 
-    const slice = {
-      path: pathData,
-      color: index === 0 ? "#8B5CF6" : "#F59E0B", // violet-500 or amber-500
-      percentage,
-      startAngle,
-      endAngle,
-      name: item.name,
-      value: item.value,
-    }
+      const slice = {
+        path: pathData,
+        color: index === 0 ? "#8B5CF6" : "#F59E0B", // violet-500 or amber-500
+        percentage,
+        startAngle,
+        endAngle,
+        name: item.name,
+        value: item.value,
+      }
 
-    startAngle = endAngle
-    return slice
-  })
+      return {
+        slices: [...acc.slices, slice],
+        currentAngle: endAngle,
+      }
+    },
+    { slices: [], currentAngle: 0 }
+  ).slices
 
   return (
     <div className="h-64 flex items-center justify-center p-4 bg-muted/50 rounded-lg">

@@ -85,7 +85,6 @@ function convertMathInText(text: string): string {
  */
 function processSolution(solutionKey: string, solution: Solution): Solution {
   const processedSolution = { ...solution }
-  let hasChanges = false
 
   for (const field of CONVERTIBLE_FIELDS) {
     if (field in processedSolution && processedSolution[field as keyof Solution]) {
@@ -94,8 +93,7 @@ function processSolution(solutionKey: string, solution: Solution): Solution {
 
       if (convertedValue !== originalValue) {
         console.log(`    📐 Converted math notation in solution "${solutionKey}" field "${field}"`)
-        ;(processedSolution as any)[field] = convertedValue
-        hasChanges = true
+        ;(processedSolution as Record<string, unknown>)[field] = convertedValue
       }
     }
   }
@@ -120,7 +118,7 @@ function processProblem(problemId: string, problem: Problem): Problem {
 
       if (convertedValue !== originalValue) {
         console.log(`  📐 Converted math notation in problem field "${field}"`)
-        ;(processedProblem as any)[field] = convertedValue
+        ;(processedProblem as Record<string, unknown>)[field] = convertedValue
         hasChanges = true
       }
     }

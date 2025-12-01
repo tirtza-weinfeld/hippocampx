@@ -99,6 +99,7 @@ export default function ContentPopover({ word, content, step, hasHighlight, clas
       {open && (
         <FloatingPortal>
           <div
+            // eslint-disable-next-line react-hooks/refs -- Floating UI callback ref setter, not a ref read
             ref={refs.setFloating}
             style={floatingStyles}
             {...getFloatingProps()}

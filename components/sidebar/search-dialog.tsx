@@ -128,7 +128,12 @@ export function SearchDialog({
     try {
       const storedSearches = localStorage.getItem("recentSearches")
       if (storedSearches) {
-        const parsedSearches = JSON.parse(storedSearches)
+        const parsedSearches = JSON.parse(storedSearches) as {
+          title: string
+          href: string
+          parent?: string
+          parentHref?: string
+        }[]
         return parsedSearches
       }
     } catch (error) {
@@ -153,7 +158,7 @@ export function SearchDialog({
     try {
       const storedFavorites = localStorage.getItem("favorites")
       if (storedFavorites) {
-        return JSON.parse(storedFavorites)
+        return JSON.parse(storedFavorites) as FavoriteItem[]
       } else {
         // Set default favorites if none exist - enrich with full data from routes
         const now = Date.now()

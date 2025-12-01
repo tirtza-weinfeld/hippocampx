@@ -38,7 +38,7 @@ export function parseMetaHighlightString(meta: string): LineHighlight[] | null {
         stepColor = getStepColor(stepNumber)
         // console.log(stepColor)
       } else if (isValidColorName(stepSpec)) {
-        stepColor = stepSpec as ColorName
+        stepColor = stepSpec
       } else {
         continue // Skip invalid step specifications
       }

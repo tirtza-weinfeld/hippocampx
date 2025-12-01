@@ -86,7 +86,7 @@ export function DictionaryView({topics}: { topics: Topics }) {
     binary_search_on_answer: `Binary search over monotonic feasibility of answers (not data indices) using a checker predicate`,
     cache: `Fast storage (memory or data structure) that holds recently/computed results to avoid recomputation or slow access`,
     dfs: `Depth-first traversal of graphs/trees using recursion or a stack; explores one branch fully before backtracking`,
-    dijkstra: `Single-source shortest paths on non-negative weighted graphs using a priority queue; *$O((V+E)\ log V)$*`,
+    dijkstra: `Single-source shortest paths on non-negative weighted graphs using a priority queue; *$O((V+E) log V)$*`,
     dynamic_programming: `Technique of solving problems by breaking them into overlapping subproblems, storing solutions to reuse`,
     game: `Formalized problem with states, players, and payoffs; often analyzed with strategies, minimax, or Nash equilibrium`,
     greedy: `Algorithmic paradigm that builds a solution step-by-step, always choosing the locally optimal option.`,

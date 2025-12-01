@@ -11,10 +11,10 @@ interface PillListProps {
 }
 
 // Calculate vertical stack positions for smooth spill-down effect
-const getStackPosition = (index: number, total: number) => {
+const getStackPosition = (index: number) => {
   const spacing = 44 // Space between items
   const startY = 16 // Start position below toggle button
-  
+
   return {
     x: 0, // All items aligned vertically
     y: startY + (index * spacing),
@@ -53,8 +53,8 @@ export const PillList = ({ pills, className }: PillListProps) => {
 
   // Calculate positions for vertical stack expansion
   const itemPositions = useMemo(() => {
-    return pillsArray.map((_, index) => 
-      getStackPosition(index, pillsArray.length)
+    return pillsArray.map((_, index) =>
+      getStackPosition(index)
     )
   }, [pillsArray])
 

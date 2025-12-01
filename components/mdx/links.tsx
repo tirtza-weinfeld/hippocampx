@@ -2,7 +2,7 @@
 
 import { motion } from "motion/react"
 import type { ReactNode, ComponentPropsWithoutRef } from "react"
-import { ArrowUpRight, ExternalLink } from "lucide-react"
+import { ExternalLink } from "lucide-react"
 import { cn } from "@/lib/utils"
 import Link from "next/link"
 import { Route } from "next"

@@ -12,7 +12,7 @@ export function useLocalStorage<T>(
 ): [T, (value: T | ((val: T) => T)) => void] {
   const {
     serialize = JSON.stringify,
-    deserialize = JSON.parse,
+    deserialize = (value: string) => JSON.parse(value) as T,
   } = options
 
   // State to store our value

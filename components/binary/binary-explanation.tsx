@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef, startTransition } from "react"
+import { useState, useRef, startTransition } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { motion, AnimatePresence } from "motion/react"
 import { ArrowRight, ArrowDown, Lightbulb, RefreshCw, ChevronLeft, ChevronRight, Binary } from "lucide-react"
@@ -45,9 +45,10 @@ export default function BinaryExplanation() {
   const [highlightedStep, setHighlightedStep] = useState<number | null>(null)
 
   // State for interactive binary builder
-  const [customDecimal, setCustomDecimal] = useState(0)
-  const [customBinary, setCustomBinary] = useState("")
   const [binaryBits, setBinaryBits] = useState([0, 0, 0, 0, 0, 0, 0, 0])
+  // Derive customBinary and customDecimal from binaryBits - no effect needed
+  const customBinary = binaryBits.join("")
+  const customDecimal = Number.parseInt(customBinary, 2) || 0
 
   // Simplify the step-by-step navigation and make it more intuitive
   const [isStepByStep, setIsStepByStep] = useState(false)
@@ -60,8 +61,8 @@ export default function BinaryExplanation() {
   // Ref to store animation timeouts
   const animationTimeoutsRef = useRef<NodeJS.Timeout[]>([])
 
-  // Reset step indices when tab changes
-  useEffect(() => {
+  // Helper to change tab and reset animation state - called from event handlers
+  function changeTab(newTab: string) {
     // Clear any running animation timeouts
     animationTimeoutsRef.current.forEach((timeout) => clearTimeout(timeout))
     animationTimeoutsRef.current = []
@@ -73,14 +74,8 @@ export default function BinaryExplanation() {
     setShowBinarySteps(false)
     setDecimalToBinaryStepIndex(0)
     setBinaryToDecimalStepIndex(0)
-  }, [activeTab])
-
-  // Update custom binary when bits change
-  useEffect(() => {
-    const binaryString = binaryBits.join("")
-    setCustomBinary(binaryString)
-    setCustomDecimal(Number.parseInt(binaryString, 2) || 0)
-  }, [binaryBits])
+    setActiveTab(newTab)
+  }
 
   // Generate steps for decimal to binary conversion
   const generateDecimalToBinarySteps = (decimal: number) => {
@@ -283,7 +278,7 @@ export default function BinaryExplanation() {
               />
 
               <motion.button
-                onClick={() => setActiveTab("decimal-to-binary")}
+                onClick={() => changeTab("decimal-to-binary")}
                 className={`relative z-10 py-2 transition-colors duration-300 ${activeTab === "decimal-to-binary" ? "text-white font-bold" : "text-slate-700 dark:text-slate-300"
                   }`}
                 whileHover={{ scale: activeTab !== "decimal-to-binary" ? 1.05 : 1 }}
@@ -301,7 +296,7 @@ export default function BinaryExplanation() {
               </motion.button>
 
               <motion.button
-                onClick={() => setActiveTab("binary-to-decimal")}
+                onClick={() => changeTab("binary-to-decimal")}
                 className={`relative z-10 py-2 transition-colors duration-300 ${activeTab === "binary-to-decimal" ? "text-white font-bold" : "text-slate-700 dark:text-slate-300"
                   }`}
                 whileHover={{ scale: activeTab !== "binary-to-decimal" ? 1.05 : 1 }}

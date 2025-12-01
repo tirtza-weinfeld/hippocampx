@@ -1,6 +1,6 @@
 "use client"; // Required for Framer Motion components
 
-import { AlertCircle, Info, Lightbulb, Notebook, AlertTriangle, ChevronDown, Clock, Database,
+import { Info, Lightbulb, Notebook, AlertTriangle, ChevronDown, Clock, Database,
    ListChecks, Bell } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "motion/react";
@@ -178,7 +178,7 @@ const splitReactChildren = (children: React.ReactNode): { summary: React.ReactNo
     }
 
     // First element is summary, rest are details
-    const summary = children[0];
+    const summary = children[0] as React.ReactNode;
     const details = children.slice(1);
 
     return {

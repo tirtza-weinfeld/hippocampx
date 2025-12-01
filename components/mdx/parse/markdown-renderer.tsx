@@ -19,10 +19,11 @@ export function MarkdownRenderer({ children, className }: MarkdownRendererProps)
   } else if (Array.isArray(children)) {
     // Filter out empty strings and whitespace-only strings, then join without separator
     text = children
-      .filter(child => typeof child === 'string' && child.trim())
+      .filter((child): child is string => typeof child === 'string' && child.trim() !== '')
       .join('')
   } else {
-    text = String(children || '')
+    // Non-string, non-array children can't be parsed as markdown
+    return null
   }
 
   if (!text) return null
@@ -137,9 +138,10 @@ export function MarkdownRenderer({ children, className }: MarkdownRendererProps)
 
 // Export a simpler version that just handles inline elements without math extraction
 export function SimpleMarkdownRenderer({ children, className }: MarkdownRendererProps) {
-  const text = typeof children === 'string' ? children : String(children || '')
+  if (typeof children !== 'string') return null
+  if (!children) return null
 
-  if (!text) return null
+  const text = children
 
   const parser = new InlineParser(text)
   const tokens = parser.parse()

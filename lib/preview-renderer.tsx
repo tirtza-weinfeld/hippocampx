@@ -26,7 +26,7 @@ async function loadProblemData(slug: string): Promise<SymbolTag | null> {
   try {
     const metadataPath = path.join(process.cwd(), 'lib', 'extracted-metadata', 'symbol_tags.json')
     const metadataContent = await fs.readFile(metadataPath, 'utf-8')
-    const symbolTags: Record<string, SymbolTag> = JSON.parse(metadataContent)
+    const symbolTags: Record<string, SymbolTag> = JSON.parse(metadataContent) as Record<string, SymbolTag>
     
     // Find problem by matching the slug to the filename
     const problem = Object.values(symbolTags).find(tag => {

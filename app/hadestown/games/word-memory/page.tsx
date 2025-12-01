@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 // Import the new CardFlip component
 import { Card, CardFlip } from "@/components/hadestown/card"
@@ -72,12 +72,9 @@ type CardType = {
   matchId: number
 }
 
-// Replace the InstructionsCarousel component with this improved version that includes mouse animations
-function InstructionsCarousel({ onClose }: { onClose: () => void }) {
-  const [step, setStep] = useState(0)
-
-  // Custom mouse cursor component with click animation
-  const MouseCursor = ({ animate = true }: { animate?: boolean }) => (
+// Custom mouse cursor component with click animation
+function MouseCursor({ animate = true }: { animate?: boolean }) {
+  return (
     <motion.div
       className="absolute pointer-events-none z-10"
       initial={animate ? { x: -50, y: 0, scale: 0.8 } : { scale: 0.8 }}
@@ -108,6 +105,11 @@ function InstructionsCarousel({ onClose }: { onClose: () => void }) {
       </div>
     </motion.div>
   )
+}
+
+// Replace the InstructionsCarousel component with this improved version that includes mouse animations
+function InstructionsCarousel({ onClose }: { onClose: () => void }) {
+  const [step, setStep] = useState(0)
 
   const steps = [
     {
@@ -314,7 +316,6 @@ function InstructionsCarousel({ onClose }: { onClose: () => void }) {
 }
 
 export default function WordMemoryGame() {
-  const [cards, setCards] = useState<CardType[]>([])
   const [flippedCards, setFlippedCards] = useState<number[]>([])
   const [matchedPairs, setMatchedPairs] = useState<number>(0)
   const [moves, setMoves] = useState<number>(0)
@@ -323,26 +324,16 @@ export default function WordMemoryGame() {
   const [gameStarted, setGameStarted] = useState<boolean>(false)
   const [difficulty, setDifficulty] = useState<"easy" | "medium" | "hard">("medium")
   const [showInstructions, setShowInstructions] = useState<boolean>(true)
-  // Initialize game cards
-  const initializeGame = useCallback(() => {  
-    // Reset game state
-    setFlippedCards([])
-    setMatchedPairs(0)
-    setMoves(0)
-    setTimer(0)
-    setGameComplete(false)
-    setGameStarted(false)
 
-    // Determine number of pairs based on difficulty
+  // Helper to generate cards for a given difficulty
+  function generateCards(diff: "easy" | "medium" | "hard"): CardType[] {
     let numPairs = 6
-    if (difficulty === "easy") numPairs = 4
-    if (difficulty === "hard") numPairs = 8
+    if (diff === "easy") numPairs = 4
+    if (diff === "hard") numPairs = 8
 
-    // Select random vocabulary pairs
     const shuffledPairs = [...VOCABULARY_PAIRS].sort(() => Math.random() - 0.5).slice(0, numPairs)
-
-    // Create cards from pairs
     const newCards: CardType[] = []
+
     shuffledPairs.forEach((pair, index) => {
       newCards.push({
         id: index * 2,
@@ -352,7 +343,6 @@ export default function WordMemoryGame() {
         flipped: false,
         matchId: index,
       })
-
       newCards.push({
         id: index * 2 + 1,
         content: pair.definition,
@@ -363,13 +353,28 @@ export default function WordMemoryGame() {
       })
     })
 
-    // Shuffle cards
-    setCards(newCards.sort(() => Math.random() - 0.5))
-  }, [difficulty])
-  // Initialize game
-  useEffect(() => {
-    initializeGame()
-  }, [difficulty, initializeGame])
+    return newCards.sort(() => Math.random() - 0.5)
+  }
+
+  // Initialize game - called from event handlers, not effects
+  function initializeGame(diff: "easy" | "medium" | "hard" = difficulty) {
+    setFlippedCards([])
+    setMatchedPairs(0)
+    setMoves(0)
+    setTimer(0)
+    setGameComplete(false)
+    setGameStarted(false)
+    setCards(generateCards(diff))
+  }
+
+  // Change difficulty and reinitialize
+  function changeDifficulty(newDifficulty: "easy" | "medium" | "hard") {
+    setDifficulty(newDifficulty)
+    initializeGame(newDifficulty)
+  }
+
+  // Initialize cards on first render using useState initializer
+  const [cards, setCards] = useState<CardType[]>(() => generateCards("medium"))
 
   // Update the timer logic to exclude it from Easy mode
   // In the Timer effect, modify the condition to not start timer in Easy mode
@@ -578,7 +583,7 @@ export default function WordMemoryGame() {
               bg-gradient-to-r from-green-200 to-green-700 text-white dark:text-gray-900 
               
               dark:from-green-300 dark:to-green-600` : "dark:border-green-400/60 border-green-500/60"}
-            onClick={() => setDifficulty("easy")}
+            onClick={() => changeDifficulty("easy")}
           >
             Easy
           </Button>
@@ -588,7 +593,7 @@ export default function WordMemoryGame() {
               bg-gradient-to-r from-orange-200 to-orange-700 text-white dark:text-gray-900 
               
               dark:from-orange-300 dark:to-orange-600` : " dark:border-orange-350/60 border-orange-500/60"}
-            onClick={() => setDifficulty("medium")}
+            onClick={() => changeDifficulty("medium")}
           >
             Medium
           </Button>
@@ -597,7 +602,7 @@ export default function WordMemoryGame() {
             className={difficulty === "hard" ? `bg-gradient-to-r from-red-200 to-red-700 text-white dark:text-gray-900 
               
               dark:from-red-300 dark:to-red-600` : "dark:border-red-350/60 border-red-500/60"}
-            onClick={() => setDifficulty("hard")}
+            onClick={() => changeDifficulty("hard")}
           >
             Hard
           </Button>
@@ -607,7 +612,7 @@ export default function WordMemoryGame() {
         <div className="flex justify-center mb-6">
           <Button
             size="lg"
-            onClick={initializeGame}
+            onClick={() => initializeGame()}
             className="
                
                mr-4

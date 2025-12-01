@@ -129,20 +129,20 @@ export function Mascot({
       {/* Mascot Button */}
       <div className="relative">
         <motion.button
-          className={`w-14 h-14 rounded-full bg-gradient-to-r ${characterColors[settings.character]} text-white flex items-center justify-center shadow-lg border-2 border-white dark:border-gray-800`}
+          className={`w-14 h-14 rounded-full bg-linear-to-r ${characterColors[settings.character]} text-white flex items-center justify-center shadow-lg border-2 border-white dark:border-gray-800`}
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
           onClick={toggleOpen}
-          animate={{
-            y: [0, -10, 0],
-          }}
-          transition={{
-            y: {
-              duration: 2,
-              repeat: Number.POSITIVE_INFINITY,
-              repeatType: "reverse",
-            },
-          }}
+          // animate={{
+          //   y: [0, -10, 0],
+          // }}
+          // transition={{
+          //   y: {
+          //     duration: 2,
+          //     repeat: Number.POSITIVE_INFINITY,
+          //     repeatType: "reverse",
+          //   },
+          // }}
         >
           <span className="text-2xl">{characterImages[settings.character]}</span>
         </motion.button>

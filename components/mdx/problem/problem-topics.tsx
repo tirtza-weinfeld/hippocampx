@@ -3,7 +3,6 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { Tags } from "lucide-react";
 
 interface ProblemTopicsProps {
   children: React.ReactNode;

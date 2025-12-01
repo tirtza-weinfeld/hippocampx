@@ -734,66 +734,55 @@ function VocabularyQuiz() {
 
 // Word Matching Game Component
 function WordMatchingGame() {
-  const [words, setWords] = useState<string[]>([])
-  const [definitions, setDefinitions] = useState<string[]>([])
+  // Initialize with shuffled arrays - no effect needed
+  const [words, setWords] = useState<string[]>(() =>
+    MATCHING_PAIRS.map((pair) => pair.word).sort(() => Math.random() - 0.5)
+  )
+  const [definitions, setDefinitions] = useState<string[]>(() =>
+    MATCHING_PAIRS.map((pair) => pair.match).sort(() => Math.random() - 0.5)
+  )
   const [selectedWord, setSelectedWord] = useState<string | null>(null)
   const [selectedMatch, setSelectedMatch] = useState<string | null>(null)
   const [matchedPairs, setMatchedPairs] = useState<{ [key: string]: string }>({})
   const [attempts, setAttempts] = useState(0)
-  const [showCelebration, setShowCelebration] = useState(false)
+  const [celebrationDismissed, setCelebrationDismissed] = useState(false)
 
-  // Initialize the game
-  useEffect(() => {
-    resetGame()
-  }, [])
+  // Derive celebration state - show when complete AND not dismissed
+  const isGameComplete = Object.keys(matchedPairs).length === MATCHING_PAIRS.length * 2
+  const showCelebration = isGameComplete && !celebrationDismissed
 
-  const resetGame = () => {
-    // Extract words and definitions
-    const extractedWords = MATCHING_PAIRS.map((pair) => pair.word)
-    const extractedDefinitions = MATCHING_PAIRS.map((pair) => pair.match)
+  function dismissCelebration() {
+    setCelebrationDismissed(true)
+  }
 
-    // Shuffle both arrays
-    setWords([...extractedWords].sort(() => Math.random() - 0.5))
-    setDefinitions([...extractedDefinitions].sort(() => Math.random() - 0.5))
-
+  function resetGame() {
+    setWords(MATCHING_PAIRS.map((pair) => pair.word).sort(() => Math.random() - 0.5))
+    setDefinitions(MATCHING_PAIRS.map((pair) => pair.match).sort(() => Math.random() - 0.5))
     setSelectedWord(null)
     setSelectedMatch(null)
     setMatchedPairs({})
     setAttempts(0)
-    setShowCelebration(false)
+    setCelebrationDismissed(false)
   }
 
-  // Check for matches when selections change
-  useEffect(() => {
-    if (selectedWord && selectedMatch) {
-      // Find if they are a correct pair
-      const isCorrectPair = MATCHING_PAIRS.some((pair) => pair.word === selectedWord && pair.match === selectedMatch)
+  // Helper to check match and update state - called from event handlers
+  function checkAndHandleMatch(word: string, match: string) {
+    const isCorrectPair = MATCHING_PAIRS.some((pair) => pair.word === word && pair.match === match)
+    setAttempts((prev) => prev + 1)
 
-      setAttempts((prev) => prev + 1)
-
-      if (isCorrectPair) {
-        // Correct match - store in our matches object
-        setMatchedPairs((prev) => ({
-          ...prev,
-          [selectedWord]: selectedMatch,
-          [selectedMatch]: selectedWord,
-        }))
-      }
-
-      // Reset selections after a short delay
-      setTimeout(() => {
-        setSelectedWord(null)
-        setSelectedMatch(null)
-      }, 500)
+    if (isCorrectPair) {
+      setMatchedPairs((prev) => ({
+        ...prev,
+        [word]: match,
+        [match]: word,
+      }))
     }
-  }, [selectedWord, selectedMatch])
 
-  // Check if game is complete
-  useEffect(() => {
-    if (Object.keys(matchedPairs).length === MATCHING_PAIRS.length * 2) {
-      setShowCelebration(true)
-    }
-  }, [matchedPairs])
+    setTimeout(() => {
+      setSelectedWord(null)
+      setSelectedMatch(null)
+    }, 500)
+  }
 
   // Handle drag start
   const handleDragStart = (e: React.DragEvent, type: "word" | "definition", value: string) => {
@@ -834,7 +823,7 @@ function WordMatchingGame() {
   }
 
   // Handle drop
-  const handleDrop = (e: React.DragEvent, type: "word" | "definition", value: string) => {
+  function handleDrop(e: React.DragEvent, type: "word" | "definition", value: string) {
     e.preventDefault()
 
     // Remove visual feedback
@@ -847,18 +836,16 @@ function WordMatchingGame() {
 
     // Only allow dropping if types are different
     if (droppedType !== type && !matchedPairs[value]) {
-      if (type === "word") {
-        setSelectedWord(value)
-        setSelectedMatch(droppedValue)
-      } else {
-        setSelectedWord(droppedValue)
-        setSelectedMatch(value)
-      }
+      const word = type === "word" ? value : droppedValue
+      const match = type === "word" ? droppedValue : value
+      setSelectedWord(word)
+      setSelectedMatch(match)
+      checkAndHandleMatch(word, match)
     }
   }
 
   // Handle touch-based selection for mobile
-  const handleItemClick = (type: "word" | "definition", value: string) => {
+  function handleItemClick(type: "word" | "definition", value: string) {
     if (matchedPairs[value]) return // Don't allow selecting matched items
 
     if (type === "word") {
@@ -867,23 +854,7 @@ function WordMatchingGame() {
       } else {
         setSelectedWord(value)
         if (selectedMatch) {
-          // Check for match if we already have a definition selected
-          const isCorrectPair = MATCHING_PAIRS.some((pair) => pair.word === value && pair.match === selectedMatch)
-          setAttempts((prev) => prev + 1)
-
-          if (isCorrectPair) {
-            setMatchedPairs((prev) => ({
-              ...prev,
-              [value]: selectedMatch,
-              [selectedMatch]: value,
-            }))
-          }
-
-          // Reset selections after a delay
-          setTimeout(() => {
-            setSelectedWord(null)
-            setSelectedMatch(null)
-          }, 500)
+          checkAndHandleMatch(value, selectedMatch)
         }
       }
     } else {
@@ -892,23 +863,7 @@ function WordMatchingGame() {
       } else {
         setSelectedMatch(value)
         if (selectedWord) {
-          // Check for match if we already have a word selected
-          const isCorrectPair = MATCHING_PAIRS.some((pair) => pair.word === selectedWord && pair.match === value)
-          setAttempts((prev) => prev + 1)
-
-          if (isCorrectPair) {
-            setMatchedPairs((prev) => ({
-              ...prev,
-              [selectedWord]: value,
-              [value]: selectedWord,
-            }))
-          }
-
-          // Reset selections after a delay
-          setTimeout(() => {
-            setSelectedWord(null)
-            setSelectedMatch(null)
-          }, 500)
+          checkAndHandleMatch(selectedWord, value)
         }
       }
     }
@@ -1033,7 +988,7 @@ function WordMatchingGame() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-            onClick={() => setShowCelebration(false)}
+            onClick={dismissCelebration}
           >
             <motion.div
               initial={{ scale: 0.9, y: 20 }}
@@ -1067,7 +1022,7 @@ function WordMatchingGame() {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   className="px-6 py-3 bg-gradient-to-r from-amber-500 to-amber-600 dark:from-amber-600 dark:to-amber-700 text-white dark:text-gray-900 rounded-full shadow-md"
-                  onClick={() => setShowCelebration(false)}
+                  onClick={dismissCelebration}
                 >
                   Continue Learning
                 </motion.button>

@@ -1,5 +1,5 @@
 "use client"
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useMemo } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
@@ -131,6 +131,17 @@ export default function SpellingChallengePage() {
   // const inputRefs = useRef<(HTMLInputElement | null)[]>([])
 
   const currentWord = WORDS[currentWordIndex]
+
+  // Pre-compute random values for confetti to avoid impure renders
+  const confettiParticles = useMemo(() =>
+    Array.from({ length: 20 }, () => ({
+      x: Math.random() * 400 - 200,
+      y: Math.random() * 400 - 200,
+      scale: Math.random() * 1.5 + 0.5,
+      rotate: Math.random() * 360,
+      borderRadius: Math.random() > 0.5 ? "50%" : "0%",
+      hue: Math.random() * 360,
+    })), [])
 
   useEffect(() => {
     // Check if this is the first visit
@@ -891,7 +902,7 @@ export default function SpellingChallengePage() {
               aria-labelledby="celebration-title"
             >
               {/* Flying confetti effect */}
-              {[...Array(20)].map((_, i) => (
+              {confettiParticles.map((particle, i) => (
                 <motion.div
                   key={i}
                   className="absolute"
@@ -901,10 +912,10 @@ export default function SpellingChallengePage() {
                     scale: 0,
                   }}
                   animate={{
-                    x: Math.random() * 400 - 200,
-                    y: Math.random() * 400 - 200,
-                    scale: Math.random() * 1.5 + 0.5,
-                    rotate: Math.random() * 360,
+                    x: particle.x,
+                    y: particle.y,
+                    scale: particle.scale,
+                    rotate: particle.rotate,
                   }}
                   transition={{
                     duration: 1.5,
@@ -913,8 +924,8 @@ export default function SpellingChallengePage() {
                   style={{
                     width: "15px",
                     height: "15px",
-                    borderRadius: Math.random() > 0.5 ? "50%" : "0%",
-                    background: `hsl(${Math.random() * 360}, 80%, 60%)`,
+                    borderRadius: particle.borderRadius,
+                    background: `hsl(${particle.hue}, 80%, 60%)`,
                     zIndex: 10,
                   }}
                   aria-hidden="true"

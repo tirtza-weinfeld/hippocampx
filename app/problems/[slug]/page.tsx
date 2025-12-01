@@ -7,7 +7,7 @@ interface ProblemPageProps {
   }>
 }
 
-export async function generateStaticParams() {
+export function generateStaticParams() {
   return problemSlugs.map((slug) => ({
     slug,
   }))

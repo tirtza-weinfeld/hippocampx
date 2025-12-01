@@ -14,14 +14,12 @@ import { motion } from "motion/react";
 import { useWordEditMode } from "./word-edit-mode-provider";
 
 interface WordHeaderEditableProps {
-  wordId: number;
   initialWordText: string;
   initialLanguageCode: string;
   onUpdate: (wordText: string, languageCode: string) => void;
 }
 
 export function WordHeaderEditable({
-  wordId,
   initialWordText,
   initialLanguageCode,
   onUpdate,

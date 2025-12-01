@@ -4,7 +4,7 @@ import * as React from "react"
 import { motion, useReducedMotion, AnimatePresence } from "motion/react"
 import * as DialogPrimitive from "@radix-ui/react-dialog"
 import { cn } from "@/lib/utils"
-import { BookOpen, X, ChevronUp, Maximize2, Minimize2 } from "lucide-react"
+import { BookOpen, X, ChevronUp } from "lucide-react"
 
 type ProblemDeepDiveProps = {
   readonly title: string
@@ -22,7 +22,6 @@ export function ProblemDeepDive({
   const shouldReduceMotion = useReducedMotion()
   const [isOpen, setIsOpen] = React.useState(false)
   const [showScrollTop, setShowScrollTop] = React.useState(false)
-  const [isMaximized, setIsMaximized] = React.useState(false)
   const scrollRef = React.useRef<HTMLDivElement>(null)
   const modalRef = React.useRef<HTMLDivElement>(null)
   const [position, setPosition] = React.useState({ x: 0, y: 0 })
@@ -73,13 +72,7 @@ export function ProblemDeepDive({
     scrollRef.current?.scrollTo({ top: 0, behavior: "smooth" })
   }
 
-  function toggleMaximize() {
-    setIsMaximized(!isMaximized)
-  }
-
   function handleDragStart(event: React.PointerEvent, direction: string) {
-    if (isMaximized) return
-
     event.stopPropagation()
     setIsResizing(true)
 
@@ -134,9 +127,7 @@ export function ProblemDeepDive({
     document.addEventListener("pointerup", handleEnd)
   }
 
-  const actualSize = isMaximized
-    ? { width: window.innerWidth * 0.95, height: window.innerHeight * 0.95 }
-    : modalSize
+  const actualSize = modalSize
 
   return (
     <DialogPrimitive.Root open={isOpen} onOpenChange={setIsOpen}>
@@ -191,7 +182,7 @@ export function ProblemDeepDive({
           <DialogPrimitive.Portal forceMount>
             <motion.div
               ref={modalRef}
-              drag={!isResizing && !isMaximized && !isMobile}
+              drag={!isResizing && !isMobile}
               dragMomentum={false}
               dragElastic={0}
               onDragEnd={(_, info) => {
@@ -200,8 +191,8 @@ export function ProblemDeepDive({
               style={{
                 width: actualSize.width,
                 height: actualSize.height,
-                x: isMaximized || isMobile ? 0 : position.x,
-                y: isMaximized || isMobile ? 0 : position.y,
+                x: isMobile ? 0 : position.x,
+                y: isMobile ? 0 : position.y,
               }}
               className={cn(
                 "fixed left-[50%] top-[50%] z-[200]",
@@ -334,8 +325,8 @@ export function ProblemDeepDive({
                 )}
               </AnimatePresence>
 
-              {/* Resize handles - only when not maximized and not mobile */}
-              {!isMaximized && !isMobile && (
+              {/* Resize handles - only when not mobile */}
+              {!isMobile && (
                 <>
                   {/* Edges */}
                   <div

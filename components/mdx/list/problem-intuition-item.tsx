@@ -59,7 +59,7 @@ export default function ProblemIntuitionItem({
   className = "",
   level,
   displayNumber,
-  headerItem,
+  headerItem, 
   ...props
 }: ListItemProps) {
   const showNumber = displayNumber !== undefined

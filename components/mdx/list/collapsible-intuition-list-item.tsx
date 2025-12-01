@@ -17,7 +17,6 @@ export interface CollapsibleIntuitionListItemProps {
   className?: string
   level: number
   displayNumber?: string
-  headerItem?: boolean
   marker?: string
   defaultOpen?: boolean
 }
@@ -102,7 +101,6 @@ export default function CollapsibleIntuitionListItem({
   className = "",
   level,
   displayNumber,
-  headerItem,
   marker,
   defaultOpen = false,
   ...props

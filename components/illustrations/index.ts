@@ -22,13 +22,13 @@ export const allIllustrations = {
 // Unified getter function that checks both core and problem illustrations
 export const getIllustration = (name: string) => {
   // Try core illustrations first
-  const coreIllustration = coreIllustrations[name as keyof typeof coreIllustrations] || coreIllustrations.default;
+  const coreIllustration = coreIllustrations[name] || coreIllustrations.default;
   if (coreIllustration !== coreIllustrations.default) {
     return coreIllustration;
   }
   
   // Fall back to problem illustrations
-  const problemIllustration = PROBLEM_ILLUSTRATIONS[name as keyof typeof PROBLEM_ILLUSTRATIONS] || PROBLEM_ILLUSTRATIONS.default;
+  const problemIllustration = PROBLEM_ILLUSTRATIONS[name] || PROBLEM_ILLUSTRATIONS.default;
   if (problemIllustration !== problemIllustrations.default) {
     return problemIllustration;
   }
@@ -40,5 +40,5 @@ export const getIllustration = (name: string) => {
 // Legacy exports for backwards compatibility with existing code
 export const algorithmIllustrations = coreIllustrations;
 export const getAlgorithmIllustration = (name: string) => {
-  return coreIllustrations[name as keyof typeof coreIllustrations] || coreIllustrations.default;
+  return coreIllustrations[name] || coreIllustrations.default;
 };

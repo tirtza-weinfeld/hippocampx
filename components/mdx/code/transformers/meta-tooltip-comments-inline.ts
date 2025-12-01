@@ -1,7 +1,6 @@
 import type { ShikiTransformer } from 'shiki';
 import type { LspData, CommentsInlineData } from './types';
 import { getFunctionRange } from './utils';
-import { ElementContent } from 'hast';
 
 
 const symbol = Symbol('comment-lines');

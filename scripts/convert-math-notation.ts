@@ -95,7 +95,7 @@ function processSolution(solution: Solution): Solution {
 
       if (convertedValue !== originalValue) {
         console.log(`  📐 Converted math notation in ${field}`)
-        ;(processedSolution as any)[field] = convertedValue
+        ;(processedSolution as Record<string, unknown>)[field] = convertedValue
       }
     }
   }
@@ -120,7 +120,7 @@ function processProblem(problemId: string, problem: Problem): Problem {
 
       if (convertedValue !== originalValue) {
         console.log(`  📐 Converted math notation in ${field}`)
-        ;(processedProblem as any)[field] = convertedValue
+        ;(processedProblem as Record<string, unknown>)[field] = convertedValue
         hasChanges = true
       }
     }

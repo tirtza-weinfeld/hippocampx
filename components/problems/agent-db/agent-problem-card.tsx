@@ -119,7 +119,7 @@ async function AgentProblemCardContent({
           {/* Key Variables */}
           {solution.variables && Object.keys(solution.variables as object).length > 0 && (
             <AgentSection section="keyVariables" file={solution.file_name}>
-                {Object.entries(solution.variables as Record<string, string>).map(([key, value]) => (
+                {Object.entries(solution.variables).map(([key, value]) => (
                   <MarkdownRenderer key={key}>
                     {`- \`${key}\`: ${value}`}
                   </MarkdownRenderer>
@@ -130,7 +130,7 @@ async function AgentProblemCardContent({
           {/* Key Expressions */}
           {solution.expressions && Object.keys(solution.expressions as object).length > 0 && (
             <AgentSection section="keyExpressions" file={solution.file_name}>
-                {Object.entries(solution.expressions as Record<string, string>).map(([key, value]) => (
+                {Object.entries(solution.expressions).map(([key, value]) => (
                   <MarkdownRenderer key={key}>
                     {`- \`${key}\`: ${value}`}
                   </MarkdownRenderer>

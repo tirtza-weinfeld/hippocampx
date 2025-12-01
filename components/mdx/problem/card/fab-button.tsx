@@ -1,7 +1,6 @@
 
 "use client"
 import { cn } from "@/lib/utils"
-import { Activity } from "react"
 import { useCalloutContext } from "./callout-context"
 import { Braces, Code, Lightbulb, SquareChartGantt, Timer, Variable } from 'lucide-react'
 import type { CalloutTab } from "./callout-context"

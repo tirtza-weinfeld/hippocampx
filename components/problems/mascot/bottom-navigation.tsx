@@ -3,7 +3,6 @@
 import { use } from "react"
 import { motion } from "motion/react"
 import { List, Settings } from "lucide-react"
-import { ActiveFeature } from "./mascot-types"
 import { MascotStateContext, MascotActionsContext } from "./mascot-context"
 
 export function BottomNavigation() {

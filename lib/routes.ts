@@ -1,4 +1,4 @@
-import { Brain, Binary, Sparkles, InfinityIcon, ChartNoAxesCombinedIcon, Home, Calculator, BookOpen, HelpCircle, Dumbbell, Lightbulb, Gamepad2, SquareFunction, Code } from "lucide-react"
+import { Brain, Binary, Sparkles, InfinityIcon, ChartNoAxesCombinedIcon, Home, Calculator, BookOpen, HelpCircle, Dumbbell, Lightbulb, Gamepad2 } from "lucide-react"
 import { ElementType } from "react"
 // import { PROBLEMS_ROUTES } from "./problems-routes"
 

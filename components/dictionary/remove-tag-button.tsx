@@ -27,7 +27,7 @@ export function RemoveTagButton({ tagId, wordId }: RemoveTagButtonProps) {
       variant="ghost"
       size="icon"
       className="h-4 w-4 p-0 hover:bg-transparent"
-      onClick={handleRemove}
+      onClick={() => void handleRemove()}
       disabled={isRemoving}
     >
       <X className="h-3 w-3" />

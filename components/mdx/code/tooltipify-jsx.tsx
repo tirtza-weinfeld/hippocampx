@@ -1,7 +1,6 @@
 import React, { isValidElement, cloneElement, ReactElement, JSXElementConstructor } from 'react';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
-import { MessageCircle, MessageCircleMore, MessageSquareText } from 'lucide-react';
 
 
 /**

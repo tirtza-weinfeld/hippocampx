@@ -82,24 +82,27 @@ export default function RateAnalyzerPage() {
         vel = initialVelocity + acceleration * time
         acc = acceleration
         break
-      case "pendulum":
+      case "pendulum": {
         const frequency = acceleration // Using acceleration slider as frequency control
         pos = initialPosition + initialVelocity * Math.sin(frequency * time)
         vel = initialVelocity * frequency * Math.cos(frequency * time)
         acc = -initialVelocity * frequency * frequency * Math.sin(frequency * time)
         break
-      case "growth":
+      }
+      case "growth": {
         const growthRate = acceleration // Using acceleration slider as growth rate
         pos = initialPosition * Math.exp(growthRate * time)
         vel = initialPosition * growthRate * Math.exp(growthRate * time)
         acc = initialPosition * growthRate * growthRate * Math.exp(growthRate * time)
         break
-      case "projectile":
+      }
+      case "projectile": {
         const gravity = acceleration // Using acceleration slider as gravity
         pos = initialPosition + initialVelocity * time - 0.5 * gravity * time * time
         vel = initialVelocity - gravity * time
         acc = -gravity
         break
+      }
     }
 
     position.set(pos)

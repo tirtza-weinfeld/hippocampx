@@ -15,7 +15,7 @@
  * - Badge components for complexity and difficulty indicators
  * - Expand/collapse controls for problem cards
  */
-export * from './callout'
+// export * from './callout'
 export * from './callout-context'
 export * from './badge'
 export * from './callout-dialog'

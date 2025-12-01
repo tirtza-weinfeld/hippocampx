@@ -131,7 +131,7 @@ export class MathNotationConverter {
     // Step 5: Convert Big-O notation with multiplication: O(m * n * k) or O(m × n × k)
     result = result.replace(
       /O\(([^)]*(?:\*|\\times)[^)]*)\)/g,
-      (match, expression) => {
+      (_match: string, expression: string) => {
         const expr = expression
           .replace(/\s*(?:\*|\\times)\s*/g, ' \\times ')
           .replace(/\s+/g, ' ')
@@ -151,7 +151,7 @@ export class MathNotationConverter {
 
     // Convert absolute value notation for simple cases only
     // Avoid converting |piles| or other simple variable names
-    result = result.replace(/\|([a-zA-Z0-9_]+(?:\s*[+\-*/]\s*[a-zA-Z0-9_]+)*)\|/g, (match, content) => {
+    result = result.replace(/\|([a-zA-Z0-9_]+(?:\s*[+\-*/]\s*[a-zA-Z0-9_]+)*)\|/g, (match: string, content: string) => {
       // Only convert if it's not a simple variable name or array reference
       if (/^[a-zA-Z][a-zA-Z0-9_]*$/.test(content.trim())) {
         return match; // Keep as-is for simple variables like |piles|
@@ -162,7 +162,7 @@ export class MathNotationConverter {
     // Convert matrix notation [a b; c d]
     result = result.replace(
       /\[([^\]]+)\]/g,
-      (match, content) => {
+      (match: string, content: string) => {
         if (content.includes(';')) {
           const rows = content.split(';').map((row: string) => row.trim().replace(/\s+/g, ' & '));
           return `\\begin{bmatrix} ${rows.join(' \\\\ ')} \\end{bmatrix}`;
@@ -193,7 +193,7 @@ export class MathNotationConverter {
     // Match: ∑ (Unicode) + subscript variable + = + lower bound + optional ^ + upper bound
     result = result.replace(
       /∑([ᵢⱼₖₗₘₙₒₚᵣₛₜᵤᵥₓᵧ][₌][₀₁₂₃₄₅₆₇₈₉]+)(\^?)([^∑\s≤≥<>=]*?)(?=\s|[≤≥<>=]|$)/g,
-      (_match, subscriptPart, _caretSymbol, upperBound) => {
+      (_match: string, subscriptPart: string, _caretSymbol: string, upperBound: string) => {
         // Parse the subscript part (variable = lower)
         const subChars = subscriptPart.split('');
         const variable = this.SUBSCRIPT_MAP.get(subChars[0]) || subChars[0];
@@ -218,7 +218,7 @@ export class MathNotationConverter {
     // But avoid unnecessary braces for single characters
     result = result.replace(
       /([a-zA-Z0-9])([₀₁₂₃₄₅₆₇₈₉ₐₑᵢⱼₖₗₘₙₒₚᵣₛₜᵤᵥₓᵧᵦᵨᵩᵪ₊₋₌₍₎]+)/g,
-      (_match, base, subscript) => {
+      (_match: string, base: string, subscript: string) => {
         const converted = subscript.split('').map((char: string) =>
           this.SUBSCRIPT_MAP.get(char) || char
         ).join('');
@@ -239,7 +239,7 @@ export class MathNotationConverter {
     // Convert superscript patterns like x² → x^{2} or xⁿ → x^{n}
     result = result.replace(
       /([a-zA-Z0-9])([⁰¹²³⁴⁵⁶⁷⁸⁹ᵃᵇᶜᵈᵉᶠᵍʰⁱʲᵏˡᵐⁿᵒᵖʳˢᵗᵘᵛʷˣʸᶻᴬᴮᴰᴱᴳᴴᴵᴶᴷᴸᴹᴺᴼᴾᴿᵀᵁⱽᵂ⁺⁻⁼⁽⁾ᵅᵝᵞᵟᵋᶿᶥᶲᵡ]+)/g,
-      (_match, base, superscript) => {
+      (_match: string, base: string, superscript: string) => {
         const converted = superscript.split('').map((char: string) =>
           this.SUPERSCRIPT_MAP.get(char) || char
         ).join('');
@@ -291,7 +291,7 @@ export class MathNotationConverter {
     // Pattern 2: Mathematical expressions within ** bold ** text
     result = result.replace(
       /\*\*([^*]+(?:[∑∏∈∉⊆⊊⊇⊋∪∩∅∞≤≥≠≈≡ℕℤℚℝℂℙ⌊⌋⌈⌉₀₁₂₃₄₅₆₇₈₉ₐₑᵢⱼₖₗₘₙₒₚᵣₛₜᵤᵥₓᵧ⁰¹²³⁴⁵⁶⁷⁸⁹ᵃᵇᶜᵈᵉᶠᵍʰⁱʲᵏˡᵐⁿᵒᵖʳˢᵗᵘᵛʷˣʸᶻ])[^*]*?)\*\*/g,
-      (match, content) => {
+      (match: string, content: string) => {
         if (this.containsMathNotation(content)) {
           const converted = this.convert(content.trim(), { wrapInDelimiters: false, preserveExisting: false });
           return `**$${converted}$**`;

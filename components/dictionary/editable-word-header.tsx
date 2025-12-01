@@ -13,7 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { updateWord } from "@/lib/actions/vocabulary";
-import { motion, AnimatePresence } from "motion/react";
+import { motion } from "motion/react";
 
 interface EditableWordHeaderProps {
   wordId: number;

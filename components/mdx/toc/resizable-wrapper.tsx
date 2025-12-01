@@ -213,7 +213,7 @@ export function ResizableWrapper({ headings: headingsJson, children, className }
 
   let headings: TocHeading[] = []
   try {
-    const parsedHeadings = JSON.parse(headingsJson)
+    const parsedHeadings = JSON.parse(headingsJson) as TocHeading[]
     if (Array.isArray(parsedHeadings)) headings = parsedHeadings
   } catch (e) {
     console.error("Failed to parse TOC headings:", e)

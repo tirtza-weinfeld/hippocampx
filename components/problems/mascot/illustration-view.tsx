@@ -21,7 +21,7 @@ export function IllustrationView() {
       {/* Dictionary Content */}
       <ScrollArea className="flex-1">
         <div className="space-y-3 pr-4">
-          {Object.entries(coreIllustrations).map(([topic, Illustration]) => (
+          {Object.entries(coreIllustrations).map(([topic]) => (
             <div
               key={topic}
               className="p-4 rounded-lg border bg-card hover:bg-accent/50 transition-colors"

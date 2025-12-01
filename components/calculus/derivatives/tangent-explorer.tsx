@@ -181,14 +181,16 @@ export function TangentExplorer() {
     ctx.beginPath()
     ctx.arc(pointCoords.x, pointCoords.y, 6, 0, Math.PI * 2)
     ctx.fill()
+  }, [xValue, functionType, functions])
 
-    // Check if this is the first interaction
-    if (!hasInteracted && xValue !== 0) {
+  // Handle slider change - check for first interaction here instead of effect
+  function handleXValueChange(newValue: number) {
+    setXValue(newValue)
+    if (!hasInteracted && newValue !== 0) {
       setHasInteracted(true)
-      // setShowReward(true)
       setShowConfetti(true)
     }
-  }, [xValue, functionType, hasInteracted, functions])
+  }
 
   // Handle function change
   const handleFunctionChange = (value: string) => {
@@ -261,7 +263,7 @@ export function TangentExplorer() {
                   min={functions[functionType as keyof typeof functions].recommendedDomain[0]}
                   max={functions[functionType as keyof typeof functions].recommendedDomain[1]}
                   step={0.1}
-                  onValueChange={(value) => setXValue(value[0])}
+                  onValueChange={(value) => handleXValueChange(value[0])}
                 />
               </div>
 

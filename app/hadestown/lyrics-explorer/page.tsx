@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { MusicIcon, ArrowLeftIcon, ArrowRightIcon } from "lucide-react"
@@ -439,7 +439,7 @@ export default function LyricsExplorerPage() {
           </AnimatedTabs>
         </div>
 
-        <SongLyrics song={currentSong} />
+        <SongLyrics key={currentSong.id} song={currentSong} />
       </div>
     </main>
   )
@@ -451,16 +451,11 @@ function SongLyrics({ song }: { song: (typeof SONGS)[number] }) {
     definition: string
     partOfSpeech: string
     example: string
-    wordElement: HTMLElement | null
+    position: { top: number; left: number }
   } | null>(null)
 
   // Reference to the lyrics container for scrolling
   const lyricsContainerRef = useRef<HTMLDivElement>(null)
-
-  // Close popup when song changes
-  useEffect(() => {
-    setActiveDefinition(null)
-  }, [song])
 
   // Function to handle clicking on a vocabulary word
   const handleWordClick = (
@@ -472,16 +467,41 @@ function SongLyrics({ song }: { song: (typeof SONGS)[number] }) {
     },
     event: React.MouseEvent,
   ) => {
-    // Get the clicked element
+    // Calculate position in the event handler (refs are safe to read here)
     const wordElement = event.currentTarget as HTMLElement
+    const wordRect = wordElement.getBoundingClientRect()
+    const containerRect = lyricsContainerRef.current?.getBoundingClientRect() || {
+      top: 0,
+      left: 0,
+      width: 0,
+      height: 0,
+    }
 
-    // Set active definition with the word element reference
+    // Default position is below the word
+    let top = wordRect.bottom - containerRect.top + 10
+    let left = wordRect.left - containerRect.left
+
+    // Make sure the popup stays within the container horizontally
+    const maxLeft = containerRect.width - 300 // 300px is approximate popup width
+    if (left > maxLeft) {
+      left = maxLeft
+    }
+
+    // If the popup would go below the visible area, position it above the word instead
+    const visibleHeight = window.innerHeight - containerRect.top
+    if (top + 200 > visibleHeight) {
+      // 200px is approximate popup height
+      top = wordRect.top - containerRect.top - 210 // Position above with some margin
+    }
+
+    // Ensure popup is never positioned off-screen at the top
+    if (top < 0) top = 10
+
     setActiveDefinition({
       ...word,
-      wordElement,
+      position: { top, left },
     })
 
-    // Prevent event propagation
     event.stopPropagation()
   }
 
@@ -536,43 +556,6 @@ function SongLyrics({ song }: { song: (typeof SONGS)[number] }) {
     }
   }
 
-  // Calculate popup position based on the word element
-  const getPopupPosition = () => {
-    if (!activeDefinition?.wordElement) return { top: 0, left: 0 }
-
-    const wordRect = activeDefinition.wordElement.getBoundingClientRect()
-    const containerRect = lyricsContainerRef.current?.getBoundingClientRect() || {
-      top: 0,
-      left: 0,
-      width: 0,
-      height: 0,
-    }
-
-    // Default position is below the word
-    let top = wordRect.bottom - containerRect.top + 10
-    let left = wordRect.left - containerRect.left
-
-    // Make sure the popup stays within the container horizontally
-    const maxLeft = containerRect.width - 300 // 300px is approximate popup width
-    if (left > maxLeft) {
-      left = maxLeft
-    }
-
-    // If the popup would go below the visible area, position it above the word instead
-    const visibleHeight = window.innerHeight - containerRect.top
-    if (top + 200 > visibleHeight) {
-      // 200px is approximate popup height
-      top = wordRect.top - containerRect.top - 210 // Position above with some margin
-    }
-
-    // Ensure popup is never positioned off-screen at the top
-    if (top < 0) top = 10
-
-    return { top, left }
-  }
-
-  const popupPosition = getPopupPosition()
-
   return (
     <div className="flex justify-center" onClick={handleContainerClick}>
       <Card className="max-w-3xl w-full bg-gradient-to-br from-amber-50/90 to-amber-100/80 backdrop-blur-sm border-amber-200/50 p-6 rounded-xl overflow-hidden relative dark:from-gray-900 dark:to-amber-950/50 dark:border-amber-700/60 dark:shadow-amber-900/30 ember-glow">
@@ -607,8 +590,8 @@ function SongLyrics({ song }: { song: (typeof SONGS)[number] }) {
                 exit={{ opacity: 0, scale: 0.8 }}
                 className="absolute z-50 p-4 bg-gradient-to-br from-white to-amber-50/90 dark:from-gray-800 dark:to-gray-900 rounded-lg shadow-xl border border-amber-300/50 dark:border-amber-600/40 ember-glow max-w-[280px]"
                 style={{
-                  top: popupPosition.top,
-                  left: popupPosition.left,
+                  top: activeDefinition.position.top,
+                  left: activeDefinition.position.left,
                 }}
                 onClick={(e) => e.stopPropagation()}
               >

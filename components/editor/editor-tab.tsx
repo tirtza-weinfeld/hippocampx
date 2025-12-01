@@ -123,6 +123,7 @@ export function EditorTab({
     },
   })
 
+  // eslint-disable-next-line react-hooks/refs -- react-dnd connector functions, not a ref read
   drag(drop(ref))
 
   if (!file) return null

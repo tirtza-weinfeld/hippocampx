@@ -94,7 +94,7 @@ export default function DataVisualization() {
           </div>
         )
 
-      case "pie":
+      case "pie": {
         const total = currentDataSet.data.reduce((sum, item) => sum + item.value, 0)
         let cumulativePercent = 0
 
@@ -133,6 +133,7 @@ export default function DataVisualization() {
             </div>
           </div>
         )
+      }
 
       case "line":
         return (

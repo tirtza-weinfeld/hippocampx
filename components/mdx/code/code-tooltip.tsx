@@ -15,7 +15,7 @@ export default function CodeTooltip({ symbolName, metadata, children }: CodeTool
 
   // Parse metadata if it's a string
   const symbolMetadata: SymbolMetadata = typeof metadata === 'string' 
-    ? JSON.parse(metadata) 
+    ? JSON.parse(metadata) as SymbolMetadata
     : metadata;
 
   const handleClick = useCallback((event: React.MouseEvent) => {

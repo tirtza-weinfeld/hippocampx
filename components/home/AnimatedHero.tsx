@@ -5,17 +5,11 @@ import { Button } from '@/components/ui/button'
 import { useTheme } from 'next-themes'
 import { Moon, Sun } from 'lucide-react'
 import confetti from 'canvas-confetti'
-import { useEffect, useState } from 'react'
 
 export function AnimatedHero() {
-  const { theme, setTheme } = useTheme()
-  const [mounted, setMounted] = useState(false)
+  const { theme, setTheme, resolvedTheme } = useTheme()
 
-  useEffect(() => {
-    setMounted(true)
-  }, [])
-
-  const triggerConfetti = () => {
+  function triggerConfetti() {
     confetti({
       particleCount: 100,
       spread: 70,
@@ -23,7 +17,8 @@ export function AnimatedHero() {
     })
   }
 
-  if (!mounted) {
+  // resolvedTheme is undefined on server
+  if (!resolvedTheme) {
     return null
   }
 

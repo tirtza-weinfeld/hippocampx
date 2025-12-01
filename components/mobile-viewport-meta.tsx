@@ -5,9 +5,9 @@ import { useEffect } from "react"
 export function MobileViewportMeta() {
   useEffect(() => {
     // Get existing viewport meta tag or create a new one
-    let viewportMeta = document.querySelector('meta[name="viewport"]') as HTMLMetaElement | null
+    let viewportMeta = document.querySelector<HTMLMetaElement>('meta[name="viewport"]')
     if (!viewportMeta) {
-      viewportMeta = document.createElement('meta') as HTMLMetaElement
+      viewportMeta = document.createElement('meta')
       viewportMeta.name = "viewport"
       document.head.appendChild(viewportMeta)
     }

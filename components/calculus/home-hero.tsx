@@ -3,20 +3,15 @@
 import { motion } from "motion/react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Confetti } from "@/components/calculus/confetti"
 import { ArrowRight } from "lucide-react"
 import { useReducedMotion } from "motion/react"
 
 export function HomeHero() {
-  const [mounted, setMounted] = useState(false)
   const [showConfetti, setShowConfetti] = useState(false)
   const [isAnimating, setIsAnimating] = useState(false)
   const shouldReduceMotion = useReducedMotion()
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
 
   const triggerConfetti = () => {
     setShowConfetti(true)
@@ -285,8 +280,7 @@ export function HomeHero() {
                 />
 
                 {/* Sine function y = sin(x) */}
-                {mounted && (
-                  <motion.path
+                <motion.path
                     d={Array.from({ length: 200 })
                       .map((_, i) => {
                         const x = -5 + i * 0.05
@@ -308,8 +302,7 @@ export function HomeHero() {
                       repeat: isAnimating ? 0 : 0,
                       ease: "easeInOut" as const,
                     }}
-                  />
-                )}
+                />
 
                 {/* Tangent visualization */}
                 {isAnimating && (

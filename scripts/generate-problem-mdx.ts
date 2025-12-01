@@ -249,7 +249,7 @@ function generateMDXContent(problemId: string, problem: Problem): string {
     const problemNumber = problemId.match(/^(\d+)-/)?.[1]
 
     // Extract problem number and title from the URL or use the title
-    const urlMatch = problem.leetcode.match(/leetcode\.com\/problems\/([^\/]+)/)
+    const urlMatch = problem.leetcode.match(/leetcode\.com\/problems\/([^/]+)/)
     if (urlMatch) {
       const linkTitle = problemNumber ? `${problemNumber}. ${title}` : title
       content += `[${linkTitle}](${problem.leetcode})\n\n`

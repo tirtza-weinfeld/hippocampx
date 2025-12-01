@@ -1,7 +1,6 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { Code } from "lucide-react";
 // import CodeBlock from "../code/code-block";
 
 interface ProblemCodeSnippetProps {

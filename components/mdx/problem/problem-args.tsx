@@ -1,7 +1,6 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { Lightbulb } from "lucide-react";
 
 interface ProblemArgumentsProps {
   children: React.ReactNode;

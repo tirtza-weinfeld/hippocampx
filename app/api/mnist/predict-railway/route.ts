@@ -15,7 +15,7 @@ const PredictionOutputSchema = z.object({
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
-    const body = await request.json()
+    const body = await request.json() as unknown
     const validatedData = PredictionInputSchema.parse(body)
 
     const response = await fetch(RAILWAY_API_URL, {
@@ -39,7 +39,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       )
     }
 
-    const prediction = await response.json()
+    const prediction = await response.json() as unknown
     const validatedPrediction = PredictionOutputSchema.parse(prediction)
 
     return NextResponse.json(validatedPrediction)

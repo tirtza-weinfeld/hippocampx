@@ -45,7 +45,17 @@ function parseAttributes(attrStr: string): { language?: string; meta?: string } 
 type InlineCodeProps = ComponentPropsWithoutRef<'code'> & { children: ReactNode } &{[key: string]: unknown};
 
 export default async function InlineCode({ children, ...restProps }: InlineCodeProps) {
-  const codeText = typeof children === 'string' ? children : String(children || '');
+  // Only process special syntax for string children; non-strings skip to default rendering
+  if (typeof children !== 'string') {
+    const hasStep = 'data-step' in restProps;
+    return (
+      <InlineCodeClient highlighted={hasStep} {...restProps}>
+        {children}
+      </InlineCodeClient>
+    );
+  }
+
+  const codeText = children;
   const tooltipContent = await getTooltipContent();
 
   // Check for new attribute syntax: [language="python", meta="/[red!]k//[green!]for/"]code

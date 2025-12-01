@@ -60,44 +60,74 @@ function LoadingState() {
   )
 }
 
-export function CodePanel({ 
-  file, 
-  showLineNumbers = true, 
-  fontSize = 14, 
-  className 
+interface HighlightResult {
+  content: string
+  language: string | undefined
+  code: React.ReactNode
+}
+
+export function CodePanel({
+  file,
+  showLineNumbers = true,
+  fontSize = 14,
+  className
 }: CodePanelProps) {
-  const [highlightedCode, setHighlightedCode] = useState<React.ReactNode>(null)
-  const [isLoading, setIsLoading] = useState(false)
+  const [highlightResult, setHighlightResult] = useState<HighlightResult | null>(null)
+
+  const content = file?.content
+  const language = file?.language
 
   const totalLines = useMemo(() => {
-    if (!file?.content) return 0
-    return file.content.split('\n').length
-  }, [file?.content])
+    if (!content) return 0
+    return content.split('\n').length
+  }, [content])
+
+  // Derive loading state: we're loading if we have content but the highlight result
+  // doesn't match the current content/language
+  const isLoading = Boolean(
+    content &&
+    (highlightResult?.content !== content || highlightResult?.language !== language)
+  )
 
   useEffect(() => {
-    if (!file?.content) {
-      setHighlightedCode(null)
+    if (!content) {
       return
     }
 
-    setIsLoading(true)
-    
-    highlightCode(file.content, file.language, undefined, true, false)
+    let cancelled = false
+
+    highlightCode(content, language ?? 'text', undefined, true, false)
       .then(jsxResult => {
-        setHighlightedCode(jsxResult)
-        setIsLoading(false)
+        if (!cancelled) {
+          setHighlightResult({ content, language, code: jsxResult })
+        }
       })
       .catch(error => {
-        console.error('Failed to highlight code:', error)
-        // Fallback to plain text
-        setHighlightedCode(
-          <pre className="font-mono">
-            <code>{file.content}</code>
-          </pre>
-        )
-        setIsLoading(false)
+        if (!cancelled) {
+          console.error('Failed to highlight code:', error)
+          setHighlightResult({
+            content,
+            language,
+            code: (
+              <pre className="font-mono">
+                <code>{content}</code>
+              </pre>
+            )
+          })
+        }
       })
-  }, [file?.content, file?.language])
+
+    return () => {
+      cancelled = true
+    }
+  }, [content, language])
+
+  // Only show highlighted code if it matches current content
+  const displayedCode = (
+    content &&
+    highlightResult?.content === content &&
+    highlightResult?.language === language
+  ) ? highlightResult.code : null
 
   if (!file) {
     return (
@@ -134,7 +164,7 @@ export function CodePanel({
               minHeight: '100%'
             }}
           >
-            {highlightedCode || (
+            {displayedCode || (
               <pre className="font-mono">
                 <code>{file.content}</code>
               </pre>

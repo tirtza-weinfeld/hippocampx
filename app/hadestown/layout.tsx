@@ -3,6 +3,13 @@ import type { Metadata } from "next"
 
 import { cn } from "@/lib/utils"
 
+// Pre-compute random note positions at module level for pure rendering
+const MUSICAL_NOTES = ["♪", "♫", "♩", "♬"]
+const floatingNotes = Array.from({ length: 5 }, (_, i) => ({
+  left: `${(i * 20 + 10) % 100}%`, // Deterministic spread instead of random
+  duration: 5 + (i % 3) * 2.5, // Deterministic duration: 5, 7.5, 10, 5, 7.5
+  note: MUSICAL_NOTES[i % 4],
+}))
 
 export const metadata: Metadata = {
   title: "Hadestown",
@@ -63,17 +70,17 @@ export default function HadestownLayout({
 
           {/* Musical notes that float up occasionally */}
           <div className="fixed pointer-events-none inset-0 z-[-1] overflow-hidden">
-            {Array.from({ length: 5 }).map((_, i) => (
+            {floatingNotes.map((note, i) => (
               <div
                 key={i}
                 className="absolute text-amber-500/20 dark:text-amber-400/20 text-2xl"
                 style={{
-                  left: `${Math.random() * 100}%`,
+                  left: note.left,
                   bottom: "-20px",
-                  animation: `note-float ${5 + Math.random() * 5}s ease-out ${i * 10}s infinite`,
+                  animation: `note-float ${note.duration}s ease-out ${i * 10}s infinite`,
                 }}
               >
-                {["♪", "♫", "♩", "♬"][Math.floor(Math.random() * 4)]}
+                {note.note}
               </div>
             ))}
           </div>

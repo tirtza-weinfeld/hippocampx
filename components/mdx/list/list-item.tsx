@@ -10,8 +10,8 @@ export interface ListItemProps {
   className?: string
   level: number
   displayNumber?: string
-  headerItem?: boolean
   marker?: string
+  headerItem?: boolean
 }
 
 export const listItemVariants = {
@@ -76,7 +76,6 @@ export default function ListItem({
   className = "",
   level,
   displayNumber,
-  headerItem,
   marker,
   ...props
 }: ListItemProps) {

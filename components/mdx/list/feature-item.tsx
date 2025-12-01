@@ -9,7 +9,6 @@ interface FeatureItemProps {
   className?: string
   onClick?: () => void
   displayNumber?: string
-  headerItem?: boolean
   isOrdered?: boolean
 }
 
@@ -32,7 +31,6 @@ export default function FeatureItem({
   children,
   className = "",
   displayNumber,
-  headerItem,
   isOrdered = false,
   ...props
 }: FeatureItemProps) {

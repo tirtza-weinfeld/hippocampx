@@ -1,38 +1,40 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useSyncExternalStore } from "react"
 import { SparklesCore } from "./sparkles"
 
+const SPARKLES_EVENT = "sparkles-state-change"
+const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)"
+
+function subscribeSparkles(callback: () => void) {
+  function handleEvent() {
+    callback()
+  }
+  window.addEventListener(SPARKLES_EVENT, handleEvent)
+  return () => window.removeEventListener(SPARKLES_EVENT, handleEvent)
+}
+
+function getSparklesSnapshot() {
+  const prefersReducedMotion = window.matchMedia(REDUCED_MOTION_QUERY).matches
+  if (prefersReducedMotion) return false
+
+  const sparklesEnabled = document.cookie
+    .split("; ")
+    .find((row) => row.startsWith("sparkles="))
+    ?.split("=")[1]
+  return sparklesEnabled === "true"
+}
+
+function getSparklesServerSnapshot() {
+  return false
+}
+
 export function SparklesBackground() {
-  const [enabled, setEnabled] = useState(false) // Default to false, will be updated in useEffect
-
-  useEffect(() => {
-    // Check prefers-reduced-motion
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    
-    // Initialize from cookie, but respect prefers-reduced-motion
-    const sparklesEnabled = document.cookie
-      .split("; ")
-      .find((row) => row.startsWith("sparkles="))
-      ?.split("=")[1]
-    
-    // Only enable if explicitly set to true in cookie AND not prefers-reduced-motion
-    setEnabled(sparklesEnabled === "true" && !prefersReducedMotion)
-
-    // Listen for sparkles state changes
-    const handleSparklesChange = (event: CustomEvent<{ enabled: boolean }>) => {
-      // Only allow enabling if not prefers-reduced-motion
-      if (!prefersReducedMotion) {
-        setEnabled(event.detail.enabled)
-      }
-    }
-
-    window.addEventListener("sparkles-state-change", handleSparklesChange as EventListener)
-
-    return () => {
-      window.removeEventListener("sparkles-state-change", handleSparklesChange as EventListener)
-    }
-  }, [])
+  const enabled = useSyncExternalStore(
+    subscribeSparkles,
+    getSparklesSnapshot,
+    getSparklesServerSnapshot
+  )
 
   if (!enabled) return null
 
@@ -49,4 +51,4 @@ export function SparklesBackground() {
       />
     </div>
   )
-} 
+}

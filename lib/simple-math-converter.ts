@@ -67,8 +67,8 @@ export class MathConverter {
    */
   private static convertBoldMathExpressions(text: string): string {
     return text.replace(/\*\*([^*]+)\*\*/g, (_, content) => {
-      if (this.containsMathSymbols(content)) {
-        const converted = this.convertMathSymbols(content);
+      if (this.containsMathSymbols(content as string)) {
+        const converted = this.convertMathSymbols(content as string);
         return `**$${converted}$**`;
       }
       return `**${content}**`;
@@ -80,7 +80,7 @@ export class MathConverter {
    */
   private static convertBigO(text: string): string {
     return text.replace(/\bO\(([^)]+)\)/g, (_, expression) => {
-      let expr = expression.trim();
+      let expr = (expression as string).trim();
 
       // Handle multiplication: * → \times
       expr = expr.replace(/\s*\*\s*/g, ' \\times ');

@@ -30,9 +30,9 @@ async function dropTables() {
     try {
       await db.execute(sql.raw(statement));
       console.log(`✅ Executed: ${statement.substring(0, 60)}...`);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(`❌ Error executing: ${statement.substring(0, 60)}...`);
-      console.error(error?.message || error);
+      console.error(error instanceof Error ? error.message : String(error));
     }
   }
 

@@ -275,77 +275,86 @@ export default function RateMasterGame() {
     drawSimulation()
   }, [currentScenario.initialPosition, currentScenario.initialVelocity, setIsSimulating, setTime, setPosition, setVelocity, setMaxVelocity, setTargetPosition, drawSimulation])
 
-  // Animation loop
-  const animate = useCallback((timestamp: number) => {
-    if (!lastTimeRef.current) lastTimeRef.current = timestamp
-    const deltaTime = (timestamp - lastTimeRef.current) / 1000 // Convert to seconds
-    lastTimeRef.current = timestamp
-
-    if (isSimulating && time < currentScenario.maxTime) {
-      // Update time
-      const newTime = time + deltaTime * currentScenario.timeScale
-
-      // Calculate acceleration
-      let acceleration
-      if (typeof currentScenario.acceleration === "function") {
-        acceleration = currentScenario.acceleration(newTime, position, velocity)
-      } else {
-        acceleration = currentScenario.acceleration
-      }
-
-      // Update velocity
-      const newVelocity = velocity + acceleration * deltaTime * currentScenario.timeScale
-      const newMaxVelocity = Math.max(maxVelocity, Math.abs(newVelocity))
-
-      // Update position
-      const newPosition = position + newVelocity * deltaTime * currentScenario.timeScale
-
-      // Record history for graphing
-      positionHistoryRef.current.push([newTime, newPosition])
-      velocityHistoryRef.current.push([newTime, newVelocity])
-
-      // Update all state at once to prevent race conditions
-      setTime(newTime)
-      setVelocity(newVelocity)
-      setPosition(newPosition)
-      setMaxVelocity(newMaxVelocity)
-
-      // Check if we've reached the target position (for time-based questions)
-      if (currentScenario.answerType === "time" && targetPosition !== null) {
-        if (Math.abs(newPosition - targetPosition) < 1) {
-          setIsSimulating(false)
-          setUserAnswer(newTime.toFixed(1))
-        }
-      }
-
-      // Stop if we've reached max time
-      if (newTime >= currentScenario.maxTime) {
-        setIsSimulating(false)
-      }
-    }
-
-    // Draw the simulation
-    drawSimulation()
-
-    // Continue animation loop only if still simulating
-    if (isSimulating) {
-      animationRef.current = requestAnimationFrame(animate)
-    }
-  }, [isSimulating, time, currentScenario, position, velocity, maxVelocity, targetPosition, drawSimulation])
-
   // Start/stop animation
   useEffect(() => {
-    if (isSimulating) {
-      lastTimeRef.current = 0 // Reset the last time reference when starting
+    if (!isSimulating) return
+
+    lastTimeRef.current = 0 // Reset the last time reference when starting
+
+    function animate(timestamp: number) {
+      if (!lastTimeRef.current) lastTimeRef.current = timestamp
+      const deltaTime = (timestamp - lastTimeRef.current) / 1000 // Convert to seconds
+      lastTimeRef.current = timestamp
+
+      // Update simulation state
+      setTime((prevTime) => {
+        if (prevTime >= currentScenario.maxTime) {
+          setIsSimulating(false)
+          return prevTime
+        }
+
+        const newTime = prevTime + deltaTime * currentScenario.timeScale
+
+        setPosition((prevPosition) => {
+          setVelocity((prevVelocity) => {
+            // Calculate acceleration
+            let acceleration
+            if (typeof currentScenario.acceleration === "function") {
+              acceleration = currentScenario.acceleration(newTime, prevPosition, prevVelocity)
+            } else {
+              acceleration = currentScenario.acceleration
+            }
+
+            // Update velocity
+            const newVelocity = prevVelocity + acceleration * deltaTime * currentScenario.timeScale
+            setMaxVelocity((prevMax) => Math.max(prevMax, Math.abs(newVelocity)))
+
+            // Record velocity history
+            velocityHistoryRef.current.push([newTime, newVelocity])
+
+            return newVelocity
+          })
+
+          // Update position
+          const newPosition = prevPosition + velocity * deltaTime * currentScenario.timeScale
+
+          // Record position history
+          positionHistoryRef.current.push([newTime, newPosition])
+
+          // Check if we've reached the target position (for time-based questions)
+          if (currentScenario.answerType === "time" && targetPosition !== null) {
+            if (Math.abs(newPosition - targetPosition) < 1) {
+              setIsSimulating(false)
+              setUserAnswer(newTime.toFixed(1))
+            }
+          }
+
+          return newPosition
+        })
+
+        // Stop if we've reached max time
+        if (newTime >= currentScenario.maxTime) {
+          setIsSimulating(false)
+        }
+
+        return newTime
+      })
+
+      // Draw the simulation
+      drawSimulation()
+
+      // Continue animation loop
       animationRef.current = requestAnimationFrame(animate)
     }
+
+    animationRef.current = requestAnimationFrame(animate)
 
     return () => {
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current)
       }
     }
-  }, [isSimulating, animate])
+  }, [isSimulating, currentScenario, targetPosition, velocity, drawSimulation])
 
   const toggleSimulation = () => {
     setIsSimulating(!isSimulating)

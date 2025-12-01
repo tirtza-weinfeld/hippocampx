@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Plus, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -36,15 +36,6 @@ export function WordTagsEditable({
   const [availableTags, setAvailableTags] = useState<Tag[]>([]);
   const [isLoadingTags, setIsLoadingTags] = useState(false);
 
-  useEffect(
-    function loadTagsWhenEditMode() {
-      if (isEditMode && availableTags.length === 0) {
-        loadAvailableTags();
-      }
-    },
-    [isEditMode]
-  );
-
   async function loadAvailableTags() {
     setIsLoadingTags(true);
     const result = await fetchAllTags();
@@ -53,6 +44,7 @@ export function WordTagsEditable({
     }
     setIsLoadingTags(false);
   }
+
 
   async function handleRemoveTag(tagId: number) {
     const result = await removeTagFromWord(wordId, tagId);
@@ -145,7 +137,12 @@ export function WordTagsEditable({
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => setIsAdding(true)}
+              onClick={() => {
+                setIsAdding(true);
+                if (availableTags.length === 0) {
+                  loadAvailableTags();
+                }
+              }}
               className="h-7 px-2 text-muted-foreground hover:text-foreground"
             >
               <Plus className="h-4 w-4 mr-1" />

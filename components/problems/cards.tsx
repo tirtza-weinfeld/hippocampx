@@ -623,7 +623,7 @@ import WordSearchContent from './cards/79-word-search.mdx'
 import WordSearchIiContent from './cards/212-word-search-ii.mdx'
 
 // Card shell renders with metadata and content
-function CardShell({ id, Content }: { id: string; Content: React.ComponentType<any> }) {
+function CardShell({ id, Content }: { id: string; Content: React.ComponentType }) {
   const meta = CARDS_METADATA[id as keyof typeof CARDS_METADATA]
   if (!meta) return null
 

@@ -180,7 +180,6 @@ function WordDetailContent({ word: initialWord }: { word: WordComplete }) {
       <div className="flex justify-between items-start">
         <div className="space-y-2 flex-1">
           <WordHeaderEditable
-            wordId={word.id}
             initialWordText={word.word_text}
             initialLanguageCode={word.language_code}
             onUpdate={handleWordUpdate}
@@ -200,7 +199,7 @@ function WordDetailContent({ word: initialWord }: { word: WordComplete }) {
           {isEditMode ? (
             <>
               <Button
-                onClick={handleSave}
+                onClick={() => { void handleSave() }}
                 disabled={isSaving}
                 className="gap-2"
               >
@@ -253,7 +252,7 @@ function WordDetailContent({ word: initialWord }: { word: WordComplete }) {
           <h2 className="text-2xl font-semibold">Definitions</h2>
           {isEditMode && (
             <Button
-              onClick={handleAddDefinition}
+              onClick={() => { void handleAddDefinition() }}
               variant="outline"
               size="sm"
               className="gap-2"
@@ -292,7 +291,7 @@ function WordDetailContent({ word: initialWord }: { word: WordComplete }) {
           >
             {isEditMode ? (
               <Button
-                onClick={handleAddDefinition}
+                onClick={() => { void handleAddDefinition() }}
                 variant="outline"
                 className="gap-2"
               >
