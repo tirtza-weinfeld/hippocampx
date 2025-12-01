@@ -7,11 +7,11 @@ export default [
     ignores: ["node_modules/**", ".next/**", "out/**", "build/**", "backend/**", "next-env.d.ts",
       ".venv/**", "__tests__/**",  "lib/db/**" ,
     "**/problems/mascot/**",
-     "**/calculus/**",
-     "**/binary/**",
-     "**/hadestown/**",
-     "**/infinity/**",
-     "**/ai/**",
+     "**/old/calculus/**",
+     "**/old/binary/**",
+     "**/old/hadestown/**",
+     "**/old/infinity/**",
+     "**/old/ai/**",
      "**/scripts/**",
      
 

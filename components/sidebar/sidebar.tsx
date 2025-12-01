@@ -14,7 +14,7 @@ import { SearchDialog } from "@/components/sidebar/search-dialog"
 import { InfinityFontSelector } from "./infinity-font-selector"
 import { ThemeToggle } from "@/components/theme/theme-toggle"
 import { routes, NavigationItem } from "@/lib/routes"
-import { SparklesToggle } from "@/components/calculus/ui/sparkles-toggle"
+import { SparklesToggle } from "@/components/old/calculus/ui/sparkles-toggle"
 import { Route } from "next"
 
 type SidebarProps = {

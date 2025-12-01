@@ -6,7 +6,7 @@ import { Sidebar } from "@/components/sidebar/sidebar";
 import AppFooter from "@/components/layout/app-footer";
 import { cookies } from "next/headers";
 import { CustomTheme } from "@/components/theme/custom-theme";
-import { SparklesBackground } from "@/components/calculus/ui/sparkles-background";
+import { SparklesBackground } from "@/components/old/calculus/ui/sparkles-background";
 import { Fonts } from "@/components/sidebar/fonts";
 import { Font, getFontFamily } from "@/components/theme/font";
 import { TooltipProvider } from "@/components/ui/tooltip";
