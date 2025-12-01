@@ -1,1 +1,184 @@
 # Calculus
+
+## Resizable Table of Contents
+
+## **1. Functions**
+
+A function assigns each input a single output.
+
+* **Single-variable:**
+  $f:\mathbb{R}\to\mathbb{R}$
+  Example: *[green!]$f(x)=x^2+3x$*
+
+* **Multivariable:**
+  $F:\mathbb{R}^n\to\mathbb{R}$
+  Example: *[green!]$F(x,y)=x^2+xy+y^3$*
+
+---
+
+## **2. Limits**
+
+A limit describes the value a quantity approaches.
+
+Example:
+
+$$
+\lim_{h\to 0}(x+h)=x.
+$$
+
+---
+
+## **3. Derivative (1D)**
+
+A function $f$ is differentiable at $a$ if the limit
+
+$$
+f'(a)=\lim_{h\to 0}\frac{f(a+h)-f(a)}{h}
+$$
+
+exists and is finite.
+
+### **Tangent Line**
+
+$$
+T(x)=f(a)+f'(a)(x-a).
+$$
+
+### **Basic Derivative Rules**
+
+$$
+\frac{d}{dx}(x^n)=n x^{n-1},
+\qquad
+\frac{d}{dx}(e^x)=e^x,
+\qquad
+\frac{d}{dx}(\ln x)=\frac{1}{x}.
+$$
+
+---
+
+## **4. Chain Rule (1D)**
+
+If $h(x)=f(g(x))$, then
+
+$$
+h'(x)=f'(g(x)),g'(x).
+$$
+
+---
+
+## **5. Multivariable Functions**
+
+A function of several inputs is written:
+
+$$
+F(x_1,x_2,\dots,x_n).
+$$
+
+---
+
+## **6. Partial Derivatives**
+
+Definition:
+
+$$
+\frac{\partial F}{\partial x_i}(x_1,\dots,x_n)
+
+==============================================
+
+\lim_{h\to 0}
+\frac{
+F(x_1,\dots,x_i+h,\dots,x_n)
+----------------------------
+
+F(x_1,\dots,x_i,\dots,x_n)
+}{h}.
+$$
+
+Example with $F(x,y)=x^2+xy+y^3$:
+
+$$
+\frac{\partial F}{\partial x}=2x+y,
+\qquad
+\frac{\partial F}{\partial y}=x+3y^2.
+$$
+
+---
+
+## **7. Linear Approximation**
+
+For small $h\in\mathbb{R}^n$:
+
+$$
+F(x+h)\approx F(x)+\nabla F(x)\cdot h.
+$$
+
+This is the multivariable analogue of a tangent line.
+
+---
+
+## **8. Gradient**
+
+The gradient of $F:\mathbb{R}^n\to\mathbb{R}$ is:
+
+$$
+\nabla F(x_1,\dots,x_n)
+=======================
+
+\begin{bmatrix}
+\frac{\partial F}{\partial x_1} \
+\frac{\partial F}{\partial x_2} \
+\vdots \
+\frac{\partial F}{\partial x_n}
+\end{bmatrix}.
+$$
+
+Key properties:
+
+* Direction of maximum increase
+* Magnitude = maximum rate of increase
+* Contains all first-order change information
+
+---
+
+## **9. Directional Derivative**
+
+For direction $v\in\mathbb{R}^n$:
+
+$$
+D_v F(x)=\nabla F(x)\cdot v.
+$$
+
+---
+
+## **10. Critical Points**
+
+A point $x^*$ is a **critical point** if
+
+$$
+\nabla F(x^*)=0.
+$$
+
+Possible types:
+
+* local minimum
+* local maximum
+* saddle point
+
+---
+
+## **11. Steepest Descent**
+
+To decrease $F$, move opposite the gradient:
+
+$$
+x_{\text{new}}
+==============
+
+## x_{\text{old}}
+
+\eta,\nabla F(x_{\text{old}}),
+$$
+
+where $\eta>0$ is the step size.
+
+---

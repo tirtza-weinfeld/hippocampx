@@ -1,11 +1,6 @@
 import type { NextConfig } from "next";
 import createMDX from '@next/mdx'
 
-// import remarkMath from 'remark-math'
-// import rehypeKatex from 'rehype-katex'
-// import rehypeMdxCodeProps from 'rehype-mdx-code-props'
-// import rehypeSlug from 'rehype-slug'
-// import rehypeAutolinkHeadings from 'rehype-autolink-headings'
 const withMDX = createMDX({
   extension: /\.mdx?$/,
   options: {
@@ -13,9 +8,7 @@ const withMDX = createMDX({
       'remark-math',
       'remark-gfm',
       '@hippocampx/plugins/remark-typography',
-      // '@hippocampx/plugins/remark-code-tabs',
-      // '@hippocampx/plugins/remark-collapsible-section',
-      // '@hippocampx/plugins/remark-header-section',
+
       '@hippocampx/plugins/remark-section-list',
       '@hippocampx/plugins/remark-github-alerts',
       '@hippocampx/plugins/remark-code-copy',
@@ -43,21 +36,19 @@ const withMDX = createMDX({
 })
 
 const nextConfig: NextConfig = {
+  // turbopack: {
+  //   rules: {
+  //     '*.mdx': {
+  //       loaders: ['@hippocampx/plugins/mdx-latex-loader'],
+  //       as: '*.mdx',
+  //     },
+  //   },
+  // },
   typedRoutes: true,
   reactCompiler: true,
-  // experimental: {
-  //   // ppr: true,
-  //   mdxRs: false,
-  // },
+
   pageExtensions: ['ts', 'tsx', 'mdx'],
-  // Force CSS updates during development
-  // webpack: (config, { dev, isServer }) => {
-  //   if (dev && !isServer) {
-  //     // Disable CSS caching in development
-  //     config.cache = false;
-  //   }
-  //   return config;
-  // },
+  
   images: {
     remotePatterns: [
       {

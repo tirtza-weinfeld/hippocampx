@@ -57,6 +57,19 @@
 **REQUIRED**: Render all math symbols via KaTeX only.
 **VIOLATION = IMMEDIATE REFUSAL**
 
+### ⛔ NEWEST RESOURCES ONLY (2025-2026 CANARY) ⛔
+**MANDATORY**: When searching for documentation, libraries, APIs, or any external resources:
+- **THIS PROJECT RUNS CANARY VERSIONS** - always look for newest, not necessarily stable
+- **ALWAYS** search for the most recent versions (2025-2026 only)
+- **PREFER** canary, RC, beta, or experimental docs over stable when available
+- **NEVER** use outdated documentation or deprecated patterns
+- **REJECT** resources from 2024 or earlier - they are outdated
+- **PRIORITIZE** official documentation over third-party tutorials
+- **VERIFY** that any referenced library versions are current and actively maintained
+- When using web search, **ALWAYS** include "2025" or "2026" or "latest" or "canary" in search queries
+- **CURRENT DATE**: December 2025 (almost 2026) - all resources must be up-to-date
+**VIOLATION = IMMEDIATE REFUSAL**
+
 ## ⛔ ABSOLUTE ENFORCEMENT: COMMAND EXECUTION ⛔
 
 **BEFORE EVERY BASH COMMAND:**

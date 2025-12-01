@@ -12,6 +12,7 @@
     "noEmit": false
   },
   "include": [
+    "./mdx-latex-loader.ts",
     "./remark-typography.ts",
     "./remark-code-tabs.ts",
     "./remark-header-section.ts",

@@ -1,0 +1,131 @@
+
+
+# Foundational Mathematical Objects for AI
+
+## Resizable Table of Contents
+
+## **1. Sets**
+
+A **set** is a collection of objects.
+
+Examples:
+
+* $ \{1,2,3\} $
+* a set of numbers
+* a set of vectors
+
+Sets let us say clearly “this function takes inputs from *here*.”
+
+---
+
+## **2. Numbers → Real Numbers $\mathbb{R}$**
+
+A **number** is a symbol representing a quantity.
+
+A **real number** is any number that can be placed on a continuous number line.
+Includes integers, fractions, decimals, and values like ( \pi ) or ( \sqrt{2} ).
+
+We denote the set of all real numbers by:
+
+$$
+\mathbb{R}
+$$
+
+Every scalar used in ML (weights, biases, activations, losses) is a real number unless stated otherwise.
+
+---
+
+## **3. Scalars**
+
+A **scalar** is simply a single real number.
+
+Example:
+
+$$
+x \in \mathbb{R}
+$$
+
+Scalars are the basic building block of vectors and matrices.
+
+---
+
+## **4. Tuples (Ordered Lists of Scalars)**
+
+A **tuple** is an ordered list of scalars:
+
+* Pair: $ (x, y) $
+* Triple: $ (x, y, z) $
+* (n)-tuple: $ (x_1, x_2, \dots, x_n) $
+
+The order matters.
+Tuples define points in a space.
+
+---
+
+## **5. The Space $\mathbb{R}^n$**
+
+Now that we defined real numbers and tuples, we can define:
+
+$$
+\mathbb{R}^n = { (x_1,\dots,x_n) \mid x_i \in \mathbb{R} }
+$$
+
+So:
+
+* $ \mathbb{R}^1 $ = all 1-tuples (just real numbers)
+* $ \mathbb{R}^2 $ = all pairs $ (x,y) $
+* $ \mathbb{R}^3 $ = all triples $ (x,y,z) $
+* $ \mathbb{R}^n $ = all n-tuples of real numbers
+
+In AI, **data points**, **embeddings**, **weight vectors**, **gradients**, and **activations** all live in some $ \mathbb{R}^n $.
+
+---
+
+## **6. Functions**
+
+Now that we have sets and spaces, we can define functions.
+
+A **function** is a rule that assigns every input **exactly one** output.
+
+Notation:
+
+$$
+f : A \to B
+$$
+
+* **Domain** (A): where inputs come from
+* **Codomain** (B): the type of outputs
+
+Examples used in AI:
+
+* Scalar → scalar (activation):
+  $$
+  \sigma : \mathbb{R} \to \mathbb{R}
+  $$
+
+* Vector → scalar (loss):
+  $$
+  L : \mathbb{R}^n \to \mathbb{R}
+  $$
+
+* Vector → vector (neural layer):
+    $$
+  F : \mathbb{R}^n \to \mathbb{R}^m
+  $$
+
+All neural networks are compositions of such functions.
+
+---
+
+## **7. Why this block exists**
+
+Everything in AI math — **gradients, Jacobians, loss functions, optimization, tensors, backprop** — requires:
+
+* real numbers
+* vectors $ \mathbb{R}^n $
+* functions between these spaces
+
+This is the minimal, complete foundation.
+
+---
+
