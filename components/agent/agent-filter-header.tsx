@@ -70,11 +70,11 @@ export function AgentFilterHeader({ filters, onFiltersChange, topics, stats, has
     (filters.topic !== "all" ? 1 : 0)
 
   return (
-    <div className="sticky top-0 z-20 bg-background/98 backdrop-blur-xl border-b border-border/20 pb-3 mb-3 pt-2">
+    <div className="sticky top-0 z-20 bg-background/98 backdrop-blur-xl border-b border-border/20 pb-3 mb-3 pt-2 @container">
       <div className="flex flex-col gap-2.5 w-full">
         {/* Stats Row - Compact */}
         <div className="grid grid-cols-4 gap-2 h-[42px]">
-          <div className="group relative bg-background/40 backdrop-blur-sm rounded-xl px-3 border border-blue-200/30 dark:border-blue-800/30 hover:border-blue-300/50 dark:hover:border-blue-700/50 transition-all duration-200 flex items-center">
+          <div className=" group relative bg-background/40 backdrop-blur-sm rounded-xl px-3 border border-blue-200/30 dark:border-blue-800/30 hover:border-blue-300/50 dark:hover:border-blue-700/50 transition-all duration-200 flex items-center">
             <div className="flex items-center gap-2.5 w-full">
               <div className="p-1.5 rounded-lg bg-blue-500/10 dark:bg-blue-400/10 flex-shrink-0">
                 <BookOpen className="text-blue-600 dark:text-blue-400 h-3.5 w-3.5" />
@@ -84,7 +84,7 @@ export function AgentFilterHeader({ filters, onFiltersChange, topics, stats, has
                   {stats.totalFiltered !== stats.total && <span className="text-xs text-blue-600/50 dark:text-blue-400/50">{stats.totalFiltered}/</span>}
                   {stats.total}
                 </div>
-                <span className="text-[9px] font-medium text-blue-600/50 dark:text-blue-400/50 uppercase tracking-wider leading-none">Total</span>
+                <span className="text-[9px] hidden @sm:block font-medium text-blue-600/50 dark:text-blue-400/50 uppercase tracking-wider leading-none">Total</span>
               </div>
             </div>
           </div>
@@ -98,7 +98,7 @@ export function AgentFilterHeader({ filters, onFiltersChange, topics, stats, has
                 <div className="text-sm font-bold text-emerald-700 dark:text-emerald-300 tabular-nums leading-none mb-0.5">
                   {stats.easy}
                 </div>
-                <span className="text-[9px] font-medium text-emerald-600/50 dark:text-emerald-400/50 uppercase tracking-wider leading-none">Easy</span>
+                <span className="text-[9px] hidden @sm:block font-medium text-emerald-600/50 dark:text-emerald-400/50 uppercase tracking-wider leading-none">Easy</span>
               </div>
             </div>
           </div>
@@ -112,7 +112,7 @@ export function AgentFilterHeader({ filters, onFiltersChange, topics, stats, has
                 <div className="text-sm font-bold text-amber-700 dark:text-amber-300 tabular-nums leading-none mb-0.5">
                   {stats.medium}
                 </div>
-                <span className="text-[9px] font-medium text-amber-600/50 dark:text-amber-400/50 uppercase tracking-wider leading-none">Medium</span>
+                <span className="text-[9px] hidden @sm:block font-medium text-amber-600/50 dark:text-amber-400/50 uppercase tracking-wider leading-none">Medium</span>
               </div>
             </div>
           </div>
@@ -126,7 +126,7 @@ export function AgentFilterHeader({ filters, onFiltersChange, topics, stats, has
                 <div className="text-sm font-bold text-rose-700 dark:text-rose-300 tabular-nums leading-none mb-0.5">
                   {stats.hard}
                 </div>
-                <span className="text-[9px] font-medium text-rose-600/50 dark:text-rose-400/50 uppercase tracking-wider leading-none">Hard</span>
+                <span className="text-[9px] hidden @sm:block  font-medium text-rose-600/50 dark:text-rose-400/50 uppercase tracking-wider leading-none">Hard</span>
               </div>
             </div>
           </div>

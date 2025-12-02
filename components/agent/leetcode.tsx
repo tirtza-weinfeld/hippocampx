@@ -47,10 +47,12 @@ export function Leetcode({ problemNumber, link, difficulty, className }: Leetcod
         // "group-hover:-translate-y-1 transition-transform duration-300"
       )}>.{problemNumber}</span>
       <span className={cn(
+        "absolute bottom-2 left-0",
         "inline-block",
         "hidden group-hover:inline-block",
+        "opacity-60"
       )}>
-        <ArrowUpRight className="w-4 h-4" />
+        <ArrowUpRight className="w-3 h-3" />
       </span>
 
     </a>

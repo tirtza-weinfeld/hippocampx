@@ -9,6 +9,7 @@ import type { Problem } from '@/lib/db/schema-problems'
 type AgentCardShellProps = {
   children: ReactNode
   problem: Problem
+  timeComplexityBadge?: ReactNode
 }
 
 /**
@@ -16,7 +17,7 @@ type AgentCardShellProps = {
  * Header renders instantly from problem metadata.
  * Content (children) streams in when ready, wrapped in Suspense by parent.
  */
-export function AgentCardShell({ children, problem }: AgentCardShellProps) {
+export function AgentCardShell({ children, problem, timeComplexityBadge }: AgentCardShellProps) {
   // Use derived selector - only re-render when THIS card's state changes
   const expanded = useAgentDialogStore((state) => state.expandedIds.includes(problem.slug))
   const toggleExpanded = useAgentDialogStore((state) => state.toggleExpanded)
@@ -31,6 +32,8 @@ export function AgentCardShell({ children, problem }: AgentCardShellProps) {
         difficulty={problem.difficulty}
         isExpanded={expanded}
         onToggle={() => toggleExpanded(problem.slug)}
+        topics={problem.topics || []}
+        timeComplexityBadge={timeComplexityBadge}
       />
 
       <Activity mode={expanded ? 'visible' : 'hidden'}>

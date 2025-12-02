@@ -2,6 +2,7 @@ import { Suspense } from 'react';
 import { getSolutionsByProblemId } from '@/lib/db/queries/agent-problems';
 import { AgentCardShell, AgentSection } from '@/components/agent';
 import { AgentCardShellContent } from '@/components/agent/agent-card-shell-content';
+import { TimeComplexityBadge } from '@/components/agent/time-complexity-badge';
 import type { Problem, Solution } from '@/lib/db/schema-problems';
 import type { SectionType } from '@/components/agent/agent-section-tab';
 import { MarkdownRenderer } from '@/components/mdx/parse/markdown-renderer';
@@ -14,19 +15,49 @@ export type AgentProblemCardProps = {
 /**
  * Server component wrapper - renders shell immediately, suspends content.
  * Header shows instantly, solutions stream in when ready.
+ * Time complexity badge streams independently via its own Suspense.
  */
 export function AgentProblemCard({ problem }: AgentProblemCardProps) {
-
-
   // Create promise but DON'T await - allows header to render instantly
   const solutionsPromise = getSolutionsByProblemId(problem.id);
 
   return (
-    <AgentCardShell problem={problem}>
+    <AgentCardShell
+      problem={problem}
+      timeComplexityBadge={
+        <Suspense fallback={null}>
+          <TimeComplexityBadgeContent solutionsPromise={solutionsPromise} />
+        </Suspense>
+      }
+    >
       <Suspense fallback={<div className="p-4 text-gray-500">Loading solutions...</div>}>
         <AgentProblemCardContent problem={problem} solutionsPromise={solutionsPromise} />
       </Suspense>
     </AgentCardShell>
+  );
+}
+
+/**
+ * Server component that awaits solutions and renders time complexity with KaTeX.
+ */
+async function TimeComplexityBadgeContent({
+  solutionsPromise
+}: {
+  solutionsPromise: Promise<Solution[]>
+}) {
+  const solutions = await solutionsPromise;
+  const rawLine = solutions[0]?.time_complexity?.split('\n')[0].trim();
+  // Remove leading "- " and trailing ":" if present
+  const timeComplexity = rawLine?.replace(/^-\s*/, '').replace(/:$/, '');
+
+  if (!timeComplexity) {
+    return null;
+  }
+
+  return (
+    <TimeComplexityBadge>
+      <MarkdownRenderer>{timeComplexity}</MarkdownRenderer>
+    </TimeComplexityBadge>
   );
 }
 
