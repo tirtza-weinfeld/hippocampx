@@ -1,16 +1,18 @@
 
-.katex span[style*="color:red"]    { --step: var(--color-red-500)  }
-.katex span[style*="color:blue"]   { --step: var(--color-blue-500)  }
-.katex span[style*="color:green"]  { --step: var(--color-green-500)  }
-.katex span[style*="color:yellow"] { --step: var(--color-yellow-500)  }
-.katex span[style*="color:purple"] { --step: var(--color-purple-500)  }
-.katex span[style*="color:pink"] { --step: var(--color-pink-500)  }
-.katex span[style*="color:teal"] { --step: var(--color-teal-500)  }
-.katex span[style*="color:indigo"] { --step: var(--color-indigo-500)  }
-.katex span[style*="color:gray"] { --step: var(--color-gray-500)  }
-.katex span[style*="color:black"] { --step: var(--color-gray-900)  }
-.katex span[style*="color:white"] { --step: var(--color-gray-100)  }
-.katex span[style*="color:orange"] { --step: var(--color-orange-500)  }
+.katex span[style*="color: red"]    { --step: var(--color-red-500)  }
+.katex span[style*="color: blue"]   { --step: var(--color-blue-500)  }
+.katex span[style*="color: green"]  { --step: var(--color-green-500)  }
+.katex span[style*="color: yellow"] { --step: var(--color-yellow-500)  }
+.katex span[style*="color: purple"] { --step: var(--color-purple-500)  }
+.katex span[style*="color: pink"] { --step: var(--color-pink-500)  }
+.katex span[style*="color: teal"] { --step: var(--color-teal-500)  }
+.katex span[style*="color: indigo"] { --step: var(--color-indigo-500)  }
+.katex span[style*="color: gray"] { --step: var(--color-gray-500)  }
+.katex span[style*="color: black"] { --step: var(--color-gray-900)  }
+.katex span[style*="color: white"] { --step: var(--color-gray-100)  }
+.katex span[style*="color: orange"] { --step: var(--color-orange-500)  }
+.katex span[style*="color: blue"] { --step: var(--color-blue-500)  }
+.katex span[style*="color: sky"] { --step: var(--color-sky-500)  }
 
 /* em .katex *,strong .katex * */
 .alert .katex,
@@ -35,18 +37,17 @@ strong .katex{
 .katex {
   font-size: 1.1em;
   text-rendering: auto;
-  background: transparent;
-  background-size: 200% 100%;
-  background-position: 0% 50%;
-  /* display: inline-block; */
+  background: transparent! important;
+
+  display: inline-block;
 
 
   *{
     background: linear-gradient(to right, --alpha(var(--step) / 100%), --alpha(var(--step) / 20%) , --alpha(var(--step) / 40%));
     background-size: 200% 100%;
     background-position: 0% 50%;
-    background-clip: text;
-    color: transparent;
+    background-clip: text !important;
+    color: transparent !important;
     /* display: inline-block; */
     &:hover span{
       background-position: 100% 20%;

@@ -8,12 +8,14 @@ import { useState } from "react"
 import { Dropdown, DropdownItem } from "./dropdown"
 import { AgentTooltip } from "./agent-tooltip"
 
-const DIFFICULTY_COLORS: Record<string, string> = {
-  all: "blue",
-  easy: "emerald",
-  medium: "amber",
-  hard: "rose",
-}
+
+
+// const DIFFICULTY_COLORS: Record<string, string> = {
+//   all: "blue",
+//   easy: "emerald",
+//   medium: "amber",
+//   hard: "rose",
+// }
 
 type FilterState = {
   search: string
@@ -165,20 +167,31 @@ export function AgentFilterHeader({ filters, onFiltersChange, topics, stats, has
               tooltipClassName="bg-blue-500/5 text-blue-500 fill-blue-500"
               trigger={
                 <div
-                  className={cn(
-                    "h-8 w-8 p-0 border border-border/20 bg-gradient-to-br flex items-center justify-center cursor-pointer",
+                className={cn(
+                           "h-8 w-8 p-0 border border-border/20  flex items-center justify-center cursor-pointer",
                     "transition-all duration-200 rounded-lg relative hover:scale-105 hover:shadow-sm active:scale-95",
-                    `from-${DIFFICULTY_COLORS[filters.difficulty]}-50 to-${DIFFICULTY_COLORS[filters.difficulty]}-100`,
-                    `dark:from-${DIFFICULTY_COLORS[filters.difficulty]}-950 dark:to-${DIFFICULTY_COLORS[filters.difficulty]}-900`,
-                    `text-${DIFFICULTY_COLORS[filters.difficulty]}-700 dark:text-${DIFFICULTY_COLORS[filters.difficulty]}-300`,
-                    filters.difficulty !== "all" && "ring-2 ring-offset-1 ring-offset-background ring-current/30"
-                  )}
+                  "bg-linear-to-r hover:bg-linear-to-l",
+                  filters.difficulty === "all" && "from-blue-50 to-blue-100 dark:from-blue-950/50 dark:to-blue-900/50 text-blue-700 dark:text-blue-300",
+                  filters.difficulty === "easy" && "from-emerald-50 to-emerald-100 dark:from-emerald-950/50 dark:to-emerald-900/50 text-emerald-700 dark:text-emerald-300 ring-2 ring-offset-1 ring-offset-background ring-emerald-500/30",
+                  filters.difficulty === "medium" && "from-amber-50 to-amber-100 dark:from-amber-950/50 dark:to-amber-900/50 text-amber-700 dark:text-amber-300 ring-2 ring-offset-1 ring-offset-background ring-amber-500/30",
+                  filters.difficulty === "hard" && "from-rose-50 to-rose-100 dark:from-rose-950/50 dark:to-rose-900/50 text-rose-700 dark:text-rose-300 ring-2 ring-offset-1 ring-offset-background ring-rose-500/30",
+                )}
+                  // className={cn(
+                  //   "h-8 w-8 p-0 border border-border/20 bg-gradient-to-br flex items-center justify-center cursor-pointer",
+                  //   "transition-all duration-200 rounded-lg relative hover:scale-105 hover:shadow-sm active:scale-95",
+                  //   `from-${DIFFICULTY_COLORS[filters.difficulty]}-50 to-${DIFFICULTY_COLORS[filters.difficulty]}-100`,
+                  //   `dark:from-${DIFFICULTY_COLORS[filters.difficulty]}-950 dark:to-${DIFFICULTY_COLORS[filters.difficulty]}-900`,
+                  //   `text-${DIFFICULTY_COLORS[filters.difficulty]}-700 dark:text-${DIFFICULTY_COLORS[filters.difficulty]}-300`,
+                  //   filters.difficulty !== "all" && "ring-2 ring-offset-1 ring-offset-background ring-current/30"
+                  // )}
                 >
-                  <Target className="h-4 w-4" />
+                  <Target className="h-4 w-4 " />
                   {filters.difficulty !== "all" && (
                     <div className={cn(
                       "absolute -top-1 -right-1 w-3 h-3 rounded-full border-2 border-background shadow-sm",
-                      `bg-${DIFFICULTY_COLORS[filters.difficulty]}-500`
+                      filters.difficulty === "easy" && "bg-emerald-500 dark:bg-emerald-900",
+                      filters.difficulty === "medium" && "bg-amber-500 dark:bg-amber-900",
+                      filters.difficulty === "hard" && "bg-rose-500 dark:bg-rose-900",
                     )} />
                   )}
                 </div>
