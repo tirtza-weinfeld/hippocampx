@@ -30,7 +30,8 @@ export default async function DictionaryPage(props: {
     result = query
       ? await searchWords({ query, languageCode: language, page, pageSize: 50 })
       : await fetchWordsPaginated({ languageCode: language, page, pageSize: 50 });
-  } catch {
+  } catch (error) {
+    console.error("Dictionary load error:", error);
     return (
       <div className="min-h-screen">
         <div className="flex flex-col items-center justify-center py-12">
