@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { Plus, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -35,50 +35,58 @@ export function WordTagsEditable({
   const [newTagName, setNewTagName] = useState("");
   const [availableTags, setAvailableTags] = useState<Tag[]>([]);
   const [isLoadingTags, setIsLoadingTags] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
-  async function loadAvailableTags() {
+  function loadAvailableTags() {
     setIsLoadingTags(true);
-    const result = await fetchAllTags();
-    if (result.success && result.tags) {
-      setAvailableTags(result.tags);
-    }
-    setIsLoadingTags(false);
+    startTransition(async () => {
+      const result = await fetchAllTags();
+      if (result.success) {
+        setAvailableTags(result.tags);
+      }
+      setIsLoadingTags(false);
+    });
   }
 
-
-  async function handleRemoveTag(tagId: number) {
-    const result = await removeTagFromWord(wordId, tagId);
-    if (result.success) {
-      setTags(tags.filter((tag) => tag.id !== tagId));
-    }
+  function handleRemoveTag(tagId: number) {
+    startTransition(async () => {
+      const result = await removeTagFromWord(wordId, tagId);
+      if (result.success) {
+        setTags(tags.filter((tag) => tag.id !== tagId));
+      }
+    });
   }
 
-  async function handleAddExistingTag(tag: Tag) {
-    const result = await addTagToWord(wordId, tag.id);
-    if (result.success) {
-      setTags([...tags, tag]);
-      setIsAdding(false);
-    }
-  }
-
-  async function handleCreateAndAddTag() {
-    if (!newTagName.trim()) return;
-
-    const createResult = await createTag(newTagName.trim());
-    if (createResult.success && createResult.tagId) {
-      const newTag: Tag = {
-        id: createResult.tagId,
-        name: newTagName.trim(),
-        description: null,
-      };
-
-      const addResult = await addTagToWord(wordId, createResult.tagId);
-      if (addResult.success) {
-        setTags([...tags, newTag]);
-        setNewTagName("");
+  function handleAddExistingTag(tag: Tag) {
+    startTransition(async () => {
+      const result = await addTagToWord(wordId, tag.id);
+      if (result.success) {
+        setTags([...tags, tag]);
         setIsAdding(false);
       }
-    }
+    });
+  }
+
+  function handleCreateAndAddTag() {
+    if (!newTagName.trim()) return;
+
+    startTransition(async () => {
+      const createResult = await createTag(newTagName.trim());
+      if (createResult.success && createResult.tagId) {
+        const newTag: Tag = {
+          id: createResult.tagId,
+          name: newTagName.trim(),
+          description: null,
+        };
+
+        const addResult = await addTagToWord(wordId, createResult.tagId);
+        if (addResult.success) {
+          setTags([...tags, newTag]);
+          setNewTagName("");
+          setIsAdding(false);
+        }
+      }
+    });
   }
 
   const unusedTags = availableTags.filter(
@@ -120,6 +128,7 @@ export function WordTagsEditable({
                     size="icon"
                     className="h-4 w-4 p-0 hover:bg-transparent hover:text-destructive"
                     onClick={() => handleRemoveTag(tag.id)}
+                    disabled={isPending}
                   >
                     <X className="h-3 w-3" />
                   </Button>
@@ -248,7 +257,7 @@ export function WordTagsEditable({
                             handleCreateAndAddTag();
                           }
                         }}
-                        disabled={!newTagName.trim()}
+                        disabled={isPending || !newTagName.trim()}
                         className="h-9"
                       >
                         {exactMatch ? "Add" : "Create"}
@@ -267,12 +276,12 @@ export function WordTagsEditable({
                     </div>
                     {newTagName && exactMatch && (
                       <p className="text-xs text-muted-foreground mt-1">
-                        Press Enter to add "{exactMatch.name}"
+                        Press Enter to add &ldquo;{exactMatch.name}&rdquo;
                       </p>
                     )}
                     {newTagName && !exactMatch && filteredTags.length === 0 && (
                       <p className="text-xs text-muted-foreground mt-1">
-                        Press Enter to create "{newTagName}"
+                        Press Enter to create &ldquo;{newTagName}&rdquo;
                       </p>
                     )}
                   </div>

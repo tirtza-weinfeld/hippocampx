@@ -1,9 +1,16 @@
 import Link from "next/link";
 import { Suspense } from "react";
+// TEMPORARY: Using direct Neon DB queries instead of Hippo API
+// import {
+//   fetchWordsPaginated,
+//   searchWords,
+// } from "@/lib/api/railway-vocabulary-client";
 import {
-  fetchWords,
-  searchWordsByPrefix,
-} from "@/lib/api/railway-vocabulary-client";
+  fetchWordsPaginated,
+  searchWords,
+  type PaginatedResponse,
+  type Word,
+} from "@/lib/db/queries/dictionary";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { DictionarySearchWrapper } from "@/components/dictionary/dictionary-search-wrapper";
@@ -11,17 +18,18 @@ import * as motion from "motion/react-client";
 import { BookOpen, Plus, AlertTriangle } from "lucide-react";
 
 export default async function DictionaryPage(props: {
-  searchParams: Promise<{ q?: string; lang?: string }>;
+  searchParams: Promise<{ q?: string; lang?: string; page?: string }>;
 }) {
   const searchParams = await props.searchParams;
   const query = searchParams.q;
   const language = searchParams.lang || "en";
+  const page = Math.max(1, parseInt(searchParams.page || "1", 10) || 1);
 
-  let words;
+  let result: PaginatedResponse<Word>;
   try {
-    words = query
-      ? await searchWordsByPrefix(query, language, 50)
-      : await fetchWords(language, 50, 0);
+    result = query
+      ? await searchWords({ query, languageCode: language, page, pageSize: 50 })
+      : await fetchWordsPaginated({ languageCode: language, page, pageSize: 50 });
   } catch {
     return (
       <div className="min-h-screen">
@@ -72,11 +80,18 @@ export default async function DictionaryPage(props: {
     <div className="min-h-screen">
       <Suspense fallback={<WordListSkeleton />}>
         <DictionarySearchWrapper
-          words={words}
+          words={result.data}
           initialQuery={query}
           initialLanguage={language}
           serverQuery={query}
           headerContent={headerContent}
+          pagination={{
+            page: result.page,
+            pageSize: result.pageSize,
+            total: result.total,
+            totalPages: result.totalPages,
+            hasMore: result.hasMore,
+          }}
         />
       </Suspense>
     </div>

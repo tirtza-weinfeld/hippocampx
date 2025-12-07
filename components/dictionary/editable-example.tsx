@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { Pencil, Check, X, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -25,25 +25,25 @@ export function EditableExample({
   const [isEditing, setIsEditing] = useState(false);
   const [exampleText, setExampleText] = useState(initialText);
   const [source, setSource] = useState(initialSource || "");
-  const [isSaving, setIsSaving] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
-  async function handleSave() {
+  function handleSave() {
     if (!exampleText.trim()) {
       return;
     }
 
-    setIsSaving(true);
-    const result = await updateExample(
-      exampleId,
-      wordId,
-      exampleText.trim(),
-      source.trim() || undefined
-    );
-    setIsSaving(false);
+    startTransition(async () => {
+      const result = await updateExample(
+        exampleId,
+        wordId,
+        exampleText.trim(),
+        source.trim() || undefined
+      );
 
-    if (result.success) {
-      setIsEditing(false);
-    }
+      if (result.success) {
+        setIsEditing(false);
+      }
+    });
   }
 
   function handleCancel() {
@@ -52,11 +52,13 @@ export function EditableExample({
     setIsEditing(false);
   }
 
-  async function handleDelete() {
-    const result = await deleteExample(exampleId, wordId);
-    if (result.success) {
-      onDeleted(exampleId);
-    }
+  function handleDelete() {
+    startTransition(async () => {
+      const result = await deleteExample(exampleId, wordId);
+      if (result.success) {
+        onDeleted(exampleId);
+      }
+    });
   }
 
   if (isEditing) {
@@ -76,6 +78,7 @@ export function EditableExample({
           autoFocus
           onKeyDown={(e) => {
             if (e.key === "Enter" && e.metaKey) {
+              e.preventDefault();
               handleSave();
             } else if (e.key === "Escape") {
               handleCancel();
@@ -93,7 +96,7 @@ export function EditableExample({
           <Button
             size="sm"
             onClick={handleSave}
-            disabled={isSaving}
+            disabled={isPending}
             className="h-7"
           >
             <Check className="h-3 w-3 mr-1" />
@@ -103,7 +106,7 @@ export function EditableExample({
             size="sm"
             variant="outline"
             onClick={handleCancel}
-            disabled={isSaving}
+            disabled={isPending}
             className="h-7"
           >
             <X className="h-3 w-3 mr-1" />
@@ -124,7 +127,7 @@ export function EditableExample({
       className="border-l-2 pl-4 py-2 border-muted flex justify-between items-start gap-2 group hover:border-primary transition-colors"
     >
       <div className="flex-1">
-        <p className="text-sm italic">"{initialText}"</p>
+        <p className="text-sm italic">&ldquo;{initialText}&rdquo;</p>
         {initialSource && (
           <p className="text-xs text-muted-foreground mt-1">— {initialSource}</p>
         )}

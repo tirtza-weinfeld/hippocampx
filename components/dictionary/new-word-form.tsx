@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -50,7 +50,7 @@ export function NewWordForm() {
     async function loadTagsFromServer() {
       try {
         const result = await fetchAllTags();
-        if (result.success && result.tags) {
+        if (result.success) {
           setAvailableTags(result.tags);
         }
       } catch (error) {
@@ -59,7 +59,7 @@ export function NewWordForm() {
         setIsLoadingTags(false);
       }
     }
-    loadTagsFromServer();
+    void loadTagsFromServer();
   }, []);
 
   function handleAddDefinition() {
@@ -149,24 +149,28 @@ export function NewWordForm() {
     setSelectedTagIds(newSelected);
   }
 
-  async function handleCreateTag() {
+  const [isTagPending, startTagTransition] = useTransition();
+
+  function handleCreateTag() {
     if (!newTagName.trim()) return;
 
-    try {
-      const result = await createTag(newTagName.trim());
-      if (result.success && result.tagId) {
-        const newTag: Tag = {
-          id: result.tagId,
-          name: newTagName.trim(),
-          description: null,
-        };
-        setAvailableTags([...availableTags, newTag]);
-        setSelectedTagIds(new Set([...selectedTagIds, result.tagId]));
-        setNewTagName("");
+    startTagTransition(async () => {
+      try {
+        const result = await createTag(newTagName.trim());
+        if (result.success && result.tagId) {
+          const newTag: Tag = {
+            id: result.tagId,
+            name: newTagName.trim(),
+            description: null,
+          };
+          setAvailableTags([...availableTags, newTag]);
+          setSelectedTagIds(new Set([...selectedTagIds, result.tagId]));
+          setNewTagName("");
+        }
+      } catch (error) {
+        console.error("Failed to create tag:", error);
       }
-    } catch (error) {
-      console.error("Failed to create tag:", error);
-    }
+    });
   }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -242,7 +246,13 @@ export function NewWordForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        void handleSubmit(e);
+      }}
+      className="space-y-6"
+    >
       <div className="space-y-2">
         <Label htmlFor="word_text">Word *</Label>
         <Input
@@ -475,7 +485,7 @@ export function NewWordForm() {
                 variant="outline"
                 size="sm"
                 onClick={handleCreateTag}
-                disabled={!newTagName.trim()}
+                disabled={isTagPending || !newTagName.trim()}
               >
                 <Plus className="h-4 w-4 mr-1" />
                 Create

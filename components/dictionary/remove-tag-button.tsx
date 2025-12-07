@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useTransition } from "react";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { removeTagFromWord } from "@/lib/actions/vocabulary";
@@ -11,15 +11,15 @@ interface RemoveTagButtonProps {
 }
 
 export function RemoveTagButton({ tagId, wordId }: RemoveTagButtonProps) {
-  const [isRemoving, setIsRemoving] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
-  async function handleRemove() {
-    setIsRemoving(true);
-    const result = await removeTagFromWord(wordId, tagId);
-    if (result?.error) {
-      console.error(result.error);
-    }
-    setIsRemoving(false);
+  function handleRemove() {
+    startTransition(async () => {
+      const result = await removeTagFromWord(wordId, tagId);
+      if (result.error) {
+        console.error(result.error);
+      }
+    });
   }
 
   return (
@@ -27,8 +27,8 @@ export function RemoveTagButton({ tagId, wordId }: RemoveTagButtonProps) {
       variant="ghost"
       size="icon"
       className="h-4 w-4 p-0 hover:bg-transparent"
-      onClick={() => void handleRemove()}
-      disabled={isRemoving}
+      onClick={handleRemove}
+      disabled={isPending}
     >
       <X className="h-3 w-3" />
     </Button>

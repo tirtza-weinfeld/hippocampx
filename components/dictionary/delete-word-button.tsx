@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { deleteWord } from "@/lib/actions/vocabulary";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,17 +15,16 @@ import {
 
 export function DeleteWordButton({ wordId }: { wordId: number }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
-  async function handleDelete() {
-    setIsDeleting(true);
-    try {
-      await deleteWord(wordId);
-      // Navigation happens in the server action
-    } catch (error) {
-      console.error("Failed to delete word:", error);
-      setIsDeleting(false);
-    }
+  function handleDelete() {
+    startTransition(async () => {
+      try {
+        await deleteWord(wordId);
+      } catch (error) {
+        console.error("Failed to delete word:", error);
+      }
+    });
   }
 
   return (
@@ -45,16 +44,16 @@ export function DeleteWordButton({ wordId }: { wordId: number }) {
           <Button
             variant="outline"
             onClick={function handleCancelClick() { setIsOpen(false); }}
-            disabled={isDeleting}
+            disabled={isPending}
           >
             Cancel
           </Button>
           <Button
             variant="destructive"
             onClick={handleDelete}
-            disabled={isDeleting}
+            disabled={isPending}
           >
-            {isDeleting ? "Deleting..." : "Delete"}
+            {isPending ? "Deleting..." : "Delete"}
           </Button>
         </DialogFooter>
       </DialogContent>

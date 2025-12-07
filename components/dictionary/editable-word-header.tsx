@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { Check, X, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,21 +29,21 @@ export function EditableWordHeader({
   const [isEditing, setIsEditing] = useState(false);
   const [wordText, setWordText] = useState(initialWordText);
   const [languageCode, setLanguageCode] = useState(initialLanguageCode);
-  const [isSaving, setIsSaving] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
-  async function handleSave() {
-    if (!wordText.trim() || wordText === initialWordText && languageCode === initialLanguageCode) {
+  function handleSave() {
+    if (!wordText.trim() || (wordText === initialWordText && languageCode === initialLanguageCode)) {
       setIsEditing(false);
       return;
     }
 
-    setIsSaving(true);
-    const result = await updateWord(wordId, wordText.trim(), languageCode);
-    setIsSaving(false);
+    startTransition(async () => {
+      const result = await updateWord(wordId, wordText.trim(), languageCode);
 
-    if (result.success) {
-      setIsEditing(false);
-    }
+      if (result.success) {
+        setIsEditing(false);
+      }
+    });
   }
 
   function handleCancel() {
@@ -66,6 +66,7 @@ export function EditableWordHeader({
           autoFocus
           onKeyDown={(e) => {
             if (e.key === "Enter") {
+              e.preventDefault();
               handleSave();
             } else if (e.key === "Escape") {
               handleCancel();
@@ -90,7 +91,7 @@ export function EditableWordHeader({
           <Button
             size="sm"
             onClick={handleSave}
-            disabled={isSaving}
+            disabled={isPending}
             className="h-9"
           >
             <Check className="h-4 w-4 mr-1" />
@@ -100,7 +101,7 @@ export function EditableWordHeader({
             size="sm"
             variant="outline"
             onClick={handleCancel}
-            disabled={isSaving}
+            disabled={isPending}
             className="h-9"
           >
             <X className="h-4 w-4 mr-1" />

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useActionState } from "react";
 import { Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -30,29 +30,26 @@ export function EditExampleDialog({
   initialSource,
 }: EditExampleDialogProps) {
   const [open, setOpen] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [exampleText, setExampleText] = useState(initialExampleText);
-  const [source, setSource] = useState(initialSource || "");
+  const [source, setSource] = useState(initialSource ?? "");
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setIsSubmitting(true);
+  const [state, formAction, isPending] = useActionState(
+    async () => {
+      const result = await updateExample(
+        exampleId,
+        wordId,
+        exampleText,
+        source || undefined
+      );
 
-    const result = await updateExample(
-      exampleId,
-      wordId,
-      exampleText,
-      source || undefined
-    );
-
-    if (result?.error) {
-      console.error(result.error);
-    } else {
+      if (result.error) {
+        return { error: result.error };
+      }
       setOpen(false);
-    }
-
-    setIsSubmitting(false);
-  }
+      return null;
+    },
+    null
+  );
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -68,7 +65,7 @@ export function EditExampleDialog({
             Update the example text and source
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form action={formAction} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="example_text">Example</Label>
             <Input
@@ -90,6 +87,10 @@ export function EditExampleDialog({
             />
           </div>
 
+          {state?.error && (
+            <p className="text-sm text-destructive">{state.error}</p>
+          )}
+
           <DialogFooter>
             <Button
               type="button"
@@ -98,8 +99,8 @@ export function EditExampleDialog({
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Saving..." : "Save Changes"}
+            <Button type="submit" disabled={isPending}>
+              {isPending ? "Saving..." : "Save Changes"}
             </Button>
           </DialogFooter>
         </form>

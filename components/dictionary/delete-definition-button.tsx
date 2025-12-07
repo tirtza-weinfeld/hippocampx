@@ -1,5 +1,6 @@
 "use client";
 
+import { useTransition } from "react";
 import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { deleteDefinition } from "@/lib/actions/vocabulary";
@@ -13,8 +14,12 @@ export function DeleteDefinitionButton({
   definitionId,
   wordId,
 }: DeleteDefinitionButtonProps) {
-  async function handleDelete() {
-    await deleteDefinition(definitionId, wordId);
+  const [isPending, startTransition] = useTransition();
+
+  function handleDelete() {
+    startTransition(async () => {
+      await deleteDefinition(definitionId, wordId);
+    });
   }
 
   return (
@@ -23,6 +28,7 @@ export function DeleteDefinitionButton({
       size="icon"
       className="h-7 w-7 text-muted-foreground hover:text-destructive"
       onClick={handleDelete}
+      disabled={isPending}
     >
       <Trash2 className="h-4 w-4" />
     </Button>

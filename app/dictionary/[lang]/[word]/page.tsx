@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { fetchWordCompleteByText } from "@/lib/api/railway-vocabulary-client";
+// TEMPORARY: Using direct Neon DB queries instead of Hippo API
+// import { fetchWordCompleteByText } from "@/lib/api/railway-vocabulary-client";
+import { fetchWordCompleteByText } from "@/lib/db/queries/dictionary";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { WordDetailClient } from "./word-detail-client";

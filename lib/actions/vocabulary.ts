@@ -2,7 +2,9 @@
 
 import { revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
-import * as railwayApi from "@/lib/api/railway-vocabulary-client";
+// TEMPORARY: Using direct Neon DB queries instead of Hippo API
+// import * as dictionaryDb from "@/lib/api/railway-vocabulary-client";
+import * as dictionaryDb from "@/lib/db/queries/dictionary";
 
 // ============================================================================
 // Word Actions
@@ -17,7 +19,7 @@ export async function createWord(formData: FormData) {
   }
 
   try {
-    const word = await railwayApi.createWord(
+    const word = await dictionaryDb.createWord(
       wordText.trim(),
       languageCode
     );
@@ -36,7 +38,7 @@ export async function updateWord(
   languageCode: string
 ) {
   try {
-    await railwayApi.updateWord(wordId, wordText, languageCode);
+    await dictionaryDb.updateWord(wordId, wordText, languageCode);
 
     revalidateTag("dictionary-words", "hours");
     revalidateTag(`word-${wordId}`, "hours");
@@ -49,7 +51,7 @@ export async function updateWord(
 
 export async function deleteWord(wordId: number) {
   try {
-    await railwayApi.deleteWord(wordId);
+    await dictionaryDb.deleteWord(wordId);
   } catch (error) {
     console.error("Failed to delete word:", error);
     return { error: "Failed to delete word" };
@@ -75,7 +77,7 @@ export async function createDefinition(formData: FormData) {
   }
 
   try {
-    const definition = await railwayApi.createDefinition(
+    const definition = await dictionaryDb.createDefinition(
       wordId,
       definitionText.trim(),
       partOfSpeech || null,
@@ -97,7 +99,7 @@ export async function updateDefinition(
   partOfSpeech: string
 ) {
   try {
-    await railwayApi.updateDefinition(
+    await dictionaryDb.updateDefinition(
       definitionId,
       definitionText,
       partOfSpeech || null
@@ -113,7 +115,7 @@ export async function updateDefinition(
 
 export async function deleteDefinition(definitionId: number, wordId: number) {
   try {
-    await railwayApi.deleteDefinition(definitionId);
+    await dictionaryDb.deleteDefinition(definitionId);
 
     revalidateTag(`word-${wordId}`, "hours");
     return { success: true };
@@ -138,10 +140,10 @@ export async function createExample(formData: FormData) {
   }
 
   try {
-    const example = await railwayApi.createExample(
+    const example = await dictionaryDb.createExample(
       definitionId,
       exampleText.trim(),
-      source?.trim()
+      source.trim()
     );
 
     revalidateTag(`word-${wordId}`, "hours");
@@ -159,7 +161,7 @@ export async function updateExample(
   source?: string
 ) {
   try {
-    await railwayApi.updateExample(exampleId, exampleText, source);
+    await dictionaryDb.updateExample(exampleId, exampleText, source);
 
     revalidateTag(`word-${wordId}`, "hours");
     return { success: true };
@@ -171,7 +173,7 @@ export async function updateExample(
 
 export async function deleteExample(exampleId: number, wordId: number) {
   try {
-    await railwayApi.deleteExample(exampleId);
+    await dictionaryDb.deleteExample(exampleId);
 
     revalidateTag(`word-${wordId}`, "hours");
     return { success: true };
@@ -187,7 +189,7 @@ export async function deleteExample(exampleId: number, wordId: number) {
 
 export async function createTag(name: string, description?: string) {
   try {
-    const tag = await railwayApi.createTag(
+    const tag = await dictionaryDb.createTag(
       name.trim(),
       description?.trim()
     );
@@ -202,7 +204,7 @@ export async function createTag(name: string, description?: string) {
 
 export async function addTagToWord(wordId: number, tagId: number) {
   try {
-    await railwayApi.addTagToWord(wordId, tagId);
+    await dictionaryDb.addTagToWord(wordId, tagId);
 
     revalidateTag(`word-${wordId}`, "hours");
     return { success: true };
@@ -214,7 +216,7 @@ export async function addTagToWord(wordId: number, tagId: number) {
 
 export async function removeTagFromWord(wordId: number, tagId: number) {
   try {
-    await railwayApi.removeTagFromWord(wordId, tagId);
+    await dictionaryDb.removeTagFromWord(wordId, tagId);
 
     revalidateTag(`word-${wordId}`, "hours");
     return { success: true };
@@ -226,7 +228,7 @@ export async function removeTagFromWord(wordId: number, tagId: number) {
 
 export async function fetchAllTags() {
   try {
-    const tags = await railwayApi.fetchAllTags();
+    const tags = await dictionaryDb.fetchAllTags();
     return { success: true, tags };
   } catch (error) {
     console.error("Failed to fetch tags:", error);

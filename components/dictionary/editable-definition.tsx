@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { Pencil, Check, X, Trash2, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -69,27 +69,27 @@ export function EditableDefinition({
   const [isEditing, setIsEditing] = useState(false);
   const [definitionText, setDefinitionText] = useState(initialText);
   const [partOfSpeech, setPartOfSpeech] = useState(initialPOS || "noun");
-  const [isSaving, setIsSaving] = useState(false);
+  const [isPending, startTransition] = useTransition();
   const [examples, setExamples] = useState<Example[]>(initialExamples);
   const [isAddingExample, setIsAddingExample] = useState(false);
 
-  async function handleSave() {
+  function handleSave() {
     if (!definitionText.trim()) {
       return;
     }
 
-    setIsSaving(true);
-    const result = await updateDefinition(
-      definitionId,
-      wordId,
-      definitionText.trim(),
-      partOfSpeech
-    );
-    setIsSaving(false);
+    startTransition(async () => {
+      const result = await updateDefinition(
+        definitionId,
+        wordId,
+        definitionText.trim(),
+        partOfSpeech
+      );
 
-    if (result.success) {
-      setIsEditing(false);
-    }
+      if (result.success) {
+        setIsEditing(false);
+      }
+    });
   }
 
   function handleCancel() {
@@ -98,34 +98,38 @@ export function EditableDefinition({
     setIsEditing(false);
   }
 
-  async function handleDelete() {
+  function handleDelete() {
     if (!confirm("Are you sure you want to delete this definition?")) {
       return;
     }
 
-    await deleteDefinition(definitionId, wordId);
+    startTransition(async () => {
+      await deleteDefinition(definitionId, wordId);
+    });
   }
 
-  async function handleAddExample(exampleText: string, source: string) {
-    const formData = new FormData();
-    formData.set("definition_id", definitionId.toString());
-    formData.set("word_id", wordId.toString());
-    formData.set("example_text", exampleText);
-    if (source.trim()) {
-      formData.set("source", source);
-    }
+  function handleAddExample(exampleText: string, source: string) {
+    startTransition(async () => {
+      const formData = new FormData();
+      formData.set("definition_id", definitionId.toString());
+      formData.set("word_id", wordId.toString());
+      formData.set("example_text", exampleText);
+      if (source.trim()) {
+        formData.set("source", source);
+      }
 
-    const result = await createExample(formData);
-    if (result.success && result.exampleId) {
-      const newExample: Example = {
-        id: result.exampleId,
-        definition_id: definitionId,
-        example_text: exampleText,
-        source: source || null,
-      };
-      setExamples([...examples, newExample]);
-      setIsAddingExample(false);
-    }
+      const result = await createExample(formData);
+      if (result.success && result.exampleId) {
+        const newExample: Example = {
+          id: result.exampleId,
+          definition_id: definitionId,
+          example_text: exampleText,
+          source: source || null,
+        };
+        setExamples([...examples, newExample]);
+        setIsAddingExample(false);
+      }
+    });
   }
 
   function handleExampleDeleted(exampleId: number) {
@@ -173,6 +177,7 @@ export function EditableDefinition({
                   autoFocus
                   onKeyDown={(e) => {
                     if (e.key === "Enter" && e.metaKey) {
+                      e.preventDefault();
                       handleSave();
                     } else if (e.key === "Escape") {
                       handleCancel();
@@ -192,7 +197,7 @@ export function EditableDefinition({
                     variant="ghost"
                     size="icon"
                     onClick={handleSave}
-                    disabled={isSaving}
+                    disabled={isPending}
                     className="h-8 w-8"
                   >
                     <Check className="h-4 w-4 text-green-600" />
@@ -201,7 +206,7 @@ export function EditableDefinition({
                     variant="ghost"
                     size="icon"
                     onClick={handleCancel}
-                    disabled={isSaving}
+                    disabled={isPending}
                     className="h-8 w-8"
                   >
                     <X className="h-4 w-4 text-red-600" />
@@ -294,19 +299,19 @@ function AddExampleForm({
   onAdd,
   onCancel,
 }: {
-  onAdd: (text: string, source: string) => Promise<void>;
+  onAdd: (text: string, source: string) => void;
   onCancel: () => void;
 }) {
   const [exampleText, setExampleText] = useState("");
   const [source, setSource] = useState("");
-  const [isSaving, setIsSaving] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
-  async function handleSubmit() {
+  function handleSubmit() {
     if (!exampleText.trim()) return;
 
-    setIsSaving(true);
-    await onAdd(exampleText, source);
-    setIsSaving(false);
+    startTransition(() => {
+      onAdd(exampleText, source);
+    });
   }
 
   return (
@@ -319,6 +324,7 @@ function AddExampleForm({
         autoFocus
         onKeyDown={(e) => {
           if (e.key === "Enter" && e.metaKey) {
+            e.preventDefault();
             handleSubmit();
           } else if (e.key === "Escape") {
             onCancel();
@@ -336,7 +342,7 @@ function AddExampleForm({
         <Button
           size="sm"
           onClick={handleSubmit}
-          disabled={isSaving || !exampleText.trim()}
+          disabled={isPending || !exampleText.trim()}
         >
           Add
         </Button>

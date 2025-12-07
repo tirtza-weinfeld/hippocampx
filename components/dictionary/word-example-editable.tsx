@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -28,6 +28,7 @@ export function WordExampleEditable({
   const { isEditMode } = useWordEditMode();
   const [exampleText, setExampleText] = useState(initialText);
   const [source, setSource] = useState(initialSource || "");
+  const [isPending, startTransition] = useTransition();
 
   function handleExampleChange(value: string) {
     setExampleText(value);
@@ -39,11 +40,13 @@ export function WordExampleEditable({
     onUpdate(exampleId, exampleText, value);
   }
 
-  async function handleDelete() {
-    const result = await deleteExample(exampleId, wordId);
-    if (result.success) {
-      onDelete(exampleId);
-    }
+  function handleDelete() {
+    startTransition(async () => {
+      const result = await deleteExample(exampleId, wordId);
+      if (result.success) {
+        onDelete(exampleId);
+      }
+    });
   }
 
   if (isEditMode) {
@@ -66,6 +69,7 @@ export function WordExampleEditable({
             variant="ghost"
             size="icon"
             onClick={handleDelete}
+            disabled={isPending}
             className="h-8 w-8 hover:text-destructive"
           >
             <Trash2 className="h-4 w-4" />
@@ -91,7 +95,7 @@ export function WordExampleEditable({
       transition={{ duration: 0.2 }}
       className="border-l-2 pl-4 py-2 border-muted"
     >
-      <p className="text-sm italic">"{initialText}"</p>
+      <p className="text-sm italic">&ldquo;{initialText}&rdquo;</p>
       {initialSource && (
         <p className="text-xs text-muted-foreground mt-1">— {initialSource}</p>
       )}

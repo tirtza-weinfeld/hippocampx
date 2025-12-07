@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { Trash2, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -83,37 +83,43 @@ export function WordDefinitionEditable({
     onUpdate(definitionText, value);
   }
 
-  async function handleDelete() {
+  const [isPending, startTransition] = useTransition();
+
+  function handleDelete() {
     if (!confirm("Are you sure you want to delete this definition?")) {
       return;
     }
 
-    const result = await deleteDefinition(definitionId, wordId);
-    if (result.success) {
-      onDelete();
-    }
+    startTransition(async () => {
+      const result = await deleteDefinition(definitionId, wordId);
+      if (result.success) {
+        onDelete();
+      }
+    });
   }
 
-  async function handleAddExample(exampleText: string, source: string) {
-    const formData = new FormData();
-    formData.set("definition_id", definitionId.toString());
-    formData.set("word_id", wordId.toString());
-    formData.set("example_text", exampleText);
-    if (source.trim()) {
-      formData.set("source", source);
-    }
+  function handleAddExample(exampleText: string, source: string) {
+    startTransition(async () => {
+      const formData = new FormData();
+      formData.set("definition_id", definitionId.toString());
+      formData.set("word_id", wordId.toString());
+      formData.set("example_text", exampleText);
+      if (source.trim()) {
+        formData.set("source", source);
+      }
 
-    const result = await createExample(formData);
-    if (result.success && result.exampleId) {
-      const newExample: Example = {
-        id: result.exampleId,
-        definition_id: definitionId,
-        example_text: exampleText,
-        source: source || null,
-      };
-      setExamples([...examples, newExample]);
-      setIsAddingExample(false);
-    }
+      const result = await createExample(formData);
+      if (result.success && result.exampleId) {
+        const newExample: Example = {
+          id: result.exampleId,
+          definition_id: definitionId,
+          example_text: exampleText,
+          source: source || null,
+        };
+        setExamples([...examples, newExample]);
+        setIsAddingExample(false);
+      }
+    });
   }
 
   function handleExampleUpdate(
@@ -185,6 +191,7 @@ export function WordDefinitionEditable({
                 variant="ghost"
                 size="icon"
                 onClick={handleDelete}
+                disabled={isPending}
                 className="h-8 w-8 hover:text-destructive"
               >
                 <Trash2 className="h-4 w-4" />
@@ -259,19 +266,19 @@ function AddExampleForm({
   onAdd,
   onCancel,
 }: {
-  onAdd: (text: string, source: string) => Promise<void>;
+  onAdd: (text: string, source: string) => void;
   onCancel: () => void;
 }) {
   const [exampleText, setExampleText] = useState("");
   const [source, setSource] = useState("");
-  const [isSaving, setIsSaving] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
-  async function handleSubmit() {
+  function handleSubmit() {
     if (!exampleText.trim()) return;
 
-    setIsSaving(true);
-    await onAdd(exampleText, source);
-    setIsSaving(false);
+    startTransition(() => {
+      onAdd(exampleText, source);
+    });
   }
 
   return (
@@ -284,6 +291,7 @@ function AddExampleForm({
         autoFocus
         onKeyDown={(e) => {
           if (e.key === "Enter" && e.metaKey) {
+            e.preventDefault();
             handleSubmit();
           } else if (e.key === "Escape") {
             onCancel();
@@ -301,7 +309,7 @@ function AddExampleForm({
         <Button
           size="sm"
           onClick={handleSubmit}
-          disabled={isSaving || !exampleText.trim()}
+          disabled={isPending || !exampleText.trim()}
         >
           Add
         </Button>
