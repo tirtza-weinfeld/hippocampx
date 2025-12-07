@@ -24,12 +24,16 @@ async function checkSchema() {
   `);
 
   console.log('📊 Current tables:');
-  tables.rows.forEach((row: any) => {
-    console.log(`  - ${row.table_name}`);
-  });
+  for (const row of tables.rows) {
+    const { table_name } = row as { table_name: string };
+    console.log(`  - ${table_name}`);
+  }
 
   // Check if symbols table exists
-  const symbolsExists = tables.rows.some((row: any) => row.table_name === 'symbols');
+  const symbolsExists = tables.rows.some((row) => {
+    const { table_name } = row as { table_name: string };
+    return table_name === 'symbols';
+  });
 
   console.log(`\n✓ Symbols table exists: ${symbolsExists}`);
 
@@ -42,14 +46,15 @@ async function checkSchema() {
   `);
 
   console.log('\n📋 Solutions table columns:');
-  solutionColumns.rows.forEach((row: any) => {
-    console.log(`  - ${row.column_name}: ${row.data_type}`);
-  });
+  for (const row of solutionColumns.rows) {
+    const { column_name, data_type } = row as { column_name: string; data_type: string };
+    console.log(`  - ${column_name}: ${data_type}`);
+  }
 
   process.exit(0);
 }
 
-checkSchema().catch((error) => {
+checkSchema().catch((error: unknown) => {
   console.error('❌ Error:', error);
   process.exit(1);
 });

@@ -20,9 +20,12 @@ async function checkData() {
   const solutionCount = await db.execute(sql`SELECT COUNT(*) FROM solutions`);
   const symbolCount = await db.execute(sql`SELECT COUNT(*) FROM symbols`);
 
-  console.log(`Problems: ${problemCount.rows[0].count}`);
-  console.log(`Solutions: ${solutionCount.rows[0].count}`);
-  console.log(`Symbols: ${symbolCount.rows[0].count}\n`);
+  const pCount = problemCount.rows[0] as { count: number };
+  const sCount = solutionCount.rows[0] as { count: number };
+  const symCount = symbolCount.rows[0] as { count: number };
+  console.log(`Problems: ${pCount.count}`);
+  console.log(`Solutions: ${sCount.count}`);
+  console.log(`Symbols: ${symCount.count}\n`);
 
   // Show a sample problem with its solutions
   const sample = await db.execute(sql`
@@ -37,10 +40,11 @@ async function checkData() {
   `);
 
   if (sample.rows.length > 0) {
+    const sampleRow = sample.rows[0] as { title: string; solution_count: number; symbol_count: number };
     console.log('📝 Sample: Problem 1235');
-    console.log(`  Title: ${sample.rows[0].title}`);
-    console.log(`  Solutions: ${sample.rows[0].solution_count}`);
-    console.log(`  Symbols: ${sample.rows[0].symbol_count}\n`);
+    console.log(`  Title: ${sampleRow.title}`);
+    console.log(`  Solutions: ${sampleRow.solution_count}`);
+    console.log(`  Symbols: ${sampleRow.symbol_count}\n`);
   }
 
   // Show sample symbols
@@ -54,14 +58,15 @@ async function checkData() {
   `);
 
   console.log('🔍 Sample symbols from Problem 1235:');
-  symbols.rows.forEach((row: any) => {
-    console.log(`  ${row.kind}: ${row.qname}`);
-  });
+  for (const row of symbols.rows) {
+    const { kind, qname } = row as { kind: string; qname: string };
+    console.log(`  ${kind}: ${qname}`);
+  }
 
   process.exit(0);
 }
 
-checkData().catch((error) => {
+checkData().catch((error: unknown) => {
   console.error('❌ Error:', error);
   process.exit(1);
 });

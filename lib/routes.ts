@@ -1,4 +1,4 @@
-import { Brain, Binary, Sparkles, InfinityIcon, ChartNoAxesCombinedIcon, Home, Calculator, BookOpen, HelpCircle, Dumbbell, Lightbulb, Gamepad2 } from "lucide-react"
+import { Brain, Binary, Sparkles, InfinityIcon, ChartNoAxesCombinedIcon, Home, Calculator, BookOpen, HelpCircle, Dumbbell, Lightbulb, Gamepad2, Pencil, Music, Flower, Puzzle, BookMarked } from "lucide-react"
 import { ElementType } from "react"
 // import { PROBLEMS_ROUTES } from "./problems-routes"
 
@@ -40,7 +40,19 @@ export const routes: NavigationItem[] = [
             { title: 'Fun Quiz', href: '/old/ai/quiz', icon: Brain, color: "text-blue-500", bgColor: "bg-blue-500/10" }
         ],
     },
-    { title: 'Hadestown', href: '/old/hadestown', icon: Sparkles, color: "text-green-500", bgColor: "bg-green-500/10", },
+    {
+        title: 'Hadestown', href: '/old/hadestown', icon: Sparkles, color: "text-amber-500", bgColor: "bg-amber-500/10",
+        children: [
+            { title: 'Overview', href: '/old/hadestown', icon: Sparkles, color: "text-amber-500", bgColor: "bg-amber-500/10" },
+            { title: 'Spelling', href: '/old/hadestown/games/spelling', icon: Pencil, color: "text-amber-600", bgColor: "bg-amber-500/10" },
+            { title: 'Vocabulary', href: '/old/hadestown/games/vocabulary', icon: BookOpen, color: "text-amber-600", bgColor: "bg-amber-500/10" },
+            { title: 'Lyrics Game', href: '/old/hadestown/games/lyrics', icon: Music, color: "text-amber-600", bgColor: "bg-amber-500/10" },
+            { title: 'Seasons', href: '/old/hadestown/games/seasons', icon: Flower, color: "text-amber-600", bgColor: "bg-amber-500/10" },
+            { title: 'Word Memory', href: '/old/hadestown/games/word-memory', icon: Puzzle, color: "text-amber-600", bgColor: "bg-amber-500/10" },
+            { title: 'Lyrics Explorer', href: '/old/hadestown/lyrics-explorer', icon: Music, color: "text-amber-500", bgColor: "bg-amber-500/10" },
+            { title: 'Story', href: '/old/hadestown/story', icon: BookMarked, color: "text-amber-500", bgColor: "bg-amber-500/10" },
+        ],
+    },
     { title: 'Infinity', href: '/old/infinity', icon: InfinityIcon, color: "text-yellow-500", bgColor: "bg-yellow-500/10" },
     {
         title: "Calculus", href: "/old/calculus", icon: ChartNoAxesCombinedIcon, color: "text-blue-500", bgColor: "bg-blue-500/10",

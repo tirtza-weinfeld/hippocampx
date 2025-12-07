@@ -22,14 +22,15 @@ async function checkConstraints() {
   `);
 
   console.log('📋 Constraints:');
-  constraints.rows.forEach((row: any) => {
-    console.log(`  - ${row.conname} (${row.contype}): ${row.definition}`);
-  });
+  for (const row of constraints.rows) {
+    const { conname, contype, definition } = row as { conname: string; contype: string; definition: string };
+    console.log(`  - ${conname} (${contype}): ${definition}`);
+  }
 
   process.exit(0);
 }
 
-checkConstraints().catch((error) => {
+checkConstraints().catch((error: unknown) => {
   console.error('❌ Error:', error);
   process.exit(1);
 });
