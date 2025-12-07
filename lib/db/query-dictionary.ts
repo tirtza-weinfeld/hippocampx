@@ -36,8 +36,21 @@ function getDictionaryDatabaseUrl(): string {
   return url;
 }
 
-const sql = neon(getDictionaryDatabaseUrl());
+// Lazy initialization to avoid build-time errors when env vars aren't available
+let _dictionaryDb: ReturnType<typeof drizzle<typeof schema>> | null = null;
 
-export const dictionaryDb = drizzle(sql, { schema });
+function getDictionaryDb() {
+  if (!_dictionaryDb) {
+    const sql = neon(getDictionaryDatabaseUrl());
+    _dictionaryDb = drizzle(sql, { schema });
+  }
+  return _dictionaryDb;
+}
+
+export const dictionaryDb = new Proxy({} as ReturnType<typeof drizzle<typeof schema>>, {
+  get(_, prop) {
+    return getDictionaryDb()[prop as keyof typeof _dictionaryDb];
+  },
+});
 
 export { schema };
