@@ -1,0 +1,8 @@
+export { QuizGame } from "./quiz-game"
+export { MatchingGame } from "./matching-game"
+export { FillBlanksGame } from "./fill-blanks-game"
+export { CategorySortGame } from "./category-sort-game"
+export { SpellingGame } from "./spelling-game"
+export { WordMemoryGame } from "./word-memory"
+export { LyricChallengeGame } from "./lyric-challenge-game"
+export { SeasonsSortGame } from "./seasons-sort-game"

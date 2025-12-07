@@ -5,6 +5,11 @@ import { Button } from "@/components/ui/button"
 import { ArrowLeft, ArrowRight } from "lucide-react"
 import { motion } from "motion/react"
 
+// Helper function to create a typed array of indices
+function range(count: number): number[] {
+  return Array.from({ length: count }, (_, i) => i)
+}
+
 // Define the story pages
 const STORY_PAGES = [
   {
@@ -43,7 +48,7 @@ const STORY_PAGES = [
           transition={{ duration: 4, repeat: Number.POSITIVE_INFINITY }}
         >
           {/* Sun rays */}
-          {[...Array(12)].map((_, i) => (
+          {range(12).map((i) => (
             <motion.div
               key={i}
               className="absolute top-1/2 left-1/2 h-1.5 bg-yellow-300 rounded-full origin-left"
@@ -66,7 +71,7 @@ const STORY_PAGES = [
         </motion.div>
 
         {/* Floating musical notes */}
-        {[...Array(6)].map((_, i) => (
+        {range(6).map((i) => (
           <motion.div
             key={`note-${i}`}
             className="absolute text-2xl text-amber-600 dark:text-amber-400"
@@ -108,7 +113,7 @@ const STORY_PAGES = [
               transition={{ duration: 8, repeat: Number.POSITIVE_INFINITY }}
             >
               {/* Tree texture lines */}
-              {[...Array(5)].map((_, i) => (
+              {range(5).map((i) => (
                 <div
                   key={`bark-${i}`}
                   className="absolute h-0.5 bg-yellow-950/40 rounded-full"
@@ -234,7 +239,7 @@ const STORY_PAGES = [
         </div>
 
         {/* Floating hearts to represent love story */}
-        {[...Array(5)].map((_, i) => (
+        {range(5).map((i) => (
           <motion.div
             key={`heart-${i}`}
             className="absolute text-red-500 dark:text-red-400"
@@ -297,7 +302,7 @@ const STORY_PAGES = [
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-16 h-4 bg-yellow-700 rounded-md"></div>
 
                 {/* Lyre strings */}
-                {[...Array(5)].map((_, i) => (
+                {range(5).map((i) => (
                   <motion.div
                     key={i}
                     className="absolute top-4 left-1/2 -translate-x-1/2 w-0.5 h-16 bg-yellow-100 dark:bg-yellow-200"
@@ -312,7 +317,7 @@ const STORY_PAGES = [
         </motion.div>
 
         {/* Music notes floating */}
-        {[...Array(8)].map((_, i) => (
+        {range(8).map((i) => (
           <motion.div
             key={i}
             className="absolute text-xl text-primary dark:text-amber-400"
@@ -338,7 +343,7 @@ const STORY_PAGES = [
 
         {/* Flowers blooming */}
         <div className="absolute bottom-0 left-0 w-full h-5 bg-green-700 dark:bg-green-800"></div>
-        {[...Array(5)].map((_, i) => (
+        {range(5).map((i) => (
           <motion.div
             key={`flower-${i}`}
             className="absolute bottom-5"
@@ -418,7 +423,7 @@ const STORY_PAGES = [
         </motion.div>
 
         {/* Background elements - journey symbols */}
-        {[...Array(5)].map((_, i) => (
+        {range(5).map((i) => (
           <motion.div
             key={`journey-${i}`}
             className="absolute text-lg"
@@ -439,7 +444,7 @@ const STORY_PAGES = [
         ))}
 
         {/* Music notes from Orpheus */}
-        {[...Array(3)].map((_, i) => (
+        {range(3).map((i) => (
           <motion.div
             key={`music-${i}`}
             className="absolute text-lg text-primary dark:text-amber-400"
@@ -524,7 +529,7 @@ const STORY_PAGES = [
             {/* Head with flower crown */}
             <div className="w-10 h-10 rounded-full bg-green-400 dark:bg-green-500 relative">
               {/* Flower crown */}
-              {[...Array(5)].map((_, i) => (
+              {range(5).map((i) => (
                 <div
                   key={`flower-crown-${i}`}
                   className="absolute -top-2"
@@ -547,7 +552,7 @@ const STORY_PAGES = [
               transition={{ duration: 2, delay: 2, repeat: Number.POSITIVE_INFINITY, repeatDelay: 2 }}
             >
               {/* Dress pattern */}
-              {[...Array(5)].map((_, i) => (
+              {range(5).map((i) => (
                 <motion.div
                   key={`dress-pattern-${i}`}
                   className="absolute h-1 rounded-full"
@@ -599,7 +604,7 @@ const STORY_PAGES = [
         <div className="absolute top-0 left-0 w-full h-5 bg-gray-900 dark:bg-black"></div>
 
         {/* Stalactites */}
-        {[...Array(8)].map((_, i) => (
+        {range(8).map((i) => (
           <div
             key={`stalactite-${i}`}
             className="absolute top-5 bg-gradient-to-b from-gray-700 to-gray-800 dark:from-gray-800 dark:to-gray-900 rounded-b-lg"
@@ -617,7 +622,7 @@ const STORY_PAGES = [
           <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-40 h-24 bg-gradient-to-b from-gray-600 to-gray-800 dark:from-gray-700 dark:to-gray-900 rounded-t-lg"></div>
 
           {/* Columns */}
-          {[...Array(5)].map((_, i) => (
+          {range(5).map((i) => (
             <div
               key={`column-${i}`}
               className="absolute bottom-0 bg-gradient-to-b from-gray-500 to-gray-700 dark:from-gray-600 dark:to-gray-800 rounded-t-lg"
@@ -643,7 +648,7 @@ const STORY_PAGES = [
           <div className="relative w-16 flex flex-col items-center">
             {/* Crown */}
             <div className="absolute -top-6 left-1/2 -translate-x-1/2 w-12 h-4">
-              {[...Array(5)].map((_, i) => (
+              {range(5).map((i) => (
                 <motion.div
                   key={`crown-spike-${i}`}
                   className="absolute bottom-0 w-2 bg-yellow-500 dark:bg-yellow-600 rounded-t-sm"
@@ -670,7 +675,7 @@ const STORY_PAGES = [
         </motion.div>
 
         {/* Gems and treasures */}
-        {[...Array(12)].map((_, i) => (
+        {range(12).map((i) => (
           <motion.div
             key={`gem-${i}`}
             className="absolute rounded-sm"
@@ -763,7 +768,7 @@ const STORY_PAGES = [
                 <div className="absolute top-0 left-0 w-10 h-2 bg-yellow-700 rounded-md"></div>
 
                 {/* Lyre strings */}
-                {[...Array(3)].map((_, i) => (
+                {range(3).map((i) => (
                   <motion.div
                     key={i}
                     className="absolute top-2 w-0.5 h-12 bg-yellow-100 dark:bg-yellow-200"
@@ -791,7 +796,7 @@ const STORY_PAGES = [
         </div>
 
         {/* Music notes */}
-        {[...Array(6)].map((_, i) => (
+        {range(6).map((i) => (
           <motion.div
             key={`music-${i}`}
             className="absolute text-primary dark:text-amber-400"
@@ -817,7 +822,7 @@ const STORY_PAGES = [
         ))}
 
         {/* Hearts */}
-        {[...Array(3)].map((_, i) => (
+        {range(3).map((i) => (
           <motion.div
             key={`heart-${i}`}
             className="absolute text-red-500 dark:text-red-400"
@@ -879,7 +884,7 @@ const STORY_PAGES = [
         </motion.div>
 
         {/* Wind visualization */}
-        {[...Array(10)].map((_, i) => (
+        {range(10).map((i) => (
           <motion.div
             key={`wind-${i}`}
             className="absolute h-1 bg-white/30 dark:bg-white/20 rounded-full"
@@ -898,7 +903,7 @@ const STORY_PAGES = [
         ))}
 
         {/* Falling leaves/snow */}
-        {[...Array(15)].map((_, i) => (
+        {range(15).map((i) => (
           <motion.div
             key={`leaf-${i}`}
             className="absolute text-sm"
@@ -978,7 +983,7 @@ const STORY_PAGES = [
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-20 h-full bg-gradient-to-b from-gray-600/50 to-amber-900/50 dark:from-gray-700/50 dark:to-amber-950/50"></div>
 
           {/* Path details */}
-          {[...Array(10)].map((_, i) => (
+          {range(10).map((i) => (
             <div
               key={`path-detail-${i}`}
               className="absolute bg-gray-500/30 dark:bg-gray-600/30"
@@ -1028,7 +1033,7 @@ const STORY_PAGES = [
                 <div className="absolute top-0 left-0 w-8 h-2 bg-yellow-700 rounded-sm"></div>
 
                 {/* Strings */}
-                {[...Array(3)].map((_, i) => (
+                {range(3).map((i) => (
                   <div
                     key={`string-${i}`}
                     className="absolute top-2 bg-yellow-100 dark:bg-yellow-200"
@@ -1045,7 +1050,7 @@ const STORY_PAGES = [
         </motion.div>
 
         {/* Music notes following */}
-        {[...Array(5)].map((_, i) => (
+        {range(5).map((i) => (
           <motion.div
             key={`music-journey-${i}`}
             className="absolute left-1/2 text-amber-400 dark:text-amber-300 opacity-0"
@@ -1067,7 +1072,7 @@ const STORY_PAGES = [
         ))}
 
         {/* Scary faces in the darkness */}
-        {[...Array(3)].map((_, i) => (
+        {range(3).map((i) => (
           <motion.div
             key={`scary-${i}`}
             className="absolute text-lg opacity-0"
@@ -1118,7 +1123,7 @@ const STORY_PAGES = [
           <div className="relative">
             {/* Crown */}
             <div className="absolute -top-5 left-1/2 -translate-x-1/2 w-12 h-3">
-              {[...Array(5)].map((_, i) => (
+              {range(5).map((i) => (
                 <div
                   key={`crown-spike-${i}`}
                   className="absolute bottom-0 w-1.5 bg-yellow-500 dark:bg-yellow-600 rounded-t-sm"
@@ -1175,7 +1180,7 @@ const STORY_PAGES = [
                 <div className="absolute top-0 left-0 w-10 h-2 bg-yellow-700 rounded-sm"></div>
 
                 {/* Glowing strings */}
-                {[...Array(4)].map((_, i) => (
+                {range(4).map((i) => (
                   <motion.div
                     key={`glowing-string-${i}`}
                     className="absolute top-2"
@@ -1207,7 +1212,7 @@ const STORY_PAGES = [
         </motion.div>
 
         {/* Music visualization */}
-        {[...Array(25)].map((_, i) => (
+        {range(25).map((i) => (
           <motion.div
             key={`music-wave-${i}`}
             className="absolute left-1/3 h-1 rounded-full bg-amber-500/50 dark:bg-amber-400/40"
@@ -1282,7 +1287,7 @@ const STORY_PAGES = [
                 <div className="absolute right-0 top-0 w-1 h-10 bg-yellow-700 rounded-sm"></div>
                 <div className="absolute top-0 left-0 w-6 h-1 bg-yellow-700 rounded-sm"></div>
 
-                {[...Array(3)].map((_, i) => (
+                {range(3).map((i) => (
                   <div
                     key={`string-${i}`}
                     className="absolute top-1 bg-yellow-100 dark:bg-yellow-200"
@@ -1353,7 +1358,7 @@ const STORY_PAGES = [
         <div className="absolute bottom-0 left-0 w-full h-20 bg-gradient-to-t from-green-700 to-green-600 dark:from-green-900 dark:to-green-800"></div>
 
         {/* Flowers */}
-        {[...Array(12)].map((_, i) => (
+        {range(12).map((i) => (
           <motion.div
             key={`flower-${i}`}
             className="absolute text-sm"
@@ -1425,7 +1430,7 @@ const STORY_PAGES = [
         </motion.div>
 
         {/* Music notes and butterflies */}
-        {[...Array(8)].map((_, i) => (
+        {range(8).map((i) => (
           <motion.div
             key={`ending-${i}`}
             className="absolute text-lg"
