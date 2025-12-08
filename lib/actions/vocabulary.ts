@@ -2,9 +2,7 @@
 
 import { revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
-// TEMPORARY: Using direct Neon DB queries instead of Hippo API
-// import * as dictionaryDb from "@/lib/api/railway-vocabulary-client";
-import * as dictionaryDb from "@/lib/db/queries/dictionary";
+import * as dictionaryDb from "@/lib/db/neon/queries/dictionary";
 
 // ============================================================================
 // Word Actions
@@ -133,7 +131,8 @@ export async function createExample(formData: FormData) {
   const definitionId = parseInt(formData.get("definition_id") as string);
   const wordId = parseInt(formData.get("word_id") as string);
   const exampleText = formData.get("example_text") as string;
-  const source = formData.get("source") as string;
+  const sourcePartIdStr = formData.get("source_part_id") as string | null;
+  const sourcePartId = sourcePartIdStr ? parseInt(sourcePartIdStr) : undefined;
 
   if (!exampleText || exampleText.trim().length === 0) {
     return { error: "Example text is required" };
@@ -143,7 +142,7 @@ export async function createExample(formData: FormData) {
     const example = await dictionaryDb.createExample(
       definitionId,
       exampleText.trim(),
-      source.trim()
+      sourcePartId
     );
 
     revalidateTag(`word-${wordId}`, "hours");
@@ -158,10 +157,10 @@ export async function updateExample(
   exampleId: number,
   wordId: number,
   exampleText: string,
-  source?: string
+  sourcePartId?: number
 ) {
   try {
-    await dictionaryDb.updateExample(exampleId, exampleText, source);
+    await dictionaryDb.updateExample(exampleId, exampleText, sourcePartId);
 
     revalidateTag(`word-${wordId}`, "hours");
     return { success: true };

@@ -3,33 +3,29 @@
 import Link from "next/link";
 import { Route } from "next";
 import { useMemo } from "react";
+import { useSearchParams } from "next/navigation";
 import * as motion from "motion/react-client";
 import { Plus, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-interface Word {
+interface WordWithPreview {
   id: number;
   word_text: string;
   language_code: string;
+  definition_text: string | null;
+  example_text: string | null;
 }
-
-const LANGUAGE_LABELS: Record<string, string> = {
-  en: "English",
-  es: "Spanish",
-  fr: "French",
-  de: "German",
-  it: "Italian",
-};
 
 export function WordListClient({
   words,
   clientFilter,
   serverQuery,
 }: {
-  words: Word[];
+  words: WordWithPreview[];
   clientFilter: string;
   serverQuery?: string;
 }) {
+  const searchParams = useSearchParams();
   const filteredWords = useMemo(
     function filterWords() {
       if (!clientFilter) {
@@ -73,27 +69,60 @@ export function WordListClient({
     );
   }
 
+  function buildWordUrl(word: WordWithPreview): Route {
+    const basePath = `/dictionary/${word.language_code}/${encodeURIComponent(word.word_text)}`;
+    const params = new URLSearchParams();
+
+    // Preserve filter and pagination params
+    searchParams.getAll("tag").forEach(function addTag(tag) {
+      params.append("tag", tag);
+    });
+    searchParams.getAll("source").forEach(function addSource(source) {
+      params.append("source", source);
+    });
+    const page = searchParams.get("page");
+    if (page && page !== "1") {
+      params.set("page", page);
+    }
+
+    const queryString = params.toString();
+    return (queryString ? `${basePath}?${queryString}` : basePath) as Route;
+  }
+
   return (
-    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+    <div className="flex flex-col gap-2">
       {filteredWords.map(function renderWord(word, index) {
-        const wordUrl = `/dictionary/${word.language_code}/${encodeURIComponent(word.word_text)}`;
+        const wordUrl = buildWordUrl(word);
         return (
-          <Link key={word.id} href={wordUrl as Route}>
+          <Link key={word.id} href={wordUrl}>
             <motion.div
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.2, delay: index * 0.02 }}
-              className="h-full group"
+              transition={{ duration: 0.2, delay: index * 0.015 }}
+              className="group"
             >
-              <div className="h-full rounded-md overflow-hidden bg-gray-50/80 dark:bg-gray-950/30 border border-border/50 hover:border-border/80 hover:shadow-sm transition-all duration-200">
+              <div className="rounded-md overflow-hidden bg-gray-50/80 dark:bg-gray-950/30 border border-border/50 hover:border-border/80 hover:shadow-sm transition-all duration-200">
                 <div className="h-px bg-linear-to-r from-gray-200 via-gray-300 to-gray-200 dark:from-gray-800 dark:via-gray-700 dark:to-gray-800 group-hover:from-sky-400 group-hover:via-sky-300 group-hover:to-sky-400 dark:group-hover:from-sky-600 dark:group-hover:via-sky-500 dark:group-hover:to-sky-600 transition-all duration-300" />
-                <div className="p-3">
-                  <p className="text-sm font-medium text-foreground group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors duration-200">
+                <div className="p-3 flex items-start gap-4">
+                  <p className="text-sm font-medium text-foreground group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors duration-200 min-w-[100px] shrink-0">
                     {word.word_text}
                   </p>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {LANGUAGE_LABELS[word.language_code] || word.language_code}
-                  </p>
+                  <div className="flex-1 min-w-0">
+                    {word.definition_text ? (
+                      <p className="text-sm text-muted-foreground line-clamp-1">
+                        {word.definition_text}
+                        {word.example_text && (
+                          <span className="text-xs italic ml-2 text-muted-foreground/70">
+                            &mdash; {word.example_text}
+                          </span>
+                        )}
+                      </p>
+                    ) : (
+                      <p className="text-xs text-muted-foreground/50 italic">
+                        No definition yet
+                      </p>
+                    )}
+                  </div>
                 </div>
               </div>
             </motion.div>

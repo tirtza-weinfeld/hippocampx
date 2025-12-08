@@ -31,6 +31,7 @@ interface Example {
   definition_id: number;
   example_text: string;
   source: string | null;
+  source_part_id?: number | null;
   created_at?: string;
 }
 
@@ -240,16 +241,19 @@ export function EditableDefinition({
           <CardContent className="space-y-3">
             <h4 className="text-sm font-semibold">Examples:</h4>
             <AnimatePresence mode="popLayout">
-              {examples.map((example) => (
-                <EditableExample
-                  key={example.id}
-                  wordId={wordId}
-                  exampleId={example.id}
-                  exampleText={example.example_text}
-                  source={example.source}
-                  onDeleted={handleExampleDeleted}
-                />
-              ))}
+              {examples.map(function renderExample(example) {
+                return (
+                  <EditableExample
+                    key={example.id}
+                    wordId={wordId}
+                    exampleId={example.id}
+                    exampleText={example.example_text}
+                    source={example.source}
+                    sourcePartId={example.source_part_id}
+                    onDeleted={handleExampleDeleted}
+                  />
+                );
+              })}
             </AnimatePresence>
 
             {isAddingExample ? (

@@ -1,0 +1,27 @@
+-- Convert serial columns to identity columns for dictionary tables
+-- This is a one-time migration to align with modern PostgreSQL standards
+
+-- 1. words table
+ALTER TABLE words ALTER COLUMN id DROP DEFAULT;
+DROP SEQUENCE IF EXISTS words_id_seq CASCADE;
+ALTER TABLE words ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY;
+
+-- 2. definitions table
+ALTER TABLE definitions ALTER COLUMN id DROP DEFAULT;
+DROP SEQUENCE IF EXISTS definitions_id_seq CASCADE;
+ALTER TABLE definitions ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY;
+
+-- 3. examples table
+ALTER TABLE examples ALTER COLUMN id DROP DEFAULT;
+DROP SEQUENCE IF EXISTS examples_id_seq CASCADE;
+ALTER TABLE examples ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY;
+
+-- 4. tags table
+ALTER TABLE tags ALTER COLUMN id DROP DEFAULT;
+DROP SEQUENCE IF EXISTS tags_id_seq CASCADE;
+ALTER TABLE tags ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY;
+
+-- 5. word_forms table
+ALTER TABLE word_forms ALTER COLUMN id DROP DEFAULT;
+DROP SEQUENCE IF EXISTS word_forms_id_seq CASCADE;
+ALTER TABLE word_forms ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY;

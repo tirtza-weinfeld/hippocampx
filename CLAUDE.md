@@ -57,6 +57,13 @@
 **REQUIRED**: Render all math symbols via KaTeX only.
 **VIOLATION = IMMEDIATE REFUSAL**
 
+### ⛔ NO CLAUDE CODE FOOTER IN COMMITS ⛔
+**MANDATORY**: Never add the Claude Code footer or Co-Authored-By lines to git commits.
+**FORBIDDEN**:
+- `🤖 Generated with [Claude Code](https://claude.com/claude-code)`
+- `Co-Authored-By: Claude ...`
+**VIOLATION = IMMEDIATE REFUSAL**
+
 ### ⛔ NEWEST RESOURCES ONLY (2025-2026 CANARY) ⛔
 **MANDATORY**: When searching for documentation, libraries, APIs, or any external resources:
 - **THIS PROJECT RUNS CANARY VERSIONS** - always look for newest, not necessarily stable

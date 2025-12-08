@@ -2,11 +2,22 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Pencil, Check, X, Plus } from "lucide-react";
+import {
+  Pencil,
+  Check,
+  X,
+  Plus,
+  Calendar,
+  Link2,
+  BookText,
+  Sparkles,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { motion, AnimatePresence } from "motion/react";
-import { WordEditModeProvider, useWordEditMode } from "@/components/dictionary/word-edit-mode-provider";
+import { motion, AnimatePresence, useReducedMotion } from "motion/react";
+import {
+  WordEditModeProvider,
+  useWordEditMode,
+} from "@/components/dictionary/word-edit-mode-provider";
 import { WordHeaderEditable } from "@/components/dictionary/word-header-editable";
 import { WordTagsEditable } from "@/components/dictionary/word-tags-editable";
 import { WordDefinitionEditable } from "@/components/dictionary/word-definition-editable";
@@ -28,7 +39,7 @@ interface Example {
   id: number;
   definition_id: number;
   example_text: string;
-  source: string | null;
+  source_part_id: number | null;
   created_at?: string;
 }
 
@@ -58,7 +69,11 @@ interface WordComplete {
   }>;
 }
 
-export function WordDetailClient({ word: initialWord }: { word: WordComplete }) {
+export function WordDetailClient({
+  word: initialWord,
+}: {
+  word: WordComplete;
+}) {
   return (
     <WordEditModeProvider>
       <WordDetailContent word={initialWord} />
@@ -70,16 +85,24 @@ function WordDetailContent({ word: initialWord }: { word: WordComplete }) {
   const { isEditMode, setEditMode } = useWordEditMode();
   const [word, setWord] = useState(initialWord);
   const [isSaving, setIsSaving] = useState(false);
+  const shouldReduceMotion = useReducedMotion();
 
   const [pendingWordText, setPendingWordText] = useState(word.word_text);
-  const [pendingLanguageCode, setPendingLanguageCode] = useState(word.language_code);
-  const [pendingDefinitions, setPendingDefinitions] = useState(word.definitions);
+  const [pendingLanguageCode, setPendingLanguageCode] = useState(
+    word.language_code
+  );
+  const [pendingDefinitions, setPendingDefinitions] = useState(
+    word.definitions
+  );
 
   async function handleSave() {
     setIsSaving(true);
 
     try {
-      if (pendingWordText !== word.word_text || pendingLanguageCode !== word.language_code) {
+      if (
+        pendingWordText !== word.word_text ||
+        pendingLanguageCode !== word.language_code
+      ) {
         await updateWord(word.id, pendingWordText, pendingLanguageCode);
       }
 
@@ -132,19 +155,30 @@ function WordDetailContent({ word: initialWord }: { word: WordComplete }) {
     partOfSpeech: string
   ) {
     setPendingDefinitions(
-      pendingDefinitions.map((def) =>
-        def.id === defId
-          ? { ...def, definition_text: definitionText, part_of_speech: partOfSpeech }
-          : def
-      )
+      pendingDefinitions.map(function updateDef(def) {
+        if (def.id === defId) {
+          return {
+            ...def,
+            definition_text: definitionText,
+            part_of_speech: partOfSpeech,
+          };
+        }
+        return def;
+      })
     );
   }
 
   function handleDefinitionDelete(defId: number) {
-    setPendingDefinitions(pendingDefinitions.filter((def) => def.id !== defId));
+    setPendingDefinitions(
+      pendingDefinitions.filter(function keepDef(def) {
+        return def.id !== defId;
+      })
+    );
     setWord({
       ...word,
-      definitions: word.definitions.filter((def) => def.id !== defId),
+      definitions: word.definitions.filter(function keepDef(def) {
+        return def.id !== defId;
+      }),
     });
   }
 
@@ -176,83 +210,128 @@ function WordDetailContent({ word: initialWord }: { word: WordComplete }) {
   }
 
   return (
-    <div className="flex flex-col space-y-6">
-      <div className="flex justify-between items-start">
-        <div className="space-y-2 flex-1">
-          <WordHeaderEditable
-            initialWordText={word.word_text}
-            initialLanguageCode={word.language_code}
-            onUpdate={handleWordUpdate}
-          />
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-muted-foreground text-sm"
-          >
-            {word.created_at
-              ? `Added ${new Date(word.created_at).toLocaleDateString()}`
-              : "Recently added"}
-          </motion.p>
-        </div>
+    <div className="flex flex-col gap-8">
+      {/* Header Card */}
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: shouldReduceMotion ? 0 : 0.4 }}
+        className="relative overflow-hidden rounded-2xl bg-linear-to-br from-card via-card to-muted/30 border border-border/50 shadow-sm"
+      >
+        <div className="absolute inset-0 bg-linear-to-br from-sky-500/5 via-transparent to-blue-500/5" />
+        <div className="absolute top-0 inset-x-0 h-px bg-linear-to-r from-transparent via-sky-500/30 to-transparent" />
 
-        <div className="flex gap-2">
-          {isEditMode ? (
-            <>
-              <Button
-                onClick={() => { void handleSave() }}
-                disabled={isSaving}
-                className="gap-2"
-              >
-                <Check className="h-4 w-4" />
-                {isSaving ? "Saving..." : "Save All"}
-              </Button>
-              <Button
-                variant="outline"
-                onClick={handleCancel}
-                disabled={isSaving}
-                className="gap-2"
-              >
-                <X className="h-4 w-4" />
-                Cancel
-              </Button>
-            </>
-          ) : (
-            <>
-              <Button
-                onClick={() => setEditMode(true)}
-                variant="default"
-                className="gap-2"
-              >
-                <Pencil className="h-4 w-4" />
-                Edit Word
-              </Button>
-              <DeleteWordButton wordId={word.id} />
-            </>
-          )}
-        </div>
-      </div>
+        <div className="relative p-6 sm:p-8">
+          <div className="flex flex-col sm:flex-row justify-between items-start gap-6">
+            <div className="space-y-4 flex-1">
+              <WordHeaderEditable
+                initialWordText={word.word_text}
+                initialLanguageCode={word.language_code}
+                onUpdate={handleWordUpdate}
+              />
+              <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                <div className="flex items-center gap-1.5">
+                  <Calendar className="h-3.5 w-3.5" />
+                  <span>
+                    {word.created_at
+                      ? `Added ${new Date(word.created_at).toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        })}`
+                      : "Recently added"}
+                  </span>
+                </div>
+              </div>
+            </div>
 
+            <div className="flex gap-2 shrink-0">
+              <AnimatePresence mode="wait">
+                {isEditMode ? (
+                  <motion.div
+                    key="edit-actions"
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    className="flex gap-2"
+                  >
+                    <Button
+                      onClick={function onSave() {
+                        void handleSave();
+                      }}
+                      disabled={isSaving}
+                      className="gap-2 bg-linear-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white shadow-md shadow-emerald-500/20"
+                    >
+                      <Check className="h-4 w-4" />
+                      {isSaving ? "Saving..." : "Save All"}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={handleCancel}
+                      disabled={isSaving}
+                      className="gap-2"
+                    >
+                      <X className="h-4 w-4" />
+                      Cancel
+                    </Button>
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="view-actions"
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    className="flex gap-2"
+                  >
+                    <Button
+                      onClick={function onEdit() {
+                        setEditMode(true);
+                      }}
+                      variant="default"
+                      className="gap-2 bg-linear-to-r from-sky-600 to-blue-600 hover:from-sky-500 hover:to-blue-500 text-white shadow-md shadow-sky-500/20"
+                    >
+                      <Pencil className="h-4 w-4" />
+                      Edit
+                    </Button>
+                    <DeleteWordButton wordId={word.id} />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Tags Section */}
       {(word.tags.length > 0 || isEditMode) && (
-        <>
-          <Separator />
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-          >
-            <WordTagsEditable wordId={word.id} initialTags={word.tags} />
-          </motion.div>
-        </>
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: shouldReduceMotion ? 0 : 0.3, delay: 0.1 }}
+        >
+          <WordTagsEditable wordId={word.id} initialTags={word.tags} />
+        </motion.div>
       )}
 
-      <Separator />
-
-      <div className="space-y-4">
+      {/* Definitions Section */}
+      <motion.section
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: shouldReduceMotion ? 0 : 0.3, delay: 0.15 }}
+        className="space-y-5"
+      >
         <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-semibold">Definitions</h2>
+          <div className="flex items-center gap-3">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-linear-to-br from-violet-50 to-purple-100/80 dark:from-violet-950/60 dark:to-purple-900/40 ring-1 ring-violet-200/50 dark:ring-violet-700/30">
+              <BookText className="h-4 w-4 text-violet-600 dark:text-violet-400" />
+            </div>
+            <h2 className="text-xl font-semibold tracking-tight">Definitions</h2>
+          </div>
           {isEditMode && (
             <Button
-              onClick={() => { void handleAddDefinition() }}
+              onClick={function onAddDef() {
+                void handleAddDefinition();
+              }}
               variant="outline"
               size="sm"
               className="gap-2"
@@ -265,84 +344,102 @@ function WordDetailContent({ word: initialWord }: { word: WordComplete }) {
 
         {pendingDefinitions.length > 0 ? (
           <AnimatePresence mode="popLayout">
-            <div className="space-y-6">
-              {pendingDefinitions.map((def, index) => (
-                <WordDefinitionEditable
-                  key={def.id}
-                  wordId={word.id}
-                  definitionId={def.id}
-                  definitionText={def.definition_text}
-                  partOfSpeech={def.part_of_speech}
-                  definitionIndex={index + 1}
-                  examples={def.examples}
-                  onUpdate={(text, pos) =>
-                    handleDefinitionUpdate(def.id, text, pos)
-                  }
-                  onDelete={() => handleDefinitionDelete(def.id)}
-                />
-              ))}
+            <div className="space-y-4">
+              {pendingDefinitions.map(function renderDefinition(def, index) {
+                return (
+                  <WordDefinitionEditable
+                    key={def.id}
+                    wordId={word.id}
+                    definitionId={def.id}
+                    definitionText={def.definition_text}
+                    partOfSpeech={def.part_of_speech}
+                    definitionIndex={index + 1}
+                    examples={def.examples}
+                    onUpdate={function onUpdate(text, pos) {
+                      handleDefinitionUpdate(def.id, text, pos);
+                    }}
+                    onDelete={function onDelete() {
+                      handleDefinitionDelete(def.id);
+                    }}
+                  />
+                );
+              })}
             </div>
           </AnimatePresence>
         ) : (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="text-center text-muted-foreground py-12"
+            className="flex flex-col items-center justify-center py-16 rounded-xl border border-dashed border-border/60 bg-muted/20"
           >
-            {isEditMode ? (
+            <div className="rounded-xl bg-muted/40 p-4 mb-4">
+              <Sparkles className="h-6 w-6 text-muted-foreground/60" />
+            </div>
+            <p className="text-muted-foreground text-sm mb-4">
+              No definitions yet
+            </p>
+            {isEditMode && (
               <Button
-                onClick={() => { void handleAddDefinition() }}
+                onClick={function onAddFirstDef() {
+                  void handleAddDefinition();
+                }}
                 variant="outline"
                 className="gap-2"
               >
                 <Plus className="h-4 w-4" />
                 Add Your First Definition
               </Button>
-            ) : (
-              <p>No definitions yet</p>
             )}
           </motion.div>
         )}
-      </div>
+      </motion.section>
 
-      {word.relations && word.relations.length > 0 && (
-        <>
-          <Separator />
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="space-y-4"
-          >
-            <h2 className="text-2xl font-semibold">Related Words</h2>
-            <div className="grid gap-2 sm:grid-cols-2">
-              {word.relations.map((relation) => {
-                const relatedUrl = `/dictionary/${word.language_code}/${encodeURIComponent(
-                  relation.related_word_text
-                )}`;
-                return (
-                  <Link
-                    key={`${relation.word_id_2}-${relation.relation_type}`}
-                    href={relatedUrl as Route }
+      {/* Related Words Section */}
+      {word.relations.length > 0 && (
+        <motion.section
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: shouldReduceMotion ? 0 : 0.3, delay: 0.2 }}
+          className="space-y-5"
+        >
+          <div className="flex items-center gap-3">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-linear-to-br from-amber-50 to-orange-100/80 dark:from-amber-950/60 dark:to-orange-900/40 ring-1 ring-amber-200/50 dark:ring-amber-700/30">
+              <Link2 className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+            </div>
+            <h2 className="text-xl font-semibold tracking-tight">
+              Related Words
+            </h2>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2">
+            {word.relations.map(function renderRelation(relation) {
+              const relatedUrl = `/dictionary/${word.language_code}/${encodeURIComponent(
+                relation.related_word_text
+              )}`;
+              return (
+                <Link
+                  key={`${relation.word_id_2}-${relation.relation_type}`}
+                  href={relatedUrl as Route}
+                >
+                  <motion.div
+                    whileHover={shouldReduceMotion ? {} : { scale: 1.02, y: -2 }}
+                    whileTap={shouldReduceMotion ? {} : { scale: 0.98 }}
+                    className="group relative overflow-hidden rounded-xl border border-border/50 bg-card/50 p-4 transition-all duration-200 hover:border-sky-300/50 hover:bg-card hover:shadow-md dark:hover:border-sky-700/50"
                   >
-                    <motion.div
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="block p-4 border rounded-lg hover:bg-accent transition-colors"
-                  >
-                    <div className="flex justify-between items-center">
-                      <span className="font-medium">{relation.related_word_text}</span>
-                      <span className="text-xs text-muted-foreground">
+                    <div className="absolute inset-0 bg-linear-to-br from-sky-500/5 via-transparent to-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <div className="relative flex justify-between items-center">
+                      <span className="font-medium text-foreground group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors">
+                        {relation.related_word_text}
+                      </span>
+                      <span className="text-xs px-2 py-1 rounded-full bg-muted/60 text-muted-foreground">
                         {relation.relation_type}
                       </span>
                     </div>
                   </motion.div>
                 </Link>
-                );
-              })}
-            </div>
-          </motion.div>
-        </>
+              );
+            })}
+          </div>
+        </motion.section>
       )}
     </div>
   );

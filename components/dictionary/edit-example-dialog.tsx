@@ -20,26 +20,29 @@ interface EditExampleDialogProps {
   exampleId: number;
   wordId: number;
   initialExampleText: string;
-  initialSource?: string | null;
+  initialSourcePartId?: number | null;
 }
 
 export function EditExampleDialog({
   exampleId,
   wordId,
   initialExampleText,
-  initialSource,
+  initialSourcePartId,
 }: EditExampleDialogProps) {
   const [open, setOpen] = useState(false);
   const [exampleText, setExampleText] = useState(initialExampleText);
-  const [source, setSource] = useState(initialSource ?? "");
+  const [sourcePartId, setSourcePartId] = useState<string>(
+    initialSourcePartId?.toString() ?? ""
+  );
 
   const [state, formAction, isPending] = useActionState(
     async () => {
+      const parsedSourcePartId = sourcePartId ? parseInt(sourcePartId, 10) : undefined;
       const result = await updateExample(
         exampleId,
         wordId,
         exampleText,
-        source || undefined
+        Number.isNaN(parsedSourcePartId) ? undefined : parsedSourcePartId
       );
 
       if (result.error) {
@@ -78,12 +81,15 @@ export function EditExampleDialog({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="source">Source (optional)</Label>
+            <Label htmlFor="source_part_id">Source Part ID (optional)</Label>
             <Input
-              id="source"
-              value={source}
-              onChange={(e) => setSource(e.target.value)}
-              placeholder="e.g., Shakespeare"
+              id="source_part_id"
+              type="number"
+              value={sourcePartId}
+              onChange={function handleSourcePartIdChange(e) {
+                setSourcePartId(e.target.value);
+              }}
+              placeholder="Enter source part ID"
             />
           </div>
 

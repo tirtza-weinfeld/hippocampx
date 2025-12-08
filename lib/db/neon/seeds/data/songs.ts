@@ -1,0 +1,78 @@
+/**
+ * Seed data for songs
+ * Lyrics files are in ./songs/{collection}/{song}.md
+ */
+
+export const songsData = {
+  "Hadestown": [
+    { title: "Wedding Song", track_number: 1, composer: "Anaïs Mitchell", lyricist: "Anaïs Mitchell", lyrics: 'hadestown/wedding-song.md'  },
+    { title: "Epic (Part I)", track_number: 2, composer: "Anaïs Mitchell", lyricist: "Anaïs Mitchell", lyrics: 'hadestown/epic-part-i.md' },
+    { title: "Way Down Hadestown", track_number: 3, composer: "Anaïs Mitchell", lyricist: "Anaïs Mitchell", lyrics: 'hadestown/way-down-hadestown.md' },
+    //   { title: "Songbird Intro", track_number: 4, composer: "Anaïs Mitchell", lyricist: "Anaïs Mitchell", lyrics: `` },
+    //   { title: "Hey, Little Songbird", track_number: 5, composer: "Anaïs Mitchell", lyricist: "Anaïs Mitchell", lyrics: `` },
+    //   { title: "Gone, I'm Gone", track_number: 6, composer: "Anaïs Mitchell", lyricist: "Anaïs Mitchell", lyrics: `` },
+    //   { title: "When the Chips Are Down", track_number: 7, composer: "Anaïs Mitchell", lyricist: "Anaïs Mitchell", lyrics: `` },
+    //   { title: "Wait for Me", track_number: 8, composer: "Anaïs Mitchell", lyricist: "Anaïs Mitchell", lyrics: `` },
+    //   { title: "Why We Build the Wall", track_number: 9, composer: "Anaïs Mitchell", lyricist: "Anaïs Mitchell", lyrics: `` },
+    //   { title: "Our Lady of the Underground", track_number: 10, composer: "Anaïs Mitchell", lyricist: "Anaïs Mitchell", lyrics: `` },
+    //   { title: "Flowers (Eurydice's Song)", track_number: 11, composer: "Anaïs Mitchell", lyricist: "Anaïs Mitchell", lyrics: `` },
+    //   { title: "Nothing Changes", track_number: 12, composer: "Anaïs Mitchell", lyricist: "Anaïs Mitchell", lyrics: `` },
+    //   { title: "If It's True", track_number: 13, composer: "Anaïs Mitchell", lyricist: "Anaïs Mitchell", lyrics: `` },
+    //   { title: "Papers (Hades Finds Out)", track_number: 14, composer: "Anaïs Mitchell", lyricist: "Anaïs Mitchell", lyrics: `` },
+    //   { title: "How Long?", track_number: 15, composer: "Anaïs Mitchell", lyricist: "Anaïs Mitchell", lyrics: `` },
+    //   { title: "Epic (Part II)", track_number: 16, composer: "Anaïs Mitchell", lyricist: "Anaïs Mitchell", lyrics: `` },
+    //   { title: "Lover's Desire", track_number: 17, composer: "Anaïs Mitchell", lyricist: "Anaïs Mitchell", lyrics: `` },
+    //   { title: "His Kiss, The Riot", track_number: 18, composer: "Anaïs Mitchell", lyricist: "Anaïs Mitchell", lyrics: `` },
+      { title: "Doubt Comes In", track_number: 19, composer: "Anaïs Mitchell", lyricist: "Anaïs Mitchell", lyrics: 'hadestown/doubt-comes-in.md' },
+    //   { title: "I Raise My Cup to Him", track_number: 20, composer: "Anaïs Mitchell", lyricist: "Anaïs Mitchell", lyrics: `` }
+    ],
+//   "Wicked": [
+//     { title: "No One Mourns the Wicked", track_number: 1, composer: "Stephen Schwartz", lyricist: "Stephen Schwartz", lyrics: "wicked/no-one-mourns-the-wicked.md" },
+//     { title: "Dear Old Shiz", track_number: 2, composer: "Stephen Schwartz", lyricist: "Stephen Schwartz", lyrics: "wicked/dear-old-shiz.md" },
+//     { title: "The Wizard and I", track_number: 3, composer: "Stephen Schwartz", lyricist: "Stephen Schwartz", lyrics: "wicked/the-wizard-and-i.md" },
+//     { title: "What Is This Feeling?", track_number: 4, composer: "Stephen Schwartz", lyricist: "Stephen Schwartz", lyrics: "wicked/what-is-this-feeling.md" },
+//     { title: "Something Bad", track_number: 5, composer: "Stephen Schwartz", lyricist: "Stephen Schwartz", lyrics: "wicked/something-bad.md" },
+//     { title: "Dancing Through Life", track_number: 6, composer: "Stephen Schwartz", lyricist: "Stephen Schwartz", lyrics: "wicked/dancing-through-life.md" },
+//     { title: "Popular", track_number: 7, composer: "Stephen Schwartz", lyricist: "Stephen Schwartz", lyrics: "wicked/popular.md" },
+//     { title: "I'm Not That Girl", track_number: 8, composer: "Stephen Schwartz", lyricist: "Stephen Schwartz", lyrics: "wicked/im-not-that-girl.md" },
+//     { title: "One Short Day", track_number: 9, composer: "Stephen Schwartz", lyricist: "Stephen Schwartz", lyrics: "wicked/one-short-day.md" },
+//     { title: "A Sentimental Man", track_number: 10, composer: "Stephen Schwartz", lyricist: "Stephen Schwartz", lyrics: "wicked/a-sentimental-man.md" },
+//     { title: "Defying Gravity", track_number: 11, composer: "Stephen Schwartz", lyricist: "Stephen Schwartz", lyrics: "wicked/defying-gravity.md" },
+//     { title: "Thank Goodness", track_number: 12, composer: "Stephen Schwartz", lyricist: "Stephen Schwartz", lyrics: "wicked/thank-goodness.md" },
+//     { title: "Wonderful", track_number: 13, composer: "Stephen Schwartz", lyricist: "Stephen Schwartz", lyrics: "wicked/wonderful.md" },
+//     { title: "I'm Not That Girl (Reprise)", track_number: 14, composer: "Stephen Schwartz", lyricist: "Stephen Schwartz", lyrics: "wicked/im-not-that-girl-reprise.md" },
+//     { title: "As Long as You're Mine", track_number: 15, composer: "Stephen Schwartz", lyricist: "Stephen Schwartz", lyrics: "wicked/as-long-as-youre-mine.md" },
+//     { title: "No Good Deed", track_number: 16, composer: "Stephen Schwartz", lyricist: "Stephen Schwartz", lyrics: "wicked/no-good-deed.md" },
+//     { title: "March of the Witch Hunters", track_number: 17, composer: "Stephen Schwartz", lyricist: "Stephen Schwartz", lyrics: "wicked/march-of-the-witch-hunters.md" },
+//     { title: "For Good", track_number: 18, composer: "Stephen Schwartz", lyricist: "Stephen Schwartz", lyrics: "wicked/for-good.md" },
+//     { title: "Finale", track_number: 19, composer: "Stephen Schwartz", lyricist: "Stephen Schwartz", lyrics: "wicked/finale.md" },
+//   ],
+
+"Wicked Part 1": [
+  { title: "No One Mourns the Wicked", track_number: 1, composer: "Stephen Schwartz", lyricist: "Stephen Schwartz", lyrics: "wicked-part-1/no-one-mourns-the-wicked.md" },
+  { title: "Dear Old Shiz", track_number: 2, composer: "Stephen Schwartz", lyricist: "Stephen Schwartz", lyrics: "wicked-part-1/dear-old-shiz.md" },
+  { title: "The Wizard and I", track_number: 3, composer: "Stephen Schwartz", lyricist: "Stephen Schwartz", lyrics: "wicked-part-1/the-wizard-and-i.md" },
+  { title: "What Is This Feeling?", track_number: 4, composer: "Stephen Schwartz", lyricist: "Stephen Schwartz", lyrics: "wicked-part-1/what-is-this-feeling.md" },
+  // { title: "Something Bad", track_number: 5, composer: "Stephen Schwartz", lyricist: "Stephen Schwartz", lyrics: "wicked-part-1/something-bad.md" },
+  // { title: "Dancing Through Life", track_number: 6, composer: "Stephen Schwartz", lyricist: "Stephen Schwartz", lyrics: "wicked-part-1/dancing-through-life.md" },
+  // { title: "Popular", track_number: 7, composer: "Stephen Schwartz", lyricist: "Stephen Schwartz", lyrics: "wicked-part-1/popular.md" },
+  // { title: "I'm Not That Girl", track_number: 8, composer: "Stephen Schwartz", lyricist: "Stephen Schwartz", lyrics: "wicked-part-1/im-not-that-girl.md" },
+  // { title: "One Short Day", track_number: 9, composer: "Stephen Schwartz", lyricist: "Stephen Schwartz", lyrics: "wicked-part-1/one-short-day.md" },
+  // { title: "A Sentimental Man", track_number: 10, composer: "Stephen Schwartz", lyricist: "Stephen Schwartz", lyrics: "wicked-part-1/a-sentimental-man.md" },
+  // { title: "Defying Gravity", track_number: 11, composer: "Stephen Schwartz", lyricist: "Stephen Schwartz", lyrics: "wicked-part-1/defying-gravity.md" },
+],
+
+"Wicked Part 2": [
+  { title: "Every Day More Wicked", track_number: 1, composer: "Stephen Schwartz", lyricist: "Stephen Schwartz", lyrics: "wicked-part-2/every-day-more-wicked.md" },
+  { title: "Thank Goodness", track_number: 2, composer: "Stephen Schwartz", lyricist: "Stephen Schwartz", lyrics: "wicked-part-2/thank-goodness.md" },
+  { title: "The Wicked Witch of the East", track_number: 3, composer: "Stephen Schwartz", lyricist: "Stephen Schwartz", lyrics: "wicked-part-2/the-wicked-witch-of-the-east.md" },
+  { title: "Wonderful", track_number: 4, composer: "Stephen Schwartz", lyricist: "Stephen Schwartz", lyrics: "wicked-part-2/wonderful.md" },
+  // { title: "I'm Not That Girl (Reprise)", track_number: 5, composer: "Stephen Schwartz", lyricist: "Stephen Schwartz", lyrics: "wicked-part-2/im-not-that-girl-reprise.md" },
+  // { title: "As Long as You're Mine", track_number: 6, composer: "Stephen Schwartz", lyricist: "Stephen Schwartz", lyrics: "wicked-part-2/as-long-as-youre-mine.md" },
+  // { title: "No Place Like Home", track_number: 7, composer: "Stephen Schwartz", lyricist: "Stephen Schwartz", lyrics: "wicked-part-2/no-place-like-home.md" },
+  // { title: "No Good Deed", track_number: 8, composer: "Stephen Schwartz", lyricist: "Stephen Schwartz", lyrics: "wicked-part-2/no-good-deed.md" },
+  // { title: "The Girl in the Bubble", track_number: 9, composer: "Stephen Schwartz", lyricist: "Stephen Schwartz", lyrics: "wicked-part-2/the-girl-in-the-bubble.md" },
+  // { title: "March of the Witch Hunters", track_number: 10, composer: "Stephen Schwartz", lyricist: "Stephen Schwartz", lyrics: "wicked-part-2/march-of-the-witch-hunters.md" },
+  // { title: "For Good", track_number: 11, composer: "Stephen Schwartz", lyricist: "Stephen Schwartz", lyrics: "wicked-part-2/for-good.md" },
+],
+};

@@ -64,13 +64,20 @@ export function SearchBar({
         params.set("lang", language);
       }
 
+      // Preserve filter params (tag, source)
+      searchParams.getAll("tag").forEach((tag) => params.append("tag", tag));
+      searchParams.getAll("source").forEach((source) => params.append("source", source));
+
       const queryString = params.toString();
       const newUrl = queryString ? `${pathname}?${queryString}` : pathname;
-      const currentUrl = searchParams.toString()
-        ? `${pathname}?${searchParams.toString()}`
-        : pathname;
 
-      if (newUrl !== currentUrl) {
+      // Compare only q and lang to decide if we need to update
+      const currentQ = searchParams.get("q") || "";
+      const currentLang = searchParams.get("lang") || "en";
+      const newQ = currentQuery;
+      const newLang = language;
+
+      if (currentQ !== newQ || currentLang !== newLang) {
         startTransition(function updateUrl() {
           router.push(newUrl as Route);
         });

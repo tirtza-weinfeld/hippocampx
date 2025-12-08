@@ -12,6 +12,7 @@ interface EditableExampleProps {
   exampleId: number;
   exampleText: string;
   source: string | null;
+  sourcePartId?: number | null;
   onDeleted: (exampleId: number) => void;
 }
 
@@ -20,11 +21,11 @@ export function EditableExample({
   exampleId,
   exampleText: initialText,
   source: initialSource,
+  sourcePartId,
   onDeleted,
 }: EditableExampleProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [exampleText, setExampleText] = useState(initialText);
-  const [source, setSource] = useState(initialSource || "");
   const [isPending, startTransition] = useTransition();
 
   function handleSave() {
@@ -33,11 +34,12 @@ export function EditableExample({
     }
 
     startTransition(async () => {
+      // Keep the existing sourcePartId when updating - source is display-only
       const result = await updateExample(
         exampleId,
         wordId,
         exampleText.trim(),
-        source.trim() || undefined
+        sourcePartId ?? undefined
       );
 
       if (result.success) {
@@ -48,7 +50,6 @@ export function EditableExample({
 
   function handleCancel() {
     setExampleText(initialText);
-    setSource(initialSource || "");
     setIsEditing(false);
   }
 
@@ -72,11 +73,13 @@ export function EditableExample({
       >
         <Textarea
           value={exampleText}
-          onChange={(e) => setExampleText(e.target.value)}
+          onChange={function handleTextChange(e) {
+            setExampleText(e.target.value);
+          }}
           className="text-sm italic border-2"
           rows={2}
           autoFocus
-          onKeyDown={(e) => {
+          onKeyDown={function handleKeyDown(e) {
             if (e.key === "Enter" && e.metaKey) {
               e.preventDefault();
               handleSave();
@@ -85,13 +88,9 @@ export function EditableExample({
             }
           }}
         />
-        <input
-          type="text"
-          placeholder="Source (optional)"
-          value={source}
-          onChange={(e) => setSource(e.target.value)}
-          className="w-full px-3 py-2 text-xs border rounded-md"
-        />
+        {initialSource && (
+          <p className="text-xs text-muted-foreground">Source: {initialSource}</p>
+        )}
         <div className="flex gap-2 justify-end">
           <Button
             size="sm"

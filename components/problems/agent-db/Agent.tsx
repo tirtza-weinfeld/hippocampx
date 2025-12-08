@@ -1,5 +1,5 @@
 import { AgentProblemsView } from '@/components/agent';
-import { getProblems } from '@/lib/db/queries/agent-problems';
+import { getProblems } from '@/lib/db/vercel/queries/problems';
 import { AgentProblemCard } from './agent-problem-card';
 import { Suspense } from 'react';
 

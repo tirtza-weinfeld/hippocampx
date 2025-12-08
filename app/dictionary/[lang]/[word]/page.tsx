@@ -1,11 +1,9 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
-// TEMPORARY: Using direct Neon DB queries instead of Hippo API
-// import { fetchWordCompleteByText } from "@/lib/api/railway-vocabulary-client";
-import { fetchWordCompleteByText } from "@/lib/db/queries/dictionary";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
+import { fetchWordCompleteByText } from "@/lib/db/neon/queries/dictionary";
 import { WordDetailClient } from "./word-detail-client";
+import * as motion from "motion/react-client";
+import { BookOpen } from "lucide-react";
+import { BackButton } from "@/components/dictionary/back-button";
 
 export default async function WordDetailPage(props: {
   params: Promise<{ lang: string; word: string }>;
@@ -22,16 +20,28 @@ export default async function WordDetailPage(props: {
   }
 
   return (
-    <div className="container mx-auto py-8 px-4 max-w-4xl">
-      <div className="flex justify-between items-center mb-6">
-        <Link href="/dictionary">
-          <Button variant="outline">Back to Dictionary</Button>
-        </Link>
+    <div className="min-h-screen bg-linear-to-b from-background via-background to-muted/10">
+      <div className="border-b border-border/40 bg-background/80 backdrop-blur-sm sticky top-0 z-10">
+        <div className="container mx-auto px-4 py-4 max-w-4xl">
+          <motion.div
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.3 }}
+            className="flex items-center gap-4"
+          >
+            <BackButton fallbackHref="/dictionary" />
+            <div className="h-4 w-px bg-border/60" />
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <BookOpen className="h-3.5 w-3.5" />
+              <span className="font-medium text-foreground">{decodedWord}</span>
+            </div>
+          </motion.div>
+        </div>
       </div>
 
-      <Separator className="mb-6" />
-
-      <WordDetailClient word={word} />
+      <div className="container mx-auto py-8 px-4 max-w-4xl">
+        <WordDetailClient word={word} />
+      </div>
     </div>
   );
 }

@@ -27,7 +27,10 @@ interface Example {
   id: number;
   definition_id: number;
   example_text: string;
-  source: string | null;
+  source_part_id: number | null;
+  source_part_name?: string | null;
+  source_title?: string | null;
+  source_type?: string | null;
   created_at?: string;
 }
 
@@ -98,15 +101,12 @@ export function WordDefinitionEditable({
     });
   }
 
-  function handleAddExample(exampleText: string, source: string) {
+  function handleAddExample(exampleText: string) {
     startTransition(async () => {
       const formData = new FormData();
       formData.set("definition_id", definitionId.toString());
       formData.set("word_id", wordId.toString());
       formData.set("example_text", exampleText);
-      if (source.trim()) {
-        formData.set("source", source);
-      }
 
       const result = await createExample(formData);
       if (result.success && result.exampleId) {
@@ -114,7 +114,7 @@ export function WordDefinitionEditable({
           id: result.exampleId,
           definition_id: definitionId,
           example_text: exampleText,
-          source: source || null,
+          source_part_id: null,
         };
         setExamples([...examples, newExample]);
         setIsAddingExample(false);
@@ -122,17 +122,14 @@ export function WordDefinitionEditable({
     });
   }
 
-  function handleExampleUpdate(
-    exampleId: number,
-    exampleText: string,
-    source: string
-  ) {
+  function handleExampleUpdate(exampleId: number, exampleText: string) {
     setExamples(
-      examples.map((ex) =>
-        ex.id === exampleId
-          ? { ...ex, example_text: exampleText, source }
-          : ex
-      )
+      examples.map(function updateExample(ex) {
+        if (ex.id === exampleId) {
+          return { ...ex, example_text: exampleText };
+        }
+        return ex;
+      })
     );
   }
 
@@ -204,17 +201,20 @@ export function WordDefinitionEditable({
           <CardContent className="space-y-3">
             <h4 className="text-sm font-semibold">Examples:</h4>
             <AnimatePresence mode="popLayout">
-              {examples.map((example) => (
-                <WordExampleEditable
-                  key={example.id}
-                  wordId={wordId}
-                  exampleId={example.id}
-                  exampleText={example.example_text}
-                  source={example.source}
-                  onUpdate={handleExampleUpdate}
-                  onDelete={handleExampleDelete}
-                />
-              ))}
+              {examples.map(function renderExample(example) {
+                return (
+                  <WordExampleEditable
+                    key={example.id}
+                    wordId={wordId}
+                    exampleId={example.id}
+                    exampleText={example.example_text}
+                    sourcePartName={example.source_part_name}
+                    sourceTitle={example.source_title}
+                    onUpdate={handleExampleUpdate}
+                    onDelete={handleExampleDelete}
+                  />
+                );
+              })}
             </AnimatePresence>
 
             {isEditMode && isAddingExample && (
@@ -266,30 +266,32 @@ function AddExampleForm({
   onAdd,
   onCancel,
 }: {
-  onAdd: (text: string, source: string) => void;
+  onAdd: (text: string) => void;
   onCancel: () => void;
 }) {
   const [exampleText, setExampleText] = useState("");
-  const [source, setSource] = useState("");
   const [isPending, startTransition] = useTransition();
 
   function handleSubmit() {
     if (!exampleText.trim()) return;
 
-    startTransition(() => {
-      onAdd(exampleText, source);
+    startTransition(function submitExample() {
+      onAdd(exampleText);
     });
   }
 
   return (
-    <div className="space-y-2 p-3 border rounded-lg bg-muted/30">
+    <div className="space-y-3 p-4 border border-border/50 rounded-xl bg-muted/20">
       <Textarea
         placeholder="Enter example sentence..."
         value={exampleText}
-        onChange={(e) => setExampleText(e.target.value)}
+        onChange={function handleTextChange(e) {
+          setExampleText(e.target.value);
+        }}
         rows={2}
         autoFocus
-        onKeyDown={(e) => {
+        className="bg-background/80"
+        onKeyDown={function handleKeyDown(e) {
           if (e.key === "Enter" && e.metaKey) {
             e.preventDefault();
             handleSubmit();
@@ -298,23 +300,17 @@ function AddExampleForm({
           }
         }}
       />
-      <input
-        type="text"
-        placeholder="Source (optional)"
-        value={source}
-        onChange={(e) => setSource(e.target.value)}
-        className="w-full px-3 py-2 text-sm border rounded-md"
-      />
       <div className="flex gap-2 justify-end">
+        <Button size="sm" variant="outline" onClick={onCancel}>
+          Cancel
+        </Button>
         <Button
           size="sm"
           onClick={handleSubmit}
           disabled={isPending || !exampleText.trim()}
+          className="bg-linear-to-r from-sky-600 to-blue-600 hover:from-sky-500 hover:to-blue-500 text-white"
         >
-          Add
-        </Button>
-        <Button size="sm" variant="outline" onClick={onCancel}>
-          Cancel
+          Add Example
         </Button>
       </div>
     </div>
