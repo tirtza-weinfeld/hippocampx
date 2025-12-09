@@ -44,6 +44,7 @@ const nextConfig: NextConfig = {
   //     },
   //   },
   // },
+  // cacheComponents: true,
   typedRoutes: true,
   reactCompiler: true,
 

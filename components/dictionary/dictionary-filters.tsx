@@ -1,7 +1,8 @@
 "use client";
 
+import { useOptimistic, useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Filter, X, Tag, BookOpen, Music } from "lucide-react";
+import { Filter, X, Tag, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -13,6 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import * as motion from "motion/react-client";
+import { slugify } from "@/lib/utils";
 
 interface TagOption {
   id: number;
@@ -30,6 +32,7 @@ interface SourceOption {
 interface SourcePartOption {
   id: number;
   name: string;
+  sourceId: number;
   sourceTitle: string;
   sourceType: string;
   wordCount: number;
@@ -44,11 +47,31 @@ interface DictionaryFiltersProps {
   selectedSourcePartNames: string[];
 }
 
-function slugify(text: string): string {
-  return text
-    .toLowerCase()
-    .replace(/\s+/g, "-")
-    .replace(/[^\w-]/g, "");
+interface FilterState {
+  tags: string[];
+  sources: string[];
+  parts: string[];
+}
+
+type FilterAction =
+  | { type: "SET_TAGS"; tags: string[] }
+  | { type: "SET_SOURCES"; sources: string[] }
+  | { type: "SET_PARTS"; parts: string[] }
+  | { type: "SET_ALL"; tags: string[]; sources: string[]; parts: string[] };
+
+function filterReducer(state: FilterState, action: FilterAction): FilterState {
+  switch (action.type) {
+    case "SET_TAGS":
+      return { ...state, tags: action.tags };
+    case "SET_SOURCES":
+      return { ...state, sources: action.sources };
+    case "SET_PARTS":
+      return { ...state, parts: action.parts };
+    case "SET_ALL":
+      return { tags: action.tags, sources: action.sources, parts: action.parts };
+    default:
+      return state;
+  }
 }
 
 export function DictionaryFilters({
@@ -61,12 +84,18 @@ export function DictionaryFilters({
 }: DictionaryFiltersProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [isPending, startTransition] = useTransition();
 
-  function updateFilters(
-    newTagNames: string[],
-    newSourceTitles: string[],
-    newSourcePartNames: string[]
-  ) {
+  const [optimisticFilters, setOptimisticFilters] = useOptimistic(
+    { tags: selectedTagNames, sources: selectedSourceTitles, parts: selectedSourcePartNames },
+    filterReducer
+  );
+
+  const localTags = optimisticFilters.tags;
+  const localSources = optimisticFilters.sources;
+  const localParts = optimisticFilters.parts;
+
+  function commitToUrlDirect(newTags: string[], newSources: string[], newParts: string[]) {
     const params = new URLSearchParams();
 
     const q = searchParams.get("q");
@@ -74,57 +103,77 @@ export function DictionaryFilters({
     if (q) params.set("q", q);
     if (lang) params.set("lang", lang);
 
-    newTagNames.forEach(function addTag(name) {
-      params.append("tag", slugify(name));
-    });
-
-    newSourceTitles.forEach(function addSource(title) {
-      params.append("source", slugify(title));
-    });
-
-    newSourcePartNames.forEach(function addPart(name) {
-      params.append("part", slugify(name));
-    });
+    newTags.forEach(name => params.append("tag", slugify(name)));
+    newSources.forEach(title => params.append("source", slugify(title)));
+    newParts.forEach(name => params.append("part", slugify(name)));
 
     const queryString = params.toString();
     router.push(queryString ? `/dictionary?${queryString}` : "/dictionary");
   }
 
   function handleTagToggle(tagName: string) {
-    const newTagNames = selectedTagNames.includes(tagName)
-      ? selectedTagNames.filter(function keepTag(name) {
-          return name !== tagName;
-        })
-      : [...selectedTagNames, tagName];
-    updateFilters(newTagNames, selectedSourceTitles, selectedSourcePartNames);
+    const newTags = localTags.includes(tagName)
+      ? localTags.filter(name => name !== tagName)
+      : [...localTags, tagName];
+    startTransition(() => {
+      setOptimisticFilters({ type: "SET_TAGS", tags: newTags });
+      commitToUrlDirect(newTags, localSources, localParts);
+    });
   }
 
   function handleSourceToggle(sourceTitle: string) {
-    const newSourceTitles = selectedSourceTitles.includes(sourceTitle)
-      ? selectedSourceTitles.filter(function keepSource(title) {
-          return title !== sourceTitle;
-        })
-      : [...selectedSourceTitles, sourceTitle];
-    updateFilters(selectedTagNames, newSourceTitles, selectedSourcePartNames);
+    if (localSources.includes(sourceTitle)) {
+      const newSources = localSources.filter(title => title !== sourceTitle);
+      startTransition(() => {
+        setOptimisticFilters({ type: "SET_SOURCES", sources: newSources });
+        commitToUrlDirect(localTags, newSources, localParts);
+      });
+    } else {
+      const partsOfThisSource = sourceParts.filter(part => part.sourceTitle === sourceTitle);
+      const partNamesToRemove = new Set(partsOfThisSource.map(p => p.name));
+      const newParts = localParts.filter(name => !partNamesToRemove.has(name));
+      const newSources = [...localSources, sourceTitle];
+
+      startTransition(() => {
+        setOptimisticFilters({ type: "SET_ALL", tags: localTags, sources: newSources, parts: newParts });
+        commitToUrlDirect(localTags, newSources, newParts);
+      });
+    }
   }
 
-  function handleSourcePartToggle(partName: string) {
-    const newSourcePartNames = selectedSourcePartNames.includes(partName)
-      ? selectedSourcePartNames.filter(function keepPart(name) {
-          return name !== partName;
-        })
-      : [...selectedSourcePartNames, partName];
-    updateFilters(selectedTagNames, selectedSourceTitles, newSourcePartNames);
+  function handleSourcePartToggle(partName: string, parentSourceTitle: string) {
+    if (localParts.includes(partName)) {
+      const newParts = localParts.filter(name => name !== partName);
+      startTransition(() => {
+        setOptimisticFilters({ type: "SET_PARTS", parts: newParts });
+        commitToUrlDirect(localTags, localSources, newParts);
+      });
+    } else {
+      const sourceWasSelected = localSources.includes(parentSourceTitle);
+      const newParts = [...localParts, partName];
+      const newSources = sourceWasSelected
+        ? localSources.filter(title => title !== parentSourceTitle)
+        : localSources;
+
+      startTransition(() => {
+        if (sourceWasSelected) {
+          setOptimisticFilters({ type: "SET_ALL", tags: localTags, sources: newSources, parts: newParts });
+        } else {
+          setOptimisticFilters({ type: "SET_PARTS", parts: newParts });
+        }
+        commitToUrlDirect(localTags, newSources, newParts);
+      });
+    }
   }
 
   function clearAllFilters() {
-    updateFilters([], [], []);
+    startTransition(() => {
+      setOptimisticFilters({ type: "SET_ALL", tags: [], sources: [], parts: [] });
+      commitToUrlDirect([], [], []);
+    });
   }
 
-  const hasActiveFilters =
-    selectedTagNames.length > 0 ||
-    selectedSourceTitles.length > 0 ||
-    selectedSourcePartNames.length > 0;
+  const hasActiveFilters = localTags.length > 0 || localSources.length > 0 || localParts.length > 0;
 
   return (
     <motion.div
@@ -143,20 +192,20 @@ export function DictionaryFilters({
           >
             <Tag className="h-3.5 w-3.5" />
             Tags
-            {selectedTagNames.length > 0 && (
+            {localTags.length > 0 && (
               <Badge
                 variant="secondary"
                 className="ml-1 px-1.5 py-0 text-xs bg-sky-100 text-sky-700 dark:bg-sky-950 dark:text-sky-300"
               >
-                {selectedTagNames.length}
+                {localTags.length}
               </Badge>
+            )}
+            {isPending && localTags.length > 0 && (
+              <span className="ml-1 h-2 w-2 rounded-full bg-sky-400 animate-pulse" />
             )}
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent
-          align="start"
-          className="w-56 border-border/50 shadow-lg"
-        >
+        <DropdownMenuContent align="start" className="w-56 border-border/50 shadow-lg">
           <DropdownMenuLabel className="text-xs font-medium text-muted-foreground">
             Filter by Tag
           </DropdownMenuLabel>
@@ -166,22 +215,17 @@ export function DictionaryFilters({
               No tags available
             </div>
           ) : (
-            tags.map(function renderTag(tag) {
-              return (
-                <DropdownMenuCheckboxItem
-                  key={tag.id}
-                  checked={selectedTagNames.includes(tag.name)}
-                  onCheckedChange={function onToggle() {
-                    handleTagToggle(tag.name);
-                  }}
-                >
-                  <span className="flex-1">{tag.name}</span>
-                  <span className="text-xs text-muted-foreground ml-2">
-                    ({tag.wordCount})
-                  </span>
-                </DropdownMenuCheckboxItem>
-              );
-            })
+            tags.map(tag => (
+              <DropdownMenuCheckboxItem
+                key={tag.id}
+                checked={localTags.includes(tag.name)}
+                onCheckedChange={() => handleTagToggle(tag.name)}
+                onSelect={e => e.preventDefault()}
+              >
+                <span className="flex-1">{tag.name}</span>
+                <span className="text-xs text-muted-foreground ml-2">({tag.wordCount})</span>
+              </DropdownMenuCheckboxItem>
+            ))
           )}
         </DropdownMenuContent>
       </DropdownMenu>
@@ -196,19 +240,22 @@ export function DictionaryFilters({
           >
             <BookOpen className="h-3.5 w-3.5" />
             Sources
-            {selectedSourceTitles.length > 0 && (
+            {(localSources.length > 0 || localParts.length > 0) && (
               <Badge
                 variant="secondary"
                 className="ml-1 px-1.5 py-0 text-xs bg-violet-100 text-violet-700 dark:bg-violet-950 dark:text-violet-300"
               >
-                {selectedSourceTitles.length}
+                {localSources.length + localParts.length}
               </Badge>
+            )}
+            {isPending && (localSources.length > 0 || localParts.length > 0) && (
+              <span className="ml-1 h-2 w-2 rounded-full bg-violet-400 animate-pulse" />
             )}
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent
           align="start"
-          className="w-64 border-border/50 shadow-lg"
+          className="w-72 max-h-96 overflow-y-auto border-border/50 shadow-lg"
         >
           <DropdownMenuLabel className="text-xs font-medium text-muted-foreground">
             Filter by Source
@@ -219,83 +266,39 @@ export function DictionaryFilters({
               No sources available
             </div>
           ) : (
-            sources.map(function renderSource(source) {
+            sources.map((source, sourceIndex) => {
+              const partsForSource = sourceParts.filter(part => part.sourceId === source.id);
               return (
-                <DropdownMenuCheckboxItem
-                  key={source.id}
-                  checked={selectedSourceTitles.includes(source.title)}
-                  onCheckedChange={function onToggle() {
-                    handleSourceToggle(source.title);
-                  }}
-                >
-                  <div className="flex flex-col flex-1">
-                    <span>{source.title}</span>
-                    <span className="text-xs text-muted-foreground">
-                      {source.type}
-                    </span>
-                  </div>
-                  <span className="text-xs text-muted-foreground ml-2">
-                    ({source.wordCount})
-                  </span>
-                </DropdownMenuCheckboxItem>
-              );
-            })
-          )}
-        </DropdownMenuContent>
-      </DropdownMenu>
-
-      {/* Source Part Filter (Songs/Chapters/Acts) */}
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="outline"
-            size="sm"
-            className="gap-2 border-border/50 hover:border-amber-300/50 hover:bg-amber-50/50 dark:hover:border-amber-700/50 dark:hover:bg-amber-950/30 transition-colors"
-          >
-            <Music className="h-3.5 w-3.5" />
-            Parts
-            {selectedSourcePartNames.length > 0 && (
-              <Badge
-                variant="secondary"
-                className="ml-1 px-1.5 py-0 text-xs bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300"
-              >
-                {selectedSourcePartNames.length}
-              </Badge>
-            )}
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent
-          align="start"
-          className="w-72 max-h-80 overflow-y-auto border-border/50 shadow-lg"
-        >
-          <DropdownMenuLabel className="text-xs font-medium text-muted-foreground">
-            Filter by Part
-          </DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          {sourceParts.length === 0 ? (
-            <div className="px-2 py-3 text-sm text-muted-foreground text-center">
-              No parts available
-            </div>
-          ) : (
-            sourceParts.map(function renderSourcePart(part) {
-              return (
-                <DropdownMenuCheckboxItem
-                  key={part.id}
-                  checked={selectedSourcePartNames.includes(part.name)}
-                  onCheckedChange={function onToggle() {
-                    handleSourcePartToggle(part.name);
-                  }}
-                >
-                  <div className="flex flex-col flex-1 min-w-0">
-                    <span className="truncate">{part.name}</span>
-                    <span className="text-xs text-muted-foreground truncate">
-                      {part.sourceTitle}
-                    </span>
-                  </div>
-                  <span className="text-xs text-muted-foreground ml-2 shrink-0">
-                    ({part.wordCount})
-                  </span>
-                </DropdownMenuCheckboxItem>
+                <div key={source.id}>
+                  {sourceIndex > 0 && <DropdownMenuSeparator className="my-1" />}
+                  <DropdownMenuCheckboxItem
+                    checked={localSources.includes(source.title)}
+                    onCheckedChange={() => handleSourceToggle(source.title)}
+                    onSelect={e => e.preventDefault()}
+                  >
+                    <div className="flex flex-col flex-1">
+                      <span className="font-medium">{source.title}</span>
+                      <span className="text-xs text-muted-foreground">{source.type}</span>
+                    </div>
+                    <span className="text-xs text-muted-foreground ml-2">({source.wordCount})</span>
+                  </DropdownMenuCheckboxItem>
+                  {partsForSource.map(part => (
+                    <DropdownMenuCheckboxItem
+                      key={part.id}
+                      checked={localParts.includes(part.name)}
+                      onCheckedChange={() => handleSourcePartToggle(part.name, source.title)}
+                      onSelect={e => e.preventDefault()}
+                      className="pl-8"
+                    >
+                      <div className="flex flex-1 min-w-0">
+                        <span className="truncate text-sm">{part.name}</span>
+                      </div>
+                      <span className="text-xs text-muted-foreground ml-2 shrink-0">
+                        ({part.wordCount})
+                      </span>
+                    </DropdownMenuCheckboxItem>
+                  ))}
+                </div>
               );
             })
           )}
@@ -307,60 +310,52 @@ export function DictionaryFilters({
         <>
           <div className="h-4 w-px bg-border/50 mx-1" />
           <div className="flex flex-wrap items-center gap-1.5">
-            {selectedTagNames.map(function renderSelectedTag(name) {
+            {localTags.map(name => (
+              <Badge
+                key={name}
+                variant="secondary"
+                className="gap-1 pr-1 bg-sky-50 text-sky-700 border-sky-200/50 dark:bg-sky-950/50 dark:text-sky-300 dark:border-sky-800/50"
+              >
+                {name}
+                <button
+                  type="button"
+                  onClick={() => handleTagToggle(name)}
+                  className="ml-0.5 rounded-full hover:bg-sky-200/50 dark:hover:bg-sky-800/50 p-0.5 transition-colors"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </Badge>
+            ))}
+            {localSources.map(title => (
+              <Badge
+                key={title}
+                variant="secondary"
+                className="gap-1 pr-1 bg-violet-50 text-violet-700 border-violet-200/50 dark:bg-violet-950/50 dark:text-violet-300 dark:border-violet-800/50"
+              >
+                {title}
+                <button
+                  type="button"
+                  onClick={() => handleSourceToggle(title)}
+                  className="ml-0.5 rounded-full hover:bg-violet-200/50 dark:hover:bg-violet-800/50 p-0.5 transition-colors"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </Badge>
+            ))}
+            {localParts.map(name => {
+              const part = sourceParts.find(p => p.name === name);
+              const parentSourceTitle = part?.sourceTitle ?? "";
               return (
                 <Badge
                   key={name}
-                  variant="secondary"
-                  className="gap-1 pr-1 bg-sky-50 text-sky-700 border-sky-200/50 dark:bg-sky-950/50 dark:text-sky-300 dark:border-sky-800/50"
-                >
-                  {name}
-                  <button
-                    type="button"
-                    onClick={function onRemove() {
-                      handleTagToggle(name);
-                    }}
-                    className="ml-0.5 rounded-full hover:bg-sky-200/50 dark:hover:bg-sky-800/50 p-0.5 transition-colors"
-                  >
-                    <X className="h-3 w-3" />
-                  </button>
-                </Badge>
-              );
-            })}
-            {selectedSourceTitles.map(function renderSelectedSource(title) {
-              return (
-                <Badge
-                  key={title}
                   variant="secondary"
                   className="gap-1 pr-1 bg-violet-50 text-violet-700 border-violet-200/50 dark:bg-violet-950/50 dark:text-violet-300 dark:border-violet-800/50"
                 >
-                  {title}
-                  <button
-                    type="button"
-                    onClick={function onRemove() {
-                      handleSourceToggle(title);
-                    }}
-                    className="ml-0.5 rounded-full hover:bg-violet-200/50 dark:hover:bg-violet-800/50 p-0.5 transition-colors"
-                  >
-                    <X className="h-3 w-3" />
-                  </button>
-                </Badge>
-              );
-            })}
-            {selectedSourcePartNames.map(function renderSelectedPart(name) {
-              return (
-                <Badge
-                  key={name}
-                  variant="secondary"
-                  className="gap-1 pr-1 bg-amber-50 text-amber-700 border-amber-200/50 dark:bg-amber-950/50 dark:text-amber-300 dark:border-amber-800/50"
-                >
                   {name}
                   <button
                     type="button"
-                    onClick={function onRemove() {
-                      handleSourcePartToggle(name);
-                    }}
-                    className="ml-0.5 rounded-full hover:bg-amber-200/50 dark:hover:bg-amber-800/50 p-0.5 transition-colors"
+                    onClick={() => handleSourcePartToggle(name, parentSourceTitle)}
+                    className="ml-0.5 rounded-full hover:bg-violet-200/50 dark:hover:bg-violet-800/50 p-0.5 transition-colors"
                   >
                     <X className="h-3 w-3" />
                   </button>

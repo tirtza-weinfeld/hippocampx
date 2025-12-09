@@ -5,7 +5,6 @@ import { Route } from "next";
 import { useState, useEffect, useTransition } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -13,20 +12,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search, Globe, Database, FileText } from "lucide-react";
+import { Search, Globe } from "lucide-react";
 
 const DEBOUNCE_DELAY = 300;
-
-type SearchScope = "page" | "database";
 
 export function SearchBar({
   initialQuery,
   initialLanguage,
-  onClientFilterChange,
 }: {
   initialQuery?: string;
   initialLanguage: string;
-  onClientFilterChange?: (filter: string) => void;
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -35,7 +30,6 @@ export function SearchBar({
   const [query, setQuery] = useState(initialQuery || "");
   const [debouncedQuery, setDebouncedQuery] = useState(initialQuery || "");
   const [language, setLanguage] = useState(initialLanguage);
-  const [scope, setScope] = useState<SearchScope>("database");
 
   useEffect(function debounceQuery() {
     const timer = setTimeout(function updateDebouncedQuery() {
@@ -49,10 +43,6 @@ export function SearchBar({
 
   useEffect(
     function syncSearchParams() {
-      if (scope === "page") {
-        return;
-      }
-
       const params = new URLSearchParams();
       const currentQuery = debouncedQuery.trim();
 
@@ -64,9 +54,16 @@ export function SearchBar({
         params.set("lang", language);
       }
 
-      // Preserve filter params (tag, source)
-      searchParams.getAll("tag").forEach((tag) => params.append("tag", tag));
-      searchParams.getAll("source").forEach((source) => params.append("source", source));
+      // Preserve filter params (tag, source, part)
+      searchParams.getAll("tag").forEach(function appendTag(tag) {
+        params.append("tag", tag);
+      });
+      searchParams.getAll("source").forEach(function appendSource(source) {
+        params.append("source", source);
+      });
+      searchParams.getAll("part").forEach(function appendPart(part) {
+        params.append("part", part);
+      });
 
       const queryString = params.toString();
       const newUrl = queryString ? `${pathname}?${queryString}` : pathname;
@@ -83,30 +80,8 @@ export function SearchBar({
         });
       }
     },
-    [debouncedQuery, language, router, searchParams, pathname, scope]
+    [debouncedQuery, language, router, searchParams, pathname]
   );
-
-  useEffect(
-    function syncClientFilter() {
-      if (scope === "page" && onClientFilterChange) {
-        onClientFilterChange(query);
-      }
-    },
-    [query, scope, onClientFilterChange]
-  );
-
-  function handleScopeChange(newScope: SearchScope) {
-    setScope(newScope);
-    if (newScope === "page") {
-      if (onClientFilterChange) {
-        onClientFilterChange(query);
-      }
-    } else {
-      if (onClientFilterChange) {
-        onClientFilterChange("");
-      }
-    }
-  }
 
   return (
     <div className="flex flex-col gap-2">
@@ -119,9 +94,7 @@ export function SearchBar({
           <Input
             id="search"
             type="search"
-            placeholder={
-              scope === "page" ? "Filter current page..." : "Search all words..."
-            }
+            placeholder="Search all words..."
             value={query}
             onChange={function handleQueryChange(e) {
               setQuery(e.target.value);
@@ -129,62 +102,26 @@ export function SearchBar({
             className="pl-8 h-9 text-sm border-border/50"
           />
         </div>
-        <div className="flex gap-2">
-          <div className="flex rounded-md border border-border/50 p-0.5">
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={function handlePageScope() {
-                handleScopeChange("page");
-              }}
-              className={`h-7 px-2.5 text-xs gap-1.5 ${
-                scope === "page"
-                  ? "bg-sky-100 text-sky-700 dark:bg-sky-950 dark:text-sky-300"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
+        <div className="w-full sm:w-36">
+          <Label htmlFor="language" className="sr-only">
+            Language
+          </Label>
+          <Select value={language} onValueChange={setLanguage}>
+            <SelectTrigger
+              id="language"
+              className="h-9 text-sm border-border/50"
             >
-              <FileText className="h-3 w-3" />
-              Page
-            </Button>
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={function handleDatabaseScope() {
-                handleScopeChange("database");
-              }}
-              className={`h-7 px-2.5 text-xs gap-1.5 ${
-                scope === "database"
-                  ? "bg-sky-100 text-sky-700 dark:bg-sky-950 dark:text-sky-300"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              <Database className="h-3 w-3" />
-              All
-            </Button>
-          </div>
-          <div className="w-full sm:w-36">
-            <Label htmlFor="language" className="sr-only">
-              Language
-            </Label>
-            <Select value={language} onValueChange={setLanguage}>
-              <SelectTrigger
-                id="language"
-                className="h-9 text-sm border-border/50"
-              >
-                <Globe className="h-3.5 w-3.5 text-muted-foreground mr-1.5" />
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent className="border border-border/50 shadow-lg ring-1 ring-black/5 bg-popover/95 backdrop-blur-xl">
-                <SelectItem value="en">English</SelectItem>
-                <SelectItem value="es">Spanish</SelectItem>
-                <SelectItem value="fr">French</SelectItem>
-                <SelectItem value="de">German</SelectItem>
-                <SelectItem value="it">Italian</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+              <Globe className="h-3.5 w-3.5 text-muted-foreground mr-1.5" />
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="border border-border/50 shadow-lg ring-1 ring-black/5 bg-popover/95 backdrop-blur-xl">
+              <SelectItem value="en">English</SelectItem>
+              <SelectItem value="es">Spanish</SelectItem>
+              <SelectItem value="fr">French</SelectItem>
+              <SelectItem value="de">German</SelectItem>
+              <SelectItem value="it">Italian</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
     </div>

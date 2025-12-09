@@ -1,2 +1,2 @@
 // Neon database queries
-export * from "./queries/dictionary";
+export * from "./queries/dictionary/index";

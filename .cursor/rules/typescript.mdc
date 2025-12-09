@@ -1,10 +1,46 @@
 ---
-description: TypeScript Rules
-alwaysApply: false
+alwaysApply: true
 ---
 # TypeScript Rules
 
 This guide covers modern bleeding-edge TypeScript patterns based on TypeScript 5.7+, 5.8, and 5.9 features from official documentation.
+
+## ⛔ MANDATORY: Function Syntax
+
+### Arrow Functions in Callbacks
+Single parameter without parentheses, implicit return for simple expressions:
+```typescript
+items.map(x => x.id)
+items.filter(x => x.active)
+items.find(x => x.id === id)
+promise.then(data => data.result)
+array.reduce((acc, x) => acc + x, 0)
+```
+
+Object literal implicit return uses parentheses around the object:
+```typescript
+items.map(x => ({ id: x.id, name: x.name }))
+```
+
+Explicit return only for multiple statements:
+```typescript
+items.map(x => {
+  const processed = transform(x)
+  return processed.value
+})
+```
+
+### Top-Level Functions
+Use function declarations for named functions:
+```typescript
+function fetchData(id: string) {
+  return db.query(id)
+}
+
+async function processItems(items: Item[]) {
+  return items.map(x => x.value)
+}
+```
 
 ## 🚀 Latest TypeScript Features (5.7 - 5.9)
 

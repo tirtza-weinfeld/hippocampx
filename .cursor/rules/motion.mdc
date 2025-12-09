@@ -1,6 +1,5 @@
 ---
-description: motion
-alwaysApply: false
+alwaysApply: true
 ---
 # Motion for React Rules 
 
