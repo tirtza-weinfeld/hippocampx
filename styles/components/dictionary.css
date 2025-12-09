@@ -1,0 +1,793 @@
+/**
+ * Dictionary Component CSS Tokens - 2026 Edition
+ *
+ * Modern design system featuring:
+ * - OKLCH color space with perceptual uniformity
+ * - Mesh gradients & layered surfaces
+ * - Advanced glassmorphism with noise texture
+ * - Micro-interaction utilities
+ *
+ * Usage: bg-dict-*, text-dict-*, border-dict-*, shadow-dict-*
+ */
+
+@theme inline {
+  /* Primary spectrum - Luminous sky blues */
+  --color-dict-primary: var(--dict-primary);
+  --color-dict-primary-vivid: var(--dict-primary-vivid);
+  --color-dict-primary-muted: var(--dict-primary-muted);
+  --color-dict-primary-wash: var(--dict-primary-wash);
+
+  /* Accent spectrum - Electric cyan/teal */
+  --color-dict-accent: var(--dict-accent);
+  --color-dict-accent-soft: var(--dict-accent-soft);
+
+  /* Semantic - Definition highlights */
+  --color-dict-definition: var(--dict-definition);
+  --color-dict-example: var(--dict-example);
+  --color-dict-tag: var(--dict-tag);
+
+  /* Surfaces - Layered depth system */
+  --color-dict-surface-0: var(--dict-surface-0);
+  --color-dict-surface-1: var(--dict-surface-1);
+  --color-dict-surface-2: var(--dict-surface-2);
+  --color-dict-surface-3: var(--dict-surface-3);
+
+  /* Borders - Subtle to prominent */
+  --color-dict-border: var(--dict-border);
+  --color-dict-border-hover: var(--dict-border-hover);
+  --color-dict-border-focus: var(--dict-border-focus);
+
+  /* Text hierarchy */
+  --color-dict-text: var(--dict-text);
+  --color-dict-text-secondary: var(--dict-text-secondary);
+  --color-dict-text-tertiary: var(--dict-text-tertiary);
+  --color-dict-text-inverse: var(--dict-text-inverse);
+
+  /* Interactive states */
+  --color-dict-hover: var(--dict-hover);
+  --color-dict-active: var(--dict-active);
+  --color-dict-focus-ring: var(--dict-focus-ring);
+
+  /* Glass/Frosted surfaces */
+  --color-dict-glass-bg: var(--dict-glass-bg);
+  --color-dict-frosted-start: var(--dict-frosted-start);
+  --color-dict-frosted-end: var(--dict-frosted-end);
+
+  /* Shadows */
+  --color-dict-shadow-color: var(--dict-shadow-color);
+  --color-dict-glow-color: var(--dict-glow-color);
+
+  /* Tag colors */
+  --color-dict-tag-bg-start: var(--dict-tag-bg-start);
+  --color-dict-tag-bg-end: var(--dict-tag-bg-end);
+  --color-dict-tag-border: var(--dict-tag-border);
+}
+
+:root {
+  /* Primary spectrum */
+  --dict-primary: oklch(0.62 0.19 245);
+  --dict-primary-vivid: oklch(0.58 0.22 250);
+  --dict-primary-muted: oklch(0.7 0.1 240);
+  --dict-primary-wash: oklch(0.97 0.02 245 / 80%);
+
+  /* Accent spectrum */
+  --dict-accent: oklch(0.72 0.16 195);
+  --dict-accent-soft: oklch(0.94 0.04 195 / 70%);
+
+  /* Semantic colors */
+  --dict-definition: oklch(0.65 0.14 260);
+  --dict-example: oklch(0.68 0.12 175);
+  --dict-tag: oklch(0.7 0.15 300);
+
+  /* Surfaces - Light mode depth */
+  --dict-surface-0: oklch(0.995 0.002 265);
+  --dict-surface-1: oklch(0.99 0.004 260);
+  --dict-surface-2: oklch(0.985 0.006 255);
+  --dict-surface-3: oklch(0.975 0.008 250);
+
+  /* Borders */
+  --dict-border: oklch(0.92 0.015 250 / 60%);
+  --dict-border-hover: oklch(0.85 0.04 245);
+  --dict-border-focus: oklch(0.65 0.18 245);
+
+  /* Text */
+  --dict-text: oklch(0.18 0.02 260);
+  --dict-text-secondary: oklch(0.4 0.02 255);
+  --dict-text-tertiary: oklch(0.55 0.015 250);
+  --dict-text-inverse: oklch(0.98 0.005 260);
+
+  /* Interactive */
+  --dict-hover: oklch(0.96 0.03 245 / 80%);
+  --dict-active: oklch(0.93 0.05 245 / 90%);
+  --dict-focus-ring: oklch(0.62 0.19 245 / 40%);
+
+  /* Gradient anchors */
+  --dict-grad-1: oklch(0.68 0.16 230);
+  --dict-grad-2: oklch(0.62 0.18 260);
+  --dict-grad-3: oklch(0.7 0.14 200);
+
+  /* Glass/Frosted */
+  --dict-glass-bg: oklch(1 0 0 / 60%);
+  --dict-frosted-start: oklch(1 0 0 / 70%);
+  --dict-frosted-end: oklch(1 0 0 / 50%);
+
+  /* Shadows */
+  --dict-shadow-color: oklch(0.3 0.05 250 / 6%);
+  --dict-glow-color: oklch(0.62 0.15 245 / 12%);
+
+  /* Tag colors */
+  --dict-tag-bg-start: var(--dict-primary-wash);
+  --dict-tag-bg-end: var(--dict-accent-soft);
+  --dict-tag-border: oklch(0.85 0.06 245 / 50%);
+}
+
+.dark {
+  /* Primary spectrum */
+  --dict-primary: oklch(0.75 0.14 230);
+  --dict-primary-vivid: oklch(0.8 0.16 235);
+  --dict-primary-muted: oklch(0.6 0.08 235);
+  --dict-primary-wash: oklch(0.22 0.04 240 / 50%);
+
+  /* Accent spectrum */
+  --dict-accent: oklch(0.78 0.12 195);
+  --dict-accent-soft: oklch(0.28 0.06 195 / 50%);
+
+  /* Semantic colors */
+  --dict-definition: oklch(0.75 0.12 265);
+  --dict-example: oklch(0.72 0.1 180);
+  --dict-tag: oklch(0.78 0.12 300);
+
+  /* Surfaces - Dark mode depth */
+  --dict-surface-0: oklch(0.12 0.015 260);
+  --dict-surface-1: oklch(0.15 0.018 255);
+  --dict-surface-2: oklch(0.18 0.02 250);
+  --dict-surface-3: oklch(0.22 0.022 245);
+
+  /* Borders */
+  --dict-border: oklch(0.3 0.025 250 / 50%);
+  --dict-border-hover: oklch(0.45 0.05 240);
+  --dict-border-focus: oklch(0.7 0.14 235);
+
+  /* Text */
+  --dict-text: oklch(0.94 0.01 250);
+  --dict-text-secondary: oklch(0.72 0.02 245);
+  --dict-text-tertiary: oklch(0.55 0.02 250);
+  --dict-text-inverse: oklch(0.15 0.015 260);
+
+  /* Interactive */
+  --dict-hover: oklch(0.25 0.035 245 / 60%);
+  --dict-active: oklch(0.3 0.05 245 / 70%);
+  --dict-focus-ring: oklch(0.7 0.14 235 / 50%);
+
+  /* Gradient anchors */
+  --dict-grad-1: oklch(0.55 0.12 220);
+  --dict-grad-2: oklch(0.5 0.14 260);
+  --dict-grad-3: oklch(0.58 0.1 190);
+
+  /* Glass/Frosted */
+  --dict-glass-bg: oklch(0.15 0.02 250 / 70%);
+  --dict-frosted-start: oklch(0.18 0.025 250 / 80%);
+  --dict-frosted-end: oklch(0.12 0.02 255 / 60%);
+
+  /* Shadows */
+  --dict-shadow-color: oklch(0 0 0 / 25%);
+  --dict-glow-color: oklch(0.7 0.12 235 / 15%);
+
+  /* Tag colors */
+  --dict-tag-bg-start: oklch(0.25 0.05 240 / 60%);
+  --dict-tag-bg-end: oklch(0.22 0.04 200 / 50%);
+  --dict-tag-border: oklch(0.4 0.06 240 / 40%);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   GRADIENT UTILITIES
+   ═══════════════════════════════════════════════════════════════ */
+
+@utility text-dict-gradient {
+  background: linear-gradient(
+    135deg,
+    var(--dict-grad-1) 0%,
+    var(--dict-grad-2) 50%,
+    var(--dict-grad-3) 100%
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+@utility bg-dict-mesh {
+  background:
+    radial-gradient(ellipse 80% 50% at 20% 40%, var(--dict-primary-wash) 0%, transparent 50%),
+    radial-gradient(ellipse 60% 80% at 80% 20%, var(--dict-accent-soft) 0%, transparent 50%),
+    radial-gradient(ellipse 50% 50% at 50% 100%, oklch(0.9 0.03 280 / 30%) 0%, transparent 50%),
+    var(--color-dict-surface-0);
+}
+
+@utility bg-dict-aurora {
+  background:
+    linear-gradient(180deg, transparent 0%, var(--color-dict-surface-1) 100%),
+    conic-gradient(
+      from 180deg at 50% 120%,
+      var(--dict-grad-1) 0deg,
+      var(--dict-grad-3) 120deg,
+      var(--dict-grad-2) 240deg,
+      var(--dict-grad-1) 360deg
+    );
+  background-blend-mode: normal, soft-light;
+}
+
+@utility bg-dict-page {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--color-dict-surface-0) 15%,
+    var(--color-dict-surface-0) 85%,
+    transparent 100%
+  );
+}
+
+@utility bg-dict-nav {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--color-dict-glass-bg) 15%,
+    var(--color-dict-glass-bg) 85%,
+    transparent 100%
+  );
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SURFACE UTILITIES
+   ═══════════════════════════════════════════════════════════════ */
+
+@utility bg-dict-glass {
+  background: var(--color-dict-glass-bg);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+}
+
+@utility bg-dict-frosted {
+  background: linear-gradient(135deg, var(--color-dict-frosted-start) 0%, var(--color-dict-frosted-end) 100%);
+  backdrop-filter: blur(24px) saturate(200%);
+  -webkit-backdrop-filter: blur(24px) saturate(200%);
+}
+
+@utility bg-dict-elevated {
+  background: linear-gradient(
+    180deg,
+    var(--color-dict-surface-2) 0%,
+    var(--color-dict-surface-1) 100%
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SHADOW UTILITIES
+   ═══════════════════════════════════════════════════════════════ */
+
+@utility shadow-dict-sm {
+  box-shadow:
+    0 1px 2px var(--color-dict-shadow-color),
+    0 2px 4px var(--color-dict-shadow-color);
+}
+
+@utility shadow-dict-md {
+  box-shadow:
+    0 2px 4px var(--color-dict-shadow-color),
+    0 4px 8px var(--color-dict-shadow-color),
+    0 8px 16px var(--color-dict-shadow-color);
+}
+
+@utility shadow-dict-lg {
+  box-shadow:
+    0 4px 8px var(--color-dict-shadow-color),
+    0 8px 16px var(--color-dict-shadow-color),
+    0 16px 32px var(--color-dict-shadow-color),
+    0 32px 64px var(--color-dict-shadow-color);
+}
+
+@utility shadow-dict-glow {
+  box-shadow:
+    0 0 0 1px var(--color-dict-border),
+    0 0 20px var(--color-dict-glow-color),
+    0 0 40px var(--color-dict-glow-color);
+}
+
+@utility shadow-dict-inner {
+  box-shadow:
+    inset 0 1px 2px var(--color-dict-shadow-color),
+    inset 0 0 0 1px oklch(1 0 0 / 5%);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   BORDER UTILITIES
+   ═══════════════════════════════════════════════════════════════ */
+
+@utility border-dict-subtle {
+  border: 1px solid var(--color-dict-border);
+}
+
+@utility border-dict-gradient {
+  border: 1px solid transparent;
+  background:
+    linear-gradient(var(--color-dict-surface-1), var(--color-dict-surface-1)) padding-box,
+    linear-gradient(135deg, var(--dict-grad-1) 0%, var(--dict-grad-2) 100%) border-box;
+}
+
+@utility ring-dict-focus {
+  outline: none;
+  box-shadow:
+    0 0 0 2px var(--color-dict-surface-0),
+    0 0 0 4px var(--color-dict-focus-ring);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   COMPONENT UTILITIES
+   ═══════════════════════════════════════════════════════════════ */
+
+@utility dict-header {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1rem;
+  background: var(--color-dict-surface-1);
+  box-shadow:
+    0 0 0 1px var(--color-dict-border),
+    0 4px 24px var(--color-dict-shadow-color);
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 100% 100% at 0% 0%, var(--dict-primary-wash) 0%, transparent 50%),
+      radial-gradient(ellipse 80% 80% at 100% 100%, var(--dict-accent-soft) 0%, transparent 50%);
+    pointer-events: none;
+  }
+}
+
+@utility dict-card {
+  position: relative;
+  border-radius: 1rem;
+  background: var(--color-dict-surface-1);
+  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    background: var(--color-dict-surface-2);
+    box-shadow:
+      0 8px 24px var(--color-dict-shadow-color),
+      0 16px 48px var(--color-dict-shadow-color);
+    transform: translateY(-2px);
+  }
+}
+
+@utility dict-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.875rem;
+  border-radius: 9999px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  background: linear-gradient(135deg, var(--color-dict-tag-bg-start) 0%, var(--color-dict-tag-bg-end) 100%);
+  color: var(--color-dict-primary-vivid);
+  transition: all 180ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    transform: translateY(-1px) scale(1.02);
+    box-shadow: 0 4px 16px var(--color-dict-glow-color);
+  }
+}
+
+@utility dict-quote {
+  position: relative;
+  padding: 1rem 1.25rem;
+  border-radius: 0 0.75rem 0.75rem 0;
+  background: linear-gradient(90deg, var(--dict-accent-soft) 0%, transparent 100%);
+  border-left: 3px solid var(--color-dict-accent);
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 3px;
+    background: linear-gradient(180deg, var(--dict-grad-3) 0%, var(--dict-grad-1) 100%);
+    border-radius: 3px 0 0 3px;
+  }
+}
+
+@utility dict-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem 0.625rem;
+  border-radius: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  background: var(--color-dict-primary);
+  color: var(--color-dict-text-inverse);
+  box-shadow: 0 1px 3px var(--color-dict-shadow-color);
+}
+
+@utility dict-section-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.75rem;
+  background: linear-gradient(135deg, var(--dict-primary-wash) 0%, var(--dict-accent-soft) 100%);
+  color: var(--color-dict-primary);
+  box-shadow: 0 2px 8px var(--color-dict-glow-color);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ANIMATION UTILITIES
+   ═══════════════════════════════════════════════════════════════ */
+
+@utility dict-shimmer {
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent 0%, oklch(1 0 0 / 10%) 50%, transparent 100%);
+    animation: dict-shimmer 2s infinite;
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes dict-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@utility dict-pulse-glow {
+  animation: dict-pulse-glow 3s ease-in-out infinite;
+}
+
+@keyframes dict-pulse-glow {
+  0%, 100% {
+    box-shadow:
+      0 0 0 1px var(--color-dict-border),
+      0 0 20px var(--color-dict-glow-color);
+  }
+  50% {
+    box-shadow:
+      0 0 0 1px var(--color-dict-border-hover),
+      0 0 30px var(--color-dict-glow-color);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   2026 MODERN UI - STICKY HEADER & ADVANCED SURFACES
+   ═══════════════════════════════════════════════════════════════ */
+
+@utility dict-sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: linear-gradient(
+    180deg,
+    var(--color-dict-frosted-start) 0%,
+    var(--color-dict-frosted-end) 100%
+  );
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  box-shadow:
+    0 4px 16px var(--color-dict-shadow-color),
+    0 8px 32px var(--color-dict-shadow-color);
+}
+
+@utility dict-input {
+  background: var(--color-dict-surface-2);
+  border: none;
+  border-radius: 0.875rem;
+  color: var(--color-dict-text);
+  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: inset 0 2px 4px var(--color-dict-shadow-color);
+
+  &::placeholder {
+    color: var(--color-dict-text-tertiary);
+  }
+
+  &:focus {
+    background: var(--color-dict-surface-1);
+    box-shadow:
+      inset 0 2px 4px var(--color-dict-shadow-color),
+      0 0 0 3px var(--color-dict-focus-ring);
+    outline: none;
+  }
+
+  &:hover:not(:focus) {
+    background: var(--color-dict-hover);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   WORD CARD - MODERN MICRO-INTERACTIONS
+   ═══════════════════════════════════════════════════════════════ */
+
+@utility dict-word-card {
+  position: relative;
+  border-radius: 1rem;
+  background: var(--color-dict-surface-1);
+  overflow: hidden;
+  transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    background: var(--color-dict-surface-2);
+    transform: translateY(-2px);
+    box-shadow:
+      0 8px 24px var(--color-dict-shadow-color),
+      0 16px 48px var(--color-dict-shadow-color);
+  }
+}
+
+@utility dict-word-card-line {
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--color-dict-surface-3) 30%,
+    var(--color-dict-surface-3) 70%,
+    transparent 100%
+  );
+  transition: all 300ms ease;
+}
+
+@utility dict-word-card-line-hover {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--color-dict-primary-muted) 20%,
+    var(--color-dict-accent) 50%,
+    var(--color-dict-primary-muted) 80%,
+    transparent 100%
+  );
+  box-shadow: 0 0 16px var(--color-dict-glow-color);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FILTER BUTTONS - PILL STYLE 2026
+   ═══════════════════════════════════════════════════════════════ */
+
+@utility dict-filter-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  background: var(--color-dict-surface-2);
+  color: var(--color-dict-text-secondary);
+  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+
+  &:hover {
+    background: var(--color-dict-hover);
+    color: var(--color-dict-text);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px var(--color-dict-shadow-color);
+  }
+
+  &:active {
+    transform: translateY(0);
+    background: var(--color-dict-active);
+  }
+}
+
+@utility dict-filter-btn-active {
+  background: linear-gradient(135deg, var(--dict-primary-wash) 0%, var(--dict-accent-soft) 100%);
+  color: var(--color-dict-primary-vivid);
+  box-shadow: 0 2px 8px var(--color-dict-glow-color);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ACTIVE FILTER CHIPS
+   ═══════════════════════════════════════════════════════════════ */
+
+@utility dict-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.5rem 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  background: linear-gradient(135deg, var(--dict-primary-wash) 0%, var(--dict-accent-soft) 100%);
+  color: var(--color-dict-primary-vivid);
+  transition: all 180ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@utility dict-chip-remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.125rem;
+  height: 1.125rem;
+  border-radius: 9999px;
+  background: transparent;
+  color: var(--color-dict-primary-muted);
+  transition: all 150ms ease;
+
+  &:hover {
+    background: var(--color-dict-primary);
+    color: var(--color-dict-text-inverse);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RESULTS COUNT BADGE
+   ═══════════════════════════════════════════════════════════════ */
+
+@utility dict-results-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  background: var(--color-dict-surface-2);
+  color: var(--color-dict-text-secondary);
+  box-shadow: 0 2px 8px var(--color-dict-shadow-color);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   EMPTY STATE
+   ═══════════════════════════════════════════════════════════════ */
+
+@utility dict-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+@utility dict-empty-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 4rem;
+  height: 4rem;
+  border-radius: 1.25rem;
+  background: linear-gradient(135deg, var(--dict-primary-wash) 0%, var(--dict-accent-soft) 100%);
+  color: var(--color-dict-primary);
+  margin-bottom: 1.5rem;
+  box-shadow:
+    0 8px 24px var(--color-dict-shadow-color),
+    0 0 32px var(--color-dict-glow-color);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   LOADING STATES
+   ═══════════════════════════════════════════════════════════════ */
+
+@utility dict-spinner {
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 2px solid var(--color-dict-border);
+  border-top-color: var(--color-dict-primary);
+  border-radius: 9999px;
+  animation: dict-spin 0.8s linear infinite;
+}
+
+@keyframes dict-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@utility dict-skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--color-dict-surface-2) 0%,
+    var(--color-dict-surface-3) 50%,
+    var(--color-dict-surface-2) 100%
+  );
+  background-size: 200% 100%;
+  animation: dict-skeleton-pulse 1.5s ease-in-out infinite;
+  border-radius: 0.5rem;
+}
+
+@keyframes dict-skeleton-pulse {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   EXPAND/COLLAPSE BUTTON
+   ═══════════════════════════════════════════════════════════════ */
+
+@utility dict-expand-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.875rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  background: var(--color-dict-surface-2);
+  color: var(--color-dict-text-secondary);
+  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    background: var(--color-dict-hover);
+    color: var(--color-dict-text);
+    box-shadow: 0 4px 12px var(--color-dict-shadow-color);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DROPDOWN MENU ENHANCEMENTS
+   ═══════════════════════════════════════════════════════════════ */
+
+@utility dict-dropdown {
+  background: var(--color-dict-glass-bg);
+  backdrop-filter: blur(24px) saturate(200%);
+  -webkit-backdrop-filter: blur(24px) saturate(200%);
+  border-radius: 1rem;
+  box-shadow:
+    0 8px 32px var(--color-dict-shadow-color),
+    0 24px 64px var(--color-dict-shadow-color);
+  overflow: hidden;
+}
+
+@utility dict-dropdown-item {
+  padding: 0.625rem 1rem;
+  font-size: 0.875rem;
+  color: var(--color-dict-text);
+  transition: all 150ms ease;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--color-dict-hover);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DEFINITION & EXAMPLE TEXT
+   ═══════════════════════════════════════════════════════════════ */
+
+@utility dict-definition-text {
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--color-dict-text-secondary);
+}
+
+@utility dict-example-text {
+  font-size: 0.8125rem;
+  font-style: italic;
+  color: var(--color-dict-example);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   WORD TEXT STYLING
+   ═══════════════════════════════════════════════════════════════ */
+
+@utility dict-word-text {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--color-dict-text);
+  transition: color 200ms ease;
+}
+
+@utility dict-word-text-hover {
+  color: var(--color-dict-primary);
+}

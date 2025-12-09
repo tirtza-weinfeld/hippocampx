@@ -7,12 +7,7 @@ import { WordListClient } from "./word-list-client";
 import { DictionaryFilters } from "./dictionary-filters";
 import { LayoutList } from "lucide-react";
 import { motion } from "motion/react";
-import type { WordsOnlyResult } from "@/lib/db/neon/queries/dictionary/index";
-
-interface DefinitionPreview {
-  definition_text: string;
-  example_text: string | null;
-}
+import type { InitialFetchResult } from "@/lib/db/neon/queries/dictionary/index";
 
 interface TagOption {
   id: number;
@@ -38,14 +33,12 @@ interface SourcePartOption {
 
 export function DictionarySearchWrapper({
   wordsPromise,
-  definitionsPromise,
   initialQuery,
   initialLanguage,
   serverQuery,
   headerContent,
 }: {
-  wordsPromise: Promise<WordsOnlyResult>;
-  definitionsPromise: Promise<Map<number, DefinitionPreview>>;
+  wordsPromise: Promise<InitialFetchResult>;
   initialQuery?: string;
   initialLanguage: string;
   serverQuery?: string;
@@ -54,13 +47,10 @@ export function DictionarySearchWrapper({
   const searchParams = useSearchParams();
   const result = use(wordsPromise);
 
-  const pagination = {
-    page: result.words.page,
-    pageSize: result.words.pageSize,
-    total: result.words.total,
-    totalPages: result.words.totalPages,
-    hasMore: result.words.hasMore,
-  };
+  // Extract filter slugs from search params
+  const tagSlugs = searchParams.getAll("tag");
+  const sourceSlugs = searchParams.getAll("source");
+  const sourcePartSlugs = searchParams.getAll("sourcePart");
 
   const filterData = {
     tags: result.filterStats.tags as TagOption[],
@@ -111,19 +101,21 @@ export function DictionarySearchWrapper({
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted/50 border border-border/40">
             <LayoutList className="h-3.5 w-3.5 text-muted-foreground" />
             <span className="text-xs font-medium text-muted-foreground">
-              {pagination.total.toLocaleString()} word{pagination.total !== 1 ? "s" : ""}
+              {result.words.pageInfo.totalCount.toLocaleString()} word
+              {result.words.pageInfo.totalCount !== 1 ? "s" : ""}
             </span>
           </div>
         </motion.div>
 
         <WordListClient
           initialWords={result.words.data}
-          definitionsPromise={definitionsPromise}
+          initialPageInfo={result.words.pageInfo}
           serverQuery={serverQuery}
           initialLanguage={initialLanguage}
-          hasMore={pagination.hasMore}
-          pageSize={pagination.pageSize}
           filterKey={searchParams.toString()}
+          tagSlugs={tagSlugs}
+          sourceSlugs={sourceSlugs}
+          sourcePartSlugs={sourcePartSlugs}
         />
       </div>
     </>

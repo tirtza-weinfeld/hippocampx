@@ -34,8 +34,10 @@
 **MANDATORY**: All code must be declarative. NO imperative patterns allowed.
 **VIOLATION = IMMEDIATE REFUSAL**
 
-### ⛔ FUNCTION DECLARATIONS ONLY ⛔
-**MANDATORY**: Use function declarations, NOT arrow functions or function expressions.
+### ⛔ FUNCTION SYNTAX⛔
+**MANDATORY**:
+- **Function declarations**: React components, standalone functions
+- **Arrow functions**: Callbacks, functions passed to wrappers (`cache()`, HOFs)
 **VIOLATION = IMMEDIATE REFUSAL**
 
 ### ⛔ PACKAGE.JSON SCRIPTS ONLY ⛔
@@ -104,7 +106,6 @@
 3. ⛔ **Missing type safety** - All code must be fully typed
 4. ⛔ **Ignored rule file patterns** - Must read and follow `.cursor/rules/*.mdc` files
 5. ⛔ **Code without tests** - All code must have tests
-6. ⛔ **Arrow functions or function expressions** - Must use function declarations only
 7. ⛔ **Unicode special characters in code** - Must use KaTeX for math symbols
 
 **THESE ARE NOT SUGGESTIONS. THESE ARE ABSOLUTE REQUIREMENTS.**

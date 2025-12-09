@@ -21,9 +21,9 @@ import {
   sourceParts,
   sources,
   type Word,
+  type Tag,
   type WordSerialized,
   type DefinitionSerialized,
-  type TagSerialized,
   type DefinitionWithExamples,
   type WordComplete,
 } from "../../schema";
@@ -39,10 +39,10 @@ function serializeWord(word: Word): WordSerialized {
 /**
  * Fetch basic word data without relations (for header/immediate render)
  */
-export const fetchWordBasic = cache(async function fetchWordBasic(
+export const fetchWordBasic = cache(async(
   wordText: string,
   languageCode: string = "en"
-): Promise<WordSerialized | null> {
+): Promise<WordSerialized | null> => {
   // "use cache";
   // cacheTag("dictionary-words", `word-${languageCode}-${wordText}`);
 
@@ -58,7 +58,7 @@ export const fetchWordBasic = cache(async function fetchWordBasic(
 /**
  * Fetch definitions with examples for a word
  */
-export const fetchDefinitionsByWordId = cache(async function fetchDefinitionsByWordId(wordId: number): Promise<DefinitionWithExamples[]> {
+export const fetchDefinitionsByWordId = cache(async(wordId: number): Promise<DefinitionWithExamples[]> => {
   // "use cache";
   // cacheTag("dictionary-definitions", `definitions-${wordId}`);
 
@@ -135,7 +135,7 @@ export const fetchDefinitionsByWordId = cache(async function fetchDefinitionsByW
 /**
  * Fetch tags for a word using single JOIN query (optimized from 2 queries)
  */
-export const fetchTagsByWordId = cache(async function fetchTagsByWordId(wordId: number): Promise<TagSerialized[]> {
+export const fetchTagsByWordId = cache(async(wordId: number): Promise<Tag[]> => {
   // "use cache";
   // cacheTag("dictionary-tags", `tags-${wordId}`);
 
@@ -154,7 +154,7 @@ export const fetchTagsByWordId = cache(async function fetchTagsByWordId(wordId: 
 /**
  * Fetch word relations using single JOIN query (optimized from 2 queries)
  */
-export const fetchWordRelations = cache(async function fetchWordRelations(wordId: number) {
+export const fetchWordRelations = cache(async(wordId: number) => {
   // "use cache";
   // cacheTag("dictionary-relations", `relations-${wordId}`);
 
@@ -190,10 +190,10 @@ export const fetchWordRelations = cache(async function fetchWordRelations(wordId
 /**
  * Fetch complete word with all relations (definitions, tags, relations)
  */
-export const fetchWordCompleteByText = cache(async function fetchWordCompleteByText(
+export const fetchWordCompleteByText = cache(async(
   wordText: string,
   languageCode: string = "en"
-): Promise<WordComplete | null> {
+): Promise<WordComplete | null> => {
   // "use cache";
   // cacheTag("dictionary-complete", `complete-${languageCode}-${wordText}`);
 
@@ -211,5 +211,12 @@ export const fetchWordCompleteByText = cache(async function fetchWordCompleteByT
     fetchWordRelations(word.id),
   ]);
 
-  return { ...serializeWord(word), definitions: defs, tags: wordTagsList, relations };
+  return {
+    ...serializeWord(word),
+    definitions: defs,
+    tags: wordTagsList,
+    relations,
+    forms: [],
+    base_word: null,
+  };
 });

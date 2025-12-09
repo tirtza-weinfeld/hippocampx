@@ -15,16 +15,16 @@ const db = drizzle(vercelSql);
 /**
  * Get all problems (lightweight, for filtering)
  */
-export const getProblems = cache(async function getProblems(): Promise<Problem[]> {
+export const getProblems = cache(async(): Promise<Problem[]> => {
   return db.select().from(problems).orderBy(problems.number);
 });
 
 /**
  * Get solutions by problem ID
  */
-export const getSolutionsByProblemId = cache(async function getSolutionsByProblemId(
+export const getSolutionsByProblemId = cache(async(
   problemId: string
-): Promise<Solution[]> {
+): Promise<Solution[]> => {
   const rawSolutions = await db
     .select()
     .from(solutions)

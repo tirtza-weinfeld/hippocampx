@@ -1,13 +1,14 @@
 "use server";
 
 import {
-  fetchMoreWords as fetchMoreWordsQuery,
-  type FetchMoreWordsOptions,
-  type FetchMoreWordsResult,
+  fetchMoreWithCursor as fetchMoreWithCursorQuery,
+  type FetchMoreWithCursorOptions,
+  type InfiniteScrollResult,
+  type WordWithPreview,
 } from "@/lib/db/neon/queries/dictionary/index";
 
-export async function fetchMoreWords(
-  options: FetchMoreWordsOptions
-): Promise<FetchMoreWordsResult> {
-  return fetchMoreWordsQuery(options);
+export async function fetchMoreWithCursor(
+  options: FetchMoreWithCursorOptions
+): Promise<InfiniteScrollResult<WordWithPreview>> {
+  return fetchMoreWithCursorQuery(options);
 }

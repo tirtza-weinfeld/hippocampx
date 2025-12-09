@@ -18,7 +18,10 @@ export const routes: NavigationItem[] = [
     // { title: 'New AI', href: '/ai', icon: Home, color: "text-blue-500", bgColor: "bg-purple-500/10", },
     // { title: 'Dictionary', href: '/dictionary', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10", },
 
-
+    {
+        title: 'Dictionary', href: '/dictionary', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10",
+       
+    },
     {
         title: 'Binary', href: 'old/binary', icon: Binary, color: "text-violet-500", bgColor: "bg-violet-500/10",
         children: [

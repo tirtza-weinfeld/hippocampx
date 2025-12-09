@@ -3,7 +3,6 @@
 import { useOptimistic, useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Filter, X, Tag, BookOpen } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,7 +11,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Badge } from "@/components/ui/badge";
 import * as motion from "motion/react-client";
 import { slugify } from "@/lib/utils";
 
@@ -185,27 +183,23 @@ export function DictionaryFilters({
       {/* Tag Filter */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button
-            variant="outline"
-            size="sm"
-            className="gap-2 border-border/50 hover:border-sky-300/50 hover:bg-sky-50/50 dark:hover:border-sky-700/50 dark:hover:bg-sky-950/30 transition-colors"
+          <button
+            type="button"
+            className={`dict-filter-btn ${localTags.length > 0 ? "dict-filter-btn-active" : ""}`}
           >
             <Tag className="h-3.5 w-3.5" />
             Tags
             {localTags.length > 0 && (
-              <Badge
-                variant="secondary"
-                className="ml-1 px-1.5 py-0 text-xs bg-sky-100 text-sky-700 dark:bg-sky-950 dark:text-sky-300"
-              >
+              <span className="ml-1 px-1.5 py-0.5 text-xs rounded-full bg-dict-primary/20 text-dict-primary-vivid">
                 {localTags.length}
-              </Badge>
+              </span>
             )}
             {isPending && localTags.length > 0 && (
-              <span className="ml-1 h-2 w-2 rounded-full bg-sky-400 animate-pulse" />
+              <span className="ml-1 h-2 w-2 rounded-full bg-dict-primary animate-pulse" />
             )}
-          </Button>
+          </button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" className="w-56 border-border/50 shadow-lg">
+        <DropdownMenuContent align="start" className="w-56 dict-dropdown">
           <DropdownMenuLabel className="text-xs font-medium text-muted-foreground">
             Filter by Tag
           </DropdownMenuLabel>
@@ -233,29 +227,25 @@ export function DictionaryFilters({
       {/* Source Filter */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button
-            variant="outline"
-            size="sm"
-            className="gap-2 border-border/50 hover:border-violet-300/50 hover:bg-violet-50/50 dark:hover:border-violet-700/50 dark:hover:bg-violet-950/30 transition-colors"
+          <button
+            type="button"
+            className={`dict-filter-btn ${(localSources.length > 0 || localParts.length > 0) ? "dict-filter-btn-active" : ""}`}
           >
             <BookOpen className="h-3.5 w-3.5" />
             Sources
             {(localSources.length > 0 || localParts.length > 0) && (
-              <Badge
-                variant="secondary"
-                className="ml-1 px-1.5 py-0 text-xs bg-violet-100 text-violet-700 dark:bg-violet-950 dark:text-violet-300"
-              >
+              <span className="ml-1 px-1.5 py-0.5 text-xs rounded-full bg-dict-accent/20 text-dict-accent">
                 {localSources.length + localParts.length}
-              </Badge>
+              </span>
             )}
             {isPending && (localSources.length > 0 || localParts.length > 0) && (
-              <span className="ml-1 h-2 w-2 rounded-full bg-violet-400 animate-pulse" />
+              <span className="ml-1 h-2 w-2 rounded-full bg-dict-accent animate-pulse" />
             )}
-          </Button>
+          </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent
           align="start"
-          className="w-72 max-h-96 overflow-y-auto border-border/50 shadow-lg"
+          className="w-72 max-h-96 overflow-y-auto dict-dropdown"
         >
           <DropdownMenuLabel className="text-xs font-medium text-muted-foreground">
             Filter by Source
@@ -308,70 +298,69 @@ export function DictionaryFilters({
       {/* Active Filters Display */}
       {hasActiveFilters && (
         <>
-          <div className="h-4 w-px bg-border/50 mx-1" />
+          <div className="h-4 w-px bg-dict-surface-3 mx-1" />
           <div className="flex flex-wrap items-center gap-1.5">
-            {localTags.map(name => (
-              <Badge
-                key={name}
-                variant="secondary"
-                className="gap-1 pr-1 bg-sky-50 text-sky-700 border-sky-200/50 dark:bg-sky-950/50 dark:text-sky-300 dark:border-sky-800/50"
-              >
-                {name}
-                <button
-                  type="button"
-                  onClick={() => handleTagToggle(name)}
-                  className="ml-0.5 rounded-full hover:bg-sky-200/50 dark:hover:bg-sky-800/50 p-0.5 transition-colors"
-                >
-                  <X className="h-3 w-3" />
-                </button>
-              </Badge>
-            ))}
-            {localSources.map(title => (
-              <Badge
-                key={title}
-                variant="secondary"
-                className="gap-1 pr-1 bg-violet-50 text-violet-700 border-violet-200/50 dark:bg-violet-950/50 dark:text-violet-300 dark:border-violet-800/50"
-              >
-                {title}
-                <button
-                  type="button"
-                  onClick={() => handleSourceToggle(title)}
-                  className="ml-0.5 rounded-full hover:bg-violet-200/50 dark:hover:bg-violet-800/50 p-0.5 transition-colors"
-                >
-                  <X className="h-3 w-3" />
-                </button>
-              </Badge>
-            ))}
-            {localParts.map(name => {
-              const part = sourceParts.find(p => p.name === name);
-              const parentSourceTitle = part?.sourceTitle ?? "";
+            {localTags.map(function renderTagChip(name) {
               return (
-                <Badge
-                  key={name}
-                  variant="secondary"
-                  className="gap-1 pr-1 bg-violet-50 text-violet-700 border-violet-200/50 dark:bg-violet-950/50 dark:text-violet-300 dark:border-violet-800/50"
-                >
+                <span key={name} className="dict-chip">
                   {name}
                   <button
                     type="button"
-                    onClick={() => handleSourcePartToggle(name, parentSourceTitle)}
-                    className="ml-0.5 rounded-full hover:bg-violet-200/50 dark:hover:bg-violet-800/50 p-0.5 transition-colors"
+                    onClick={function removeTag() {
+                      handleTagToggle(name);
+                    }}
+                    className="dict-chip-remove"
                   >
                     <X className="h-3 w-3" />
                   </button>
-                </Badge>
+                </span>
+              );
+            })}
+            {localSources.map(function renderSourceChip(title) {
+              return (
+                <span key={title} className="dict-chip">
+                  {title}
+                  <button
+                    type="button"
+                    onClick={function removeSource() {
+                      handleSourceToggle(title);
+                    }}
+                    className="dict-chip-remove"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </span>
+              );
+            })}
+            {localParts.map(function renderPartChip(name) {
+              const part = sourceParts.find(function findPart(p) {
+                return p.name === name;
+              });
+              const parentSourceTitle = part?.sourceTitle ?? "";
+              return (
+                <span key={name} className="dict-chip">
+                  {name}
+                  <button
+                    type="button"
+                    onClick={function removePart() {
+                      handleSourcePartToggle(name, parentSourceTitle);
+                    }}
+                    className="dict-chip-remove"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </span>
               );
             })}
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
+          <button
+            type="button"
             onClick={clearAllFilters}
-            className="text-muted-foreground hover:text-foreground gap-1 hover:bg-destructive/10 hover:text-destructive"
+            className="dict-filter-btn text-dict-text-tertiary hover:text-red-500"
           >
             <Filter className="h-3.5 w-3.5" />
             Clear all
-          </Button>
+          </button>
         </>
       )}
     </motion.div>

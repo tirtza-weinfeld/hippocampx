@@ -5,6 +5,7 @@
  *   --override  Replace existing entries (default: skip)
  *
  * Handles FK resolution automatically:
+ * - Resolves base_word text to base_word_id
  * - Creates tags if they don't exist
  * - Creates sources/source_parts if they don't exist
  * - Creates related words if they don't exist (as stubs)
@@ -21,7 +22,6 @@ import {
   tags,
   wordTags,
   wordRelations,
-  wordForms,
   sources,
   sourceParts,
 } from "../../schemas/dictionary";
@@ -33,26 +33,39 @@ const shouldOverride = process.argv.includes("--override");
 
 type DbType = ReturnType<typeof drizzle>;
 
-async function getOrCreateWord(
+async function getWordId(
   db: DbType,
   wordText: string,
   languageCode: string
-): Promise<number> {
+): Promise<number | null> {
   const [existing] = await db
     .select()
     .from(words)
     .where(and(eq(words.word_text, wordText), eq(words.language_code, languageCode)));
 
-  if (existing) {
-    return existing.id;
+  return existing?.id ?? null;
+}
+
+async function getOrCreateWord(
+  db: DbType,
+  wordText: string,
+  languageCode: string
+): Promise<number> {
+  const existingId = await getWordId(db, wordText, languageCode);
+  if (existingId) {
+    return existingId;
   }
 
   const [inserted] = await db
     .insert(words)
-    .values({ word_text: wordText, language_code: languageCode })
+    .values({
+      word_text: wordText,
+      language_code: languageCode,
+      form_type: "base",
+    })
     .returning();
 
-  console.log(`    [stub] Created stub word: ${wordText}`);
+  console.log(`    [stub] Created word: ${wordText}`);
   return inserted.id;
 }
 
@@ -116,13 +129,26 @@ async function getOrCreateSourcePart(db: DbType, source: SourceSeed): Promise<nu
 
 async function clearWordData(db: DbType, wordId: number): Promise<void> {
   // Clear related data for override mode
+  // Forms are separate word entries and handled independently
   await db.delete(definitions).where(eq(definitions.word_id, wordId));
   await db.delete(wordTags).where(eq(wordTags.word_id, wordId));
-  await db.delete(wordForms).where(eq(wordForms.word_id, wordId));
   await db.delete(wordRelations).where(eq(wordRelations.word_id_1, wordId));
 }
 
 async function seedWord(db: DbType, wordData: DictionaryWordSeed): Promise<void> {
+  const formType = wordData.form_type ?? "base";
+  const isForm = formType !== "base";
+
+  // Resolve base_word text to base_word_id if this is a form
+  let baseWordId: number | null = null;
+  if (wordData.base_word) {
+    baseWordId = await getWordId(db, wordData.base_word, wordData.language_code);
+    if (!baseWordId) {
+      console.log(`  ! ${wordData.word_text} (skipped, base word "${wordData.base_word}" not found)`);
+      return;
+    }
+  }
+
   // Check if word exists
   const [existing] = await db
     .select()
@@ -142,21 +168,27 @@ async function seedWord(db: DbType, wordData: DictionaryWordSeed): Promise<void>
       return;
     }
     // Override mode: clear existing data and update
-    console.log(`  ~ ${wordData.word_text} (updating)`);
+    console.log(`  ~ ${wordData.word_text}${isForm ? ` (${formType})` : ""} (updating)`);
     wordId = existing.id;
     await clearWordData(db, wordId);
     await db
       .update(words)
-      .set({ updated_at: new Date() })
+      .set({
+        updated_at: new Date(),
+        form_type: formType,
+        base_word_id: baseWordId,
+      })
       .where(eq(words.id, wordId));
   } else {
     // Insert new word
-    console.log(`  + ${wordData.word_text}`);
+    console.log(`  + ${wordData.word_text}${isForm ? ` (${formType})` : ""}`);
     const [word] = await db
       .insert(words)
       .values({
         word_text: wordData.word_text,
         language_code: wordData.language_code,
+        form_type: formType,
+        base_word_id: baseWordId,
       })
       .returning();
     wordId = word.id;
@@ -190,7 +222,7 @@ async function seedWord(db: DbType, wordData: DictionaryWordSeed): Promise<void>
     }
   }
 
-  // Handle tags
+  // Handle tags (only for base words typically, but allow for forms too)
   if (wordData.tags) {
     for (const tagName of wordData.tags) {
       const tagId = await getOrCreateTag(db, tagName);
@@ -198,17 +230,6 @@ async function seedWord(db: DbType, wordData: DictionaryWordSeed): Promise<void>
         .insert(wordTags)
         .values({ word_id: wordId, tag_id: tagId })
         .onConflictDoNothing();
-    }
-  }
-
-  // Handle word forms
-  if (wordData.forms) {
-    for (const form of wordData.forms) {
-      await db.insert(wordForms).values({
-        word_id: wordId,
-        form_text: form.form_text,
-        form_type: form.form_type,
-      });
     }
   }
 

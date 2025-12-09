@@ -2,8 +2,16 @@
  * Dictionary Schema - Neon Database
  */
 
-import { pgTable, pgEnum, index, uniqueIndex, text, timestamp, integer, varchar } from "drizzle-orm/pg-core";
+import { pgTable, pgEnum, index, uniqueIndex, text, timestamp, integer, varchar, customType } from "drizzle-orm/pg-core";
 import type { InferSelectModel, InferInsertModel } from "drizzle-orm";
+
+// ============================================================================
+// Custom Types
+// ============================================================================
+
+const bytea = customType<{ data: Buffer; driverData: Buffer }>({
+  dataType: () => "bytea",
+});
 
 // ============================================================================
 // Enums
@@ -19,9 +27,19 @@ export const partOfSpeechEnum = pgEnum("partofspeech", [
   "conjunction",
   "interjection",
   "determiner",
-  "auxiliary",
-  "phrase",
-  "other",
+  "article",
+]);
+
+export const formTypeEnum = pgEnum("formtype", [
+  "base",
+  "plural",
+  "third_person",
+  "comparative",
+  "superlative",
+  "past",
+  "past_participle",
+  "present_participle",
+  "derived",
 ]);
 
 export const relationTypeEnum = pgEnum("relationtype", [
@@ -40,7 +58,6 @@ export const sourceTypeEnum = pgEnum("sourcetype", [
   "movie",
   "podcast",
   "article",
-  "other",
 ]);
 
 // ============================================================================
@@ -51,11 +68,14 @@ export const words = pgTable("words", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
   word_text: varchar("word_text", { length: 255 }).notNull(),
   language_code: varchar("language_code", { length: 10 }).notNull(),
+  base_word_id: integer("base_word_id"),
+  form_type: formTypeEnum("form_type").default("base"),
   created_at: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updated_at: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 }, (table) => [
   index("idx_word_text_lower").on(table.word_text),
   index("ix_words_language_code").on(table.language_code),
+  index("ix_words_base_word_id").on(table.base_word_id),
   uniqueIndex("uq_word_language").on(table.word_text, table.language_code),
 ]);
 
@@ -127,16 +147,11 @@ export const wordRelations = pgTable("word_relations", {
   index("ix_word_relations_relation_type").on(table.relation_type),
 ]);
 
-export const wordForms = pgTable("word_forms", {
-  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
-  word_id: integer("word_id").notNull().references(() => words.id, { onDelete: "cascade" }),
-  form_text: varchar("form_text", { length: 255 }).notNull(),
-  form_type: varchar("form_type", { length: 50 }),
-}, (table) => [
-  index("ix_word_forms_word_id").on(table.word_id),
-  index("idx_form_text").on(table.form_text),
-  uniqueIndex("uq_word_form").on(table.word_id, table.form_text),
-]);
+export const wordAudio = pgTable("word_audio", {
+  word_id: integer("word_id").primaryKey().references(() => words.id, { onDelete: "cascade" }),
+  audio_data: bytea("audio_data").notNull(),
+  created_at: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
 
 // ============================================================================
 // Type Exports
@@ -160,56 +175,62 @@ export type InsertWordTag = InferInsertModel<typeof wordTags>;
 export type WordRelation = InferSelectModel<typeof wordRelations>;
 export type InsertWordRelation = InferInsertModel<typeof wordRelations>;
 
-export type WordForm = InferSelectModel<typeof wordForms>;
-export type InsertWordForm = InferInsertModel<typeof wordForms>;
-
 export type Source = InferSelectModel<typeof sources>;
 export type InsertSource = InferInsertModel<typeof sources>;
 
 export type SourcePart = InferSelectModel<typeof sourceParts>;
 export type InsertSourcePart = InferInsertModel<typeof sourceParts>;
 
+export type WordAudio = InferSelectModel<typeof wordAudio>;
+export type InsertWordAudio = InferInsertModel<typeof wordAudio>;
+
 // ============================================================================
-// Composite Types
+// Composite Types (for API responses - serialized versions with string dates)
 // ============================================================================
 
-export type WordSerialized = Omit<Word, "created_at" | "updated_at"> & {
-  created_at?: string;
-  updated_at?: string;
+/** Word with dates serialized to strings for JSON responses */
+export type WordSerialized = Omit<Word, "created_at" | "updated_at" | "form_type"> & {
+  form_type: string | null;
+  created_at: string;
+  updated_at: string;
 };
 
+/** Definition with part_of_speech as string for JSON responses */
 export type DefinitionSerialized = Omit<Definition, "part_of_speech"> & {
-  part_of_speech: string | null;
-  created_at?: string;
+  part_of_speech: string;
 };
 
-export type ExampleSerialized = Example & {
-  created_at?: string;
-  source_part_name?: string | null;
-  source_title?: string | null;
-  source_type?: string | null;
+/** Example with joined source info for display */
+export type ExampleWithSource = Example & {
+  source_part_name: string | null;
+  source_title: string | null;
+  source_type: string | null;
 };
 
-export type TagSerialized = Tag & {
-  created_at?: string;
-};
-
+/** Definition with its examples (including source info) */
 export type DefinitionWithExamples = DefinitionSerialized & {
-  examples: ExampleSerialized[];
+  examples: ExampleWithSource[];
 };
 
+/** Word with its definitions */
 export type WordWithDefinitions = WordSerialized & {
   definitions: DefinitionSerialized[];
 };
 
+/** Relation with the related word's text for display */
+export type WordRelationWithText = {
+  word_id_1: number;
+  word_id_2: number;
+  relation_type: string;
+  related_word_text: string;
+  related_word_id: number;
+};
+
+/** Complete word with all related data for detail view */
 export type WordComplete = WordSerialized & {
   definitions: DefinitionWithExamples[];
-  tags: TagSerialized[];
-  relations: Array<{
-    word_id_1: number;
-    word_id_2: number;
-    relation_type: string;
-    related_word_text: string;
-    related_word_id: number;
-  }>;
+  tags: Tag[];
+  relations: WordRelationWithText[];
+  forms: WordSerialized[];
+  base_word: WordSerialized | null;
 };

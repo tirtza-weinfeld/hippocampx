@@ -1,9 +1,8 @@
 import * as motion from "motion/react-client";
-import { Badge } from "@/components/ui/badge";
-import type { TagSerialized } from "@/lib/db/neon/schema";
+import type { Tag } from "@/lib/db/neon/schema";
 
 interface WordTagsProps {
-  tags: TagSerialized[];
+  tags: Tag[];
 }
 
 export function WordTags({ tags }: WordTagsProps) {
@@ -11,19 +10,21 @@ export function WordTags({ tags }: WordTagsProps) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
       transition={{ duration: 0.3, delay: 0.1 }}
+      className="flex flex-wrap gap-2"
     >
-      <div className="flex flex-wrap gap-2">
-        {tags.map(function renderTag(tag) {
-          return (
-            <Badge key={tag.id} variant="outline">
-              {tag.name}
-            </Badge>
-          );
-        })}
-      </div>
+      {tags.map(function renderTag(tag) {
+        return (
+          <span
+            key={tag.id}
+            className="px-2.5 py-1 text-xs font-medium text-dict-primary bg-dict-primary/8 hover:bg-dict-primary/12 rounded-full transition-colors cursor-default"
+          >
+            {tag.name}
+          </span>
+        );
+      })}
     </motion.div>
   );
 }

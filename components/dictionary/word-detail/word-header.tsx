@@ -1,49 +1,61 @@
+"use client";
+
 import * as motion from "motion/react-client";
-import { Calendar } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { Volume2, Loader2 } from "lucide-react";
 import type { WordSerialized } from "@/lib/db/neon/schema";
+import { useTTS } from "@/hooks/use-tts";
 
 interface WordHeaderProps {
   word: Pick<WordSerialized, "word_text" | "language_code" | "created_at">;
 }
 
 export function WordHeader({ word }: WordHeaderProps) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
-      className="relative overflow-hidden rounded-2xl bg-linear-to-br from-card via-card to-muted/30 border border-border/50 shadow-sm"
-    >
-      <div className="absolute inset-0 bg-linear-to-br from-sky-500/5 via-transparent to-blue-500/5" />
-      <div className="absolute top-0 inset-x-0 h-px bg-linear-to-r from-transparent via-sky-500/30 to-transparent" />
+  const { speak, state } = useTTS();
 
-      <div className="relative p-6 sm:p-8">
-        <div className="space-y-4">
-          <div className="flex items-center gap-4">
-            <h1 className="text-5xl font-bold tracking-tight">
-              {word.word_text}
-            </h1>
-            <Badge variant="secondary" className="uppercase text-sm">
-              {word.language_code}
-            </Badge>
-          </div>
-          <div className="flex items-center gap-3 text-sm text-muted-foreground">
-            <div className="flex items-center gap-1.5">
-              <Calendar className="h-3.5 w-3.5" />
-              <span>
-                {word.created_at
-                  ? `Added ${new Date(word.created_at).toLocaleDateString("en-US", {
-                      month: "short",
-                      day: "numeric",
-                      year: "numeric",
-                    })}`
-                  : "Recently added"}
-              </span>
-            </div>
-          </div>
-        </div>
+  const handleSpeak = () => {
+    if (state === "loading" || state === "playing") return;
+    speak(word.word_text, word.language_code);
+  };
+
+  return (
+    <motion.header
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+      className="space-y-2"
+    >
+      {/* Word title - Google style: large, clean, with pronunciation button */}
+      <div className="flex items-center gap-3">
+        <h1 className="text-4xl sm:text-5xl font-serif text-dict-text tracking-tight">
+          {word.word_text}
+        </h1>
+        <button
+          type="button"
+          onClick={handleSpeak}
+          disabled={state === "loading"}
+          className="flex items-center justify-center w-10 h-10 rounded-full bg-dict-primary/10 hover:bg-dict-primary/20 transition-colors group disabled:opacity-50"
+          aria-label="Listen to pronunciation"
+        >
+          {state === "loading" ? (
+            <Loader2 className="h-5 w-5 text-dict-primary animate-spin" />
+          ) : (
+            <Volume2
+              className={`h-5 w-5 text-dict-primary group-hover:scale-110 transition-transform ${
+                state === "playing" ? "animate-pulse" : ""
+              }`}
+            />
+          )}
+        </button>
       </div>
-    </motion.div>
+
+      {/* Phonetic / Language indicator - subtle like Google */}
+      <div className="flex items-center gap-3 text-dict-text-secondary">
+        <span className="text-sm">{word.language_code.toUpperCase()}</span>
+        <span className="text-dict-text-tertiary">|</span>
+        <span className="text-sm italic text-dict-text-tertiary">
+          /{word.word_text.toLowerCase()}/
+        </span>
+      </div>
+    </motion.header>
   );
 }

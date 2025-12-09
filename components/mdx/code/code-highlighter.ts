@@ -47,7 +47,7 @@ import type { UsesData, LspData, ExpressionsData, CommentsInlineData, SymbolTags
  * );
  * ```
  */
-const highlightCode = cache(async function highlightCode(code: string, lang: string, meta?: string, transformers: boolean = true, isInline: boolean = false) {
+const highlightCode = cache(async(code: string, lang: string, meta?: string, transformers: boolean = true, isInline: boolean = false) => {
   // const tooltipContent = await getTooltipContent()
 
   const hast = await codeToHast(code, {

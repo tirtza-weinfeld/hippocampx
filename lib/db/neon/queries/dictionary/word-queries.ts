@@ -1,11 +1,11 @@
 /**
- * Word Queries - Core word fetching and search
+ * Word Queries - Cursor-based infinite scroll
  */
 
 import "server-only";
 
 import { cache } from "react";
-import { eq, and, ilike, asc, desc, inArray, count } from "drizzle-orm";
+import { eq, and, ilike, asc, desc, inArray, count, or, gt, lt } from "drizzle-orm";
 import { neonDb } from "../../connection";
 import {
   words,
@@ -16,18 +16,13 @@ import {
   type Word,
   type WordSerialized,
 } from "../../schema";
-
-type SortField = "word_text" | "created_at" | "updated_at";
-type SortOrder = "asc" | "desc";
-
-export interface PaginatedResponse<T> {
-  data: T[];
-  total: number;
-  page: number;
-  pageSize: number;
-  totalPages: number;
-  hasMore: boolean;
-}
+import {
+  INFINITE_SCROLL_CONFIG,
+  type SortField,
+  type SortOrder,
+  type InfiniteScrollCursor,
+  type InfiniteScrollResult,
+} from "./types";
 
 export type { WordSerialized };
 
@@ -39,14 +34,12 @@ function serializeWord(word: Word): WordSerialized {
   };
 }
 
-function getOrderBy(sortBy: SortField, sortOrder: SortOrder) {
-  const column =
-    sortBy === "word_text"
-      ? words.word_text
-      : sortBy === "created_at"
-        ? words.created_at
-        : words.updated_at;
-  return sortOrder === "asc" ? asc(column) : desc(column);
+function getSortColumn(sortBy: SortField) {
+  return sortBy === "word_text"
+    ? words.word_text
+    : sortBy === "created_at"
+      ? words.created_at
+      : words.updated_at;
 }
 
 export async function resolveFilterWordIds(options: {
@@ -105,127 +98,215 @@ export async function resolveFilterWordIds(options: {
   return tagWordIds ?? sourceRelated ?? null;
 }
 
-export const fetchWordsPaginated = cache(async function fetchWordsPaginated(options: {
+/** Build cursor condition for WHERE clause */
+function buildCursorCondition(
+  cursor: InfiniteScrollCursor | null,
+  sortBy: SortField,
+  sortOrder: SortOrder
+) {
+  if (!cursor) return undefined;
+
+  const sortColumn = getSortColumn(sortBy);
+  const { afterSortValue, afterId } = cursor;
+
+  // For date fields, convert ISO string back to Date for drizzle comparison
+  const cursorValue = sortBy === "word_text"
+    ? afterSortValue
+    : new Date(afterSortValue);
+
+  // Composite cursor: (sortValue, id) > (lastSortValue, lastId)
+  if (sortOrder === "asc") {
+    return or(
+      gt(sortColumn, cursorValue),
+      and(eq(sortColumn, cursorValue), gt(words.id, afterId))
+    );
+  }
+  return or(
+    lt(sortColumn, cursorValue),
+    and(eq(sortColumn, cursorValue), lt(words.id, afterId))
+  );
+}
+
+/** Get sort value from word based on sortBy field */
+function getSortValue(word: Word, sortBy: SortField): string {
+  if (sortBy === "word_text") return word.word_text;
+  if (sortBy === "created_at") return word.created_at.toISOString();
+  return word.updated_at.toISOString();
+}
+
+/** Cursor-based word fetch with filters */
+export const fetchWordsWithCursor = cache(async (options: {
+  cursor?: InfiniteScrollCursor | null;
+  limit?: number;
   languageCode?: string;
-  page?: number;
-  pageSize?: number;
   sortBy?: SortField;
   sortOrder?: SortOrder;
   tagIds?: number[];
   sourceIds?: number[];
   sourcePartIds?: number[];
-}): Promise<PaginatedResponse<WordSerialized>> {
+}): Promise<InfiniteScrollResult<WordSerialized>> => {
   const {
+    cursor = null,
+    limit = INFINITE_SCROLL_CONFIG.defaultLimit,
     languageCode,
-    page = 1,
-    pageSize = 50,
     sortBy = "updated_at",
     sortOrder = "desc",
     tagIds,
     sourceIds,
     sourcePartIds,
   } = options;
-  const offset = (page - 1) * pageSize;
-  const empty: PaginatedResponse<WordSerialized> = {
+
+  const empty: InfiniteScrollResult<WordSerialized> = {
     data: [],
-    total: 0,
-    page,
-    pageSize,
-    totalPages: 0,
-    hasMore: false,
+    pageInfo: { hasNextPage: false, endCursor: null, totalCount: 0 },
   };
 
   const filterWordIds = await resolveFilterWordIds({ tagIds, sourceIds, sourcePartIds });
   if (filterWordIds !== null && filterWordIds.size === 0) return empty;
 
   const conditions = [];
+  // Only show base forms (words without a parent base word)
+  conditions.push(eq(words.form_type, "base"));
   if (languageCode) conditions.push(eq(words.language_code, languageCode));
   if (filterWordIds !== null) conditions.push(inArray(words.id, [...filterWordIds]));
+
+  const cursorCondition = buildCursorCondition(cursor, sortBy, sortOrder);
+  if (cursorCondition) conditions.push(cursorCondition);
+
   const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
 
+  // Build count conditions (without cursor for total)
+  const countConditions = [];
+  // Only count base forms
+  countConditions.push(eq(words.form_type, "base"));
+  if (languageCode) countConditions.push(eq(words.language_code, languageCode));
+  if (filterWordIds !== null) countConditions.push(inArray(words.id, [...filterWordIds]));
+  const countWhere = and(...countConditions);
+
+  const sortColumn = getSortColumn(sortBy);
+
   const [countResult, dataResult] = await Promise.all([
-    neonDb.select({ totalCount: count() }).from(words).where(whereClause),
+    neonDb.select({ totalCount: count() }).from(words).where(countWhere),
     neonDb
       .select()
       .from(words)
       .where(whereClause)
-      .limit(pageSize)
-      .offset(offset)
-      .orderBy(getOrderBy(sortBy, sortOrder)),
+      .limit(limit + 1) // Fetch one extra to check hasNextPage
+      .orderBy(
+        sortOrder === "asc" ? asc(sortColumn) : desc(sortColumn),
+        asc(words.id) // Tiebreaker
+      ),
   ]);
 
-  const total = countResult[0].totalCount;
+  const hasNextPage = dataResult.length > limit;
+  const data = hasNextPage ? dataResult.slice(0, -1) : dataResult;
+  const lastItem = data.at(-1);
+
   return {
-    data: dataResult.map(serializeWord),
-    total,
-    page,
-    pageSize,
-    totalPages: Math.ceil(total / pageSize),
-    hasMore: page < Math.ceil(total / pageSize),
+    data: data.map(serializeWord),
+    pageInfo: {
+      hasNextPage,
+      endCursor: lastItem
+        ? {
+            afterId: lastItem.id,
+            afterSortValue: getSortValue(lastItem, sortBy),
+            sortBy,
+            sortOrder,
+          }
+        : null,
+      totalCount: countResult[0].totalCount,
+    },
   };
 });
 
-export const searchWords = cache(async function searchWords(options: {
+/** Cursor-based search with filters */
+export const searchWordsWithCursor = cache(async (options: {
   query: string;
+  cursor?: InfiniteScrollCursor | null;
+  limit?: number;
   languageCode?: string;
-  page?: number;
-  pageSize?: number;
   sortBy?: SortField;
   sortOrder?: SortOrder;
   tagIds?: number[];
   sourceIds?: number[];
   sourcePartIds?: number[];
-}): Promise<PaginatedResponse<WordSerialized>> {
+}): Promise<InfiniteScrollResult<WordSerialized>> => {
   const {
     query,
+    cursor = null,
+    limit = INFINITE_SCROLL_CONFIG.searchLimit,
     languageCode = "en",
-    page = 1,
-    pageSize = 20,
     sortBy = "word_text",
     sortOrder = "asc",
     tagIds,
     sourceIds,
     sourcePartIds,
   } = options;
-  const offset = (page - 1) * pageSize;
-  const empty: PaginatedResponse<WordSerialized> = {
+
+  const empty: InfiniteScrollResult<WordSerialized> = {
     data: [],
-    total: 0,
-    page,
-    pageSize,
-    totalPages: 0,
-    hasMore: false,
+    pageInfo: { hasNextPage: false, endCursor: null, totalCount: 0 },
   };
 
   const filterWordIds = await resolveFilterWordIds({ tagIds, sourceIds, sourcePartIds });
   if (filterWordIds !== null && filterWordIds.size === 0) return empty;
 
   const conditions = [
+    // Only show base forms
+    eq(words.form_type, "base"),
     ilike(words.word_text, `${query}%`),
     eq(words.language_code, languageCode),
   ];
   if (filterWordIds !== null) conditions.push(inArray(words.id, [...filterWordIds]));
+
+  const cursorCondition = buildCursorCondition(cursor, sortBy, sortOrder);
+  if (cursorCondition) conditions.push(cursorCondition);
+
   const whereClause = and(...conditions);
 
+  // Count conditions (without cursor)
+  const countConditions = [
+    // Only count base forms
+    eq(words.form_type, "base"),
+    ilike(words.word_text, `${query}%`),
+    eq(words.language_code, languageCode),
+  ];
+  if (filterWordIds !== null) countConditions.push(inArray(words.id, [...filterWordIds]));
+  const countWhere = and(...countConditions);
+
+  const sortColumn = getSortColumn(sortBy);
+
   const [countResult, dataResult] = await Promise.all([
-    neonDb.select({ totalCount: count() }).from(words).where(whereClause),
+    neonDb.select({ totalCount: count() }).from(words).where(countWhere),
     neonDb
       .select()
       .from(words)
       .where(whereClause)
-      .limit(pageSize)
-      .offset(offset)
-      .orderBy(getOrderBy(sortBy, sortOrder)),
+      .limit(limit + 1)
+      .orderBy(
+        sortOrder === "asc" ? asc(sortColumn) : desc(sortColumn),
+        asc(words.id)
+      ),
   ]);
 
-  const total = countResult[0].totalCount;
+  const hasNextPage = dataResult.length > limit;
+  const data = hasNextPage ? dataResult.slice(0, -1) : dataResult;
+  const lastItem = data.at(-1);
+
   return {
-    data: dataResult.map(serializeWord),
-    total,
-    page,
-    pageSize,
-    totalPages: Math.ceil(total / pageSize),
-    hasMore: page < Math.ceil(total / pageSize),
+    data: data.map(serializeWord),
+    pageInfo: {
+      hasNextPage,
+      endCursor: lastItem
+        ? {
+            afterId: lastItem.id,
+            afterSortValue: getSortValue(lastItem, sortBy),
+            sortBy,
+            sortOrder,
+          }
+        : null,
+      totalCount: countResult[0].totalCount,
+    },
   };
 });
 
