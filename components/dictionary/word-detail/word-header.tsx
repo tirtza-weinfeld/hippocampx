@@ -1,20 +1,48 @@
 "use client";
 
+import { useState } from "react";
 import * as motion from "motion/react-client";
 import { Volume2, Loader2 } from "lucide-react";
 import type { WordSerialized } from "@/lib/db/neon/schema";
-import { useTTS } from "@/hooks/use-tts";
+
+type AudioResult =
+  | { success: true; audioContent: string }
+  | { success: false; error: string };
+
+type AudioState = "idle" | "loading" | "playing" | "error";
 
 interface WordHeaderProps {
   word: Pick<WordSerialized, "word_text" | "language_code" | "created_at">;
+  audioPromise: Promise<AudioResult>;
 }
 
-export function WordHeader({ word }: WordHeaderProps) {
-  const { speak, state } = useTTS();
+export function WordHeader({ word, audioPromise }: WordHeaderProps) {
+  const [state, setState] = useState<AudioState>("idle");
+  const [resolved, setResolved] = useState<AudioResult | null>(null);
 
-  const handleSpeak = () => {
+  const handlePlay = async () => {
     if (state === "loading" || state === "playing") return;
-    speak(word.word_text, word.language_code);
+
+    setState("loading");
+
+    // Resolve promise if not already resolved
+    const result = resolved ?? await audioPromise;
+    if (!resolved) setResolved(result);
+
+    if (!result.success) {
+      setState("error");
+      return;
+    }
+
+    const audio = new Audio(`data:audio/mp3;base64,${result.audioContent}`);
+
+    audio.oncanplaythrough = () => {
+      setState("playing");
+      audio.play().catch(() => setState("error"));
+    };
+
+    audio.onended = () => setState("idle");
+    audio.onerror = () => setState("error");
   };
 
   return (
@@ -31,7 +59,7 @@ export function WordHeader({ word }: WordHeaderProps) {
         </h1>
         <button
           type="button"
-          onClick={handleSpeak}
+          onClick={() => void handlePlay()}
           disabled={state === "loading"}
           className="flex items-center justify-center w-10 h-10 rounded-full bg-dict-primary/10 hover:bg-dict-primary/20 transition-colors group disabled:opacity-50"
           aria-label="Listen to pronunciation"

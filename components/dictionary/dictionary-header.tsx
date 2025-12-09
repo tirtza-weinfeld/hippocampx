@@ -55,7 +55,7 @@ export function DictionaryHeader({
   };
 
   return (
-    <header className="dict-sticky-header">
+    <header className="sticky top-0 z-40 bg-linear-to-b from-background from-80% to-transparent pb-6">
       <div className="container mx-auto px-4 py-4 sm:py-5">
         {/* Title Row */}
         <motion.div

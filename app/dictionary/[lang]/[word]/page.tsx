@@ -14,6 +14,7 @@ import {
   RelationsAsync,
   DefinitionsSkeleton,
 } from "@/components/dictionary/word-detail";
+import { getOrCreateWordAudio } from "@/lib/actions/word-audio";
 
 export default async function WordDetailPage(props: {
   params: Promise<{ lang: string; word: string }>;
@@ -61,7 +62,10 @@ export default async function WordDetailPage(props: {
       {/* Main content - clean Google-style layout */}
       <div className="@container mx-auto py-8 px-4 max-w-3xl">
         <div className="flex flex-col gap-6">
-          <WordHeader word={word} />
+          <WordHeader
+            word={word}
+            audioPromise={getOrCreateWordAudio(word.id, word.word_text, word.language_code)}
+          />
           <WordTags tags={tags} />
 
           {/* Definitions with streaming */}

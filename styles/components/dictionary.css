@@ -227,6 +227,14 @@
   );
 }
 
+@utility bg-dict-page-gradient {
+  background:
+    radial-gradient(ellipse 70% 60% at 50% 0%, var(--dict-primary-wash) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 80% 30%, var(--dict-accent-soft) 0%, transparent 50%),
+    radial-gradient(ellipse 80% 40% at 30% 80%, oklch(0.92 0.04 280 / 30%) 0%, transparent 50%);
+  background-attachment: fixed;
+}
+
 @utility bg-dict-nav {
   background: linear-gradient(
     90deg,
@@ -253,6 +261,15 @@
   background: linear-gradient(135deg, var(--color-dict-frosted-start) 0%, var(--color-dict-frosted-end) 100%);
   backdrop-filter: blur(24px) saturate(200%);
   -webkit-backdrop-filter: blur(24px) saturate(200%);
+}
+
+@utility bg-dict-header-solid {
+  background: linear-gradient(
+    180deg,
+    var(--color-dict-surface-0) 0%,
+    var(--color-dict-surface-0) 85%,
+    transparent 100%
+  );
 }
 
 @utility bg-dict-elevated {
@@ -471,21 +488,7 @@
    2026 MODERN UI - STICKY HEADER & ADVANCED SURFACES
    ═══════════════════════════════════════════════════════════════ */
 
-@utility dict-sticky-header {
-  position: sticky;
-  top: 0;
-  z-index: 40;
-  background: linear-gradient(
-    180deg,
-    var(--color-dict-frosted-start) 0%,
-    var(--color-dict-frosted-end) 100%
-  );
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  box-shadow:
-    0 4px 16px var(--color-dict-shadow-color),
-    0 8px 32px var(--color-dict-shadow-color);
-}
+
 
 @utility dict-input {
   background: var(--color-dict-surface-2);
@@ -518,7 +521,7 @@
 
 @utility dict-word-card {
   position: relative;
-  border-radius: 1rem;
+  border-radius: 2rem;
   background: var(--color-dict-surface-1);
   overflow: hidden;
   transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1);

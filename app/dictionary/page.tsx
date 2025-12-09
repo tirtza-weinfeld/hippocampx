@@ -45,7 +45,7 @@ export default async function DictionaryPage(props: {
   });
 
   return (
-    <div className="min-h-screen bg-dict-page">
+    <div className="min-h-screen">
       {/* Sticky Header - Always visible for search/filter access */}
       <DictionaryHeader
         initialQuery={query}
