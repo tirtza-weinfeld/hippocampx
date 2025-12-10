@@ -4,11 +4,11 @@ import {
   fetchMoreWithCursor as fetchMoreWithCursorQuery,
   type FetchMoreWithCursorOptions,
   type InfiniteScrollResult,
-  type WordWithPreview,
+  type EntryWithPreview,
 } from "@/lib/db/neon/queries/dictionary/index";
 
 export async function fetchMoreWithCursor(
   options: FetchMoreWithCursorOptions
-): Promise<InfiniteScrollResult<WordWithPreview>> {
+): Promise<InfiniteScrollResult<EntryWithPreview>> {
   return fetchMoreWithCursorQuery(options);
 }

@@ -1,90 +1,160 @@
 /**
- * Dictionary Seed Data
+ * Dictionary Seed Data - Aligned with New Schema
  *
- * STRUCTURE:
- * Each word is a separate entry. Forms (prouder, proudest) are their own
- * word entries with base_word pointing to the base form.
+ * ARCHITECTURE (matches lib/db/neon/schemas/dictionary.ts):
+ * - LexicalEntry: The headword (lemma + part_of_speech + language_code)
+ * - WordForm: Inflected forms with grammatical features (JSON)
+ * - Sense: A meaning/definition attached to a lexical entry
+ * - Example: Usage example attached to a sense
+ * - SenseRelation: Semantic relations between senses (synonym, antonym, etc.)
+ * - Tags: Attached to senses (not entries)
+ * - Sources/SourceParts: Hierarchical source citations (Musical -> Act -> Song)
  *
- * BASE WORD:
- * - word_text + language_code (required)
- * - form_type: "base" (default)
- * - definitions[] - meaning, part of speech, examples
- * - tags[] - categorize the word (optional)
- * - relations[] - synonyms/antonyms (optional)
+ * GRAMMATICAL FEATURES (stored as JSONB in word_forms):
+ * - English: { tense?, number?, person?, participle?, degree? }
+ * - German: { case, number, gender?, degree? }
+ * - Italian: { gender, number }
+ * - Arabic: { root, pattern, state }
  *
- * FORM WORD:
- * - word_text + language_code (required)
- * - form_type: plural, comparative, superlative, past, etc.
- * - base_word: text of the base word (resolved to base_word_id during seeding)
- * - definitions[] - usually empty for forms
- *
- * FORM TYPES:
- * - base: main dictionary entry (proud)
- * - plural: noun plural (cats)
- * - third_person: verb 3rd person singular (runs)
- * - comparative: adjective -er (prouder)
- * - superlative: adjective -est (proudest)
- * - past: verb past tense (ran)
- * - past_participle: verb past participle (run)
- * - present_participle: verb -ing (running)
- * - derived: different part of speech (proudly, pride)
- *
- * TAGS (what the word is about):
+ * TAGS (attached to senses):
  * - Topic: medical, legal, technology, science, music, art, politics, psychology
  * - Usage: slang, archaic, poetic, colloquial
  * - Connotation: negative, positive
  * - Test prep: GRE, SAT, TOEFL
  *
- * SOURCE (where the example came from):
- * - type: musical, book, movie, podcast, article
- * - title: "Wicked", "Pride and Prejudice"
- * - part: "Thank Goodness", "Chapter 7"
- * - part_order: track/chapter number (optional)
+ * SOURCE HIERARCHY:
+ * - Source: { type, title, publication_year?, contributors[] }
+ * - SourcePart: Recursive hierarchy (Musical -> Act 1 -> Defying Gravity)
  */
 
-import type { partOfSpeechEnum, relationTypeEnum, sourceTypeEnum, formTypeEnum } from "../../schemas/dictionary";
+import type {
+  partOfSpeechEnum,
+  relationTypeEnum,
+  sourceTypeEnum,
+  creditRoleEnum,
+  EnglishGrammarSchema,
+  GermanGrammarSchema,
+  ItalianGrammarSchema,
+  ArabicGrammarSchema,
+} from "../../schemas/dictionary";
+import type { z } from "zod";
 import { DEAR_OLD_SHIZ_DICTIONARY_DATA } from "./lyrics/wicked-part-1/dear-old-shiz";
-// import { EVERY_DAY_MORE_WICKED_DICTIONARY_DATA } from "./lyrics/wicked-part-2/every-day-more-wicked";
-// import { HEDESTOWN_DOUBT_COMES_IN_DICTIONARY_DATA } from "./lyrics/hadestown/doubt-comes-in";
-// import { NO_ONE_MOURNS_THE_WICKED_DICTIONARY_DATA } from "./lyrics/wicked-part-1/no-one-mourns-the-wicked";
+import { EVERY_DAY_MORE_WICKED_DATA } from "./lyrics/wicked-part-2/every-day-more-wicked";
+import { HADESTOWN_DOUBT_COMES_IN_DICTIONARY_DATA } from "./lyrics/hadestown/doubt-comes-in";
+import { NO_ONE_MOURNS_THE_WICKED_DATA } from "./lyrics/wicked-part-1/no-one-mourns-the-wicked";
+import { IT_FUNDAMENTAL_DATA_EXPANDED } from "./words/it/fundamentals";
+import { WONDERFUL_DATA } from "./lyrics/wicked-part-2/wonderful";
+
+// =============================================================================
+// ENUM TYPES (derived from schema)
+// =============================================================================
 
 type PartOfSpeech = (typeof partOfSpeechEnum.enumValues)[number];
 type RelationType = (typeof relationTypeEnum.enumValues)[number];
 type SourceType = (typeof sourceTypeEnum.enumValues)[number];
-type FormType = (typeof formTypeEnum.enumValues)[number];
+type CreditRole = (typeof creditRoleEnum.enumValues)[number];
 
+// =============================================================================
+// GRAMMATICAL FEATURES (polyglot support)
+// =============================================================================
+
+type EnglishGrammar = z.infer<typeof EnglishGrammarSchema>;
+type GermanGrammar = z.infer<typeof GermanGrammarSchema>;
+type ItalianGrammar = z.infer<typeof ItalianGrammarSchema>;
+type ArabicGrammar = z.infer<typeof ArabicGrammarSchema>;
+
+export type GrammaticalFeatures =
+  | EnglishGrammar
+  | GermanGrammar
+  | ItalianGrammar
+  | ArabicGrammar;
+
+// =============================================================================
+// SOURCE & CITATION SEEDS
+// =============================================================================
+
+/** Contributor (author, composer, lyricist, etc.) */
+export type ContributorSeed = {
+  name: string;
+  role: CreditRole;
+};
+
+/** Source (book, musical, movie, etc.) */
 export type SourceSeed = {
   type: SourceType;
   title: string;
-  part: string;
-  part_order?: number;
+  publication_year?: number;
+  contributors?: ContributorSeed[];
 };
 
+/**
+ * Source Part - Recursive hierarchy
+ * Examples:
+ * - Musical: { name: "Act 1", type: "act", children: [{ name: "Defying Gravity", type: "song" }] }
+ * - Book: { name: "Chapter 7", type: "chapter" }
+ */
+export type SourcePartSeed = {
+  name: string;
+  type?: string; // "act", "song", "chapter", "scene", etc.
+  order_index?: number;
+  children?: SourcePartSeed[];
+};
+
+/** Full source reference for an example */
+export type ExampleSourceSeed = {
+  source: SourceSeed;
+  /** Path through the hierarchy: ["Act 1", "Dear Old Shiz"] */
+  part_path?: string[];
+};
+
+// =============================================================================
+// LEXICAL ENTRY SEEDS
+// =============================================================================
+
+/** Example sentence attached to a sense */
 export type ExampleSeed = {
-  example_text: string;
-  source?: SourceSeed;
+  text: string;
+  source?: ExampleSourceSeed;
 };
 
-export type DefinitionSeed = {
-  definition_text: string;
-  part_of_speech: PartOfSpeech;
-  order?: number;
-  examples?: ExampleSeed[];
-};
-
-export type RelationSeed = {
-  related_word: string;
+/** Semantic relation to another sense */
+export type SenseRelationSeed = {
+  /** Target word (lemma) - resolved to sense_id during seeding */
+  target_lemma: string;
+  /** Target part of speech (to disambiguate homonyms) */
+  target_pos?: PartOfSpeech;
   relation_type: RelationType;
+  strength?: number; // 0-100, default 100
+  explanation?: string;
 };
 
-export type DictionaryWordSeed = {
-  word_text: string;
-  language_code: string;
-  form_type?: FormType;        // defaults to "base"
-  base_word?: string;          // for forms: text of the base word
-  definitions: DefinitionSeed[];
+/** A meaning/definition of a word */
+export type SenseSeed = {
+  definition: string;
+  order_index?: number; // 0 = primary sense
+  is_synthetic?: boolean;
+  examples?: ExampleSeed[];
   tags?: string[];
-  relations?: RelationSeed[];
+  relations?: SenseRelationSeed[];
+};
+
+/** Inflected word form with grammatical features */
+export type WordFormSeed = {
+  form_text: string;
+  grammatical_features: GrammaticalFeatures;
+};
+
+/**
+ * Lexical Entry - The main dictionary entry
+ * One entry per unique (lemma, part_of_speech, language_code) combination
+ */
+export type LexicalEntrySeed = {
+  lemma: string;
+  part_of_speech: PartOfSpeech;
+  language_code: string;
+  forms?: WordFormSeed[];
+  senses: SenseSeed[];
+  metadata?: Record<string, unknown>;
 };
 
 // =============================================================================
@@ -92,15 +162,11 @@ export type DictionaryWordSeed = {
 // =============================================================================
 
 
-
-
-
-
-
-
-export const dictionaryData = [
-  // ...EVERY_DAY_MORE_WICKED_DICTIONARY_DATA,
-  // ...HEDESTOWN_DOUBT_COMES_IN_DICTIONARY_DATA,
-  // ...NO_ONE_MOURNS_THE_WICKED_DICTIONARY_DATA,
+export const dictionaryData: LexicalEntrySeed[] = [
+  ...EVERY_DAY_MORE_WICKED_DATA,
+  ...NO_ONE_MOURNS_THE_WICKED_DATA,
+  ...IT_FUNDAMENTAL_DATA_EXPANDED,
   ...DEAR_OLD_SHIZ_DICTIONARY_DATA,
+  ...HADESTOWN_DOUBT_COMES_IN_DICTIONARY_DATA,
+  ...WONDERFUL_DATA,
 ];

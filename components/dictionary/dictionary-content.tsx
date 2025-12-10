@@ -1,13 +1,11 @@
 "use client";
 
 import { use } from "react";
-import * as motion from "motion/react-client";
-import { LayoutList } from "lucide-react";
-import { WordListClient } from "./word-list-client";
+import { EntryListClient } from "./entry-list-client";
 import type { InitialFetchResult } from "@/lib/db/neon/queries/dictionary/index";
 
 interface DictionaryContentProps {
-  wordsPromise: Promise<InitialFetchResult>;
+  entriesPromise: Promise<InitialFetchResult>;
   serverQuery?: string;
   initialLanguage: string;
   filterKey: string;
@@ -17,7 +15,7 @@ interface DictionaryContentProps {
 }
 
 export function DictionaryContent({
-  wordsPromise,
+  entriesPromise,
   serverQuery,
   initialLanguage,
   filterKey,
@@ -25,29 +23,13 @@ export function DictionaryContent({
   sourceSlugs,
   sourcePartSlugs,
 }: DictionaryContentProps) {
-  const result = use(wordsPromise);
+  const result = use(entriesPromise);
 
   return (
-    <div className="pt-6">
-      {/* Results count badge */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.15 }}
-        className="flex items-center gap-2 mb-6"
-      >
-        <div className="dict-results-badge">
-          <LayoutList className="h-3.5 w-3.5" />
-          <span>
-            {result.words.pageInfo.totalCount.toLocaleString()} word
-            {result.words.pageInfo.totalCount !== 1 ? "s" : ""}
-          </span>
-        </div>
-      </motion.div>
-
-      <WordListClient
-        initialWords={result.words.data}
-        initialPageInfo={result.words.pageInfo}
+    <div className="pt-4">
+      <EntryListClient
+        initialEntries={result.entries.data}
+        initialPageInfo={result.entries.pageInfo}
         serverQuery={serverQuery}
         initialLanguage={initialLanguage}
         filterKey={filterKey}

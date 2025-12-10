@@ -1,7 +1,7 @@
 /**
  * Dictionary Queries - Main export
  *
- * Cursor-based infinite scroll architecture.
+ * Cursor-based infinite scroll architecture for lexical entries.
  */
 
 import "server-only";
@@ -10,54 +10,55 @@ import { cache } from "react";
 import { slugify } from "@/lib/utils";
 
 import {
-  fetchWordsWithCursor,
-  searchWordsWithCursor,
-  fetchFirstDefinitionForWords,
-  type WordSerialized,
-} from "./word-queries";
+  fetchEntriesWithCursor,
+  searchEntriesWithCursor,
+  fetchFirstSenseForEntries,
+  buildEntryWithPreview,
+} from "./entry-queries";
 
 import {
   fetchTagStats,
-  fetchSourcesWithWordCount,
-  fetchSourcePartsWithWordCount,
+  fetchSourcesWithEntryCount,
+  fetchSourcePartsWithEntryCount,
   resolveTagSlugs,
   resolveSourceSlugs,
   resolveSourcePartSlugs,
 } from "./filter-stats";
 
-import { fetchWordCompleteByText } from "./word-complete";
+import { fetchEntryCompleteByLemma } from "./entry-complete";
 
 import {
   INFINITE_SCROLL_CONFIG,
   type InfiniteScrollCursor,
   type InfiniteScrollResult,
   type PageInfo,
-  type WordWithPreview,
+  type EntryWithPreview,
   type FilterStats,
   type SelectedFilters,
   type InitialFetchResult,
   type FetchMoreWithCursorOptions,
   type FetchInitialOptions,
+  type EntryComplete,
 } from "./types";
 
 // Re-export types
 export type {
-  WordSerialized,
   InfiniteScrollCursor,
   InfiniteScrollResult,
   PageInfo,
-  WordWithPreview,
+  EntryWithPreview,
   FilterStats,
   SelectedFilters,
   InitialFetchResult,
   FetchMoreWithCursorOptions,
   FetchInitialOptions,
+  EntryComplete,
 };
 
-export { INFINITE_SCROLL_CONFIG, fetchWordCompleteByText, fetchFirstDefinitionForWords };
+export { INFINITE_SCROLL_CONFIG, fetchEntryCompleteByLemma, fetchFirstSenseForEntries };
 
-/** Fetch initial words with filter stats - for page load */
-export const fetchWordsInitial = cache(async (
+/** Fetch initial entries with filter stats - for page load */
+export const fetchEntriesInitial = cache(async (
   options: FetchInitialOptions
 ): Promise<InitialFetchResult> => {
   const {
@@ -74,15 +75,15 @@ export const fetchWordsInitial = cache(async (
   const [tagStats, sourceStats, sourcePartStats, tagIds, sourceIds, sourcePartIds] =
     await Promise.all([
       fetchTagStats(),
-      fetchSourcesWithWordCount(),
-      fetchSourcePartsWithWordCount(),
+      fetchSourcesWithEntryCount(),
+      fetchSourcePartsWithEntryCount(),
       resolveTagSlugs(tagSlugs),
       resolveSourceSlugs(sourceSlugs),
       resolveSourcePartSlugs(sourcePartSlugs),
     ]);
 
-  const wordsResult = query
-    ? await searchWordsWithCursor({
+  const entriesResult = query
+    ? await searchEntriesWithCursor({
         query,
         languageCode,
         limit,
@@ -92,7 +93,7 @@ export const fetchWordsInitial = cache(async (
         sourceIds: sourceIds.length > 0 ? sourceIds : undefined,
         sourcePartIds: sourcePartIds.length > 0 ? sourcePartIds : undefined,
       })
-    : await fetchWordsWithCursor({
+    : await fetchEntriesWithCursor({
         languageCode,
         limit,
         sortBy,
@@ -102,60 +103,59 @@ export const fetchWordsInitial = cache(async (
         sourcePartIds: sourcePartIds.length > 0 ? sourcePartIds : undefined,
       });
 
-  const wordIds = wordsResult.data.map(w => w.id);
-  const defsMap = await fetchFirstDefinitionForWords(wordIds);
+  const entryIds = entriesResult.data.map(e => e.id);
+  const sensesMap = await fetchFirstSenseForEntries(entryIds);
 
-  const wordsWithPreviews: WordWithPreview[] = wordsResult.data.map(w => {
-    const preview = defsMap.get(w.id);
-    return {
-      id: w.id,
-      word_text: w.word_text,
-      language_code: w.language_code,
-      definition_text: preview?.definition_text ?? null,
-      example_text: preview?.example_text ?? null,
-    };
-  });
+  const entriesWithPreviews: EntryWithPreview[] = entriesResult.data.map(e =>
+    buildEntryWithPreview(e, sensesMap.get(e.id))
+  );
 
   return {
-    words: {
-      data: wordsWithPreviews,
-      pageInfo: wordsResult.pageInfo,
+    entries: {
+      data: entriesWithPreviews,
+      pageInfo: entriesResult.pageInfo,
     },
     filterStats: {
-      tags: tagStats.map(s => ({ id: s.tag.id, name: s.tag.name, wordCount: s.wordCount })),
+      tags: tagStats.map(s => ({
+        id: s.id,
+        name: s.name,
+        category: s.category,
+        senseCount: s.senseCount,
+      })),
       sources: sourceStats.map(s => ({
-        id: s.source.id,
-        title: s.source.title,
-        type: s.source.type,
-        wordCount: s.wordCount,
+        id: s.id,
+        title: s.title,
+        type: s.type,
+        entryCount: s.entryCount,
       })),
       sourceParts: sourcePartStats.map(s => ({
-        id: s.sourcePart.id,
-        name: s.sourcePart.name,
-        sourceId: s.sourcePart.source_id,
-        sourceTitle: s.sourcePart.source_title,
-        sourceType: s.sourcePart.source_type,
-        wordCount: s.wordCount,
+        id: s.id,
+        name: s.name,
+        type: s.type,
+        sourceId: s.sourceId,
+        sourceTitle: s.sourceTitle,
+        sourceType: s.sourceType,
+        entryCount: s.entryCount,
       })),
     },
     selectedFilters: {
       tagNames: tagStats
-        .filter(s => tagSlugs.includes(slugify(s.tag.name)))
-        .map(s => s.tag.name),
+        .filter(s => tagSlugs.includes(slugify(s.name)))
+        .map(s => s.name),
       sourceTitles: sourceStats
-        .filter(s => sourceSlugs.includes(slugify(s.source.title)))
-        .map(s => s.source.title),
+        .filter(s => sourceSlugs.includes(slugify(s.title)))
+        .map(s => s.title),
       sourcePartNames: sourcePartStats
-        .filter(s => sourcePartSlugs.includes(slugify(s.sourcePart.name)))
-        .map(s => s.sourcePart.name),
+        .filter(s => sourcePartSlugs.includes(slugify(s.name)))
+        .map(s => s.name),
     },
   };
 });
 
-/** Fetch more words with cursor - for infinite scroll */
+/** Fetch more entries with cursor - for infinite scroll */
 export const fetchMoreWithCursor = cache(async (
   options: FetchMoreWithCursorOptions
-): Promise<InfiniteScrollResult<WordWithPreview>> => {
+): Promise<InfiniteScrollResult<EntryWithPreview>> => {
   const {
     cursor,
     limit = INFINITE_SCROLL_CONFIG.defaultLimit,
@@ -175,8 +175,8 @@ export const fetchMoreWithCursor = cache(async (
   const sortBy = cursor?.sortBy ?? "updated_at";
   const sortOrder = cursor?.sortOrder ?? "desc";
 
-  const wordsResult = query
-    ? await searchWordsWithCursor({
+  const entriesResult = query
+    ? await searchEntriesWithCursor({
         query,
         cursor,
         languageCode,
@@ -187,7 +187,7 @@ export const fetchMoreWithCursor = cache(async (
         sourceIds: sourceIds.length > 0 ? sourceIds : undefined,
         sourcePartIds: sourcePartIds.length > 0 ? sourcePartIds : undefined,
       })
-    : await fetchWordsWithCursor({
+    : await fetchEntriesWithCursor({
         cursor,
         languageCode,
         limit,
@@ -198,22 +198,15 @@ export const fetchMoreWithCursor = cache(async (
         sourcePartIds: sourcePartIds.length > 0 ? sourcePartIds : undefined,
       });
 
-  const wordIds = wordsResult.data.map(w => w.id);
-  const defsMap = await fetchFirstDefinitionForWords(wordIds);
+  const entryIds = entriesResult.data.map(e => e.id);
+  const sensesMap = await fetchFirstSenseForEntries(entryIds);
 
-  const wordsWithPreviews: WordWithPreview[] = wordsResult.data.map(w => {
-    const preview = defsMap.get(w.id);
-    return {
-      id: w.id,
-      word_text: w.word_text,
-      language_code: w.language_code,
-      definition_text: preview?.definition_text ?? null,
-      example_text: preview?.example_text ?? null,
-    };
-  });
+  const entriesWithPreviews: EntryWithPreview[] = entriesResult.data.map(e =>
+    buildEntryWithPreview(e, sensesMap.get(e.id))
+  );
 
   return {
-    data: wordsWithPreviews,
-    pageInfo: wordsResult.pageInfo,
+    data: entriesWithPreviews,
+    pageInfo: entriesResult.pageInfo,
   };
 });

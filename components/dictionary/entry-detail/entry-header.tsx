@@ -3,20 +3,26 @@
 import { useState } from "react";
 import * as motion from "motion/react-client";
 import { Volume2, Loader2 } from "lucide-react";
-import type { WordSerialized } from "@/lib/db/neon/schema";
 
 type AudioResult =
-  | { success: true; audioContent: string }
+  | { success: true; audioUrl: string }
   | { success: false; error: string };
 
 type AudioState = "idle" | "loading" | "playing" | "error";
 
-interface WordHeaderProps {
-  word: Pick<WordSerialized, "word_text" | "language_code" | "created_at">;
+interface EntryBasic {
+  id: number;
+  lemma: string;
+  partOfSpeech: string;
+  languageCode: string;
+}
+
+interface EntryHeaderProps {
+  entry: EntryBasic;
   audioPromise: Promise<AudioResult>;
 }
 
-export function WordHeader({ word, audioPromise }: WordHeaderProps) {
+export function EntryHeader({ entry, audioPromise }: EntryHeaderProps) {
   const [state, setState] = useState<AudioState>("idle");
   const [resolved, setResolved] = useState<AudioResult | null>(null);
 
@@ -34,7 +40,7 @@ export function WordHeader({ word, audioPromise }: WordHeaderProps) {
       return;
     }
 
-    const audio = new Audio(`data:audio/mp3;base64,${result.audioContent}`);
+    const audio = new Audio(result.audioUrl);
 
     audio.oncanplaythrough = () => {
       setState("playing");
@@ -52,10 +58,10 @@ export function WordHeader({ word, audioPromise }: WordHeaderProps) {
       transition={{ duration: 0.3 }}
       className="space-y-2"
     >
-      {/* Word title - Google style: large, clean, with pronunciation button */}
+      {/* Entry lemma - Google style: large, clean, with pronunciation button */}
       <div className="flex items-center gap-3">
         <h1 className="text-4xl sm:text-5xl font-serif text-dict-text tracking-tight">
-          {word.word_text}
+          {entry.lemma}
         </h1>
         <button
           type="button"
@@ -76,12 +82,14 @@ export function WordHeader({ word, audioPromise }: WordHeaderProps) {
         </button>
       </div>
 
-      {/* Phonetic / Language indicator - subtle like Google */}
+      {/* Part of speech / Language indicator - subtle like Google */}
       <div className="flex items-center gap-3 text-dict-text-secondary">
-        <span className="text-sm">{word.language_code.toUpperCase()}</span>
+        <span className="text-sm italic">{entry.partOfSpeech}</span>
+        <span className="text-dict-text-tertiary">|</span>
+        <span className="text-sm">{entry.languageCode.toUpperCase()}</span>
         <span className="text-dict-text-tertiary">|</span>
         <span className="text-sm italic text-dict-text-tertiary">
-          /{word.word_text.toLowerCase()}/
+          /{entry.lemma.toLowerCase()}/
         </span>
       </div>
     </motion.header>

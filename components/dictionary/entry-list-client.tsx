@@ -8,13 +8,13 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { fetchMoreWithCursor } from "@/lib/actions/dictionary";
 import { getDictionaryListActions, useIsExpanded } from "./store/dictionary-list-store";
 import type {
-  WordWithPreview,
+  EntryWithPreview,
   InfiniteScrollCursor,
   PageInfo,
 } from "@/lib/db/neon/queries/dictionary/index";
 
-export function WordListClient({
-  initialWords,
+export function EntryListClient({
+  initialEntries,
   initialPageInfo,
   serverQuery,
   initialLanguage,
@@ -23,7 +23,7 @@ export function WordListClient({
   sourceSlugs,
   sourcePartSlugs,
 }: {
-  initialWords: WordWithPreview[];
+  initialEntries: EntryWithPreview[];
   initialPageInfo: PageInfo;
   serverQuery?: string;
   initialLanguage: string;
@@ -32,15 +32,14 @@ export function WordListClient({
   sourceSlugs: string[];
   sourcePartSlugs: string[];
 }) {
-  // Get actions once - React Compiler handles stability
   const storeActions = getDictionaryListActions();
 
   // Consume restoration state atomically in initializer (runs once per mount)
-  const [restoredState] = useState(function initRestoredState() {
+  const [restoredState] = useState(() => {
     const restored = storeActions.consumeRestorationState(filterKey);
     if (restored && restored.scrollY > 0) {
-      queueMicrotask(function restoreScroll() {
-        requestAnimationFrame(function scrollToPosition() {
+      queueMicrotask(() => {
+        requestAnimationFrame(() => {
           window.scrollTo(0, restored.scrollY);
         });
       });
@@ -48,7 +47,7 @@ export function WordListClient({
     return restored;
   });
 
-  const [words, setWords] = useState(restoredState?.words ?? initialWords);
+  const [entries, setEntries] = useState(restoredState?.entries ?? initialEntries);
   const [cursor, setCursor] = useState<InfiniteScrollCursor | null>(
     restoredState?.cursor ?? initialPageInfo.endCursor
   );
@@ -62,7 +61,7 @@ export function WordListClient({
   // Reset state when filters change
   if (prevFilterKey !== filterKey) {
     setPrevFilterKey(filterKey);
-    setWords(initialWords);
+    setEntries(initialEntries);
     setCursor(initialPageInfo.endCursor);
     setHasNextPage(initialPageInfo.hasNextPage);
     storeActions.clearListState();
@@ -71,7 +70,7 @@ export function WordListClient({
   function loadMore() {
     if (isPending || !hasNextPage) return;
 
-    startTransition(async function fetchMore() {
+    startTransition(async () => {
       const result = await fetchMoreWithCursor({
         cursor,
         query: serverQuery,
@@ -81,7 +80,7 @@ export function WordListClient({
         sourcePartSlugs,
       });
 
-      setWords((prev) => [...prev, ...result.data]);
+      setEntries((prev) => [...prev, ...result.data]);
       setCursor(result.pageInfo.endCursor);
       setHasNextPage(result.pageInfo.hasNextPage);
     });
@@ -99,8 +98,8 @@ export function WordListClient({
     if (!node) return;
 
     observerRef.current = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && hasNextPage && !isPending) {
+      (intersectionEntries) => {
+        if (intersectionEntries[0].isIntersecting && hasNextPage && !isPending) {
           loadMore();
         }
       },
@@ -110,8 +109,8 @@ export function WordListClient({
     observerRef.current.observe(node);
   }
 
-  function buildWordUrl(word: WordWithPreview): Route {
-    const basePath = `/dictionary/${word.language_code}/${encodeURIComponent(word.word_text)}`;
+  function buildEntryUrl(entry: EntryWithPreview): Route {
+    const basePath = `/dictionary/${entry.languageCode}/${encodeURIComponent(entry.lemma)}`;
     const params = new URLSearchParams();
 
     tagSlugs.forEach((tag) => params.append("tag", tag));
@@ -123,7 +122,7 @@ export function WordListClient({
 
   function saveStateBeforeNavigation() {
     storeActions.saveListState({
-      words,
+      entries,
       cursor,
       hasNextPage,
       scrollY: window.scrollY,
@@ -131,21 +130,21 @@ export function WordListClient({
     });
   }
 
-  if (words.length === 0) {
+  if (entries.length === 0) {
     return (
-      <div className="dict-empty-state">
-        <div className="dict-empty-icon">
+      <div className="flex flex-col items-center justify-center py-16 px-8 text-center">
+        <div className="flex items-center justify-center size-16 rounded-2xl bg-dict-empty-icon text-dict-primary mb-6">
           <Sparkles className="h-6 w-6" />
         </div>
         <p className="text-dict-text font-medium text-sm mb-1">
           {serverQuery
-            ? `No words found for "${serverQuery}"`
+            ? `No entries found for "${serverQuery}"`
             : "Your dictionary is empty"}
         </p>
         <p className="text-dict-text-tertiary text-xs">
           {serverQuery
             ? "Try a different search"
-            : "Add your first word to get started"}
+            : "Add your first entry to get started"}
         </p>
       </div>
     );
@@ -153,25 +152,30 @@ export function WordListClient({
 
   return (
     <div className="flex flex-col gap-2">
-      {words.map((word) => (
+      {entries.map((entry) => (
         <Link
-          key={word.id}
-          href={buildWordUrl(word)}
+          key={entry.id}
+          href={buildEntryUrl(entry)}
           onClick={saveStateBeforeNavigation}
         >
-          <article className="group dict-word-card">
-            <div className="dict-word-card-line group-hover:dict-word-card-line-hover" />
+          <article className="group relative rounded-3xl bg-dict-surface-1 overflow-hidden transition-all duration-250 ease-out hover:bg-dict-surface-2 hover:-translate-y-0.5 hover:shadow-dict-card-hover">
+            <div className="h-0.5 bg-dict-card-line transition-all duration-300 group-hover:bg-dict-card-line-active group-hover:shadow-dict-glow" />
             <div className="p-4 flex items-start gap-4">
-              <span className="dict-word-text group-hover:dict-word-text-hover min-w-[100px] shrink-0">
-                {word.word_text}
-              </span>
+              <div className="min-w-[100px] shrink-0">
+                <span className="text-[0.9375rem] font-semibold text-dict-text transition-colors duration-200 group-hover:text-dict-primary">
+                  {entry.lemma}
+                </span>
+                <span className="ml-2 text-xs text-dict-text-tertiary italic">
+                  {entry.partOfSpeech}
+                </span>
+              </div>
               <div className="flex-1 min-w-0">
-                <DefinitionDisplay
-                  definition={
-                    word.definition_text
+                <SenseDisplay
+                  sense={
+                    entry.definition
                       ? {
-                          definition_text: word.definition_text,
-                          example_text: word.example_text,
+                          definition: entry.definition,
+                          exampleText: entry.exampleText,
                         }
                       : null
                   }
@@ -188,24 +192,24 @@ export function WordListClient({
   );
 }
 
-function DefinitionDisplay({
-  definition,
+function SenseDisplay({
+  sense,
   isExpanded = false,
 }: {
-  definition: { definition_text: string; example_text: string | null } | null;
+  sense: { definition: string; exampleText: string | null } | null;
   isExpanded?: boolean;
 }) {
-  if (definition) {
+  if (sense) {
     return (
       <div
         className="overflow-hidden transition-[height] duration-200"
         style={{ height: isExpanded ? "auto" : "1.25rem" }}
       >
         <p className="text-sm text-dict-text-secondary leading-relaxed">
-          {definition.definition_text}
-          {definition.example_text && (
+          {sense.definition}
+          {sense.exampleText && (
             <span className="text-xs italic ml-2 text-dict-example">
-              &mdash; {definition.example_text}
+              &mdash; {sense.exampleText}
             </span>
           )}
         </p>
@@ -217,6 +221,6 @@ function DefinitionDisplay({
   );
 }
 
-export function DefinitionSkeleton() {
+export function SenseSkeleton() {
   return <Skeleton className="h-5 w-3/4 bg-dict-surface-2" />;
 }

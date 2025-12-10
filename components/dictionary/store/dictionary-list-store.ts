@@ -3,26 +3,36 @@
 import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
 import type {
-  WordWithPreview,
+  EntryWithPreview,
   InfiniteScrollCursor,
 } from '@/lib/db/neon/queries/dictionary/index'
 
+/** Filter state stored per language */
+type LanguageFilterState = {
+  query: string
+  tagSlugs: string[]
+  sourceSlugs: string[]
+  sourcePartSlugs: string[]
+}
+
 type DictionaryListState = {
   // Persisted state
-  words: WordWithPreview[]
+  entries: EntryWithPreview[]
   cursor: InfiniteScrollCursor | null
   hasNextPage: boolean
   scrollY: number
   filterKey: string
   /** Tracks where user navigated from - null if direct entry */
   originPath: string | null
-  /** Whether word definitions are expanded */
+  /** Whether definitions are expanded */
   isExpanded: boolean
+  /** Per-language filter memory */
+  languageFilters: Record<string, LanguageFilterState>
 }
 
 type DictionaryListActions = {
   saveListState: (state: {
-    words: WordWithPreview[]
+    entries: EntryWithPreview[]
     cursor: InfiniteScrollCursor | null
     hasNextPage: boolean
     scrollY: number
@@ -37,21 +47,26 @@ type DictionaryListActions = {
    * This is atomic - calling it clears the originPath to prevent double-restoration.
    */
   consumeRestorationState: (currentFilterKey: string) => {
-    words: WordWithPreview[]
+    entries: EntryWithPreview[]
     cursor: InfiniteScrollCursor | null
     hasNextPage: boolean
     scrollY: number
   } | null
+  /** Save filter state for a specific language */
+  saveLanguageFilters: (language: string, filters: LanguageFilterState) => void
+  /** Get filter state for a specific language */
+  getLanguageFilters: (language: string) => LanguageFilterState | null
 }
 
 const INITIAL_STATE: DictionaryListState = {
-  words: [],
+  entries: [],
   cursor: null,
   hasNextPage: false,
   scrollY: 0,
   filterKey: '',
   originPath: null,
   isExpanded: false,
+  languageFilters: {},
 }
 
 /**
@@ -66,7 +81,7 @@ const useDictionaryListStoreBase = create<DictionaryListState & DictionaryListAc
       ...INITIAL_STATE,
 
       saveListState: (state) => set({
-        words: state.words,
+        entries: state.entries,
         cursor: state.cursor,
         hasNextPage: state.hasNextPage,
         scrollY: state.scrollY,
@@ -85,13 +100,13 @@ const useDictionaryListStoreBase = create<DictionaryListState & DictionaryListAc
         const shouldRestore =
           state.originPath === '/dictionary' &&
           state.filterKey === currentFilterKey &&
-          state.words.length > 0
+          state.entries.length > 0
 
         if (shouldRestore) {
           // Clear origin path to prevent double-restoration
           set({ originPath: null })
           return {
-            words: state.words,
+            entries: state.entries,
             cursor: state.cursor,
             hasNextPage: state.hasNextPage,
             scrollY: state.scrollY,
@@ -99,17 +114,30 @@ const useDictionaryListStoreBase = create<DictionaryListState & DictionaryListAc
         }
         return null
       },
+
+      saveLanguageFilters: (language, filters) => set((state) => ({
+        languageFilters: {
+          ...state.languageFilters,
+          [language]: filters,
+        },
+      })),
+
+      getLanguageFilters: (language) => {
+        const state = get()
+        return state.languageFilters[language] ?? null
+      },
     }),
     {
       name: 'dictionary-list-storage',
       storage: createJSONStorage(() => sessionStorage),
       partialize: (state) => ({
-        words: state.words,
+        entries: state.entries,
         cursor: state.cursor,
         hasNextPage: state.hasNextPage,
         scrollY: state.scrollY,
         filterKey: state.filterKey,
         originPath: state.originPath,
+        languageFilters: state.languageFilters,
       }),
     }
   )
@@ -127,6 +155,8 @@ export function getDictionaryListActions() {
     setOriginPath: state.setOriginPath,
     toggleExpanded: state.toggleExpanded,
     consumeRestorationState: state.consumeRestorationState,
+    saveLanguageFilters: state.saveLanguageFilters,
+    getLanguageFilters: state.getLanguageFilters,
   }
 }
 
@@ -142,5 +172,5 @@ export function getDictionaryListState() {
  * Subscribe to isExpanded state for components that need reactivity.
  */
 export function useIsExpanded(): boolean {
-  return useDictionaryListStoreBase((state) => state.isExpanded) ?? false
+  return useDictionaryListStoreBase((state) => state.isExpanded)
 }

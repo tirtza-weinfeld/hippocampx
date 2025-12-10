@@ -1,49 +1,51 @@
 /**
- * Infinite Scroll Types - Dictionary
+ * Dictionary Query Types
  *
- * Cursor-based pagination for O(1) performance at any scroll depth.
- * Industry standard pattern (Relay, Twitter, GraphQL).
+ * Types for the new lexical entry schema with cursor-based pagination.
+ * Supports GraphRAG-ready hierarchical sources and sense-level relations.
  */
 
 import "server-only";
 
-/** Configuration for infinite scroll queries */
+// ============================================================================
+// CONFIGURATION
+// ============================================================================
+
 export const INFINITE_SCROLL_CONFIG = {
   defaultLimit: 50,
   searchLimit: 20,
 } as const;
 
-/** Sort field options for dictionary words */
-export type SortField = "word_text" | "created_at" | "updated_at";
+// ============================================================================
+// SORT & PAGINATION
+// ============================================================================
 
-/** Sort order options */
+export type SortField = "lemma" | "created_at" | "updated_at";
 export type SortOrder = "asc" | "desc";
 
-/** Cursor for infinite scroll - composite key for stable sorted pagination */
+/** Cursor for stable sorted pagination */
 export interface InfiniteScrollCursor {
-  /** ID of last item for tiebreaker */
   afterId: number;
-  /** Value of sort field for last item (e.g., word_text for alphabetical) */
   afterSortValue: string;
-  /** Sort configuration to validate cursor matches current sort */
   sortBy: SortField;
   sortOrder: SortOrder;
 }
 
-/** Page info for infinite scroll results */
 export interface PageInfo {
   hasNextPage: boolean;
   endCursor: InfiniteScrollCursor | null;
   totalCount: number;
 }
 
-/** Result shape for infinite scroll queries */
 export interface InfiniteScrollResult<T> {
   data: T[];
   pageInfo: PageInfo;
 }
 
-/** Options for fetching more items with cursor */
+// ============================================================================
+// FETCH OPTIONS
+// ============================================================================
+
 export interface FetchMoreWithCursorOptions {
   cursor: InfiniteScrollCursor | null;
   limit?: number;
@@ -54,7 +56,6 @@ export interface FetchMoreWithCursorOptions {
   sourcePartSlugs?: string[];
 }
 
-/** Options for initial fetch (no cursor) */
 export interface FetchInitialOptions {
   query?: string;
   languageCode?: string;
@@ -66,39 +67,141 @@ export interface FetchInitialOptions {
   sourcePartSlugs?: string[];
 }
 
-/** Word with preview data for list display */
-export interface WordWithPreview {
+// ============================================================================
+// ENTRY PREVIEW (List Display)
+// ============================================================================
+
+/** Lexical entry with preview data for list display */
+export interface EntryWithPreview {
   id: number;
-  word_text: string;
-  language_code: string;
-  definition_text: string | null;
-  example_text: string | null;
+  lemma: string;
+  partOfSpeech: string;
+  languageCode: string;
+  /** First sense definition */
+  definition: string | null;
+  /** First example text */
+  exampleText: string | null;
 }
 
-/** Filter statistics for sidebar */
+// ============================================================================
+// FILTER STATISTICS
+// ============================================================================
+
+export interface TagStat {
+  id: number;
+  name: string;
+  category: string | null;
+  /** Count of senses with this tag */
+  senseCount: number;
+}
+
+export interface SourceStat {
+  id: number;
+  title: string;
+  type: string;
+  /** Count of unique entries with examples from this source */
+  entryCount: number;
+}
+
+export interface SourcePartStat {
+  id: number;
+  name: string;
+  type: string | null;
+  sourceId: number;
+  sourceTitle: string;
+  sourceType: string;
+  /** Count of unique entries with examples from this part */
+  entryCount: number;
+}
+
 export interface FilterStats {
-  tags: Array<{ id: number; name: string; wordCount: number }>;
-  sources: Array<{ id: number; title: string; type: string; wordCount: number }>;
-  sourceParts: Array<{
-    id: number;
-    name: string;
-    sourceId: number;
-    sourceTitle: string;
-    sourceType: string;
-    wordCount: number;
-  }>;
+  tags: TagStat[];
+  sources: SourceStat[];
+  sourceParts: SourcePartStat[];
 }
 
-/** Selected filter names for display */
 export interface SelectedFilters {
   tagNames: string[];
   sourceTitles: string[];
   sourcePartNames: string[];
 }
 
-/** Complete initial fetch result */
+// ============================================================================
+// COMPLETE ENTRY (Detail View)
+// ============================================================================
+
+export interface ExampleWithSource {
+  id: number;
+  text: string;
+  cachedCitation: string | null;
+  sourcePartId: number | null;
+  sourcePartName: string | null;
+  sourceTitle: string | null;
+  sourceType: string | null;
+}
+
+export interface SenseWithDetails {
+  id: number;
+  definition: string;
+  orderIndex: number;
+  isSynthetic: boolean;
+  verificationStatus: string | null;
+  examples: ExampleWithSource[];
+  tags: Array<{
+    id: number;
+    name: string;
+    category: string | null;
+    explanation: string | null;
+  }>;
+}
+
+export interface SenseRelationInfo {
+  id: number;
+  relationType: string;
+  strength: number | null;
+  explanation: string | null;
+  targetSenseId: number;
+  targetDefinition: string;
+  targetEntryLemma: string;
+  targetEntryId: number;
+}
+
+export interface WordFormInfo {
+  id: number;
+  formText: string;
+  grammaticalFeatures: Record<string, unknown>;
+}
+
+export interface AudioInfo {
+  id: number;
+  audioUrl: string;
+  transcript: string | null;
+  durationMs: number | null;
+  accentCode: string | null;
+  contentType: string | null;
+}
+
+export interface EntryComplete {
+  id: number;
+  lemma: string;
+  partOfSpeech: string;
+  languageCode: string;
+  metadata: Record<string, unknown> | null;
+  createdAt: string;
+  updatedAt: string;
+  senses: SenseWithDetails[];
+  forms: WordFormInfo[];
+  audio: AudioInfo[];
+  /** Outgoing relations from this entry's senses */
+  relations: SenseRelationInfo[];
+}
+
+// ============================================================================
+// INITIAL FETCH RESULT
+// ============================================================================
+
 export interface InitialFetchResult {
-  words: InfiniteScrollResult<WordWithPreview>;
+  entries: InfiniteScrollResult<EntryWithPreview>;
   filterStats: FilterStats;
   selectedFilters: SelectedFilters;
 }

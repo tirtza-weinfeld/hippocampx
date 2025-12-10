@@ -17,23 +17,25 @@ import { slugify } from "@/lib/utils";
 interface TagOption {
   id: number;
   name: string;
-  wordCount: number;
+  category: string | null;
+  senseCount: number;
 }
 
 interface SourceOption {
   id: number;
   title: string;
   type: string;
-  wordCount: number;
+  entryCount: number;
 }
 
 interface SourcePartOption {
   id: number;
   name: string;
+  type: string | null;
   sourceId: number;
   sourceTitle: string;
   sourceType: string;
-  wordCount: number;
+  entryCount: number;
 }
 
 interface DictionaryFiltersProps {
@@ -185,7 +187,11 @@ export function DictionaryFilters({
         <DropdownMenuTrigger asChild>
           <button
             type="button"
-            className={`dict-filter-btn ${localTags.length > 0 ? "dict-filter-btn-active" : ""}`}
+            className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ease-out cursor-pointer ${
+              localTags.length > 0
+                ? "bg-dict-tag-gradient text-dict-primary-vivid shadow-dict-sm"
+                : "bg-dict-surface-2 text-dict-text-secondary hover:bg-dict-hover hover:text-dict-text hover:-translate-y-px hover:shadow-dict-sm active:translate-y-0 active:bg-dict-active"
+            }`}
           >
             <Tag className="h-3.5 w-3.5" />
             Tags
@@ -199,13 +205,13 @@ export function DictionaryFilters({
             )}
           </button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" className="w-56 dict-dropdown">
+        <DropdownMenuContent align="start" className="w-56 bg-dict-surface-1 border-dict-border rounded-2xl shadow-dict-lg p-2 overflow-hidden">
           <DropdownMenuLabel className="text-xs font-medium text-muted-foreground">
             Filter by Tag
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           {tags.length === 0 ? (
-            <div className="px-2 py-3 text-sm text-muted-foreground text-center">
+            <div className="px-3 py-4 text-sm text-dict-text-tertiary text-center">
               No tags available
             </div>
           ) : (
@@ -215,9 +221,10 @@ export function DictionaryFilters({
                 checked={localTags.includes(tag.name)}
                 onCheckedChange={() => handleTagToggle(tag.name)}
                 onSelect={e => e.preventDefault()}
+                className="rounded-lg px-3 py-2.5 my-0.5 cursor-pointer transition-all duration-150 focus:bg-dict-tag-gradient focus:text-dict-primary-vivid data-[state=checked]:bg-dict-tag-gradient data-[state=checked]:text-dict-primary-vivid hover:bg-dict-hover"
               >
-                <span className="flex-1">{tag.name}</span>
-                <span className="text-xs text-muted-foreground ml-2">({tag.wordCount})</span>
+                <span className="flex-1 text-sm">{tag.name}</span>
+                <span className="text-xs text-dict-text-tertiary ml-2">({tag.senseCount})</span>
               </DropdownMenuCheckboxItem>
             ))
           )}
@@ -229,7 +236,11 @@ export function DictionaryFilters({
         <DropdownMenuTrigger asChild>
           <button
             type="button"
-            className={`dict-filter-btn ${(localSources.length > 0 || localParts.length > 0) ? "dict-filter-btn-active" : ""}`}
+            className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ease-out cursor-pointer ${
+              (localSources.length > 0 || localParts.length > 0)
+                ? "bg-dict-tag-gradient text-dict-primary-vivid shadow-dict-sm"
+                : "bg-dict-surface-2 text-dict-text-secondary hover:bg-dict-hover hover:text-dict-text hover:-translate-y-px hover:shadow-dict-sm active:translate-y-0 active:bg-dict-active"
+            }`}
           >
             <BookOpen className="h-3.5 w-3.5" />
             Sources
@@ -245,14 +256,14 @@ export function DictionaryFilters({
         </DropdownMenuTrigger>
         <DropdownMenuContent
           align="start"
-          className="w-72 max-h-96 overflow-y-auto dict-dropdown"
+          className="w-72 max-h-96 overflow-y-auto bg-dict-surface-1 border-dict-border rounded-2xl shadow-dict-lg p-2"
         >
           <DropdownMenuLabel className="text-xs font-medium text-muted-foreground">
             Filter by Source
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           {sources.length === 0 ? (
-            <div className="px-2 py-3 text-sm text-muted-foreground text-center">
+            <div className="px-3 py-4 text-sm text-dict-text-tertiary text-center">
               No sources available
             </div>
           ) : (
@@ -260,17 +271,18 @@ export function DictionaryFilters({
               const partsForSource = sourceParts.filter(part => part.sourceId === source.id);
               return (
                 <div key={source.id}>
-                  {sourceIndex > 0 && <DropdownMenuSeparator className="my-1" />}
+                  {sourceIndex > 0 && <DropdownMenuSeparator className="my-2 bg-dict-border" />}
                   <DropdownMenuCheckboxItem
                     checked={localSources.includes(source.title)}
                     onCheckedChange={() => handleSourceToggle(source.title)}
                     onSelect={e => e.preventDefault()}
+                    className="rounded-lg px-3 py-2.5 my-0.5 cursor-pointer transition-all duration-150 focus:bg-dict-tag-gradient focus:text-dict-primary-vivid data-[state=checked]:bg-dict-tag-gradient data-[state=checked]:text-dict-primary-vivid hover:bg-dict-hover"
                   >
                     <div className="flex flex-col flex-1">
-                      <span className="font-medium">{source.title}</span>
-                      <span className="text-xs text-muted-foreground">{source.type}</span>
+                      <span className="font-medium text-sm">{source.title}</span>
+                      <span className="text-xs text-dict-text-tertiary">{source.type}</span>
                     </div>
-                    <span className="text-xs text-muted-foreground ml-2">({source.wordCount})</span>
+                    <span className="text-xs text-dict-text-tertiary ml-2">({source.entryCount})</span>
                   </DropdownMenuCheckboxItem>
                   {partsForSource.map(part => (
                     <DropdownMenuCheckboxItem
@@ -278,13 +290,13 @@ export function DictionaryFilters({
                       checked={localParts.includes(part.name)}
                       onCheckedChange={() => handleSourcePartToggle(part.name, source.title)}
                       onSelect={e => e.preventDefault()}
-                      className="pl-8"
+                      className="rounded-lg px-3 py-2 pl-10 my-0.5 cursor-pointer transition-all duration-150 focus:bg-dict-tag-gradient focus:text-dict-primary-vivid data-[state=checked]:bg-dict-tag-gradient data-[state=checked]:text-dict-primary-vivid hover:bg-dict-hover"
                     >
                       <div className="flex flex-1 min-w-0">
                         <span className="truncate text-sm">{part.name}</span>
                       </div>
-                      <span className="text-xs text-muted-foreground ml-2 shrink-0">
-                        ({part.wordCount})
+                      <span className="text-xs text-dict-text-tertiary ml-2 shrink-0">
+                        ({part.entryCount})
                       </span>
                     </DropdownMenuCheckboxItem>
                   ))}
@@ -302,14 +314,14 @@ export function DictionaryFilters({
           <div className="flex flex-wrap items-center gap-1.5">
             {localTags.map(function renderTagChip(name) {
               return (
-                <span key={name} className="dict-chip">
+                <span key={name} className="inline-flex items-center gap-1.5 py-1 pl-3 pr-2 rounded-full text-xs font-medium bg-dict-tag-gradient text-dict-primary-vivid transition-all duration-150 ease-out">
                   {name}
                   <button
                     type="button"
                     onClick={function removeTag() {
                       handleTagToggle(name);
                     }}
-                    className="dict-chip-remove"
+                    className="flex items-center justify-center size-4.5 rounded-full bg-transparent text-dict-primary-muted transition-all duration-150 hover:bg-dict-primary hover:text-dict-text-inverse"
                   >
                     <X className="h-3 w-3" />
                   </button>
@@ -318,14 +330,14 @@ export function DictionaryFilters({
             })}
             {localSources.map(function renderSourceChip(title) {
               return (
-                <span key={title} className="dict-chip">
+                <span key={title} className="inline-flex items-center gap-1.5 py-1 pl-3 pr-2 rounded-full text-xs font-medium bg-dict-tag-gradient text-dict-primary-vivid transition-all duration-150 ease-out">
                   {title}
                   <button
                     type="button"
                     onClick={function removeSource() {
                       handleSourceToggle(title);
                     }}
-                    className="dict-chip-remove"
+                    className="flex items-center justify-center size-4.5 rounded-full bg-transparent text-dict-primary-muted transition-all duration-150 hover:bg-dict-primary hover:text-dict-text-inverse"
                   >
                     <X className="h-3 w-3" />
                   </button>
@@ -338,14 +350,14 @@ export function DictionaryFilters({
               });
               const parentSourceTitle = part?.sourceTitle ?? "";
               return (
-                <span key={name} className="dict-chip">
+                <span key={name} className="inline-flex items-center gap-1.5 py-1 pl-3 pr-2 rounded-full text-xs font-medium bg-dict-tag-gradient text-dict-primary-vivid transition-all duration-150 ease-out">
                   {name}
                   <button
                     type="button"
                     onClick={function removePart() {
                       handleSourcePartToggle(name, parentSourceTitle);
                     }}
-                    className="dict-chip-remove"
+                    className="flex items-center justify-center size-4.5 rounded-full bg-transparent text-dict-primary-muted transition-all duration-150 hover:bg-dict-primary hover:text-dict-text-inverse"
                   >
                     <X className="h-3 w-3" />
                   </button>
@@ -356,7 +368,7 @@ export function DictionaryFilters({
           <button
             type="button"
             onClick={clearAllFilters}
-            className="dict-filter-btn text-dict-text-tertiary hover:text-red-500"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-dict-surface-2 text-dict-text-tertiary transition-all duration-200 ease-out cursor-pointer hover:bg-dict-hover hover:text-red-500 hover:-translate-y-px hover:shadow-dict-sm active:translate-y-0"
           >
             <Filter className="h-3.5 w-3.5" />
             Clear all

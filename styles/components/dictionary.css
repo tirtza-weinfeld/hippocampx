@@ -1,13 +1,12 @@
 /**
- * Dictionary Component CSS Tokens - 2026 Edition
+ * Dictionary Design Tokens & True Utilities
  *
- * Modern design system featuring:
- * - OKLCH color space with perceptual uniformity
- * - Mesh gradients & layered surfaces
- * - Advanced glassmorphism with noise texture
- * - Micro-interaction utilities
+ * This file contains:
+ * - CSS custom properties (design tokens) for light/dark themes
+ * - True atomic utilities that can't be expressed with Tailwind built-ins
+ *   (complex gradients, glassmorphism, multi-layer shadows, animations)
  *
- * Usage: bg-dict-*, text-dict-*, border-dict-*, shadow-dict-*
+ * Component styles should be composed in JSX using Tailwind utilities + these tokens.
  */
 
 @theme inline {
@@ -61,6 +60,50 @@
   --color-dict-tag-bg-start: var(--dict-tag-bg-start);
   --color-dict-tag-bg-end: var(--dict-tag-bg-end);
   --color-dict-tag-border: var(--dict-tag-border);
+
+  /* Animation definitions */
+  --animate-dict-shimmer: dict-shimmer 2s infinite;
+  --animate-dict-pulse-glow: dict-pulse-glow 3s ease-in-out infinite;
+  --animate-dict-spin: dict-spin 0.8s linear infinite;
+  --animate-dict-skeleton: dict-skeleton-pulse 1.5s ease-in-out infinite;
+
+  @keyframes dict-shimmer {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
+  @keyframes dict-pulse-glow {
+    0%,
+    100% {
+      box-shadow:
+        0 0 0 1px var(--dict-border),
+        0 0 20px var(--dict-glow-color);
+    }
+    50% {
+      box-shadow:
+        0 0 0 1px var(--dict-border-hover),
+        0 0 30px var(--dict-glow-color);
+    }
+  }
+
+  @keyframes dict-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes dict-skeleton-pulse {
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
+  }
 }
 
 :root {
@@ -180,9 +223,10 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   GRADIENT UTILITIES
+   TRUE UTILITIES - Complex effects not expressible in Tailwind
    ═══════════════════════════════════════════════════════════════ */
 
+/* Text gradient - requires background-clip: text */
 @utility text-dict-gradient {
   background: linear-gradient(
     135deg,
@@ -196,6 +240,7 @@
   color: transparent;
 }
 
+/* Mesh gradient background - multi-layer radial gradients */
 @utility bg-dict-mesh {
   background:
     radial-gradient(ellipse 80% 50% at 20% 40%, var(--dict-primary-wash) 0%, transparent 50%),
@@ -204,6 +249,7 @@
     var(--color-dict-surface-0);
 }
 
+/* Aurora conic gradient */
 @utility bg-dict-aurora {
   background:
     linear-gradient(180deg, transparent 0%, var(--color-dict-surface-1) 100%),
@@ -217,6 +263,7 @@
   background-blend-mode: normal, soft-light;
 }
 
+/* Page fade gradient */
 @utility bg-dict-page {
   background: linear-gradient(
     90deg,
@@ -227,6 +274,7 @@
   );
 }
 
+/* Page ambient gradient - fixed attachment */
 @utility bg-dict-page-gradient {
   background:
     radial-gradient(ellipse 70% 60% at 50% 0%, var(--dict-primary-wash) 0%, transparent 60%),
@@ -235,6 +283,21 @@
   background-attachment: fixed;
 }
 
+/* Glassmorphism - requires backdrop-filter */
+@utility bg-dict-glass {
+  background: var(--color-dict-glass-bg);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+}
+
+/* Frosted glass gradient */
+@utility bg-dict-frosted {
+  background: linear-gradient(135deg, var(--color-dict-frosted-start) 0%, var(--color-dict-frosted-end) 100%);
+  backdrop-filter: blur(24px) saturate(200%);
+  -webkit-backdrop-filter: blur(24px) saturate(200%);
+}
+
+/* Nav glassmorphism with fade edges */
 @utility bg-dict-nav {
   background: linear-gradient(
     90deg,
@@ -247,31 +310,7 @@
   -webkit-backdrop-filter: blur(16px) saturate(180%);
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   SURFACE UTILITIES
-   ═══════════════════════════════════════════════════════════════ */
-
-@utility bg-dict-glass {
-  background: var(--color-dict-glass-bg);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-}
-
-@utility bg-dict-frosted {
-  background: linear-gradient(135deg, var(--color-dict-frosted-start) 0%, var(--color-dict-frosted-end) 100%);
-  backdrop-filter: blur(24px) saturate(200%);
-  -webkit-backdrop-filter: blur(24px) saturate(200%);
-}
-
-@utility bg-dict-header-solid {
-  background: linear-gradient(
-    180deg,
-    var(--color-dict-surface-0) 0%,
-    var(--color-dict-surface-0) 85%,
-    transparent 100%
-  );
-}
-
+/* Elevated surface gradient */
 @utility bg-dict-elevated {
   background: linear-gradient(
     180deg,
@@ -280,10 +319,12 @@
   );
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   SHADOW UTILITIES
-   ═══════════════════════════════════════════════════════════════ */
+/* Tag gradient background */
+@utility bg-dict-tag-gradient {
+  background: linear-gradient(135deg, var(--color-dict-tag-bg-start) 0%, var(--color-dict-tag-bg-end) 100%);
+}
 
+/* Multi-layer shadows */
 @utility shadow-dict-sm {
   box-shadow:
     0 1px 2px var(--color-dict-shadow-color),
@@ -318,21 +359,13 @@
     inset 0 0 0 1px oklch(1 0 0 / 5%);
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   BORDER UTILITIES
-   ═══════════════════════════════════════════════════════════════ */
-
-@utility border-dict-subtle {
-  border: 1px solid var(--color-dict-border);
+@utility shadow-dict-card-hover {
+  box-shadow:
+    0 8px 24px var(--color-dict-shadow-color),
+    0 16px 48px var(--color-dict-shadow-color);
 }
 
-@utility border-dict-gradient {
-  border: 1px solid transparent;
-  background:
-    linear-gradient(var(--color-dict-surface-1), var(--color-dict-surface-1)) padding-box,
-    linear-gradient(135deg, var(--dict-grad-1) 0%, var(--dict-grad-2) 100%) border-box;
-}
-
+/* Focus ring utility */
 @utility ring-dict-focus {
   outline: none;
   box-shadow:
@@ -340,113 +373,63 @@
     0 0 0 4px var(--color-dict-focus-ring);
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   COMPONENT UTILITIES
-   ═══════════════════════════════════════════════════════════════ */
+/* Gradient border (requires specific structure) */
+@utility border-dict-gradient {
+  border: 1px solid transparent;
+  background:
+    linear-gradient(var(--color-dict-surface-1), var(--color-dict-surface-1)) padding-box,
+    linear-gradient(135deg, var(--dict-grad-1) 0%, var(--dict-grad-2) 100%) border-box;
+}
 
-@utility dict-header {
-  position: relative;
-  overflow: hidden;
-  border-radius: 1rem;
-  background: var(--color-dict-surface-1);
+/* Dropdown glassmorphism */
+@utility bg-dict-dropdown {
+  background: var(--color-dict-glass-bg);
+  backdrop-filter: blur(24px) saturate(200%);
+  -webkit-backdrop-filter: blur(24px) saturate(200%);
+}
+
+@utility shadow-dict-dropdown {
   box-shadow:
-    0 0 0 1px var(--color-dict-border),
-    0 4px 24px var(--color-dict-shadow-color);
-
-  &::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background:
-      radial-gradient(ellipse 100% 100% at 0% 0%, var(--dict-primary-wash) 0%, transparent 50%),
-      radial-gradient(ellipse 80% 80% at 100% 100%, var(--dict-accent-soft) 0%, transparent 50%);
-    pointer-events: none;
-  }
+    0 8px 32px var(--color-dict-shadow-color),
+    0 24px 64px var(--color-dict-shadow-color);
 }
 
-@utility dict-card {
-  position: relative;
-  border-radius: 1rem;
-  background: var(--color-dict-surface-1);
-  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
-
-  &:hover {
-    background: var(--color-dict-surface-2);
-    box-shadow:
-      0 8px 24px var(--color-dict-shadow-color),
-      0 16px 48px var(--color-dict-shadow-color);
-    transform: translateY(-2px);
-  }
+/* Word card decorative line gradients */
+@utility bg-dict-card-line {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--color-dict-surface-3) 30%,
+    var(--color-dict-surface-3) 70%,
+    transparent 100%
+  );
 }
 
-@utility dict-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  padding: 0.375rem 0.875rem;
-  border-radius: 9999px;
-  font-size: 0.8125rem;
-  font-weight: 500;
-  background: linear-gradient(135deg, var(--color-dict-tag-bg-start) 0%, var(--color-dict-tag-bg-end) 100%);
-  color: var(--color-dict-primary-vivid);
-  transition: all 180ms cubic-bezier(0.4, 0, 0.2, 1);
-
-  &:hover {
-    transform: translateY(-1px) scale(1.02);
-    box-shadow: 0 4px 16px var(--color-dict-glow-color);
-  }
+@utility bg-dict-card-line-active {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--color-dict-primary-muted) 20%,
+    var(--color-dict-accent) 50%,
+    var(--color-dict-primary-muted) 80%,
+    transparent 100%
+  );
 }
 
-@utility dict-quote {
-  position: relative;
-  padding: 1rem 1.25rem;
-  border-radius: 0 0.75rem 0.75rem 0;
-  background: linear-gradient(90deg, var(--dict-accent-soft) 0%, transparent 100%);
-  border-left: 3px solid var(--color-dict-accent);
-
-  &::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    width: 3px;
-    background: linear-gradient(180deg, var(--dict-grad-3) 0%, var(--dict-grad-1) 100%);
-    border-radius: 3px 0 0 3px;
-  }
-}
-
-@utility dict-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.25rem 0.625rem;
-  border-radius: 0.5rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.025em;
-  background: var(--color-dict-primary);
-  color: var(--color-dict-text-inverse);
-  box-shadow: 0 1px 3px var(--color-dict-shadow-color);
-}
-
-@utility dict-section-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.25rem;
-  height: 2.25rem;
-  border-radius: 0.75rem;
+/* Section icon gradient background */
+@utility bg-dict-section-icon {
   background: linear-gradient(135deg, var(--dict-primary-wash) 0%, var(--dict-accent-soft) 100%);
-  color: var(--color-dict-primary);
-  box-shadow: 0 2px 8px var(--color-dict-glow-color);
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   ANIMATION UTILITIES
-   ═══════════════════════════════════════════════════════════════ */
+/* Empty state icon gradient + shadow */
+@utility bg-dict-empty-icon {
+  background: linear-gradient(135deg, var(--dict-primary-wash) 0%, var(--dict-accent-soft) 100%);
+  box-shadow:
+    0 8px 24px var(--color-dict-shadow-color),
+    0 0 32px var(--color-dict-glow-color);
+}
 
+/* Shimmer effect - requires ::after pseudo-element */
 @utility dict-shimmer {
   position: relative;
   overflow: hidden;
@@ -456,244 +439,13 @@
     position: absolute;
     inset: 0;
     background: linear-gradient(90deg, transparent 0%, oklch(1 0 0 / 10%) 50%, transparent 100%);
-    animation: dict-shimmer 2s infinite;
+    animation: var(--animate-dict-shimmer);
     transform: translateX(-100%);
   }
 }
 
-@keyframes dict-shimmer {
-  100% {
-    transform: translateX(100%);
-  }
-}
-
-@utility dict-pulse-glow {
-  animation: dict-pulse-glow 3s ease-in-out infinite;
-}
-
-@keyframes dict-pulse-glow {
-  0%, 100% {
-    box-shadow:
-      0 0 0 1px var(--color-dict-border),
-      0 0 20px var(--color-dict-glow-color);
-  }
-  50% {
-    box-shadow:
-      0 0 0 1px var(--color-dict-border-hover),
-      0 0 30px var(--color-dict-glow-color);
-  }
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   2026 MODERN UI - STICKY HEADER & ADVANCED SURFACES
-   ═══════════════════════════════════════════════════════════════ */
-
-
-
-@utility dict-input {
-  background: var(--color-dict-surface-2);
-  border: none;
-  border-radius: 0.875rem;
-  color: var(--color-dict-text);
-  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: inset 0 2px 4px var(--color-dict-shadow-color);
-
-  &::placeholder {
-    color: var(--color-dict-text-tertiary);
-  }
-
-  &:focus {
-    background: var(--color-dict-surface-1);
-    box-shadow:
-      inset 0 2px 4px var(--color-dict-shadow-color),
-      0 0 0 3px var(--color-dict-focus-ring);
-    outline: none;
-  }
-
-  &:hover:not(:focus) {
-    background: var(--color-dict-hover);
-  }
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   WORD CARD - MODERN MICRO-INTERACTIONS
-   ═══════════════════════════════════════════════════════════════ */
-
-@utility dict-word-card {
-  position: relative;
-  border-radius: 2rem;
-  background: var(--color-dict-surface-1);
-  overflow: hidden;
-  transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1);
-
-  &:hover {
-    background: var(--color-dict-surface-2);
-    transform: translateY(-2px);
-    box-shadow:
-      0 8px 24px var(--color-dict-shadow-color),
-      0 16px 48px var(--color-dict-shadow-color);
-  }
-}
-
-@utility dict-word-card-line {
-  height: 2px;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    var(--color-dict-surface-3) 30%,
-    var(--color-dict-surface-3) 70%,
-    transparent 100%
-  );
-  transition: all 300ms ease;
-}
-
-@utility dict-word-card-line-hover {
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    var(--color-dict-primary-muted) 20%,
-    var(--color-dict-accent) 50%,
-    var(--color-dict-primary-muted) 80%,
-    transparent 100%
-  );
-  box-shadow: 0 0 16px var(--color-dict-glow-color);
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   FILTER BUTTONS - PILL STYLE 2026
-   ═══════════════════════════════════════════════════════════════ */
-
-@utility dict-filter-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  border-radius: 9999px;
-  font-size: 0.8125rem;
-  font-weight: 500;
-  background: var(--color-dict-surface-2);
-  color: var(--color-dict-text-secondary);
-  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
-  cursor: pointer;
-
-  &:hover {
-    background: var(--color-dict-hover);
-    color: var(--color-dict-text);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px var(--color-dict-shadow-color);
-  }
-
-  &:active {
-    transform: translateY(0);
-    background: var(--color-dict-active);
-  }
-}
-
-@utility dict-filter-btn-active {
-  background: linear-gradient(135deg, var(--dict-primary-wash) 0%, var(--dict-accent-soft) 100%);
-  color: var(--color-dict-primary-vivid);
-  box-shadow: 0 2px 8px var(--color-dict-glow-color);
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   ACTIVE FILTER CHIPS
-   ═══════════════════════════════════════════════════════════════ */
-
-@utility dict-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  padding: 0.25rem 0.5rem 0.25rem 0.75rem;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 500;
-  background: linear-gradient(135deg, var(--dict-primary-wash) 0%, var(--dict-accent-soft) 100%);
-  color: var(--color-dict-primary-vivid);
-  transition: all 180ms cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-@utility dict-chip-remove {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 1.125rem;
-  height: 1.125rem;
-  border-radius: 9999px;
-  background: transparent;
-  color: var(--color-dict-primary-muted);
-  transition: all 150ms ease;
-
-  &:hover {
-    background: var(--color-dict-primary);
-    color: var(--color-dict-text-inverse);
-  }
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   RESULTS COUNT BADGE
-   ═══════════════════════════════════════════════════════════════ */
-
-@utility dict-results-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  border-radius: 9999px;
-  font-size: 0.8125rem;
-  font-weight: 500;
-  background: var(--color-dict-surface-2);
-  color: var(--color-dict-text-secondary);
-  box-shadow: 0 2px 8px var(--color-dict-shadow-color);
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   EMPTY STATE
-   ═══════════════════════════════════════════════════════════════ */
-
-@utility dict-empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 4rem 2rem;
-  text-align: center;
-}
-
-@utility dict-empty-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 4rem;
-  height: 4rem;
-  border-radius: 1.25rem;
-  background: linear-gradient(135deg, var(--dict-primary-wash) 0%, var(--dict-accent-soft) 100%);
-  color: var(--color-dict-primary);
-  margin-bottom: 1.5rem;
-  box-shadow:
-    0 8px 24px var(--color-dict-shadow-color),
-    0 0 32px var(--color-dict-glow-color);
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   LOADING STATES
-   ═══════════════════════════════════════════════════════════════ */
-
-@utility dict-spinner {
-  width: 1.25rem;
-  height: 1.25rem;
-  border: 2px solid var(--color-dict-border);
-  border-top-color: var(--color-dict-primary);
-  border-radius: 9999px;
-  animation: dict-spin 0.8s linear infinite;
-}
-
-@keyframes dict-spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@utility dict-skeleton {
+/* Skeleton loading effect */
+@utility bg-dict-skeleton {
   background: linear-gradient(
     90deg,
     var(--color-dict-surface-2) 0%,
@@ -701,96 +453,6 @@
     var(--color-dict-surface-2) 100%
   );
   background-size: 200% 100%;
-  animation: dict-skeleton-pulse 1.5s ease-in-out infinite;
-  border-radius: 0.5rem;
+  animation: var(--animate-dict-skeleton);
 }
 
-@keyframes dict-skeleton-pulse {
-  0% {
-    background-position: 200% 0;
-  }
-  100% {
-    background-position: -200% 0;
-  }
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   EXPAND/COLLAPSE BUTTON
-   ═══════════════════════════════════════════════════════════════ */
-
-@utility dict-expand-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  padding: 0.375rem 0.875rem;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 500;
-  background: var(--color-dict-surface-2);
-  color: var(--color-dict-text-secondary);
-  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
-
-  &:hover {
-    background: var(--color-dict-hover);
-    color: var(--color-dict-text);
-    box-shadow: 0 4px 12px var(--color-dict-shadow-color);
-  }
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   DROPDOWN MENU ENHANCEMENTS
-   ═══════════════════════════════════════════════════════════════ */
-
-@utility dict-dropdown {
-  background: var(--color-dict-glass-bg);
-  backdrop-filter: blur(24px) saturate(200%);
-  -webkit-backdrop-filter: blur(24px) saturate(200%);
-  border-radius: 1rem;
-  box-shadow:
-    0 8px 32px var(--color-dict-shadow-color),
-    0 24px 64px var(--color-dict-shadow-color);
-  overflow: hidden;
-}
-
-@utility dict-dropdown-item {
-  padding: 0.625rem 1rem;
-  font-size: 0.875rem;
-  color: var(--color-dict-text);
-  transition: all 150ms ease;
-  cursor: pointer;
-
-  &:hover {
-    background: var(--color-dict-hover);
-  }
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   DEFINITION & EXAMPLE TEXT
-   ═══════════════════════════════════════════════════════════════ */
-
-@utility dict-definition-text {
-  font-size: 0.875rem;
-  line-height: 1.6;
-  color: var(--color-dict-text-secondary);
-}
-
-@utility dict-example-text {
-  font-size: 0.8125rem;
-  font-style: italic;
-  color: var(--color-dict-example);
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   WORD TEXT STYLING
-   ═══════════════════════════════════════════════════════════════ */
-
-@utility dict-word-text {
-  font-size: 0.9375rem;
-  font-weight: 600;
-  color: var(--color-dict-text);
-  transition: color 200ms ease;
-}
-
-@utility dict-word-text-hover {
-  color: var(--color-dict-primary);
-}

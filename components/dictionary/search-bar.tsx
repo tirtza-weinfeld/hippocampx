@@ -13,6 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Search, Globe } from "lucide-react";
+import { getDictionaryListActions } from "./store/dictionary-list-store";
 
 const DEBOUNCE_DELAY = 300;
 
@@ -71,56 +72,88 @@ export function SearchBar({
   }
 
   function handleLanguageChange(newLanguage: string) {
+    const currentLanguage = searchParams.get("lang") || "en";
     const currentQuery = searchParams.get("q") || "";
+    const currentTagSlugs = searchParams.getAll("tag");
+    const currentSourceSlugs = searchParams.getAll("source");
+    const currentPartSlugs = searchParams.getAll("part");
+
+    const storeActions = getDictionaryListActions();
+
+    // Save current language filters before switching
+    storeActions.saveLanguageFilters(currentLanguage, {
+      query: currentQuery,
+      tagSlugs: currentTagSlugs,
+      sourceSlugs: currentSourceSlugs,
+      sourcePartSlugs: currentPartSlugs,
+    });
+
+    // Get saved filters for new language (if any)
+    const savedFilters = storeActions.getLanguageFilters(newLanguage);
 
     startTransition(function updateUrl() {
-      router.push(buildUrl(currentQuery, newLanguage));
+      if (savedFilters) {
+        // Restore saved filters for the new language
+        const params = new URLSearchParams();
+
+        if (savedFilters.query) {
+          params.set("q", savedFilters.query);
+        }
+
+        if (newLanguage !== "en") {
+          params.set("lang", newLanguage);
+        }
+
+        savedFilters.tagSlugs.forEach((tag) => params.append("tag", tag));
+        savedFilters.sourceSlugs.forEach((source) => params.append("source", source));
+        savedFilters.sourcePartSlugs.forEach((part) => params.append("part", part));
+
+        const queryString = params.toString();
+        router.push((queryString ? `${pathname}?${queryString}` : pathname) as Route);
+      } else {
+        // No saved filters - navigate to clean state for new language
+        const params = new URLSearchParams();
+        if (newLanguage !== "en") {
+          params.set("lang", newLanguage);
+        }
+        const queryString = params.toString();
+        router.push((queryString ? `${pathname}?${queryString}` : pathname) as Route);
+      }
     });
   }
 
   return (
-    <div className="flex flex-col gap-2">
-      <div className="flex flex-col sm:flex-row gap-2">
-        <div className="relative flex-1">
-          <Label htmlFor="dict-search" className="sr-only">
-            Search words
-          </Label>
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-dict-text-tertiary" />
-          <Input
-            id="dict-search"
-            type="search"
-            placeholder="Search all words..."
-            defaultValue={initialQuery || ""}
-            onChange={handleQueryChange}
-            className="pl-9 h-10 text-sm bg-dict-surface-1 border-dict-border text-dict-text placeholder:text-dict-text-tertiary focus:border-dict-border-focus focus:ring-2 focus:ring-dict-focus-ring shadow-dict-inner"
-          />
-          {/* {isPending && (
-            <div className="absolute right-3 top-1/2 -translate-y-1/2">
-              <div className="h-4 w-4 rounded-full border-2 border-dict-primary border-t-transparent animate-spin" />
-            </div>
-          )} */}
-        </div>
-        <div className="w-full sm:w-40">
-          <Label htmlFor="dict-language" className="sr-only">
-            Language
-          </Label>
-          <Select defaultValue={initialLanguage} onValueChange={handleLanguageChange}>
-            <SelectTrigger
-              id="dict-language"
-              className="h-10 text-sm bg-dict-surface-1 border-dict-border text-dict-text shadow-dict-inner"
-            >
-              <Globe className="h-4 w-4 text-dict-text-tertiary mr-2" />
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent className="bg-dict-glass border-dict-border shadow-dict-md">
-              <SelectItem value="en">English</SelectItem>
-              <SelectItem value="es">Spanish</SelectItem>
-              <SelectItem value="fr">French</SelectItem>
-              <SelectItem value="de">German</SelectItem>
-              <SelectItem value="it">Italian</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+    <div className="relative">
+      <Label htmlFor="dict-search" className="sr-only">
+        Search words
+      </Label>
+      <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-dict-text-tertiary" />
+      <Input
+        id="dict-search"
+        type="search"
+        placeholder="Search words..."
+        defaultValue={initialQuery || ""}
+        onChange={handleQueryChange}
+        className="pl-9 pr-28 h-9 text-sm bg-dict-surface-1 border-dict-border text-dict-text placeholder:text-dict-text-tertiary focus:border-dict-border-focus focus:ring-2 focus:ring-dict-focus-ring rounded-xl w-full"
+      />
+      {/* Language selector inside search */}
+      <div className="absolute right-1 top-1/2 -translate-y-1/2">
+        <Select defaultValue={initialLanguage} onValueChange={handleLanguageChange}>
+          <SelectTrigger
+            id="dict-language"
+            className="h-7 text-xs bg-dict-surface-2 border-0 text-dict-text-secondary rounded-lg hover:bg-dict-hover transition-colors px-2 gap-1"
+          >
+            <Globe className="h-3 w-3" />
+            <span className="hidden md:inline" ><SelectValue /></span>
+          </SelectTrigger>
+          <SelectContent className="bg-dict-surface-1 border-dict-border rounded-xl shadow-dict-lg p-1">
+            <SelectItem value="en" className="rounded-lg px-3 py-1.5 text-sm cursor-pointer transition-all duration-150 focus:bg-dict-tag-gradient focus:text-dict-primary-vivid data-[state=checked]:bg-dict-tag-gradient data-[state=checked]:text-dict-primary-vivid hover:bg-dict-hover">English</SelectItem>
+            <SelectItem value="es" className="rounded-lg px-3 py-1.5 text-sm cursor-pointer transition-all duration-150 focus:bg-dict-tag-gradient focus:text-dict-primary-vivid data-[state=checked]:bg-dict-tag-gradient data-[state=checked]:text-dict-primary-vivid hover:bg-dict-hover">Spanish</SelectItem>
+            <SelectItem value="fr" className="rounded-lg px-3 py-1.5 text-sm cursor-pointer transition-all duration-150 focus:bg-dict-tag-gradient focus:text-dict-primary-vivid data-[state=checked]:bg-dict-tag-gradient data-[state=checked]:text-dict-primary-vivid hover:bg-dict-hover">French</SelectItem>
+            <SelectItem value="de" className="rounded-lg px-3 py-1.5 text-sm cursor-pointer transition-all duration-150 focus:bg-dict-tag-gradient focus:text-dict-primary-vivid data-[state=checked]:bg-dict-tag-gradient data-[state=checked]:text-dict-primary-vivid hover:bg-dict-hover">German</SelectItem>
+            <SelectItem value="it" className="rounded-lg px-3 py-1.5 text-sm cursor-pointer transition-all duration-150 focus:bg-dict-tag-gradient focus:text-dict-primary-vivid data-[state=checked]:bg-dict-tag-gradient data-[state=checked]:text-dict-primary-vivid hover:bg-dict-hover">Italian</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
     </div>
   );

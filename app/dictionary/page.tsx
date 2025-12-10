@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { fetchWordsInitial } from "@/lib/db/neon/queries/dictionary/index";
+import { fetchEntriesInitial } from "@/lib/db/neon/queries/dictionary/index";
 import { Skeleton } from "@/components/ui/skeleton";
 import { DictionaryHeader } from "@/components/dictionary/dictionary-header";
 import { DictionaryContent } from "@/components/dictionary/dictionary-content";
@@ -35,8 +35,8 @@ export default async function DictionaryPage(props: {
       : [searchParams.part]
     : [];
 
-  // Fetch initial words with cursor-based pagination
-  const wordsPromise = fetchWordsInitial({
+  // Fetch initial entries with cursor-based pagination
+  const entriesPromise = fetchEntriesInitial({
     query,
     languageCode: language,
     tagSlugs,
@@ -50,14 +50,14 @@ export default async function DictionaryPage(props: {
       <DictionaryHeader
         initialQuery={query}
         initialLanguage={language}
-        wordsPromise={wordsPromise}
+        entriesPromise={entriesPromise}
       />
 
       {/* Scrollable Content Area */}
       <main className="container mx-auto px-4 pb-8">
-        <Suspense fallback={<WordListSkeleton />}>
+        <Suspense fallback={<EntryListSkeleton />}>
           <DictionaryContent
-            wordsPromise={wordsPromise}
+            entriesPromise={entriesPromise}
             serverQuery={query}
             initialLanguage={language}
             filterKey={`${query ?? ""}|${language}|${tagSlugs.join(",")}|${sourceSlugs.join(",")}|${sourcePartSlugs.join(",")}`}
@@ -71,7 +71,7 @@ export default async function DictionaryPage(props: {
   );
 }
 
-function WordListSkeleton() {
+function EntryListSkeleton() {
   return (
     <div className="pt-6">
       {/* Results count skeleton */}
@@ -79,22 +79,20 @@ function WordListSkeleton() {
         <Skeleton className="h-7 w-24 rounded-full" />
       </div>
 
-      {/* Word list skeleton */}
+      {/* Entry list skeleton */}
       <div className="flex flex-col gap-3">
-        {Array.from({ length: 8 }).map(function renderSkeleton(_, i) {
-          return (
-            <div
-              key={i}
-              className="dict-card overflow-hidden"
-            >
-              <div className="h-px bg-linear-to-r from-transparent via-dict-border to-transparent" />
-              <div className="p-4 flex items-start gap-4">
-                <Skeleton className="h-5 w-28 shrink-0" />
-                <Skeleton className="h-5 flex-1" />
-              </div>
+        {Array.from({ length: 8 }).map((_, i) => (
+          <div
+            key={i}
+            className="dict-card overflow-hidden"
+          >
+            <div className="h-px bg-linear-to-r from-transparent via-dict-border to-transparent" />
+            <div className="p-4 flex items-start gap-4">
+              <Skeleton className="h-5 w-28 shrink-0" />
+              <Skeleton className="h-5 flex-1" />
             </div>
-          );
-        })}
+          </div>
+        ))}
       </div>
     </div>
   );

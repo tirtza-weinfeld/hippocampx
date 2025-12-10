@@ -2,67 +2,77 @@
 
 import { eq } from "drizzle-orm";
 import { neonDb } from "@/lib/db/neon/connection";
-import { words, wordAudio } from "@/lib/db/neon/schema";
+import { lexicalEntries, entryAudio } from "@/lib/db/neon/schema";
 import { synthesizeSpeech } from "./tts";
+import { uploadAudio, generateAudioKey } from "@/lib/storage/r2";
 
 type GetWordAudioResult =
-  | { success: true; audioContent: string }
+  | { success: true; audioUrl: string }
   | { success: false; error: string };
 
 /**
- * Get word audio from database, or synthesize and store if not found.
- * Returns base64-encoded MP3 audio.
+ * Get word audio URL from database, or synthesize, upload to R2, and store URL if not found.
+ * Returns public R2 URL for audio playback.
  */
-export async function getOrCreateWordAudio(
-  wordId: number,
+async function getOrCreateWordAudio(
+  entryId: number,
   wordText: string,
   languageCode: string
 ): Promise<GetWordAudioResult> {
-  if (wordId <= 0 || !wordText || !languageCode) {
+  if (entryId <= 0 || !wordText || !languageCode) {
     return { success: false, error: "Invalid input" };
   }
 
-  // Check database first
+  // Check database for existing audio URL
   const existingAudio = await neonDb
-    .select({ audio_data: wordAudio.audio_data })
-    .from(wordAudio)
-    .where(eq(wordAudio.word_id, wordId))
+    .select({ audio_url: entryAudio.audio_url })
+    .from(entryAudio)
+    .where(eq(entryAudio.entry_id, entryId))
     .limit(1);
 
   if (existingAudio.length > 0) {
-    return {
-      success: true,
-      audioContent: existingAudio[0].audio_data.toString("base64"),
-    };
+    return { success: true, audioUrl: existingAudio[0].audio_url };
   }
 
-  // Verify word exists
-  const wordExists = await neonDb
-    .select({ id: words.id })
-    .from(words)
-    .where(eq(words.id, wordId))
+  // Verify entry exists
+  const entryExists = await neonDb
+    .select({ id: lexicalEntries.id })
+    .from(lexicalEntries)
+    .where(eq(lexicalEntries.id, entryId))
     .limit(1);
 
-  if (wordExists.length === 0) {
-    return { success: false, error: "Word not found" };
+  if (entryExists.length === 0) {
+    return { success: false, error: "Entry not found" };
   }
 
-  // Synthesize via existing TTS action
+  // Synthesize via TTS
   const ttsResult = await synthesizeSpeech({ text: wordText, languageCode });
 
   if (!ttsResult.success) {
     return ttsResult;
   }
 
-  // Store in database
+  // Upload to R2
   const audioBuffer = Buffer.from(ttsResult.audioContent, "base64");
-  await neonDb
-    .insert(wordAudio)
-    .values({ word_id: wordId, audio_data: audioBuffer })
-    .onConflictDoUpdate({
-      target: wordAudio.word_id,
-      set: { audio_data: audioBuffer, created_at: new Date() },
-    });
+  const key = generateAudioKey(languageCode, wordText);
+  const uploadResult = await uploadAudio(key, audioBuffer);
 
-  return ttsResult;
+  if (!uploadResult.success) {
+    return { success: false, error: uploadResult.error };
+  }
+
+  // Store URL in database
+  await neonDb
+    .insert(entryAudio)
+    .values({
+      entry_id: entryId,
+      audio_url: uploadResult.url,
+      accent_code: languageCode,
+      content_type: "audio/mpeg",
+    })
+    .onConflictDoNothing();
+
+  return { success: true, audioUrl: uploadResult.url };
 }
+
+export { getOrCreateWordAudio, getOrCreateWordAudio as getOrCreateEntryAudio };

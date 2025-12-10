@@ -1,650 +1,670 @@
-// import type { DictionaryWordSeed } from "../../dictionary";
+import type { LexicalEntrySeed } from "../../dictionary";
 
-// export const EVERY_DAY_MORE_WICKED_DICTIONARY_DATA: DictionaryWordSeed[] = [
-//     // wicked
-//     {
-//       word_text: "wicked",
-//       language_code: "en",
-//       definitions: [
-//         {
-//           definition_text: "Morally very bad or evil.",
-//           part_of_speech: "adjective",
-//           order: 0,
-//           examples: [
-//             {
-//               example_text: "Every day more wicked, every day the terror grows.",
-//               source: {
-//                 type: "musical",
-//                 title: "Wicked Part 2",
-//                 part: "Every Day More Wicked",
-//               },
-//             },
-//           ],
-//         },
-//       ],
-//       tags: ["morality", "negative"],
-//       forms: [
-//         { form_text: "wickeder" },
-//         { form_text: "wickedest" },
-//         { form_text: "wickedly", form_type: "adverb" },
-//         { form_text: "wickedness", form_type: "noun" },
-//       ],
-//     },
-  
-//     // terror
-//     {
-//       word_text: "terror",
-//       language_code: "en",
-//       definitions: [
-//         {
-//           definition_text: "A feeling of extreme fear.",
-//           part_of_speech: "noun",
-//           order: 0,
-//           examples: [
-//             {
-//               example_text: "Every day, the terror grows across Oz.",
-//               source: {
-//                 type: "musical",
-//                 title: "Wicked Part 2",
-//                 part: "Every Day More Wicked",
-//               },
-//             },
-//           ],
-//         },
-//       ],
-//       tags: ["emotion", "negative"],
-//       forms: [{ form_text: "terrors" }],
-//     },
-  
-//     // alert
-//     {
-//       word_text: "alert",
-//       language_code: "en",
-//       definitions: [
-//         {
-//           definition_text:
-//             "A warning that something dangerous or important may happen.",
-//           part_of_speech: "noun",
-//           order: 0,
-//           examples: [
-//             {
-//               example_text: "All of Oz is ever on alert for the wicked witch.",
-//               source: {
-//                 type: "musical",
-//                 title: "Wicked Part 2",
-//                 part: "Every Day More Wicked",
-//               },
-//             },
-//           ],
-//         },
-//       ],
-//       tags: ["safety"],
-//       forms: [
-//         { form_text: "alerts" },
-//         { form_text: "alerted", form_type: "verb" },
-//         { form_text: "alerting", form_type: "verb" },
-//         { form_text: "alert", form_type: "adjective" },
-//       ],
-//     },
-  
-//     // victim
-//     {
-//       word_text: "victim",
-//       language_code: "en",
-//       definitions: [
-//         {
-//           definition_text:
-//             "Someone who is harmed, hurt, or treated badly by another person or by an event.",
-//           part_of_speech: "noun",
-//           order: 0,
-//           examples: [
-//             {
-//               example_text:
-//                 "She is always seeking out new victims she can hurt.",
-//               source: {
-//                 type: "musical",
-//                 title: "Wicked Part 2",
-//                 part: "Every Day More Wicked",
-//               },
-//             },
-//           ],
-//         },
-//       ],
-//       tags: ["psychology", "legal", "negative"],
-//       forms: [{ form_text: "victims" }],
-//     },
-  
-//     // blizzard
-//     {
-//       word_text: "blizzard",
-//       language_code: "en",
-//       definitions: [
-//         {
-//           definition_text:
-//             "A severe snowstorm with strong winds and very poor visibility.",
-//           part_of_speech: "noun",
-//           order: 0,
-//           examples: [
-//             {
-//               example_text:
-//                 "Like some terrible green blizzard, throughout the land she flies.",
-//               source: {
-//                 type: "musical",
-//                 title: "Wicked Part 2",
-//                 part: "Every Day More Wicked",
-//               },
-//             },
-//           ],
-//         },
-//       ],
-//       tags: ["nature", "weather"],
-//       forms: [{ form_text: "blizzards" }],
-//     },
-  
-//     // defame
-//     {
-//       word_text: "defame",
-//       language_code: "en",
-//       definitions: [
-//         {
-//           definition_text:
-//             "To harm someone's reputation by saying or writing false things about them.",
-//           part_of_speech: "verb",
-//           order: 0,
-//           examples: [
-//             {
-//               example_text: "She is defaming our poor Wizard with her stories.",
-//               source: {
-//                 type: "musical",
-//                 title: "Wicked Part 2",
-//                 part: "Every Day More Wicked",
-//               },
-//             },
-//           ],
-//         },
-//       ],
-//       tags: ["legal", "negative"],
-//       forms: [
-//         { form_text: "defamed" },
-//         { form_text: "defaming" },
-//         { form_text: "defames" },
-//         { form_text: "defamation", form_type: "noun" },
-//       ],
-//     },
-  
-//     // calumny
-//     {
-//       word_text: "calumny",
-//       language_code: "en",
-//       definitions: [
-//         {
-//           definition_text:
-//             "A false and damaging statement about someone that harms their reputation.",
-//           part_of_speech: "noun",
-//           order: 0,
-//           examples: [
-//             {
-//               example_text: "He was the target of calumny and lies.",
-//               source: {
-//                 type: "musical",
-//                 title: "Wicked Part 2",
-//                 part: "Every Day More Wicked",
-//               },
-//             },
-//           ],
-//         },
-//       ],
-//       tags: ["legal", "negative", "GRE"],
-//       forms: [{ form_text: "calumnies" }],
-//     },
-  
-//     // shield
-//     {
-//       word_text: "shield",
-//       language_code: "en",
-//       definitions: [
-//         {
-//           definition_text:
-//             "To protect someone or something from danger or harm.",
-//           part_of_speech: "verb",
-//           order: 0,
-//           examples: [
-//             {
-//               example_text: "Shield us so we won’t be hexed.",
-//               source: {
-//                 type: "musical",
-//                 title: "Wicked Part 2",
-//                 part: "Every Day More Wicked",
-//               },
-//             },
-//           ],
-//         },
-//       ],
-//       tags: ["protection"],
-//       forms: [
-//         { form_text: "shielded" },
-//         { form_text: "shielding" },
-//         { form_text: "shields" },
-//         { form_text: "shield", form_type: "noun" },
-//       ],
-//     },
-  
-//     // hex
-//     {
-//       word_text: "hex",
-//       language_code: "en",
-//       definitions: [
-//         {
-//           definition_text: "To put a curse or magic spell on someone.",
-//           part_of_speech: "verb",
-//           order: 0,
-//           examples: [
-//             {
-//               example_text: "Save us from the wicked, shield us so we won’t be hexed.",
-//               source: {
-//                 type: "musical",
-//                 title: "Wicked Part 2",
-//                 part: "Every Day More Wicked",
-//               },
-//             },
-//           ],
-//         },
-//       ],
-//       tags: ["folklore", "colloquial", "negative"],
-//       forms: [
-//         { form_text: "hexed" },
-//         { form_text: "hexes" },
-//         { form_text: "hexing" },
-//         { form_text: "hex", form_type: "noun" },
-//       ],
-//     },
-  
-//     // strike
-//     {
-//       word_text: "strike",
-//       language_code: "en",
-//       definitions: [
-//         {
-//           definition_text:
-//             "To attack or hit someone or something suddenly; to cause harm in a particular place.",
-//           part_of_speech: "verb",
-//           order: 0,
-//           examples: [
-//             {
-//               example_text: "Give us warning, where will she strike next?",
-//               source: {
-//                 type: "musical",
-//                 title: "Wicked Part 2",
-//                 part: "Every Day More Wicked",
-//               },
-//             },
-//           ],
-//         },
-//       ],
-//       tags: ["conflict"],
-//       forms: [
-//         { form_text: "strikes" },
-//         { form_text: "struck" },
-//         { form_text: "striking" },
-//       ],
-//     },
-  
-//     // applaud
-//     {
-//       word_text: "applaud",
-//       language_code: "en",
-//       definitions: [
-//         {
-//           definition_text:
-//             "To show approval by clapping your hands; to praise or approve of something.",
-//           part_of_speech: "verb",
-//           order: 0,
-//           examples: [
-//             {
-//               example_text: "When I stop the Wizard, all Oz will applaud.",
-//               source: {
-//                 type: "musical",
-//                 title: "Wicked Part 2",
-//                 part: "Every Day More Wicked",
-//               },
-//             },
-//           ],
-//         },
-//       ],
-//       tags: ["emotion", "positive"],
-//       forms: [
-//         { form_text: "applauded" },
-//         { form_text: "applauding" },
-//         { form_text: "applauds" },
-//         { form_text: "applause", form_type: "noun" },
-//       ],
-//     },
-  
-//     // fraud
-//     {
-//       word_text: "fraud",
-//       language_code: "en",
-//       definitions: [
-//         {
-//           definition_text:
-//             "The crime of lying or cheating to get money, power, or advantage; or a person who pretends to be something they are not.",
-//           part_of_speech: "noun",
-//           order: 0,
-//           examples: [
-//             {
-//               example_text: "By revealing he’s a fraud, she hopes to save Oz.",
-//               source: {
-//                 type: "musical",
-//                 title: "Wicked Part 2",
-//                 part: "Every Day More Wicked",
-//               },
-//             },
-//           ],
-//         },
-//       ],
-//       tags: ["legal", "morality", "negative"],
-//       forms: [{ form_text: "frauds" }],
-//     },
-  
-//     // gaze
-//     {
-//       word_text: "gaze",
-//       language_code: "en",
-//       definitions: [
-//         {
-//           definition_text: "To look steadily and with interest at someone or something.",
-//           part_of_speech: "verb",
-//           order: 0,
-//           examples: [
-//             {
-//               example_text:
-//                 "We feel merry, we feel cheery just to gaze on your reflection.",
-//               source: {
-//                 type: "musical",
-//                 title: "Wicked Part 2",
-//                 part: "Every Day More Wicked",
-//               },
-//             },
-//           ],
-//         },
-//       ],
-//       tags: ["perception"],
-//       forms: [
-//         { form_text: "gazed" },
-//         { form_text: "gazing" },
-//         { form_text: "gazes" },
-//         { form_text: "gaze", form_type: "noun" },
-//       ],
-//     },
-  
-//     // reflection
-//     {
-//       word_text: "reflection",
-//       language_code: "en",
-//       definitions: [
-//         {
-//           definition_text:
-//             "The image of something in a mirror or on a shiny surface.",
-//           part_of_speech: "noun",
-//           order: 0,
-//           examples: [
-//             {
-//               example_text:
-//                 "They feel happy just to gaze on Glinda’s reflection.",
-//               source: {
-//                 type: "musical",
-//                 title: "Wicked Part 2",
-//                 part: "Every Day More Wicked",
-//               },
-//             },
-//           ],
-//         },
-//         {
-//           definition_text:
-//             "Careful thought about something.",
-//           part_of_speech: "noun",
-//           order: 1,
-//           examples: [
-//             {
-//               example_text:
-//                 "The song also invites reflection on what ‘good’ really means.",
-//               source: {
-//                 type: "musical",
-//                 title: "Wicked Part 2",
-//                 part: "Every Day More Wicked",
-//               },
-//             },
-//           ],
-//         },
-//       ],
-//       tags: ["perception", "psychology"],
-//       forms: [
-//         { form_text: "reflections" },
-//         { form_text: "reflect", form_type: "verb" },
-//       ],
-//     },
-  
-//     // disprove
-//     {
-//       word_text: "disprove",
-//       language_code: "en",
-//       definitions: [
-//         {
-//           definition_text:
-//             "To show that something is not true or is wrong, especially using facts or logic.",
-//           part_of_speech: "verb",
-//           order: 0,
-//           examples: [
-//             {
-//               example_text:
-//                 "Only you disprove the theory that you can’t improve perfection.",
-//               source: {
-//                 type: "musical",
-//                 title: "Wicked Part 2",
-//                 part: "Every Day More Wicked",
-//               },
-//             },
-//           ],
-//         },
-//       ],
-//       tags: ["logic", "science"],
-//       forms: [
-//         { form_text: "disproved" },
-//         { form_text: "disproving" },
-//         { form_text: "disproves" },
-//       ],
-//     },
-  
-//     // theory
-//     {
-//       word_text: "theory",
-//       language_code: "en",
-//       definitions: [
-//         {
-//           definition_text:
-//             "An idea or set of ideas that explains how or why something happens, based on evidence.",
-//           part_of_speech: "noun",
-//           order: 0,
-//           examples: [
-//             {
-//               example_text:
-//                 "Only you disprove the theory that you can’t improve perfection.",
-//               source: {
-//                 type: "musical",
-//                 title: "Wicked Part 2",
-//                 part: "Every Day More Wicked",
-//               },
-//             },
-//           ],
-//         },
-//       ],
-//       tags: ["science", "academia", "GRE"],
-//       forms: [{ form_text: "theories" }],
-//     },
-  
-//     // perfection
-//     {
-//       word_text: "perfection",
-//       language_code: "en",
-//       definitions: [
-//         {
-//           definition_text:
-//             "The state of being as good as something can possibly be; without any faults.",
-//           part_of_speech: "noun",
-//           order: 0,
-//           examples: [
-//             {
-//               example_text:
-//                 "They say you can’t improve perfection, but Glinda comes close.",
-//               source: {
-//                 type: "musical",
-//                 title: "Wicked Part 2",
-//                 part: "Every Day More Wicked",
-//               },
-//             },
-//           ],
-//         },
-//       ],
-//       tags: ["philosophy"],
-//       forms: [
-//         { form_text: "perfect", form_type: "adjective" },
-//         { form_text: "perfectly", form_type: "adverb" },
-//       ],
-//     },
-  
-//     // victimhood
-//     {
-//       word_text: "victimhood",
-//       language_code: "en",
-//       definitions: [
-//         {
-//           definition_text:
-//             "The state of being a victim, especially when it strongly shapes how someone sees themselves or is treated.",
-//           part_of_speech: "noun",
-//           order: 0,
-//           examples: [
-//             {
-//               example_text:
-//                 "Save us from this fear and victimhood, they sing to Glinda.",
-//               source: {
-//                 type: "musical",
-//                 title: "Wicked Part 2",
-//                 part: "Every Day More Wicked",
-//               },
-//             },
-//           ],
-//         },
-//       ],
-//       tags: ["psychology", "negative"],
-//     },
-  
-//     // prevail
-//     {
-//       word_text: "prevail",
-//       language_code: "en",
-//       definitions: [
-//         {
-//           definition_text:
-//             "To win in the end; to be more powerful or successful than something else.",
-//           part_of_speech: "verb",
-//           order: 0,
-//           examples: [
-//             {
-//               example_text:
-//                 "With her magic, she’ll prevail and make it end the way it should.",
-//               source: {
-//                 type: "musical",
-//                 title: "Wicked Part 2",
-//                 part: "Every Day More Wicked",
-//               },
-//             },
-//           ],
-//         },
-//       ],
-//       tags: ["conflict", "positive"],
-//       forms: [
-//         { form_text: "prevailed" },
-//         { form_text: "prevailing" },
-//         { form_text: "prevails" },
-//       ],
-//     },
-  
-//     // wail
-//     {
-//       word_text: "wail",
-//       language_code: "en",
-//       definitions: [
-//         {
-//           definition_text:
-//             "To cry out loudly in pain, sadness, or fear.",
-//           part_of_speech: "verb",
-//           order: 0,
-//           examples: [
-//             {
-//               example_text:
-//                 "Every night our voices wail, begging to be saved from the wicked.",
-//               source: {
-//                 type: "musical",
-//                 title: "Wicked Part 2",
-//                 part: "Every Day More Wicked",
-//               },
-//             },
-//           ],
-//         },
-//       ],
-//       tags: ["sound", "emotion", "negative"],
-//       forms: [
-//         { form_text: "wailed" },
-//         { form_text: "wailing" },
-//         { form_text: "wails" },
-//       ],
-//     },
-  
-//     // defeat
-//     {
-//       word_text: "defeat",
-//       language_code: "en",
-//       definitions: [
-//         {
-//           definition_text:
-//             "To win against someone or something in a fight, game, or struggle.",
-//           part_of_speech: "verb",
-//           order: 0,
-//           examples: [
-//             {
-//               example_text:
-//                 "When at last the wicked is defeated by the good, the story ends.",
-//               source: {
-//                 type: "musical",
-//                 title: "Wicked Part 2",
-//                 part: "Every Day More Wicked",
-//               },
-//             },
-//           ],
-//         },
-//         {
-//           definition_text:
-//             "The loss or failure experienced when you do not win.",
-//           part_of_speech: "noun",
-//           order: 1,
-//           examples: [
-//             {
-//               example_text:
-//                 "The witch’s defeat brings joy throughout the land.",
-//               source: {
-//                 type: "musical",
-//                 title: "Wicked Part 2",
-//                 part: "Every Day More Wicked",
-//               },
-//             },
-//           ],
-//         },
-//       ],
-//       tags: ["conflict", "negative"],
-//       forms: [
-//         { form_text: "defeated" },
-//         { form_text: "defeating" },
-//         { form_text: "defeats" },
-//       ],
-//     },
-//   ];
+// Shared source constant
+const WICKED_SOURCE = {
+  type: "musical" as const,
+  title: "Wicked Part 2",
+  publication_year: 2003,
+  contributors: [
+    { name: "Stephen Schwartz", role: "composer" as const },
+    { name: "Stephen Schwartz", role: "lyricist" as const },
+  ]
+};
+
+// "Every Day More Wicked" is technically part of "March of the Witch Hunters" or "Thank Goodness" depending on the specific track listing, 
+// but we will stick to the user's explicit labelling.
+const EVERY_DAY_PATH = ["Every Day More Wicked"];
+
+export const EVERY_DAY_MORE_WICKED_DATA: LexicalEntrySeed[] = [
+  // ===========================================================================
+  // WICKED (Adjective)
+  // ===========================================================================
+  {
+    lemma: "wicked",
+    part_of_speech: "adjective",
+    language_code: "en",
+    forms: [
+      { form_text: "wickeder", grammatical_features: { degree: "comparative" } },
+      { form_text: "wickedest", grammatical_features: { degree: "superlative" } },
+      { form_text: "wickedly", grammatical_features: {} }, // Adverb
+      { form_text: "wickedness", grammatical_features: {} }, // Noun
+    ],
+    senses: [
+      {
+        definition: "Morally very bad or evil.",
+        order_index: 0,
+        tags: ["morality", "negative"],
+        examples: [
+          {
+            text: "Every day more wicked, every day the terror grows.",
+            source: {
+              source: WICKED_SOURCE,
+              part_path: EVERY_DAY_PATH,
+            },
+          },
+        ],
+      },
+    ],
+  },
+
+  // ===========================================================================
+  // TERROR (Noun)
+  // ===========================================================================
+  {
+    lemma: "terror",
+    part_of_speech: "noun",
+    language_code: "en",
+    forms: [
+      { form_text: "terrors", grammatical_features: { number: "plural" } },
+    ],
+    senses: [
+      {
+        definition: "A feeling of extreme fear.",
+        order_index: 0,
+        tags: ["emotion", "negative"],
+        examples: [
+          {
+            text: "Every day, the terror grows across Oz.",
+            source: {
+              source: WICKED_SOURCE,
+              part_path: EVERY_DAY_PATH,
+            },
+          },
+        ],
+      },
+    ],
+  },
+
+  // ===========================================================================
+  // ALERT (Noun)
+  // ===========================================================================
+  {
+    lemma: "alert",
+    part_of_speech: "noun",
+    language_code: "en",
+    forms: [
+      { form_text: "alerts", grammatical_features: { number: "plural" } },
+      // Note: The original data listed verb/adj forms here, but since the definition 
+      // provided is strictly for the Noun, we keep the forms relevant to the Lemma or derived forms.
+    ],
+    senses: [
+      {
+        definition: "A warning that something dangerous or important may happen.",
+        order_index: 0,
+        tags: ["safety"],
+        examples: [
+          {
+            text: "All of Oz is ever on alert for the wicked witch.",
+            source: {
+              source: WICKED_SOURCE,
+              part_path: EVERY_DAY_PATH,
+            },
+          },
+        ],
+      },
+    ],
+  },
+
+  // ===========================================================================
+  // VICTIM (Noun)
+  // ===========================================================================
+  {
+    lemma: "victim",
+    part_of_speech: "noun",
+    language_code: "en",
+    forms: [
+      { form_text: "victims", grammatical_features: { number: "plural" } },
+    ],
+    senses: [
+      {
+        definition: "Someone who is harmed, hurt, or treated badly by another person or by an event.",
+        order_index: 0,
+        tags: ["psychology", "legal", "negative"],
+        examples: [
+          {
+            text: "She is always seeking out new victims she can hurt.",
+            source: {
+              source: WICKED_SOURCE,
+              part_path: EVERY_DAY_PATH,
+            },
+          },
+        ],
+      },
+    ],
+  },
+
+  // ===========================================================================
+  // BLIZZARD (Noun)
+  // ===========================================================================
+  {
+    lemma: "blizzard",
+    part_of_speech: "noun",
+    language_code: "en",
+    forms: [
+      { form_text: "blizzards", grammatical_features: { number: "plural" } },
+    ],
+    senses: [
+      {
+        definition: "A severe snowstorm with strong winds and very poor visibility.",
+        order_index: 0,
+        tags: ["nature", "weather"],
+        examples: [
+          {
+            text: "Like some terrible green blizzard, throughout the land she flies.",
+            source: {
+              source: WICKED_SOURCE,
+              part_path: EVERY_DAY_PATH,
+            },
+          },
+        ],
+      },
+    ],
+  },
+
+  // ===========================================================================
+  // DEFAME (Verb)
+  // ===========================================================================
+  {
+    lemma: "defame",
+    part_of_speech: "verb",
+    language_code: "en",
+    forms: [
+      { form_text: "defamed", grammatical_features: { tense: "past" } },
+      { form_text: "defaming", grammatical_features: { participle: "present" } },
+      { form_text: "defames", grammatical_features: { tense: "present", person: "3rd", number: "singular" } },
+      { form_text: "defamation", grammatical_features: {} }, // Nominal
+    ],
+    senses: [
+      {
+        definition: "To harm someone's reputation by saying or writing false things about them.",
+        order_index: 0,
+        tags: ["legal", "negative"],
+        examples: [
+          {
+            text: "She is defaming our poor Wizard with her stories.",
+            source: {
+              source: WICKED_SOURCE,
+              part_path: EVERY_DAY_PATH,
+            },
+          },
+        ],
+      },
+    ],
+  },
+
+  // ===========================================================================
+  // CALUMNY (Noun)
+  // ===========================================================================
+  {
+    lemma: "calumny",
+    part_of_speech: "noun",
+    language_code: "en",
+    forms: [
+      { form_text: "calumnies", grammatical_features: { number: "plural" } },
+    ],
+    senses: [
+      {
+        definition: "A false and damaging statement about someone that harms their reputation.",
+        order_index: 0,
+        tags: ["legal", "negative", "GRE"],
+        examples: [
+          {
+            text: "He was the target of calumny and lies.",
+            source: {
+              source: WICKED_SOURCE,
+              part_path: EVERY_DAY_PATH,
+            },
+          },
+        ],
+      },
+    ],
+  },
+
+  // ===========================================================================
+  // SHIELD (Verb)
+  // ===========================================================================
+  {
+    lemma: "shield",
+    part_of_speech: "verb",
+    language_code: "en",
+    forms: [
+      { form_text: "shielded", grammatical_features: { tense: "past" } },
+      { form_text: "shielding", grammatical_features: { participle: "present" } },
+      { form_text: "shields", grammatical_features: { tense: "present", person: "3rd", number: "singular" } },
+    ],
+    senses: [
+      {
+        definition: "To protect someone or something from danger or harm.",
+        order_index: 0,
+        tags: ["protection"],
+        examples: [
+          {
+            text: "Shield us so we won’t be hexed.",
+            source: {
+              source: WICKED_SOURCE,
+              part_path: EVERY_DAY_PATH,
+            },
+          },
+        ],
+      },
+    ],
+  },
+
+  // ===========================================================================
+  // HEX (Verb)
+  // ===========================================================================
+  {
+    lemma: "hex",
+    part_of_speech: "verb",
+    language_code: "en",
+    forms: [
+      { form_text: "hexed", grammatical_features: { tense: "past" } },
+      { form_text: "hexes", grammatical_features: { tense: "present", person: "3rd", number: "singular" } },
+      { form_text: "hexing", grammatical_features: { participle: "present" } },
+    ],
+    senses: [
+      {
+        definition: "To put a curse or magic spell on someone.",
+        order_index: 0,
+        tags: ["folklore", "colloquial", "negative"],
+        examples: [
+          {
+            text: "Save us from the wicked, shield us so we won’t be hexed.",
+            source: {
+              source: WICKED_SOURCE,
+              part_path: EVERY_DAY_PATH,
+            },
+          },
+        ],
+      },
+    ],
+  },
+
+  // ===========================================================================
+  // STRIKE (Verb)
+  // ===========================================================================
+  {
+    lemma: "strike",
+    part_of_speech: "verb",
+    language_code: "en",
+    forms: [
+      { form_text: "struck", grammatical_features: { tense: "past" } },
+      { form_text: "strikes", grammatical_features: { tense: "present", person: "3rd", number: "singular" } },
+      { form_text: "striking", grammatical_features: { participle: "present" } },
+    ],
+    senses: [
+      {
+        definition: "To attack or hit someone or something suddenly; to cause harm in a particular place.",
+        order_index: 0,
+        tags: ["conflict"],
+        examples: [
+          {
+            text: "Give us warning, where will she strike next?",
+            source: {
+              source: WICKED_SOURCE,
+              part_path: EVERY_DAY_PATH,
+            },
+          },
+        ],
+      },
+    ],
+  },
+
+  // ===========================================================================
+  // APPLAUD (Verb)
+  // ===========================================================================
+  {
+    lemma: "applaud",
+    part_of_speech: "verb",
+    language_code: "en",
+    forms: [
+      { form_text: "applauded", grammatical_features: { tense: "past" } },
+      { form_text: "applauding", grammatical_features: { participle: "present" } },
+      { form_text: "applauds", grammatical_features: { tense: "present", person: "3rd", number: "singular" } },
+      { form_text: "applause", grammatical_features: {} }, // Nominal
+    ],
+    senses: [
+      {
+        definition: "To show approval by clapping your hands; to praise or approve of something.",
+        order_index: 0,
+        tags: ["emotion", "positive"],
+        examples: [
+          {
+            text: "When I stop the Wizard, all Oz will applaud.",
+            source: {
+              source: WICKED_SOURCE,
+              part_path: EVERY_DAY_PATH,
+            },
+          },
+        ],
+      },
+    ],
+  },
+
+  // ===========================================================================
+  // FRAUD (Noun)
+  // ===========================================================================
+  {
+    lemma: "fraud",
+    part_of_speech: "noun",
+    language_code: "en",
+    forms: [
+      { form_text: "frauds", grammatical_features: { number: "plural" } },
+    ],
+    senses: [
+      {
+        definition: "The crime of lying or cheating to get money, power, or advantage; or a person who pretends to be something they are not.",
+        order_index: 0,
+        tags: ["legal", "morality", "negative"],
+        examples: [
+          {
+            text: "By revealing he’s a fraud, she hopes to save Oz.",
+            source: {
+              source: WICKED_SOURCE,
+              part_path: EVERY_DAY_PATH,
+            },
+          },
+        ],
+      },
+    ],
+  },
+
+  // ===========================================================================
+  // GAZE (Verb)
+  // ===========================================================================
+  {
+    lemma: "gaze",
+    part_of_speech: "verb",
+    language_code: "en",
+    forms: [
+      { form_text: "gazed", grammatical_features: { tense: "past" } },
+      { form_text: "gazing", grammatical_features: { participle: "present" } },
+      { form_text: "gazes", grammatical_features: { tense: "present", person: "3rd", number: "singular" } },
+    ],
+    senses: [
+      {
+        definition: "To look steadily and with interest at someone or something.",
+        order_index: 0,
+        tags: ["perception"],
+        examples: [
+          {
+            text: "We feel merry, we feel cheery just to gaze on your reflection.",
+            source: {
+              source: WICKED_SOURCE,
+              part_path: EVERY_DAY_PATH,
+            },
+          },
+        ],
+      },
+    ],
+  },
+
+  // ===========================================================================
+  // REFLECTION (Noun)
+  // ===========================================================================
+  {
+    lemma: "reflection",
+    part_of_speech: "noun",
+    language_code: "en",
+    forms: [
+      { form_text: "reflections", grammatical_features: { number: "plural" } },
+    ],
+    senses: [
+      {
+        definition: "The image of something in a mirror or on a shiny surface.",
+        order_index: 0,
+        tags: ["perception", "psychology"],
+        examples: [
+          {
+            text: "They feel happy just to gaze on Glinda’s reflection.",
+            source: {
+              source: WICKED_SOURCE,
+              part_path: EVERY_DAY_PATH,
+            },
+          },
+        ],
+      },
+      {
+        definition: "Careful thought about something.",
+        order_index: 1,
+        tags: ["psychology"],
+        examples: [
+          {
+            text: "The song also invites reflection on what ‘good’ really means.",
+            source: {
+              source: WICKED_SOURCE,
+              part_path: EVERY_DAY_PATH,
+            },
+          },
+        ],
+      },
+    ],
+  },
+
+  // ===========================================================================
+  // DISPROVE (Verb)
+  // ===========================================================================
+  {
+    lemma: "disprove",
+    part_of_speech: "verb",
+    language_code: "en",
+    forms: [
+      { form_text: "disproved", grammatical_features: { tense: "past" } },
+      { form_text: "disproving", grammatical_features: { participle: "present" } },
+      { form_text: "disproves", grammatical_features: { tense: "present", person: "3rd", number: "singular" } },
+    ],
+    senses: [
+      {
+        definition: "To show that something is not true or is wrong, especially using facts or logic.",
+        order_index: 0,
+        tags: ["logic", "science"],
+        examples: [
+          {
+            text: "Only you disprove the theory that you can’t improve perfection.",
+            source: {
+              source: WICKED_SOURCE,
+              part_path: EVERY_DAY_PATH,
+            },
+          },
+        ],
+      },
+    ],
+  },
+
+  // ===========================================================================
+  // THEORY (Noun)
+  // ===========================================================================
+  {
+    lemma: "theory",
+    part_of_speech: "noun",
+    language_code: "en",
+    forms: [
+      { form_text: "theories", grammatical_features: { number: "plural" } },
+    ],
+    senses: [
+      {
+        definition: "An idea or set of ideas that explains how or why something happens, based on evidence.",
+        order_index: 0,
+        tags: ["science", "academia", "GRE"],
+        examples: [
+          {
+            text: "Only you disprove the theory that you can’t improve perfection.",
+            source: {
+              source: WICKED_SOURCE,
+              part_path: EVERY_DAY_PATH,
+            },
+          },
+        ],
+      },
+    ],
+  },
+
+  // ===========================================================================
+  // PERFECTION (Noun)
+  // ===========================================================================
+  {
+    lemma: "perfection",
+    part_of_speech: "noun",
+    language_code: "en",
+    forms: [
+      { form_text: "perfect", grammatical_features: {} }, // Adjective
+      { form_text: "perfectly", grammatical_features: {} }, // Adverb
+    ],
+    senses: [
+      {
+        definition: "The state of being as good as something can possibly be; without any faults.",
+        order_index: 0,
+        tags: ["philosophy"],
+        examples: [
+          {
+            text: "They say you can’t improve perfection, but Glinda comes close.",
+            source: {
+              source: WICKED_SOURCE,
+              part_path: EVERY_DAY_PATH,
+            },
+          },
+        ],
+      },
+    ],
+  },
+
+  // ===========================================================================
+  // VICTIMHOOD (Noun)
+  // ===========================================================================
+  {
+    lemma: "victimhood",
+    part_of_speech: "noun",
+    language_code: "en",
+    senses: [
+      {
+        definition: "The state of being a victim, especially when it strongly shapes how someone sees themselves or is treated.",
+        order_index: 0,
+        tags: ["psychology", "negative"],
+        examples: [
+          {
+            text: "Save us from this fear and victimhood, they sing to Glinda.",
+            source: {
+              source: WICKED_SOURCE,
+              part_path: EVERY_DAY_PATH,
+            },
+          },
+        ],
+      },
+    ],
+  },
+
+  // ===========================================================================
+  // PREVAIL (Verb)
+  // ===========================================================================
+  {
+    lemma: "prevail",
+    part_of_speech: "verb",
+    language_code: "en",
+    forms: [
+      { form_text: "prevailed", grammatical_features: { tense: "past" } },
+      { form_text: "prevailing", grammatical_features: { participle: "present" } },
+      { form_text: "prevails", grammatical_features: { tense: "present", person: "3rd", number: "singular" } },
+    ],
+    senses: [
+      {
+        definition: "To win in the end; to be more powerful or successful than something else.",
+        order_index: 0,
+        tags: ["conflict", "positive"],
+        examples: [
+          {
+            text: "With her magic, she’ll prevail and make it end the way it should.",
+            source: {
+              source: WICKED_SOURCE,
+              part_path: EVERY_DAY_PATH,
+            },
+          },
+        ],
+      },
+    ],
+  },
+
+  // ===========================================================================
+  // WAIL (Verb)
+  // ===========================================================================
+  {
+    lemma: "wail",
+    part_of_speech: "verb",
+    language_code: "en",
+    forms: [
+      { form_text: "wailed", grammatical_features: { tense: "past" } },
+      { form_text: "wailing", grammatical_features: { participle: "present" } },
+      { form_text: "wails", grammatical_features: { tense: "present", person: "3rd", number: "singular" } },
+    ],
+    senses: [
+      {
+        definition: "To cry out loudly in pain, sadness, or fear.",
+        order_index: 0,
+        tags: ["sound", "emotion", "negative"],
+        examples: [
+          {
+            text: "Every night our voices wail, begging to be saved from the wicked.",
+            source: {
+              source: WICKED_SOURCE,
+              part_path: EVERY_DAY_PATH,
+            },
+          },
+        ],
+      },
+    ],
+  },
+
+  // ===========================================================================
+  // DEFEAT (Verb)
+  // ===========================================================================
+  {
+    lemma: "defeat",
+    part_of_speech: "verb",
+    language_code: "en",
+    forms: [
+      { form_text: "defeated", grammatical_features: { tense: "past" } },
+      { form_text: "defeating", grammatical_features: { participle: "present" } },
+      { form_text: "defeats", grammatical_features: { tense: "present", person: "3rd", number: "singular" } },
+    ],
+    senses: [
+      {
+        definition: "To win against someone or something in a fight, game, or struggle.",
+        order_index: 0,
+        tags: ["conflict", "negative"],
+        examples: [
+          {
+            text: "When at last the wicked is defeated by the good, the story ends.",
+            source: {
+              source: WICKED_SOURCE,
+              part_path: EVERY_DAY_PATH,
+            },
+          },
+        ],
+      },
+    ],
+  },
+
+  // ===========================================================================
+  // DEFEAT (Noun) - Split from above
+  // ===========================================================================
+  {
+    lemma: "defeat",
+    part_of_speech: "noun",
+    language_code: "en",
+    senses: [
+      {
+        definition: "The loss or failure experienced when you do not win.",
+        order_index: 0,
+        tags: ["conflict", "negative"],
+        examples: [
+          {
+            text: "The witch’s defeat brings joy throughout the land.",
+            source: {
+              source: WICKED_SOURCE,
+              part_path: EVERY_DAY_PATH,
+            },
+          },
+        ],
+      },
+    ],
+  },
+];
