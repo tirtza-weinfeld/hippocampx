@@ -1,12 +1,17 @@
+import { notFound } from "next/navigation";
 import { fetchSenseRelationsByEntryId } from "@/lib/db/neon/queries/dictionary/entry-complete";
 import { RelationsGrid } from "./relations-grid";
+import type { EntryBasic } from "./types";
 
 interface RelationsAsyncProps {
-  entryId: number;
-  languageCode: string;
+  entryPromise: Promise<EntryBasic | null>;
 }
 
-export async function RelationsAsync({ entryId, languageCode }: RelationsAsyncProps) {
-  const relations = await fetchSenseRelationsByEntryId(entryId);
-  return <RelationsGrid relations={relations} languageCode={languageCode} />;
+export async function RelationsAsync({ entryPromise }: RelationsAsyncProps) {
+  const entry = await entryPromise;
+  if (!entry) {
+    notFound();
+  }
+  const relations = await fetchSenseRelationsByEntryId(entry.id);
+  return <RelationsGrid relations={relations} languageCode={entry.languageCode} />;
 }

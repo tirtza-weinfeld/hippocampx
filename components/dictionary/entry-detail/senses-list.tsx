@@ -55,21 +55,6 @@ export function SensesList({ senses }: SensesListProps) {
                     {sense.definition}
                   </p>
 
-                  {/* Sense tags if any */}
-                  {sense.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-1.5">
-                      {sense.tags.map((tag) => (
-                        <span
-                          key={tag.id}
-                          className="px-2 py-0.5 text-xs font-medium text-dict-primary/80 bg-dict-primary/5 rounded-full"
-                          title={tag.explanation ?? undefined}
-                        >
-                          {tag.name}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-
                   {/* Examples - indented with subtle styling */}
                   {sense.examples.length > 0 && (
                     <div className="space-y-2 pl-4 border-l-2 border-dict-border">

@@ -16,8 +16,6 @@ import {
   wordForms,
   senses,
   examples,
-  tags,
-  senseTags,
   senseRelations,
   sourceParts,
   sources,
@@ -84,13 +82,11 @@ export const fetchSensesByEntryId = cache(async (entryId: number): Promise<Sense
   const rows = await neonDb
     .select({
       sense_id: senses.id,
-      sense_entry_id: senses.entry_id,
       sense_definition: senses.definition,
       sense_order: senses.order_index,
       sense_is_synthetic: senses.is_synthetic,
       sense_verification: senses.verification_status,
       ex_id: examples.id,
-      ex_sense_id: examples.sense_id,
       ex_text: examples.text,
       ex_citation: examples.cached_citation,
       ex_source_part_id: examples.source_part_id,
@@ -106,7 +102,7 @@ export const fetchSensesByEntryId = cache(async (entryId: number): Promise<Sense
     .orderBy(asc(senses.order_index));
 
   const senseMap = new Map<number, {
-    sense: Omit<SenseWithDetails, "tags">;
+    sense: SenseWithDetails;
     exampleIds: Set<number>;
   }>();
 
@@ -139,35 +135,6 @@ export const fetchSensesByEntryId = cache(async (entryId: number): Promise<Sense
     }
   }
 
-  // Fetch tags for all senses
-  const senseIds = [...senseMap.keys()];
-  const tagsData = senseIds.length > 0
-    ? await neonDb
-        .select({
-          sense_id: senseTags.sense_id,
-          tag_id: tags.id,
-          tag_name: tags.name,
-          tag_category: tags.category,
-          explanation: senseTags.explanation,
-        })
-        .from(senseTags)
-        .innerJoin(tags, eq(senseTags.tag_id, tags.id))
-        .where(inArray(senseTags.sense_id, senseIds))
-    : [];
-
-  // Group tags by sense
-  const tagsBySense = new Map<number, SenseWithDetails["tags"]>();
-  for (const t of tagsData) {
-    if (!tagsBySense.has(t.sense_id)) tagsBySense.set(t.sense_id, []);
-    const senseTags = tagsBySense.get(t.sense_id);
-    if (senseTags) senseTags.push({
-      id: t.tag_id,
-      name: t.tag_name,
-      category: t.tag_category,
-      explanation: t.explanation,
-    });
-  }
-
   // Build result preserving order
   const result: SenseWithDetails[] = [];
   const seen = new Set<number>();
@@ -176,10 +143,7 @@ export const fetchSensesByEntryId = cache(async (entryId: number): Promise<Sense
       seen.add(row.sense_id);
       const entry = senseMap.get(row.sense_id);
       if (entry) {
-        result.push({
-          ...entry.sense,
-          tags: tagsBySense.get(row.sense_id) ?? [],
-        });
+        result.push(entry.sense);
       }
     }
   }

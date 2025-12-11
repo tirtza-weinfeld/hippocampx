@@ -11,7 +11,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import * as motion from "motion/react-client";
 import { slugify } from "@/lib/utils";
 
 interface TagOption {
@@ -108,7 +107,7 @@ export function DictionaryFilters({
     newParts.forEach(name => params.append("part", slugify(name)));
 
     const queryString = params.toString();
-    router.push(queryString ? `/dictionary?${queryString}` : "/dictionary");
+    router.replace(queryString ? `/dictionary?${queryString}` : "/dictionary", { scroll: false });
   }
 
   function handleTagToggle(tagName: string) {
@@ -176,12 +175,7 @@ export function DictionaryFilters({
   const hasActiveFilters = localTags.length > 0 || localSources.length > 0 || localParts.length > 0;
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ delay: 0.15 }}
-      className="flex flex-wrap items-center gap-2"
-    >
+    <div className="flex flex-wrap items-center gap-2 animate-in fade-in duration-150 delay-150">
       {/* Tag Filter */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -312,51 +306,39 @@ export function DictionaryFilters({
         <>
           <div className="h-4 w-px bg-dict-surface-3 mx-1" />
           <div className="flex flex-wrap items-center gap-1.5">
-            {localTags.map(function renderTagChip(name) {
-              return (
-                <span key={name} className="inline-flex items-center gap-1.5 py-1 pl-3 pr-2 rounded-full text-xs font-medium bg-dict-tag-gradient text-dict-primary-vivid transition-all duration-150 ease-out">
-                  {name}
-                  <button
-                    type="button"
-                    onClick={function removeTag() {
-                      handleTagToggle(name);
-                    }}
-                    className="flex items-center justify-center size-4.5 rounded-full bg-transparent text-dict-primary-muted transition-all duration-150 hover:bg-dict-primary hover:text-dict-text-inverse"
-                  >
-                    <X className="h-3 w-3" />
-                  </button>
-                </span>
-              );
-            })}
-            {localSources.map(function renderSourceChip(title) {
-              return (
-                <span key={title} className="inline-flex items-center gap-1.5 py-1 pl-3 pr-2 rounded-full text-xs font-medium bg-dict-tag-gradient text-dict-primary-vivid transition-all duration-150 ease-out">
-                  {title}
-                  <button
-                    type="button"
-                    onClick={function removeSource() {
-                      handleSourceToggle(title);
-                    }}
-                    className="flex items-center justify-center size-4.5 rounded-full bg-transparent text-dict-primary-muted transition-all duration-150 hover:bg-dict-primary hover:text-dict-text-inverse"
-                  >
-                    <X className="h-3 w-3" />
-                  </button>
-                </span>
-              );
-            })}
-            {localParts.map(function renderPartChip(name) {
-              const part = sourceParts.find(function findPart(p) {
-                return p.name === name;
-              });
+            {localTags.map(name => (
+              <span key={name} className="inline-flex items-center gap-1.5 py-1 pl-3 pr-2 rounded-full text-xs font-medium bg-dict-tag-gradient text-dict-primary-vivid transition-all duration-150 ease-out">
+                {name}
+                <button
+                  type="button"
+                  onClick={() => handleTagToggle(name)}
+                  className="flex items-center justify-center size-4.5 rounded-full bg-transparent text-dict-primary-muted transition-all duration-150 hover:bg-dict-primary hover:text-dict-text-inverse"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </span>
+            ))}
+            {localSources.map(title => (
+              <span key={title} className="inline-flex items-center gap-1.5 py-1 pl-3 pr-2 rounded-full text-xs font-medium bg-dict-tag-gradient text-dict-primary-vivid transition-all duration-150 ease-out">
+                {title}
+                <button
+                  type="button"
+                  onClick={() => handleSourceToggle(title)}
+                  className="flex items-center justify-center size-4.5 rounded-full bg-transparent text-dict-primary-muted transition-all duration-150 hover:bg-dict-primary hover:text-dict-text-inverse"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </span>
+            ))}
+            {localParts.map(name => {
+              const part = sourceParts.find(p => p.name === name);
               const parentSourceTitle = part?.sourceTitle ?? "";
               return (
                 <span key={name} className="inline-flex items-center gap-1.5 py-1 pl-3 pr-2 rounded-full text-xs font-medium bg-dict-tag-gradient text-dict-primary-vivid transition-all duration-150 ease-out">
                   {name}
                   <button
                     type="button"
-                    onClick={function removePart() {
-                      handleSourcePartToggle(name, parentSourceTitle);
-                    }}
+                    onClick={() => handleSourcePartToggle(name, parentSourceTitle)}
                     className="flex items-center justify-center size-4.5 rounded-full bg-transparent text-dict-primary-muted transition-all duration-150 hover:bg-dict-primary hover:text-dict-text-inverse"
                   >
                     <X className="h-3 w-3" />
@@ -375,6 +357,6 @@ export function DictionaryFilters({
           </button>
         </>
       )}
-    </motion.div>
+    </div>
   );
 }

@@ -60,13 +60,10 @@ export function DictionaryHeader({
 
   return (
     <header className="sticky top-0 z-40 @container">
-      {/* Seamless gradient fade - blends into page */}
-      <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
-        <div className="absolute inset-0 bg-dict-surface-0/95 backdrop-blur-xl [mask-image:linear-gradient(to_bottom,black_70%,transparent_100%)]" />
-        <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-dict-border/30 to-transparent" />
-      </div>
+      {/* Subtle blur background - minimal, blends with page */}
+      <div className="absolute inset-0 -z-10 backdrop-blur-xl [mask-image:linear-gradient(to_bottom,black_50%,transparent_100%)]" aria-hidden="true" />
 
-      <div className="relative container mx-auto px-3 @sm:px-4 py-2.5 @sm:py-3 space-y-2">
+      <div className="relative container mx-auto pl-16 pr-3 @3xl:pl-3 @sm:pr-4 py-2.5 @sm:py-3 space-y-2">
         {/* Row 1: Search bar */}
         <div>
           <SearchBar
@@ -89,7 +86,7 @@ export function DictionaryHeader({
           <div className="flex-1" />
 
           {/* Entry count */}
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-dict-surface-2 text-dict-text-secondary text-xs font-medium">
+          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-dict-surface-2/80 backdrop-blur-sm text-dict-text-secondary text-xs font-medium">
             <LayoutList className="size-3 text-dict-primary" />
             <span className="tabular-nums">{totalCount.toLocaleString()}</span>
           </div>
@@ -98,7 +95,7 @@ export function DictionaryHeader({
           <button
             type="button"
             onClick={toggleExpanded}
-            className="inline-flex items-center justify-center size-7 rounded-full text-xs font-medium bg-dict-surface-2 text-dict-text-secondary transition-colors duration-150 hover:bg-dict-hover hover:text-dict-text"
+            className="inline-flex items-center justify-center size-7 rounded-full text-xs font-medium bg-dict-surface-2/80 backdrop-blur-sm text-dict-text-secondary transition-colors duration-150 hover:bg-dict-hover hover:text-dict-text"
             aria-label={isExpanded ? "Collapse definitions" : "Expand definitions"}
           >
             <motion.span
@@ -110,12 +107,6 @@ export function DictionaryHeader({
           </button>
         </div>
       </div>
-
-      {/* Bottom fade for seamless blend */}
-      <div
-        className="absolute inset-x-0 bottom-0 h-4 bg-linear-to-b from-dict-surface-0/50 to-transparent pointer-events-none"
-        aria-hidden="true"
-      />
     </header>
   );
 }

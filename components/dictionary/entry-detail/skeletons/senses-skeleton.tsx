@@ -1,37 +1,36 @@
 import { Skeleton } from "@/components/ui/skeleton";
-import { Card, CardHeader, CardContent } from "@/components/ui/card";
-import { BookText } from "lucide-react";
 
 export function SensesSkeleton() {
   return (
-    <section className="space-y-5">
-      <div className="flex items-center gap-3">
-        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-linear-to-br from-violet-50 to-purple-100/80 dark:from-violet-950/60 dark:to-purple-900/40 ring-1 ring-violet-200/50 dark:ring-violet-700/30">
-          <BookText className="h-4 w-4 text-violet-600 dark:text-violet-400" />
-        </div>
-        <h2 className="text-xl font-semibold tracking-tight">Definitions</h2>
-      </div>
+    <div className="space-y-8">
+      <section className="space-y-4">
+        <ol className="space-y-5 list-none">
+          {[1, 2].map((i) => (
+            <li key={i} className="flex gap-4">
+              {/* Number */}
+              <span className="text-dict-text-tertiary text-sm font-medium mt-0.5 select-none">
+                {i}.
+              </span>
 
-      <div className="space-y-4">
-        {[1].map((i) => (
-          <Card key={i}>
-            <CardHeader>
-              <div className="flex items-center gap-2">
-                <Skeleton className="h-5 w-6" />
-                <Skeleton className="h-5 w-16 rounded-full" />
+              <div className="flex-1 space-y-3">
+                {/* Definition skeleton */}
+                <div className="space-y-1.5">
+                  <Skeleton className="h-5 w-full" />
+                  <Skeleton className="h-5 w-3/4" />
+                </div>
+
+                {/* Example skeleton - matches indented styling */}
+                <div className="space-y-2 pl-4 border-l-2 border-dict-border">
+                  <div className="space-y-1">
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-3 w-32" />
+                  </div>
+                </div>
               </div>
-              <Skeleton className="h-6 w-full mt-2" />
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <Skeleton className="h-4 w-20" />
-              <div className="border-l-2 pl-4 py-2 border-muted">
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-3/4 mt-1" />
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    </section>
+            </li>
+          ))}
+        </ol>
+      </section>
+    </div>
   );
 }

@@ -147,12 +147,6 @@ export interface SenseWithDetails {
   isSynthetic: boolean;
   verificationStatus: string | null;
   examples: ExampleWithSource[];
-  tags: Array<{
-    id: number;
-    name: string;
-    category: string | null;
-    explanation: string | null;
-  }>;
 }
 
 export interface SenseRelationInfo {

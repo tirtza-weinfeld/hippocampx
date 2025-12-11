@@ -1,19 +1,14 @@
 import { Suspense } from "react";
-import { notFound } from "next/navigation";
 import * as motion from "motion/react-client";
 import {
-  fetchEntryBasic,
-  fetchSensesByEntryId,
-} from "@/lib/db/neon/queries/dictionary/entry-complete";
-import {
   BackNavButton,
-  EntryHeader,
+  EntryHeaderClient,
+  SensesWithHeaderAsync,
+  SensesWithHeaderSkeleton,
   RelationsAsync,
-  SensesAsync,
-  SensesSkeleton,
-  SenseTags,
 } from "@/components/dictionary/entry-detail";
 import { getOrCreateEntryAudio } from "@/lib/actions/word-audio";
+import { fetchEntryBasic } from "@/lib/db/neon/queries/dictionary/entry-complete";
 
 export default async function EntryDetailPage(props: {
   params: Promise<{ lang: string; word: string }>;
@@ -22,59 +17,52 @@ export default async function EntryDetailPage(props: {
   const { lang, word: lemmaText } = params;
   const decodedLemma = decodeURIComponent(lemmaText);
 
-  // Fetch base entry first (required for notFound check and header)
-  const entry = await fetchEntryBasic(decodedLemma, lang);
+  // Start entry fetch immediately - need entry.id for audio
+  const entryPromise = fetchEntryBasic(decodedLemma, lang);
 
-  if (!entry) {
-    notFound();
-  }
-
-  // Fetch senses to get tags (needed for immediate display)
-  const senses = await fetchSensesByEntryId(entry.id);
-
-  // Collect unique tags from all senses
-  const allTags = senses.flatMap(s => s.tags);
-  const uniqueTags = allTags.filter((tag, index, self) =>
-    self.findIndex(t => t.id === tag.id) === index
+  // Start audio fetch - chains off entry but doesn't block render
+  const audioPromise = entryPromise.then(entry =>
+    entry ? getOrCreateEntryAudio(entry.id, entry.lemma, entry.languageCode) : null
   );
 
+  // Page renders INSTANTLY with word from URL
   return (
     <div className="min-h-screen from-transparent via-dict-surface-0 to-transparent bg-linear-to-r">
 
-      {/* Minimal sticky nav - Google style */}
-      <div className="from-transparent via-dict-glass to-transparent bg-linear-to-r sticky top-0 z-10 border-b border-dict-border ">
-        <div className="@container mx-auto px-4 py-3 ">
+      {/* Sticky nav - seamless header that clears sidebar toggle */}
+      <div className="sticky top-0 z-10">
+        <div className="@container mx-auto px-4 py-4">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.2 }}
-            className="flex items-center gap-3"
+            className="flex items-center gap-3 pl-14 md:pl-0"
           >
             <BackNavButton />
-            <div className="flex items-center gap-2 text-sm text-dict-text-secondary">
-              <span className="font-medium text-dict-text">{decodedLemma}</span>
-            </div>
+            <span className="text-dict-text-tertiary">/</span>
+            <span className="text-sm text-dict-text-secondary font-medium">
+              {decodedLemma}
+            </span>
           </motion.div>
         </div>
+        {/* Fade out gradient at bottom */}
+        {/* <div className="h-4 bg-gradient-to-b from-dict-surface-0/80 to-transparent -mt-2" /> */}
       </div>
 
-      {/* Main content - clean Google-style layout */}
+      {/* Main content */}
       <div className="@container mx-auto py-8 px-4 max-w-3xl">
         <div className="flex flex-col gap-6">
-          <EntryHeader
-            entry={entry}
-            audioPromise={getOrCreateEntryAudio(entry.id, entry.lemma, entry.languageCode)}
-          />
-          <SenseTags tags={uniqueTags} />
+          {/* Header renders INSTANTLY - word from URL, audio loading in background */}
+          <EntryHeaderClient lemma={decodedLemma} audioPromise={audioPromise} />
 
-          {/* Senses with streaming */}
-          <Suspense fallback={<SensesSkeleton />}>
-            <SensesAsync entryId={entry.id} />
+          {/* Senses + tags + entry metadata - streams in */}
+          <Suspense fallback={<SensesWithHeaderSkeleton />}>
+            <SensesWithHeaderAsync entryPromise={entryPromise} />
           </Suspense>
 
-          {/* Relations */}
+          {/* Relations - streams independently */}
           <Suspense fallback={null}>
-            <RelationsAsync entryId={entry.id} languageCode={entry.languageCode} />
+            <RelationsAsync entryPromise={entryPromise} />
           </Suspense>
         </div>
       </div>

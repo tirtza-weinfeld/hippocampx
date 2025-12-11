@@ -1,55 +1,62 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import * as motion from "motion/react-client";
 import { Volume2, Loader2 } from "lucide-react";
+import type { EntryBasic, AudioResult } from "./types";
 
-type AudioResult =
-  | { success: true; audioUrl: string }
-  | { success: false; error: string };
-
-type AudioState = "idle" | "loading" | "playing" | "error";
-
-interface EntryBasic {
-  id: number;
-  lemma: string;
-  partOfSpeech: string;
-  languageCode: string;
-}
+type AudioState = "idle" | "loading" | "ready" | "playing" | "error";
 
 interface EntryHeaderProps {
   entry: EntryBasic;
-  audioPromise: Promise<AudioResult>;
+  audioResult: AudioResult | null;
 }
 
-export function EntryHeader({ entry, audioPromise }: EntryHeaderProps) {
+export function EntryHeader({ entry, audioResult }: EntryHeaderProps) {
   const [state, setState] = useState<AudioState>("idle");
-  const [resolved, setResolved] = useState<AudioResult | null>(null);
+  const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
 
-  const handlePlay = async () => {
-    if (state === "loading" || state === "playing") return;
+  // Preload audio as soon as we have the URL
+  useEffect(() => {
+    if (!audioResult?.success) return;
 
-    setState("loading");
+    const audioElement = new Audio();
+    audioElement.preload = "auto";
+    audioElement.src = audioResult.audioUrl;
 
-    // Resolve promise if not already resolved
-    const result = resolved ?? await audioPromise;
-    if (!resolved) setResolved(result);
-
-    if (!result.success) {
-      setState("error");
-      return;
-    }
-
-    const audio = new Audio(result.audioUrl);
-
-    audio.oncanplaythrough = () => {
-      setState("playing");
-      audio.play().catch(() => setState("error"));
+    audioElement.oncanplaythrough = () => {
+      setState("ready");
     };
 
-    audio.onended = () => setState("idle");
-    audio.onerror = () => setState("error");
-  };
+    audioElement.onended = () => setState("ready");
+    audioElement.onerror = () => setState("error");
+
+    setAudio(audioElement);
+
+    return () => {
+      audioElement.pause();
+      audioElement.src = "";
+    };
+  }, [audioResult]);
+
+  function handlePlay() {
+    if (!audio || state === "loading" || state === "playing") return;
+
+    if (state === "ready") {
+      setState("playing");
+      audio.currentTime = 0;
+      audio.play().catch(() => setState("error"));
+    } else if (state === "idle" && audioResult?.success) {
+      // Still loading, wait for it
+      setState("loading");
+      audio.oncanplaythrough = () => {
+        setState("playing");
+        audio.play().catch(() => setState("error"));
+      };
+    }
+  }
+
+  const isDisabled = state === "loading" || state === "error" || !audioResult?.success;
 
   return (
     <motion.header
@@ -65,8 +72,8 @@ export function EntryHeader({ entry, audioPromise }: EntryHeaderProps) {
         </h1>
         <button
           type="button"
-          onClick={() => void handlePlay()}
-          disabled={state === "loading"}
+          onClick={handlePlay}
+          disabled={isDisabled}
           className="flex items-center justify-center w-10 h-10 rounded-full bg-dict-primary/10 hover:bg-dict-primary/20 transition-colors group disabled:opacity-50"
           aria-label="Listen to pronunciation"
         >
