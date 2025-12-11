@@ -1,0 +1,115 @@
+# ERDiagram Syntax Design
+
+## Proposed: SQL-like, FK auto-infers relationships
+
+```erDiagram
+lexical_entries
+  id            int           PK
+  lemma         varchar(255)
+  part_of_speech partofspeech
+  language_code varchar(5)
+  embedding     halfvec(1536)
+  metadata      jsonb
+  created_at    timestamp
+  updated_at    timestamp
+
+word_forms
+  id                    int     PK
+  entry_id              int     FK(lexical_entries.id)
+  form_text             varchar(255)
+  grammatical_features  jsonb
+
+senses
+  id                  int     PK
+  entry_id            int     FK(lexical_entries.id)
+  definition          text
+  order_index         int
+  embedding           halfvec(1536)
+  is_synthetic        boolean
+  verification_status varchar(50)
+
+sense_relations
+  id              int           PK
+  source_sense_id int           FK(senses.id)
+  target_sense_id int           FK(senses.id)
+  relation_type   relationtype
+  strength        int
+  explanation     text
+
+examples
+  id              int     PK
+  sense_id        int     FK(senses.id)
+  text            text
+  language_code   varchar(5)
+  source_part_id  int     FK(source_parts.id)
+  embedding       halfvec(1536)
+  cached_citation varchar(255)
+
+tags
+  id        int           PK
+  name      varchar(100)  UK
+  category  varchar(50)
+
+sense_tags
+  sense_id    int   PK FK(senses.id)
+  tag_id      int   PK FK(tags.id)
+  explanation text
+
+entry_audio
+  id           int     PK
+  entry_id     int     FK(lexical_entries.id)
+  audio_url    varchar(512)
+  transcript   text
+  duration_ms  int
+  accent_code  varchar(10)
+  content_type varchar(50)
+
+contributors
+  id        int     PK
+  name      varchar(255)
+  type      varchar(50)
+  metadata  jsonb
+
+sources
+  id                int     PK
+  type              sourcetype
+  title             varchar(255)
+  publication_year  int
+  reliability_score real
+  metadata          jsonb
+
+source_credits
+  source_id       int         PK FK(sources.id)
+  contributor_id  int         PK FK(contributors.id)
+  role            creditrole  PK
+
+source_parts
+  id              int     PK
+  source_id       int     FK(sources.id)
+  parent_part_id  int     FK(source_parts.id)
+  name            varchar(255)
+  type            varchar(50)
+  order_index     int
+```
+
+## Syntax Rules
+
+**Tables:** Name on its own line, columns indented below
+**Columns:** `name type [constraints]`
+**Constraints:**
+  - `PK` = primary key
+  - `FK(table.column)` = foreign key (auto-draws relationship)
+  - `UK` = unique
+  - Multiple: `PK FK(table.id)` (space-separated)
+
+**Relationships:** Auto-inferred from FK definitions - no separate syntax needed!
+
+## Comparison
+
+| Feature | Mermaid | Proposed |
+|---------|---------|----------|
+| Column order | `int id` | `id int` (SQL-like) |
+| FK target | Separate line | `FK(table.column)` inline |
+| Relationships | `\|\|--o{` manually | Auto from FK |
+| Self-reference | Confusing | `FK(same_table.id)` |
+| Composite PK | `PK,FK` | `PK FK(table)` |

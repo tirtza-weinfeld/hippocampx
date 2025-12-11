@@ -25,6 +25,7 @@
     "./remark-collapsible-section.ts",
     "./mdx-text-extraction.ts",
     "./remark-section-wrapper.ts",
+    "./remark-er-diagram.ts",
     "./lib/step-colors.ts",
     "./mdast-types.d.ts"
   ],

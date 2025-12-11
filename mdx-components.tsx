@@ -62,6 +62,7 @@ import { ProblemCodeTabsList } from "@/components/mdx/problem/problem-code-tabs-
 import { ProblemCodeTabTrigger } from "@/components/mdx/problem/problem-code-tab-trigger";
 import { ProblemCodeTab } from "@/components/mdx/problem/problem-code-tab";
 import * as CardComponents from "@/components/mdx/card"
+import { ERDiagram } from "@/components/mdx/diagrams/er"
 
 export const customComponents = {
   ...CardComponents,
@@ -214,7 +215,8 @@ export const customComponents = {
   ...ProblemHeaders,
   DifficultyBadge,
 
-  // Header Components handled by existing h1-h6 in typography
+  // ER Diagram
+  ERDiagram,
 
 } as MDXComponents;
 

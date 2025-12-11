@@ -10,13 +10,34 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuGroup,
 } from "@/components/ui/dropdown-menu";
 import { slugify } from "@/lib/utils";
+
+/** Groups tags by their category */
+function groupTagsByCategory(tags: TagOption[]): Map<string, { displayName: string; tags: TagOption[] }> {
+  const grouped = new Map<string, { displayName: string; tags: TagOption[] }>();
+
+  for (const tag of tags) {
+    const existing = grouped.get(tag.categoryId);
+    if (existing) {
+      existing.tags.push(tag);
+    } else {
+      grouped.set(tag.categoryId, {
+        displayName: tag.categoryDisplayName,
+        tags: [tag],
+      });
+    }
+  }
+
+  return grouped;
+}
 
 interface TagOption {
   id: number;
   name: string;
-  category: string | null;
+  categoryId: string;
+  categoryDisplayName: string;
   senseCount: number;
 }
 
@@ -199,7 +220,7 @@ export function DictionaryFilters({
             )}
           </button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" className="w-56 bg-dict-surface-1 border-dict-border rounded-2xl shadow-dict-lg p-2 overflow-hidden">
+        <DropdownMenuContent align="start" className="w-64 max-h-96 overflow-y-auto bg-dict-surface-1 border-dict-border rounded-2xl shadow-dict-lg p-2">
           <DropdownMenuLabel className="text-xs font-medium text-muted-foreground">
             Filter by Tag
           </DropdownMenuLabel>
@@ -209,17 +230,25 @@ export function DictionaryFilters({
               No tags available
             </div>
           ) : (
-            tags.map(tag => (
-              <DropdownMenuCheckboxItem
-                key={tag.id}
-                checked={localTags.includes(tag.name)}
-                onCheckedChange={() => handleTagToggle(tag.name)}
-                onSelect={e => e.preventDefault()}
-                className="rounded-lg px-3 py-2.5 my-0.5 cursor-pointer transition-all duration-150 focus:bg-dict-tag-gradient focus:text-dict-primary-vivid data-[state=checked]:bg-dict-tag-gradient data-[state=checked]:text-dict-primary-vivid hover:bg-dict-hover"
-              >
-                <span className="flex-1 text-sm">{tag.name}</span>
-                <span className="text-xs text-dict-text-tertiary ml-2">({tag.senseCount})</span>
-              </DropdownMenuCheckboxItem>
+            Array.from(groupTagsByCategory(tags).entries()).map(([categoryId, { displayName, tags: categoryTags }], categoryIndex) => (
+              <DropdownMenuGroup key={categoryId}>
+                {categoryIndex > 0 && <DropdownMenuSeparator className="my-2 bg-dict-border" />}
+                <DropdownMenuLabel className="text-xs font-semibold text-dict-text-secondary px-3 py-1.5">
+                  {displayName}
+                </DropdownMenuLabel>
+                {categoryTags.map(tag => (
+                  <DropdownMenuCheckboxItem
+                    key={tag.id}
+                    checked={localTags.includes(tag.name)}
+                    onCheckedChange={() => handleTagToggle(tag.name)}
+                    onSelect={e => e.preventDefault()}
+                    className="rounded-lg px-3 py-2.5 my-0.5 cursor-pointer transition-all duration-150 focus:bg-dict-tag-gradient focus:text-dict-primary-vivid data-[state=checked]:bg-dict-tag-gradient data-[state=checked]:text-dict-primary-vivid hover:bg-dict-hover"
+                  >
+                    <span className="flex-1 text-sm">{tag.name}</span>
+                    <span className="text-xs text-dict-text-tertiary ml-2">({tag.senseCount})</span>
+                  </DropdownMenuCheckboxItem>
+                ))}
+              </DropdownMenuGroup>
             ))
           )}
         </DropdownMenuContent>

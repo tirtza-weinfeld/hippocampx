@@ -119,7 +119,8 @@ export const fetchEntriesInitial = cache(async (
       tags: tagStats.map(s => ({
         id: s.id,
         name: s.name,
-        category: s.category,
+        categoryId: s.categoryId,
+        categoryDisplayName: s.categoryDisplayName,
         senseCount: s.senseCount,
       })),
       sources: sourceStats.map(s => ({

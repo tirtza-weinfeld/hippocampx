@@ -12,6 +12,7 @@ import { eq, asc, count } from "drizzle-orm";
 import { neonDb } from "../../connection";
 import {
   tags,
+  categories,
   senseTags,
   senses,
   sources,
@@ -25,24 +26,27 @@ import type { TagStat, SourceStat, SourcePartStat } from "./types";
 // TAG STATISTICS
 // ============================================================================
 
-/** Fetch tag stats with sense counts */
+/** Fetch tag stats with sense counts, joined with categories */
 export const fetchTagStats = cache(async (): Promise<TagStat[]> => {
   const result = await neonDb
     .select({
       id: tags.id,
       name: tags.name,
-      category: tags.category,
+      categoryId: tags.categoryId,
+      categoryDisplayName: categories.displayName,
       senseCount: count(senseTags.sense_id),
     })
     .from(tags)
+    .innerJoin(categories, eq(tags.categoryId, categories.id))
     .leftJoin(senseTags, eq(tags.id, senseTags.tag_id))
-    .groupBy(tags.id, tags.name, tags.category)
-    .orderBy(asc(tags.name));
+    .groupBy(tags.id, tags.name, tags.categoryId, categories.displayName)
+    .orderBy(asc(categories.displayName), asc(tags.name));
 
   return result.map(r => ({
     id: r.id,
     name: r.name,
-    category: r.category,
+    categoryId: r.categoryId,
+    categoryDisplayName: r.categoryDisplayName,
     senseCount: r.senseCount,
   }));
 });

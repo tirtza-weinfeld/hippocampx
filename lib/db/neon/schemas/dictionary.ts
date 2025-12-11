@@ -20,6 +20,7 @@ import {
   pgEnum,
   index,
   uniqueIndex,
+  unique,
   text,
   timestamp,
   integer,
@@ -39,11 +40,17 @@ import { z } from "zod";
 // ============================================================================
 
 /**
+ * Embedding dimension - OpenAI text-embedding-3 uses 1536.
+ * Change this if switching to a different model (e.g., 1024, 768, 4096).
+ */
+const EMBEDDING_DIM = 1536;
+
+/**
  * HALF-PRECISION VECTOR (FP16)
  * Cuts RAM/Storage by 50% vs FP32. Requires pgvector 0.7.0+
  */
 const halfvec = customType<{ data: number[]; driverData: string }>({
-  dataType: () => "halfvec(1536)",
+  dataType: () => `halfvec(${EMBEDDING_DIM})`,
   toDriver: (value) => `[${value.join(",")}]`,
   fromDriver: (value) => {
     if (typeof value === "string") {
@@ -122,6 +129,14 @@ export const creditRoleEnum = pgEnum("creditrole", [
   "host",
 ]);
 
+export const verificationStatusEnum = pgEnum("verificationstatus", [
+  "unverified",      // Raw import / AI generated
+  "flagged",         // User reported issue
+  "pending_review",  // Human currently editing
+  "verified",        // Signed off by human
+  "canonical",       // Authoritative source (Oxford, Merriam-Webster, etc.)
+]);
+
 // ============================================================================
 // 3. CORE TABLES (Lexical Hierarchy)
 // ============================================================================
@@ -134,6 +149,9 @@ export const lexicalEntries = pgTable(
     part_of_speech: partOfSpeechEnum("part_of_speech").notNull(),
     language_code: varchar("language_code", { length: 5 }).notNull().default("en"),
 
+    // Homograph discriminator: distinguishes "bass" (fish) from "bass" (instrument)
+    discriminator: integer("discriminator").default(1).notNull(),
+
     embedding: halfvec("embedding"),
     metadata: jsonb("metadata"),
 
@@ -141,7 +159,12 @@ export const lexicalEntries = pgTable(
     updated_at: timestamp("updated_at", { withTimezone: true }).defaultNow(),
   },
   (table) => [
-    uniqueIndex("uq_lemma_lang_pos").on(table.lemma, table.language_code, table.part_of_speech),
+    uniqueIndex("uq_lemma_lang_pos_disc").on(
+      table.lemma,
+      table.language_code,
+      table.part_of_speech,
+      table.discriminator
+    ),
     index("idx_entry_embedding").using("hnsw", table.embedding.op("halfvec_cosine_ops")),
     index("idx_entry_lemma_trgm").using("gin", sql.raw(`"lemma" gin_trgm_ops`)),
   ]
@@ -156,7 +179,9 @@ export const wordForms = pgTable(
       .references(() => lexicalEntries.id, { onDelete: "cascade" }),
 
     form_text: varchar("form_text", { length: 255 }).notNull(),
-    grammatical_features: jsonb("grammatical_features").notNull(),
+    grammatical_features: jsonb("grammatical_features")
+      .$type<z.infer<typeof PolyglotGrammarSchema>>()
+      .notNull(),
   },
   (table) => [
     index("idx_form_entry").on(table.entry_id),
@@ -179,7 +204,7 @@ export const senses = pgTable(
     embedding: halfvec("embedding"),
 
     is_synthetic: boolean("is_synthetic").default(false),
-    verification_status: varchar("verification_status", { length: 50 }).default("unverified"),
+    verification_status: verificationStatusEnum("verification_status").default("unverified").notNull(),
   },
   (table) => [
     index("idx_sense_entry").on(table.entry_id),
@@ -289,7 +314,9 @@ export const sourceParts = pgTable(
   (table) => [
     index("idx_source_parts_source").on(table.source_id),
     index("idx_source_parts_parent").on(table.parent_part_id),
-    uniqueIndex("uq_source_part").on(table.source_id, table.parent_part_id, table.name),
+    unique("uq_source_part")
+      .on(table.source_id, table.parent_part_id, table.name)
+      .nullsNotDistinct(),
     foreignKey({
       columns: [table.parent_part_id],
       foreignColumns: [table.id],
@@ -345,11 +372,28 @@ export const entryAudio = pgTable(
   (table) => [index("idx_audio_entry").on(table.entry_id)]
 );
 
-export const tags = pgTable("tags", {
-  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
-  name: varchar("name", { length: 100 }).notNull().unique(),
-  category: varchar("category", { length: 50 }),
+/**
+ * Categories - Parent "bucket" for organizing tags
+ * Uses natural key (varchar id) for readable data: 'register', 'domain'
+ */
+export const categories = pgTable("categories", {
+  id: varchar("id", { length: 50 }).primaryKey(),
+  displayName: varchar("display_name", { length: 100 }).notNull(),
+  aiDescription: text("ai_description"),
 });
+
+export const tags = pgTable(
+  "tags",
+  {
+    id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+    categoryId: varchar("category_id", { length: 50 })
+      .notNull()
+      .references(() => categories.id, { onDelete: "restrict" }),
+    name: varchar("name", { length: 100 }).notNull(),
+    metadata: jsonb("metadata"),
+  },
+  (table) => [uniqueIndex("uq_tag_name_category").on(table.name, table.categoryId)]
+);
 
 export const senseTags = pgTable(
   "sense_tags",
@@ -432,7 +476,15 @@ export const examplesRelations = relations(examples, ({ one }) => ({
   sourcePart: one(sourceParts, { fields: [examples.source_part_id], references: [sourceParts.id] }),
 }));
 
-export const tagsRelations = relations(tags, ({ many }) => ({
+export const categoriesRelations = relations(categories, ({ many }) => ({
+  tags: many(tags),
+}));
+
+export const tagsRelations = relations(tags, ({ one, many }) => ({
+  category: one(categories, {
+    fields: [tags.categoryId],
+    references: [categories.id],
+  }),
   senses: many(senseTags),
 }));
 
@@ -497,6 +549,9 @@ export type InsertSense = InferInsertModel<typeof senses>;
 
 export type SenseRelation = InferSelectModel<typeof senseRelations>;
 export type InsertSenseRelation = InferInsertModel<typeof senseRelations>;
+
+export type Category = InferSelectModel<typeof categories>;
+export type InsertCategory = InferInsertModel<typeof categories>;
 
 export type Tag = InferSelectModel<typeof tags>;
 export type InsertTag = InferInsertModel<typeof tags>;

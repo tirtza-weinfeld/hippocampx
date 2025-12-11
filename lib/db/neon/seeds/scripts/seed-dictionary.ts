@@ -25,6 +25,7 @@ import {
   senses,
   examples,
   senseRelations,
+  categories,
   tags,
   senseTags,
   sources,
@@ -92,19 +93,99 @@ async function getSenseId(
 }
 
 // =============================================================================
+// CATEGORY DEFINITIONS
+// =============================================================================
+
+/**
+ * Predefined categories for tags.
+ * Tags are parsed as "category:tagName" or default to "topic" category.
+ */
+const CATEGORY_DEFINITIONS: Array<{ id: string; displayName: string; aiDescription?: string }> = [
+  { id: "topic", displayName: "Topic", aiDescription: "Subject domain (medical, legal, technology, etc.)" },
+  { id: "register", displayName: "Register", aiDescription: "Formality level (slang, archaic, poetic, colloquial)" },
+  { id: "connotation", displayName: "Connotation", aiDescription: "Emotional tone (positive, negative, neutral)" },
+  { id: "test-prep", displayName: "Test Prep", aiDescription: "Standardized test vocabulary (GRE, SAT, TOEFL)" },
+  { id: "frequency", displayName: "Frequency", aiDescription: "How common the word is (rare, common)" },
+  { id: "region", displayName: "Region", aiDescription: "Geographic usage (British, American, Australian)" },
+];
+
+/**
+ * Map tag names to their categories.
+ * Format: "tagName" -> "categoryId"
+ * If a tag is not in this map, it defaults to "topic".
+ */
+const TAG_CATEGORY_MAP: Record<string, string> = {
+  // Register (formality/style)
+  slang: "register",
+  archaic: "register",
+  poetic: "register",
+  colloquial: "register",
+  formal: "register",
+  informal: "register",
+  literary: "register",
+  vulgar: "register",
+  // Connotation (emotional tone)
+  negative: "connotation",
+  positive: "connotation",
+  neutral: "connotation",
+  pejorative: "connotation",
+  // Test prep
+  GRE: "test-prep",
+  SAT: "test-prep",
+  TOEFL: "test-prep",
+  IELTS: "test-prep",
+  // Frequency
+  rare: "frequency",
+  common: "frequency",
+  // Region
+  British: "region",
+  American: "region",
+  Australian: "region",
+  // All other tags (emotion, nature, morality, religion, etc.) default to "topic"
+};
+
+// =============================================================================
 // GET OR CREATE HELPERS
 // =============================================================================
 
+/** Ensure all categories exist in the database */
+async function seedCategories(db: DbType): Promise<void> {
+  for (const cat of CATEGORY_DEFINITIONS) {
+    const [existing] = await db.select().from(categories).where(eq(categories.id, cat.id));
+    if (!existing) {
+      await db.insert(categories).values({
+        id: cat.id,
+        displayName: cat.displayName,
+        aiDescription: cat.aiDescription,
+      });
+      console.log(`  [category] Created: ${cat.displayName}`);
+    }
+  }
+}
+
+/** Get category ID for a tag name */
+function getCategoryForTag(tagName: string): string {
+  return TAG_CATEGORY_MAP[tagName] ?? "topic";
+}
+
 async function getOrCreateTag(db: DbType, tagName: string): Promise<number> {
-  const [existing] = await db.select().from(tags).where(eq(tags.name, tagName));
+  const categoryId = getCategoryForTag(tagName);
+
+  const [existing] = await db
+    .select()
+    .from(tags)
+    .where(and(eq(tags.name, tagName), eq(tags.categoryId, categoryId)));
 
   if (existing) {
     return existing.id;
   }
 
-  const [inserted] = await db.insert(tags).values({ name: tagName }).returning();
+  const [inserted] = await db
+    .insert(tags)
+    .values({ name: tagName, categoryId })
+    .returning();
 
-  console.log(`    [tag] Created: ${tagName}`);
+  console.log(`    [tag] Created: ${tagName} (${categoryId})`);
   return inserted.id;
 }
 
@@ -421,9 +502,13 @@ async function seed(): Promise<void> {
   const db = drizzle(sql);
 
   console.log("Seeding dictionary (new schema)...");
-  console.log(`Mode: ${shouldOverride ? "OVERRIDE" : "SKIP"} existing entries`);
-  console.log(`Found ${dictionaryData.length} entries to seed\n`);
+  console.log(`Mode: ${shouldOverride ? "OVERRIDE" : "SKIP"} existing entries\n`);
 
+  // Seed categories first (required for tags)
+  console.log("Seeding categories...");
+  await seedCategories(db);
+
+  console.log(`\nSeeding ${dictionaryData.length} entries...`);
   for (const entryData of dictionaryData) {
     await seedEntry(db, entryData);
   }

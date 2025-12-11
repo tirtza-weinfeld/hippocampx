@@ -1,0 +1,96 @@
+/**
+ * ER Diagram CSS Tokens
+ *
+ * Usage with Tailwind:
+ *   bg-er-entity
+ *   text-er-header
+ *   border-er-border
+ *   stroke-er-relation
+ */
+
+@theme inline {
+  --color-er-entity: var(--er-entity);
+  --color-er-entity-header: var(--er-entity-header);
+  --color-er-border: var(--er-border);
+  --color-er-text: var(--er-text);
+  --color-er-text-muted: var(--er-text-muted);
+  --color-er-pk: var(--er-pk);
+  --color-er-pk-text: var(--er-pk-text);
+  --color-er-fk: var(--er-fk);
+  --color-er-fk-text: var(--er-fk-text);
+  --color-er-uk: var(--er-uk);
+  --color-er-uk-text: var(--er-uk-text);
+  --color-er-relation: var(--er-relation);
+
+  --shadow-er-table: var(--shadow-sm);
+  --shadow-er-table-hover: var(--shadow-lg);
+}
+
+:root {
+  --er-entity: var(--color-white);
+  --er-entity-header: var(--color-gray-100);
+  --er-border: var(--color-gray-300);
+  --er-text: var(--color-gray-800);
+  --er-text-muted: var(--color-gray-500);
+  --er-pk: var(--color-amber-100);
+  --er-pk-text: var(--color-amber-800);
+  --er-fk: var(--color-blue-100);
+  --er-fk-text: var(--color-blue-800);
+  --er-uk: var(--color-purple-100);
+  --er-uk-text: var(--color-purple-800);
+  --er-relation: var(--color-gray-400);
+}
+
+.dark {
+  --er-entity: var(--color-gray-800);
+  --er-entity-header: var(--color-gray-900);
+  --er-border: var(--color-gray-600);
+  --er-text: var(--color-gray-100);
+  --er-text-muted: var(--color-gray-400);
+  --er-pk: --alpha(var(--color-amber-900) / 40%);
+  --er-pk-text: var(--color-amber-300);
+  --er-fk: --alpha(var(--color-blue-900) / 40%);
+  --er-fk-text: var(--color-blue-300);
+  --er-uk: --alpha(var(--color-purple-900) / 40%);
+  --er-uk-text: var(--color-purple-300);
+  --er-relation: var(--color-gray-500);
+}
+
+/* Table states via data attributes */
+:is([data-er-table]) {
+  transition: transform 200ms ease-out, box-shadow 200ms ease-out;
+  box-shadow: var(--shadow-er-table);
+}
+
+:is([data-er-table][data-highlighted="true"]),
+:is([data-er-table][data-selected="true"]) {
+  transform: scale(1.02);
+  box-shadow: var(--shadow-er-table-hover);
+}
+
+:is([data-er-table][data-selected="true"]) {
+  outline: 2px solid var(--er-pk);
+  outline-offset: 2px;
+}
+
+/* Relationship line states */
+:is([data-er-relation]) {
+  stroke: var(--er-relation);
+  stroke-width: 1.5;
+  fill: none;
+  transition: stroke-width 200ms ease-out, opacity 200ms ease-out;
+}
+
+:is([data-er-relation][data-highlighted="true"]) {
+  stroke-width: 2.5;
+  stroke: var(--er-fk);
+}
+
+/* Canvas states */
+:is([data-er-canvas]) {
+  cursor: grab;
+}
+
+:is([data-er-canvas][data-dragging="true"]) {
+  cursor: grabbing;
+}

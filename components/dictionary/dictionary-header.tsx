@@ -6,31 +6,10 @@ import { ChevronDown, LayoutList } from "lucide-react";
 import { SearchBar } from "./search-bar";
 import { DictionaryFilters } from "./dictionary-filters";
 import { getDictionaryListActions, useIsExpanded } from "./store/dictionary-list-store";
-import type { InitialFetchResult } from "@/lib/db/neon/queries/dictionary/index";
-
-interface TagOption {
-  id: number;
-  name: string;
-  category: string | null;
-  senseCount: number;
-}
-
-interface SourceOption {
-  id: number;
-  title: string;
-  type: string;
-  entryCount: number;
-}
-
-interface SourcePartOption {
-  id: number;
-  name: string;
-  type: string | null;
-  sourceId: number;
-  sourceTitle: string;
-  sourceType: string;
-  entryCount: number;
-}
+import type {
+  InitialFetchResult,
+  FilterStats,
+} from "@/lib/db/neon/queries/dictionary/index";
 
 interface DictionaryHeaderProps {
   initialQuery?: string;
@@ -47,14 +26,8 @@ export function DictionaryHeader({
   const isExpanded = useIsExpanded();
   const { toggleExpanded } = getDictionaryListActions();
 
-  const filterData = {
-    tags: result.filterStats.tags as TagOption[],
-    sources: result.filterStats.sources as SourceOption[],
-    sourceParts: result.filterStats.sourceParts as SourcePartOption[],
-    selectedTagNames: result.selectedFilters.tagNames,
-    selectedSourceTitles: result.selectedFilters.sourceTitles,
-    selectedSourcePartNames: result.selectedFilters.sourcePartNames,
-  };
+  const filterStats: FilterStats = result.filterStats;
+  const selectedFilters = result.selectedFilters;
 
   const totalCount = result.entries.pageInfo.totalCount;
 
@@ -75,12 +48,12 @@ export function DictionaryHeader({
         {/* Row 2: Filters + Count + Expand */}
         <div className="flex items-center gap-1.5 @sm:gap-2 flex-wrap">
           <DictionaryFilters
-            tags={filterData.tags}
-            sources={filterData.sources}
-            sourceParts={filterData.sourceParts}
-            selectedTagNames={filterData.selectedTagNames}
-            selectedSourceTitles={filterData.selectedSourceTitles}
-            selectedSourcePartNames={filterData.selectedSourcePartNames}
+            tags={filterStats.tags}
+            sources={filterStats.sources}
+            sourceParts={filterStats.sourceParts}
+            selectedTagNames={selectedFilters.tagNames}
+            selectedSourceTitles={selectedFilters.sourceTitles}
+            selectedSourcePartNames={selectedFilters.sourcePartNames}
           />
 
           <div className="flex-1" />

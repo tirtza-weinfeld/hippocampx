@@ -17,7 +17,7 @@ const withMDX = createMDX({
       '@hippocampx/plugins/toc-plugin',
 
       '@hippocampx/plugins/remark-section-wrapper',
-
+      '@hippocampx/plugins/remark-er-diagram',
 
       ],
     rehypePlugins: [

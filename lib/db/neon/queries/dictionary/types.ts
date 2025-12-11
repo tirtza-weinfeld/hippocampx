@@ -90,7 +90,8 @@ export interface EntryWithPreview {
 export interface TagStat {
   id: number;
   name: string;
-  category: string | null;
+  categoryId: string;
+  categoryDisplayName: string;
   /** Count of senses with this tag */
   senseCount: number;
 }
