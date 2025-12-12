@@ -2,6 +2,7 @@ import type { Plugin } from 'unified'
 import { visit } from 'unist-util-visit'
 import type { Node } from 'unist'
 import type { Code, Parent } from 'mdast'
+import { computeERLayout } from './er-layout-algorithm.js'
 
 /**
  * Remark plugin that transforms `erDiagram` code blocks into ERDiagram components.
@@ -47,6 +48,7 @@ interface Column {
 interface Table {
   name: string
   columns: Column[]
+  domain?: string
 }
 
 interface Relationship {
@@ -76,12 +78,40 @@ interface Cluster {
   root: string          // Most referenced table in cluster
 }
 
+interface TablePosition {
+  row: number
+  col: number
+}
+
+interface Domain {
+  name: string
+  tables: string[]
+  // Internal layout computed by plugin
+  tablePositions: Record<string, TablePosition>
+  columns: number // how many columns in this domain's layout
+}
+
+interface DomainConnection {
+  from: string  // domain name
+  to: string    // domain name
+  count: number // number of FK connections
+}
+
+interface DomainGridPosition {
+  row: number
+  col: number
+}
+
 interface ERTopology {
   tables: Table[]
   relationships: Relationship[]
   metrics: Record<string, TableMetrics>
   layers: string[][]    // Topologically sorted: [[roots], [level1], [level2], ...]
   clusters: Cluster[]   // Groups of interconnected tables
+  domains: Domain[]     // Named groupings from --- DOMAIN --- syntax
+  domainConnections: DomainConnection[] // Cross-domain FK connections
+  domainOrder: string[] // Optimal domain order for layout (hub domains first)
+  domainGrid: Record<string, DomainGridPosition> // Grid positions for domain layout
 }
 
 // ============================================================================
@@ -89,6 +119,7 @@ interface ERTopology {
 // ============================================================================
 
 const FK_REGEX = /FK\((\w+)\.(\w+)\)/
+const DOMAIN_REGEX = /^---\s*(.+?)\s*---$/
 
 function parseConstraints(constraintString: string): {
   constraints: Constraint[]
@@ -176,23 +207,69 @@ function extractRelationships(tables: Table[]): Relationship[] {
   return relationships
 }
 
+interface ERSchema {
+  tables: Table[]
+  relationships: Relationship[]
+  domains: Domain[]
+}
+
 function parseERDiagram(content: string): ERSchema {
-  // Split by blank lines to get table blocks
-  const blocks = content.split(/\n\s*\n/).filter(block => block.trim() !== '')
-
+  const lines = content.split('\n')
   const tables: Table[] = []
+  const domains: Domain[] = []
 
-  for (const block of blocks) {
-    const table = parseTableBlock(block)
+  let currentDomain: string | undefined
+  let currentBlock: string[] = []
+
+  function flushBlock() {
+    if (currentBlock.length === 0) return
+    const blockContent = currentBlock.join('\n')
+    const table = parseTableBlock(blockContent)
     if (table !== null) {
+      table.domain = currentDomain
       tables.push(table)
+
+      // Add table to current domain
+      if (currentDomain !== undefined) {
+        const domain = domains.find(d => d.name === currentDomain)
+        if (domain !== undefined) {
+          domain.tables.push(table.name)
+        }
+      }
     }
+    currentBlock = []
   }
+
+  for (const line of lines) {
+    const trimmed = line.trim()
+
+    // Check for domain header
+    const domainMatch = DOMAIN_REGEX.exec(trimmed)
+    if (domainMatch !== null) {
+      flushBlock()
+      currentDomain = domainMatch[1]
+      domains.push({ name: currentDomain, tables: [], tablePositions: {}, columns: 1 })
+      continue
+    }
+
+    // Check for blank line (table separator)
+    if (trimmed === '') {
+      flushBlock()
+      continue
+    }
+
+    currentBlock.push(line)
+  }
+
+  // Flush any remaining block
+  flushBlock()
 
   const relationships = extractRelationships(tables)
 
-  return { tables, relationships }
+  return { tables, relationships, domains }
 }
+
+// Layout algorithm moved to er-layout-algorithm.ts
 
 // ============================================================================
 // GRAPH ANALYSIS (build-time computation)
@@ -364,14 +441,57 @@ function computeClusters(
   })
 }
 
+// Domain grid positioning moved to er-layout-algorithm.ts
+
 function buildTopology(schema: ERSchema): ERTopology {
+  // Use the layout algorithm to compute positions
+  const { domainGrid, domainOrder } = computeERLayout(schema.domains, schema.relationships)
+
+  // Compute domain connections for the topology output
+  const connections = computeDomainConnectionsList(schema.domains, schema.relationships)
+
   return {
     tables: schema.tables,
     relationships: schema.relationships,
     metrics: computeTableMetrics(schema.tables, schema.relationships),
     layers: computeLayers(schema.tables, schema.relationships),
     clusters: computeClusters(schema.tables, schema.relationships),
+    domains: schema.domains,
+    domainConnections: connections,
+    domainOrder,
+    domainGrid,
   }
+}
+
+function computeDomainConnectionsList(
+  domains: Domain[],
+  relationships: Relationship[]
+): DomainConnection[] {
+  const tableToDomain = new Map<string, string>()
+  for (const domain of domains) {
+    for (const table of domain.tables) {
+      tableToDomain.set(table, domain.name)
+    }
+  }
+
+  const connectionMap = new Map<string, number>()
+  for (const rel of relationships) {
+    const fromDomain = tableToDomain.get(rel.from.table)
+    const toDomain = tableToDomain.get(rel.to.table)
+
+    if (fromDomain !== undefined && toDomain !== undefined && fromDomain !== toDomain) {
+      const key = `${fromDomain}->${toDomain}`
+      connectionMap.set(key, (connectionMap.get(key) ?? 0) + 1)
+    }
+  }
+
+  const connections: DomainConnection[] = []
+  for (const [key, count] of connectionMap) {
+    const [from, to] = key.split('->')
+    connections.push({ from, to, count })
+  }
+
+  return connections
 }
 
 // ============================================================================
@@ -438,6 +558,10 @@ export {
   type Relationship,
   type TableMetrics,
   type Cluster,
+  type Domain,
+  type DomainConnection,
+  type DomainGridPosition,
+  type TablePosition,
   type Constraint,
   type ForeignKey,
 }

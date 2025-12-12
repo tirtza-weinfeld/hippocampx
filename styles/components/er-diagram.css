@@ -24,6 +24,13 @@
   --color-er-relation-highlight-fk: var(--er-relation-highlight-fk);
   --color-er-relation-highlight-pk: var(--er-relation-highlight-pk);
 
+  --color-er-domain-0: var(--er-domain-0);
+  --color-er-domain-1: var(--er-domain-1);
+  --color-er-domain-2: var(--er-domain-2);
+  --color-er-domain-3: var(--er-domain-3);
+  --color-er-domain-4: var(--er-domain-4);
+  --color-er-domain-5: var(--er-domain-5);
+
   --shadow-er-table: var(--shadow-sm);
   --shadow-er-table-hover: var(--shadow-lg);
 }
@@ -43,6 +50,25 @@
   --er-relation: var(--color-gray-500);
   --er-relation-highlight-fk: var(--color-blue-500);
   --er-relation-highlight-pk: var(--color-orange-500);
+
+
+
+  --er-domain-0: var(--color-blue-500);
+  --er-domain-1: var(--color-emerald-500);
+  --er-domain-2: var(--color-violet-500);
+  --er-domain-3: var(--color-orange-500);
+  --er-domain-4: var(--color-pink-500);
+  --er-domain-5: var(--color-amber-500);
+
+  /* Layout sizing (unitless for SVG calculations) */
+  --er-table-width: 200;
+  --er-row-height: 24;
+  --er-header-height: 32;
+  --er-table-gap: 16;
+  --er-domain-padding: 16;
+  --er-domain-title-height: 24;
+  --er-domain-gap: 20;
+  --er-canvas-padding: 24;
 }
 
 .dark {
@@ -60,6 +86,13 @@
   --er-relation: var(--color-gray-400);
   --er-relation-highlight-fk: var(--color-blue-400);
   --er-relation-highlight-pk: var(--color-orange-400);
+
+  --er-domain-0: var(--color-blue-400);
+  --er-domain-1: var(--color-emerald-400);
+  --er-domain-2: var(--color-violet-400);
+  --er-domain-3: var(--color-orange-400);
+  --er-domain-4: var(--color-pink-400);
+  --er-domain-5: var(--color-amber-400);
 }
 
 /* Table states via data attributes */
@@ -147,3 +180,46 @@
 :is([data-er-canvas][data-dragging="true"]) {
   cursor: grabbing;
 }
+
+/* Domain boxes */
+:is([data-er-domain]) {
+  stroke-dasharray: 8 4;
+  stroke-width: 2;
+}
+
+:is([data-er-domain="0"]) {
+  fill: oklch(from var(--er-domain-0) l c h / 8%);
+  stroke: oklch(from var(--er-domain-0) l c h / 30%);
+}
+
+:is([data-er-domain="1"]) {
+  fill: oklch(from var(--er-domain-1) l c h / 8%);
+  stroke: oklch(from var(--er-domain-1) l c h / 30%);
+}
+
+:is([data-er-domain="2"]) {
+  fill: oklch(from var(--er-domain-2) l c h / 8%);
+  stroke: oklch(from var(--er-domain-2) l c h / 30%);
+}
+
+:is([data-er-domain="3"]) {
+  fill: oklch(from var(--er-domain-3) l c h / 8%);
+  stroke: oklch(from var(--er-domain-3) l c h / 30%);
+}
+
+:is([data-er-domain="4"]) {
+  fill: oklch(from var(--er-domain-4) l c h / 8%);
+  stroke: oklch(from var(--er-domain-4) l c h / 30%);
+}
+
+:is([data-er-domain="5"]) {
+  fill: oklch(from var(--er-domain-5) l c h / 8%);
+  stroke: oklch(from var(--er-domain-5) l c h / 30%);
+}
+
+.er-domain-label-0 { fill: var(--er-domain-0); }
+.er-domain-label-1 { fill: var(--er-domain-1); }
+.er-domain-label-2 { fill: var(--er-domain-2); }
+.er-domain-label-3 { fill: var(--er-domain-3); }
+.er-domain-label-4 { fill: var(--er-domain-4); }
+.er-domain-label-5 { fill: var(--er-domain-5); }

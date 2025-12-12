@@ -54,6 +54,6 @@ export default defineConfig([
     "**/old/infinity/**",
     "**/old/ai/**",
     "**/scripts/**",
-    "plugins/**",
+    // "plugins/**",
   ]),
 ]);

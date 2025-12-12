@@ -3,6 +3,8 @@ import type {
   DiagramLayout,
   TableLayout,
   RelationshipPath,
+  DomainLayout,
+  Domain,
   Table,
   Point,
   Dimensions,
@@ -17,9 +19,9 @@ import type {
 const TABLE_WIDTH = 280
 const ROW_HEIGHT = 32
 const HEADER_HEIGHT = 44
-const LAYER_GAP_X = 120
-const TABLE_GAP_Y = 40
-const PADDING = 60
+const TABLE_GAP = 30
+const PADDING = 40
+const DOMAIN_PADDING = 20
 
 // ============================================================================
 // DIMENSION CALCULATION
@@ -33,52 +35,124 @@ function calculateTableDimensions(table: Table): Dimensions {
 }
 
 // ============================================================================
-// LAYER-BASED LAYOUT (uses pre-computed topology from plugin)
+// DOMAIN-CENTRIC LAYOUT
 // ============================================================================
 
-function computeLayerLayout(topology: ERTopology): TableLayout[] {
+function computeDomainCentricLayout(topology: ERTopology): TableLayout[] {
   const tableMap = new Map(topology.tables.map(t => [t.name, t]))
   const layouts: TableLayout[] = []
 
-  let currentX = PADDING
+  // Calculate domain dimensions using plugin's pre-computed positions
+  interface DomainBlock {
+    domain: Domain
+    width: number
+    height: number
+    tableLayouts: Map<string, { x: number; y: number; height: number }>
+  }
 
-  for (const layer of topology.layers) {
-    // Calculate dimensions for all tables in this layer
-    const layerTables = layer
-      .map(name => tableMap.get(name))
-      .filter((t): t is Table => t !== undefined)
+  const domainBlocks = new Map<string, DomainBlock>()
 
-    // Sort by metrics: primary hubs first, then by incoming FKs
-    layerTables.sort((a, b) => {
-      const metricsA = topology.metrics[a.name]
-      const metricsB = topology.metrics[b.name]
-      if (metricsA.isPrimaryHub !== metricsB.isPrimaryHub) {
-        return metricsA.isPrimaryHub ? -1 : 1
-      }
-      return metricsB.incomingFKs - metricsA.incomingFKs
+  for (const domain of topology.domains) {
+    if (domain.tables.length === 0) continue
+
+    // Calculate positions based on plugin's row/col assignments (2D grid)
+    const tableLayouts = new Map<string, { x: number; y: number; height: number }>()
+    const columns = domain.columns ?? 1
+
+    // First pass: calculate max height per row
+    const rowHeights = new Map<number, number>()
+    for (const tableName of domain.tables) {
+      const table = tableMap.get(tableName)
+      if (!table) continue
+
+      const pos = domain.tablePositions?.[tableName] ?? { row: 0, col: 0 }
+      const dimensions = calculateTableDimensions(table)
+      rowHeights.set(pos.row, Math.max(rowHeights.get(pos.row) ?? 0, dimensions.height))
+    }
+
+    // Calculate cumulative Y positions per row
+    const rowY = new Map<number, number>()
+    let cumY = 0
+    const maxRow = Math.max(...rowHeights.keys(), 0)
+    for (let r = 0; r <= maxRow; r++) {
+      rowY.set(r, cumY)
+      cumY += (rowHeights.get(r) ?? 0) + TABLE_GAP
+    }
+
+    // Second pass: position tables
+    for (const tableName of domain.tables) {
+      const table = tableMap.get(tableName)
+      if (!table) continue
+
+      const pos = domain.tablePositions?.[tableName] ?? { row: 0, col: 0 }
+      const dimensions = calculateTableDimensions(table)
+      const x = pos.col * (TABLE_WIDTH + TABLE_GAP)
+      const y = rowY.get(pos.row) ?? 0
+
+      tableLayouts.set(tableName, { x, y, height: dimensions.height })
+    }
+
+    const totalHeight = cumY > 0 ? cumY - TABLE_GAP : 0
+    const blockWidth = columns * TABLE_WIDTH + (columns - 1) * TABLE_GAP
+
+    domainBlocks.set(domain.name, {
+      domain,
+      width: blockWidth + DOMAIN_PADDING * 2,
+      height: totalHeight + DOMAIN_PADDING * 2,
+      tableLayouts,
     })
+  }
 
-    // Calculate dimensions for positioning
-    const layerDimensions = layerTables.map(t => calculateTableDimensions(t))
+  // Use plugin's computed domain grid positions
+  const domainGrid = topology.domainGrid ?? {}
+  const DOMAIN_GAP = 60
 
-    // Position tables vertically centered
-    let currentY = PADDING
+  // Calculate row heights and column widths based on actual domain sizes
+  const rowHeights = new Map<number, number>()
+  const colWidths = new Map<number, number>()
 
-    for (let i = 0; i < layerTables.length; i++) {
-      const table = layerTables[i]
-      const dimensions = layerDimensions[i]
+  for (const [domainName, block] of domainBlocks) {
+    const gridPos = domainGrid[domainName] ?? { row: 0, col: 0 }
+    rowHeights.set(gridPos.row, Math.max(rowHeights.get(gridPos.row) ?? 0, block.height))
+    colWidths.set(gridPos.col, Math.max(colWidths.get(gridPos.col) ?? 0, block.width))
+  }
+
+  // Calculate cumulative positions
+  const rowY = new Map<number, number>()
+  const colX = new Map<number, number>()
+
+  let cumY = PADDING
+  for (let r = 0; r <= Math.max(...rowHeights.keys(), 0); r++) {
+    rowY.set(r, cumY)
+    cumY += (rowHeights.get(r) ?? 0) + DOMAIN_GAP
+  }
+
+  let cumX = PADDING
+  for (let c = 0; c <= Math.max(...colWidths.keys(), 0); c++) {
+    colX.set(c, cumX)
+    cumX += (colWidths.get(c) ?? 0) + DOMAIN_GAP
+  }
+
+  // Position domains using grid
+  for (const [domainName, block] of domainBlocks) {
+    const gridPos = domainGrid[domainName] ?? { row: 0, col: 0 }
+    const domainX = colX.get(gridPos.col) ?? PADDING
+    const domainY = rowY.get(gridPos.row) ?? PADDING
+
+    for (const tableName of block.domain.tables) {
+      const table = tableMap.get(tableName)
+      const localPos = block.tableLayouts.get(tableName)
+      if (!table || !localPos) continue
 
       layouts.push({
         table,
-        position: { x: currentX, y: currentY },
-        dimensions,
+        position: {
+          x: domainX + DOMAIN_PADDING + localPos.x,
+          y: domainY + DOMAIN_PADDING + localPos.y,
+        },
+        dimensions: calculateTableDimensions(table),
       })
-
-      currentY += dimensions.height + TABLE_GAP_Y
     }
-
-    // Move to next column
-    currentX += TABLE_WIDTH + LAYER_GAP_X
   }
 
   return layouts
@@ -98,22 +172,16 @@ function getConnectionPoint(
   const columnIndex = layout.table.columns.findIndex(c => c.name === columnName)
   const rowOffset = columnIndex >= 0 ? columnIndex : 0
 
-  // Calculate table center
   const tableHeight = HEADER_HEIGHT + layout.table.columns.length * ROW_HEIGHT
   const centerX = layout.position.x + layout.dimensions.width / 2
   const centerY = layout.position.y + tableHeight / 2
 
-  // Calculate scaled width
   const scaledWidth = layout.dimensions.width * scale
-
-  // Calculate connection point relative to center, then apply scale
   const relativeY = HEADER_HEIGHT + rowOffset * ROW_HEIGHT + ROW_HEIGHT / 2 - tableHeight / 2
   const scaledRelativeY = relativeY * scale
 
-  // Offset from table edge for markers - must be large enough that markers
-  // are fully visible in the gap between tables (not hidden behind table)
-  const FK_MARKER_OFFSET = 16  // Triangle extends ~8px back, so 16px keeps it visible
-  const PK_MARKER_OFFSET = 14  // Circle radius ~5px
+  const FK_MARKER_OFFSET = 16
+  const PK_MARKER_OFFSET = 14
   const offset = isTarget ? PK_MARKER_OFFSET : FK_MARKER_OFFSET
 
   const x = side === 'left'
@@ -133,23 +201,15 @@ function generateBezierPath(
 ): string {
   const dx = to.x - from.x
   const dy = to.y - from.y
-
-  // Small offset to separate overlapping paths
   const separation = Math.min(curveOffset, 15)
-
-  // Determine control point direction based on which side we're exiting/entering
   const fromDir = fromSide === 'right' ? 1 : -1
   const toDir = toSide === 'left' ? -1 : 1
 
-  // Same-side connections (vertically stacked tables)
   if (fromSide === toSide) {
-    // Tight curve that stays close to the tables
     const curveOut = Math.min(40, Math.abs(dy) * 0.15) + separation
-    // Both control points go same direction since same side
     return `M ${from.x} ${from.y} C ${from.x + fromDir * curveOut} ${from.y}, ${to.x + fromDir * curveOut} ${to.y}, ${to.x} ${to.y}`
   }
 
-  // Opposite-side connections (horizontally separated tables)
   const controlDist = Math.min(Math.abs(dx) * 0.35, 50) + separation
   return `M ${from.x} ${from.y} C ${from.x + fromDir * controlDist} ${from.y + separation * 0.2}, ${to.x + toDir * controlDist} ${to.y - separation * 0.2}, ${to.x} ${to.y}`
 }
@@ -160,54 +220,45 @@ function calculateRelationshipPaths(
   scales: TableScales = {}
 ): RelationshipPath[] {
   const layoutMap = new Map(tableLayouts.map(tl => [tl.table.name, tl]))
-
-  // Track connections per table-side to offset overlapping paths
   const connectionCounts = new Map<string, number>()
 
-  function getConnectionKey(table: string, side: 'left' | 'right'): string {
-    return `${table}-${side}`
-  }
-
   function getAndIncrementCount(table: string, side: 'left' | 'right'): number {
-    const key = getConnectionKey(table, side)
+    const key = `${table}-${side}`
     const count = connectionCounts.get(key) ?? 0
     connectionCounts.set(key, count + 1)
     return count
   }
 
-  return relationships.map(rel => {
+  const paths: RelationshipPath[] = []
+
+  // Generate independent path for each relationship (no trunk routing)
+  for (const rel of relationships) {
     const fromLayout = layoutMap.get(rel.from.table)
     const toLayout = layoutMap.get(rel.to.table)
 
     if (!fromLayout || !toLayout) {
-      return { relationship: rel, path: '', fkSide: 'right' as const }
+      paths.push({ relationship: rel, path: '', fkSide: 'right' as const })
+      continue
     }
 
     const fromScale = scales[rel.from.table] ?? 1
     const toScale = scales[rel.to.table] ?? 1
 
-    // Calculate table edges (not centers) to determine optimal connection sides
     const fromLeft = fromLayout.position.x
     const fromRight = fromLayout.position.x + fromLayout.dimensions.width
     const toLeft = toLayout.position.x
     const toRight = toLayout.position.x + toLayout.dimensions.width
 
-    // Determine sides based on which connection creates shortest/cleanest path
-    // If tables don't overlap horizontally, connect facing sides
-    // If they do overlap, pick sides that minimize crossing
     let fromSide: 'left' | 'right'
     let toSide: 'left' | 'right'
 
     if (fromRight < toLeft) {
-      // From table is entirely to the left of To table
       fromSide = 'right'
       toSide = 'left'
     } else if (fromLeft > toRight) {
-      // From table is entirely to the right of To table
       fromSide = 'left'
       toSide = 'right'
     } else {
-      // Tables overlap horizontally - use outer edges to avoid crossing
       const fromCenterX = (fromLeft + fromRight) / 2
       const toCenterX = (toLeft + toRight) / 2
       if (fromCenterX <= toCenterX) {
@@ -219,22 +270,23 @@ function calculateRelationshipPaths(
       }
     }
 
-    // Get connection index for curve offset
     const fromIndex = getAndIncrementCount(rel.from.table, fromSide)
     const toIndex = getAndIncrementCount(rel.to.table, toSide)
-
     const fromPoint = getConnectionPoint(fromLayout, rel.from.column, fromSide, fromScale, false)
     const toPoint = getConnectionPoint(toLayout, rel.to.column, toSide, toScale, true)
 
-    // Small curve offset to separate overlapping paths
+    // Each connection gets its own independent curved path
+    // Offset curves slightly to avoid overlap when multiple lines use same edge
     const curveOffset = (fromIndex + toIndex) * 5
 
-    return {
+    paths.push({
       relationship: rel,
       path: generateBezierPath(fromPoint, toPoint, fromSide, toSide, curveOffset),
       fkSide: fromSide,
-    }
-  })
+    })
+  }
+
+  return paths
 }
 
 // ============================================================================
@@ -251,6 +303,54 @@ function calculateViewBox(tableLayouts: TableLayout[]): Dimensions {
   }
 
   return { width: maxX + PADDING, height: maxY + PADDING }
+}
+
+// ============================================================================
+// DOMAIN BOUNDS (visual grouping overlay)
+// ============================================================================
+
+function computeDomainLayouts(
+  topology: ERTopology,
+  tableLayouts: TableLayout[]
+): DomainLayout[] {
+  const layoutMap = new Map(tableLayouts.map(tl => [tl.table.name, tl]))
+
+  return topology.domains.map((domain: Domain, index: number) => {
+    const domainTableLayouts = domain.tables
+      .map((name: string) => layoutMap.get(name))
+      .filter((tl): tl is TableLayout => tl !== undefined)
+
+    if (domainTableLayouts.length === 0) {
+      return {
+        domain,
+        bounds: { x: 0, y: 0, width: 0, height: 0 },
+        colorIndex: index,
+      }
+    }
+
+    let minX = Infinity
+    let minY = Infinity
+    let maxX = -Infinity
+    let maxY = -Infinity
+
+    for (const tl of domainTableLayouts) {
+      minX = Math.min(minX, tl.position.x)
+      minY = Math.min(minY, tl.position.y)
+      maxX = Math.max(maxX, tl.position.x + tl.dimensions.width)
+      maxY = Math.max(maxY, tl.position.y + tl.dimensions.height)
+    }
+
+    return {
+      domain,
+      bounds: {
+        x: minX - DOMAIN_PADDING,
+        y: minY - DOMAIN_PADDING,
+        width: maxX - minX + DOMAIN_PADDING * 2,
+        height: maxY - minY + DOMAIN_PADDING * 2,
+      },
+      colorIndex: index,
+    }
+  })
 }
 
 // ============================================================================
@@ -285,16 +385,19 @@ interface UseERLayoutResult {
 }
 
 export function useERLayout(topology: ERTopology): UseERLayoutResult {
-  // React Compiler handles memoization
-  const baseLayouts = computeLayerLayout(topology)
+  const baseLayouts = computeDomainCentricLayout(topology)
 
   function getLayout(options: LayoutOptions = {}): DiagramLayout {
     const { positions = {}, scales = {} } = options
+
+    // Apply table-level overrides
     const adjustedLayouts = applyPositionOverrides(baseLayouts, positions)
+
     const relationshipPaths = calculateRelationshipPaths(adjustedLayouts, topology.relationships, scales)
+    const domainLayouts = computeDomainLayouts(topology, adjustedLayouts)
     const viewBox = calculateViewBox(adjustedLayouts)
 
-    return { tables: adjustedLayouts, relationships: relationshipPaths, viewBox }
+    return { tables: adjustedLayouts, relationships: relationshipPaths, domains: domainLayouts, viewBox }
   }
 
   return {

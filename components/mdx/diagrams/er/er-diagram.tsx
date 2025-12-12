@@ -6,6 +6,7 @@ import type { ERDiagramProps, TablePositions, TableScales, Point, SelectedColumn
 import { useERLayout } from './use-er-layout'
 import { ERCanvas } from './er-canvas'
 import { ERTable } from './er-table'
+import { ERDomain } from './er-domain'
 import { ERRelationship, ERRelationshipDefs } from './er-relationship'
 import { ERHelpModal } from './er-help-modal'
 import { cn } from '@/lib/utils'
@@ -259,7 +260,7 @@ export function ERDiagram({ topology, title, className }: ERDiagramProps) {
         isFullscreen={isFullscreen}
         onTableZoom={handleTableZoom}
       >
-        {/* Relationships first (lines render under tables) */}
+        {/* Domains and relationships (render under tables) */}
         <svg
           className="absolute inset-0 pointer-events-none overflow-visible"
           width={currentLayout.viewBox.width}
@@ -267,6 +268,14 @@ export function ERDiagram({ topology, title, className }: ERDiagramProps) {
           style={{ zIndex: 0 }}
         >
           <ERRelationshipDefs />
+          {/* Domains first (background boxes) */}
+          {currentLayout.domains.map(domainLayout => (
+            <ERDomain
+              key={domainLayout.domain.name}
+              layout={domainLayout}
+            />
+          ))}
+          {/* Relationships on top of domains */}
           {currentLayout.relationships.map(rel => {
             const isHighlighted = highlightedRelationships.has(getRelationshipKey(rel.relationship))
             return (

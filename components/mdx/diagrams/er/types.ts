@@ -26,6 +26,7 @@ export interface Column {
 export interface Table {
   name: string
   columns: Column[]
+  domain?: string
 }
 
 export interface Relationship {
@@ -50,12 +51,39 @@ export interface Cluster {
   root: string
 }
 
+export interface TablePosition {
+  row: number
+  col: number
+}
+
+export interface Domain {
+  name: string
+  tables: string[]
+  tablePositions?: Record<string, TablePosition>
+  columns?: number
+}
+
+export interface DomainConnection {
+  from: string  // domain name
+  to: string    // domain name
+  count: number // number of FK connections
+}
+
+export interface DomainGridPosition {
+  row: number
+  col: number
+}
+
 export interface ERTopology {
   tables: Table[]
   relationships: Relationship[]
   metrics: Record<string, TableMetrics>
   layers: string[][]
   clusters: Cluster[]
+  domains: Domain[]
+  domainConnections?: DomainConnection[]
+  domainOrder?: string[]
+  domainGrid?: Record<string, DomainGridPosition>
 }
 
 // ============================================================================
@@ -78,6 +106,17 @@ export interface TableLayout {
   dimensions: Dimensions
 }
 
+export interface DomainLayout {
+  domain: Domain
+  bounds: {
+    x: number
+    y: number
+    width: number
+    height: number
+  }
+  colorIndex: number
+}
+
 export interface RelationshipPath {
   relationship: Relationship
   path: string
@@ -87,6 +126,7 @@ export interface RelationshipPath {
 export interface DiagramLayout {
   tables: TableLayout[]
   relationships: RelationshipPath[]
+  domains: DomainLayout[]
   viewBox: Dimensions
 }
 

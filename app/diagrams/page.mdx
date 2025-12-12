@@ -3,6 +3,8 @@
 ## Proposed: SQL-like, FK auto-infers relationships
 
 ```erDiagram
+--- LEXICAL CORE ---
+
 lexical_entries
   id             int           PK
   lemma          varchar(255)
@@ -29,22 +31,16 @@ senses
   is_synthetic        boolean
   verification_status varchar(50)
 
-sense_relations
-  id              int           PK
-  source_sense_id int           FK(senses.id)
-  target_sense_id int           FK(senses.id)
-  relation_type   relationtype
-  strength        int
-  explanation     text
+entry_audio
+  id           int     PK
+  entry_id     int     FK(lexical_entries.id)
+  audio_url    varchar(512)
+  transcript   text
+  duration_ms  int
+  accent_code  varchar(10)
+  content_type varchar(50)
 
-examples
-  id              int     PK
-  sense_id        int     FK(senses.id)
-  text            text
-  language_code   varchar(5)
-  source_part_id  int     FK(source_parts.id)
-  embedding       halfvec(1536)
-  cached_citation varchar(255)
+--- TAXONOMY & TAGS ---
 
 categories
   id              varchar(50)   PK
@@ -62,14 +58,26 @@ sense_tags
   tag_id      int   PK FK(tags.id)
   explanation text
 
-entry_audio
-  id           int     PK
-  entry_id     int     FK(lexical_entries.id)
-  audio_url    varchar(512)
-  transcript   text
-  duration_ms  int
-  accent_code  varchar(10)
-  content_type varchar(50)
+--- KNOWLEDGE GRAPH & RELATIONS ---
+
+sense_relations
+  id              int           PK
+  source_sense_id int           FK(senses.id)
+  target_sense_id int           FK(senses.id)
+  relation_type   relationtype
+  strength        int
+  explanation     text
+
+--- SOURCES & HIERARCHY ---
+
+examples
+  id              int     PK
+  sense_id        int     FK(senses.id)
+  text            text
+  language_code   varchar(5)
+  source_part_id  int     FK(source_parts.id)
+  embedding       halfvec(1536)
+  cached_citation varchar(255)
 
 contributors
   id        int     PK
@@ -101,6 +109,7 @@ source_parts
 
 ## Syntax Rules
 
+**Domains:** `--- DOMAIN NAME ---` groups tables visually
 **Tables:** Name on its own line, columns indented below
 **Columns:** `name type [constraints]`
 **Constraints:**
@@ -120,6 +129,7 @@ source_parts
 | Relationships | `\|\|--o{` manually | Auto from FK |
 | Self-reference | Confusing | `FK(same_table.id)` |
 | Composite PK | `PK,FK` | `PK FK(table)` |
+| Domains | Not supported | `--- NAME ---` sections |
 
 
 
@@ -132,3 +142,4 @@ source_parts
                       └─────────────┘
   
                 
+                      
