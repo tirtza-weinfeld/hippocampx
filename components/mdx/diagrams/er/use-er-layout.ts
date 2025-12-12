@@ -1,4 +1,3 @@
-import { useMemo } from 'react'
 import type {
   ERTopology,
   DiagramLayout,
@@ -7,6 +6,8 @@ import type {
   Table,
   Point,
   Dimensions,
+  TablePositions,
+  TableScales,
 } from './types'
 
 // ============================================================================
@@ -90,60 +91,182 @@ function computeLayerLayout(topology: ERTopology): TableLayout[] {
 function getConnectionPoint(
   layout: TableLayout,
   columnName: string,
-  side: 'left' | 'right'
+  side: 'left' | 'right',
+  scale: number = 1,
+  isTarget: boolean = false
 ): Point {
   const columnIndex = layout.table.columns.findIndex(c => c.name === columnName)
   const rowOffset = columnIndex >= 0 ? columnIndex : 0
 
-  const x = side === 'left' ? layout.position.x : layout.position.x + layout.dimensions.width
-  const y = layout.position.y + HEADER_HEIGHT + rowOffset * ROW_HEIGHT + ROW_HEIGHT / 2
+  // Calculate table center
+  const tableHeight = HEADER_HEIGHT + layout.table.columns.length * ROW_HEIGHT
+  const centerX = layout.position.x + layout.dimensions.width / 2
+  const centerY = layout.position.y + tableHeight / 2
+
+  // Calculate scaled width
+  const scaledWidth = layout.dimensions.width * scale
+
+  // Calculate connection point relative to center, then apply scale
+  const relativeY = HEADER_HEIGHT + rowOffset * ROW_HEIGHT + ROW_HEIGHT / 2 - tableHeight / 2
+  const scaledRelativeY = relativeY * scale
+
+  // Offset from table edge for markers - must be large enough that markers
+  // are fully visible in the gap between tables (not hidden behind table)
+  const FK_MARKER_OFFSET = 16  // Triangle extends ~8px back, so 16px keeps it visible
+  const PK_MARKER_OFFSET = 14  // Circle radius ~5px
+  const offset = isTarget ? PK_MARKER_OFFSET : FK_MARKER_OFFSET
+
+  const x = side === 'left'
+    ? centerX - scaledWidth / 2 - offset
+    : centerX + scaledWidth / 2 + offset
+  const y = centerY + scaledRelativeY
 
   return { x, y }
 }
 
-function generateBezierPath(from: Point, to: Point): string {
+function generateBezierPath(
+  from: Point,
+  to: Point,
+  fromSide: 'left' | 'right',
+  toSide: 'left' | 'right',
+  curveOffset: number = 0
+): string {
   const dx = to.x - from.x
   const dy = to.y - from.y
 
-  // Use different curve strategies based on direction
-  if (Math.abs(dx) > Math.abs(dy)) {
-    // Horizontal dominant: horizontal bezier
-    const controlOffset = Math.min(Math.abs(dx) * 0.4, 80)
-    return `M ${from.x} ${from.y} C ${from.x + controlOffset} ${from.y}, ${to.x - controlOffset} ${to.y}, ${to.x} ${to.y}`
-  } else {
-    // Vertical dominant: S-curve
-    const midY = (from.y + to.y) / 2
-    return `M ${from.x} ${from.y} C ${from.x} ${midY}, ${to.x} ${midY}, ${to.x} ${to.y}`
+  // Small offset to separate overlapping paths
+  const separation = Math.min(curveOffset, 15)
+
+  // Determine control point direction based on which side we're exiting/entering
+  const fromDir = fromSide === 'right' ? 1 : -1
+  const toDir = toSide === 'left' ? -1 : 1
+
+  // Same-side connections (vertically stacked tables)
+  if (fromSide === toSide) {
+    // Tight curve that stays close to the tables
+    const curveOut = Math.min(40, Math.abs(dy) * 0.15) + separation
+    // Both control points go same direction since same side
+    return `M ${from.x} ${from.y} C ${from.x + fromDir * curveOut} ${from.y}, ${to.x + fromDir * curveOut} ${to.y}, ${to.x} ${to.y}`
   }
+
+  // Opposite-side connections (horizontally separated tables)
+  const controlDist = Math.min(Math.abs(dx) * 0.35, 50) + separation
+  return `M ${from.x} ${from.y} C ${from.x + fromDir * controlDist} ${from.y + separation * 0.2}, ${to.x + toDir * controlDist} ${to.y - separation * 0.2}, ${to.x} ${to.y}`
 }
 
 function calculateRelationshipPaths(
   tableLayouts: TableLayout[],
-  relationships: ERTopology['relationships']
+  relationships: ERTopology['relationships'],
+  scales: TableScales = {}
 ): RelationshipPath[] {
   const layoutMap = new Map(tableLayouts.map(tl => [tl.table.name, tl]))
+
+  // Track connections per table-side to offset overlapping paths
+  const connectionCounts = new Map<string, number>()
+
+  function getConnectionKey(table: string, side: 'left' | 'right'): string {
+    return `${table}-${side}`
+  }
+
+  function getAndIncrementCount(table: string, side: 'left' | 'right'): number {
+    const key = getConnectionKey(table, side)
+    const count = connectionCounts.get(key) ?? 0
+    connectionCounts.set(key, count + 1)
+    return count
+  }
 
   return relationships.map(rel => {
     const fromLayout = layoutMap.get(rel.from.table)
     const toLayout = layoutMap.get(rel.to.table)
 
     if (!fromLayout || !toLayout) {
-      return { relationship: rel, path: '' }
+      return { relationship: rel, path: '', fkSide: 'right' as const }
     }
 
-    const fromCenterX = fromLayout.position.x + fromLayout.dimensions.width / 2
-    const toCenterX = toLayout.position.x + toLayout.dimensions.width / 2
+    const fromScale = scales[rel.from.table] ?? 1
+    const toScale = scales[rel.to.table] ?? 1
 
-    const fromSide: 'left' | 'right' = fromCenterX < toCenterX ? 'right' : 'left'
-    const toSide: 'left' | 'right' = fromCenterX < toCenterX ? 'left' : 'right'
+    // Calculate table edges (not centers) to determine optimal connection sides
+    const fromLeft = fromLayout.position.x
+    const fromRight = fromLayout.position.x + fromLayout.dimensions.width
+    const toLeft = toLayout.position.x
+    const toRight = toLayout.position.x + toLayout.dimensions.width
 
-    const fromPoint = getConnectionPoint(fromLayout, rel.from.column, fromSide)
-    const toPoint = getConnectionPoint(toLayout, rel.to.column, toSide)
+    // Determine sides based on which connection creates shortest/cleanest path
+    // If tables don't overlap horizontally, connect facing sides
+    // If they do overlap, pick sides that minimize crossing
+    let fromSide: 'left' | 'right'
+    let toSide: 'left' | 'right'
+
+    if (fromRight < toLeft) {
+      // From table is entirely to the left of To table
+      fromSide = 'right'
+      toSide = 'left'
+    } else if (fromLeft > toRight) {
+      // From table is entirely to the right of To table
+      fromSide = 'left'
+      toSide = 'right'
+    } else {
+      // Tables overlap horizontally - use outer edges to avoid crossing
+      const fromCenterX = (fromLeft + fromRight) / 2
+      const toCenterX = (toLeft + toRight) / 2
+      if (fromCenterX <= toCenterX) {
+        fromSide = 'right'
+        toSide = 'right'
+      } else {
+        fromSide = 'left'
+        toSide = 'left'
+      }
+    }
+
+    // Get connection index for curve offset
+    const fromIndex = getAndIncrementCount(rel.from.table, fromSide)
+    const toIndex = getAndIncrementCount(rel.to.table, toSide)
+
+    const fromPoint = getConnectionPoint(fromLayout, rel.from.column, fromSide, fromScale, false)
+    const toPoint = getConnectionPoint(toLayout, rel.to.column, toSide, toScale, true)
+
+    // Small curve offset to separate overlapping paths
+    const curveOffset = (fromIndex + toIndex) * 5
 
     return {
       relationship: rel,
-      path: generateBezierPath(fromPoint, toPoint),
+      path: generateBezierPath(fromPoint, toPoint, fromSide, toSide, curveOffset),
+      fkSide: fromSide,
     }
+  })
+}
+
+// ============================================================================
+// VIEWBOX CALCULATION
+// ============================================================================
+
+function calculateViewBox(tableLayouts: TableLayout[]): Dimensions {
+  let maxX = 0
+  let maxY = 0
+
+  for (const layout of tableLayouts) {
+    maxX = Math.max(maxX, layout.position.x + layout.dimensions.width)
+    maxY = Math.max(maxY, layout.position.y + layout.dimensions.height)
+  }
+
+  return { width: maxX + PADDING, height: maxY + PADDING }
+}
+
+// ============================================================================
+// LAYOUT WITH POSITION OVERRIDES
+// ============================================================================
+
+function applyPositionOverrides(
+  baseLayouts: TableLayout[],
+  positions: TablePositions
+): TableLayout[] {
+  return baseLayouts.map(layout => {
+    const override = positions[layout.table.name]
+    if (override) {
+      return { ...layout, position: override }
+    }
+    return layout
   })
 }
 
@@ -151,26 +274,33 @@ function calculateRelationshipPaths(
 // HOOK
 // ============================================================================
 
-export function useERLayout(topology: ERTopology): DiagramLayout {
-  return useMemo(() => {
-    const tableLayouts = computeLayerLayout(topology)
-    const relationshipPaths = calculateRelationshipPaths(tableLayouts, topology.relationships)
+interface LayoutOptions {
+  positions?: TablePositions
+  scales?: TableScales
+}
 
-    // Calculate viewBox
-    let maxX = 0
-    let maxY = 0
+interface UseERLayoutResult {
+  tables: TableLayout[]
+  getLayout: (options?: LayoutOptions) => DiagramLayout
+}
 
-    for (const layout of tableLayouts) {
-      maxX = Math.max(maxX, layout.position.x + layout.dimensions.width)
-      maxY = Math.max(maxY, layout.position.y + layout.dimensions.height)
-    }
+export function useERLayout(topology: ERTopology): UseERLayoutResult {
+  // React Compiler handles memoization
+  const baseLayouts = computeLayerLayout(topology)
 
-    return {
-      tables: tableLayouts,
-      relationships: relationshipPaths,
-      viewBox: { width: maxX + PADDING, height: maxY + PADDING },
-    }
-  }, [topology])
+  function getLayout(options: LayoutOptions = {}): DiagramLayout {
+    const { positions = {}, scales = {} } = options
+    const adjustedLayouts = applyPositionOverrides(baseLayouts, positions)
+    const relationshipPaths = calculateRelationshipPaths(adjustedLayouts, topology.relationships, scales)
+    const viewBox = calculateViewBox(adjustedLayouts)
+
+    return { tables: adjustedLayouts, relationships: relationshipPaths, viewBox }
+  }
+
+  return {
+    tables: baseLayouts,
+    getLayout,
+  }
 }
 
 export { HEADER_HEIGHT, ROW_HEIGHT, TABLE_WIDTH }

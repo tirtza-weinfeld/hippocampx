@@ -10,13 +10,14 @@ import { cn } from '@/lib/utils'
 
 interface ERColumnProps {
   column: Column
-  onFKClick?: (table: string, column: string) => void
+  tableName: string
+  highlight?: 'pk' | 'fk'
+  onColumnClick?: (table: string, column: string) => void
 }
 
 interface ConstraintBadgeProps {
   constraint: Constraint
   foreignKey?: ForeignKey
-  onFKClick?: (table: string, column: string) => void
 }
 
 // ============================================================================
@@ -33,29 +34,10 @@ const CONSTRAINT_STYLES = {
 // COMPONENTS
 // ============================================================================
 
-function ConstraintBadge({ constraint, foreignKey, onFKClick }: ConstraintBadgeProps) {
-  const isClickable = constraint === 'FK' && foreignKey !== undefined && onFKClick !== undefined
-
-  function handleClick() {
-    if (foreignKey && onFKClick) {
-      onFKClick(foreignKey.table, foreignKey.column)
-    }
-  }
-
-  function handleKeyDown(event: KeyboardEvent<HTMLSpanElement>) {
-    if ((event.key === 'Enter' || event.key === ' ') && foreignKey && onFKClick) {
-      event.preventDefault()
-      onFKClick(foreignKey.table, foreignKey.column)
-    }
-  }
-
+function ConstraintBadge({ constraint, foreignKey }: ConstraintBadgeProps) {
   const title = foreignKey
-    ? `Navigate to ${foreignKey.table}.${foreignKey.column}`
+    ? `References ${foreignKey.table}.${foreignKey.column}`
     : undefined
-
-  const ariaLabel = foreignKey
-    ? `Foreign key referencing ${foreignKey.table}.${foreignKey.column}`
-    : constraint
 
   return (
     <span
@@ -63,30 +45,72 @@ function ConstraintBadge({ constraint, foreignKey, onFKClick }: ConstraintBadgeP
         'px-1.5 py-0.5 text-xs rounded font-mono select-none',
         CONSTRAINT_STYLES[constraint]
       )}
-      onClick={isClickable ? handleClick : undefined}
-      onKeyDown={isClickable ? handleKeyDown : undefined}
-      role={isClickable ? 'button' : undefined}
-      tabIndex={isClickable ? 0 : undefined}
       title={title}
-      aria-label={ariaLabel}
     >
       {constraint}
     </span>
   )
 }
 
-export function ERColumn({ column, onFKClick }: ERColumnProps) {
+export function ERColumn({ column, tableName, highlight, onColumnClick }: ERColumnProps) {
   const hasConstraints = column.constraints.length > 0
+  const hasPK = column.constraints.includes('PK')
+  const hasFK = column.constraints.includes('FK')
+  const isClickable = hasPK || hasFK
+
+  function handleClick() {
+    if (isClickable && onColumnClick) {
+      onColumnClick(tableName, column.name)
+    }
+  }
+
+  function handleKeyDown(event: KeyboardEvent<HTMLDivElement>) {
+    if ((event.key === 'Enter' || event.key === ' ') && isClickable && onColumnClick) {
+      event.preventDefault()
+      onColumnClick(tableName, column.name)
+    }
+  }
 
   return (
     <div
       className={cn(
-        'er-column',
+        'er-column relative',
         'flex items-center gap-2 px-3 py-1.5',
         'border-b border-er-border last:border-b-0',
-        'hover:bg-er-entity-header/50 transition-colors'
+        'transition-colors',
+        isClickable && 'cursor-pointer hover:bg-er-entity-header/50',
+        !isClickable && 'hover:bg-er-entity-header/30',
+        highlight === 'pk' && 'er-row-highlight-pk',
+        highlight === 'fk' && 'er-row-highlight-fk'
       )}
+      onClick={handleClick}
+      onKeyDown={handleKeyDown}
+      role={isClickable ? 'button' : undefined}
+      tabIndex={isClickable ? 0 : undefined}
+      aria-label={isClickable ? `Select ${column.name} to highlight related columns` : undefined}
     >
+      {/* Connection indicator - left side (for incoming arrows to PK) */}
+      {hasPK && (
+        <span
+          className={cn(
+            'absolute -left-1 top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full shadow-sm',
+            highlight === 'pk' ? 'bg-er-relation-highlight-pk' : 'bg-er-pk-text'
+          )}
+          aria-hidden="true"
+        />
+      )}
+
+      {/* Connection indicator - right side (for outgoing arrows from FK) */}
+      {hasFK && (
+        <span
+          className={cn(
+            'absolute -right-1 top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full shadow-sm',
+            highlight === 'fk' ? 'bg-er-relation-highlight-fk' : 'bg-er-fk-text'
+          )}
+          aria-hidden="true"
+        />
+      )}
+
       <span className="font-medium text-er-text flex-1 truncate">
         {column.name}
       </span>
@@ -102,7 +126,6 @@ export function ERColumn({ column, onFKClick }: ERColumnProps) {
               key={constraint}
               constraint={constraint}
               foreignKey={constraint === 'FK' ? column.foreignKey : undefined}
-              onFKClick={onFKClick}
             />
           ))}
         </div>

@@ -81,12 +81,39 @@ export interface TableLayout {
 export interface RelationshipPath {
   relationship: Relationship
   path: string
+  fkSide: 'left' | 'right'  // Which side the FK connects from
 }
 
 export interface DiagramLayout {
   tables: TableLayout[]
   relationships: RelationshipPath[]
   viewBox: Dimensions
+}
+
+// ============================================================================
+// INTERACTION TYPES
+// ============================================================================
+
+export type TablePositions = Partial<Record<string, Point>>
+export type TableScales = Partial<Record<string, number>>
+
+export interface SelectedColumn {
+  table: string
+  column: string
+}
+
+export type HighlightMode = 'pk' | 'fk'
+
+export interface ColumnHighlight {
+  table: string
+  column: string
+  type: HighlightMode
+}
+
+export interface HighlightState {
+  mode: HighlightMode
+  columns: ColumnHighlight[]
+  relationships: Relationship[]
 }
 
 // ============================================================================

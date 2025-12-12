@@ -4,14 +4,15 @@
 
 ```erDiagram
 lexical_entries
-  id            int           PK
-  lemma         varchar(255)
+  id             int           PK
+  lemma          varchar(255)
   part_of_speech partofspeech
-  language_code varchar(5)
-  embedding     halfvec(1536)
-  metadata      jsonb
-  created_at    timestamp
-  updated_at    timestamp
+  language_code  varchar(5)
+  discriminator  int
+  embedding      halfvec(1536)
+  metadata       jsonb
+  created_at     timestamp
+  updated_at     timestamp
 
 word_forms
   id                    int     PK
@@ -45,10 +46,16 @@ examples
   embedding       halfvec(1536)
   cached_citation varchar(255)
 
+categories
+  id              varchar(50)   PK
+  display_name    varchar(100)
+  ai_description  text
+
 tags
-  id        int           PK
-  name      varchar(100)  UK
-  category  varchar(50)
+  id          int           PK
+  category_id varchar(50)   FK(categories.id)
+  name        varchar(100)
+  metadata    jsonb
 
 sense_tags
   sense_id    int   PK FK(senses.id)
@@ -113,3 +120,15 @@ source_parts
 | Relationships | `\|\|--o{` manually | Auto from FK |
 | Self-reference | Confusing | `FK(same_table.id)` |
 | Composite PK | `PK,FK` | `PK FK(table)` |
+
+
+
+                      ┌─────────────┐
+   line to PK ───────◁│ column      │
+                      └─────────────┘
+
+                      ┌─────────────┐
+                      │ column      │▷───────── line to PK
+                      └─────────────┘
+  
+                
