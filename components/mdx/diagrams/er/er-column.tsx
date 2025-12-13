@@ -146,8 +146,16 @@ export function ERColumn({ column, tableName, highlight, verbose, onColumnClick 
           />
         )}
 
-        <span className="font-medium text-er-text flex-1 truncate">
-          {column.name}
+        <span className="flex-1 truncate">
+          <span
+            className="font-medium text-er-text cursor-pointer hover:text-er-text-muted active:text-er-copy"
+            onClick={(e) => {
+              e.stopPropagation()
+              void navigator.clipboard.writeText(column.name)
+            }}
+          >
+            {column.name}
+          </span>
         </span>
 
         <span className="text-er-text-muted text-sm font-mono shrink-0">

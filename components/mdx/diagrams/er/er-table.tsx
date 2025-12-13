@@ -114,12 +114,8 @@ export function ERTable({
   const centerX = position.x + dimensions.width / 2
   const centerY = position.y + tableHeight / 2
 
-  // Calculate effective scale with hover/drag effects
-  const effectiveScale = isDragging
-    ? scale * 1.02
-    : highlighted || selected
-      ? scale * 1.01
-      : scale
+  // Use scale prop directly, no hover/click effects
+  const effectiveScale = scale
 
   return (
     <motion.article
@@ -190,7 +186,15 @@ export function ERTable({
           <circle cx="4" cy="12" r="1.5" />
           <circle cx="12" cy="12" r="1.5" />
         </svg>
-        <span className="truncate">{table.name}</span>
+        <span
+          className="truncate cursor-pointer hover:text-er-text-muted active:text-er-copy"
+          onClick={(e) => {
+            e.stopPropagation()
+            void navigator.clipboard.writeText(table.name)
+          }}
+        >
+          {table.name}
+        </span>
         <div className="ml-auto flex items-center gap-1.5">
           {scale !== 1 && (
             <span className="text-xs font-mono text-er-text-muted">

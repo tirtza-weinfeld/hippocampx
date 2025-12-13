@@ -25,6 +25,7 @@
   --color-er-relation-highlight-pk: var(--er-relation-highlight-pk);
   --color-er-comment: var(--er-comment);
   --color-er-example: var(--er-example);
+  --color-er-copy: var(--er-copy);
 
   --color-er-domain-0: var(--er-domain-0);
   --color-er-domain-1: var(--er-domain-1);
@@ -54,6 +55,7 @@
   --er-relation-highlight-pk: var(--color-orange-500);
   --er-comment: var(--color-gray-600);
   --er-example: var(--color-emerald-700);
+  --er-copy: var(--color-emerald-900);
 
 
 
@@ -92,6 +94,7 @@
   --er-relation-highlight-pk: var(--color-orange-400);
   --er-comment: var(--color-gray-400);
   --er-example: var(--color-emerald-400);
+  --er-copy: --alpha(var(--color-emerald-700) / 70%);
 
   --er-domain-0: var(--color-blue-400);
   --er-domain-1: var(--color-emerald-400);
@@ -229,3 +232,14 @@
 .er-domain-label-3 { fill: var(--er-domain-3); }
 .er-domain-label-4 { fill: var(--er-domain-4); }
 .er-domain-label-5 { fill: var(--er-domain-5); }
+
+/* Copy feedback animation */
+@keyframes copy-flash {
+  0%, 100% { color: inherit; }
+  30%, 70% { color: var(--er-copy); }
+}
+
+
+.animate-copy-flash {
+  animation: copy-flash  0.6s ease-in-out;
+}
