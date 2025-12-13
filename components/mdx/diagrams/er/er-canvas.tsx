@@ -68,6 +68,7 @@ export function ERCanvas({
   const activePointers = useRef<Map<number, { x: number; y: number }>>(new Map())
   const lastPinchDistance = useRef<number | null>(null)
   const isPinching = useRef(false)
+  const pinchTargetTable = useRef<string | null>(null)
 
   // Store callbacks in refs to avoid stale closures in wheel handler
   const onTableZoomRef = useRef(onTableZoom)
@@ -129,12 +130,21 @@ export function ERCanvas({
     // Always track pointers for pinch-to-zoom (even on tables for canvas-level zoom)
     activePointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY })
 
-    // If 2 pointers, start pinch zoom mode (works on canvas level)
+    // If 2 pointers, start pinch zoom mode
     if (activePointers.current.size === 2) {
       const pointers = Array.from(activePointers.current.values())
       lastPinchDistance.current = getDistance(pointers[0], pointers[1])
       isPinching.current = true
       setIsDragging(false)
+
+      // Determine pinch target: check if midpoint is over a table
+      const midpoint = getMidpoint(pointers[0], pointers[1])
+      const elementAtMidpoint = document.elementFromPoint(midpoint.x, midpoint.y)
+      const tableElement = elementAtMidpoint?.closest('[data-er-table]')
+      pinchTargetTable.current = tableElement instanceof HTMLElement
+        ? tableElement.dataset.tableName ?? null
+        : null
+
       // Capture pointer for pinch gesture
       ;(e.target as HTMLElement).setPointerCapture(e.pointerId)
       return
@@ -165,23 +175,29 @@ export function ERCanvas({
 
       if (lastPinchDistance.current !== null && currentDistance > 0) {
         const delta = currentDistance / lastPinchDistance.current
-        const midpoint = getMidpoint(pointers[0], pointers[1])
-        const container = containerRef.current
-        const rect = container?.getBoundingClientRect()
 
-        if (rect) {
-          // Calculate position relative to container
-          const pinchX = midpoint.x - rect.left
-          const pinchY = midpoint.y - rect.top
+        // Pinching over a table → zoom that table
+        if (pinchTargetTable.current && onTableZoom) {
+          onTableZoom(pinchTargetTable.current, delta)
+        } else {
+          // Pinching on canvas → global zoom
+          const midpoint = getMidpoint(pointers[0], pointers[1])
+          const container = containerRef.current
+          const rect = container?.getBoundingClientRect()
 
-          updateTransform(prev => {
-            const newScale = Math.min(Math.max(prev.scale * delta, 0.25), 3)
-            return {
-              scale: newScale,
-              x: pinchX - (pinchX - prev.x) * (newScale / prev.scale),
-              y: pinchY - (pinchY - prev.y) * (newScale / prev.scale),
-            }
-          })
+          if (rect) {
+            const pinchX = midpoint.x - rect.left
+            const pinchY = midpoint.y - rect.top
+
+            updateTransform(prev => {
+              const newScale = Math.min(Math.max(prev.scale * delta, 0.25), 3)
+              return {
+                scale: newScale,
+                x: pinchX - (pinchX - prev.x) * (newScale / prev.scale),
+                y: pinchY - (pinchY - prev.y) * (newScale / prev.scale),
+              }
+            })
+          }
         }
 
         lastPinchDistance.current = currentDistance
@@ -206,6 +222,7 @@ export function ERCanvas({
     if (activePointers.current.size < 2) {
       isPinching.current = false
       lastPinchDistance.current = null
+      pinchTargetTable.current = null
     }
 
     setIsDragging(false)
@@ -219,6 +236,7 @@ export function ERCanvas({
     if (activePointers.current.size < 2) {
       isPinching.current = false
       lastPinchDistance.current = null
+      pinchTargetTable.current = null
     }
   }
 
