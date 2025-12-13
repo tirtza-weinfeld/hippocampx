@@ -15,9 +15,9 @@ export function ERDomain({ layout }: ERDomainProps) {
   }
 
   return (
-    <g>
+    <g  data-er-domain={colorIdx} >
       <rect
-        data-er-domain={colorIdx}
+        className={`fill-er-domain/10 stroke-er-domain/30  pointer-events-auto cursor-pointer hover:opacity-70 active:opacity-50`}
         x={bounds.x}
         y={bounds.y}
         width={bounds.width}
@@ -26,13 +26,13 @@ export function ERDomain({ layout }: ERDomainProps) {
         ry={12}
       />
       <text
-        className={`er-domain-label-${colorIdx} pointer-events-auto cursor-pointer hover:opacity-70 active:opacity-50`}
+        className={`fill-er-domain   pointer-events-auto cursor-pointer hover:opacity-70 active:opacity-50`}
         x={bounds.x + 12}
         y={bounds.y + 20}
         fontSize={14}
         fontWeight={600}
         onClick={(e) => {
-          console.log('copied domain name', domain.name)
+          // console.log('copied domain name', domain.name)
 
           e.stopPropagation()
           void navigator.clipboard.writeText(domain.name)

@@ -51,11 +51,17 @@ function createDebouncedStorage(storage: Storage, delay: number = 300): StateSto
 /** Default canvas transform (no zoom/pan) */
 export const DEFAULT_CANVAS_TRANSFORM: CanvasTransform = { x: 0, y: 0, scale: 1 }
 
+export type TableZIndexes = Record<string, number>
+export type VerboseTables = string[]
+
 export interface DiagramLayoutState {
   positions: TablePositions
   scales: TableScales
   isFullscreen: boolean
   canvasTransform: CanvasTransform
+  zIndexes: TableZIndexes
+  zCounter: number
+  verboseTables: VerboseTables
 }
 
 interface ERDiagramStoreState {
@@ -67,6 +73,8 @@ interface ERDiagramStoreState {
   setScales: (diagramId: string, scales: TableScales) => void
   setFullscreen: (diagramId: string, isFullscreen: boolean) => void
   setCanvasTransform: (diagramId: string, canvasTransform: CanvasTransform) => void
+  setZIndexes: (diagramId: string, zIndexes: TableZIndexes, zCounter: number) => void
+  setVerboseTables: (diagramId: string, verboseTables: VerboseTables) => void
   setLayout: (diagramId: string, layout: Partial<DiagramLayoutState>) => void
   resetLayout: (diagramId: string) => void
   getLayout: (diagramId: string) => DiagramLayoutState | undefined
@@ -76,6 +84,16 @@ interface ERDiagramStoreState {
 // STORE
 // ============================================================================
 
+const DEFAULT_LAYOUT: DiagramLayoutState = {
+  positions: {},
+  scales: {},
+  isFullscreen: false,
+  canvasTransform: DEFAULT_CANVAS_TRANSFORM,
+  zIndexes: {},
+  zCounter: 1,
+  verboseTables: [],
+}
+
 export const useERDiagramStore = create<ERDiagramStoreState>()(
   persist(
     (set, get) => ({
@@ -83,76 +101,73 @@ export const useERDiagramStore = create<ERDiagramStoreState>()(
 
       setPositions: (diagramId, positions) =>
         set((state) => {
-          const existing = state.layouts[diagramId]
+          const existing = state.layouts[diagramId] ?? DEFAULT_LAYOUT
           return {
             layouts: {
               ...state.layouts,
-              [diagramId]: {
-                positions,
-                scales: existing ? existing.scales : {},
-                isFullscreen: existing ? existing.isFullscreen : false,
-                canvasTransform: existing ? existing.canvasTransform : DEFAULT_CANVAS_TRANSFORM,
-              },
+              [diagramId]: { ...existing, positions },
             },
           }
         }),
 
       setScales: (diagramId, scales) =>
         set((state) => {
-          const existing = state.layouts[diagramId]
+          const existing = state.layouts[diagramId] ?? DEFAULT_LAYOUT
           return {
             layouts: {
               ...state.layouts,
-              [diagramId]: {
-                positions: existing ? existing.positions : {},
-                scales,
-                isFullscreen: existing ? existing.isFullscreen : false,
-                canvasTransform: existing ? existing.canvasTransform : DEFAULT_CANVAS_TRANSFORM,
-              },
+              [diagramId]: { ...existing, scales },
             },
           }
         }),
 
       setFullscreen: (diagramId, isFullscreen) =>
         set((state) => {
-          const existing = state.layouts[diagramId]
+          const existing = state.layouts[diagramId] ?? DEFAULT_LAYOUT
           return {
             layouts: {
               ...state.layouts,
-              [diagramId]: {
-                positions: existing ? existing.positions : {},
-                scales: existing ? existing.scales : {},
-                isFullscreen,
-                canvasTransform: existing ? existing.canvasTransform : DEFAULT_CANVAS_TRANSFORM,
-              },
+              [diagramId]: { ...existing, isFullscreen },
             },
           }
         }),
 
       setCanvasTransform: (diagramId, canvasTransform) =>
         set((state) => {
-          const existing = state.layouts[diagramId]
+          const existing = state.layouts[diagramId] ?? DEFAULT_LAYOUT
           return {
             layouts: {
               ...state.layouts,
-              [diagramId]: {
-                positions: existing ? existing.positions : {},
-                scales: existing ? existing.scales : {},
-                isFullscreen: existing ? existing.isFullscreen : false,
-                canvasTransform,
-              },
+              [diagramId]: { ...existing, canvasTransform },
+            },
+          }
+        }),
+
+      setZIndexes: (diagramId, zIndexes, zCounter) =>
+        set((state) => {
+          const existing = state.layouts[diagramId] ?? DEFAULT_LAYOUT
+          return {
+            layouts: {
+              ...state.layouts,
+              [diagramId]: { ...existing, zIndexes, zCounter },
+            },
+          }
+        }),
+
+      setVerboseTables: (diagramId, verboseTables) =>
+        set((state) => {
+          const existing = state.layouts[diagramId] ?? DEFAULT_LAYOUT
+          return {
+            layouts: {
+              ...state.layouts,
+              [diagramId]: { ...existing, verboseTables },
             },
           }
         }),
 
       setLayout: (diagramId, layout) =>
         set((state) => {
-          const current = state.layouts[diagramId] ?? {
-            positions: {},
-            scales: {},
-            isFullscreen: false,
-            canvasTransform: DEFAULT_CANVAS_TRANSFORM,
-          }
+          const current = state.layouts[diagramId] ?? DEFAULT_LAYOUT
           return {
             layouts: {
               ...state.layouts,
@@ -161,6 +176,9 @@ export const useERDiagramStore = create<ERDiagramStoreState>()(
                 scales: layout.scales ?? current.scales,
                 isFullscreen: layout.isFullscreen ?? current.isFullscreen,
                 canvasTransform: layout.canvasTransform ?? current.canvasTransform,
+                zIndexes: layout.zIndexes ?? current.zIndexes,
+                zCounter: layout.zCounter ?? current.zCounter,
+                verboseTables: layout.verboseTables ?? current.verboseTables,
               },
             },
           }

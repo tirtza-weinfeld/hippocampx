@@ -83,7 +83,6 @@ export function ERDiagram({ topology, title, className }: ERDiagramProps) {
   const [selectedTable, setSelectedTable] = useState<string | null>(null)
   const [selectedColumn, setSelectedColumn] = useState<SelectedColumn | null>(null)
   const [isHelpOpen, setIsHelpOpen] = useState(false)
-  const [verboseTables, setVerboseTables] = useState<Set<string>>(new Set())
   const shouldReduceMotion = useReducedMotion()
 
   // Generate stable diagram ID for persistence
@@ -99,10 +98,15 @@ export function ERDiagram({ topology, title, className }: ERDiagramProps) {
     scales: tableScales,
     isFullscreen,
     canvasTransform,
+    zIndexes: tableZIndexes,
+    zCounter,
+    verboseTables,
     setPositions: setTablePositions,
     setScales: setTableScales,
     setFullscreen,
     setCanvasTransform,
+    setZIndexes: setTableZIndexes,
+    setVerboseTables,
     resetLayout: resetPersistedLayout,
   } = useERPersistence(diagramId)
 
@@ -143,6 +147,18 @@ export function ERDiagram({ topology, title, className }: ERDiagramProps) {
     }
   }
 
+  function bringTableToFront(tableName: string) {
+    const newCounter = zCounter + 1
+    setTableZIndexes({ ...tableZIndexes, [tableName]: newCounter }, newCounter)
+  }
+
+  function handleTableSelect(tableName: string | null) {
+    setSelectedTable(tableName)
+    if (tableName !== null) {
+      bringTableToFront(tableName)
+    }
+  }
+
   function handleTableDrag(tableName: string, position: Point) {
     setTablePositions({ ...tablePositions, [tableName]: position })
   }
@@ -166,15 +182,12 @@ export function ERDiagram({ topology, title, className }: ERDiagramProps) {
   }
 
   function handleVerboseToggle(tableName: string) {
-    setVerboseTables(prev => {
-      const next = new Set(prev)
-      if (next.has(tableName)) {
-        next.delete(tableName)
-      } else {
-        next.add(tableName)
-      }
-      return next
-    })
+    const isVerbose = verboseTables.includes(tableName)
+    if (isVerbose) {
+      setVerboseTables(verboseTables.filter(t => t !== tableName))
+    } else {
+      setVerboseTables([...verboseTables, tableName])
+    }
   }
 
   // Handle escape key to exit fullscreen
@@ -203,6 +216,8 @@ export function ERDiagram({ topology, title, className }: ERDiagramProps) {
 
   const hasCustomLayout = Object.keys(tablePositions).length > 0 ||
     Object.keys(tableScales).length > 0 ||
+    Object.keys(tableZIndexes).length > 0 ||
+    verboseTables.length > 0 ||
     canvasTransform.x !== 0 ||
     canvasTransform.y !== 0 ||
     canvasTransform.scale !== 1
@@ -329,11 +344,12 @@ export function ERDiagram({ topology, title, className }: ERDiagramProps) {
             layout={tableLayout}
             highlighted={tableLayout.table.name === hoveredTable}
             selected={tableLayout.table.name === selectedTable}
+            zIndex={tableZIndexes[tableLayout.table.name]}
             scale={tableScales[tableLayout.table.name] ?? 1}
             columnHighlights={getColumnHighlights(tableLayout.table.name)}
-            verbose={verboseTables.has(tableLayout.table.name)}
+            verbose={verboseTables.includes(tableLayout.table.name)}
             onHover={setHoveredTable}
-            onSelect={setSelectedTable}
+            onSelect={handleTableSelect}
             onDrag={handleTableDrag}
             onColumnClick={handleColumnClick}
             onVerboseToggle={handleVerboseToggle}

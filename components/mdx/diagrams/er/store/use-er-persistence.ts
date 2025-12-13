@@ -3,7 +3,7 @@
 import { useEffect, useSyncExternalStore } from 'react'
 import { useERDiagramStore } from './er-diagram-store'
 import type { TablePositions, TableScales, CanvasTransform } from '../types'
-import { DEFAULT_CANVAS_TRANSFORM } from './er-diagram-store'
+import { DEFAULT_CANVAS_TRANSFORM, type TableZIndexes, type VerboseTables } from './er-diagram-store'
 
 interface ERPersistenceResult {
   /** Persisted table positions (empty until hydrated) */
@@ -14,6 +14,12 @@ interface ERPersistenceResult {
   isFullscreen: boolean
   /** Persisted canvas transform (default until hydrated) */
   canvasTransform: CanvasTransform
+  /** Persisted z-indexes for table stacking order */
+  zIndexes: TableZIndexes
+  /** Current z-index counter */
+  zCounter: number
+  /** Persisted list of tables with verbose mode enabled */
+  verboseTables: VerboseTables
   /** Update persisted positions */
   setPositions: (positions: TablePositions) => void
   /** Update persisted scales */
@@ -22,6 +28,10 @@ interface ERPersistenceResult {
   setFullscreen: (isFullscreen: boolean) => void
   /** Update persisted canvas transform */
   setCanvasTransform: (canvasTransform: CanvasTransform) => void
+  /** Update persisted z-indexes and counter */
+  setZIndexes: (zIndexes: TableZIndexes, zCounter: number) => void
+  /** Update persisted verbose tables list */
+  setVerboseTables: (verboseTables: VerboseTables) => void
   /** Reset layout to defaults (clears persisted state) */
   resetLayout: () => void
   /** Whether hydration from localStorage is complete */
@@ -73,6 +83,8 @@ export function useERPersistence(diagramId: string): ERPersistenceResult {
   const storeSetScales = useERDiagramStore((state) => state.setScales)
   const storeSetFullscreen = useERDiagramStore((state) => state.setFullscreen)
   const storeSetCanvasTransform = useERDiagramStore((state) => state.setCanvasTransform)
+  const storeSetZIndexes = useERDiagramStore((state) => state.setZIndexes)
+  const storeSetVerboseTables = useERDiagramStore((state) => state.setVerboseTables)
   const storeResetLayout = useERDiagramStore((state) => state.resetLayout)
 
   // Bind actions to this diagram ID - compiler handles stabilization
@@ -92,6 +104,14 @@ export function useERPersistence(diagramId: string): ERPersistenceResult {
     storeSetCanvasTransform(diagramId, canvasTransform)
   }
 
+  function setZIndexes(zIndexes: TableZIndexes, zCounter: number) {
+    storeSetZIndexes(diagramId, zIndexes, zCounter)
+  }
+
+  function setVerboseTables(verboseTables: VerboseTables) {
+    storeSetVerboseTables(diagramId, verboseTables)
+  }
+
   function resetLayout() {
     storeResetLayout(diagramId)
   }
@@ -102,10 +122,15 @@ export function useERPersistence(diagramId: string): ERPersistenceResult {
     scales: isReady ? (layout?.scales ?? {}) : {},
     isFullscreen: isReady ? (layout?.isFullscreen ?? false) : false,
     canvasTransform: isReady ? (layout?.canvasTransform ?? DEFAULT_CANVAS_TRANSFORM) : DEFAULT_CANVAS_TRANSFORM,
+    zIndexes: isReady ? (layout?.zIndexes ?? {}) : {},
+    zCounter: isReady ? (layout?.zCounter ?? 1) : 1,
+    verboseTables: isReady ? (layout?.verboseTables ?? []) : [],
     setPositions,
     setScales,
     setFullscreen,
     setCanvasTransform,
+    setZIndexes,
+    setVerboseTables,
     resetLayout,
     isReady,
   }

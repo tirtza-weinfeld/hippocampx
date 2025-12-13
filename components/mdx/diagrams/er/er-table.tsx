@@ -10,6 +10,7 @@ interface ERTableProps {
   layout: TableLayout
   highlighted: boolean
   selected: boolean
+  zIndex?: number
   scale?: number
   columnHighlights?: ColumnHighlight[]
   verbose?: boolean
@@ -24,6 +25,7 @@ export function ERTable({
   layout,
   highlighted,
   selected,
+  zIndex,
   scale = 1,
   columnHighlights = [],
   verbose = false,
@@ -104,11 +106,9 @@ export function ERTable({
     onVerboseToggle?.(table.name)
   }
 
-  // Calculate table dimensions (verbose mode adds height for metadata)
+  // Calculate table dimensions (verbose mode expands width via fit-content, not height)
   const baseColumnHeight = 32
-  const metadataHeight = verbose ? 28 : 0 // approx height for inline metadata
-  const columnsWithMetadata = table.columns.filter(col => col.comment !== undefined || col.example !== undefined).length
-  const tableHeight = 44 + table.columns.length * baseColumnHeight + (verbose ? columnsWithMetadata * metadataHeight : 0)
+  const tableHeight = 44 + table.columns.length * baseColumnHeight
 
   // Position is at the center, offset by scaled size
   const centerX = position.x + dimensions.width / 2
@@ -127,16 +127,18 @@ export function ERTable({
       data-dragging={isDragging}
       className={cn(
         'absolute rounded-lg border-2 overflow-hidden bg-er-entity border-er-border',
-        isDragging && 'z-50 cursor-grabbing',
+        isDragging && 'cursor-grabbing',
         !isDragging && 'cursor-grab',
         scale !== 1 && 'ring-2 ring-er-relation/50'
       )}
       style={{
         left: centerX,
         top: centerY,
-        width: dimensions.width,
+        width: verbose && hasAnyMetadata ? 'fit-content' : dimensions.width,
+        minWidth: dimensions.width,
         marginLeft: -dimensions.width / 2,
         marginTop: -tableHeight / 2,
+        zIndex: isDragging ? 1000 : zIndex,
       }}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}

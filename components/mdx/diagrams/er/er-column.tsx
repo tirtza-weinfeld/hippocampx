@@ -55,7 +55,7 @@ function ConstraintBadge({ constraint, foreignKey }: ConstraintBadgeProps) {
 }
 
 // ============================================================================
-// INLINE METADATA (for verbose mode)
+// INLINE METADATA (for verbose mode - horizontal expansion)
 // ============================================================================
 
 interface InlineMetadataProps {
@@ -69,20 +69,17 @@ function InlineMetadata({ comment, example }: InlineMetadataProps) {
   if (!comment && !example) return null
 
   return (
-    <motion.div
-      initial={{ opacity: 0, height: 0 }}
-      animate={{ opacity: 1, height: 'auto' }}
-      exit={{ opacity: 0, height: 0 }}
+    <motion.span
+      initial={{ opacity: 0, width: 0 }}
+      animate={{ opacity: 1, width: 'auto' }}
+      exit={{ opacity: 0, width: 0 }}
       transition={{ duration: shouldReduceMotion ? 0 : 0.15 }}
-      className="overflow-hidden"
+      className="overflow-hidden flex items-center gap-2 text-xs shrink-0 whitespace-nowrap"
     >
-      <div className="px-3 py-1.5 bg-er-entity-header/30 border-b border-er-border text-xs">
-        {comment && <p className="text-er-comment">{comment}</p>}
-        {example && (
-          <p className="font-mono mt-0.5 text-er-example">{example}</p>
-        )}
-      </div>
-    </motion.div>
+      <span className="w-px h-4 bg-er-border" />
+      {comment && <span className="text-er-comment">{comment}</span>}
+      {example && <span className="font-mono text-er-example">{example}</span>}
+    </motion.span>
   )
 }
 
@@ -146,7 +143,7 @@ export function ERColumn({ column, tableName, highlight, verbose, onColumnClick 
           />
         )}
 
-        <span className="flex-1 truncate">
+        <span className="flex-1 whitespace-nowrap">
           <span
             className="font-medium text-er-text cursor-pointer hover:text-er-text-muted active:text-er-copy"
             onClick={(e) => {
@@ -173,14 +170,14 @@ export function ERColumn({ column, tableName, highlight, verbose, onColumnClick 
             ))}
           </div>
         )}
-      </div>
 
-      {/* Inline metadata shown when verbose mode is enabled */}
-      <AnimatePresence>
-        {verbose && hasMetadata && (
-          <InlineMetadata comment={column.comment} example={column.example} />
-        )}
-      </AnimatePresence>
+        {/* Inline metadata shown when verbose mode is enabled - horizontal */}
+        <AnimatePresence>
+          {verbose && hasMetadata && (
+            <InlineMetadata comment={column.comment} example={column.example} />
+          )}
+        </AnimatePresence>
+      </div>
     </div>
   )
 }

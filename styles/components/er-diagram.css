@@ -27,15 +27,18 @@
   --color-er-example: var(--er-example);
   --color-er-copy: var(--er-copy);
 
-  --color-er-domain-0: var(--er-domain-0);
-  --color-er-domain-1: var(--er-domain-1);
-  --color-er-domain-2: var(--er-domain-2);
-  --color-er-domain-3: var(--er-domain-3);
-  --color-er-domain-4: var(--er-domain-4);
-  --color-er-domain-5: var(--er-domain-5);
+  
+  --color-er-domain: var(--er-domain);
 
   --shadow-er-table: var(--shadow-sm);
   --shadow-er-table-hover: var(--shadow-lg);
+
+  --animate-er-copy-flash: er-copy-flash 0.6s ease-in-out;
+}
+
+@keyframes er-copy-flash {
+  0%, 100% { color: inherit; }
+  30%, 70% { color: var(--er-copy); }
 }
 
 :root {
@@ -53,7 +56,7 @@
   --er-relation: var(--color-gray-500);
   --er-relation-highlight-fk: var(--color-blue-500);
   --er-relation-highlight-pk: var(--color-orange-500);
-  --er-comment: var(--color-gray-600);
+  --er-comment: var(--color-blue-600);
   --er-example: var(--color-emerald-700);
   --er-copy: var(--color-emerald-900);
 
@@ -65,6 +68,9 @@
   --er-domain-3: var(--color-orange-500);
   --er-domain-4: var(--color-pink-500);
   --er-domain-5: var(--color-amber-500);
+
+  --er-row-highlight-pk: linear-gradient(90deg, oklch(from var(--color-orange-200) l c h / 0.7) 0%, oklch(from var(--color-orange-100) l c h / 0.3) 100%);
+  --er-row-highlight-fk: linear-gradient(90deg, oklch(from var(--color-blue-100) l c h / 0.3) 0%, oklch(from var(--color-blue-200) l c h / 0.7) 100%);
 
   /* Layout sizing (unitless for SVG calculations) */
   --er-table-width: 200;
@@ -92,7 +98,7 @@
   --er-relation: var(--color-gray-400);
   --er-relation-highlight-fk: var(--color-blue-400);
   --er-relation-highlight-pk: var(--color-orange-400);
-  --er-comment: var(--color-gray-400);
+  --er-comment: var(--color-blue-400);
   --er-example: var(--color-emerald-400);
   --er-copy: --alpha(var(--color-emerald-700) / 70%);
 
@@ -102,7 +108,19 @@
   --er-domain-3: var(--color-orange-400);
   --er-domain-4: var(--color-pink-400);
   --er-domain-5: var(--color-amber-400);
+
+  --er-row-highlight-pk: linear-gradient(90deg, oklch(from var(--color-orange-900) l c h / 0.5) 0%, oklch(from var(--color-orange-800) l c h / 0.2) 100%);
+  --er-row-highlight-fk: linear-gradient(90deg, oklch(from var(--color-blue-800) l c h / 0.2) 0%, oklch(from var(--color-blue-900) l c h / 0.5) 100%);
 }
+
+@utility er-row-highlight-pk {
+  background: var(--er-row-highlight-pk);
+}
+
+@utility er-row-highlight-fk {
+  background: var(--er-row-highlight-fk);
+}
+
 
 /* Table states via data attributes */
 :is([data-er-table]) {
@@ -139,48 +157,6 @@
   stroke: var(--er-relation-highlight-pk);
 }
 
-/* Fill colors for markers */
-.fill-er-relation {
-  fill: var(--er-relation);
-}
-
-.fill-er-relation-highlight-fk {
-  fill: var(--er-relation-highlight-fk);
-}
-
-.fill-er-relation-highlight-pk {
-  fill: var(--er-relation-highlight-pk);
-}
-
-/* Row highlight gradients */
-.er-row-highlight-pk {
-  background: linear-gradient(90deg,
-    oklch(from var(--color-orange-200) l c h / 0.7) 0%,
-    oklch(from var(--color-orange-100) l c h / 0.3) 100%
-  );
-}
-
-.er-row-highlight-fk {
-  background: linear-gradient(90deg,
-    oklch(from var(--color-blue-100) l c h / 0.3) 0%,
-    oklch(from var(--color-blue-200) l c h / 0.7) 100%
-  );
-}
-
-.dark .er-row-highlight-pk {
-  background: linear-gradient(90deg,
-    oklch(from var(--color-orange-900) l c h / 0.5) 0%,
-    oklch(from var(--color-orange-800) l c h / 0.2) 100%
-  );
-}
-
-.dark .er-row-highlight-fk {
-  background: linear-gradient(90deg,
-    oklch(from var(--color-blue-800) l c h / 0.2) 0%,
-    oklch(from var(--color-blue-900) l c h / 0.5) 100%
-  );
-}
-
 /* Canvas states */
 :is([data-er-canvas]) {
   cursor: grab;
@@ -197,49 +173,26 @@
 }
 
 :is([data-er-domain="0"]) {
-  fill: oklch(from var(--er-domain-0) l c h / 8%);
-  stroke: oklch(from var(--er-domain-0) l c h / 30%);
+  --er-domain: var(--er-domain-0);
 }
 
 :is([data-er-domain="1"]) {
-  fill: oklch(from var(--er-domain-1) l c h / 8%);
-  stroke: oklch(from var(--er-domain-1) l c h / 30%);
+  --er-domain: var(--er-domain-1);
 }
 
 :is([data-er-domain="2"]) {
-  fill: oklch(from var(--er-domain-2) l c h / 8%);
-  stroke: oklch(from var(--er-domain-2) l c h / 30%);
+  --er-domain: var(--er-domain-2);
 }
 
 :is([data-er-domain="3"]) {
-  fill: oklch(from var(--er-domain-3) l c h / 8%);
-  stroke: oklch(from var(--er-domain-3) l c h / 30%);
+  --er-domain: var(--er-domain-3);
 }
 
 :is([data-er-domain="4"]) {
-  fill: oklch(from var(--er-domain-4) l c h / 8%);
-  stroke: oklch(from var(--er-domain-4) l c h / 30%);
+  --er-domain: var(--er-domain-4);
 }
 
 :is([data-er-domain="5"]) {
-  fill: oklch(from var(--er-domain-5) l c h / 8%);
-  stroke: oklch(from var(--er-domain-5) l c h / 30%);
-}
+  --er-domain: var(--er-domain-5);
+  }
 
-.er-domain-label-0 { fill: var(--er-domain-0); }
-.er-domain-label-1 { fill: var(--er-domain-1); }
-.er-domain-label-2 { fill: var(--er-domain-2); }
-.er-domain-label-3 { fill: var(--er-domain-3); }
-.er-domain-label-4 { fill: var(--er-domain-4); }
-.er-domain-label-5 { fill: var(--er-domain-5); }
-
-/* Copy feedback animation */
-@keyframes copy-flash {
-  0%, 100% { color: inherit; }
-  30%, 70% { color: var(--er-copy); }
-}
-
-
-.animate-copy-flash {
-  animation: copy-flash  0.6s ease-in-out;
-}
