@@ -1,6 +1,7 @@
 "use client"
 
 import type { KeyboardEvent } from 'react'
+import { motion, AnimatePresence, useReducedMotion } from 'motion/react'
 import type { Column, Constraint, ForeignKey } from './types'
 import { cn } from '@/lib/utils'
 
@@ -12,6 +13,7 @@ interface ERColumnProps {
   column: Column
   tableName: string
   highlight?: 'pk' | 'fk'
+  verbose?: boolean
   onColumnClick?: (table: string, column: string) => void
 }
 
@@ -52,11 +54,44 @@ function ConstraintBadge({ constraint, foreignKey }: ConstraintBadgeProps) {
   )
 }
 
-export function ERColumn({ column, tableName, highlight, onColumnClick }: ERColumnProps) {
+// ============================================================================
+// INLINE METADATA (for verbose mode)
+// ============================================================================
+
+interface InlineMetadataProps {
+  comment?: string
+  example?: string
+}
+
+function InlineMetadata({ comment, example }: InlineMetadataProps) {
+  const shouldReduceMotion = useReducedMotion()
+
+  if (!comment && !example) return null
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, height: 0 }}
+      animate={{ opacity: 1, height: 'auto' }}
+      exit={{ opacity: 0, height: 0 }}
+      transition={{ duration: shouldReduceMotion ? 0 : 0.15 }}
+      className="overflow-hidden"
+    >
+      <div className="px-3 py-1.5 bg-er-entity-header/30 border-b border-er-border text-xs">
+        {comment && <p className="text-er-comment">{comment}</p>}
+        {example && (
+          <p className="font-mono mt-0.5 text-er-example">{example}</p>
+        )}
+      </div>
+    </motion.div>
+  )
+}
+
+export function ERColumn({ column, tableName, highlight, verbose, onColumnClick }: ERColumnProps) {
   const hasConstraints = column.constraints.length > 0
   const hasPK = column.constraints.includes('PK')
   const hasFK = column.constraints.includes('FK')
   const isClickable = hasPK || hasFK
+  const hasMetadata = column.comment !== undefined || column.example !== undefined
 
   function handleClick() {
     if (isClickable && onColumnClick) {
@@ -72,64 +107,72 @@ export function ERColumn({ column, tableName, highlight, onColumnClick }: ERColu
   }
 
   return (
-    <div
-      className={cn(
-        'er-column relative',
-        'flex items-center gap-2 px-3 py-1.5',
-        'border-b border-er-border last:border-b-0',
-        'transition-colors',
-        isClickable && 'cursor-pointer hover:bg-er-entity-header/50',
-        !isClickable && 'hover:bg-er-entity-header/30',
-        highlight === 'pk' && 'er-row-highlight-pk',
-        highlight === 'fk' && 'er-row-highlight-fk'
-      )}
-      onClick={handleClick}
-      onKeyDown={handleKeyDown}
-      role={isClickable ? 'button' : undefined}
-      tabIndex={isClickable ? 0 : undefined}
-      aria-label={isClickable ? `Select ${column.name} to highlight related columns` : undefined}
-    >
-      {/* Connection indicator - left side (for incoming arrows to PK) */}
-      {hasPK && (
-        <span
-          className={cn(
-            'absolute -left-1 top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full shadow-sm',
-            highlight === 'pk' ? 'bg-er-relation-highlight-pk' : 'bg-er-pk-text'
-          )}
-          aria-hidden="true"
-        />
-      )}
+    <div className="border-b border-er-border last:border-b-0">
+      <div
+        className={cn(
+          'er-column relative',
+          'flex items-center gap-2 px-3 py-1.5',
+          'transition-colors',
+          isClickable && 'cursor-pointer hover:bg-er-entity-header/50',
+          !isClickable && 'hover:bg-er-entity-header/30',
+          highlight === 'pk' && 'er-row-highlight-pk',
+          highlight === 'fk' && 'er-row-highlight-fk'
+        )}
+        onClick={handleClick}
+        onKeyDown={handleKeyDown}
+        role={isClickable ? 'button' : undefined}
+        tabIndex={isClickable ? 0 : undefined}
+        aria-label={isClickable ? `Select ${column.name} to highlight related columns` : undefined}
+      >
+        {/* Connection indicator - left side (for incoming arrows to PK) */}
+        {hasPK && (
+          <span
+            className={cn(
+              'absolute -left-1 top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full shadow-sm',
+              highlight === 'pk' ? 'bg-er-relation-highlight-pk' : 'bg-er-pk-text'
+            )}
+            aria-hidden="true"
+          />
+        )}
 
-      {/* Connection indicator - right side (for outgoing arrows from FK) */}
-      {hasFK && (
-        <span
-          className={cn(
-            'absolute -right-1 top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full shadow-sm',
-            highlight === 'fk' ? 'bg-er-relation-highlight-fk' : 'bg-er-fk-text'
-          )}
-          aria-hidden="true"
-        />
-      )}
+        {/* Connection indicator - right side (for outgoing arrows from FK) */}
+        {hasFK && (
+          <span
+            className={cn(
+              'absolute -right-1 top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full shadow-sm',
+              highlight === 'fk' ? 'bg-er-relation-highlight-fk' : 'bg-er-fk-text'
+            )}
+            aria-hidden="true"
+          />
+        )}
 
-      <span className="font-medium text-er-text flex-1 truncate">
-        {column.name}
-      </span>
+        <span className="font-medium text-er-text flex-1 truncate">
+          {column.name}
+        </span>
 
-      <span className="text-er-text-muted text-sm font-mono shrink-0">
-        {column.type}
-      </span>
+        <span className="text-er-text-muted text-sm font-mono shrink-0">
+          {column.type}
+        </span>
 
-      {hasConstraints && (
-        <div className="flex gap-1 shrink-0">
-          {column.constraints.map(constraint => (
-            <ConstraintBadge
-              key={constraint}
-              constraint={constraint}
-              foreignKey={constraint === 'FK' ? column.foreignKey : undefined}
-            />
-          ))}
-        </div>
-      )}
+        {hasConstraints && (
+          <div className="flex gap-1 shrink-0">
+            {column.constraints.map(constraint => (
+              <ConstraintBadge
+                key={constraint}
+                constraint={constraint}
+                foreignKey={constraint === 'FK' ? column.foreignKey : undefined}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Inline metadata shown when verbose mode is enabled */}
+      <AnimatePresence>
+        {verbose && hasMetadata && (
+          <InlineMetadata comment={column.comment} example={column.example} />
+        )}
+      </AnimatePresence>
     </div>
   )
 }

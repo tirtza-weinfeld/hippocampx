@@ -23,6 +23,8 @@
   --color-er-relation: var(--er-relation);
   --color-er-relation-highlight-fk: var(--er-relation-highlight-fk);
   --color-er-relation-highlight-pk: var(--er-relation-highlight-pk);
+  --color-er-comment: var(--er-comment);
+  --color-er-example: var(--er-example);
 
   --color-er-domain-0: var(--er-domain-0);
   --color-er-domain-1: var(--er-domain-1);
@@ -50,6 +52,8 @@
   --er-relation: var(--color-gray-500);
   --er-relation-highlight-fk: var(--color-blue-500);
   --er-relation-highlight-pk: var(--color-orange-500);
+  --er-comment: var(--color-gray-600);
+  --er-example: var(--color-emerald-700);
 
 
 
@@ -86,6 +90,8 @@
   --er-relation: var(--color-gray-400);
   --er-relation-highlight-fk: var(--color-blue-400);
   --er-relation-highlight-pk: var(--color-orange-400);
+  --er-comment: var(--color-gray-400);
+  --er-example: var(--color-emerald-400);
 
   --er-domain-0: var(--color-blue-400);
   --er-domain-1: var(--color-emerald-400);

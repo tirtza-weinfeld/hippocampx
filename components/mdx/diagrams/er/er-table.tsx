@@ -12,10 +12,12 @@ interface ERTableProps {
   selected: boolean
   scale?: number
   columnHighlights?: ColumnHighlight[]
+  verbose?: boolean
   onHover: (tableName: string | null) => void
   onSelect: (tableName: string | null) => void
   onDrag?: (tableName: string, position: Point) => void
   onColumnClick?: (table: string, column: string) => void
+  onVerboseToggle?: (tableName: string) => void
 }
 
 export function ERTable({
@@ -24,10 +26,12 @@ export function ERTable({
   selected,
   scale = 1,
   columnHighlights = [],
+  verbose = false,
   onHover,
   onSelect,
   onDrag,
   onColumnClick,
+  onVerboseToggle,
 }: ERTableProps) {
   const { table, position, dimensions } = layout
   const tableRef = useRef<HTMLElement>(null)
@@ -92,8 +96,19 @@ export function ERTable({
     }
   }
 
-  // Calculate table dimensions
-  const tableHeight = 44 + table.columns.length * 32
+  // Check if any columns have metadata (comment or example)
+  const hasAnyMetadata = table.columns.some(col => col.comment !== undefined || col.example !== undefined)
+
+  function handleVerboseToggle(e: React.MouseEvent) {
+    e.stopPropagation()
+    onVerboseToggle?.(table.name)
+  }
+
+  // Calculate table dimensions (verbose mode adds height for metadata)
+  const baseColumnHeight = 32
+  const metadataHeight = verbose ? 28 : 0 // approx height for inline metadata
+  const columnsWithMetadata = table.columns.filter(col => col.comment !== undefined || col.example !== undefined).length
+  const tableHeight = 44 + table.columns.length * baseColumnHeight + (verbose ? columnsWithMetadata * metadataHeight : 0)
 
   // Position is at the center, offset by scaled size
   const centerX = position.x + dimensions.width / 2
@@ -176,11 +191,30 @@ export function ERTable({
           <circle cx="12" cy="12" r="1.5" />
         </svg>
         <span className="truncate">{table.name}</span>
-        {scale !== 1 && (
-          <span className="ml-auto text-xs font-mono text-er-text-muted">
-            {Math.round(scale * 100)}%
-          </span>
-        )}
+        <div className="ml-auto flex items-center gap-1.5">
+          {scale !== 1 && (
+            <span className="text-xs font-mono text-er-text-muted">
+              {Math.round(scale * 100)}%
+            </span>
+          )}
+          {hasAnyMetadata && (
+            <button
+              type="button"
+              onClick={handleVerboseToggle}
+              className={cn(
+                'w-5 h-5 rounded flex items-center justify-center text-xs font-bold transition-colors',
+                verbose
+                  ? 'bg-er-pk text-er-pk-text'
+                  : 'bg-er-entity text-er-text-muted hover:bg-er-entity-header hover:text-er-text'
+              )}
+              aria-label={verbose ? 'Hide column descriptions' : 'Show column descriptions'}
+              aria-pressed={verbose}
+              title={verbose ? 'Hide descriptions (click to collapse)' : 'Show descriptions (click to expand)'}
+            >
+              ?
+            </button>
+          )}
+        </div>
       </header>
       <div>
         {table.columns.map(col => {
@@ -191,6 +225,7 @@ export function ERTable({
               column={col}
               tableName={table.name}
               highlight={highlight?.type}
+              verbose={verbose}
               onColumnClick={onColumnClick}
             />
           )

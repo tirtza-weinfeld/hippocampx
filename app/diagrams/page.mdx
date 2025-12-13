@@ -1,122 +1,168 @@
 # ERDiagram Syntax Design
 
-## Proposed: SQL-like, FK auto-infers relationships
+## Proposed Syntax
+
+```
+column_name  type  [constraints]  // description | example
+```
+
+**Metadata rules:**
+- `//` starts the metadata section (hidden by default, shown on hover)
+- Text before `|` is the **description** (explains what this column stores)
+- Text after `|` is the **example value** (a realistic sample)
+- Both description and example are optional
+- Metadata does NOT affect column parsing - purely for documentation
+
+**Display behavior:**
+- **Default:** Columns show only `name`, `type`, `constraints` (clean, minimal)
+- **Hover (500ms delay):** Tooltip appears with description + example
+- **Table header `[?]` toggle:** Expands ALL column descriptions inline (verbose mode)
+- **Keyboard `i`:** Instant tooltip for hovered column (power users)
+
+```
+Default view:                         Verbose mode (header toggle):
+┌──────────────────────────┐          ┌──────────────────────────────────┐
+│ users               [?]  │          │ users                       [?]  │
+├──────────────────────────┤          ├──────────────────────────────────┤
+│ ● id        int    [PK]  │          │ ● id        int           [PK]   │
+│   name   varchar         │          │   Unique identifier | 42         │
+│   email  varchar    [UK] │          │   name      varchar              │
+└──────────────────────────┘          │   User's display name | "Jane"   │
+                                      │   email     varchar        [UK]  │
+Hover tooltip:                        │   Contact email | "j@example.com"│
+┌──────────────────────────┐          └──────────────────────────────────┘
+│ ● id        int    [PK]  │
+│   name      varchar ←─────────┐
+│   email     varchar   [UK]    │
+└───────────────────────────────│
+          ┌─────────────────────┴───┐
+          │ User's display name     │
+          │ Example: "Jane Doe"     │
+          └─────────────────────────┘
+```
+
+## Example Schema
 
 ```erDiagram
 --- LEXICAL CORE ---
 
 lexical_entries
-  id             int           PK
-  lemma          varchar(255)
-  part_of_speech partofspeech
-  language_code  varchar(5)
-  discriminator  int
-  embedding      halfvec(1536)
-  metadata       jsonb
-  created_at     timestamp
-  updated_at     timestamp
+  id             int           PK  // Unique identifier for this headword | 202
+  lemma          varchar(255)      // Dictionary form (canonical) | "go"
+  part_of_speech partofspeech      // Grammatical category | "verb"
+  language_code  varchar(5)        // ISO 639-1 code | "en"
+  discriminator  int               // Distinguishes homographs | 1
+  embedding      halfvec(1536)     // Semantic vector for fuzzy search | [0.15, -0.88, ...]
+  metadata       jsonb             // Extra data (origin, etymology) | {"etymology": "Old English"}
+  created_at     timestamp         // Record creation time | 2026-01-01 10:00:00
+  updated_at     timestamp         // Last modification time | 2026-01-02 12:30:00
 
 word_forms
-  id                    int     PK
-  entry_id              int     FK(lexical_entries.id)
-  form_text             varchar(255)
-  grammatical_features  jsonb
+  id                    int          PK  // ID for this inflection | 801
+  entry_id              int          FK(lexical_entries.id)  // Parent lemma | 202
+  form_text             varchar(255)     // Conjugated string | "went"
+  grammatical_features  jsonb            // Form definition | {"tense": "past"}
 
 senses
-  id                  int     PK
-  entry_id            int     FK(lexical_entries.id)
-  definition          text
-  order_index         int
-  embedding           halfvec(1536)
-  is_synthetic        boolean
-  verification_status varchar(50)
+  id                  int          PK  // ID for a specific meaning | 444
+  entry_id            int          FK(lexical_entries.id)  // Parent lemma | 202
+  definition          text             // Text explanation | "To move from one place to another."
+  order_index         int              // Importance rank (1 = most common) | 1
+  embedding           halfvec(1536)    // Vector for concept search | [0.33, 0.21, ...]
+  is_synthetic        boolean          // Written by AI? | false
+  verification_status varchar(50)      // Editorial state | "canonical"
 
 entry_audio
-  id           int     PK
-  entry_id     int     FK(lexical_entries.id)
-  audio_url    varchar(512)
-  transcript   text
-  duration_ms  int
-  accent_code  varchar(10)
-  content_type varchar(50)
+  id           int          PK  // ID for this audio clip | 910
+  entry_id     int          FK(lexical_entries.id)  // Parent lemma | 202
+  audio_url    varchar(512)     // URL to edge storage | "https://r2.../go_uk.mp3"
+  transcript   text             // IPA phonetic | "/ɡəʊ/"
+  duration_ms  int              // Length in milliseconds | 950
+  accent_code  varchar(10)      // Dialect/region | "en-GB"
+  content_type varchar(50)      // MIME type | "audio/mpeg"
 
 --- TAXONOMY & TAGS ---
 
 categories
-  id              varchar(50)   PK
-  display_name    varchar(100)
-  ai_description  text
+  id              varchar(50)   PK  // Category identifier | "grammar"
+  display_name    varchar(100)      // Human-readable name | "Grammar"
+  ai_description  text              // AI-generated description
 
 tags
-  id          int           PK
-  category_id varchar(50)   FK(categories.id)
-  name        varchar(100)
-  metadata    jsonb
+  id          int           PK  // Tag identifier | 15
+  category_id varchar(50)   FK(categories.id)  // Parent category
+  name        varchar(100)      // Tag name | "transitive"
+  metadata    jsonb             // Additional data
 
 sense_tags
-  sense_id    int   PK FK(senses.id)
-  tag_id      int   PK FK(tags.id)
-  explanation text
+  sense_id    int   PK FK(senses.id)     // Linked sense
+  tag_id      int   PK FK(tags.id)       // Linked tag
+  explanation text                        // Why this tag applies
 
---- KNOWLEDGE GRAPH & RELATIONS ---
+--- KNOWLEDGE GRAPH ---
 
 sense_relations
-  id              int           PK
-  source_sense_id int           FK(senses.id)
-  target_sense_id int           FK(senses.id)
-  relation_type   relationtype
-  strength        int
-  explanation     text
+  id              int           PK  // Relation identifier
+  source_sense_id int           FK(senses.id)  // From sense
+  target_sense_id int           FK(senses.id)  // To sense
+  relation_type   relationtype      // Type (synonym, antonym, etc.)
+  strength        int               // Relationship strength (0-100) | 85
+  explanation     text              // Human explanation
 
---- SOURCES & HIERARCHY ---
+--- SOURCES ---
 
 examples
-  id              int     PK
-  sense_id        int     FK(senses.id)
-  text            text
-  language_code   varchar(5)
-  source_part_id  int     FK(source_parts.id)
-  embedding       halfvec(1536)
-  cached_citation varchar(255)
+  id              int          PK  // Example identifier
+  sense_id        int          FK(senses.id)  // Parent sense
+  text            text             // Example sentence | "She went to the store."
+  language_code   varchar(5)       // ISO 639-1 code | "en"
+  source_part_id  int          FK(source_parts.id)  // Citation source
+  embedding       halfvec(1536)    // Semantic vector
+  cached_citation varchar(255)     // Formatted citation
 
 contributors
-  id        int     PK
-  name      varchar(255)
-  type      varchar(50)
-  metadata  jsonb
+  id        int          PK  // Contributor identifier
+  name      varchar(255)     // Full name | "Jane Doe"
+  type      varchar(50)      // Contributor type | "editor"
+  metadata  jsonb            // Additional info
 
 sources
-  id                int     PK
-  type              sourcetype
-  title             varchar(255)
-  publication_year  int
-  reliability_score real
-  metadata          jsonb
+  id                int          PK  // Source identifier
+  type              sourcetype       // Source type (book, article, etc.)
+  title             varchar(255)     // Title | "Oxford Dictionary"
+  publication_year  int              // Year published | 2024
+  reliability_score real             // Trust score (0-1) | 0.95
+  metadata          jsonb            // Additional data
 
 source_credits
-  source_id       int         PK FK(sources.id)
-  contributor_id  int         PK FK(contributors.id)
-  role            creditrole  PK
+  source_id       int         PK FK(sources.id)       // Linked source
+  contributor_id  int         PK FK(contributors.id)  // Linked contributor
+  role            creditrole  PK                      // Credit role (author, editor)
 
 source_parts
-  id              int     PK
-  source_id       int     FK(sources.id)
-  parent_part_id  int     FK(source_parts.id)
-  name            varchar(255)
-  type            varchar(50)
-  order_index     int
+  id              int          PK  // Part identifier
+  source_id       int          FK(sources.id)  // Parent source
+  parent_part_id  int          FK(source_parts.id)  // Nested part (chapter in book)
+  name            varchar(255)     // Part name | "Chapter 3"
+  type            varchar(50)      // Part type | "chapter"
+  order_index     int              // Display order | 3
 ```
 
 ## Syntax Rules
 
 **Domains:** `--- DOMAIN NAME ---` groups tables visually
 **Tables:** Name on its own line, columns indented below
-**Columns:** `name type [constraints]`
+**Columns:** `name type [constraints] [// description | example]`
 **Constraints:**
   - `PK` = primary key
   - `FK(table.column)` = foreign key (auto-draws relationship)
   - `UK` = unique
   - Multiple: `PK FK(table.id)` (space-separated)
+
+**Metadata (hidden by default):**
+  - `// description` = column explanation
+  - `// description | example` = explanation + sample value
+  - Triggered on hover or click
 
 **Relationships:** Auto-inferred from FK definitions - no separate syntax needed!
 
@@ -130,6 +176,7 @@ source_parts
 | Self-reference | Confusing | `FK(same_table.id)` |
 | Composite PK | `PK,FK` | `PK FK(table)` |
 | Domains | Not supported | `--- NAME ---` sections |
+| Hidden comments | Not supported | `// description \| example` |
 
 
 
@@ -140,6 +187,5 @@ source_parts
                       ┌─────────────┐
                       │ column      │▷───────── line to PK
                       └─────────────┘
-  
-                
-                      
+
+

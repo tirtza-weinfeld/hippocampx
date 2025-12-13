@@ -43,6 +43,8 @@ interface Column {
   type: string
   constraints: Constraint[]
   foreignKey?: ForeignKey
+  comment?: string
+  example?: string
 }
 
 interface Table {
@@ -147,13 +149,47 @@ function parseConstraints(constraintString: string): {
   return { constraints, foreignKey }
 }
 
+function parseColumnMetadata(metadataString: string): { comment?: string; example?: string } {
+  const trimmed = metadataString.trim()
+  if (trimmed === '') return {}
+
+  // Split at | to separate description from example
+  const pipeIndex = trimmed.indexOf('|')
+
+  if (pipeIndex === -1) {
+    // No pipe - entire string is the comment
+    return { comment: trimmed }
+  }
+
+  const comment = trimmed.slice(0, pipeIndex).trim()
+  const example = trimmed.slice(pipeIndex + 1).trim()
+
+  return {
+    comment: comment !== '' ? comment : undefined,
+    example: example !== '' ? example : undefined,
+  }
+}
+
 function parseColumn(line: string): Column | null {
-  // Column format: name type [constraints...]
+  // Column format: name type [constraints...] [// description | example]
   // Must be indented (starts with whitespace)
   if (!(/^\s+/).test(line)) return null
 
-  const trimmed = line.trim()
+  let trimmed = line.trim()
   if (trimmed === '') return null
+
+  // Extract metadata (comment and example) if present
+  let comment: string | undefined
+  let example: string | undefined
+
+  const commentIndex = trimmed.indexOf('//')
+  if (commentIndex !== -1) {
+    const metadataString = trimmed.slice(commentIndex + 2)
+    const metadata = parseColumnMetadata(metadataString)
+    comment = metadata.comment
+    example = metadata.example
+    trimmed = trimmed.slice(0, commentIndex).trim()
+  }
 
   // Split by whitespace, first is name, second is type, rest are constraints
   const parts = trimmed.split(/\s+/)
@@ -164,7 +200,7 @@ function parseColumn(line: string): Column | null {
 
   const { constraints, foreignKey } = parseConstraints(constraintString)
 
-  return { name, type, constraints, foreignKey }
+  return { name, type, constraints, foreignKey, comment, example }
 }
 
 function parseTableBlock(block: string): Table | null {

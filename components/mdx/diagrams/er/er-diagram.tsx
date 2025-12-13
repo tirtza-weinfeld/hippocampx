@@ -83,6 +83,7 @@ export function ERDiagram({ topology, title, className }: ERDiagramProps) {
   const [selectedTable, setSelectedTable] = useState<string | null>(null)
   const [selectedColumn, setSelectedColumn] = useState<SelectedColumn | null>(null)
   const [isHelpOpen, setIsHelpOpen] = useState(false)
+  const [verboseTables, setVerboseTables] = useState<Set<string>>(new Set())
   const shouldReduceMotion = useReducedMotion()
 
   // Generate stable diagram ID for persistence
@@ -162,6 +163,18 @@ export function ERDiagram({ topology, title, className }: ERDiagramProps) {
 
   function exitFullscreen() {
     setFullscreen(false)
+  }
+
+  function handleVerboseToggle(tableName: string) {
+    setVerboseTables(prev => {
+      const next = new Set(prev)
+      if (next.has(tableName)) {
+        next.delete(tableName)
+      } else {
+        next.add(tableName)
+      }
+      return next
+    })
   }
 
   // Handle escape key to exit fullscreen
@@ -318,10 +331,12 @@ export function ERDiagram({ topology, title, className }: ERDiagramProps) {
             selected={tableLayout.table.name === selectedTable}
             scale={tableScales[tableLayout.table.name] ?? 1}
             columnHighlights={getColumnHighlights(tableLayout.table.name)}
+            verbose={verboseTables.has(tableLayout.table.name)}
             onHover={setHoveredTable}
             onSelect={setSelectedTable}
             onDrag={handleTableDrag}
             onColumnClick={handleColumnClick}
+            onVerboseToggle={handleVerboseToggle}
           />
         ))}
       </ERCanvas>
@@ -378,6 +393,7 @@ export function ERDiagram({ topology, title, className }: ERDiagramProps) {
 
       <p className="mt-2 text-xs text-er-text-muted">
         Drag tables to reposition. Scroll on table to zoom it. Scroll on canvas to zoom all. Double-click canvas to reset view.
+        {' '}Click <span className="font-semibold">?</span> in table header to show column descriptions.
         {isFullscreen && ' Press Escape to exit fullscreen.'}
       </p>
 

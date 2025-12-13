@@ -21,6 +21,8 @@ export interface Column {
   type: string
   constraints: Constraint[]
   foreignKey?: ForeignKey
+  comment?: string
+  example?: string
 }
 
 export interface Table {
