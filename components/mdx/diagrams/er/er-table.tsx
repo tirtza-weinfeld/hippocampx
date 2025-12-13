@@ -44,7 +44,8 @@ export function ERTable({
 
   function handlePointerDown(e: PointerEvent) {
     if (e.button !== 0) return
-    e.stopPropagation()
+    // Don't stopPropagation - canvas needs to track all pointers for pinch-to-zoom
+    // Canvas will check isOnTable and skip panning when pointer is on table
 
     setIsDragging(true)
     dragStart.current = {
@@ -189,11 +190,14 @@ export function ERTable({
           <circle cx="12" cy="12" r="1.5" />
         </svg>
         <span
-          className="truncate cursor-pointer hover:text-er-text-muted active:text-er-copy"
+          className="truncate cursor-pointer hover:text-er-text-muted active:text-er-copy active:scale-95 transition-transform"
           onClick={(e) => {
             e.stopPropagation()
             void navigator.clipboard.writeText(table.name)
           }}
+          role="button"
+          tabIndex={0}
+          aria-label={`Copy table name: ${table.name}`}
         >
           {table.name}
         </span>
@@ -208,7 +212,8 @@ export function ERTable({
               type="button"
               onClick={handleVerboseToggle}
               className={cn(
-                'w-5 h-5 rounded flex items-center justify-center text-xs font-bold transition-colors',
+                'w-6 h-6 pointer-coarse:w-8 pointer-coarse:h-8 rounded flex items-center justify-center text-xs font-bold transition-colors',
+                'active:scale-90 active:opacity-80',
                 verbose
                   ? 'bg-er-pk text-er-pk-text'
                   : 'bg-er-entity text-er-text-muted hover:bg-er-entity-header hover:text-er-text'

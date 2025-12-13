@@ -15,6 +15,10 @@ interface ERCanvasProps {
   canvasTransform?: CanvasTransform
   /** Callback when canvas transform changes */
   onCanvasTransformChange?: (transform: CanvasTransform) => void
+  /** Whether this is a fresh diagram with no persisted layout */
+  shouldFitToView?: boolean
+  /** Key to force re-fit when reset is triggered */
+  fitToViewKey?: number
 }
 
 type ResizeEdge = 'bottom' | 'right' | 'bottom-right' | null
@@ -33,6 +37,30 @@ function getMidpoint(p1: { x: number; y: number }, p2: { x: number; y: number })
   return { x: (p1.x + p2.x) / 2, y: (p1.y + p2.y) / 2 }
 }
 
+/** Calculate transform to fit content within container with padding */
+function calculateFitTransform(
+  containerWidth: number,
+  containerHeight: number,
+  contentWidth: number,
+  contentHeight: number,
+  padding = 20
+): CanvasTransform {
+  const availableWidth = containerWidth - padding * 2
+  const availableHeight = containerHeight - padding * 2
+
+  const scaleX = availableWidth / contentWidth
+  const scaleY = availableHeight / contentHeight
+  const scale = Math.min(scaleX, scaleY, 1) // Don't scale up beyond 100%
+
+  // Center the content
+  const scaledWidth = contentWidth * scale
+  const scaledHeight = contentHeight * scale
+  const x = (containerWidth - scaledWidth) / 2
+  const y = (containerHeight - scaledHeight) / 2
+
+  return { x, y, scale }
+}
+
 export function ERCanvas({
   children,
   viewBox,
@@ -41,9 +69,12 @@ export function ERCanvas({
   onTableZoom,
   canvasTransform: controlledTransform,
   onCanvasTransformChange,
+  shouldFitToView = false,
+  fitToViewKey = 0,
 }: ERCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const [internalTransform, setInternalTransform] = useState<CanvasTransform>(DEFAULT_TRANSFORM)
+  const lastFitKeyRef = useRef(-1)
 
   // Use controlled or uncontrolled transform
   const isControlled = controlledTransform !== undefined
@@ -78,6 +109,27 @@ export function ERCanvas({
     onTableZoomRef.current = onTableZoom
     updateTransformRef.current = updateTransform
   })
+
+  // Fit to view on initial mount or when fitToViewKey changes (reset)
+  useEffect(() => {
+    // Skip if already fitted for this key, or if not requested
+    if (!shouldFitToView || lastFitKeyRef.current === fitToViewKey) return
+    const container = containerRef.current
+    if (!container) return
+
+    const rect = container.getBoundingClientRect()
+    if (rect.width === 0 || rect.height === 0) return
+
+    const fitTransform = calculateFitTransform(
+      rect.width,
+      rect.height,
+      viewBox.width,
+      viewBox.height
+    )
+
+    updateTransform(fitTransform)
+    lastFitKeyRef.current = fitToViewKey
+  }, [shouldFitToView, fitToViewKey, viewBox.width, viewBox.height])
 
   // Prevent page scroll when zooming inside the canvas
   useEffect(() => {
@@ -145,16 +197,19 @@ export function ERCanvas({
         ? tableElement.dataset.tableName ?? null
         : null
 
-      // Capture pointer for pinch gesture
-      ;(e.target as HTMLElement).setPointerCapture(e.pointerId)
+      // Capture ALL pointers on canvas container for pinch gesture
+      // This ensures tables release their pointer capture
+      for (const pointerId of activePointers.current.keys()) {
+        containerRef.current?.setPointerCapture(pointerId)
+      }
       return
     }
 
     // Don't pan when clicking on tables (they handle their own drag)
     if (isOnTable) return
 
-    // Capture this pointer for panning
-    ;(e.target as HTMLElement).setPointerCapture(e.pointerId)
+    // Capture this pointer on canvas container for panning
+    containerRef.current?.setPointerCapture(e.pointerId)
 
     // Single pointer - start panning (only for primary button)
     if (e.button !== 0) return
@@ -244,7 +299,22 @@ export function ERCanvas({
     // Don't reset on table double-click
     const target = e.target as HTMLElement
     if (target.closest('[data-er-table]')) return
-    updateTransform(DEFAULT_TRANSFORM)
+
+    // Fit to view on double-click
+    const container = containerRef.current
+    if (!container) {
+      updateTransform(DEFAULT_TRANSFORM)
+      return
+    }
+
+    const rect = container.getBoundingClientRect()
+    const fitTransform = calculateFitTransform(
+      rect.width,
+      rect.height,
+      viewBox.width,
+      viewBox.height
+    )
+    updateTransform(fitTransform)
   }
 
   function handleResizeStart(edge: ResizeEdge) {
@@ -274,11 +344,17 @@ export function ERCanvas({
         ref={containerRef}
         data-er-canvas
         data-dragging={isDragging}
+        data-pinching={isPinching.current}
         className={cn(
-          'relative overflow-hidden w-full bg-er-entity/30 border border-er-border rounded-xl touch-none select-none',
-          isFullscreen && 'fixed inset-0 z-50 rounded-none border-none'
+          'relative overflow-hidden w-full bg-er-entity/30 border border-er-border rounded-xl select-none',
+          'touch-none', // Prevent browser gestures, we handle everything
+          isDragging && 'cursor-grabbing',
+          !isDragging && 'cursor-grab',
+          isFullscreen && 'fixed inset-0 z-50 rounded-none border-none',
+          // Safe area insets for mobile
+          isFullscreen && 'pb-safe pt-safe'
         )}
-        style={{ height: isFullscreen ? '100vh' : containerHeight }}
+        style={{ height: isFullscreen ? '100dvh' : containerHeight }} // dvh for mobile viewport
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}

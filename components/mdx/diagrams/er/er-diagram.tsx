@@ -169,8 +169,18 @@ export function ERDiagram({ topology, title, className }: ERDiagramProps) {
     setTableScales({ ...tableScales, [tableName]: newScale })
   }
 
+  // Ref to track when we need to fit to view after reset
+  const [fitToViewKey, setFitToViewKey] = useState(0)
+
   function handleResetLayout() {
+    const wasFullscreen = isFullscreen
     resetPersistedLayout()
+    // Preserve fullscreen state after reset
+    if (wasFullscreen) {
+      setFullscreen(true)
+    }
+    // Increment key to trigger a new fit-to-view
+    setFitToViewKey(k => k + 1)
   }
 
   function toggleFullscreen() {
@@ -222,6 +232,11 @@ export function ERDiagram({ topology, title, className }: ERDiagramProps) {
     canvasTransform.y !== 0 ||
     canvasTransform.scale !== 1
 
+  // Fit to view on initial load when there's no persisted canvas transform
+  const shouldFitToView = canvasTransform.x === 0 &&
+    canvasTransform.y === 0 &&
+    canvasTransform.scale === 1
+
   return (
     <figure className={cn('relative', className)}>
       {title && (
@@ -230,18 +245,17 @@ export function ERDiagram({ topology, title, className }: ERDiagramProps) {
         </figcaption>
       )}
 
-      {/* Toolbar */}
-      <div className="flex items-center justify-end gap-2 mb-2">
+      {/* Toolbar - 3 icon buttons */}
+      <div className="flex items-center justify-end gap-1.5 mb-2">
         <button
           type="button"
           onClick={() => setIsHelpOpen(true)}
-          className="flex items-center gap-1.5 px-2.5 py-1.5 text-sm text-er-text-muted hover:text-er-text bg-er-entity/50 hover:bg-er-entity border border-er-border rounded-md transition-colors"
-          aria-label="Help - Learn about ER diagrams"
+          className="p-2 text-er-text-muted hover:text-er-text bg-er-entity/50 hover:bg-er-entity border border-er-border rounded-md active:scale-95 transition-all"
+          aria-label="Help"
         >
           <svg className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
             <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5h.253a.25.25 0 01.244.304l-.459 2.066A1.75 1.75 0 0010.747 15H11a.75.75 0 000-1.5h-.253a.25.25 0 01-.244-.304l.459-2.066A1.75 1.75 0 009.253 9H9z" clipRule="evenodd" />
           </svg>
-          Help
         </button>
         <AnimatePresence>
           {hasCustomLayout && (
@@ -252,40 +266,25 @@ export function ERDiagram({ topology, title, className }: ERDiagramProps) {
               transition={{ duration: shouldReduceMotion ? 0 : 0.15 }}
               type="button"
               onClick={handleResetLayout}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 text-sm text-er-text-muted hover:text-er-text bg-er-entity/50 hover:bg-er-entity border border-er-border rounded-md transition-colors"
-              aria-label="Reset table positions and scales to default"
+              className="p-2 text-er-text-muted hover:text-er-text bg-er-entity/50 hover:bg-er-entity border border-er-border rounded-md active:scale-95 transition-all"
+              aria-label="Reset layout"
             >
               <svg className="w-4 h-4" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
                 <path d="M2 8a6 6 0 0 1 10.472-4M14 8a6 6 0 0 1-10.472 4" />
                 <path d="M13 3v3h-3M3 10v3h3" />
               </svg>
-              Reset
             </motion.button>
           )}
         </AnimatePresence>
-
         <button
           type="button"
           onClick={toggleFullscreen}
-          className="flex items-center gap-1.5 px-2.5 py-1.5 text-sm text-er-text-muted hover:text-er-text bg-er-entity/50 hover:bg-er-entity border border-er-border rounded-md transition-colors"
-          aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
-          aria-pressed={isFullscreen}
+          className="p-2 text-er-text-muted hover:text-er-text bg-er-entity/50 hover:bg-er-entity border border-er-border rounded-md active:scale-95 transition-all"
+          aria-label="Fullscreen"
         >
-          {isFullscreen ? (
-            <>
-              <svg className="w-4 h-4" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <path d="M5 2v3H2M11 2v3h3M5 14v-3H2M11 14v-3h3" />
-              </svg>
-              Exit
-            </>
-          ) : (
-            <>
-              <svg className="w-4 h-4" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <path d="M2 5V2h3M14 5V2h-3M2 11v3h3M14 11v3h-3" />
-              </svg>
-              Fullscreen
-            </>
-          )}
+          <svg className="w-4 h-4" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <path d="M2 5V2h3M14 5V2h-3M2 11v3h3M14 11v3h-3" />
+          </svg>
         </button>
       </div>
 
@@ -308,6 +307,8 @@ export function ERDiagram({ topology, title, className }: ERDiagramProps) {
         onTableZoom={handleTableZoom}
         canvasTransform={canvasTransform}
         onCanvasTransformChange={setCanvasTransform}
+        shouldFitToView={shouldFitToView}
+        fitToViewKey={fitToViewKey}
       >
         {/* Domains and relationships (render under tables) */}
         <svg
@@ -357,7 +358,7 @@ export function ERDiagram({ topology, title, className }: ERDiagramProps) {
         ))}
       </ERCanvas>
 
-      {/* Fullscreen controls */}
+      {/* Fullscreen controls - top right, 3 icon buttons */}
       <AnimatePresence>
         {isFullscreen && (
           <motion.div
@@ -365,52 +366,53 @@ export function ERDiagram({ topology, title, className }: ERDiagramProps) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: shouldReduceMotion ? 0 : 0.2 }}
-            className="fixed top-4 right-4 z-50 flex items-center gap-2"
+            className="fixed top-4 right-4 z-50 flex items-center gap-1.5 pt-safe pr-safe"
           >
             <button
               type="button"
               onClick={() => setIsHelpOpen(true)}
-              className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-er-text bg-er-entity border border-er-border rounded-lg shadow-lg hover:bg-er-entity-header transition-colors"
+              className="p-2.5 text-er-text bg-er-entity border border-er-border rounded-lg shadow-lg hover:bg-er-entity-header active:scale-95 transition-all"
               aria-label="Help"
             >
-              <svg className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+              <svg className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5h.253a.25.25 0 01.244.304l-.459 2.066A1.75 1.75 0 0010.747 15H11a.75.75 0 000-1.5h-.253a.25.25 0 01-.244-.304l.459-2.066A1.75 1.75 0 009.253 9H9z" clipRule="evenodd" />
               </svg>
-              Help
             </button>
             {hasCustomLayout && (
               <button
                 type="button"
                 onClick={handleResetLayout}
-                className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-er-text bg-er-entity border border-er-border rounded-lg shadow-lg hover:bg-er-entity-header transition-colors"
-                aria-label="Reset table positions and scales"
+                className="p-2.5 text-er-text bg-er-entity border border-er-border rounded-lg shadow-lg hover:bg-er-entity-header active:scale-95 transition-all"
+                aria-label="Reset layout"
               >
-                <svg className="w-4 h-4" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <svg className="w-5 h-5" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
                   <path d="M2 8a6 6 0 0 1 10.472-4M14 8a6 6 0 0 1-10.472 4" />
                   <path d="M13 3v3h-3M3 10v3h3" />
                 </svg>
-                Reset Layout
               </button>
             )}
             <button
               type="button"
               onClick={exitFullscreen}
-              className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-er-text bg-er-entity border border-er-border rounded-lg shadow-lg hover:bg-er-entity-header transition-colors"
+              className="p-2.5 text-er-text bg-er-entity border border-er-border rounded-lg shadow-lg hover:bg-er-entity-header active:scale-95 transition-all"
               aria-label="Exit fullscreen"
             >
-              <svg className="w-4 h-4" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <svg className="w-5 h-5" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
                 <path d="M5 2v3H2M11 2v3h3M5 14v-3H2M11 14v-3h3" />
               </svg>
-              Exit Fullscreen
             </button>
           </motion.div>
         )}
       </AnimatePresence>
 
-      <p className="mt-2 text-xs text-er-text-muted">
+      <p className="mt-2 text-xs text-er-text-muted hidden pointer-fine:block">
         Drag tables to reposition. Scroll on table to zoom it. Scroll on canvas to zoom all. Double-click canvas to reset view.
         {' '}Click <span className="font-semibold">?</span> in table header to show column descriptions.
         {isFullscreen && ' Press Escape to exit fullscreen.'}
+      </p>
+      <p className="mt-2 text-xs text-er-text-muted block pointer-fine:hidden">
+        Drag tables to move. Pinch on table to zoom it. Pinch on canvas to zoom all. Double-tap canvas to reset.
+        {' '}Tap <span className="font-semibold">?</span> to show descriptions.
       </p>
 
       <ERHelpModal open={isHelpOpen} onOpenChange={setIsHelpOpen} />

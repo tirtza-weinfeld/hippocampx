@@ -260,12 +260,22 @@ function InteractionsSection() {
   return (
     <section>
       <h3 className="text-base font-semibold text-er-text mb-2">Interactions</h3>
-      <div className="grid grid-cols-2 gap-2 text-xs">
+      {/* Desktop/mouse interactions */}
+      <div className="hidden pointer-fine:grid grid-cols-2 gap-2 text-xs">
         <InteractionItem label="Drag tables" description="Reposition" />
         <InteractionItem label="Scroll on table" description="Zoom table" />
         <InteractionItem label="Scroll on canvas" description="Zoom all" />
         <InteractionItem label="Drag canvas" description="Pan view" />
         <InteractionItem label="Double-click" description="Reset view" />
+        <InteractionItem label="Fullscreen" description="Expand" />
+      </div>
+      {/* Touch/mobile interactions */}
+      <div className="grid pointer-fine:hidden grid-cols-2 gap-2 text-xs">
+        <InteractionItem label="Drag tables" description="Move" />
+        <InteractionItem label="Pinch on table" description="Zoom table" />
+        <InteractionItem label="Pinch on canvas" description="Zoom all" />
+        <InteractionItem label="Drag canvas" description="Pan view" />
+        <InteractionItem label="Double-tap" description="Reset view" />
         <InteractionItem label="Fullscreen" description="Expand" />
       </div>
     </section>

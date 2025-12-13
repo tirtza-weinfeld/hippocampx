@@ -108,10 +108,10 @@ export function ERColumn({ column, tableName, highlight, verbose, onColumnClick 
       <div
         className={cn(
           'er-column relative',
-          'flex items-center gap-2 px-3 py-1.5',
+          'flex items-center gap-2 px-3 py-1.5 pointer-coarse:py-2.5',
           'transition-colors',
-          isClickable && 'cursor-pointer hover:bg-er-entity-header/50',
-          !isClickable && 'hover:bg-er-entity-header/30',
+          isClickable && 'cursor-pointer hover:bg-er-entity-header/50 active:bg-er-entity-header/70',
+          !isClickable && 'hover:bg-er-entity-header/30 active:bg-er-entity-header/50',
           highlight === 'pk' && 'er-row-highlight-pk',
           highlight === 'fk' && 'er-row-highlight-fk'
         )}
@@ -145,11 +145,14 @@ export function ERColumn({ column, tableName, highlight, verbose, onColumnClick 
 
         <span className="flex-1 whitespace-nowrap">
           <span
-            className="font-medium text-er-text cursor-pointer hover:text-er-text-muted active:text-er-copy"
+            className="font-medium text-er-text cursor-pointer hover:text-er-text-muted active:text-er-copy active:scale-95 inline-block transition-transform"
             onClick={(e) => {
               e.stopPropagation()
               void navigator.clipboard.writeText(column.name)
             }}
+            role="button"
+            tabIndex={0}
+            aria-label={`Copy column name: ${column.name}`}
           >
             {column.name}
           </span>
