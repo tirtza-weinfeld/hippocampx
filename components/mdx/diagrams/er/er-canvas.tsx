@@ -21,6 +21,18 @@ type ResizeEdge = 'bottom' | 'right' | 'bottom-right' | null
 
 const DEFAULT_TRANSFORM: CanvasTransform = { x: 0, y: 0, scale: 1 }
 
+/** Compute distance between two points */
+function getDistance(p1: { x: number; y: number }, p2: { x: number; y: number }): number {
+  const dx = p2.x - p1.x
+  const dy = p2.y - p1.y
+  return Math.sqrt(dx * dx + dy * dy)
+}
+
+/** Compute midpoint between two points */
+function getMidpoint(p1: { x: number; y: number }, p2: { x: number; y: number }): { x: number; y: number } {
+  return { x: (p1.x + p2.x) / 2, y: (p1.y + p2.y) / 2 }
+}
+
 export function ERCanvas({
   children,
   viewBox,
@@ -51,6 +63,11 @@ export function ERCanvas({
   const dragStart = useRef({ x: 0, y: 0 })
   const resizeStart = useRef({ height: 0, y: 0 })
   const shouldReduceMotion = useReducedMotion()
+
+  // Track active pointers for pinch-to-zoom on mobile
+  const activePointers = useRef<Map<number, { x: number; y: number }>>(new Map())
+  const lastPinchDistance = useRef<number | null>(null)
+  const isPinching = useRef(false)
 
   // Store callbacks in refs to avoid stale closures in wheel handler
   const onTableZoomRef = useRef(onTableZoom)
@@ -105,18 +122,74 @@ export function ERCanvas({
   }, [])
 
   function handlePointerDown(e: PointerEvent) {
-    if (e.button !== 0) return
-
-    // Check if clicking on a table (don't pan when clicking tables)
+    // Check if clicking on a table (tables handle their own drag/interaction)
     const target = e.target as HTMLElement
-    if (target.closest('[data-er-table]')) return
+    const isOnTable = target.closest('[data-er-table]')
 
+    // Always track pointers for pinch-to-zoom (even on tables for canvas-level zoom)
+    activePointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY })
+
+    // If 2 pointers, start pinch zoom mode (works on canvas level)
+    if (activePointers.current.size === 2) {
+      const pointers = Array.from(activePointers.current.values())
+      lastPinchDistance.current = getDistance(pointers[0], pointers[1])
+      isPinching.current = true
+      setIsDragging(false)
+      // Capture pointer for pinch gesture
+      ;(e.target as HTMLElement).setPointerCapture(e.pointerId)
+      return
+    }
+
+    // Don't pan when clicking on tables (they handle their own drag)
+    if (isOnTable) return
+
+    // Capture this pointer for panning
+    ;(e.target as HTMLElement).setPointerCapture(e.pointerId)
+
+    // Single pointer - start panning (only for primary button)
+    if (e.button !== 0) return
     setIsDragging(true)
     dragStart.current = { x: e.clientX - transform.x, y: e.clientY - transform.y }
-    ;(e.target as HTMLElement).setPointerCapture(e.pointerId)
   }
 
   function handlePointerMove(e: PointerEvent) {
+    // Update pointer position in tracking
+    if (activePointers.current.has(e.pointerId)) {
+      activePointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY })
+    }
+
+    // Handle pinch-to-zoom when 2 pointers are active
+    if (activePointers.current.size === 2 && isPinching.current) {
+      const pointers = Array.from(activePointers.current.values())
+      const currentDistance = getDistance(pointers[0], pointers[1])
+
+      if (lastPinchDistance.current !== null && currentDistance > 0) {
+        const delta = currentDistance / lastPinchDistance.current
+        const midpoint = getMidpoint(pointers[0], pointers[1])
+        const container = containerRef.current
+        const rect = container?.getBoundingClientRect()
+
+        if (rect) {
+          // Calculate position relative to container
+          const pinchX = midpoint.x - rect.left
+          const pinchY = midpoint.y - rect.top
+
+          updateTransform(prev => {
+            const newScale = Math.min(Math.max(prev.scale * delta, 0.25), 3)
+            return {
+              scale: newScale,
+              x: pinchX - (pinchX - prev.x) * (newScale / prev.scale),
+              y: pinchY - (pinchY - prev.y) * (newScale / prev.scale),
+            }
+          })
+        }
+
+        lastPinchDistance.current = currentDistance
+      }
+      return
+    }
+
+    // Handle single-pointer panning
     if (!isDragging) return
     updateTransform(prev => ({
       ...prev,
@@ -125,8 +198,28 @@ export function ERCanvas({
     }))
   }
 
-  function handlePointerUp() {
+  function handlePointerUp(e: PointerEvent) {
+    // Remove this pointer from tracking
+    activePointers.current.delete(e.pointerId)
+
+    // Reset pinch state if we drop below 2 pointers
+    if (activePointers.current.size < 2) {
+      isPinching.current = false
+      lastPinchDistance.current = null
+    }
+
     setIsDragging(false)
+  }
+
+  function handlePointerLeave(e: PointerEvent) {
+    // Clean up pointer tracking when pointer leaves canvas
+    activePointers.current.delete(e.pointerId)
+
+    // Reset pinch state if we drop below 2 pointers
+    if (activePointers.current.size < 2) {
+      isPinching.current = false
+      lastPinchDistance.current = null
+    }
   }
 
   function handleDoubleClick(e: React.MouseEvent) {
@@ -172,6 +265,7 @@ export function ERCanvas({
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
+        onPointerLeave={handlePointerLeave}
         onDoubleClick={handleDoubleClick}
         initial={false}
         animate={{ opacity: 1 }}
