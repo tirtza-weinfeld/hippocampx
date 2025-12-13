@@ -1,14 +1,15 @@
 "use client"
 
-import { useState, useEffect } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'motion/react'
-import type { ERDiagramProps, TablePositions, TableScales, Point, SelectedColumn, ColumnHighlight, HighlightState } from './types'
+import type { ERDiagramProps, Point, SelectedColumn, ColumnHighlight, HighlightState } from './types'
 import { useERLayout } from './use-er-layout'
 import { ERCanvas } from './er-canvas'
 import { ERTable } from './er-table'
 import { ERDomain } from './er-domain'
 import { ERRelationship, ERRelationshipDefs } from './er-relationship'
 import { ERHelpModal } from './er-help-modal'
+import { useERPersistence, generateDiagramId } from './store'
 import { cn } from '@/lib/utils'
 import type { ERTopology } from './types'
 
@@ -81,11 +82,28 @@ export function ERDiagram({ topology, title, className }: ERDiagramProps) {
   const [hoveredTable, setHoveredTable] = useState<string | null>(null)
   const [selectedTable, setSelectedTable] = useState<string | null>(null)
   const [selectedColumn, setSelectedColumn] = useState<SelectedColumn | null>(null)
-  const [isFullscreen, setIsFullscreen] = useState(false)
   const [isHelpOpen, setIsHelpOpen] = useState(false)
-  const [tablePositions, setTablePositions] = useState<TablePositions>({})
-  const [tableScales, setTableScales] = useState<TableScales>({})
   const shouldReduceMotion = useReducedMotion()
+
+  // Generate stable diagram ID for persistence
+  // useMemo needed here since generateDiagramId computes a hash
+  const diagramId = useMemo(
+    () => generateDiagramId(topology, title),
+    [topology, title]
+  )
+
+  // Persistence hook for localStorage - use persisted values directly
+  const {
+    positions: tablePositions,
+    scales: tableScales,
+    isFullscreen,
+    canvasTransform,
+    setPositions: setTablePositions,
+    setScales: setTableScales,
+    setFullscreen,
+    setCanvasTransform,
+    resetLayout: resetPersistedLayout,
+  } = useERPersistence(diagramId)
 
   const { getLayout } = useERLayout(topology)
 
@@ -125,41 +143,38 @@ export function ERDiagram({ topology, title, className }: ERDiagramProps) {
   }
 
   function handleTableDrag(tableName: string, position: Point) {
-    setTablePositions(prev => ({ ...prev, [tableName]: position }))
+    setTablePositions({ ...tablePositions, [tableName]: position })
   }
 
   function handleTableZoom(tableName: string, delta: number) {
-    setTableScales(prev => {
-      const currentScale = prev[tableName] ?? 1
-      const newScale = Math.min(Math.max(currentScale * delta, 0.5), 2.5)
-      return { ...prev, [tableName]: newScale }
-    })
+    const currentScale = tableScales[tableName] ?? 1
+    const newScale = Math.min(Math.max(currentScale * delta, 0.5), 2.5)
+    setTableScales({ ...tableScales, [tableName]: newScale })
   }
 
   function handleResetLayout() {
-    setTablePositions({})
-    setTableScales({})
+    resetPersistedLayout()
   }
 
   function toggleFullscreen() {
-    setIsFullscreen(prev => !prev)
+    setFullscreen(!isFullscreen)
   }
 
   function exitFullscreen() {
-    setIsFullscreen(false)
+    setFullscreen(false)
   }
 
   // Handle escape key to exit fullscreen
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       if (e.key === 'Escape' && isFullscreen) {
-        setIsFullscreen(false)
+        setFullscreen(false)
       }
     }
 
     document.addEventListener('keydown', handleKeyDown)
     return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [isFullscreen])
+  }, [isFullscreen, setFullscreen])
 
   // Lock body scroll when fullscreen
   useEffect(() => {
@@ -173,7 +188,11 @@ export function ERDiagram({ topology, title, className }: ERDiagramProps) {
     }
   }, [isFullscreen])
 
-  const hasCustomLayout = Object.keys(tablePositions).length > 0 || Object.keys(tableScales).length > 0
+  const hasCustomLayout = Object.keys(tablePositions).length > 0 ||
+    Object.keys(tableScales).length > 0 ||
+    canvasTransform.x !== 0 ||
+    canvasTransform.y !== 0 ||
+    canvasTransform.scale !== 1
 
   return (
     <figure className={cn('relative', className)}>
@@ -259,6 +278,8 @@ export function ERDiagram({ topology, title, className }: ERDiagramProps) {
         viewBox={currentLayout.viewBox}
         isFullscreen={isFullscreen}
         onTableZoom={handleTableZoom}
+        canvasTransform={canvasTransform}
+        onCanvasTransformChange={setCanvasTransform}
       >
         {/* Domains and relationships (render under tables) */}
         <svg

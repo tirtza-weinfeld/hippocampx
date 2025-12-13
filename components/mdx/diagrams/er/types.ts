@@ -137,6 +137,12 @@ export interface DiagramLayout {
 export type TablePositions = Partial<Record<string, Point>>
 export type TableScales = Partial<Record<string, number>>
 
+export interface CanvasTransform {
+  x: number
+  y: number
+  scale: number
+}
+
 export interface SelectedColumn {
   table: string
   column: string

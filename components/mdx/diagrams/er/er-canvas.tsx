@@ -3,6 +3,7 @@
 import { useRef, useState, useEffect, type ReactNode, type PointerEvent } from 'react'
 import { motion, useReducedMotion } from 'motion/react'
 import { cn } from '@/lib/utils'
+import type { CanvasTransform } from './types'
 
 interface ERCanvasProps {
   children: ReactNode
@@ -10,15 +11,15 @@ interface ERCanvasProps {
   isFullscreen?: boolean
   minHeight?: number
   onTableZoom?: (tableName: string, delta: number) => void
-}
-
-interface Transform {
-  x: number
-  y: number
-  scale: number
+  /** Controlled canvas transform (zoom/pan) */
+  canvasTransform?: CanvasTransform
+  /** Callback when canvas transform changes */
+  onCanvasTransformChange?: (transform: CanvasTransform) => void
 }
 
 type ResizeEdge = 'bottom' | 'right' | 'bottom-right' | null
+
+const DEFAULT_TRANSFORM: CanvasTransform = { x: 0, y: 0, scale: 1 }
 
 export function ERCanvas({
   children,
@@ -26,9 +27,24 @@ export function ERCanvas({
   isFullscreen = false,
   minHeight = 400,
   onTableZoom,
+  canvasTransform: controlledTransform,
+  onCanvasTransformChange,
 }: ERCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null)
-  const [transform, setTransform] = useState<Transform>({ x: 0, y: 0, scale: 1 })
+  const [internalTransform, setInternalTransform] = useState<CanvasTransform>(DEFAULT_TRANSFORM)
+
+  // Use controlled or uncontrolled transform
+  const isControlled = controlledTransform !== undefined
+  const transform = isControlled ? controlledTransform : internalTransform
+
+  function updateTransform(newTransform: CanvasTransform | ((prev: CanvasTransform) => CanvasTransform)) {
+    if (isControlled && onCanvasTransformChange) {
+      const nextTransform = typeof newTransform === 'function' ? newTransform(transform) : newTransform
+      onCanvasTransformChange(nextTransform)
+    } else {
+      setInternalTransform(newTransform)
+    }
+  }
   const [isDragging, setIsDragging] = useState(false)
   const [containerHeight, setContainerHeight] = useState(minHeight)
   const [resizeEdge, setResizeEdge] = useState<ResizeEdge>(null)
@@ -36,12 +52,14 @@ export function ERCanvas({
   const resizeStart = useRef({ height: 0, y: 0 })
   const shouldReduceMotion = useReducedMotion()
 
-  // Store onTableZoom in ref to avoid stale closure
+  // Store callbacks in refs to avoid stale closures in wheel handler
   const onTableZoomRef = useRef(onTableZoom)
+  const updateTransformRef = useRef(updateTransform)
 
   useEffect(() => {
     onTableZoomRef.current = onTableZoom
-  }, [onTableZoom])
+    updateTransformRef.current = updateTransform
+  })
 
   // Prevent page scroll when zooming inside the canvas
   useEffect(() => {
@@ -65,7 +83,7 @@ export function ERCanvas({
       } else {
         // Zooming on empty canvas → global zoom
         const delta = e.deltaY > 0 ? 0.9 : 1.1
-        setTransform(prev => {
+        updateTransformRef.current(prev => {
           const newScale = Math.min(Math.max(prev.scale * delta, 0.25), 3)
           const rect = container?.getBoundingClientRect()
           if (!rect) return prev
@@ -100,7 +118,7 @@ export function ERCanvas({
 
   function handlePointerMove(e: PointerEvent) {
     if (!isDragging) return
-    setTransform(prev => ({
+    updateTransform(prev => ({
       ...prev,
       x: e.clientX - dragStart.current.x,
       y: e.clientY - dragStart.current.y,
@@ -115,7 +133,7 @@ export function ERCanvas({
     // Don't reset on table double-click
     const target = e.target as HTMLElement
     if (target.closest('[data-er-table]')) return
-    setTransform({ x: 0, y: 0, scale: 1 })
+    updateTransform(DEFAULT_TRANSFORM)
   }
 
   function handleResizeStart(edge: ResizeEdge) {
