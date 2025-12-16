@@ -1,6 +1,6 @@
 import { Brain, Binary, Sparkles, InfinityIcon, ChartNoAxesCombinedIcon, Home, Calculator, BookOpen, HelpCircle, Dumbbell, Lightbulb, Gamepad2, Pencil, Music, Flower, Puzzle, BookMarked } from "lucide-react"
 import { ElementType } from "react"
-import { PROBLEMS_ROUTES } from "./problems-routes"
+// import { PROBLEMS_ROUTES } from "./problems-routes"
 
 export type NavigationItem = {
     title: string
@@ -67,7 +67,7 @@ export const routes: NavigationItem[] = [
             { title: "Lab", href: "/old/calculus/lab", icon: ChartNoAxesCombinedIcon, color: "text-blue-500", bgColor: "bg-blue-500/10" },
         ],
     },
-    ...PROBLEMS_ROUTES,
+    // ...PROBLEMS_ROUTES,
     {
         title: 'Notes', href: '/notes', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10",
         children: [
