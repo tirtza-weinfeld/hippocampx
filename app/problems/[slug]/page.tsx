@@ -1,5 +1,4 @@
 import { notFound } from 'next/navigation'
-import { cacheLife, cacheTag } from 'next/cache'
 import { problemComponents, problemSlugs, type ProblemSlug } from '@/components/problems/tutorials'
 
 interface ProblemPageProps {
@@ -13,10 +12,6 @@ export function generateStaticParams() {
 }
 
 export default async function ProblemPage({ params }: ProblemPageProps) {
-  'use cache'
-  cacheTag('problem-page')
-  cacheLife('max')
-
   const { slug } = await params
 
   if (!problemSlugs.includes(slug as ProblemSlug)) {
