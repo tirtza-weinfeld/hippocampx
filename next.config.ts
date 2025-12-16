@@ -36,18 +36,9 @@ const withMDX = createMDX({
 })
 
 const nextConfig: NextConfig = {
-  // turbopack: {
-  //   rules: {
-  //     '*.mdx': {
-  //       loaders: ['@hippocampx/plugins/mdx-latex-loader'],
-  //       as: '*.mdx',
-  //     },
-  //   },
-  // },
-  // cacheComponents: true,
+  cacheComponents: true,
   typedRoutes: true,
   reactCompiler: true,
-
   pageExtensions: ['ts', 'tsx', 'mdx'],
   
   images: {

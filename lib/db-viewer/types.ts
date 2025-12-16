@@ -17,12 +17,18 @@ export interface TableInfo {
   description?: string;
 }
 
+export interface ForeignKeyRef {
+  table: string;
+  column: string;
+}
+
 export interface ColumnInfo {
   name: string;
   dataType: string;
   isNullable: boolean;
   isPrimaryKey: boolean;
   isForeignKey: boolean;
+  foreignKey?: ForeignKeyRef;
   defaultValue?: string;
 }
 
@@ -67,4 +73,45 @@ export interface TableViewerState {
   queryOptions: QueryOptions;
   isLoading: boolean;
   error: string | null;
+}
+
+// ============================================================================
+// Schema Diagram Types
+// ============================================================================
+
+export interface SchemaColumn {
+  name: string;
+  type: string;
+  isPrimaryKey: boolean;
+  foreignKey?: ForeignKeyRef;
+}
+
+export interface SchemaTable {
+  name: string;
+  provider: DatabaseProvider;
+  columns: SchemaColumn[];
+}
+
+export interface SchemaRelationship {
+  id: string;
+  from: { table: string; column: string };
+  to: { table: string; column: string };
+}
+
+export interface SchemaTopology {
+  tables: SchemaTable[];
+  relationships: SchemaRelationship[];
+}
+
+export interface TablePosition {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+export interface SchemaLayout {
+  positions: Record<string, TablePosition>;
+  paths: Record<string, string>;
+  viewBox: { x: number; width: number; height: number };
 }

@@ -1,307 +1,149 @@
 ---
 alwaysApply: true
 ---
-# Motion for React Rules 
+# Motion for React
 
-## Installation & Setup
-
-* **Installation:** `pnpm add motion` (replaces framer-motion)
-* **Client Components:** `import { motion } from "motion/react"` (requires `"use client"`)
-* **Server Components:** `import * as motion from "motion/react-client"` (RSC compatible)
-* **Hybrid Engine:** Combines native browser animation performance with JavaScript flexibility
-* **Production-grade:** Trusted by Framer, Figma, and millions of sites
-
-## React Patterns (Declarative Over Imperative)
-
-* **State-driven animations:** Animate based on React state changes, not imperative calls
-* **Conditional rendering:** Use AnimatePresence for mount/unmount animations
-* **Component composition:** Wrap semantic elements, avoid wrapper divs
-* **Props-based config:** Pass animation config through props, not inline objects
-
-## Core Motion Component
-
-* **Basic usage:** `<motion.div>` wraps any DOM element with animation capabilities
-* **Animate prop:** `animate={{ rotate: 360, scale: 1.2 }}` - automatically animates when values change
-* **Transition control:** Configure timing via `transition={{ duration: 2, ease: "easeOut" }}`
+## Imports
 
 ```tsx
-// Client Component Example
+// Client Components
 "use client"
-import { motion } from "motion/react"
+import { motion, AnimatePresence } from "motion/react"
 
-export function ExpandableCard({ isExpanded }: { isExpanded: boolean }) {
-  return (
-    <motion.div
-      animate={isExpanded ? "expanded" : "collapsed"}
-      variants={{
-        expanded: { scale: 1.1, rotateY: 5 },
-        collapsed: { scale: 1, rotateY: 0 }
-      }}
-      transition={{ duration: 0.3, ease: "easeOut" }}
-    />
-  )
-}
-```
-
-## Entry & Initial Animations
-
-* **Initial state:** `initial={{ scale: 0, opacity: 0 }}` - defines starting values
-* **Auto-animate:** Components automatically animate to `animate` values on mount
-* **Disable initial:** `initial={false}` - skip initial animation entirely
-
-```tsx
-// Server Component Example
+// Server Components
 import * as motion from "motion/react-client"
-
-export function FadeInButton({ children, isVisible }: ButtonProps) {
-  return (
-    <motion.button
-      initial="hidden"
-      animate={isVisible ? "visible" : "hidden"}
-      variants={{
-        hidden: { scale: 0, opacity: 0 },
-        visible: { scale: 1, opacity: 1 }
-      }}
-      transition={{ duration: 0.3 }}
-    >
-      {children}
-    </motion.button>
-  )
-}
 ```
 
-## Gesture Animations
-
-* **Hover:** `whileHover={{ scale: 1.1 }}` - smooth hover states
-* **Tap:** `whileTap={{ scale: 0.95 }}` - press feedback
-* **Focus:** `whileFocus={{ outline: "2px solid blue" }}` - keyboard navigation
-* **Event handlers:** `onHoverStart`, `onHoverEnd`, `onTap` for custom logic
-
-```tsx
-<motion.button
-  whileHover={{ scale: 1.1, backgroundColor: "#007acc" }}
-  whileTap={{ scale: 0.95 }}
-  whileFocus={{ outline: "2px solid #007acc" }}
-  onHoverStart={() => console.log('hover started')}
-/>
-```
-
-## Scroll Animations
-
-### Scroll-Triggered (whileInView)
-* **Viewport trigger:** `whileInView={{ opacity: 1, y: 0 }}` - animate when element enters view
-* **Initial state:** Combine with `initial` for scroll-reveal effects
+## Core Animation
 
 ```tsx
 <motion.div
-  initial={{ opacity: 0, y: 50 }}
-  whileInView={{ opacity: 1, y: 0 }}
-  transition={{ duration: 0.6 }}
+  initial={{ opacity: 0, y: 20 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.3, ease: "easeOut" }}
 />
 ```
 
-### Scroll-Linked (useScroll)
-* **Direct linking:** `useScroll()` hook for scroll position values
-* **Progress tracking:** `scrollYProgress` for 0-1 scroll progress
+## Variants
 
 ```tsx
-"use client"
-import { motion, useScroll } from "motion/react"
-
-export function ProgressBar() {
-  const { scrollYProgress } = useScroll()
-
-  return (
-    <motion.div
-      className="fixed top-0 left-0 right-0 h-1 bg-blue-500 origin-left"
-      style={{ scaleX: scrollYProgress }}
-    />
-  )
-}
+<motion.div
+  initial="hidden"
+  animate="visible"
+  variants={{
+    hidden: { opacity: 0, scale: 0.95 },
+    visible: { opacity: 1, scale: 1 }
+  }}
+/>
 ```
 
-## Layout Animations
-
-* **Auto layout:** `layout` prop animates between layout changes using transforms
-* **Shared elements:** `layoutId="unique-id"` for smooth element transitions between states
-* **Industry-leading:** Motion's layout engine is performance-optimized
+## Gestures
 
 ```tsx
-// Auto-animate layout changes
-<motion.div layout className={isExpanded ? "expanded" : "collapsed"} />
-
-// Shared element transition
-<motion.div layoutId="modal-backdrop" />
+<motion.button
+  whileHover={{ scale: 1.05 }}
+  whileTap={{ scale: 0.95 }}
+  whileFocus={{ outline: "2px solid oklch(0.6 0.15 250)" }}
+/>
 ```
 
-## Exit Animations (AnimatePresence)
-
-* **Required wrapper:** `<AnimatePresence>` enables exit animations
-* **Exit prop:** `exit={{ opacity: 0, scale: 0 }}` - animate removal from DOM
-* **Key requirement:** Each animated child needs unique `key` prop
+## Exit Animations
 
 ```tsx
 <AnimatePresence>
   {isVisible && (
     <motion.div
       key="modal"
-      initial={{ opacity: 0, scale: 0.8 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.8 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
     />
   )}
 </AnimatePresence>
 ```
 
-## Accessibility & Performance
+## Scroll-Triggered
 
-* **Reduced motion:** Always use `useReducedMotion()` hook for accessibility
-* **Performance:** Keep animations ≤ 300ms, prefer transform properties
-* **GPU acceleration:** Motion automatically optimizes for hardware acceleration
+```tsx
+<motion.div
+  initial={{ opacity: 0, y: 50 }}
+  whileInView={{ opacity: 1, y: 0 }}
+  viewport={{ once: true }}
+/>
+```
+
+## Scroll-Linked
+
+```tsx
+"use client"
+import { motion, useScroll } from "motion/react"
+
+function ProgressBar() {
+  const { scrollYProgress } = useScroll()
+  return <motion.div style={{ scaleX: scrollYProgress }} />
+}
+```
+
+## Layout
+
+```tsx
+<motion.div layout />
+<motion.div layoutId="shared-element" />
+```
+
+## Reduced Motion
 
 ```tsx
 "use client"
 import { motion, useReducedMotion } from "motion/react"
 
-export function AccessibleAnimation({ children }: { children: React.ReactNode }) {
-  const shouldReduceMotion = useReducedMotion()
-
+function Card() {
+  const reduced = useReducedMotion()
   return (
     <motion.div
-      animate={{ x: shouldReduceMotion ? 0 : 100 }}
-      transition={{
-        duration: shouldReduceMotion ? 0 : 0.3,
-        type: shouldReduceMotion ? "tween" : "spring"
-      }}
-    >
-      {children}
-    </motion.div>
-  )
-}
-```
-
-## Advanced Patterns
-
-### Variants System
-* **Reusable states:** Define animation variants for complex orchestration
-* **Propagation:** Parent variants automatically propagate to children
-
-```tsx
-const variants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0 }
-};
-
-<motion.div variants={variants} initial="hidden" animate="visible">
-  <motion.p variants={variants} /> {/* Inherits parent state */}
-</motion.div>
-```
-
-### Motion Values & Hooks
-
-#### Core Hooks
-* **useAnimate:** Imperative animations for complex sequences
-* **useInView:** Track element visibility in viewport
-* **useTransform:** Transform one motion value into another
-* **useSpring:** Spring physics for natural motion
-* **useMotionValue:** Create reactive motion values
-* **useVelocity:** Track velocity of motion values
-
-#### Advanced Hooks
-* **useAnimationFrame:** Custom animation loops
-* **useTime:** Access animation timeline
-* **useSpring:** Physics-based animations
-* **useMotionTemplate:** Template literal motion values
-
-```tsx
-"use client"
-import { motion, useInView, useMotionValue, useTransform } from "motion/react"
-
-export function ScrollReveal() {
-  const ref = useRef(null)
-  const isInView = useInView(ref, { once: true })
-  const x = useMotionValue(0)
-  const opacity = useTransform(x, [0, 100], [0, 1])
-
-  return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 75 }}
-      animate={isInView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.5, delay: 0.25 }}
+      animate={{ scale: reduced ? 1 : 1.05 }}
+      transition={{ duration: reduced ? 0 : 0.2 }}
     />
   )
 }
 ```
 
-## Best Practices
+## Hooks
 
-### Performance Optimization
-* **Transform properties:** Prefer `transform` over layout-triggering properties
-* **Will-change:** Motion automatically applies `will-change` for GPU acceleration
-* **Animation duration:** Keep animations ≤ 300ms for perceived performance
-* **Bundle splitting:** Use `LazyMotion` for code splitting when needed
-* **Reduce repaints:** Avoid animating `width`, `height`, `top`, `left`
+| Hook | Usage |
+|------|-------|
+| `useScroll()` | `scrollY`, `scrollYProgress` |
+| `useInView(ref)` | Viewport visibility |
+| `useMotionValue(0)` | Reactive values |
+| `useTransform(mv, [0,1], [0,100])` | Value mapping |
+| `useSpring(mv)` | Spring physics |
+| `useReducedMotion()` | Accessibility |
+| `useAnimate()` | Imperative control |
 
-### Accessibility Standards
-* **Reduced motion:** ALWAYS implement `useReducedMotion()` for WCAG compliance
-* **Focus management:** Preserve focus states during animations
-* **Screen readers:** Use `aria-hidden` during transitions when appropriate
-* **Color contrast:** Ensure animated elements maintain contrast ratios
-* **Keyboard navigation:** Don't interfere with tab order during animations
-
-### React Integration
-* **Component composition:** Wrap semantic HTML elements, not divs
-* **State management:** Animate based on React state changes, not imperative calls
-* **Cleanup:** AnimatePresence handles cleanup automatically
-* **Testing:** Motion works with React Testing Library
-* **TypeScript:** Full type safety with motion components
+## Transition Types
 
 ```tsx
-// Performance & Accessibility Example
-"use client"
-import { motion, useReducedMotion } from "motion/react"
-
-export function OptimizedCard({ isSelected }: { isSelected: boolean }) {
-  const shouldReduceMotion = useReducedMotion()
-
-  return (
-    <motion.article
-      layout // GPU-accelerated layout animations
-      animate={isSelected ? "selected" : "idle"}
-      variants={{
-        idle: {
-          scale: 1,
-          boxShadow: "0 1px 3px rgba(0,0,0,0.12)"
-        },
-        selected: {
-          scale: shouldReduceMotion ? 1 : 1.02,
-          boxShadow: shouldReduceMotion
-            ? "0 1px 3px rgba(0,0,0,0.12)"
-            : "0 4px 12px rgba(0,0,0,0.15)"
-        }
-      }}
-      transition={{
-        duration: shouldReduceMotion ? 0 : 0.2,
-        type: "tween"
-      }}
-      whileHover={shouldReduceMotion ? {} : { y: -2 }}
-      whileFocus={{ outline: "2px solid #007acc" }}
-    />
-  )
-}
+transition={{ type: "spring", stiffness: 300, damping: 20 }}
+transition={{ type: "tween", duration: 0.3, ease: "easeOut" }}
+transition={{ type: "inertia", velocity: 50 }}
 ```
 
-## Development Tools
+## Transform Properties
 
-* **VS Code extension:** Visual bezier curve editors and animation tools
-* **Cursor integration:** Motion documentation loaded into LLM context
-* **Debug mode:** Use React DevTools to inspect motion components
+`opacity`, `scale`, `rotate`, `x`, `y`, `rotateX`, `rotateY`, `skewX`, `skewY`
 
-## Migration from Framer Motion
+## Easing
 
-* **Package:** Replace `framer-motion` with `motion`
-* **Imports:** Change `"framer-motion"` to `"motion/react"`
-* **API:** Core API remains the same, performance improvements under the hood
-* **New features:** Access to latest Motion+ premium components and examples
+`"easeIn"`, `"easeOut"`, `"easeInOut"`, `"circIn"`, `"circOut"`, `"backIn"`, `"backOut"`, `"anticipate"`
+
+## Colors
+
+Use oklch in animations:
+```tsx
+animate={{ backgroundColor: "oklch(0.7 0.15 250)" }}
+variants={{
+  idle: { boxShadow: "0 1px 3px oklch(0 0 0 / 0.12)" },
+  hover: { boxShadow: "0 4px 12px oklch(0 0 0 / 0.15)" }
+}}
+```
 

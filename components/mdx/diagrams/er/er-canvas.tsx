@@ -346,7 +346,7 @@ export function ERCanvas({
         data-dragging={isDragging}
         data-pinching={isPinching.current}
         className={cn(
-          'relative overflow-hidden w-full bg-er-entity/30 border border-er-border rounded-xl select-none',
+          'relative overflow-hidden w-full bg-er-card/30 border border-er-border rounded-xl select-none',
           'touch-none', // Prevent browser gestures, we handle everything
           isDragging && 'cursor-grabbing',
           !isDragging && 'cursor-grab',
@@ -378,7 +378,7 @@ export function ERCanvas({
 
         {/* Zoom indicator */}
         {transform.scale !== 1 && (
-          <div className="absolute bottom-3 left-3 px-2 py-1 text-xs font-mono text-er-text-muted bg-er-entity/80 rounded-md border border-er-border">
+          <div className="absolute bottom-3 left-3 px-2 py-1 text-xs font-mono text-er-text-muted bg-er-card/80 rounded-md border border-er-border">
             {Math.round(transform.scale * 100)}%
           </div>
         )}

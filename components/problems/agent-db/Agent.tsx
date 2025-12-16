@@ -1,7 +1,10 @@
+'use cache'
+
+import { cacheLife } from 'next/cache'
+import { Suspense } from 'react';
 import { AgentProblemsView } from '@/components/agent';
 import { getProblems } from '@/lib/db/vercel/queries/problems';
 import { AgentProblemCard } from './agent-problem-card';
-import { Suspense } from 'react';
 
 /**
  * Server component - renders all problem cards from database.
@@ -15,6 +18,8 @@ import { Suspense } from 'react';
  */
 
 export default async function Agent() {
+  cacheLife('hours')
+
   // Fetch all problems (lightweight - no solutions)
   const problems = await getProblems();
 

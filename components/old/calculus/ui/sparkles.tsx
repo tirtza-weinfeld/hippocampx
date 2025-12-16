@@ -13,18 +13,26 @@ interface SparklesProps {
   particleDensity?: number
 }
 
-// useSyncExternalStore for window size
+// useSyncExternalStore for window size - must cache snapshot
+let cachedWindowSize = { width: 0, height: 0 }
+
 function subscribeWindowSize(callback: () => void) {
   window.addEventListener("resize", callback)
   return () => window.removeEventListener("resize", callback)
 }
 
 function getWindowSizeSnapshot() {
-  return { width: window.innerWidth, height: window.innerHeight }
+  const width = window.innerWidth
+  const height = window.innerHeight
+  if (cachedWindowSize.width !== width || cachedWindowSize.height !== height) {
+    cachedWindowSize = { width, height }
+  }
+  return cachedWindowSize
 }
 
+const serverSnapshot = { width: 0, height: 0 }
 function getWindowSizeServerSnapshot() {
-  return { width: 0, height: 0 }
+  return serverSnapshot
 }
 
 export function SparklesCore({

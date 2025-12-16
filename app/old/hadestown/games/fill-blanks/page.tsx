@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { Suspense, useState } from "react"
 import { motion, AnimatePresence, useReducedMotion } from "motion/react"
 import { BookIcon, HelpCircleIcon, XIcon } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
@@ -82,10 +82,12 @@ export default function FillInTheBlanksPage() {
         {/* Game container */}
         <Card className="max-w-4xl mx-auto overflow-hidden shadow-lg border-none">
           <CardContent className="p-6 bg-game-surface min-h-[500px]">
-            <FillBlanksGame
-              sentences={HADESTOWN_VOCABULARY.fillBlanks}
-              onComplete={handleGameComplete}
-            />
+            <Suspense fallback={<div className="flex items-center justify-center h-64 text-game-text-muted">Loading game...</div>}>
+              <FillBlanksGame
+                sentences={HADESTOWN_VOCABULARY.fillBlanks}
+                onComplete={handleGameComplete}
+              />
+            </Suspense>
           </CardContent>
         </Card>
       </div>

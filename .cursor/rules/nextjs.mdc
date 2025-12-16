@@ -1,353 +1,247 @@
 ---
 alwaysApply: true
 ---
-# Next.js Rules
+# Next.js
 
-**Essential patterns for Next.js App Router**
-
-https://nextjs.org/blog/next-16-beta
-
-## ASYNC PROPS & SERVER APIS
-
-```tsx
-// Always await params, searchParams, cookies, headers
-export default async function Page(props: {
-  params: { id: string };
-  searchParams: { query: string };
-}) {
-  const params = await props.params;
-  const searchParams = await props.searchParams;
-  return <div>{params.id}</div>;
-}
-
-// Server APIs
-import { cookies, headers } from 'next/headers';
-
-const cookieStore = await cookies();
-const headersList = await headers();
-```
-
-## CACHING
-
-```tsx
-import { revalidateTag, updateTag, refresh } from 'next/cache';
-
-// revalidateTag with cacheLife profile
-revalidateTag('blog-posts', 'max');
-revalidateTag('news-feed', 'hours');
-revalidateTag('analytics', 'days');
-revalidateTag('products', { revalidate: 3600 });
-
-// updateTag for read-your-writes in Server Actions
-export async function updateProfile(userId: string, data: Profile) {
-  'use server';
-  await db.users.update(userId, data);
-  updateTag(`user-${userId}`);
-}
-
-// refresh for uncached data only
-export async function markAsRead(id: string) {
-  'use server';
-  await db.notifications.markAsRead(id);
-  refresh();
-}
-```
-
-## CONFIGURATION
+## CONFIG
 
 ```ts
-// next.config.ts
-export default {
-  reactCompiler: true, // Automatic memoization
-  experimental: {
-    turbopackFileSystemCacheForDev: true,
-    cacheComponents: true, // Cache Components for partial prerendering
-  },
-};
-```
-
-## MDX INTEGRATION
-
-```js
-// next.config.mjs
-import createMDX from '@next/mdx'
-
-export default createMDX({ options: { remarkPlugins: [], rehypePlugins: [] } })({
-  pageExtensions: ['md', 'mdx', 'ts', 'tsx'],
-  experimental: { mdxRs: true }
-})
-```
-
-```tsx
-// mdx-components.tsx
-import type { MDXComponents } from 'mdx/types'
-
-export function useMDXComponents(components: MDXComponents): MDXComponents {
-  return {
-    h1: ({ children }) => <h1 className="text-4xl font-bold">{children}</h1>,
-    ...components
-  }
+const config: NextConfig = {
+  cacheComponents: true,
+  typedRoutes: true,
+  reactCompiler: true,
 }
 ```
 
-## PARTIAL PRERENDERING
+## CACHE VARIANTS
 
-Combines static shell with streamed dynamic content for optimal performance.
+| Directive | Runtime APIs | Prerender | Storage | Use Case |
+|-----------|-------------|-----------|---------|----------|
+| `'use cache'` | No | Yes | In-memory | Static shared content |
+| `'use cache: private'` | Yes | No | Browser | User-specific data |
+| `'use cache: remote'` | No | Yes | External KV | Shared across instances |
 
-```ts
-// next.config.ts
-export default { experimental: { ppr: 'incremental' } }
-```
+## CACHE DECISION
+
+1. Static content, no runtime APIs → `'use cache'`
+2. User-specific with cookies/headers/searchParams → `'use cache: private'`
+3. Shared data, serverless/multi-instance → `'use cache: remote'`
+4. Non-deterministic (Math.random, crypto) → `'use cache'`
+
+**Rules:**
+- `'use cache'` requires `cacheLife()`
+- `'use cache: private'` requires `cacheTag()` + `cacheLife({ stale: 30+ })`
+- No runtime APIs inside `'use cache'` or `'use cache: remote'`
+- File-level directive: ALL exports must be async
+- `<Suspense>` required for uncached async components
+
+## CACHED (file-level)
 
 ```tsx
-// app/page.tsx
-export const experimental_ppr = true
+'use cache'
 
-export default function Page() {
-  return (
-    <>
-      <StaticHeader />
-      <Suspense fallback={<Skeleton />}>
-        <DynamicContent />
-      </Suspense>
-    </>
-  )
+import { cacheLife, cacheTag } from 'next/cache'
+
+export default async function Page() {
+  cacheLife('hours')
+  cacheTag('page')
+  return <div>...</div>
 }
 ```
 
-## COOKIES
+## CACHED (function-level)
 
-Server-side HTTP cookie management for authentication and user preferences.
+```tsx
+import { cacheLife, cacheTag } from 'next/cache'
+
+export async function getData() {
+  'use cache'
+  cacheLife('hours')
+  cacheTag('data')
+  return await fetch('...')
+}
+```
+
+## CACHED PRIVATE (user-specific)
 
 ```tsx
 import { cookies } from 'next/headers'
+import { cacheLife, cacheTag } from 'next/cache'
 
-// Server Component
-export default async function Page() {
-  const cookieStore = await cookies()
-  const theme = cookieStore.get('theme')?.value
-  return <div className={theme} />
-}
+async function getRecommendations(productId: string) {
+  'use cache: private'
+  cacheTag(`recs-${productId}`)
+  cacheLife({ stale: 60 })  // min 30s for runtime prefetch
 
-// Server Action
-async function updateTheme(theme: string) {
-  'use server'
-  const cookieStore = await cookies()
-  cookieStore.set('theme', theme, {
-    httpOnly: true,
-    secure: true,
-    sameSite: 'strict',
-    maxAge: 60 * 60 * 24 * 30
-  })
+  const session = (await cookies()).get('session')?.value || 'guest'
+  return getPersonalizedRecs(productId, session)
 }
 ```
 
-## LAYOUTS, ERRORS & NOT FOUND
-
-Layouts wrap pages and preserve state. Handle errors and missing routes gracefully.
+## CACHED REMOTE (external storage)
 
 ```tsx
-// app/layout.tsx - Root layout (required)
-export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <html lang="en">
-      <body>{children}</body>
-    </html>
-  )
+import { cacheLife, cacheTag } from 'next/cache'
+
+async function getGlobalStats() {
+  'use cache: remote'
+  cacheTag('global-stats')
+  cacheLife({ expire: 60 })
+
+  return db.analytics.aggregate({ users: 'count', revenue: 'sum' })
+}
+```
+
+## RUNTIME + CACHE (extract pattern)
+
+```tsx
+import { cookies } from 'next/headers'
+import { cacheLife } from 'next/cache'
+
+export default async function Page() {
+  const currency = (await cookies()).get('currency')?.value ?? 'USD'
+  return <CachedPrice productId="123" currency={currency} />
 }
 
-// app/dashboard/layout.tsx - Nested layout
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+async function CachedPrice({ productId, currency }: Props) {
+  'use cache'
+  cacheLife('hours')
+  const price = await getPrice(productId, currency)
+  return <div>{price} {currency}</div>
+}
+```
+
+## PASS-THROUGH (non-serializable)
+
+```tsx
+import { cacheLife } from 'next/cache'
+import type { ReactNode } from 'react'
+
+async function CachedWrapper({ children }: { children: ReactNode }) {
+  'use cache'
+  cacheLife('hours')
+  const data = await fetch('...')
   return (
     <div>
-      <nav>Dashboard Nav</nav>
+      <header>{data.title}</header>
       {children}
     </div>
   )
 }
+```
 
-// Error handling
+## REVALIDATION
+
+```tsx
+'use server'
+import { cacheTag, updateTag, revalidateTag, revalidatePath } from 'next/cache'
+
+async function getCart() {
+  'use cache'
+  cacheTag('cart')
+  return await fetchCart()
+}
+
+updateTag('cart')                 // immediate (Server Actions only)
+revalidateTag('posts', 'max')     // stale-while-revalidate
+revalidatePath('/dashboard')
+```
+
+## CACHE PROFILES
+
+```tsx
+cacheLife('hours')   // stale: 1h, revalidate: 1h, expire: 1h
+cacheLife('days')    // stale: 1d, revalidate: 1d, expire: 1d
+cacheLife('weeks')   // stale: 1w, revalidate: 1w, expire: 1w
+cacheLife('max')     // stale: 1y, revalidate: 1y, expire: 1y
+
+cacheLife({ stale: 3600, revalidate: 7200, expire: 86400 })
+```
+
+## ASYNC PROPS
+
+```tsx
+export default async function Page(props: {
+  params: Promise<{ id: string }>
+  searchParams: Promise<{ q: string }>
+}) {
+  const { id } = await props.params
+  const { q } = await props.searchParams
+}
+```
+
+## FORM
+
+```tsx
+import Form from 'next/form'
+
+<Form action={serverAction}>
+  <input name="q" />
+</Form>
+```
+
+## ERROR BOUNDARY
+
+```tsx
 'use client'
+
 export default function Error({ error, reset }: { error: Error; reset: () => void }) {
-  return (
-    <div>
-      <h2>Something went wrong!</h2>
-      <button onClick={reset}>Try again</button>
-    </div>
-  )
-}
-
-// Not found handling
-import { notFound } from 'next/navigation'
-
-export default async function Page({ params }: { params: { id: string } }) {
-  const data = await getData(params.id)
-  if (!data) notFound() // Renders nearest not-found.js
-  return <div>{data.title}</div>
-}
-
-// File structure
-app/
-├── layout.tsx          # Wraps everything
-├── page.tsx           # /
-├── error.tsx          # Error boundary
-├── not-found.tsx      # 404 page
-├── global-error.tsx   # Global error handler
-└── dashboard/
-    ├── layout.tsx     # Wraps dashboard/*
-    ├── page.tsx       # /dashboard
-    ├── error.tsx      # Dashboard errors
-    └── settings/
-        └── page.tsx   # /dashboard/settings
-```
-
-## SITEMAPS
-
-XML files that list all URLs on your site for search engines to crawl and index.
-
-```tsx
-// app/sitemap.ts - Static sitemap
-export default function sitemap() {
-  return [
-    { url: 'https://acme.com', lastModified: new Date() },
-    { url: 'https://acme.com/about', lastModified: new Date() }
-  ]
-}
-
-// Dynamic sitemaps for large datasets
-export async function generateSitemaps() {
-  return [{ id: 0 }, { id: 1 }] // Split into multiple files
-}
-
-export default async function sitemap({ id }: { id: number }) {
-  const posts = await getPosts(id * 50000) // 50k URL limit per sitemap
-  return posts.map(post => ({
-    url: `https://acme.com/posts/${post.slug}`,
-    lastModified: post.updatedAt
-  }))
+  return <button onClick={reset}>Retry</button>
 }
 ```
 
-## METADATA
-
-SEO and social sharing metadata generation.
+## AUTH
 
 ```tsx
-// Static
-export const metadata = {
-  title: 'My App',
-  description: 'The best app ever'
-}
+import { forbidden, unauthorized } from 'next/navigation'
 
-// Dynamic
-export async function generateMetadata({ params }: { params: { id: string } }) {
-  const post = await getPost(params.id)
-  return {
-    title: post.title,
-    openGraph: { images: [post.coverImage] }
-  }
-}
-
-// Dynamic images - app/og/route.tsx
-export async function generateImageMetadata() {
-  return [{ id: 'home' }, { id: 'about' }]
-}
-
-export default function Image({ params }: { params: { id: string } }) {
-  return new ImageResponse(
-    <div style={{ fontSize: 64, background: 'white', width: '100%', height: '100%' }}>
-      {params.id}
-    </div>
-  )
-}
-
-// File-based metadata
-app/favicon.ico
-app/robots.txt
-app/sitemap.xml
-app/opengraph-image.png
+if (!session) unauthorized()
+if (!session.isAdmin) forbidden()
 ```
 
-## IMAGES
+## PROXY
 
-Optimized image component with automatic resizing and lazy loading.
+```ts
+import { NextRequest, NextResponse } from 'next/server'
+
+export function proxy(request: NextRequest) {
+  if (!request.cookies.get('token')) return NextResponse.redirect(new URL('/login', request.url))
+  return NextResponse.next()
+}
+
+export const config = { matcher: ['/dashboard/:path*'] }
+```
+
+## ROUTE HANDLERS
 
 ```tsx
-import Image from 'next/image'
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url)
+  return Response.json({ q: searchParams.get('q') })
+}
 
-// Basic usage
-<Image
-  src="/hero.jpg"
-  alt="Hero image"
-  width={800}
-  height={600}
-  priority // Above the fold
-/>
-
-// Responsive with fill
-<div style={{ position: 'relative', width: '100%', height: '400px' }}>
-  <Image
-    src="/background.jpg"
-    alt="Background"
-    fill
-    style={{ objectFit: 'cover' }}
-  />
-</div>
-
-// External images
-<Image
-  src="https://example.com/image.jpg"
-  alt="External image"
-  width={500}
-  height={300}
-/>
-
-// Configuration - next.config.js
-export default {
-  images: {
-    remotePatterns: [
-      { protocol: 'https', hostname: 'example.com' }
-    ],
-    formats: ['image/webp', 'image/avif']
-  }
+export async function POST(request: Request) {
+  const data = await request.json()
+  return Response.json(data, { status: 201 })
 }
 ```
 
 ## NAVIGATION
 
-Client-side routing with automatic prefetching and optimization.
-
 ```tsx
 import Link from 'next/link'
+import { redirect, notFound } from 'next/navigation'
 
-// Basic linking
 <Link href="/dashboard">Dashboard</Link>
-<Link href={`/posts/${slug}`}>Read more</Link>
-
-// Programmatic navigation
-'use client'
-import { useRouter, usePathname } from 'next/navigation'
-
-export default function Navigation() {
-  const router = useRouter()
-  const pathname = usePathname()
-
-  return (
-    <nav>
-      <Link
-        href="/dashboard"
-        className={pathname === '/dashboard' ? 'active' : ''}
-      >
-        Dashboard
-      </Link>
-      <button onClick={() => router.push('/settings')}>
-        Go to Settings
-      </button>
-      <button onClick={() => router.back()}>
-        Back
-      </button>
-    </nav>
-  )
-}
+redirect('/login')
+notFound()
 ```
 
+```tsx
+'use client'
+import { useRouter } from 'next/navigation'
+
+const router = useRouter()
+router.push('/settings')
+router.refresh()
+```

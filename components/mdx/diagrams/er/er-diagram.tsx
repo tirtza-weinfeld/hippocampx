@@ -250,7 +250,7 @@ export function ERDiagram({ topology, title, className }: ERDiagramProps) {
         <button
           type="button"
           onClick={() => setIsHelpOpen(true)}
-          className="p-2 text-er-text-muted hover:text-er-text bg-er-entity/50 hover:bg-er-entity border border-er-border rounded-md active:scale-95 transition-all"
+          className="p-2 text-er-text-muted hover:text-er-text bg-er-card/50 hover:bg-er-card border border-er-border rounded-md active:scale-95 transition-all"
           aria-label="Help"
         >
           <svg className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
@@ -266,7 +266,7 @@ export function ERDiagram({ topology, title, className }: ERDiagramProps) {
               transition={{ duration: shouldReduceMotion ? 0 : 0.15 }}
               type="button"
               onClick={handleResetLayout}
-              className="p-2 text-er-text-muted hover:text-er-text bg-er-entity/50 hover:bg-er-entity border border-er-border rounded-md active:scale-95 transition-all"
+              className="p-2 text-er-text-muted hover:text-er-text bg-er-card/50 hover:bg-er-card border border-er-border rounded-md active:scale-95 transition-all"
               aria-label="Reset layout"
             >
               <svg className="w-4 h-4" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -279,7 +279,7 @@ export function ERDiagram({ topology, title, className }: ERDiagramProps) {
         <button
           type="button"
           onClick={toggleFullscreen}
-          className="p-2 text-er-text-muted hover:text-er-text bg-er-entity/50 hover:bg-er-entity border border-er-border rounded-md active:scale-95 transition-all"
+          className="p-2 text-er-text-muted hover:text-er-text bg-er-card/50 hover:bg-er-card border border-er-border rounded-md active:scale-95 transition-all"
           aria-label="Fullscreen"
         >
           <svg className="w-4 h-4" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -296,7 +296,7 @@ export function ERDiagram({ topology, title, className }: ERDiagramProps) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: shouldReduceMotion ? 0 : 0.2 }}
-            className="fixed inset-0 z-40 bg-er-entity/95 backdrop-blur-sm"
+            className="fixed inset-0 z-40 bg-er-card/95 backdrop-blur-sm"
           />
         )}
       </AnimatePresence>
@@ -371,7 +371,7 @@ export function ERDiagram({ topology, title, className }: ERDiagramProps) {
             <button
               type="button"
               onClick={() => setIsHelpOpen(true)}
-              className="p-2.5 text-er-text bg-er-entity border border-er-border rounded-lg shadow-lg hover:bg-er-entity-header active:scale-95 transition-all"
+              className="p-2.5 text-er-text bg-er-card border border-er-border rounded-lg shadow-lg hover:bg-er-card-header active:scale-95 transition-all"
               aria-label="Help"
             >
               <svg className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
@@ -382,7 +382,7 @@ export function ERDiagram({ topology, title, className }: ERDiagramProps) {
               <button
                 type="button"
                 onClick={handleResetLayout}
-                className="p-2.5 text-er-text bg-er-entity border border-er-border rounded-lg shadow-lg hover:bg-er-entity-header active:scale-95 transition-all"
+                className="p-2.5 text-er-text bg-er-card border border-er-border rounded-lg shadow-lg hover:bg-er-card-header active:scale-95 transition-all"
                 aria-label="Reset layout"
               >
                 <svg className="w-5 h-5" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -394,7 +394,7 @@ export function ERDiagram({ topology, title, className }: ERDiagramProps) {
             <button
               type="button"
               onClick={exitFullscreen}
-              className="p-2.5 text-er-text bg-er-entity border border-er-border rounded-lg shadow-lg hover:bg-er-entity-header active:scale-95 transition-all"
+              className="p-2.5 text-er-text bg-er-card border border-er-border rounded-lg shadow-lg hover:bg-er-card-header active:scale-95 transition-all"
               aria-label="Exit fullscreen"
             >
               <svg className="w-5 h-5" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">

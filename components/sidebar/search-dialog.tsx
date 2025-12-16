@@ -70,7 +70,10 @@ export function SearchDialog({
     if (typeof window === 'undefined') return 'date'
     try {
       const stored = localStorage.getItem('favoritesSortOrder')
-      return (stored as FavoritesSortOrder) || 'date'
+      if (stored === 'date' || stored === 'alphabetical' || stored === 'custom') {
+        return stored
+      }
+      return 'date'
     } catch {
       return 'date'
     }
@@ -338,16 +341,13 @@ export function SearchDialog({
 
   // Reset state when dialog closes using previous state pattern
   useEffect(() => {
-    let timeoutId: NodeJS.Timeout
     if (!isOpen) {
-      timeoutId = setTimeout(() => {
+      const timeoutId = setTimeout(() => {
         setSearch("")
         setSelectedIndex(0)
         // Don't reset showFavoritesOnly - keep user's preference
       }, 0)
-    }
-    return () => {
-      if (timeoutId) clearTimeout(timeoutId)
+      return () => clearTimeout(timeoutId)
     }
   }, [isOpen])
 

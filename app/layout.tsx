@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { Inter } from "next/font/google";
 import "@/styles/globals.css";
 import "@/styles/dev-only.css";
@@ -10,20 +11,18 @@ import { SparklesBackground } from "@/components/old/calculus/ui/sparkles-backgr
 import { Fonts } from "@/components/sidebar/fonts";
 import { Font, getFontFamily } from "@/components/theme/font";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { cacheLife, cacheTag } from "next/cache";
 import 'katex/dist/katex.min.css';
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" })
 
-
 export { metadata } from "@/lib/metadata";
 
+async function RootLayoutContent({ children }: { children: React.ReactNode }) {
+  'use cache: private'
+  cacheTag('root-layout')
+  cacheLife({ stale: 3600 })
 
-
-export default async function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
   const cookieStore = await cookies()
   const theme = cookieStore.get("theme")?.value || "system"
   const font: Font = cookieStore.get("font")?.value as Font || "inter"
@@ -31,16 +30,11 @@ export default async function RootLayout({
 
   return (
     <html lang="en" suppressHydrationWarning style={{ fontFamily: getFontFamily(font) }}>
-      <body className={`${inter.variable} antialiased 
-    
-      `}>
-      <div className="fixed inset-0 
-      pointer-events-none z-[9999]" aria-label="Navigation" role="navigation">
-        <SparklesBackground />
-      </div>
-
-      <Fonts />
-
+      <body className={`${inter.variable} antialiased`}>
+        <div className="fixed inset-0 pointer-events-none z-[9999]" aria-label="Navigation" role="navigation">
+          <SparklesBackground />
+        </div>
+        <Fonts />
         <ThemeProvider
           attribute="class"
           defaultTheme={theme}
@@ -50,8 +44,6 @@ export default async function RootLayout({
         >
           <TooltipProvider delayDuration={0}>
             <CustomTheme>
-
-
               <div className="min-h-screen w-full">
                 <Sidebar defaultOpen={sidebarDefaultOpen}>
                   <div className="flex flex-col min-h-screen">
@@ -62,13 +54,35 @@ export default async function RootLayout({
                   </div>
                 </Sidebar>
               </div>
-
-
             </CustomTheme>
           </TooltipProvider>
         </ThemeProvider>
       </body>
     </html>
-  );
+  )
+}
+
+function LayoutSkeleton({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${inter.variable} antialiased`}>
+        <div className="min-h-screen w-full">
+          {children}
+        </div>
+      </body>
+    </html>
+  )
+}
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <Suspense fallback={<LayoutSkeleton>{children}</LayoutSkeleton>}>
+      <RootLayoutContent>{children}</RootLayoutContent>
+    </Suspense>
+  )
 }
 

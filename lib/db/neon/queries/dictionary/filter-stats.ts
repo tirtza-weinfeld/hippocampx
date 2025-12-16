@@ -7,7 +7,7 @@
 
 import "server-only";
 
-import { cache } from "react";
+import { cacheLife } from "next/cache";
 import { eq, asc, count } from "drizzle-orm";
 import { neonDb } from "../../connection";
 import {
@@ -27,7 +27,10 @@ import type { TagStat, SourceStat, SourcePartStat } from "./types";
 // ============================================================================
 
 /** Fetch tag stats with sense counts, joined with categories */
-export const fetchTagStats = cache(async (): Promise<TagStat[]> => {
+export async function fetchTagStats(): Promise<TagStat[]> {
+  'use cache'
+  cacheLife('hours')
+
   const result = await neonDb
     .select({
       id: tags.id,
@@ -49,14 +52,17 @@ export const fetchTagStats = cache(async (): Promise<TagStat[]> => {
     categoryDisplayName: r.categoryDisplayName,
     senseCount: r.senseCount,
   }));
-});
+}
 
 // ============================================================================
 // SOURCE STATISTICS
 // ============================================================================
 
 /** Fetch sources with entry counts */
-export const fetchSourcesWithEntryCount = cache(async (): Promise<SourceStat[]> => {
+export async function fetchSourcesWithEntryCount(): Promise<SourceStat[]> {
+  'use cache'
+  cacheLife('hours')
+
   // Count unique entries that have examples from each source
   // Path: sources → sourceParts → examples → senses → entries
   const rows = await neonDb
@@ -90,14 +96,17 @@ export const fetchSourcesWithEntryCount = cache(async (): Promise<SourceStat[]> 
     type: s.type,
     entryCount: entryMap.get(s.id)?.size ?? 0,
   }));
-});
+}
 
 // ============================================================================
 // SOURCE PART STATISTICS
 // ============================================================================
 
 /** Fetch source parts with entry counts */
-export const fetchSourcePartsWithEntryCount = cache(async (): Promise<SourcePartStat[]> => {
+export async function fetchSourcePartsWithEntryCount(): Promise<SourcePartStat[]> {
+  'use cache'
+  cacheLife('hours')
+
   const rows = await neonDb
     .select({
       source_part_id: sourceParts.id,
@@ -173,7 +182,7 @@ export const fetchSourcePartsWithEntryCount = cache(async (): Promise<SourcePart
     }
   }
   return result;
-});
+}
 
 // ============================================================================
 // SLUG RESOLUTION

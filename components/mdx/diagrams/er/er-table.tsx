@@ -127,10 +127,10 @@ export function ERTable({
       data-selected={selected}
       data-dragging={isDragging}
       className={cn(
-        'absolute rounded-lg border-2 overflow-hidden bg-er-entity border-er-border',
+        'absolute rounded-lg border-2 overflow-hidden bg-er-card border-er-border',
         isDragging && 'cursor-grabbing',
         !isDragging && 'cursor-grab',
-        scale !== 1 && 'ring-2 ring-er-relation/50'
+        scale !== 1 && 'ring-2 ring-er-line/50'
       )}
       style={{
         left: centerX,
@@ -176,7 +176,7 @@ export function ERTable({
         },
       }}
     >
-      <header className="bg-er-entity-header px-3 py-2 font-semibold text-er-text border-b border-er-border flex items-center gap-2">
+      <header className="bg-er-card-header px-3 py-2 font-semibold text-er-text border-b border-er-border flex items-center gap-2">
         <svg
           className="w-4 h-4 text-er-text-muted shrink-0"
           viewBox="0 0 16 16"
@@ -215,8 +215,8 @@ export function ERTable({
                 'w-6 h-6 pointer-coarse:w-8 pointer-coarse:h-8 rounded flex items-center justify-center text-xs font-bold transition-colors',
                 'active:scale-90 active:opacity-80',
                 verbose
-                  ? 'bg-er-pk text-er-pk-text'
-                  : 'bg-er-entity text-er-text-muted hover:bg-er-entity-header hover:text-er-text'
+                  ? 'bg-er-pk-soft text-er-pk'
+                  : 'bg-er-card text-er-text-muted hover:bg-er-card-header hover:text-er-text'
               )}
               aria-label={verbose ? 'Hide column descriptions' : 'Show column descriptions'}
               aria-pressed={verbose}

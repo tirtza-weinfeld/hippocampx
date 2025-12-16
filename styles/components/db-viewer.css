@@ -31,6 +31,10 @@
   --color-db-text: var(--db-text);
   --color-db-text-muted: var(--db-text-muted);
   --color-db-text-subtle: var(--db-text-subtle);
+
+
+
+
 }
 
 :root {
@@ -160,21 +164,7 @@
   }
 }
 
-/* Table cell animations */
-@utility animate-cell-in {
-  animation: cellFadeIn 0.3s ease-out forwards;
-}
 
-@keyframes cellFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
 
 /* Shimmer loading effect */
 @utility shimmer-db {
@@ -218,6 +208,8 @@
   --color-db-type-date-bg: var(--db-type-date-bg);
   --color-db-type-json: var(--db-type-json);
   --color-db-type-json-bg: var(--db-type-json-bg);
+  --color-db-type-array: var(--db-type-array);
+  --color-db-type-array-bg: var(--db-type-array-bg);
 }
 
 :root {
@@ -231,6 +223,8 @@
   --db-type-date-bg: var(--db-surface-raised);
   --db-type-json: oklch(0.65 0.18 300);
   --db-type-json-bg: oklch(0.65 0.18 300 / 12%);
+  --db-type-array: oklch(0.65 0.16 45);
+  --db-type-array-bg: oklch(0.65 0.16 45 / 12%);
 }
 
 .dark {
@@ -238,4 +232,6 @@
   --db-type-boolean-bg: oklch(0.75 0.14 85 / 15%);
   --db-type-json: oklch(0.75 0.16 300);
   --db-type-json-bg: oklch(0.75 0.16 300 / 15%);
+  --db-type-array: oklch(0.75 0.14 45);
+  --db-type-array-bg: oklch(0.75 0.14 45 / 15%);
 }

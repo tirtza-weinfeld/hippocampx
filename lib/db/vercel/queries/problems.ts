@@ -2,7 +2,9 @@
  * Problems Queries - Vercel Database
  */
 
-import { cache } from "react";
+import "server-only";
+
+import { cacheLife } from "next/cache";
 import { drizzle } from "drizzle-orm/vercel-postgres";
 import { sql as vercelSql } from "@vercel/postgres";
 import { eq } from "drizzle-orm";
@@ -15,16 +17,22 @@ const db = drizzle(vercelSql);
 /**
  * Get all problems (lightweight, for filtering)
  */
-export const getProblems = cache(async(): Promise<Problem[]> => {
+export async function getProblems(): Promise<Problem[]> {
+  'use cache: remote'
+  cacheLife('hours')
+
   return db.select().from(problems).orderBy(problems.number);
-});
+}
 
 /**
  * Get solutions by problem ID
  */
-export const getSolutionsByProblemId = cache(async(
+export async function getSolutionsByProblemId(
   problemId: string
-): Promise<Solution[]> => {
+): Promise<Solution[]> {
+  'use cache: remote'
+  cacheLife('hours')
+
   const rawSolutions = await db
     .select()
     .from(solutions)
@@ -37,4 +45,4 @@ export const getSolutionsByProblemId = cache(async(
     intuition: solution.intuition ? formatIntuitionContent(solution.intuition) : null,
     time_complexity: solution.time_complexity ? formatTimeComplexity(solution.time_complexity) : null,
   }));
-});
+}

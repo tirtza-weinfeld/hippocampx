@@ -3,7 +3,7 @@
 import React, { useMemo, useState, useEffect } from 'react'
 import { cn } from '@/lib/utils'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import highlightCode from '@/components/mdx/code/code-highlighter'
+import { highlightCodeAction } from '@/components/mdx/code/actions'
 import type { CodeFile } from './types'
 
 interface CodePanelProps {
@@ -96,7 +96,7 @@ export function CodePanel({
 
     let cancelled = false
 
-    highlightCode(content, language ?? 'text', undefined, true, false)
+    highlightCodeAction(content, language ?? 'text', undefined, true, false)
       .then(jsxResult => {
         if (!cancelled) {
           setHighlightResult({ content, language, code: jsxResult })

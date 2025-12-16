@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { Suspense, useState } from "react"
 import { motion, useReducedMotion } from "motion/react"
 import { HelpCircleIcon } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
@@ -86,10 +86,12 @@ export default function WordMemoryPage() {
         >
           <Card className="max-w-4xl mx-auto overflow-hidden shadow-2xl border-none rounded-2xl">
             <CardContent className="p-4 sm:p-6 md:p-8 bg-game-surface">
-              <WordMemoryGame
-                pairs={HADESTOWN_MEMORY_PAIRS}
-                onComplete={handleGameComplete}
-              />
+              <Suspense fallback={<div className="flex items-center justify-center h-64 text-game-text-muted">Loading game...</div>}>
+                <WordMemoryGame
+                  pairs={HADESTOWN_MEMORY_PAIRS}
+                  onComplete={handleGameComplete}
+                />
+              </Suspense>
             </CardContent>
           </Card>
         </motion.div>

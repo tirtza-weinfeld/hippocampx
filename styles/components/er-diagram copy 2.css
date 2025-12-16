@@ -1,0 +1,231 @@
+/**
+ * ER Diagram CSS
+ * Unified tokens for components/db-viewer/diagram/ and components/mdx/diagrams/er/
+ */
+
+@theme inline {
+  /* Canvas */
+  --color-er-canvas: var(--er-canvas);
+  --color-er-canvas-dot: var(--er-canvas-dot);
+
+  /* Card surfaces */
+  --color-er-card: var(--er-card);
+  --color-er-card-header: var(--er-card-header);
+  --color-er-border: var(--er-border);
+
+  /* Primary key */
+  --color-er-pk: var(--er-pk);
+  --color-er-pk-soft: var(--er-pk-soft);
+
+  /* Foreign key */
+  --color-er-fk: var(--er-fk);
+  --color-er-fk-soft: var(--er-fk-soft);
+
+  /* Unique key */
+  --color-er-uk: var(--er-uk);
+  --color-er-uk-soft: var(--er-uk-soft);
+
+  /* Relationship lines */
+  --color-er-line: var(--er-line);
+  --color-er-line-hover: var(--er-line-hover);
+  --color-er-line-pk: var(--er-line-pk);
+  --color-er-line-fk: var(--er-line-fk);
+
+  /* Text */
+  --color-er-text: var(--er-text);
+  --color-er-text-muted: var(--er-text-muted);
+  --color-er-text-type: var(--er-text-type);
+
+  /* Metadata */
+  --color-er-comment: var(--er-comment);
+  --color-er-example: var(--er-example);
+  --color-er-copy: var(--er-copy);
+
+  /* Controls */
+  --color-er-control: var(--er-control);
+  --color-er-control-hover: var(--er-control-hover);
+
+  /* Domain */
+  --color-er-domain: var(--er-domain);
+
+  /* Shadows */
+  --shadow-er-card: var(--er-shadow-card);
+  --shadow-er-control: var(--er-shadow-control);
+}
+
+:root {
+  /* Canvas */
+  --er-canvas: var(--color-gray-50);
+  --er-canvas-dot: var(--color-gray-200);
+
+  /* Card */
+  --er-card: var(--color-white);
+  --er-card-header: var(--color-gray-100);
+  --er-border: var(--color-gray-300);
+
+  /* Primary key - amber */
+  --er-pk: var(--color-amber-800);
+  --er-pk-soft: var(--color-amber-100);
+
+  /* Foreign key - blue */
+  --er-fk: var(--color-blue-800);
+  --er-fk-soft: var(--color-blue-100);
+
+  /* Unique key - purple */
+  --er-uk: var(--color-purple-800);
+  --er-uk-soft: var(--color-purple-100);
+
+  /* Lines */
+  --er-line: var(--color-gray-500);
+  --er-line-hover: var(--color-blue-500);
+  --er-line-pk: var(--color-orange-500);
+  --er-line-fk: var(--color-blue-500);
+
+  /* Text */
+  --er-text: var(--color-gray-800);
+  --er-text-muted: var(--color-gray-500);
+  --er-text-type: var(--color-blue-700);
+
+  /* Metadata */
+  --er-comment: var(--color-blue-600);
+  --er-example: var(--color-emerald-700);
+  --er-copy: var(--color-emerald-900);
+
+  /* Controls */
+  --er-control: oklch(from var(--color-white) l c h / 95%);
+  --er-control-hover: var(--color-gray-100);
+
+  /* Domain colors */
+  --er-domain: var(--color-blue-500);
+  --er-domain-0: var(--color-blue-500);
+  --er-domain-1: var(--color-emerald-500);
+  --er-domain-2: var(--color-violet-500);
+  --er-domain-3: var(--color-orange-500);
+  --er-domain-4: var(--color-pink-500);
+  --er-domain-5: var(--color-amber-500);
+
+  /* Shadows */
+  --er-shadow-card: var(--shadow-sm);
+  --er-shadow-control: var(--shadow-lg);
+
+  /* Row highlights */
+  --er-row-pk: linear-gradient(90deg, oklch(from var(--color-orange-200) l c h / 70%) 0%, oklch(from var(--color-orange-100) l c h / 30%) 100%);
+  --er-row-fk: linear-gradient(90deg, oklch(from var(--color-blue-100) l c h / 30%) 0%, oklch(from var(--color-blue-200) l c h / 70%) 100%);
+}
+
+.dark {
+  /* Canvas */
+  --er-canvas: var(--color-gray-900);
+  --er-canvas-dot: var(--color-gray-700);
+
+  /* Card */
+  --er-card: var(--color-gray-800);
+  --er-card-header: var(--color-gray-900);
+  --er-border: var(--color-gray-600);
+
+  /* Primary key - amber */
+  --er-pk: var(--color-amber-300);
+  --er-pk-soft: oklch(from var(--color-amber-900) l c h / 40%);
+
+  /* Foreign key - blue */
+  --er-fk: var(--color-blue-300);
+  --er-fk-soft: oklch(from var(--color-blue-900) l c h / 40%);
+
+  /* Unique key - purple */
+  --er-uk: var(--color-purple-300);
+  --er-uk-soft: oklch(from var(--color-purple-900) l c h / 40%);
+
+  /* Lines */
+  --er-line: var(--color-gray-400);
+  --er-line-hover: var(--color-blue-400);
+  --er-line-pk: var(--color-orange-400);
+  --er-line-fk: var(--color-blue-400);
+
+  /* Text */
+  --er-text: var(--color-gray-100);
+  --er-text-muted: var(--color-gray-400);
+  --er-text-type: var(--color-blue-400);
+
+  /* Metadata */
+  --er-comment: var(--color-blue-400);
+  --er-example: var(--color-emerald-400);
+  --er-copy: oklch(from var(--color-emerald-700) l c h / 70%);
+
+  /* Controls */
+  --er-control: oklch(from var(--color-gray-800) l c h / 95%);
+  --er-control-hover: var(--color-gray-700);
+
+  /* Domain */
+  --er-domain: var(--color-blue-400);
+
+  /* Shadows */
+  --er-shadow-card: 0 1px 3px oklch(0 0 0 / 25%), 0 1px 2px oklch(0 0 0 / 20%);
+  --er-shadow-control: 0 2px 8px oklch(0 0 0 / 30%);
+
+  /* Row highlights */
+  --er-row-pk: linear-gradient(90deg, oklch(from var(--color-orange-900) l c h / 50%) 0%, oklch(from var(--color-orange-800) l c h / 20%) 100%);
+  --er-row-fk: linear-gradient(90deg, oklch(from var(--color-blue-800) l c h / 20%) 0%, oklch(from var(--color-blue-900) l c h / 50%) 100%);
+}
+
+@layer components {
+  .er-canvas {
+    background-color: var(--color-er-canvas);
+    background-image: radial-gradient(circle, var(--color-er-canvas-dot) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+
+  .er-control-panel {
+    background: var(--color-er-control);
+    border: 1px solid var(--color-er-border);
+    border-radius: 10px;
+    box-shadow: var(--shadow-er-control);
+    backdrop-filter: blur(12px);
+  }
+
+  .er-checkbox {
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--color-er-border);
+    border-radius: 4px;
+    background: var(--color-er-card);
+    cursor: pointer;
+    transition: border-color 0.15s, background-color 0.15s;
+    position: relative;
+    flex-shrink: 0;
+
+    &:checked {
+      background: var(--color-db-neon);
+      border-color: var(--color-db-neon);
+    }
+
+    &:checked::after {
+      content: "";
+      position: absolute;
+      left: 4px;
+      top: 1px;
+      width: 4px;
+      height: 8px;
+      border: solid white;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+    }
+
+    &:hover {
+      border-color: var(--color-er-line-hover);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--color-er-line-hover);
+      outline-offset: 2px;
+    }
+  }
+
+  .er-row-pk {
+    background: var(--er-row-pk);
+  }
+
+  .er-row-fk {
+    background: var(--er-row-fk);
+  }
+}

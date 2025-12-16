@@ -7,7 +7,7 @@
 
 import "server-only";
 
-import { cache } from "react";
+import { cacheLife } from "next/cache";
 import { eq, and, asc, inArray } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import { neonDb } from "../../connection";
@@ -57,10 +57,13 @@ function serializeEntry(entry: LexicalEntry): EntryBasic {
 }
 
 /** Fetch basic entry data (for header/immediate render) */
-export const fetchEntryBasic = cache(async (
+export async function fetchEntryBasic(
   lemma: string,
   languageCode: string = "en"
-): Promise<EntryBasic | null> => {
+): Promise<EntryBasic | null> {
+  'use cache'
+  cacheLife('hours')
+
   const result = await neonDb
     .select()
     .from(lexicalEntries)
@@ -71,14 +74,17 @@ export const fetchEntryBasic = cache(async (
 
   const entry = result.at(0);
   return entry ? serializeEntry(entry) : null;
-});
+}
 
 // ============================================================================
 // SENSES WITH EXAMPLES
 // ============================================================================
 
 /** Fetch senses with examples for an entry */
-export const fetchSensesByEntryId = cache(async (entryId: number): Promise<SenseWithDetails[]> => {
+export async function fetchSensesByEntryId(entryId: number): Promise<SenseWithDetails[]> {
+  'use cache'
+  cacheLife('hours')
+
   const rows = await neonDb
     .select({
       sense_id: senses.id,
@@ -148,14 +154,17 @@ export const fetchSensesByEntryId = cache(async (entryId: number): Promise<Sense
     }
   }
   return result;
-});
+}
 
 // ============================================================================
 // WORD FORMS
 // ============================================================================
 
 /** Fetch word forms for an entry */
-export const fetchFormsByEntryId = cache(async (entryId: number): Promise<WordFormInfo[]> => {
+export async function fetchFormsByEntryId(entryId: number): Promise<WordFormInfo[]> {
+  'use cache'
+  cacheLife('hours')
+
   const result = await neonDb
     .select({
       id: wordForms.id,
@@ -170,14 +179,17 @@ export const fetchFormsByEntryId = cache(async (entryId: number): Promise<WordFo
     formText: r.form_text,
     grammaticalFeatures: r.grammatical_features as Record<string, unknown>,
   }));
-});
+}
 
 // ============================================================================
 // AUDIO
 // ============================================================================
 
 /** Fetch audio for an entry */
-export const fetchAudioByEntryId = cache(async (entryId: number): Promise<AudioInfo[]> => {
+export async function fetchAudioByEntryId(entryId: number): Promise<AudioInfo[]> {
+  'use cache'
+  cacheLife('hours')
+
   const result = await neonDb
     .select()
     .from(entryAudio)
@@ -191,14 +203,17 @@ export const fetchAudioByEntryId = cache(async (entryId: number): Promise<AudioI
     accentCode: r.accent_code,
     contentType: r.content_type,
   }));
-});
+}
 
 // ============================================================================
 // SENSE RELATIONS
 // ============================================================================
 
 /** Fetch sense relations (outgoing from entry's senses) */
-export const fetchSenseRelationsByEntryId = cache(async (entryId: number): Promise<SenseRelationInfo[]> => {
+export async function fetchSenseRelationsByEntryId(entryId: number): Promise<SenseRelationInfo[]> {
+  'use cache'
+  cacheLife('hours')
+
   const targetSense = alias(senses, "target_sense");
   const targetEntry = alias(lexicalEntries, "target_entry");
 
@@ -237,17 +252,20 @@ export const fetchSenseRelationsByEntryId = cache(async (entryId: number): Promi
     targetEntryId: r.target_entry_id,
     targetEntryLemma: r.target_entry_lemma,
   }));
-});
+}
 
 // ============================================================================
 // COMPLETE ENTRY
 // ============================================================================
 
 /** Fetch complete entry with all relations */
-export const fetchEntryCompleteByLemma = cache(async (
+export async function fetchEntryCompleteByLemma(
   lemma: string,
   languageCode: string = "en"
-): Promise<EntryComplete | null> => {
+): Promise<EntryComplete | null> {
+  'use cache'
+  cacheLife('hours')
+
   const result = await neonDb
     .select()
     .from(lexicalEntries)
@@ -273,4 +291,4 @@ export const fetchEntryCompleteByLemma = cache(async (
     audio: audioData,
     relations: relationsData,
   };
-});
+}

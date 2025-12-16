@@ -27,9 +27,9 @@ interface ConstraintBadgeProps {
 // ============================================================================
 
 const CONSTRAINT_STYLES = {
-  PK: 'bg-er-pk text-er-pk-text',
-  FK: 'bg-er-fk text-er-fk-text cursor-pointer hover:opacity-80 transition-opacity',
-  UK: 'bg-er-uk text-er-uk-text',
+  PK: 'bg-er-pk-soft text-er-pk',
+  FK: 'bg-er-fk-soft text-er-fk cursor-pointer hover:opacity-80 transition-opacity',
+  UK: 'bg-er-fk-soft text-er-fk',
 } as const satisfies Record<Constraint, string>
 
 // ============================================================================
@@ -110,10 +110,10 @@ export function ERColumn({ column, tableName, highlight, verbose, onColumnClick 
           'er-column relative',
           'flex items-center gap-2 px-3 py-1.5 pointer-coarse:py-2.5',
           'transition-colors',
-          isClickable && 'cursor-pointer hover:bg-er-entity-header/50 active:bg-er-entity-header/70',
-          !isClickable && 'hover:bg-er-entity-header/30 active:bg-er-entity-header/50',
-          highlight === 'pk' && 'er-row-highlight-pk',
-          highlight === 'fk' && 'er-row-highlight-fk'
+          isClickable && 'cursor-pointer hover:bg-er-card-header/50 active:bg-er-card-header/70',
+          !isClickable && 'hover:bg-er-card-header/30 active:bg-er-card-header/50',
+          highlight === 'pk' && 'er-row-pk',
+          highlight === 'fk' && 'er-row-fk'
         )}
         onClick={handleClick}
         onKeyDown={handleKeyDown}
@@ -126,7 +126,7 @@ export function ERColumn({ column, tableName, highlight, verbose, onColumnClick 
           <span
             className={cn(
               'absolute -left-1 top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full shadow-sm',
-              highlight === 'pk' ? 'bg-er-relation-highlight-pk' : 'bg-er-pk-text'
+              highlight === 'pk' ? 'bg-er-line-pk' : 'bg-er-pk'
             )}
             aria-hidden="true"
           />
@@ -137,7 +137,7 @@ export function ERColumn({ column, tableName, highlight, verbose, onColumnClick 
           <span
             className={cn(
               'absolute -right-1 top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full shadow-sm',
-              highlight === 'fk' ? 'bg-er-relation-highlight-fk' : 'bg-er-fk-text'
+              highlight === 'fk' ? 'bg-er-line-fk' : 'bg-er-fk'
             )}
             aria-hidden="true"
           />

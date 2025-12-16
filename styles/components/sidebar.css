@@ -1,23 +1,23 @@
-:root {
-  --color-sidebar: oklch(0.98 0.01 240);
-  --color-sidebar-foreground: oklch(0.2 0.01 240);
-  --color-sidebar-muted: oklch(0.7 0.01 240);
-  --color-sidebar-accent: oklch(0.94 0.01 240);
-  --color-sidebar-accent-foreground: oklch(0.2 0.01 240);
-  --color-sidebar-border: var(--color-red-600);
-  --color-sidebar-ring: oklch(0.7 0.2 180);
+/* Sidebar derives from app tokens for theme compatibility */
+@theme inline {
+  /* Sidebar base - slightly offset from background */
+  --color-sidebar: --alpha(var(--background) / 98%);
+  --color-sidebar-foreground: var(--foreground);
+  --color-sidebar-muted: var(--muted-foreground);
+  --color-sidebar-accent: --alpha(var(--primary) / 10%);
+  --color-sidebar-accent-foreground: var(--primary);
+  --color-sidebar-border: var(--border);
+  --color-sidebar-ring: var(--ring);
+  --color-sidebar-active: var(--primary);
+  --color-sidebar-hover: --alpha(var(--primary) / 8%);
 
-  /* Border radius */
-  --radius: 0.5rem;
+  /* Gradient button: primary → accent flow */
+  --color-sidebar-btn-from: var(--primary);
+  --color-sidebar-btn-via: var(--accent);
+  --color-sidebar-btn-to: var(--secondary);
+
+  /* Shadow uses primary glow */
+  --shadow-sidebar-btn: 0 2px 8px --alpha(var(--primary) / 25%), inset 0 1px 0 oklch(1 0 0 / 15%);
+  --shadow-sidebar-btn-hover: 0 4px 16px --alpha(var(--primary) / 35%), inset 0 1px 0 oklch(1 0 0 / 20%);
 }
 
-.dark {
-  /* Sidebar dark mode colors */
-  --color-sidebar: oklch(0.22 0.01 240);
-  --color-sidebar-foreground: oklch(0.98 0.01 0);
-  --color-sidebar-muted: oklch(0.7 0.01 240);
-  --color-sidebar-accent: oklch(0.3 0.01 240);
-  --color-sidebar-accent-foreground: oklch(0.98 0.01 0);
-  /* --color-sidebar-border: oklch(0.3 0.01 240); */
-  --color-sidebar-border: var(--color-red-800);
-}

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { Suspense, useState } from "react"
 import { motion, AnimatePresence, useReducedMotion } from "motion/react"
 import { BookIcon, ListTodoIcon, PuzzleIcon, ShuffleIcon, HelpCircleIcon, XIcon } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
@@ -68,68 +68,70 @@ export default function VocabularyGamesPage() {
 
           {/* Content */}
           <CardContent className="p-6 bg-game-surface min-h-[600px]">
-            <AnimatePresence mode="wait">
-              {activeTab === "quiz" && (
-                <motion.div
-                  key="quiz"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: shouldReduceMotion ? 0 : 0.3 }}
-                  className="h-full"
-                >
-                  <QuizGame
-                    items={HADESTOWN_VOCABULARY.quiz}
-                    onComplete={handleGameComplete}
-                  />
-                </motion.div>
-              )}
+            <Suspense fallback={<div className="flex items-center justify-center h-64 text-game-text-muted">Loading game...</div>}>
+              <AnimatePresence mode="wait">
+                {activeTab === "quiz" && (
+                  <motion.div
+                    key="quiz"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ duration: shouldReduceMotion ? 0 : 0.3 }}
+                    className="h-full"
+                  >
+                    <QuizGame
+                      items={HADESTOWN_VOCABULARY.quiz}
+                      onComplete={handleGameComplete}
+                    />
+                  </motion.div>
+                )}
 
-              {activeTab === "matching" && (
-                <motion.div
-                  key="matching"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: shouldReduceMotion ? 0 : 0.3 }}
-                >
-                  <MatchingGame
-                    pairs={HADESTOWN_VOCABULARY.matching}
-                    onComplete={handleGameComplete}
-                  />
-                </motion.div>
-              )}
+                {activeTab === "matching" && (
+                  <motion.div
+                    key="matching"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ duration: shouldReduceMotion ? 0 : 0.3 }}
+                  >
+                    <MatchingGame
+                      pairs={HADESTOWN_VOCABULARY.matching}
+                      onComplete={handleGameComplete}
+                    />
+                  </motion.div>
+                )}
 
-              {activeTab === "fillBlanks" && (
-                <motion.div
-                  key="fillBlanks"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: shouldReduceMotion ? 0 : 0.3 }}
-                >
-                  <FillBlanksGame
-                    sentences={HADESTOWN_VOCABULARY.fillBlanks}
-                    onComplete={handleGameComplete}
-                  />
-                </motion.div>
-              )}
+                {activeTab === "fillBlanks" && (
+                  <motion.div
+                    key="fillBlanks"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ duration: shouldReduceMotion ? 0 : 0.3 }}
+                  >
+                    <FillBlanksGame
+                      sentences={HADESTOWN_VOCABULARY.fillBlanks}
+                      onComplete={handleGameComplete}
+                    />
+                  </motion.div>
+                )}
 
-              {activeTab === "categories" && (
-                <motion.div
-                  key="categories"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: shouldReduceMotion ? 0 : 0.3 }}
-                >
-                  <CategorySortGame
-                    categories={HADESTOWN_VOCABULARY.categories}
-                    onComplete={handleGameComplete}
-                  />
-                </motion.div>
-              )}
-            </AnimatePresence>
+                {activeTab === "categories" && (
+                  <motion.div
+                    key="categories"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ duration: shouldReduceMotion ? 0 : 0.3 }}
+                  >
+                    <CategorySortGame
+                      categories={HADESTOWN_VOCABULARY.categories}
+                      onComplete={handleGameComplete}
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </Suspense>
           </CardContent>
         </Card>
       </div>

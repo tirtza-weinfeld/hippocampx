@@ -7,6 +7,7 @@
 
 import "server-only";
 
+import { cacheLife } from "next/cache";
 import { sql, count, asc, desc, ilike, or } from "drizzle-orm";
 import { neonDb } from "@/lib/db/neon/connection";
 import { vercelDb } from "@/lib/db/vercel/connection";
@@ -22,7 +23,7 @@ import type {
 } from "./types";
 
 // Table registry - maps table names to their schemas and providers
-const TABLE_REGISTRY: Record<string, TableInfo> = {
+const TABLE_REGISTRY: Partial<Record<string, TableInfo>> = {
   // Neon tables
   lexical_entries: {
     name: "lexical_entries",
@@ -121,14 +122,14 @@ const TABLE_REGISTRY: Record<string, TableInfo> = {
  * Get list of all available tables grouped by provider
  */
 export function getAvailableTables(): TableInfo[] {
-  return Object.values(TABLE_REGISTRY);
+  return Object.values(TABLE_REGISTRY).filter((t): t is TableInfo => t !== undefined);
 }
 
 /**
  * Get tables filtered by provider
  */
 export function getTablesByProvider(provider: DatabaseProvider): TableInfo[] {
-  return Object.values(TABLE_REGISTRY).filter((t) => t.provider === provider);
+  return Object.values(TABLE_REGISTRY).filter((t): t is TableInfo => t?.provider === provider);
 }
 
 /**
@@ -153,7 +154,7 @@ function extractColumnInfo(
   };
 
   for (const key of Object.keys(tableConfig)) {
-    const column = tableConfig[key];
+    const column = tableConfig[key] as typeof tableConfig[string] | undefined;
     if (column && typeof column === "object" && "name" in column) {
       // Prefer getSQLType() for actual PostgreSQL type, fallback to columnType parsing
       let sqlType = "unknown";
@@ -175,7 +176,7 @@ function extractColumnInfo(
         isNullable: !column.notNull,
         isPrimaryKey: column.primaryKey ?? false,
         isForeignKey: false,
-        defaultValue: column.default ? String(column.default) : undefined,
+        defaultValue: column.default != null ? JSON.stringify(column.default) : undefined,
       });
     }
   }
@@ -189,6 +190,9 @@ function extractColumnInfo(
 export async function getTableMetadata(
   tableName: string
 ): Promise<TableMetadata | null> {
+  'use cache'
+  cacheLife('hours')
+
   const tableInfo = TABLE_REGISTRY[tableName];
   if (!tableInfo) return null;
 
@@ -256,14 +260,13 @@ export async function queryTableData(
     }
   }
 
-  // Get total count
-  const countResult = await db
-    .select({ count: count() })
-    .from(tableInfo.schema);
-  const totalCount = countResult[0]?.count ?? 0;
+  // Run count and data queries in parallel
+  const [countResult, data] = await Promise.all([
+    db.select({ count: count() }).from(tableInfo.schema),
+    query.limit(pageSize).offset(offset),
+  ]);
 
-  // Apply pagination
-  const data = await query.limit(pageSize).offset(offset);
+  const totalCount = countResult[0]?.count ?? 0;
 
   return {
     data: data as Record<string, unknown>[],
@@ -298,7 +301,7 @@ export async function getRowById(
     .where(sql`${idColumn} = ${id}`)
     .limit(1);
 
-  return (result[0] as Record<string, unknown>) ?? null;
+  return (result[0] as Record<string, unknown> | undefined) ?? null;
 }
 
 /**
@@ -307,31 +310,35 @@ export async function getRowById(
 export async function getTableStats(): Promise<
   { name: string; provider: DatabaseProvider; rowCount: number; description?: string }[]
 > {
-  const stats: { name: string; provider: DatabaseProvider; rowCount: number; description?: string }[] = [];
+  'use cache'
+  cacheLife('hours')
 
-  for (const tableInfo of Object.values(TABLE_REGISTRY)) {
-    try {
-      const db = tableInfo.provider === "neon" ? neonDb : vercelDb;
-      const result = await db
-        .select({ count: count() })
-        .from(tableInfo.schema);
+  const tableEntries = Object.values(TABLE_REGISTRY).filter((t): t is TableInfo => t !== undefined);
 
-      stats.push({
-        name: tableInfo.name,
-        provider: tableInfo.provider,
-        rowCount: result[0]?.count ?? 0,
-        description: tableInfo.description,
-      });
-    } catch {
-      // Table might not exist yet, skip it
-      stats.push({
-        name: tableInfo.name,
-        provider: tableInfo.provider,
-        rowCount: 0,
-        description: tableInfo.description,
-      });
-    }
-  }
+  const results = await Promise.all(
+    tableEntries.map(async (tableInfo) => {
+      try {
+        const db = tableInfo.provider === "neon" ? neonDb : vercelDb;
+        const result = await db
+          .select({ count: count() })
+          .from(tableInfo.schema);
 
-  return stats;
+        return {
+          name: tableInfo.name,
+          provider: tableInfo.provider,
+          rowCount: result[0]?.count ?? 0,
+          description: tableInfo.description,
+        };
+      } catch {
+        return {
+          name: tableInfo.name,
+          provider: tableInfo.provider,
+          rowCount: 0,
+          description: tableInfo.description,
+        };
+      }
+    })
+  );
+
+  return results;
 }

@@ -6,7 +6,7 @@
 
 import "server-only";
 
-import { cache } from "react";
+import { cacheLife } from "next/cache";
 import { eq, and, ilike, asc, desc, inArray, count, or, gt, lt } from "drizzle-orm";
 import { neonDb } from "../../connection";
 import {
@@ -169,7 +169,7 @@ export async function resolveFilterEntryIds(options: {
 // ============================================================================
 
 /** Cursor-based entry fetch with filters */
-export const fetchEntriesWithCursor = cache(async (options: {
+export async function fetchEntriesWithCursor(options: {
   cursor?: InfiniteScrollCursor | null;
   limit?: number;
   languageCode?: string;
@@ -178,7 +178,10 @@ export const fetchEntriesWithCursor = cache(async (options: {
   tagIds?: number[];
   sourceIds?: number[];
   sourcePartIds?: number[];
-}): Promise<InfiniteScrollResult<EntrySerialized>> => {
+}): Promise<InfiniteScrollResult<EntrySerialized>> {
+  'use cache'
+  cacheLife('hours')
+
   const {
     cursor = null,
     limit = INFINITE_SCROLL_CONFIG.defaultLimit,
@@ -247,10 +250,10 @@ export const fetchEntriesWithCursor = cache(async (options: {
       totalCount: countResult[0].totalCount,
     },
   };
-});
+}
 
 /** Cursor-based search with filters */
-export const searchEntriesWithCursor = cache(async (options: {
+export async function searchEntriesWithCursor(options: {
   query: string;
   cursor?: InfiniteScrollCursor | null;
   limit?: number;
@@ -260,7 +263,10 @@ export const searchEntriesWithCursor = cache(async (options: {
   tagIds?: number[];
   sourceIds?: number[];
   sourcePartIds?: number[];
-}): Promise<InfiniteScrollResult<EntrySerialized>> => {
+}): Promise<InfiniteScrollResult<EntrySerialized>> {
+  'use cache'
+  cacheLife('hours')
+
   const {
     query,
     cursor = null,
@@ -334,70 +340,71 @@ export const searchEntriesWithCursor = cache(async (options: {
       totalCount: countResult[0].totalCount,
     },
   };
-});
+}
 
 // ============================================================================
 // PREVIEW DATA
 // ============================================================================
 
 /** Fetch first sense definition and example for entries (for list preview) */
-export const fetchFirstSenseForEntries = cache(
-  async function fetchFirstSenseForEntries(
-    entryIds: number[]
-  ): Promise<Map<number, { definition: string; exampleText: string | null }>> {
-    if (entryIds.length === 0) return new Map();
+export async function fetchFirstSenseForEntries(
+  entryIds: number[]
+): Promise<Map<number, { definition: string; exampleText: string | null }>> {
+  'use cache'
+  cacheLife('hours')
 
-    // Get first sense per entry (ordered by order_index)
-    const sensesData = await neonDb
-      .select({
-        entry_id: senses.entry_id,
-        sense_id: senses.id,
-        definition: senses.definition,
-      })
-      .from(senses)
-      .where(inArray(senses.entry_id, entryIds))
-      .orderBy(asc(senses.order_index));
+  if (entryIds.length === 0) return new Map();
 
-    const firstSense = new Map<number, { sense_id: number; definition: string }>();
-    for (const s of sensesData) {
-      if (!firstSense.has(s.entry_id)) {
-        firstSense.set(s.entry_id, {
-          sense_id: s.sense_id,
-          definition: s.definition,
-        });
-      }
-    }
+  // Get first sense per entry (ordered by order_index)
+  const sensesData = await neonDb
+    .select({
+      entry_id: senses.entry_id,
+      sense_id: senses.id,
+      definition: senses.definition,
+    })
+    .from(senses)
+    .where(inArray(senses.entry_id, entryIds))
+    .orderBy(asc(senses.order_index));
 
-    const senseIds = [...firstSense.values()].map(s => s.sense_id);
-    if (senseIds.length === 0) return new Map();
-
-    // Get first example per sense
-    const examplesData = await neonDb
-      .select({
-        sense_id: examples.sense_id,
-        text: examples.text,
-      })
-      .from(examples)
-      .where(inArray(examples.sense_id, senseIds));
-
-    const firstExample = new Map<number, string>();
-    for (const e of examplesData) {
-      if (!firstExample.has(e.sense_id)) {
-        firstExample.set(e.sense_id, e.text);
-      }
-    }
-
-    // Build result map
-    const result = new Map<number, { definition: string; exampleText: string | null }>();
-    for (const [entryId, sense] of firstSense) {
-      result.set(entryId, {
-        definition: sense.definition,
-        exampleText: firstExample.get(sense.sense_id) ?? null,
+  const firstSense = new Map<number, { sense_id: number; definition: string }>();
+  for (const s of sensesData) {
+    if (!firstSense.has(s.entry_id)) {
+      firstSense.set(s.entry_id, {
+        sense_id: s.sense_id,
+        definition: s.definition,
       });
     }
-    return result;
   }
-);
+
+  const senseIds = [...firstSense.values()].map(s => s.sense_id);
+  if (senseIds.length === 0) return new Map();
+
+  // Get first example per sense
+  const examplesData = await neonDb
+    .select({
+      sense_id: examples.sense_id,
+      text: examples.text,
+    })
+    .from(examples)
+    .where(inArray(examples.sense_id, senseIds));
+
+  const firstExample = new Map<number, string>();
+  for (const e of examplesData) {
+    if (!firstExample.has(e.sense_id)) {
+      firstExample.set(e.sense_id, e.text);
+    }
+  }
+
+  // Build result map
+  const result = new Map<number, { definition: string; exampleText: string | null }>();
+  for (const [entryId, sense] of firstSense) {
+    result.set(entryId, {
+      definition: sense.definition,
+      exampleText: firstExample.get(sense.sense_id) ?? null,
+    });
+  }
+  return result;
+}
 
 /** Build EntryWithPreview from entry data and sense preview */
 export function buildEntryWithPreview(

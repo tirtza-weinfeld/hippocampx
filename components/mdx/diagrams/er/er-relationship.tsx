@@ -29,7 +29,7 @@ export function ERRelationship({ path, highlightMode }: ERRelationshipProps) {
       <motion.path
         d={path.path}
         data-highlight-mode={highlightMode}
-        className="fill-none stroke-er-relation/40 data-[highlight-mode=fk]:stroke-er-relation-highlight-fk/50 data-[highlight-mode=pk]:stroke-er-relation-highlight-pk/50"
+        className="fill-none stroke-er-line/40 data-[highlight-mode=fk]:stroke-er-line-fk/50 data-[highlight-mode=pk]:stroke-er-line-pk/50"
         initial={false}
         animate={{
           d: path.path,
@@ -42,7 +42,7 @@ export function ERRelationship({ path, highlightMode }: ERRelationshipProps) {
       <motion.path
         data-er-relation
         data-highlight-mode={highlightMode}
-        className="fill-none stroke-er-relation stroke-[2] data-[highlight-mode]:stroke-[3]"
+        className="fill-none stroke-er-line stroke-[2] data-[highlight-mode]:stroke-[3]"
         initial={false}
         animate={{
           d: path.path,
@@ -80,7 +80,7 @@ export function ERRelationshipDefs() {
         markerHeight={size}
         overflow="visible"
       >
-        <path d="M 0 1 L 10 5 L 0 9 Z" className="fill-er-relation" />
+        <path d="M 0 1 L 10 5 L 0 9 Z" className="fill-er-line" />
       </marker>
 
       {/* FK pointing LEFT: tip at left (refX=0), base extends right toward table */}
@@ -93,7 +93,7 @@ export function ERRelationshipDefs() {
         markerHeight={size}
         overflow="visible"
       >
-        <path d="M 10 1 L 0 5 L 10 9 Z" className="fill-er-relation" />
+        <path d="M 10 1 L 0 5 L 10 9 Z" className="fill-er-line" />
       </marker>
 
       {/* PK circle */}
@@ -106,7 +106,7 @@ export function ERRelationshipDefs() {
         markerHeight={size}
         overflow="visible"
       >
-        <circle cx="5" cy="5" r="4" className="fill-er-relation" />
+        <circle cx="5" cy="5" r="4" className="fill-er-line" />
       </marker>
 
       {/* Highlighted FK markers - RIGHT: tip at right (refX=10) */}
@@ -119,7 +119,7 @@ export function ERRelationshipDefs() {
         markerHeight={hlSize}
         overflow="visible"
       >
-        <path d="M 0 1 L 10 5 L 0 9 Z" className="fill-er-relation-highlight-fk" />
+        <path d="M 0 1 L 10 5 L 0 9 Z" className="fill-er-line-fk" />
       </marker>
       <marker
         id="er-fk-marker-right-pk"
@@ -130,7 +130,7 @@ export function ERRelationshipDefs() {
         markerHeight={hlSize}
         overflow="visible"
       >
-        <path d="M 0 1 L 10 5 L 0 9 Z" className="fill-er-relation-highlight-pk" />
+        <path d="M 0 1 L 10 5 L 0 9 Z" className="fill-er-line-pk" />
       </marker>
 
       {/* Highlighted FK markers - LEFT: tip at left (refX=0) */}
@@ -143,7 +143,7 @@ export function ERRelationshipDefs() {
         markerHeight={hlSize}
         overflow="visible"
       >
-        <path d="M 10 1 L 0 5 L 10 9 Z" className="fill-er-relation-highlight-fk" />
+        <path d="M 10 1 L 0 5 L 10 9 Z" className="fill-er-line-fk" />
       </marker>
       <marker
         id="er-fk-marker-left-pk"
@@ -154,7 +154,7 @@ export function ERRelationshipDefs() {
         markerHeight={hlSize}
         overflow="visible"
       >
-        <path d="M 10 1 L 0 5 L 10 9 Z" className="fill-er-relation-highlight-pk" />
+        <path d="M 10 1 L 0 5 L 10 9 Z" className="fill-er-line-pk" />
       </marker>
 
       {/* Highlighted PK circles */}
@@ -167,7 +167,7 @@ export function ERRelationshipDefs() {
         markerHeight={hlSize}
         overflow="visible"
       >
-        <circle cx="5" cy="5" r="5" className="fill-er-relation-highlight-fk" />
+        <circle cx="5" cy="5" r="5" className="fill-er-line-fk" />
       </marker>
       <marker
         id="er-pk-marker-pk"
@@ -178,7 +178,7 @@ export function ERRelationshipDefs() {
         markerHeight={hlSize}
         overflow="visible"
       >
-        <circle cx="5" cy="5" r="5" className="fill-er-relation-highlight-pk" />
+        <circle cx="5" cy="5" r="5" className="fill-er-line-pk" />
       </marker>
     </defs>
   )

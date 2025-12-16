@@ -6,7 +6,7 @@
 
 import "server-only";
 
-import { cache } from "react";
+import { cacheLife } from "next/cache";
 import { slugify } from "@/lib/utils";
 
 import {
@@ -58,9 +58,12 @@ export type {
 export { INFINITE_SCROLL_CONFIG, fetchEntryCompleteByLemma, fetchFirstSenseForEntries };
 
 /** Fetch initial entries with filter stats - for page load */
-export const fetchEntriesInitial = cache(async (
+export async function fetchEntriesInitial(
   options: FetchInitialOptions
-): Promise<InitialFetchResult> => {
+): Promise<InitialFetchResult> {
+  'use cache'
+  cacheLife('hours')
+
   const {
     query,
     languageCode = "en",
@@ -151,12 +154,15 @@ export const fetchEntriesInitial = cache(async (
         .map(s => s.name),
     },
   };
-});
+}
 
 /** Fetch more entries with cursor - for infinite scroll */
-export const fetchMoreWithCursor = cache(async (
+export async function fetchMoreWithCursor(
   options: FetchMoreWithCursorOptions
-): Promise<InfiniteScrollResult<EntryWithPreview>> => {
+): Promise<InfiniteScrollResult<EntryWithPreview>> {
+  'use cache'
+  cacheLife('hours')
+
   const {
     cursor,
     limit = INFINITE_SCROLL_CONFIG.defaultLimit,
@@ -210,4 +216,4 @@ export const fetchMoreWithCursor = cache(async (
     data: entriesWithPreviews,
     pageInfo: entriesResult.pageInfo,
   };
-});
+}

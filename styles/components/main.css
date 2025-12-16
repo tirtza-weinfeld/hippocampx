@@ -1,4 +1,5 @@
 @import "./sidebar.css";
+@import "./brain-buddy.css";
 @import "./games.css";
 @import "./hadestown.css";
 @import "./binary.css";
@@ -18,6 +19,7 @@
 @import "./dictionary.css";
 @import "./er-diagram.css";
 @import "./db-viewer.css";
+@import "../test-gradient.css";
 /* @import "./mermaid.css"; */
 /* @import "./nav.css"; */
 /* @import "./difficulty.css"; */

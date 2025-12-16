@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useTransition } from "react";
 import { motion, AnimatePresence } from "motion/react";
+import Link from "next/link";
 import { TableSidebar, MobileSidebar } from "./table-sidebar";
 import { DataTable } from "./data-table";
 import { ColumnFilter } from "./column-filter";
@@ -16,6 +17,7 @@ import type {
   TableMetadata,
   SortConfig,
 } from "@/lib/db-viewer/types";
+import { TableSkeleton } from "./table-skeleton";
 
 interface TableStat {
   name: string;
@@ -42,9 +44,9 @@ function formatTableName(name: string): string {
 
 function updateUrl(tableName: string | null) {
   if (tableName) {
-    window.history.replaceState(null, "", `/db?table=${tableName}`);
+    window.history.replaceState(null, "", `/db/tables?table=${tableName}`);
   } else {
-    window.history.replaceState(null, "", "/db");
+    window.history.replaceState(null, "", "/db/tables");
   }
 }
 
@@ -56,17 +58,14 @@ export function TableBrowser({
   currentPage = 1,
   currentSort,
 }: TableBrowserProps) {
-  // Client-side state for table, data, metadata
   const [selectedTable, setSelectedTable] = useState(serverSelectedTable);
   const [data, setData] = useState(initialData);
   const [metadata, setMetadata] = useState(initialMetadata);
   const [isPending, startTransition] = useTransition();
 
-  // Local UI state (not in URL)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
-  // Persisted column visibility from store
   const hiddenColumnsArray = useHiddenColumns(selectedTable);
   const hiddenColumns = useMemo(() => new Set(hiddenColumnsArray), [hiddenColumnsArray]);
   const { toggleColumn, showAllColumns, hideAllColumns } = getDbViewerActions();
@@ -96,7 +95,6 @@ export function TableBrowser({
   }
 
   function handleTableSelect(tableName: string) {
-    // Don't refetch if clicking the same table
     if (tableName === selectedTable) {
       setMobileSidebarOpen(false);
       return;
@@ -153,7 +151,6 @@ export function TableBrowser({
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col overflow-hidden relative">
-        {/* Content Area */}
         <div className="flex-1 overflow-auto p-4 lg:p-6">
           <AnimatePresence mode="wait">
             {selectedTable ? (
@@ -168,7 +165,6 @@ export function TableBrowser({
                 {/* Table Header */}
                 <div className="flex items-start justify-between gap-4 mb-6">
                   <div className="flex items-center gap-4 min-w-0">
-                    {/* Provider Icon */}
                     <div className={`
                       size-12 rounded-2xl flex items-center justify-center flex-shrink-0
                       ${selectedTableInfo?.provider === "neon"
@@ -214,7 +210,6 @@ export function TableBrowser({
                     </div>
                   </div>
 
-                  {/* Actions */}
                   <div className="flex items-center gap-2 flex-shrink-0">
                     {columns.length > 0 && !isLoadingNewTable && (
                       <ColumnFilter
@@ -275,7 +270,7 @@ export function TableBrowser({
           </AnimatePresence>
         </div>
 
-        {/* Mobile Floating Action Button - Toggle */}
+        {/* Mobile FAB */}
         <motion.button
           type="button"
           onClick={() => setMobileSidebarOpen(!mobileSidebarOpen)}
@@ -335,58 +330,6 @@ export function TableBrowser({
   );
 }
 
-function TableSkeleton() {
-  return (
-    <div className="flex flex-col flex-1 h-full gap-4">
-      {/* Table skeleton */}
-      <div className="flex-1 min-h-0 rounded-2xl overflow-hidden">
-        <div className="h-full">
-          {/* Header skeleton */}
-          <div className="flex gap-4 p-4 bg-db-surface-raised/95">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="flex-1 min-w-[120px]">
-                <div className="h-4 w-20 bg-db-border/50 rounded animate-pulse mb-2" />
-                <div className="h-5 w-16 bg-db-border/30 rounded animate-pulse" />
-              </div>
-            ))}
-          </div>
-          {/* Row skeletons */}
-          <div className="divide-y divide-db-border/20">
-            {Array.from({ length: 8 }).map((_, rowIdx) => (
-              <div key={rowIdx} className="flex gap-4 p-4">
-                {Array.from({ length: 4 }).map((_, colIdx) => (
-                  <div key={colIdx} className="flex-1 min-w-[120px]">
-                    <div
-                      className="h-4 bg-db-border/30 rounded animate-pulse"
-                      style={{
-                        width: `${60 + Math.random() * 30}%`,
-                        animationDelay: `${(rowIdx * 4 + colIdx) * 50}ms`
-                      }}
-                    />
-                  </div>
-                ))}
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-      {/* Pagination skeleton */}
-      <div className="flex-shrink-0 flex items-center justify-between px-2 py-4 mt-2">
-        <div className="h-4 w-24 bg-db-border/30 rounded animate-pulse" />
-        <div className="flex items-center gap-2">
-          <div className="h-10 w-20 bg-db-border/30 rounded-xl animate-pulse" />
-          <div className="flex gap-1">
-            {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="size-10 bg-db-border/30 rounded-xl animate-pulse" />
-            ))}
-          </div>
-          <div className="h-10 w-16 bg-db-border/30 rounded-xl animate-pulse" />
-        </div>
-      </div>
-    </div>
-  );
-}
-
 interface WelcomeContentProps {
   tableCount: number;
 }
@@ -394,7 +337,6 @@ interface WelcomeContentProps {
 function WelcomeContent({ tableCount }: WelcomeContentProps) {
   return (
     <div className="text-center max-w-md">
-      {/* Icon */}
       <motion.div
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
@@ -412,23 +354,21 @@ function WelcomeContent({ tableCount }: WelcomeContentProps) {
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
-              d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+              d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 01-1.125-1.125M3.375 19.5h7.5c.621 0 1.125-.504 1.125-1.125m-9.75 0V5.625m0 12.75v-1.5c0-.621.504-1.125 1.125-1.125m18.375 2.625V5.625m0 12.75c0 .621-.504 1.125-1.125 1.125m1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125m0 3.75h-7.5A1.125 1.125 0 0112 18.375m9.75-12.75c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125m19.5 0v1.5c0 .621-.504 1.125-1.125 1.125M2.25 5.625v1.5c0 .621.504 1.125 1.125 1.125m0 0h17.25m-17.25 0h7.5c.621 0 1.125.504 1.125 1.125M3.375 8.25c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125m17.25-3.75h-7.5c-.621 0-1.125.504-1.125 1.125m8.625-1.125c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125m-17.25 0h7.5m-7.5 0c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125M12 10.875v-1.5m0 1.5c0 .621-.504 1.125-1.125 1.125M12 10.875c0 .621.504 1.125 1.125 1.125m-2.25 0c.621 0 1.125.504 1.125 1.125M13.125 12h7.5m-7.5 0c-.621 0-1.125.504-1.125 1.125M20.625 12c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125m-17.25 0h7.5M12 14.625v-1.5m0 1.5c0 .621-.504 1.125-1.125 1.125M12 14.625c0 .621.504 1.125 1.125 1.125m-2.25 0c.621 0 1.125.504 1.125 1.125m0 0v1.5c0 .621-.504 1.125-1.125 1.125M13.125 18.375v-1.5m0 0c-.621 0-1.125-.504-1.125-1.125m1.125 1.125h7.5"
             />
           </svg>
         </div>
       </motion.div>
 
-      {/* Title */}
       <motion.h2
         initial={{ y: 10, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.15 }}
         className="text-2xl lg:text-3xl font-bold text-db-text mb-3"
       >
-        Database Explorer
+        Table Browser
       </motion.h2>
 
-      {/* Description */}
       <motion.p
         initial={{ y: 10, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -438,7 +378,6 @@ function WelcomeContent({ tableCount }: WelcomeContentProps) {
         <span className="font-semibold text-db-text">{tableCount} tables</span> ready to explore
       </motion.p>
 
-      {/* Hint */}
       <motion.div
         initial={{ y: 10, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -459,12 +398,29 @@ function WelcomeContent({ tableCount }: WelcomeContentProps) {
         </span>
       </motion.div>
 
-      {/* Connection Status */}
+      {/* Link to ER Diagram */}
       <motion.div
         initial={{ y: 10, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.3 }}
-        className="flex items-center justify-center gap-6 mt-10"
+        className="mt-8"
+      >
+        <Link
+          href="/db/diagram"
+          className="inline-flex items-center gap-2.5 px-5 py-3 rounded-xl bg-db-surface-raised/70 hover:bg-db-surface-raised text-db-text font-medium border border-db-border/30 transition-all hover:scale-[1.02] active:scale-[0.98]"
+        >
+          <svg className="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+          </svg>
+          View ER Diagram
+        </Link>
+      </motion.div>
+
+      <motion.div
+        initial={{ y: 10, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.35 }}
+        className="flex items-center justify-center gap-6 mt-8"
       >
         <div className="flex items-center gap-2.5 px-4 py-2 rounded-xl bg-db-surface-raised/50">
           <span className="size-2 rounded-full bg-db-neon animate-pulse" />

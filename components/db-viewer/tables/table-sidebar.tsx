@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { SearchInput } from "./search-input";
+import { MobileBottomSheet } from "./mobile-bottom-sheet";
+import { MobileTableList } from "./mobile-table-list";
 import type { DatabaseProvider } from "@/lib/db-viewer/types";
 
 interface TableStat {
@@ -460,183 +462,101 @@ export function MobileSidebar({
   return (
     <AnimatePresence>
       {isOpen && (
-        <>
-          {/* Backdrop */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={onClose}
-            className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden"
-          />
-
-          {/* Bottom Sheet */}
-          <motion.div
-            initial={{ y: "100%" }}
-            animate={{ y: 0 }}
-            exit={{ y: "100%" }}
-            transition={{ type: "spring", damping: 32, stiffness: 400 }}
-            className="fixed inset-x-0 bottom-0 z-50 max-h-[85vh] bg-db-glass rounded-t-3xl shadow-2xl lg:hidden flex flex-col border-t border-db-border/50"
-          >
-            {/* Handle */}
-            <div className="flex justify-center pt-3 pb-2">
-              <div className="w-10 h-1 rounded-full bg-db-border" />
-            </div>
-
-            {/* Header */}
-            <div className="flex items-center justify-between px-5 pb-4">
-              <div className="flex items-center gap-3">
-                <div className="size-12 rounded-2xl bg-gradient-to-br from-db-neon/20 via-transparent to-db-vercel/20 flex items-center justify-center">
-                  <svg className="size-6 text-db-text" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                  </svg>
-                </div>
-                <div>
-                  <h2 className="font-semibold text-db-text">Tables</h2>
-                  <p className="text-xs text-db-text-muted">
-                    {filteredTables.length} of {tables.length}
-                  </p>
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={onClose}
-                className="p-2.5 rounded-xl bg-db-surface-raised/50 hover:bg-db-surface-raised transition-all"
-                aria-label="Close"
+        <MobileBottomSheet isOpen={isOpen} onClose={onClose}>
+          {/* Header */}
+          <div className="flex items-center justify-between px-5 pb-4">
+            <div className="flex items-center gap-3">
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ delay: 0.1, type: "spring", stiffness: 300 }}
+                className="size-12 rounded-2xl bg-gradient-to-br from-db-neon/20 via-transparent to-db-vercel/20 flex items-center justify-center"
               >
-                <svg className="size-5 text-db-text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                <svg className="size-6 text-db-text" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                 </svg>
-              </button>
-            </div>
-
-            {/* Filter Pills */}
-            <div className="flex gap-2 px-5 pb-4">
-              {(["all", "neon", "vercel"] as const).map((filter) => {
-                const count = filter === "all" ? tables.length : filter === "neon" ? neonCount : vercelCount;
-                const isActive = providerFilter === filter;
-
-                return (
-                  <button
-                    key={filter}
-                    type="button"
-                    onClick={() => setProviderFilter(filter)}
-                    className={`
-                      flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all
-                      ${isActive
-                        ? filter === "neon"
-                          ? "bg-db-neon/20 text-db-neon"
-                          : filter === "vercel"
-                            ? "bg-db-vercel/20 text-db-vercel"
-                            : "bg-db-surface-raised text-db-text"
-                        : "bg-db-surface-raised/50 text-db-text-muted hover:text-db-text"
-                      }
-                    `}
-                  >
-                    {filter !== "all" && (
-                      <span className={`size-2 rounded-full ${filter === "neon" ? "bg-db-neon" : "bg-db-vercel"}`} />
-                    )}
-                    <span className="capitalize">{filter}</span>
-                    <span className={`text-xs ${isActive ? "opacity-70" : "opacity-50"}`}>{count}</span>
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Search */}
-            <div className="px-5 pb-4">
-              <SearchInput
-                value={search}
-                onChange={setSearch}
-                placeholder="Search tables..."
-              />
-            </div>
-
-            {/* Table Grid */}
-            <div className="flex-1 overflow-y-auto scrollbar-thin px-5 pb-8">
-              <div className="grid grid-cols-2 gap-3">
-                {filteredTables.map((table, index) => (
-                  <MobileTableCard
-                    key={table.name}
-                    table={table}
-                    isSelected={selectedTable === table.name}
-                    onSelect={() => handleTableSelect(table.name)}
-                    index={index}
-                  />
-                ))}
+              </motion.div>
+              <div>
+                <h2 className="font-semibold text-db-text">Tables</h2>
+                <p className="text-xs text-db-text-muted">
+                  {filteredTables.length} of {tables.length}
+                </p>
               </div>
-
-              {filteredTables.length === 0 && (
-                <div className="flex flex-col items-center justify-center py-16">
-                  <div className="size-14 rounded-2xl bg-db-surface-raised/50 flex items-center justify-center mb-4">
-                    <svg className="size-7 text-db-text-subtle" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-                    </svg>
-                  </div>
-                  <p className="text-base font-medium text-db-text">No tables found</p>
-                  <p className="text-sm text-db-text-muted mt-1">Try a different search</p>
-                </div>
-              )}
             </div>
+            <motion.button
+              type="button"
+              onClick={onClose}
+              whileTap={{ scale: 0.9 }}
+              className="p-2.5 rounded-xl bg-db-surface-raised/50 hover:bg-db-surface-raised transition-all"
+              aria-label="Close"
+            >
+              <svg className="size-5 text-db-text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </motion.button>
+          </div>
+
+          {/* Filter Pills */}
+          <div className="flex gap-2 px-5 pb-4 overflow-x-auto scrollbar-none">
+            {(["all", "neon", "vercel"] as const).map((filter, index) => {
+              const count = filter === "all" ? tables.length : filter === "neon" ? neonCount : vercelCount;
+              const isActive = providerFilter === filter;
+
+              return (
+                <motion.button
+                  key={filter}
+                  type="button"
+                  onClick={() => setProviderFilter(filter)}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.05 * index }}
+                  whileTap={{ scale: 0.95 }}
+                  className={`
+                    flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors flex-shrink-0
+                    ${isActive
+                      ? filter === "neon"
+                        ? "bg-db-neon/20 text-db-neon"
+                        : filter === "vercel"
+                          ? "bg-db-vercel/20 text-db-vercel"
+                          : "bg-db-surface-raised text-db-text"
+                      : "bg-db-surface-raised/50 text-db-text-muted hover:text-db-text"
+                    }
+                  `}
+                >
+                  {filter !== "all" && (
+                    <span className={`size-2 rounded-full ${filter === "neon" ? "bg-db-neon" : "bg-db-vercel"}`} />
+                  )}
+                  <span className="capitalize">{filter}</span>
+                  <span className={`text-xs ${isActive ? "opacity-70" : "opacity-50"}`}>{count}</span>
+                </motion.button>
+              );
+            })}
+          </div>
+
+          {/* Search */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+            className="px-5 pb-4"
+          >
+            <SearchInput
+              value={search}
+              onChange={setSearch}
+              placeholder="Search tables..."
+            />
           </motion.div>
-        </>
+
+          {/* Table Grid */}
+          <div className="flex-1 overflow-y-auto scrollbar-thin px-5 pb-8 overscroll-contain">
+            <MobileTableList
+              tables={filteredTables}
+              selectedTable={selectedTable}
+              onTableSelect={handleTableSelect}
+            />
+          </div>
+        </MobileBottomSheet>
       )}
     </AnimatePresence>
-  );
-}
-
-interface MobileTableCardProps {
-  table: TableStat;
-  isSelected: boolean;
-  onSelect: () => void;
-  index: number;
-}
-
-function MobileTableCard({ table, isSelected, onSelect, index }: MobileTableCardProps) {
-  const isNeon = table.provider === "neon";
-
-  return (
-    <motion.button
-      type="button"
-      onClick={onSelect}
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.03 }}
-      whileTap={{ scale: 0.97 }}
-      className={`
-        relative flex flex-col items-start p-4 rounded-2xl text-left transition-all overflow-hidden
-        ${isSelected
-          ? isNeon
-            ? "bg-gradient-to-br from-db-neon to-db-neon/80 text-white shadow-lg"
-            : "bg-gradient-to-br from-db-vercel to-db-vercel/80 text-white shadow-lg"
-          : "bg-db-surface-raised/70 hover:bg-db-surface-raised border border-db-border/50"
-        }
-      `}
-    >
-      {/* Provider dot */}
-      <div className={`absolute top-3 right-3 size-2 rounded-full ${
-        isSelected ? "bg-white/50" : isNeon ? "bg-db-neon" : "bg-db-vercel"
-      }`} />
-
-      <p className={`text-sm font-semibold truncate w-full pr-4 ${
-        isSelected ? "text-white" : "text-db-text"
-      }`}>
-        {formatTableName(table.name)}
-      </p>
-
-      {table.description && (
-        <p className={`text-xs truncate w-full mt-0.5 ${
-          isSelected ? "text-white/70" : "text-db-text-muted"
-        }`}>
-          {table.description}
-        </p>
-      )}
-
-      <div className={`mt-3 px-2 py-1 rounded-lg text-xs font-medium tabular-nums ${
-        isSelected ? "bg-white/20 text-white" : "bg-db-surface text-db-text-muted"
-      }`}>
-        {formatRowCount(table.rowCount)} rows
-      </div>
-    </motion.button>
   );
 }

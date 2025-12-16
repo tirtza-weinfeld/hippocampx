@@ -1,0 +1,78 @@
+# SQL Databases Overview
+
+## Resizable Table of Contents
+
+## Quick Comparison
+
+| | PostgreSQL | MySQL | SQLite |
+|---|---|---|---|
+| Architecture | Client-server | Client-server | Embedded (file) |
+| Concurrency | Excellent (MVCC) | Good (row locks) | Limited (file locks) |
+| Scale | TB+ | TB+ | GB range |
+| Best for | Complex queries, integrity | Read-heavy, web apps | Embedded, edge, mobile |
+| Providers | Neon, Supabase, Vercel | PlanetScale, TiDB | Turso, D1, libSQL |
+
+## PostgreSQL
+
+Richest SQL feature set. Best for complex queries and strict data integrity.
+
+- CTEs, window functions, JSON, arrays, custom types
+- Best GIS support (PostGIS)
+- Strong constraint enforcement
+
+**Providers:** Neon, Vercel Postgres, Supabase, AWS RDS
+
+## MySQL
+
+Simpler, faster for basic queries. Excellent replication.
+
+- Read-optimized
+- Great clustering support
+- Two engines: InnoDB (default), MyISAM (legacy)
+
+**Providers:** PlanetScale, TiDB, AWS RDS
+
+## SQLite
+
+No server — just a file. Zero configuration.
+
+- Single-writer limitation
+- Perfect for mobile, Electron, edge, prototyping
+- No concurrent writes
+
+**Providers:** Turso, Cloudflare D1, libSQL, Bun SQLite
+
+## What is Serverless?
+
+**Traditional:** Server runs 24/7, you manage scaling, pay for uptime.
+
+**Serverless:** Provider manages everything — auto-scales, scales to zero when idle, pay per usage.
+
+| | Traditional | Serverless |
+|---|---|---|
+| Scaling | Manual | Automatic |
+| Idle cost | Pay always | Zero |
+| Cold starts | None | ~100-500ms |
+| Connections | You manage | Auto-pooled |
+| Pricing | Fixed monthly | Per-request |
+
+**Trade-offs:**
+- Pros: Zero ops, cost-effective for variable traffic, free when idle
+- Cons: Cold start latency, less tuning control, expensive at constant high load
+
+## Serverless Providers
+
+| Provider | Base | Feature |
+|----------|------|---------|
+| Neon | PostgreSQL | Branching, scale-to-zero |
+| Supabase | PostgreSQL | Auth, realtime |
+| PlanetScale | MySQL | Git-like branching |
+| Turso | SQLite | Edge replication |
+| D1 | SQLite | Cloudflare Workers |
+
+## When to Use
+
+- **Complex analytics, strict integrity** → PostgreSQL
+- **High-traffic web, simple queries** → MySQL
+- **Mobile, edge, local-first** → SQLite
+- **Prototype → production** → SQLite → PostgreSQL
