@@ -51,7 +51,7 @@ export default function WordMemoryPage() {
   }
 
   return (
-    <main className="hadestown @container min-h-screen py-8 bg-gradient-to-b from-amber-50/30 to-amber-100/20 dark:from-gray-900 dark:to-amber-950/30 text-foreground">
+    <main className="@container min-h-screen py-8  text-foreground">
       {/* Background decorations */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 via-transparent to-amber-500/5 dark:from-amber-500/10 dark:to-amber-500/10" />
@@ -71,7 +71,7 @@ export default function WordMemoryPage() {
         >
           <button
             onClick={handleOpenGuide}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/90 dark:bg-gray-800/90 shadow-lg hover:shadow-xl transition-shadow text-game-primary border border-game-border font-medium"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/90 dark:bg-gray-800/90 shadow-lg hover:shadow-xl transition-shadow text-old-game-primary border border-old-game-border font-medium"
           >
             <HelpCircleIcon className="h-5 w-5" />
             <span>How to Play</span>
@@ -85,8 +85,8 @@ export default function WordMemoryPage() {
           transition={{ duration: shouldReduceMotion ? 0 : 0.5, delay: shouldReduceMotion ? 0 : 0.35 }}
         >
           <Card className="max-w-4xl mx-auto overflow-hidden shadow-2xl border-none rounded-2xl">
-            <CardContent className="p-4 sm:p-6 md:p-8 bg-game-surface">
-              <Suspense fallback={<div className="flex items-center justify-center h-64 text-game-text-muted">Loading game...</div>}>
+            <CardContent className="p-4 sm:p-6 md:p-8 bg-old-game-surface">
+              <Suspense fallback={<div className="flex items-center justify-center h-64 text-old-game-text-muted">Loading game...</div>}>
                 <WordMemoryGame
                   pairs={HADESTOWN_MEMORY_PAIRS}
                   onComplete={handleGameComplete}

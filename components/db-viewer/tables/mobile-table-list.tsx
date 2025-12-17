@@ -75,12 +75,7 @@ interface MobileTableCardProps {
 }
 
 function MobileTableCard({ table, isSelected, onSelect, index }: MobileTableCardProps) {
-  const isNeon = table.provider === "neon";
-
-  const selectedStyles = isNeon
-    ? "bg-linear-to-br from-db-neon to-db-neon/80 text-white shadow-lg"
-    : "bg-linear-to-br from-db-vercel to-db-vercel/80 text-white shadow-lg";
-
+  const selectedStyles = "bg-linear-to-br from-db-neon to-db-neon/80 text-white shadow-lg";
   const defaultStyles = "bg-db-surface-raised/70 hover:bg-db-surface-raised border border-db-border/50";
 
   return (
@@ -95,7 +90,7 @@ function MobileTableCard({ table, isSelected, onSelect, index }: MobileTableCard
     >
       {/* Provider indicator */}
       <div className={`absolute top-3 right-3 size-2 rounded-full ${
-        isSelected ? "bg-white/50" : isNeon ? "bg-db-neon" : "bg-db-vercel"
+        isSelected ? "bg-white/50" : "bg-db-neon"
       }`} />
 
       <p className={`text-sm font-semibold truncate w-full pr-4 ${

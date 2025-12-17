@@ -12,15 +12,13 @@ async function DatabaseLanding() {
   'use cache'
   cacheLife('hours')
   const stats = await getTableStats();
-  const neonCount = stats.filter(t => t.provider === "neon").length;
-  const vercelCount = stats.filter(t => t.provider === "vercel").length;
 
   return (
     <div className="flex flex-col items-center justify-center min-h-full p-8 bg-linear-to-br from-transparent via-db-surface to-transparent">
       <div className="text-center max-w-2xl">
         {/* Icon */}
         <div className="inline-flex items-center justify-center mb-8">
-          <div className="size-24 rounded-3xl bg-gradient-to-br from-db-neon/15 via-transparent to-db-vercel/15 flex items-center justify-center">
+          <div className="size-24 rounded-3xl bg-gradient-to-br from-db-neon/15 via-transparent to-db-neon/5 flex items-center justify-center">
             <svg
               className="size-12 text-db-text"
               fill="none"
@@ -44,9 +42,8 @@ async function DatabaseLanding() {
 
         {/* Description */}
         <p className="text-lg text-db-text-muted mb-8">
-          <span className="font-semibold text-db-text">{stats.length} tables</span> across{" "}
-          <span className="font-semibold text-db-neon">{neonCount} Neon</span> and{" "}
-          <span className="font-semibold text-db-vercel">{vercelCount} Vercel</span> databases
+          <span className="font-semibold text-db-text">{stats.length} tables</span> on{" "}
+          <span className="font-semibold text-db-neon">Neon</span> PostgreSQL
         </p>
 
         {/* Navigation Cards */}
@@ -80,11 +77,11 @@ async function DatabaseLanding() {
           {/* Diagram Card */}
           <Link
             href="/db/diagram"
-            className="group p-6 rounded-2xl bg-db-surface-raised/50 hover:bg-db-surface-raised border border-db-border/30 hover:border-db-vercel/30 transition-all hover:scale-[1.02] active:scale-[0.98]"
+            className="group p-6 rounded-2xl bg-db-surface-raised/50 hover:bg-db-surface-raised border border-db-border/30 hover:border-db-neon/30 transition-all hover:scale-[1.02] active:scale-[0.98]"
           >
-            <div className="size-14 rounded-xl bg-gradient-to-br from-db-vercel/20 to-db-vercel/5 flex items-center justify-center mb-4 mx-auto group-hover:scale-110 transition-transform">
+            <div className="size-14 rounded-xl bg-gradient-to-br from-db-neon/20 to-db-neon/5 flex items-center justify-center mb-4 mx-auto group-hover:scale-110 transition-transform">
               <svg
-                className="size-7 text-db-vercel"
+                className="size-7 text-db-neon"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -105,14 +102,10 @@ async function DatabaseLanding() {
         </div>
 
         {/* Connection Status */}
-        <div className="flex items-center justify-center gap-6 mt-10">
+        <div className="flex items-center justify-center mt-10">
           <div className="flex items-center gap-2.5 px-4 py-2 rounded-xl bg-db-surface-raised/50">
             <span className="size-2 rounded-full bg-db-neon animate-pulse" />
             <span className="text-sm font-medium text-db-text-muted">Neon Connected</span>
-          </div>
-          <div className="flex items-center gap-2.5 px-4 py-2 rounded-xl bg-db-surface-raised/50">
-            <span className="size-2 rounded-full bg-db-vercel animate-pulse" />
-            <span className="text-sm font-medium text-db-text-muted">Vercel Connected</span>
           </div>
         </div>
       </div>

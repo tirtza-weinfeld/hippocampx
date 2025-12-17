@@ -272,7 +272,8 @@ const STORY_PAGES = [
       "In this world lived a young musician named Orpheus. His songs were so beautiful they could make flowers bloom and stones dance. He played a special instrument called a lyre.",
     visualElement: (
       <div className="relative h-60 w-full overflow-hidden rounded-lg">
-        <div className="absolute inset-0 bg-gradient-to-b from-amber-100/40 to-amber-300/20 dark:from-amber-400/30 dark:to-amber-600/20"></div>
+        <div className="absolute inset-0 
+        bg-gradient-to-b from-amber-100/40 to-amber-300/20 dark:from-amber-400/30 dark:to-amber-600/20"></div>
 
         {/* Orpheus silhouette */}
         <motion.div
@@ -1532,16 +1533,7 @@ export default function StoryPage() {
   return (
     <main className="min-h-screen py-8 ">
       {/* Animated background elements */}
-      <div className="fixed inset-0 pointer-events-none -z-10">
-        <div className="absolute inset-0 dark:bg-gradient-to-br dark:from-amber-800/20 dark:via-gray-900 dark:to-red-800/20 animate-gradient"></div>
-        <div className="absolute top-0 left-0 w-1/3 h-1/3 bg-gradient-to-br from-yellow-300/10 to-transparent dark:from-yellow-500/10"></div>
-        <div className="absolute bottom-0 w-full h-[30%] bg-gradient-to-t from-amber-200/20 to-transparent dark:from-amber-700/20"></div>
 
-        {/* Decorative elements */}
-        <div className="absolute top-20 left-10 text-4xl opacity-20 dark:opacity-10">📚</div>
-        <div className="absolute bottom-20 right-10 text-4xl opacity-20 dark:opacity-10">🎭</div>
-        <div className="absolute top-40 right-20 text-4xl opacity-20 dark:opacity-10">🎵</div>
-      </div>
 
 
       <div className="container mx-auto px-4 z-10 relative">

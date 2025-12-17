@@ -130,12 +130,12 @@ export function SeasonsSortGame({ seasons, onComplete }: SeasonsSortGameProps) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="space-y-1">
-          <p className="text-sm text-game-text-muted">
-            Placed: <span className="font-semibold text-game-primary">{placedCount}</span> / {totalItems}
+          <p className="text-sm text-old-game-text-muted">
+            Placed: <span className="font-semibold text-old-game-primary">{placedCount}</span> / {totalItems}
           </p>
-          <div className="h-1.5 w-32 bg-game-primary-light rounded-full overflow-hidden">
+          <div className="h-1.5 w-32 bg-old-game-primary-light rounded-full overflow-hidden">
             <motion.div
-              className="h-full bg-game-gradient rounded-full"
+              className="h-full bg-old-game-gradient rounded-full"
               initial={false}
               animate={{ width: `${(placedCount / totalItems) * 100}%` }}
               transition={smoothSpring}
@@ -144,14 +144,14 @@ export function SeasonsSortGame({ seasons, onComplete }: SeasonsSortGameProps) {
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="text-xs px-2 py-1 rounded-full game-primary-soft text-game-primary font-medium">
+          <span className="text-xs px-2 py-1 rounded-full old-game-primary-soft text-old-game-primary font-medium">
             Level {state.level}
           </span>
           <motion.button
             onClick={reset}
             whileHover={shouldReduceMotion ? undefined : { scale: 1.05 }}
             whileTap={shouldReduceMotion ? undefined : { scale: 0.95 }}
-            className="flex items-center gap-2 px-3 py-1.5 text-sm rounded-full bg-game-surface border border-game-border text-game-text-muted hover:text-game-primary hover:border-game-primary transition-colors"
+            className="flex items-center gap-2 px-3 py-1.5 text-sm rounded-full bg-old-game-surface border border-old-game-border text-old-game-text-muted hover:text-old-game-primary hover:border-old-game-primary transition-colors"
           >
             <RotateCcw className="h-3.5 w-3.5" />
             Reset
@@ -160,8 +160,8 @@ export function SeasonsSortGame({ seasons, onComplete }: SeasonsSortGameProps) {
       </div>
 
       {/* Item Bank */}
-      <div className="p-4 rounded-xl bg-game-surface border border-game-border">
-        <p className="text-xs font-medium text-game-text-muted mb-3">Items to Sort</p>
+      <div className="p-4 rounded-xl bg-old-game-surface border border-old-game-border">
+        <p className="text-xs font-medium text-old-game-text-muted mb-3">Items to Sort</p>
         <div className="flex flex-wrap gap-2 min-h-[40px]">
           <AnimatePresence>
             {unplacedItems.map(item => (
@@ -177,8 +177,8 @@ export function SeasonsSortGame({ seasons, onComplete }: SeasonsSortGameProps) {
                   border-2 transition-all duration-200
                   flex items-center gap-1.5
                   ${state.selectedItem?.id === item.id
-                    ? "bg-game-selected border-game-primary text-game-selected-text shadow-md"
-                    : "bg-game-surface-soft border-transparent hover:border-game-primary text-game-text"
+                    ? "bg-old-game-selected border-old-game-primary text-old-game-selected-text shadow-md"
+                    : "bg-old-game-surface-soft border-transparent hover:border-old-game-primary text-old-game-text"
                   }
                 `}
               >
@@ -188,7 +188,7 @@ export function SeasonsSortGame({ seasons, onComplete }: SeasonsSortGameProps) {
             ))}
           </AnimatePresence>
           {unplacedItems.length === 0 && !state.checked && (
-            <p className="text-sm text-game-text-muted italic">All items placed!</p>
+            <p className="text-sm text-old-game-text-muted italic">All items placed!</p>
           )}
         </div>
       </div>
@@ -209,16 +209,16 @@ export function SeasonsSortGame({ seasons, onComplete }: SeasonsSortGameProps) {
                 p-3 rounded-xl border-2 min-h-[140px]
                 transition-all duration-200
                 ${state.selectedItem && !state.checked
-                  ? "border-dashed border-game-primary game-primary-soft cursor-pointer"
-                  : "border-game-border bg-game-surface"
+                  ? "border-dashed border-old-game-primary old-game-primary-soft cursor-pointer"
+                  : "border-old-game-border bg-old-game-surface"
                 }
               `}
             >
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-lg">{season.id === "spring" ? "🌸" : season.id === "summer" ? "☀️" : season.id === "fall" ? "🍂" : "❄️"}</span>
-                <p className="text-xs font-semibold text-game-primary">{season.name}</p>
+                <p className="text-xs font-semibold text-old-game-primary">{season.name}</p>
               </div>
-              <p className="text-xs text-game-text-muted mb-2">{season.description}</p>
+              <p className="text-xs text-old-game-text-muted mb-2">{season.description}</p>
               <div className="flex flex-wrap gap-1.5">
                 <AnimatePresence>
                   {itemsInSeason.map(item => {
@@ -240,9 +240,9 @@ export function SeasonsSortGame({ seasons, onComplete }: SeasonsSortGameProps) {
                           transition-all duration-200
                           ${state.checked
                             ? correct
-                              ? "bg-game-success-light text-game-success-text"
-                              : "bg-game-error-light text-game-error-text"
-                            : "bg-game-selected text-game-selected-text hover:opacity-80"
+                              ? "bg-old-game-success-light text-old-game-success-text"
+                              : "bg-old-game-error-light text-old-game-error-text"
+                            : "bg-old-game-selected text-old-game-selected-text hover:opacity-80"
                           }
                           ${!state.checked ? "cursor-pointer" : "cursor-default"}
                         `}
@@ -271,7 +271,7 @@ export function SeasonsSortGame({ seasons, onComplete }: SeasonsSortGameProps) {
             transition={smoothSpring}
             onClick={checkAnswers}
             disabled={!isAllPlaced}
-            className="w-full py-4 text-base font-semibold rounded-2xl bg-game-gradient text-white shadow-lg hover:shadow-xl hover:brightness-110 active:scale-[0.98] transition-all disabled:cursor-not-allowed"
+            className="w-full py-4 text-base font-semibold rounded-2xl bg-old-game-gradient text-white shadow-lg hover:shadow-xl hover:brightness-110 active:scale-[0.98] transition-all disabled:cursor-not-allowed"
           >
             Check Answers
           </motion.button>
@@ -284,14 +284,14 @@ export function SeasonsSortGame({ seasons, onComplete }: SeasonsSortGameProps) {
             className={`
               text-center p-4 rounded-xl
               ${state.correctCount === totalItems
-                ? "bg-game-success-light border border-game-success"
-                : "bg-game-surface border border-game-border"
+                ? "bg-old-game-success-light border border-old-game-success"
+                : "bg-old-game-surface border border-old-game-border"
               }
             `}
           >
             {state.correctCount === totalItems ? (
               <div className="space-y-3">
-                <div className="flex items-center justify-center gap-2 text-game-success-text">
+                <div className="flex items-center justify-center gap-2 text-old-game-success-text">
                   <Sparkles className="h-5 w-5" />
                   <span className="font-semibold">Perfect! All items sorted correctly!</span>
                   <Sparkles className="h-5 w-5" />
@@ -300,7 +300,7 @@ export function SeasonsSortGame({ seasons, onComplete }: SeasonsSortGameProps) {
                   onClick={nextLevel}
                   whileHover={shouldReduceMotion ? undefined : { scale: 1.05 }}
                   whileTap={shouldReduceMotion ? undefined : { scale: 0.95 }}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-game-success to-emerald-600 text-white font-semibold shadow-md"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-old-game-success to-emerald-600 text-white font-semibold shadow-md"
                 >
                   Next Level
                   <ChevronRight className="h-4 w-4" />
@@ -308,12 +308,12 @@ export function SeasonsSortGame({ seasons, onComplete }: SeasonsSortGameProps) {
               </div>
             ) : (
               <div>
-                <p className="font-semibold text-game-text">
+                <p className="font-semibold text-old-game-text">
                   {state.correctCount} / {totalItems} correct
                 </p>
                 <button
                   onClick={reset}
-                  className="mt-2 text-sm text-game-primary hover:underline"
+                  className="mt-2 text-sm text-old-game-primary hover:underline"
                 >
                   Try again
                 </button>

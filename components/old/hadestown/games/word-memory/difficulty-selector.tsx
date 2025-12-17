@@ -16,9 +16,9 @@ function DifficultyButton({ difficulty, isActive, onClick }: DifficultyButtonPro
     const baseClasses = "px-3 sm:px-4 py-2 text-sm font-medium rounded-full transition-colors duration-200 capitalize"
 
     if (isActive) {
-      return `${baseClasses} bg-game-gradient text-white shadow-md`
+      return `${baseClasses} bg-old-game-gradient text-white shadow-md`
     }
-    return `${baseClasses} bg-game-surface border border-game-border text-game-text-muted hover:border-game-primary hover:text-game-primary`
+    return `${baseClasses} bg-old-game-surface border border-old-game-border text-old-game-text-muted hover:border-old-game-primary hover:text-old-game-primary`
   }
 
   return (

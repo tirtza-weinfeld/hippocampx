@@ -82,7 +82,7 @@ export function FillBlanksGame({ sentences, onComplete }: FillBlanksGameProps) {
     const parts = currentSentence.sentence.split("_____")
 
     return (
-      <p className="text-lg leading-relaxed text-game-text">
+      <p className="text-lg leading-relaxed text-old-game-text">
         {parts[0]}
         <span className={`
           inline-block min-w-[100px] px-3 py-1 mx-1 rounded-lg font-semibold text-center
@@ -90,10 +90,10 @@ export function FillBlanksGame({ sentences, onComplete }: FillBlanksGameProps) {
           ${state.selectedOption
             ? isAnswered
               ? state.isCorrect
-                ? "bg-game-success-light border-game-success text-game-success-text"
-                : "bg-game-error-light border-game-error text-game-error-text"
-              : "bg-game-selected border-game-primary text-game-selected-text"
-            : "bg-game-surface-soft border-game-border text-game-text-muted"
+                ? "bg-old-game-success-light border-old-game-success text-old-game-success-text"
+                : "bg-old-game-error-light border-old-game-error text-old-game-error-text"
+              : "bg-old-game-selected border-old-game-primary text-old-game-selected-text"
+            : "bg-old-game-surface-soft border-old-game-border text-old-game-text-muted"
           }
         `}>
           {state.selectedOption ?? "???"}
@@ -111,19 +111,19 @@ export function FillBlanksGame({ sentences, onComplete }: FillBlanksGameProps) {
 
         <div className="flex-1 space-y-1">
           <div className="flex justify-between text-xs">
-            <span className="text-game-text-muted">Sentence {state.currentIndex + 1} of {sentences.length}</span>
+            <span className="text-old-game-text-muted">Sentence {state.currentIndex + 1} of {sentences.length}</span>
             <motion.span
               key={state.score}
               initial={shouldReduceMotion ? false : { scale: 1.3 }}
               animate={{ scale: 1 }}
-              className="text-game-primary font-semibold"
+              className="text-old-game-primary font-semibold"
             >
               {state.score} correct
             </motion.span>
           </div>
-          <div className="h-1.5 bg-game-primary-light rounded-full overflow-hidden">
+          <div className="h-1.5 bg-old-game-primary-light rounded-full overflow-hidden">
             <motion.div
-              className="h-full bg-game-gradient rounded-full"
+              className="h-full bg-old-game-gradient rounded-full"
               initial={false}
               animate={{ width: `${((state.currentIndex + 1) / sentences.length) * 100}%` }}
               transition={smoothSpring}
@@ -142,7 +142,7 @@ export function FillBlanksGame({ sentences, onComplete }: FillBlanksGameProps) {
           animate={{ opacity: 1, y: 0 }}
           exit={shouldReduceMotion ? undefined : { opacity: 0, y: -10 }}
           transition={smoothSpring}
-          className="p-6 rounded-xl bg-game-surface border border-game-border"
+          className="p-6 rounded-xl bg-old-game-surface border border-old-game-border"
         >
           {renderSentence()}
         </motion.div>
@@ -170,12 +170,12 @@ export function FillBlanksGame({ sentences, onComplete }: FillBlanksGameProps) {
                 border-2 transition-all duration-200
                 flex items-center justify-center gap-2
                 ${showCorrect
-                  ? "bg-game-success-light border-game-success text-game-success-text"
+                  ? "bg-old-game-success-light border-old-game-success text-old-game-success-text"
                   : showWrong
-                    ? "bg-game-error-light border-game-error text-game-error-text"
+                    ? "bg-old-game-error-light border-old-game-error text-old-game-error-text"
                     : isSelected
-                      ? "bg-game-selected border-game-primary text-game-selected-text shadow-md"
-                      : "bg-game-surface border-transparent hover:border-game-primary hover:bg-game-surface-soft text-game-text"
+                      ? "bg-old-game-selected border-old-game-primary text-old-game-selected-text shadow-md"
+                      : "bg-old-game-surface border-transparent hover:border-old-game-primary hover:bg-old-game-surface-soft text-old-game-text"
                 }
                 disabled:cursor-default
               `}
@@ -199,7 +199,7 @@ export function FillBlanksGame({ sentences, onComplete }: FillBlanksGameProps) {
             transition={smoothSpring}
             onClick={checkAnswer}
             disabled={!canCheck}
-            className="w-full py-4 text-base font-semibold rounded-2xl bg-game-gradient text-white shadow-lg hover:shadow-xl hover:brightness-110 active:scale-[0.98] transition-all disabled:cursor-not-allowed"
+            className="w-full py-4 text-base font-semibold rounded-2xl bg-old-game-gradient text-white shadow-lg hover:shadow-xl hover:brightness-110 active:scale-[0.98] transition-all disabled:cursor-not-allowed"
           >
             Check Answer
           </motion.button>
@@ -213,8 +213,8 @@ export function FillBlanksGame({ sentences, onComplete }: FillBlanksGameProps) {
             onClick={() => navigate(1)}
             className={`w-full py-4 text-base font-semibold rounded-2xl text-white shadow-lg hover:shadow-xl hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-2 ${
               state.isCorrect
-                ? "bg-gradient-to-r from-game-success to-emerald-600"
-                : "bg-game-gradient"
+                ? "bg-gradient-to-r from-old-game-success to-emerald-600"
+                : "bg-old-game-gradient"
             }`}
           >
             {state.isCorrect && <Sparkles className="h-5 w-5" />}
@@ -241,7 +241,7 @@ function NavButton({ direction, onClick, shouldReduceMotion }: NavButtonProps) {
       onClick={onClick}
       whileHover={shouldReduceMotion ? undefined : { scale: 1.1 }}
       whileTap={shouldReduceMotion ? undefined : { scale: 0.95 }}
-      className="p-2.5 rounded-full bg-game-surface border border-game-border text-game-text-muted hover:text-game-primary hover:border-game-primary hover:bg-game-surface-soft transition-colors"
+      className="p-2.5 rounded-full bg-old-game-surface border border-old-game-border text-old-game-text-muted hover:text-old-game-primary hover:border-old-game-primary hover:bg-old-game-surface-soft transition-colors"
       aria-label={direction === "prev" ? "Previous sentence" : "Next sentence"}
     >
       <Icon className="h-5 w-5" />

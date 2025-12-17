@@ -98,24 +98,24 @@ export function QuizGame({ items, onComplete }: QuizGameProps) {
     <LayoutGroup>
       <div className="flex flex-col h-full min-h-[500px]">
         {/* Progress Header */}
-        <header className="flex items-center gap-3 pb-4 mb-4 border-b border-game-border">
+        <header className="flex items-center gap-3 pb-4 mb-4 border-b border-old-game-border">
           <NavButton direction="prev" onClick={() => navigate(-1)} disabled={false} {...motionConfig} />
 
           <div className="flex-1 space-y-1">
             <div className="flex justify-between text-xs">
-              <span className="text-game-text-muted">Question {state.currentIndex + 1} of {items.length}</span>
+              <span className="text-old-game-text-muted">Question {state.currentIndex + 1} of {items.length}</span>
               <motion.span
                 key={state.score}
                 initial={shouldReduceMotion ? false : { scale: 1.3 }}
                 animate={{ scale: 1 }}
-                className="text-game-primary font-semibold"
+                className="text-old-game-primary font-semibold"
               >
                 {state.score} correct
               </motion.span>
             </div>
-            <div className="h-1.5 bg-game-primary-light rounded-full overflow-hidden">
+            <div className="h-1.5 bg-old-game-primary-light rounded-full overflow-hidden">
               <motion.div
-                className="h-full bg-game-gradient rounded-full"
+                className="h-full bg-old-game-gradient rounded-full"
                 initial={false}
                 animate={{ width: `${((state.currentIndex + 1) / items.length) * 100}%` }}
                 transition={smoothSpring}
@@ -139,13 +139,13 @@ export function QuizGame({ items, onComplete }: QuizGameProps) {
             >
               {/* Word */}
               <div className="text-center mb-6">
-                <h2 className="text-3xl md:text-4xl font-bold text-game-gradient mb-3">
+                <h2 className="text-3xl md:text-4xl font-bold text-old-game-gradient mb-3">
                   {currentItem.word}
                 </h2>
 
                 <button
                   onClick={toggleHint}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-full bg-game-surface-soft text-game-text-muted hover:text-game-primary transition-colors"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-full bg-old-game-surface-soft text-old-game-text-muted hover:text-old-game-primary transition-colors"
                 >
                   <Lightbulb className="h-3.5 w-3.5" />
                   {state.showHint ? "Hide hint" : "Show hint"}
@@ -160,7 +160,7 @@ export function QuizGame({ items, onComplete }: QuizGameProps) {
                       transition={smoothSpring}
                       className="overflow-hidden"
                     >
-                      <p className="p-3 text-sm italic text-game-text-muted bg-game-surface-soft rounded-lg max-w-md mx-auto">
+                      <p className="p-3 text-sm italic text-old-game-text-muted bg-old-game-surface-soft rounded-lg max-w-md mx-auto">
                         &quot;{currentItem.example}&quot;
                       </p>
                     </motion.div>
@@ -222,7 +222,7 @@ function NavButton({ direction, onClick, disabled, transition }: NavButtonProps)
       whileHover={transition?.duration === 0 ? undefined : { scale: 1.1 }}
       whileTap={transition?.duration === 0 ? undefined : { scale: 0.95 }}
       transition={spring}
-      className="p-2.5 rounded-full bg-game-surface border border-game-border text-game-text-muted hover:text-game-primary hover:border-game-primary hover:bg-game-surface-soft transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+      className="p-2.5 rounded-full bg-old-game-surface border border-old-game-border text-old-game-text-muted hover:text-old-game-primary hover:border-old-game-primary hover:bg-old-game-surface-soft transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
       aria-label={direction === "prev" ? "Previous question" : "Next question"}
     >
       <Icon className="h-5 w-5" />
@@ -261,17 +261,17 @@ function OptionCard({
   const variant = getVariant()
 
   const styles = {
-    default: "bg-game-surface border-transparent hover:border-game-primary hover:bg-game-surface-soft",
-    selected: "bg-game-selected border-game-primary shadow-md",
-    correct: "bg-game-success-light border-game-success shadow-md",
-    incorrect: "bg-game-error-light border-game-error shadow-md",
+    default: "bg-old-game-surface border-transparent hover:border-old-game-primary hover:bg-old-game-surface-soft",
+    selected: "bg-old-game-selected border-old-game-primary shadow-md",
+    correct: "bg-old-game-success-light border-old-game-success shadow-md",
+    incorrect: "bg-old-game-error-light border-old-game-error shadow-md",
   }
 
   const letterStyles = {
-    default: "game-primary-soft text-game-primary",
-    selected: "bg-game-primary text-white",
-    correct: "bg-game-success text-white",
-    incorrect: "bg-game-error text-white",
+    default: "old-game-primary-soft text-old-game-primary",
+    selected: "bg-old-game-primary text-white",
+    correct: "bg-old-game-success text-white",
+    incorrect: "bg-old-game-error text-white",
   }
 
   return (
@@ -292,7 +292,7 @@ function OptionCard({
         >
           {isAnswered && isCorrect ? <Check className="h-4 w-4" /> : isAnswered && isSelected && !isCorrect ? <X className="h-4 w-4" /> : letter}
         </motion.span>
-        <span className={`flex-1 text-sm leading-snug ${variant === "default" ? "text-game-text" : variant === "correct" ? "text-game-success-text" : variant === "incorrect" ? "text-game-error-text" : "text-game-selected-text"}`}>
+        <span className={`flex-1 text-sm leading-snug ${variant === "default" ? "text-old-game-text" : variant === "correct" ? "text-old-game-success-text" : variant === "incorrect" ? "text-old-game-error-text" : "text-old-game-selected-text"}`}>
           {option}
         </span>
       </div>
@@ -330,7 +330,7 @@ function ActionButton({
           transition={smoothSpring}
           onClick={onCheck}
           disabled={!canCheck}
-          className="w-full py-4 text-base font-semibold rounded-2xl bg-game-gradient text-white shadow-lg hover:shadow-xl hover:brightness-110 active:scale-[0.98] transition-all disabled:cursor-not-allowed"
+          className="w-full py-4 text-base font-semibold rounded-2xl bg-old-game-gradient text-white shadow-lg hover:shadow-xl hover:brightness-110 active:scale-[0.98] transition-all disabled:cursor-not-allowed"
         >
           Check Answer
         </motion.button>
@@ -344,8 +344,8 @@ function ActionButton({
           onClick={onNext}
           className={`w-full py-4 text-base font-semibold rounded-2xl text-white shadow-lg hover:shadow-xl hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-2 ${
             isCorrect
-              ? "bg-gradient-to-r from-game-success to-emerald-600"
-              : "bg-game-gradient"
+              ? "bg-gradient-to-r from-old-game-success to-emerald-600"
+              : "bg-old-game-gradient"
           }`}
         >
           {isCorrect && <Sparkles className="h-5 w-5" />}

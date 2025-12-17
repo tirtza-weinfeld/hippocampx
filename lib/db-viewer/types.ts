@@ -7,7 +7,7 @@
 
 import type { AnyPgTable } from "drizzle-orm/pg-core";
 
-export type DatabaseProvider = "neon" | "vercel";
+export type DatabaseProvider = "neon";
 
 export interface TableInfo {
   name: string;

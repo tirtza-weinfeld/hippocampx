@@ -165,22 +165,10 @@ export function TableBrowser({
                 {/* Table Header */}
                 <div className="flex items-start justify-between gap-4 mb-6">
                   <div className="flex items-center gap-4 min-w-0">
-                    <div className={`
-                      size-12 rounded-2xl flex items-center justify-center flex-shrink-0
-                      ${selectedTableInfo?.provider === "neon"
-                        ? "bg-gradient-to-br from-db-neon/20 to-db-neon/5"
-                        : "bg-gradient-to-br from-db-vercel/20 to-db-vercel/5"
-                      }
-                    `}>
-                      {selectedTableInfo?.provider === "neon" ? (
-                        <svg className="size-6 text-db-neon" viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
-                        </svg>
-                      ) : (
-                        <svg className="size-6 text-db-vercel" viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M12 2L2 19.5h20L12 2z"/>
-                        </svg>
-                      )}
+                    <div className="size-12 rounded-2xl flex items-center justify-center flex-shrink-0 bg-gradient-to-br from-db-neon/20 to-db-neon/5">
+                      <svg className="size-6 text-db-neon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+                      </svg>
                     </div>
                     <div className="min-w-0">
                       <h1 className="text-xl lg:text-2xl font-bold text-db-text truncate">
@@ -194,17 +182,9 @@ export function TableBrowser({
                         ) : (
                           <div className="h-4 w-16 bg-db-surface-raised/50 rounded animate-pulse" />
                         )}
-                        <span className={`
-                          inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg text-[10px] font-medium uppercase tracking-wider
-                          ${selectedTableInfo?.provider === "neon"
-                            ? "bg-db-neon/10 text-db-neon"
-                            : "bg-db-vercel/10 text-db-vercel"
-                          }
-                        `}>
-                          <span className={`size-1.5 rounded-full ${
-                            selectedTableInfo?.provider === "neon" ? "bg-db-neon" : "bg-db-vercel"
-                          }`} />
-                          {selectedTableInfo?.provider}
+                        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg text-[10px] font-medium uppercase tracking-wider bg-db-neon/10 text-db-neon">
+                          <span className="size-1.5 rounded-full bg-db-neon" />
+                          neon
                         </span>
                       </div>
                     </div>
@@ -343,7 +323,7 @@ function WelcomeContent({ tableCount }: WelcomeContentProps) {
         transition={{ delay: 0.1, type: "spring", stiffness: 200 }}
         className="inline-flex items-center justify-center mb-8"
       >
-        <div className="size-20 rounded-3xl bg-gradient-to-br from-db-neon/15 via-transparent to-db-vercel/15 flex items-center justify-center">
+        <div className="size-20 rounded-3xl bg-gradient-to-br from-db-neon/15 via-transparent to-db-neon/5 flex items-center justify-center">
           <svg
             className="size-10 text-db-text"
             fill="none"
@@ -375,7 +355,7 @@ function WelcomeContent({ tableCount }: WelcomeContentProps) {
         transition={{ delay: 0.2 }}
         className="text-db-text-muted mb-8"
       >
-        <span className="font-semibold text-db-text">{tableCount} tables</span> ready to explore
+        <span className="font-semibold text-db-text">{tableCount} tables</span> on Neon PostgreSQL
       </motion.p>
 
       <motion.div
@@ -420,15 +400,11 @@ function WelcomeContent({ tableCount }: WelcomeContentProps) {
         initial={{ y: 10, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.35 }}
-        className="flex items-center justify-center gap-6 mt-8"
+        className="flex items-center justify-center mt-8"
       >
         <div className="flex items-center gap-2.5 px-4 py-2 rounded-xl bg-db-surface-raised/50">
           <span className="size-2 rounded-full bg-db-neon animate-pulse" />
-          <span className="text-sm font-medium text-db-text-muted">Neon</span>
-        </div>
-        <div className="flex items-center gap-2.5 px-4 py-2 rounded-xl bg-db-surface-raised/50">
-          <span className="size-2 rounded-full bg-db-vercel animate-pulse" />
-          <span className="text-sm font-medium text-db-text-muted">Vercel</span>
+          <span className="text-sm font-medium text-db-text-muted">Neon Connected</span>
         </div>
       </motion.div>
     </div>

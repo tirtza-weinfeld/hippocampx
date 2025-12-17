@@ -31,14 +31,11 @@ function formatRowCount(count: number): string {
 
 export function TableStatsCard({
   name,
-  provider,
   rowCount,
   description,
   isSelected = false,
   onClick,
 }: TableStatsCardProps) {
-  const isNeon = provider === "neon";
-
   return (
     <motion.button
       type="button"
@@ -49,7 +46,7 @@ export function TableStatsCard({
         group relative w-full text-left rounded-xl border p-4
         transition-all duration-200 bg-db-surface
         ${isSelected
-          ? `border-db-border ring-2 ring-offset-2 ring-offset-background ${isNeon ? "ring-db-neon" : "ring-db-vercel"}`
+          ? "border-db-border ring-2 ring-offset-2 ring-offset-background ring-db-neon"
           : "border-db-border hover:bg-db-row-hover"
         }
       `}
@@ -57,12 +54,8 @@ export function TableStatsCard({
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
-            <span
-              className={`inline-flex items-center px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider rounded-full ${
-                isNeon ? "bg-db-neon-soft text-db-neon" : "bg-db-vercel-soft text-db-vercel"
-              }`}
-            >
-              {provider}
+            <span className="inline-flex items-center px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider rounded-full bg-db-neon-soft text-db-neon">
+              neon
             </span>
           </div>
           <h3 className="font-semibold text-db-text truncate">

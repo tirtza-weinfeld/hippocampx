@@ -106,7 +106,7 @@ export async function fetchRowById(
 }
 
 export async function fetchTableStats(): Promise<
-  { name: string; provider: "neon" | "vercel"; rowCount: number; description?: string }[]
+  { name: string; provider: "neon"; rowCount: number; description?: string }[]
 > {
   return getTableStats();
 }

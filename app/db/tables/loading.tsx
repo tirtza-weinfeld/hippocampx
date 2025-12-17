@@ -49,14 +49,10 @@ export default function Loading() {
             <div className="h-8 w-56 mx-auto bg-db-border/40 rounded animate-pulse mb-3" />
             <div className="h-4 w-40 mx-auto bg-db-border/30 rounded animate-pulse mb-8" />
             <div className="h-4 w-48 mx-auto bg-db-border/20 rounded animate-pulse mb-10" />
-            <div className="flex items-center justify-center gap-6">
+            <div className="flex items-center justify-center">
               <div className="flex items-center gap-2.5 px-4 py-2 rounded-xl bg-db-surface-raised/50">
                 <div className="size-2 rounded-full bg-db-neon/50 animate-pulse" />
                 <div className="h-4 w-10 bg-db-border/30 rounded animate-pulse" />
-              </div>
-              <div className="flex items-center gap-2.5 px-4 py-2 rounded-xl bg-db-surface-raised/50">
-                <div className="size-2 rounded-full bg-db-vercel/50 animate-pulse" />
-                <div className="h-4 w-12 bg-db-border/30 rounded animate-pulse" />
               </div>
             </div>
           </div>

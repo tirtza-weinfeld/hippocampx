@@ -34,4 +34,19 @@ Target lines of code:
 
 ## Resources
 
-Check `package.json` for versions. Search for documentation matching version >= installed. use canary/experimental docs. 
+Check `package.json` for versions. Search for documentation matching version >= installed. use canary/experimental docs.
+
+## Behavior Correction
+
+When user calls out bad behavior:
+1. STOP — do not continue the task
+2. Analyze what went wrong and why
+3. Propose a concrete fix (rule, hook, or CLAUDE.md update)
+4. Implement the fix immediately — this persists across sessions
+5. Only then resume the task
+
+Examples of bad behavior:
+- Reading files already in context
+- Ignoring loaded rules, falling back to training data
+- Not reading files when explicitly referenced
+- Giving hypothetical answers without checking actual project files 

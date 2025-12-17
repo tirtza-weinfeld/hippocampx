@@ -45,7 +45,7 @@ export function Sidebar({ children, defaultOpen }: SidebarProps) {
           className="min-w-0 flex-1"
           style={{ marginLeft: contentMargin }}
         >
-          <div className="@container/content px-6">{children}</div>
+          <div className="@container/content md:px-6 px-1">{children}</div>
         </div>
 
         <SearchDialog

@@ -1,0 +1,144 @@
+/**
+ * Old Game Component CSS Tokens
+ *
+ * Usage in HTML with Tailwind arbitrary values:
+ *   bg-old-game-primary
+ *   text-old-game-primary
+ *   border-old-game-border
+ *
+ * To theme for a musical, override in parent:
+ *   .hadestown { --old-game-primary: var(--color-amber-500); }
+ *   .wicked { --old-game-primary: var(--color-green-500); }
+ */
+
+
+
+@theme inline {
+  /* Primary game colors - themeable per musical */
+  --color-old-game-primary: var(--old-game-primary);
+  --color-old-game-primary-dark: var(--old-game-primary-dark);
+  --color-old-game-primary-light: var(--old-game-primary-light);
+  --color-old-game-primary-soft: var(--old-game-primary-soft);
+
+
+  /* Success/Error semantic colors */
+  --color-old-game-success: var(--old-game-success);
+  --color-old-game-success-light: var(--old-game-success-light);
+  --color-old-game-success-text: var(--old-game-success-text);
+
+  --color-old-game-error: var(--old-game-error);
+  --color-old-game-error-light: var(--old-game-error-light);
+  --color-old-game-error-text: var(--old-game-error-text);
+
+  /* Selection state */
+  --color-old-game-selected: var(--old-game-selected);
+  --color-old-game-selected-text: var(--old-game-selected-text);
+
+  /* Surface colors */
+  --color-old-game-surface: var(--old-game-surface);
+  --color-old-game-surface-soft: var(--old-game-surface-soft);
+  --color-old-game-border: var(--old-game-border);
+
+  /* Text colors */
+  --color-old-game-text: var(--old-game-text);
+  --color-old-game-text-muted: var(--old-game-text-muted);
+
+  /* Gradients */
+  --color-old-game-gradient: var(--old-game-gradient);
+}
+:root{
+  /* Primary game colors - themeable per musical */
+  --old-game-primary: var(--color-amber-500);
+  --old-game-primary-dark: var(--color-amber-600);
+  --old-game-primary-light: var(--color-amber-100);
+  --old-game-primary-soft: --alpha(var(--color-amber-500) / 10%);
+
+
+  /* Success/Error semantic colors */
+  --old-game-success: var(--color-green-500);
+  --old-game-success-light: var(--color-green-100);
+  --old-game-success-text: var(--color-green-800);
+
+  --old-game-error: var(--color-red-500);
+  --old-game-error-light: var(--color-red-100);
+  --old-game-error-text: var(--color-red-800);
+
+  /* Selection state */
+  --old-game-selected: var(--color-amber-100);
+  --old-game-selected-text: var(--color-amber-800);
+
+  /* Surface colors */
+  --old-game-surface: var(--color-white);
+  --old-game-surface-soft: --alpha(var(--color-amber-50) / 50%);
+  --old-game-border: --alpha(var(--color-amber-500) / 20%);
+
+  /* Text colors */
+  --old-game-text: var(--color-gray-800);
+  --old-game-text-muted: var(--color-gray-600);
+
+  /* Gradients */
+  --old-game-gradient: linear-gradient(to right, var(--old-game-primary), var(--old-game-primary-dark));
+}
+
+/* Dark mode token overrides */
+.dark {
+  --old-game-primary: var(--color-amber-400);
+  --old-game-primary-dark: var(--color-amber-500);
+  --old-game-primary-light: --alpha(var(--color-amber-900) / 30%);
+  --old-game-primary-soft: --alpha(var(--color-amber-500) / 20%);
+
+  --old-game-success-light: --alpha(var(--color-green-900) / 30%);
+  --old-game-success-text: var(--color-green-300);
+
+  --old-game-error-light: --alpha(var(--color-red-900) / 30%);
+  --old-game-error-text: var(--color-red-300);
+
+  --old-game-selected: --alpha(var(--color-amber-900) / 50%);
+  --old-game-selected-text: var(--color-amber-300);
+
+  --old-game-surface: var(--color-gray-800);
+  --old-game-surface-soft: --alpha(var(--color-amber-900) / 20%);
+  --old-game-border: --alpha(var(--color-amber-600) / 30%);
+
+  --old-game-text: var(--color-gray-100);
+  --old-game-text-muted: var(--color-amber-300) / 90%;
+}
+
+/* Hadestown theme overrides (amber/red) */
+.hadestown {
+  --old-game-primary: var(--color-amber-500);
+  --old-game-primary-dark: var(--color-amber-600);
+}
+
+.dark .hadestown {
+  --old-game-primary: var(--color-amber-400);
+  --old-game-primary-dark: var(--color-amber-500);
+}
+
+/* Example: Wicked theme overrides (green) */
+/* .wicked {
+  --color-old-game-primary: var(--color-green-500);
+  --color-old-game-primary-dark: var(--color-green-600);
+  --color-old-game-primary-light: var(--color-green-100);
+  --color-old-game-selected: var(--color-green-100);
+  --color-old-game-selected-text: var(--color-green-800);
+} */
+
+/* .dark .wicked {
+  --color-old-game-primary: var(--color-green-400);
+  --color-old-game-primary-dark: var(--color-green-500);
+} */
+
+/* Utility for gradient text */
+@utility text-old-game-gradient {
+  background: var(--color-old-game-gradient);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* Utility for gradient background */
+@utility bg-old-game-gradient {
+  background: var(--color-old-game-gradient);
+}

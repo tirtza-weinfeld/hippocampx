@@ -22,8 +22,6 @@ interface TableSidebarProps {
   onCollapsedChange: (collapsed: boolean) => void;
 }
 
-type ProviderFilter = "all" | "neon" | "vercel";
-
 function formatTableName(name: string): string {
   return name
     .split("_")
@@ -45,22 +43,14 @@ export function TableSidebar({
   onCollapsedChange,
 }: TableSidebarProps) {
   const [search, setSearch] = useState("");
-  const [providerFilter, setProviderFilter] = useState<ProviderFilter>("all");
 
   const filteredTables = tables.filter((table) => {
-    const matchesSearch =
+    return (
       search === "" ||
       table.name.toLowerCase().includes(search.toLowerCase()) ||
-      table.description?.toLowerCase().includes(search.toLowerCase());
-
-    const matchesProvider =
-      providerFilter === "all" || table.provider === providerFilter;
-
-    return matchesSearch && matchesProvider;
+      table.description?.toLowerCase().includes(search.toLowerCase())
+    );
   });
-
-  const neonTables = filteredTables.filter((t) => t.provider === "neon");
-  const vercelTables = filteredTables.filter((t) => t.provider === "vercel");
 
   return (
     <motion.aside
@@ -83,15 +73,11 @@ export function TableSidebar({
             key="expanded"
             tables={tables}
             filteredTables={filteredTables}
-            neonTables={neonTables}
-            vercelTables={vercelTables}
             selectedTable={selectedTable}
             onTableSelect={onTableSelect}
             onCollapse={() => onCollapsedChange(true)}
             search={search}
             onSearchChange={setSearch}
-            providerFilter={providerFilter}
-            onProviderFilterChange={setProviderFilter}
           />
         )}
       </AnimatePresence>
@@ -127,7 +113,6 @@ function CollapsedSidebar({ tables, selectedTable, onTableSelect, onExpand }: Co
 
       <div className="flex-1 overflow-y-auto scrollbar-thin space-y-1.5">
         {tables.map((table, index) => {
-          const isNeon = table.provider === "neon";
           const isActive = selectedTable === table.name;
 
           return (
@@ -141,9 +126,7 @@ function CollapsedSidebar({ tables, selectedTable, onTableSelect, onExpand }: Co
               className={`
                 w-full p-2 rounded-xl transition-all group
                 ${isActive
-                  ? isNeon
-                    ? "bg-gradient-to-br from-db-neon/20 to-db-neon/5 shadow-sm"
-                    : "bg-gradient-to-br from-db-vercel/20 to-db-vercel/5 shadow-sm"
+                  ? "bg-gradient-to-br from-db-neon/20 to-db-neon/5 shadow-sm"
                   : "hover:bg-db-surface-raised/70"
                 }
               `}
@@ -152,12 +135,8 @@ function CollapsedSidebar({ tables, selectedTable, onTableSelect, onExpand }: Co
               <div className={`
                 size-9 rounded-xl flex items-center justify-center text-xs font-bold transition-all
                 ${isActive
-                  ? isNeon
-                    ? "bg-gradient-to-br from-db-neon to-db-neon/80 text-white shadow-md"
-                    : "bg-gradient-to-br from-db-vercel to-db-vercel/80 text-white shadow-md"
-                  : isNeon
-                    ? "bg-db-neon/10 text-db-neon group-hover:bg-db-neon/15"
-                    : "bg-db-vercel/10 text-db-vercel group-hover:bg-db-vercel/15"
+                  ? "bg-gradient-to-br from-db-neon to-db-neon/80 text-white shadow-md"
+                  : "bg-db-neon/10 text-db-neon group-hover:bg-db-neon/15"
                 }
               `}>
                 {table.name.charAt(0).toUpperCase()}
@@ -173,33 +152,22 @@ function CollapsedSidebar({ tables, selectedTable, onTableSelect, onExpand }: Co
 interface ExpandedSidebarProps {
   tables: TableStat[];
   filteredTables: TableStat[];
-  neonTables: TableStat[];
-  vercelTables: TableStat[];
   selectedTable: string | null;
   onTableSelect: (tableName: string) => void;
   onCollapse: () => void;
   search: string;
   onSearchChange: (value: string) => void;
-  providerFilter: ProviderFilter;
-  onProviderFilterChange: (filter: ProviderFilter) => void;
 }
 
 function ExpandedSidebar({
   tables,
   filteredTables,
-  neonTables,
-  vercelTables,
   selectedTable,
   onTableSelect,
   onCollapse,
   search,
   onSearchChange,
-  providerFilter,
-  onProviderFilterChange,
 }: ExpandedSidebarProps) {
-  const neonCount = tables.filter((t) => t.provider === "neon").length;
-  const vercelCount = tables.filter((t) => t.provider === "vercel").length;
-
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -211,14 +179,14 @@ function ExpandedSidebar({
       <div className="p-4">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <div className="size-10 rounded-2xl bg-gradient-to-br from-db-neon/20 via-transparent to-db-vercel/20 flex items-center justify-center">
+            <div className="size-10 rounded-2xl bg-gradient-to-br from-db-neon/20 via-transparent to-db-neon/5 flex items-center justify-center">
               <svg className="size-5 text-db-text" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
               </svg>
             </div>
             <div>
               <h2 className="text-sm font-semibold text-db-text">Tables</h2>
-              <p className="text-xs text-db-text-muted">{filteredTables.length} available</p>
+              <p className="text-xs text-db-text-muted">{filteredTables.length} on Neon</p>
             </div>
           </div>
           <button
@@ -239,65 +207,22 @@ function ExpandedSidebar({
           onChange={onSearchChange}
           placeholder="Search tables..."
         />
-
-        {/* Filter Pills */}
-        <div className="flex items-center gap-1.5 mt-3">
-          {(["all", "neon", "vercel"] as const).map((filter) => {
-            const count = filter === "all" ? tables.length : filter === "neon" ? neonCount : vercelCount;
-            const isActive = providerFilter === filter;
-
-            return (
-              <button
-                key={filter}
-                type="button"
-                onClick={() => onProviderFilterChange(filter)}
-                className={`
-                  flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all
-                  ${isActive
-                    ? filter === "neon"
-                      ? "bg-db-neon/15 text-db-neon"
-                      : filter === "vercel"
-                        ? "bg-db-vercel/15 text-db-vercel"
-                        : "bg-db-surface-raised text-db-text"
-                    : "text-db-text-muted hover:text-db-text hover:bg-db-surface-raised/50"
-                  }
-                `}
-              >
-                {filter !== "all" && (
-                  <span className={`size-1.5 rounded-full ${filter === "neon" ? "bg-db-neon" : "bg-db-vercel"}`} />
-                )}
-                <span className="capitalize">{filter}</span>
-                <span className={`text-[10px] ${isActive ? "opacity-70" : "opacity-50"}`}>{count}</span>
-              </button>
-            );
-          })}
-        </div>
       </div>
 
       {/* Table List */}
       <div className="flex-1 overflow-y-auto scrollbar-thin px-3 pb-4">
-        {/* Neon Section */}
-        {neonTables.length > 0 && (providerFilter === "all" || providerFilter === "neon") && (
-          <TableSection
-            label="Neon"
-            color="neon"
-            tables={neonTables}
-            selectedTable={selectedTable}
-            onTableSelect={onTableSelect}
-            showLabel={providerFilter === "all"}
-          />
-        )}
-
-        {/* Vercel Section */}
-        {vercelTables.length > 0 && (providerFilter === "all" || providerFilter === "vercel") && (
-          <TableSection
-            label="Vercel"
-            color="vercel"
-            tables={vercelTables}
-            selectedTable={selectedTable}
-            onTableSelect={onTableSelect}
-            showLabel={providerFilter === "all"}
-          />
+        {filteredTables.length > 0 && (
+          <div className="space-y-0.5">
+            {filteredTables.map((table, index) => (
+              <TableItem
+                key={table.name}
+                table={table}
+                isSelected={selectedTable === table.name}
+                onSelect={() => onTableSelect(table.name)}
+                index={index}
+              />
+            ))}
+          </div>
         )}
 
         {/* Empty State */}
@@ -321,39 +246,6 @@ function ExpandedSidebar({
   );
 }
 
-interface TableSectionProps {
-  label: string;
-  color: "neon" | "vercel";
-  tables: TableStat[];
-  selectedTable: string | null;
-  onTableSelect: (tableName: string) => void;
-  showLabel: boolean;
-}
-
-function TableSection({ label, color, tables, selectedTable, onTableSelect, showLabel }: TableSectionProps) {
-  return (
-    <div className="mb-2">
-      {showLabel && (
-        <div className="flex items-center gap-2 px-2 py-2 text-[10px] font-semibold text-db-text-subtle uppercase tracking-wider">
-          <span className={`size-1.5 rounded-full ${color === "neon" ? "bg-db-neon" : "bg-db-vercel"}`} />
-          {label}
-        </div>
-      )}
-      <div className="space-y-0.5">
-        {tables.map((table, index) => (
-          <TableItem
-            key={table.name}
-            table={table}
-            isSelected={selectedTable === table.name}
-            onSelect={() => onTableSelect(table.name)}
-            index={index}
-          />
-        ))}
-      </div>
-    </div>
-  );
-}
-
 interface TableItemProps {
   table: TableStat;
   isSelected: boolean;
@@ -362,8 +254,6 @@ interface TableItemProps {
 }
 
 function TableItem({ table, isSelected, onSelect, index }: TableItemProps) {
-  const isNeon = table.provider === "neon";
-
   return (
     <motion.button
       type="button"
@@ -374,9 +264,7 @@ function TableItem({ table, isSelected, onSelect, index }: TableItemProps) {
       className={`
         w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all group
         ${isSelected
-          ? isNeon
-            ? "bg-gradient-to-r from-db-neon/15 to-db-neon/5"
-            : "bg-gradient-to-r from-db-vercel/15 to-db-vercel/5"
+          ? "bg-gradient-to-r from-db-neon/15 to-db-neon/5"
           : "hover:bg-db-surface-raised/60"
         }
       `}
@@ -385,12 +273,8 @@ function TableItem({ table, isSelected, onSelect, index }: TableItemProps) {
       <div className={`
         size-8 rounded-lg flex items-center justify-center text-[11px] font-bold transition-all flex-shrink-0
         ${isSelected
-          ? isNeon
-            ? "bg-db-neon text-white shadow-sm"
-            : "bg-db-vercel text-white shadow-sm"
-          : isNeon
-            ? "bg-db-neon/10 text-db-neon group-hover:bg-db-neon/15"
-            : "bg-db-vercel/10 text-db-vercel group-hover:bg-db-vercel/15"
+          ? "bg-db-neon text-white shadow-sm"
+          : "bg-db-neon/10 text-db-neon group-hover:bg-db-neon/15"
         }
       `}>
         {table.name.charAt(0).toUpperCase()}
@@ -399,9 +283,7 @@ function TableItem({ table, isSelected, onSelect, index }: TableItemProps) {
       {/* Content */}
       <div className="flex-1 min-w-0">
         <p className={`text-sm font-medium truncate transition-colors ${
-          isSelected
-            ? isNeon ? "text-db-neon" : "text-db-vercel"
-            : "text-db-text group-hover:text-db-text"
+          isSelected ? "text-db-neon" : "text-db-text group-hover:text-db-text"
         }`}>
           {formatTableName(table.name)}
         </p>
@@ -411,7 +293,7 @@ function TableItem({ table, isSelected, onSelect, index }: TableItemProps) {
       <span className={`
         text-[11px] font-medium tabular-nums px-2 py-0.5 rounded-md transition-all
         ${isSelected
-          ? isNeon ? "bg-db-neon/20 text-db-neon" : "bg-db-vercel/20 text-db-vercel"
+          ? "bg-db-neon/20 text-db-neon"
           : "text-db-text-subtle group-hover:text-db-text-muted"
         }
       `}>
@@ -437,22 +319,14 @@ export function MobileSidebar({
   onClose,
 }: MobileSidebarProps) {
   const [search, setSearch] = useState("");
-  const [providerFilter, setProviderFilter] = useState<ProviderFilter>("all");
 
   const filteredTables = tables.filter((table) => {
-    const matchesSearch =
+    return (
       search === "" ||
       table.name.toLowerCase().includes(search.toLowerCase()) ||
-      table.description?.toLowerCase().includes(search.toLowerCase());
-
-    const matchesProvider =
-      providerFilter === "all" || table.provider === providerFilter;
-
-    return matchesSearch && matchesProvider;
+      table.description?.toLowerCase().includes(search.toLowerCase())
+    );
   });
-
-  const neonCount = tables.filter((t) => t.provider === "neon").length;
-  const vercelCount = tables.filter((t) => t.provider === "vercel").length;
 
   function handleTableSelect(tableName: string) {
     onTableSelect(tableName);
@@ -470,7 +344,7 @@ export function MobileSidebar({
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ delay: 0.1, type: "spring", stiffness: 300 }}
-                className="size-12 rounded-2xl bg-gradient-to-br from-db-neon/20 via-transparent to-db-vercel/20 flex items-center justify-center"
+                className="size-12 rounded-2xl bg-gradient-to-br from-db-neon/20 via-transparent to-db-neon/5 flex items-center justify-center"
               >
                 <svg className="size-6 text-db-text" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
@@ -479,7 +353,7 @@ export function MobileSidebar({
               <div>
                 <h2 className="font-semibold text-db-text">Tables</h2>
                 <p className="text-xs text-db-text-muted">
-                  {filteredTables.length} of {tables.length}
+                  {filteredTables.length} on Neon
                 </p>
               </div>
             </div>
@@ -496,48 +370,11 @@ export function MobileSidebar({
             </motion.button>
           </div>
 
-          {/* Filter Pills */}
-          <div className="flex gap-2 px-5 pb-4 overflow-x-auto scrollbar-none">
-            {(["all", "neon", "vercel"] as const).map((filter, index) => {
-              const count = filter === "all" ? tables.length : filter === "neon" ? neonCount : vercelCount;
-              const isActive = providerFilter === filter;
-
-              return (
-                <motion.button
-                  key={filter}
-                  type="button"
-                  onClick={() => setProviderFilter(filter)}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.05 * index }}
-                  whileTap={{ scale: 0.95 }}
-                  className={`
-                    flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors flex-shrink-0
-                    ${isActive
-                      ? filter === "neon"
-                        ? "bg-db-neon/20 text-db-neon"
-                        : filter === "vercel"
-                          ? "bg-db-vercel/20 text-db-vercel"
-                          : "bg-db-surface-raised text-db-text"
-                      : "bg-db-surface-raised/50 text-db-text-muted hover:text-db-text"
-                    }
-                  `}
-                >
-                  {filter !== "all" && (
-                    <span className={`size-2 rounded-full ${filter === "neon" ? "bg-db-neon" : "bg-db-vercel"}`} />
-                  )}
-                  <span className="capitalize">{filter}</span>
-                  <span className={`text-xs ${isActive ? "opacity-70" : "opacity-50"}`}>{count}</span>
-                </motion.button>
-              );
-            })}
-          </div>
-
           {/* Search */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.15 }}
+            transition={{ delay: 0.1 }}
             className="px-5 pb-4"
           >
             <SearchInput

@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useMemo, useId } from "react";
+import { useState, useId } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import type { SchemaTable, DatabaseProvider } from "@/lib/db-viewer/types";
+import type { SchemaTable } from "@/lib/db-viewer/types";
 
 interface ERVisibilityPanelProps {
   tables: SchemaTable[];
@@ -17,8 +17,6 @@ const panelVariants = {
   visible: { opacity: 1, y: 0, scale: 1 },
 } as const;
 
-const PROVIDERS: readonly DatabaseProvider[] = ["neon", "vercel"] as const;
-
 export function ERVisibilityPanel({
   tables,
   hiddenTables,
@@ -29,14 +27,6 @@ export function ERVisibilityPanel({
   const [isOpen, setIsOpen] = useState(false);
   const panelId = useId();
   const visibleCount = tables.length - hiddenTables.size;
-
-  const tablesByProvider = useMemo(() => {
-    const grouped: Record<DatabaseProvider, SchemaTable[]> = { neon: [], vercel: [] };
-    for (const table of tables) {
-      grouped[table.provider].push(table);
-    }
-    return grouped;
-  }, [tables]);
 
   return (
     <div className="absolute top-4 left-4">
@@ -118,74 +108,46 @@ export function ERVisibilityPanel({
                 onClick={onHideAll}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="flex-1 px-2 py-1.5 text-[10px] font-medium text-er-text rounded-lg hover:bg-db-vercel/10 hover:text-db-vercel transition-colors focus-visible:ring-2 focus-visible:ring-db-vercel focus-visible:outline-none"
+                className="flex-1 px-2 py-1.5 text-[10px] font-medium text-er-text rounded-lg hover:bg-er-control-hover transition-colors focus-visible:ring-2 focus-visible:ring-db-neon focus-visible:outline-none"
               >
                 Hide All
               </motion.button>
             </div>
 
-            {/* Tables by Provider */}
-            {PROVIDERS.map(provider => {
-              const providerTables = tablesByProvider[provider];
-              if (providerTables.length === 0) return null;
+            {/* Table List */}
+            <div className="space-y-1" role="list" aria-label="Tables">
+              {tables.map(table => {
+                const isVisible = !hiddenTables.has(table.name);
+                const checkboxId = `${panelId}-${table.name}`;
 
-              const visibleInProvider = providerTables.filter(t => !hiddenTables.has(t.name)).length;
-
-              return (
-                <div key={provider} className="mb-3 last:mb-0">
-                  {/* Provider Header */}
-                  <div className="flex items-center justify-between gap-2 mb-2">
-                    <div className="flex items-center gap-2">
-                      <span
-                        className={`size-2 rounded-full ${provider === "neon" ? "bg-db-neon" : "bg-db-vercel"}`}
-                        aria-hidden="true"
-                      />
-                      <span className="text-[10px] font-semibold uppercase tracking-wider text-er-text-muted">
-                        {provider}
-                      </span>
-                    </div>
-                    <span className="text-[9px] text-er-text-muted tabular-nums">
-                      {visibleInProvider}/{providerTables.length}
+                return (
+                  <label
+                    key={table.name}
+                    htmlFor={checkboxId}
+                    className="flex items-center gap-2 px-2 py-1.5 cursor-pointer rounded-lg transition-colors hover:bg-er-control-hover"
+                    role="listitem"
+                  >
+                    <input
+                      id={checkboxId}
+                      type="checkbox"
+                      checked={isVisible}
+                      onChange={() => onToggle(table.name)}
+                      className="er-checkbox"
+                      aria-describedby={`${checkboxId}-desc`}
+                    />
+                    <span
+                      id={`${checkboxId}-desc`}
+                      className="text-xs text-er-text font-mono truncate"
+                    >
+                      {table.name}
                     </span>
-                  </div>
-
-                  {/* Table List */}
-                  <div className="space-y-1" role="list" aria-label={`${provider} tables`}>
-                    {providerTables.map(table => {
-                      const isVisible = !hiddenTables.has(table.name);
-                      const checkboxId = `${panelId}-${table.name}`;
-
-                      return (
-                        <label
-                          key={table.name}
-                          htmlFor={checkboxId}
-                          className="flex items-center gap-2 px-2 py-1.5 cursor-pointer rounded-lg transition-colors hover:bg-er-control-hover"
-                          role="listitem"
-                        >
-                          <input
-                            id={checkboxId}
-                            type="checkbox"
-                            checked={isVisible}
-                            onChange={() => onToggle(table.name)}
-                            className="er-checkbox"
-                            aria-describedby={`${checkboxId}-desc`}
-                          />
-                          <span
-                            id={`${checkboxId}-desc`}
-                            className="text-xs text-er-text font-mono truncate"
-                          >
-                            {table.name}
-                          </span>
-                          <span className="ml-auto text-[9px] text-er-text-muted">
-                            {table.columns.length} cols
-                          </span>
-                        </label>
-                      );
-                    })}
-                  </div>
-                </div>
-              );
-            })}
+                    <span className="ml-auto text-[9px] text-er-text-muted">
+                      {table.columns.length} cols
+                    </span>
+                  </label>
+                );
+              })}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

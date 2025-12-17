@@ -27,7 +27,7 @@ export default function VocabularyGamesPage() {
   }
 
   return (
-    <main className="hadestown @container min-h-screen py-8 bg-gradient-to-b from-amber-50/30 to-amber-100/20 dark:from-gray-900 dark:to-amber-950/30 text-foreground">
+    <main className="@container min-h-screen py-8 text-foreground">
       {/* Background */}
       <div className="fixed inset-0 pointer-events-none -z-10">
         <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 via-transparent to-amber-500/5 dark:from-amber-500/10 dark:to-amber-500/10" />
@@ -50,7 +50,7 @@ export default function VocabularyGamesPage() {
             onClick={() => setShowGuide(true)}
             whileHover={shouldReduceMotion ? undefined : { scale: 1.05 }}
             whileTap={shouldReduceMotion ? undefined : { scale: 0.95 }}
-            className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-md hover:shadow-lg transition-all text-game-primary border border-game-border"
+            className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-md hover:shadow-lg transition-all text-old-game-primary border border-old-game-border"
           >
             <HelpCircleIcon className="h-5 w-5" />
             <span>How to Play</span>
@@ -67,8 +67,8 @@ export default function VocabularyGamesPage() {
           />
 
           {/* Content */}
-          <CardContent className="p-6 bg-game-surface min-h-[600px]">
-            <Suspense fallback={<div className="flex items-center justify-center h-64 text-game-text-muted">Loading game...</div>}>
+          <CardContent className="p-6 bg-linear-to-br from-transparent via-old-game-primary-soft/40 to-transparent min-h-[600px] ">
+            <Suspense fallback={<div className="flex items-center justify-center h-64 text-old-game-text-muted">Loading game...</div>}>
               <AnimatePresence mode="wait">
                 {activeTab === "quiz" && (
                   <motion.div
@@ -175,30 +175,30 @@ function PageHeader({ title, subtitle, badges, shouldReduceMotion }: PageHeaderP
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: shouldReduceMotion ? 0 : 0.5 }}
       >
-        <div className="absolute inset-0 bg-gradient-to-r from-game-primary/20 via-game-primary-dark/20 to-game-primary/20 rounded-lg blur-md" />
+        <div className="absolute inset-0 bg-gradient-to-r from-old-game-primary/20 via-old-game-primary-dark/20 to-old-game-primary/20 rounded-lg blur-md" />
         <div className="relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg px-8 py-4 shadow-lg">
           <div className="flex items-center justify-center gap-3">
             <motion.div
               animate={shouldReduceMotion ? undefined : { rotate: [0, 10, 0, -10, 0] }}
               transition={{ duration: 5, repeat: Infinity }}
             >
-              <BookIcon className="h-8 w-8 text-game-primary" />
+              <BookIcon className="h-8 w-8 text-old-game-primary" />
             </motion.div>
-            <h1 className="text-3xl md:text-5xl font-bold text-game-gradient">
+            <h1 className="text-3xl md:text-5xl font-bold text-old-game-gradient">
               {title}
             </h1>
             <motion.div
               animate={shouldReduceMotion ? undefined : { rotate: [0, -10, 0, 10, 0] }}
               transition={{ duration: 5, repeat: Infinity }}
             >
-              <BookIcon className="h-8 w-8 text-game-primary" />
+              <BookIcon className="h-8 w-8 text-old-game-primary" />
             </motion.div>
           </div>
         </div>
       </motion.div>
 
       <motion.p
-        className="text-lg text-game-text-muted max-w-xl mx-auto"
+        className="text-lg text-old-game-text-muted max-w-xl mx-auto"
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: shouldReduceMotion ? 0 : 0.5, delay: shouldReduceMotion ? 0 : 0.3 }}
@@ -215,7 +215,7 @@ function PageHeader({ title, subtitle, badges, shouldReduceMotion }: PageHeaderP
         {badges.map((badge, i) => (
           <motion.span
             key={badge}
-            className="text-xs font-bold game-primary-soft text-game-primary px-2 py-1 rounded-full"
+            className="text-xs font-bold old-game-primary-soft text-old-game-primary px-2 py-1 rounded-full"
             animate={shouldReduceMotion ? undefined : { y: [0, -5, 0] }}
             transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.2 }}
           >
@@ -235,7 +235,7 @@ type GameTabsProps = {
 
 function GameTabs({ tabs, activeTab, onTabChange }: GameTabsProps) {
   return (
-    <div className="flex overflow-x-auto snap-x scrollbar-hide rounded-t-lg bg-gradient-to-r from-game-primary/40 to-game-primary-dark/50">
+    <div className="flex overflow-x-auto snap-x scrollbar-hide rounded-t-lg bg-gradient-to-r from-old-game-primary/40 to-old-game-primary-dark/50">
       {tabs.map(tab => {
         const Icon = tab.icon
         const isActive = activeTab === tab.id
@@ -247,13 +247,13 @@ function GameTabs({ tabs, activeTab, onTabChange }: GameTabsProps) {
             className={`relative flex-1 min-w-[100px] flex items-center justify-center gap-2 py-4 px-3 transition-all duration-300 ${
               isActive
                 ? "text-white"
-                : "text-gray-500 hover:text-game-primary dark:text-gray-400"
+                : "text-gray-500 hover:text-old-game-primary dark:text-gray-400"
             }`}
           >
             {isActive && (
               <motion.div
                 layoutId="tab-background"
-                className="absolute inset-0 bg-game-gradient"
+                className="absolute inset-0 bg-old-game-gradient"
                 initial={false}
                 transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
               />
@@ -287,16 +287,16 @@ function GameGuideModal({ guide, onClose }: GameGuideModalProps) {
         initial={{ scale: 0.9, y: 20 }}
         animate={{ scale: 1, y: 0 }}
         exit={{ scale: 0.9, y: 20 }}
-        className="bg-game-surface rounded-xl p-6 max-w-md w-full shadow-2xl"
+        className="bg-old-game-surface rounded-xl p-6 max-w-md w-full shadow-2xl"
         onClick={e => e.stopPropagation()}
       >
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold text-game-primary">
+          <h2 className="text-xl font-bold text-old-game-primary">
             How to Play: {guide.title}
           </h2>
           <button
             onClick={onClose}
-            className="text-game-text-muted hover:text-game-text"
+            className="text-old-game-text-muted hover:text-old-game-text"
           >
             <XIcon className="h-5 w-5" />
           </button>
@@ -311,10 +311,10 @@ function GameGuideModal({ guide, onClose }: GameGuideModalProps) {
               transition={{ delay: index * 0.1 }}
               className="flex items-start gap-3"
             >
-              <div className="flex-shrink-0 w-6 h-6 rounded-full game-primary-soft text-game-primary flex items-center justify-center font-bold text-sm">
+              <div className="flex-shrink-0 w-6 h-6 rounded-full old-game-primary-soft text-old-game-primary flex items-center justify-center font-bold text-sm">
                 {index + 1}
               </div>
-              <p className="text-game-text">{step}</p>
+              <p className="text-old-game-text">{step}</p>
             </motion.div>
           ))}
         </div>
@@ -323,7 +323,7 @@ function GameGuideModal({ guide, onClose }: GameGuideModalProps) {
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="px-6 py-2 bg-game-gradient text-white rounded-full shadow-md"
+            className="px-6 py-2 bg-old-game-gradient text-white rounded-full shadow-md"
             onClick={onClose}
           >
             Got it!
@@ -352,7 +352,7 @@ function CelebrationModal({ message, onClose }: CelebrationModalProps) {
         initial={{ scale: 0.9, y: 20 }}
         animate={{ scale: 1, y: 0 }}
         exit={{ scale: 0.9, y: 20 }}
-        className="bg-game-surface rounded-xl p-6 max-w-md w-full shadow-2xl text-center"
+        className="bg-old-game-surface rounded-xl p-6 max-w-md w-full shadow-2xl text-center"
         onClick={e => e.stopPropagation()}
       >
         <motion.div
@@ -362,14 +362,14 @@ function CelebrationModal({ message, onClose }: CelebrationModalProps) {
         >
           ⭐
         </motion.div>
-        <h2 className="text-2xl font-bold text-game-primary mb-4">
+        <h2 className="text-2xl font-bold text-old-game-primary mb-4">
           Congratulations!
         </h2>
-        <p className="text-game-text mb-6">{message}</p>
+        <p className="text-old-game-text mb-6">{message}</p>
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          className="px-6 py-3 bg-game-gradient text-white rounded-full shadow-md"
+          className="px-6 py-3 bg-old-game-gradient text-white rounded-full shadow-md"
           onClick={onClose}
         >
           Continue Learning

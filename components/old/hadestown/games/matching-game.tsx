@@ -100,12 +100,12 @@ export function MatchingGame({ pairs, onComplete }: MatchingGameProps) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="space-y-1">
-          <p className="text-sm text-game-text-muted">
-            Matched: <span className="font-semibold text-game-primary">{state.matchedPairs.size}</span> / {pairs.length}
+          <p className="text-sm text-old-game-text-muted">
+            Matched: <span className="font-semibold text-old-game-primary">{state.matchedPairs.size}</span> / {pairs.length}
           </p>
-          <div className="h-1.5 w-32 bg-game-primary-light rounded-full overflow-hidden">
+          <div className="h-1.5 w-32 bg-old-game-primary-light rounded-full overflow-hidden">
             <motion.div
-              className="h-full bg-game-gradient rounded-full"
+              className="h-full bg-old-game-gradient rounded-full"
               initial={false}
               animate={{ width: `${(state.matchedPairs.size / pairs.length) * 100}%` }}
               transition={smoothSpring}
@@ -117,7 +117,7 @@ export function MatchingGame({ pairs, onComplete }: MatchingGameProps) {
           onClick={reset}
           whileHover={shouldReduceMotion ? undefined : { scale: 1.05 }}
           whileTap={shouldReduceMotion ? undefined : { scale: 0.95 }}
-          className="flex items-center gap-2 px-3 py-1.5 text-sm rounded-full bg-game-surface border border-game-border text-game-text-muted hover:text-game-primary hover:border-game-primary transition-colors"
+          className="flex items-center gap-2 px-3 py-1.5 text-sm rounded-full bg-old-game-surface border border-old-game-border text-old-game-text-muted hover:text-old-game-primary hover:border-old-game-primary transition-colors"
         >
           <RotateCcw className="h-3.5 w-3.5" />
           Reset
@@ -128,7 +128,7 @@ export function MatchingGame({ pairs, onComplete }: MatchingGameProps) {
       <div className="grid grid-cols-2 gap-4">
         {/* Words Column */}
         <div className="space-y-2">
-          <p className="text-xs font-medium text-game-text-muted mb-3">Words</p>
+          <p className="text-xs font-medium text-old-game-text-muted mb-3">Words</p>
           {pairs.map((pair, index) => {
             const isMatched = state.matchedPairs.has(pair.word)
             const isSelected = state.selectedWord === pair.word
@@ -147,12 +147,12 @@ export function MatchingGame({ pairs, onComplete }: MatchingGameProps) {
                   w-full p-3 rounded-xl text-left text-sm font-medium
                   border-2 transition-all duration-200
                   ${isMatched
-                    ? "bg-game-success-light border-game-success text-game-success-text"
+                    ? "bg-old-game-success-light border-old-game-success text-old-game-success-text"
                     : isWrong
-                      ? "bg-game-error-light border-game-error text-game-error-text animate-shake"
+                      ? "bg-old-game-error-light border-old-game-error text-old-game-error-text animate-shake"
                       : isSelected
-                        ? "bg-game-selected border-game-primary text-game-selected-text shadow-md"
-                        : "bg-game-surface border-transparent hover:border-game-primary hover:bg-game-surface-soft text-game-text"
+                        ? "bg-old-game-selected border-old-game-primary text-old-game-selected-text shadow-md"
+                        : "bg-old-game-surface border-transparent hover:border-old-game-primary hover:bg-old-game-surface-soft text-old-game-text"
                   }
                   disabled:cursor-default
                 `}
@@ -165,7 +165,7 @@ export function MatchingGame({ pairs, onComplete }: MatchingGameProps) {
 
         {/* Matches Column */}
         <div className="space-y-2">
-          <p className="text-xs font-medium text-game-text-muted mb-3">Definitions</p>
+          <p className="text-xs font-medium text-old-game-text-muted mb-3">Definitions</p>
           {shuffledMatches.map((match, index) => {
             const matchedWord = pairs.find(p => p.match === match && state.matchedPairs.has(p.word))
             const isMatched = !!matchedWord
@@ -185,12 +185,12 @@ export function MatchingGame({ pairs, onComplete }: MatchingGameProps) {
                   w-full p-3 rounded-xl text-left text-sm
                   border-2 transition-all duration-200
                   ${isMatched
-                    ? "bg-game-success-light border-game-success text-game-success-text"
+                    ? "bg-old-game-success-light border-old-game-success text-old-game-success-text"
                     : isWrong
-                      ? "bg-game-error-light border-game-error text-game-error-text animate-shake"
+                      ? "bg-old-game-error-light border-old-game-error text-old-game-error-text animate-shake"
                       : canSelect
-                        ? "bg-game-surface border-transparent hover:border-game-primary hover:bg-game-surface-soft text-game-text cursor-pointer"
-                        : "bg-game-surface border-transparent text-game-text-muted cursor-default opacity-60"
+                        ? "bg-old-game-surface border-transparent hover:border-old-game-primary hover:bg-old-game-surface-soft text-old-game-text cursor-pointer"
+                        : "bg-old-game-surface border-transparent text-old-game-text-muted cursor-default opacity-60"
                   }
                 `}
               >
@@ -209,14 +209,14 @@ export function MatchingGame({ pairs, onComplete }: MatchingGameProps) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={smoothSpring}
-            className="text-center p-4 rounded-xl bg-game-success-light border border-game-success"
+            className="text-center p-4 rounded-xl bg-old-game-success-light border border-old-game-success"
           >
-            <div className="flex items-center justify-center gap-2 text-game-success-text">
+            <div className="flex items-center justify-center gap-2 text-old-game-success-text">
               <Sparkles className="h-5 w-5" />
               <span className="font-semibold">All matched!</span>
               <Sparkles className="h-5 w-5" />
             </div>
-            <p className="text-sm text-game-success-text mt-1">
+            <p className="text-sm text-old-game-success-text mt-1">
               Accuracy: {accuracy}% ({state.matchedPairs.size}/{state.attempts} attempts)
             </p>
           </motion.div>

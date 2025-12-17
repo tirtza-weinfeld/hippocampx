@@ -304,12 +304,7 @@ export default function LyricsExplorerPage() {
     //  text-foreground dark:from-gray-950 dark:to-amber-950/80">
     <main className="@container min-h-screen py-8  ">
       {/* Animated gradient background */}
-      <div className="fixed inset-0 pointer-events-none -z-10">
-        <div className="absolute inset-0 dark:bg-gradient-to-br dark:from-amber-800/30 dark:via-gray-900 dark:to-red-800/30 animate-gradient"></div>
-        <div className="absolute bottom-0 w-full h-[30%] bg-gradient-to-t from-amber-100/10 to-transparent dark:from-amber-700/30 dark:to-transparent"></div>
-        <div className="absolute top-0 left-0 w-1/3 h-1/3 bg-gradient-to-br from-primary/5 to-transparent dark:from-amber-600/20 dark:to-transparent"></div>
-        <div className="railroad-pattern absolute inset-0 opacity-10 dark:opacity-20"></div>
-      </div>
+    
 
 
 

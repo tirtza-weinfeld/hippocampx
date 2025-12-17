@@ -34,7 +34,6 @@ export function ERTableNode({
   onSelect,
   reducedMotion = false,
 }: ERTableNodeProps) {
-  const isNeon = table.provider === "neon";
   const height = LAYOUT.HEADER_HEIGHT + table.columns.length * LAYOUT.COLUMN_HEIGHT + 8;
   const animationDuration = reducedMotion ? 0 : 0.25;
 
@@ -85,7 +84,7 @@ export function ERTableNode({
         width={4}
         height={LAYOUT.HEADER_HEIGHT}
         rx={2}
-        className={isNeon ? "fill-db-neon" : "fill-db-vercel"}
+        className="fill-db-neon"
       />
 
       {/* Table Name */}
@@ -104,15 +103,15 @@ export function ERTableNode({
           width={40}
           height={18}
           rx={4}
-          className={isNeon ? "fill-db-neon/15" : "fill-db-vercel/15"}
+          className="fill-db-neon/15"
         />
         <text
           x={20}
           y={13}
           textAnchor="middle"
-          className={`text-[9px] font-bold uppercase ${isNeon ? "fill-db-neon" : "fill-db-vercel"}`}
+          className="text-[9px] font-bold uppercase fill-db-neon"
         >
-          {table.provider}
+          neon
         </text>
       </g>
 

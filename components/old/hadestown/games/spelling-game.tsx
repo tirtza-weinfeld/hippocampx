@@ -289,26 +289,26 @@ export function SpellingGame({ words, onComplete }: SpellingGameProps) {
       <LayoutGroup>
         <div className="flex flex-col h-full min-h-[500px]">
           {/* Progress Header */}
-          <header className="flex items-center gap-3 pb-4 mb-4 border-b border-game-border">
+          <header className="flex items-center gap-3 pb-4 mb-4 border-b border-old-game-border">
             <NavButton direction="prev" onClick={() => { navigate(-1) }} {...motionConfig} />
 
             <div className="flex-1 space-y-1">
               <div className="flex justify-between text-xs">
-                <span className="text-game-text-muted">
+                <span className="text-old-game-text-muted">
                   Word {state.currentIndex + 1} of {words.length}
                 </span>
                 <motion.span
                   key={state.score}
                   initial={shouldReduceMotion ? false : { scale: 1.3 }}
                   animate={{ scale: 1 }}
-                  className="text-game-primary font-semibold"
+                  className="text-old-game-primary font-semibold"
                 >
                   {state.score} correct
                 </motion.span>
               </div>
-              <div className="h-1.5 bg-game-primary-light rounded-full overflow-hidden">
+              <div className="h-1.5 bg-old-game-primary-light rounded-full overflow-hidden">
                 <motion.div
-                  className="h-full bg-game-gradient rounded-full"
+                  className="h-full bg-old-game-gradient rounded-full"
                   initial={false}
                   animate={{ width: `${((state.currentIndex + 1) / words.length) * 100}%` }}
                   transition={smoothSpring}
@@ -337,7 +337,7 @@ export function SpellingGame({ words, onComplete }: SpellingGameProps) {
                       onClick={toggleHint}
                       whileHover={shouldReduceMotion ? undefined : { scale: 1.05 }}
                       whileTap={shouldReduceMotion ? undefined : { scale: 0.95 }}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-full bg-game-surface-soft text-game-text-muted hover:text-game-primary transition-colors"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-full bg-old-game-surface-soft text-old-game-text-muted hover:text-old-game-primary transition-colors"
                     >
                       <Lightbulb className="h-3.5 w-3.5" />
                       {state.showHint ? "Hide hint" : "Show hint"}
@@ -347,7 +347,7 @@ export function SpellingGame({ words, onComplete }: SpellingGameProps) {
                       onClick={resetCurrentWord}
                       whileHover={shouldReduceMotion ? undefined : { scale: 1.05 }}
                       whileTap={shouldReduceMotion ? undefined : { scale: 0.95 }}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-full bg-game-surface-soft text-game-text-muted hover:text-game-primary transition-colors"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-full bg-old-game-surface-soft text-old-game-text-muted hover:text-old-game-primary transition-colors"
                     >
                       <RotateCcw className="h-3.5 w-3.5" />
                       Reset
@@ -363,7 +363,7 @@ export function SpellingGame({ words, onComplete }: SpellingGameProps) {
                         transition={smoothSpring}
                         className="overflow-hidden"
                       >
-                        <p className="p-3 text-sm italic text-game-text-muted bg-game-surface-soft rounded-lg max-w-md mx-auto">
+                        <p className="p-3 text-sm italic text-old-game-text-muted bg-old-game-surface-soft rounded-lg max-w-md mx-auto">
                           {currentWord.hint}
                         </p>
                       </motion.div>
@@ -409,13 +409,13 @@ export function SpellingGame({ words, onComplete }: SpellingGameProps) {
                       transition={smoothSpring}
                       className={`mt-4 p-4 rounded-xl text-center ${
                         state.isCorrect
-                          ? "bg-game-success-light border border-game-success"
-                          : "bg-game-error-light border border-game-error"
+                          ? "bg-old-game-success-light border border-old-game-success"
+                          : "bg-old-game-error-light border border-old-game-error"
                       }`}
                     >
                       {state.isCorrect ? (
                         <div className="space-y-2">
-                          <div className="flex items-center justify-center gap-2 text-game-success-text">
+                          <div className="flex items-center justify-center gap-2 text-old-game-success-text">
                             <Sparkles className="h-5 w-5" />
                             <span className="font-semibold">Correct! Great job!</span>
                             <Sparkles className="h-5 w-5" />
@@ -424,14 +424,14 @@ export function SpellingGame({ words, onComplete }: SpellingGameProps) {
                             <motion.p
                               initial={{ opacity: 0 }}
                               animate={{ opacity: 1 }}
-                              className="text-sm text-game-success-text mt-2"
+                              className="text-sm text-old-game-success-text mt-2"
                             >
                               <span className="font-semibold">Fun Fact:</span> {currentWord.funFact}
                             </motion.p>
                           )}
                         </div>
                       ) : (
-                        <div className="text-game-error-text">
+                        <div className="text-old-game-error-text">
                           <p className="font-semibold">Not quite right. Try again!</p>
                           <p className="text-sm mt-1">
                             Drag letters back and try a different order.
@@ -466,7 +466,7 @@ export function SpellingGame({ words, onComplete }: SpellingGameProps) {
           <motion.div
             initial={{ scale: 1 }}
             animate={{ scale: 1.15, rotate: 3 }}
-            className="w-12 h-12 md:w-14 md:h-14 flex items-center justify-center rounded-lg font-bold text-xl bg-game-gradient text-white shadow-2xl cursor-grabbing ring-2 ring-white/50"
+            className="w-12 h-12 md:w-14 md:h-14 flex items-center justify-center rounded-lg font-bold text-xl bg-old-game-gradient text-white shadow-2xl cursor-grabbing ring-2 ring-white/50"
           >
             {activeTile.letter}
           </motion.div>
@@ -491,7 +491,7 @@ function NavButton({ direction, onClick, transition }: NavButtonProps) {
       whileHover={transition?.duration === 0 ? undefined : { scale: 1.1 }}
       whileTap={transition?.duration === 0 ? undefined : { scale: 0.95 }}
       transition={spring}
-      className="p-2.5 rounded-full bg-game-surface border border-game-border text-game-text-muted hover:text-game-primary hover:border-game-primary hover:bg-game-surface-soft transition-colors"
+      className="p-2.5 rounded-full bg-old-game-surface border border-old-game-border text-old-game-text-muted hover:text-old-game-primary hover:border-old-game-primary hover:bg-old-game-surface-soft transition-colors"
       aria-label={direction === "prev" ? "Previous word" : "Next word"}
     >
       <Icon className="h-5 w-5" />
@@ -529,13 +529,13 @@ function LetterSlot({ slotId, tile, isCorrect, onClick, disabled, shouldReduceMo
   const variant = getVariant()
 
   const styles = {
-    empty: "border-dashed border-game-border bg-game-surface-soft",
+    empty: "border-dashed border-old-game-border bg-old-game-surface-soft",
     filled:
-      "bg-game-selected border-game-primary text-game-selected-text cursor-grab shadow-md",
+      "bg-old-game-selected border-old-game-primary text-old-game-selected-text cursor-grab shadow-md",
     correct:
-      "bg-game-success-light border-game-success text-game-success-text shadow-md",
+      "bg-old-game-success-light border-old-game-success text-old-game-success-text shadow-md",
     incorrect:
-      "bg-game-error-light border-game-error text-game-error-text shadow-md",
+      "bg-old-game-error-light border-old-game-error text-old-game-error-text shadow-md",
   }
 
   return (
@@ -549,7 +549,7 @@ function LetterSlot({ slotId, tile, isCorrect, onClick, disabled, shouldReduceMo
       className={`
         w-12 h-12 md:w-14 md:h-14 flex items-center justify-center rounded-lg border-2 font-bold text-xl transition-all duration-200
         ${styles[variant]}
-        ${isOver ? "ring-2 ring-game-primary ring-offset-2 scale-105" : ""}
+        ${isOver ? "ring-2 ring-old-game-primary ring-offset-2 scale-105" : ""}
         ${isDragging ? "opacity-50" : ""}
         ${tile && !disabled ? "active:cursor-grabbing" : ""}
       `}
@@ -589,11 +589,11 @@ function AvailableLettersArea({ letters, onLetterClick, disabled, shouldReduceMo
   return (
     <div
       ref={setNodeRef}
-      className={`p-4 rounded-xl bg-game-surface border border-game-border transition-all ${
-        isOver ? "ring-2 ring-game-primary bg-game-surface-soft" : ""
+      className={`p-4 rounded-xl bg-old-game-surface border border-old-game-border transition-all ${
+        isOver ? "ring-2 ring-old-game-primary bg-old-game-surface-soft" : ""
       }`}
     >
-      <p className="text-xs font-medium text-game-text-muted mb-3 text-center">
+      <p className="text-xs font-medium text-old-game-text-muted mb-3 text-center">
         Drag letters to spell the word
       </p>
       <div className="flex flex-wrap justify-center gap-2 min-h-[56px]">
@@ -610,7 +610,7 @@ function AvailableLettersArea({ letters, onLetterClick, disabled, shouldReduceMo
           ))}
         </AnimatePresence>
         {letters.length === 0 && !disabled && (
-          <p className="text-sm text-game-text-muted italic py-3">
+          <p className="text-sm text-old-game-text-muted italic py-3">
             All letters placed!
           </p>
         )}
@@ -652,7 +652,7 @@ function DraggableLetter({ tile, index, onClick, disabled, shouldReduceMotion }:
       whileTap={shouldReduceMotion || disabled ? undefined : { scale: 0.95 }}
       className={`
         w-12 h-12 md:w-14 md:h-14 flex items-center justify-center rounded-lg font-bold text-xl
-        bg-game-gradient text-white shadow-md cursor-grab active:cursor-grabbing touch-manipulation
+        bg-old-game-gradient text-white shadow-md cursor-grab active:cursor-grabbing touch-manipulation
         ${isDragging ? "opacity-50" : ""}
       `}
       {...attributes}
@@ -693,7 +693,7 @@ function ActionButton({
           transition={smoothSpring}
           onClick={onCheck}
           disabled={!canCheck}
-          className="w-full py-4 text-base font-semibold rounded-2xl bg-game-gradient text-white shadow-lg hover:shadow-xl hover:brightness-110 active:scale-[0.98] transition-all disabled:cursor-not-allowed"
+          className="w-full py-4 text-base font-semibold rounded-2xl bg-old-game-gradient text-white shadow-lg hover:shadow-xl hover:brightness-110 active:scale-[0.98] transition-all disabled:cursor-not-allowed"
         >
           Check Spelling
         </motion.button>
@@ -707,8 +707,8 @@ function ActionButton({
           onClick={onNext}
           className={`w-full py-4 text-base font-semibold rounded-2xl text-white shadow-lg hover:shadow-xl hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-2 ${
             isCorrect
-              ? "bg-gradient-to-r from-game-success to-emerald-600"
-              : "bg-game-gradient"
+              ? "bg-gradient-to-r from-old-game-success to-emerald-600"
+              : "bg-old-game-gradient"
           }`}
         >
           {isCorrect && <Sparkles className="h-5 w-5" />}
