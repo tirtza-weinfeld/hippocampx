@@ -20,17 +20,15 @@ import type {
   DatabaseProvider,
 } from "./types";
 
-import * as neonSchema from "@/lib/db/neon/schema";
-import * as vercelSchema from "@/lib/db/vercel/schema";
+import * as schema from "@/lib/db/schema";
 
 // ============================================================================
 // Schema Registry
 // ============================================================================
 
 const SCHEMA_MODULES = {
-  neon: neonSchema,
-  vercel: vercelSchema,
-} as const satisfies Record<DatabaseProvider, Record<string, unknown>>;
+  neon: schema,
+} as const satisfies Partial<Record<DatabaseProvider, Record<string, unknown>>>;
 
 // ============================================================================
 // Table Detection
@@ -167,12 +165,15 @@ export function getSchemaTableNames(): string[] {
   return buildSchemaTopology().tables.map(t => t.name);
 }
 
-export function getTablesByProvider(): Record<DatabaseProvider, string[]> {
+export function getTablesByProvider(): Partial<Record<DatabaseProvider, string[]>> {
   const topology = buildSchemaTopology();
-  const result: Record<DatabaseProvider, string[]> = { neon: [], vercel: [] };
+  const result: Partial<Record<DatabaseProvider, string[]>> = { neon: [] };
 
   for (const table of topology.tables) {
-    result[table.provider].push(table.name);
+    if (!result[table.provider]) {
+      result[table.provider] = [];
+    }
+    result[table.provider]!.push(table.name);
   }
 
   return result;

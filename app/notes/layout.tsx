@@ -8,7 +8,7 @@ export default function NotesLayout({
   children: React.ReactNode
 }) {
   return (
-    <div className="@container mx-auto py-8 px-4 ">
+    <div className="@container mx-auto py-8 px-4 notes">
       <div className="max-w-none">
         {children}
       </div>

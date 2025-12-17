@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import { Maximize2, Minimize2 } from 'lucide-react';
 import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
@@ -39,13 +39,13 @@ export function CodeBlockClient({
   const shouldShowToggle = totalLines > MAX_LINES_COLLAPSED;
 
   // Measure heights using callback ref
-  const contentRef = useCallback((node: HTMLDivElement | null) => {
+  const contentRef = (node: HTMLDivElement | null) => {
     if (node !== null) {
       const fullHeight = node.scrollHeight;
       const collapsed = MAX_LINES_COLLAPSED * LINE_HEIGHT;
       setHeights({ collapsed, expanded: fullHeight });
     }
-  }, []);
+  };
 
   function toggleExpanded(): void {
     setIsExpanded(prev => !prev);

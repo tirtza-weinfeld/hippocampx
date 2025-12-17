@@ -34,10 +34,10 @@ from code_cleaner import clean_code
 
 def get_db_connection():
     """Get PostgreSQL connection from environment variables."""
-    database_url = os.getenv('POSTGRES_URL')
+    database_url = os.getenv('NEON_DATABASE_URL')
 
     if not database_url:
-        raise ValueError("POSTGRES_URL environment variable not set in .env.local")
+        raise ValueError("NEON_DATABASE_URL environment variable not set in .env.local")
 
     return psycopg2.connect(database_url)
 

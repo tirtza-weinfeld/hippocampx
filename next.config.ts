@@ -36,6 +36,9 @@ const withMDX = createMDX({
 })
 
 const nextConfig: NextConfig = {
+  // experimental: {
+  //   viewTransition: true,
+  // },
   cacheComponents: true,
   typedRoutes: true,
   reactCompiler: true,

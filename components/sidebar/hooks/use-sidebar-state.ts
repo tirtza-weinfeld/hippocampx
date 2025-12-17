@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback, useEffect, useRef } from "react"
+import { useState, useEffect, useRef } from "react"
 import { usePathname } from "next/navigation"
 import type { ExpandedItems } from "../types"
 import { navigationItems, SIDEBAR_COOKIE_NAME, SIDEBAR_COOKIE_MAX_AGE } from "../constants"
@@ -13,11 +13,11 @@ export function useSidebarState(defaultOpen: boolean, isMobile: boolean) {
   const pathname = usePathname()
   const navRefs = useRef<Map<string, HTMLElement>>(new Map())
 
-  const setExpandedWithCookie = useCallback((value: boolean | ((value: boolean) => boolean)) => {
+  const setExpandedWithCookie = (value: boolean | ((value: boolean) => boolean)) => {
     const expandedState = typeof value === "function" ? value(isExpanded) : value
     setIsExpanded(expandedState)
     document.cookie = `${SIDEBAR_COOKIE_NAME}=${expandedState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`
-  }, [isExpanded])
+  }
 
   useEffect(() => {
     navigationItems.forEach((item) => {
@@ -38,17 +38,17 @@ export function useSidebarState(defaultOpen: boolean, isMobile: boolean) {
     })
   }, [pathname])
 
-  const toggleSidebar = useCallback(() => {
+  const toggleSidebar = () => {
     setExpandedWithCookie((prev) => !prev)
-  }, [setExpandedWithCookie])
+  }
 
-  const toggleMobileSidebar = useCallback(() => {
+  const toggleMobileSidebar = () => {
     setIsMobileOpen((prev) => !prev)
-  }, [])
+  }
 
-  const toggleSearch = useCallback(() => {
+  const toggleSearch = () => {
     setIsSearchOpen((prev) => !prev)
-  }, [])
+  }
 
   function handleNavigation(href: string, parentHref?: string) {
     setIsSearchOpen(false)

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback, useMemo } from "react"
+import { useState, useMemo } from "react"
 import { motion, AnimatePresence } from "motion/react"
 import { 
   Search, 
@@ -154,7 +154,7 @@ export function AlgorithmMascot({ isOpen, onClose, algorithms = mockAlgorithms }
     });
   }, [algorithms, searchQuery, selectedTopics, selectedDifficulty]);
 
-  const toggleTopic = useCallback((topic: string) => {
+  const toggleTopic = (topic: string) => {
     setSelectedTopics(prev => {
       const newSet = new Set(prev);
       if (newSet.has(topic)) {
@@ -164,17 +164,17 @@ export function AlgorithmMascot({ isOpen, onClose, algorithms = mockAlgorithms }
       }
       return newSet;
     });
-  }, []);
+  };
 
-  const clearFilters = useCallback(() => {
+  const clearFilters = () => {
     setSelectedTopics(new Set());
     setSelectedDifficulty("all");
     setSearchQuery("");
-  }, []);
+  };
 
-  const toggleExpanded = useCallback((algorithmName: string) => {
+  const toggleExpanded = (algorithmName: string) => {
     setExpandedAlgorithm(prev => prev === algorithmName ? null : algorithmName);
-  }, []);
+  };
 
   if (!isOpen) return null;
 

@@ -1,7 +1,5 @@
 @theme inline {
-
-
-  --color-fun-yellow:  oklch(0.85 0.229 101.54)   ;
+  --color-fun-yellow: oklch(0.85 0.229 101.54);
   --color-fun-orange: oklch(75.29% 0.2 60);
   --color-fun-green: oklch(70.2% 0.2 158.57);
   --color-fun-teal: oklch(70.2% 0.2 198.57);
@@ -10,45 +8,35 @@
   --color-fun-pink: oklch(30.2% 0.2 358.57);
 }
 
-.infinity {
-  /* --primary: oklch(97.31% 0.02 233.14); */
-  
+/* Route theme: infinity - activated by any .infinity descendant */
+body:has(.infinity) {
   --secondary: oklch(95.5% 0.04 282.1);
   --accent: var(--color-pink-300);
   --neutral: oklch(97.31% 0.02 233.14);
-  --background:oklch(0.967 0.003 264.542);
+  --background: oklch(0.967 0.003 264.542);
   --foreground: oklch(0% 0 0);
+}
 
-
-  
-  
-
-
- .btn {
+body:has(.infinity) .btn {
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
   padding: 0.5rem 1rem;
-
-}
- .btn-primary {
-    background-color:color-mix(in oklab, var(--color-pink-200), var(--color-blue-600)50%);
-
-    
-  }
-
 }
 
-.dark .infinity {
+body:has(.infinity) .btn-primary {
+  background-color: color-mix(in oklab, var(--color-pink-200), var(--color-blue-600) 50%);
+}
+
+.dark body:has(.infinity) {
   --primary: oklch(97.31% 0.02 233.14);
   --secondary: oklch(95.5% 0.04 282.1);
   --accent: var(--color-pink-500);
   --neutral: oklch(0.967 0.003 264.542);
   --background: oklch(25.5% 0.036 257.1);
   --foreground: oklch(97.31% 0.02 233.14);
+}
 
-
-  .btn-primary {
-   background-color:color-mix(in oklab, var(--color-pink-500), var(--color-blue-800)50%);
-  }
+.dark body:has(.infinity) .btn-primary {
+  background-color: color-mix(in oklab, var(--color-pink-500), var(--color-blue-800) 50%);
 }
 
 /* Math equation styles */

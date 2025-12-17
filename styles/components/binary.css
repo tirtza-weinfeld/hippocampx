@@ -1,16 +1,8 @@
-/* Theme tokens: colors, spacing, and container settings */
-.binary {
+/* Route theme: binary - activated by any .binary descendant */
+body:has(.binary) {
   --accent: var(--color-blue-300);
-
-  /* --primary: var(--color-teal-300); 
-    --primary-foreground: var(--color-gray-900);  */
 }
 
-.dark .binary {
+.dark body:has(.binary) {
   --accent: var(--color-blue-800);
-  /* --background: oklch(0.99 0 0);
-  --foreground: oklch(0.1 0 0);
-
-  --primary: var(--color-red-300); 
-  --primary-foreground: var(--color-red-900);  */
 }

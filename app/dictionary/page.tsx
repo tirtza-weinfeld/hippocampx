@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import * as motion from "motion/react-client";
-import { fetchEntriesInitial } from "@/lib/db/neon/queries/dictionary/index";
+import { fetchEntriesInitial } from "@/lib/db/queries/dictionary";
 import { DictionaryHeader } from "@/components/dictionary/dictionary-header";
 import { DictionaryContent } from "@/components/dictionary/dictionary-content";
 

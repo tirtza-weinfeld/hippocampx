@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence, useReducedMotion } from "motion/react"
 import { cn } from "@/lib/utils"
-import { useState, useMemo, useEffect, useCallback } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { Tags, X } from "lucide-react"
 
 interface PillListProps {
@@ -58,9 +58,9 @@ export const PillList = ({ pills, className }: PillListProps) => {
     )
   }, [pillsArray])
 
-  const handleToggle = useCallback(() => {
+  const handleToggle = () => {
     setIsExpanded(!isExpanded)
-  }, [isExpanded])
+  }
 
   // Enhanced keyboard handlers
   useEffect(() => {

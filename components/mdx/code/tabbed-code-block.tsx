@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useCallback } from 'react'
+import React, { useState } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'motion/react'
 import { cn } from '@/lib/utils'
 import CopyCode from './copy-code'
@@ -20,9 +20,9 @@ export default function TabbedCodeBlock({ tabs, className }: TabbedCodeBlockProp
   const [selectedTab, setSelectedTab] = useState<string>(tabs[0]?.label ?? '')
   const shouldReduceMotion = useReducedMotion()
 
-  const handleTabChange = useCallback((tabLabel: string) => {
+  const handleTabChange = (tabLabel: string) => {
     setSelectedTab(tabLabel)
-  }, [])
+  }
 
   const selectedTabData = tabs.find(tab => tab.label === selectedTab)
 

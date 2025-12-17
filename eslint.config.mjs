@@ -1,17 +1,17 @@
-import { defineConfig, globalIgnores } from "eslint/config";
-import nextVitals from "eslint-config-next/core-web-vitals";
-import nextTs from "eslint-config-next/typescript";
+import { globalIgnores } from "eslint/config";
+import nextPlugin from "@next/eslint-plugin-next";
+import reactHooks from "eslint-plugin-react-hooks";
 import tseslint from "typescript-eslint";
 
-export default defineConfig([
-  // Next.js Core Web Vitals (includes React, React Hooks, Next.js rules)
-  ...nextVitals,
+export default tseslint.config(
+  // React 19.2+ strictest: recommended-latest with React Compiler rules
+  reactHooks.configs.flat["recommended-latest"],
 
-  // Next.js TypeScript configuration
-  ...nextTs,
+  // Next.js 16+ core-web-vitals (includes recommended)
+  nextPlugin.configs["core-web-vitals"],
 
-  // typescript-eslint strict type-checked rules (maximum strictness)
-  ...tseslint.configs.strictTypeChecked,
+  // TypeScript strict type-checked rules
+  tseslint.configs.strictTypeChecked,
 
   // TypeScript parser options for type-aware linting
   {
@@ -23,28 +23,28 @@ export default defineConfig([
     },
   },
 
-  // Rule overrides to align with React 19.2+ official patterns
+  // Rule overrides for React 19.2+ patterns
   {
     rules: {
       // React docs recommend: onClick={() => doSomething()}
-      "@typescript-eslint/no-confusing-void-expression": ["error", {
-        ignoreArrowShorthand: true,
-      }],
+      "@typescript-eslint/no-confusing-void-expression": [
+        "error",
+        { ignoreArrowShorthand: true },
+      ],
       // Safe for integer indices in template literals
-      "@typescript-eslint/restrict-template-expressions": ["error", {
-        allowNumber: true,
-      }],
+      "@typescript-eslint/restrict-template-expressions": [
+        "error",
+        { allowNumber: true },
+      ],
     },
   },
 
-  // Global ignores (overrides eslint-config-next defaults)
+  // Global ignores
   globalIgnores([
-    // Default Next.js ignores
     ".next/**",
     "out/**",
     "build/**",
     "next-env.d.ts",
-    // Project-specific ignores
     "node_modules/**",
     "backend/**",
     ".venv/**",
@@ -54,6 +54,5 @@ export default defineConfig([
     "**/old/infinity/**",
     "**/old/ai/**",
     "**/scripts/**",
-    // "plugins/**",
   ]),
-]);
+);

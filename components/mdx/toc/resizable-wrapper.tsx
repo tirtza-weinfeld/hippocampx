@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect, useCallback, useRef } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { motion, useMotionValue, animate, useMotionValueEvent } from 'motion/react'
 import { TableOfContents } from './table-of-contents'
 import { cn } from '@/lib/utils'
@@ -52,86 +52,85 @@ const useResizablePanel = (defaultWidth: number) => {
     width.set(defaultWidth)
   }, [defaultWidth, width])
 
-  const handleStart = useCallback((e: React.MouseEvent | React.TouchEvent) => {
+  const handleStart = (e: React.MouseEvent | React.TouchEvent) => {
     // Only prevent default for mouse events, not touch events (which are passive)
     if ('clientX' in e) {
       e.preventDefault()
     }
     e.stopPropagation()
 
-    const clientX = 'touches' in e ? e.touches[0]?.clientX : e.clientX
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX
     setDragStartTime(Date.now())
-    setDragStartX(clientX || 0)
+    setDragStartX(clientX)
     setDragDistance(0)
 
     document.body.style.cursor = 'col-resize'
     document.body.style.userSelect = 'none'
     setIsDragging(true)
-  }, [])
+  }
 
-  const handleMove = useCallback((e: MouseEvent | TouchEvent) => {
+  // Event listeners inside useEffect to avoid stale closure issues
+  useEffect(() => {
     if (!isDragging) return
 
-    const clientX = 'touches' in e ? e.touches[0]?.clientX : e.clientX
-    if (clientX === undefined) return
+    const handleMove = (e: MouseEvent | TouchEvent) => {
+      const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX
 
-    // Calculate drag distance
-    const currentDistance = Math.abs(clientX - dragStartX)
-    setDragDistance(currentDistance)
+      // Calculate drag distance
+      const currentDistance = Math.abs(clientX - dragStartX)
+      setDragDistance(currentDistance)
 
-    const newWidth = window.innerWidth - clientX
-    const maxWidth = Math.min(window.innerWidth * 0.9, 500) // 90% of screen width
-    width.set(Math.max(0, Math.min(maxWidth, newWidth)))
-  }, [isDragging, width, dragStartX])
+      const newWidth = window.innerWidth - clientX
+      const maxWidth = Math.min(window.innerWidth * 0.9, 500) // 90% of screen width
+      width.set(Math.max(0, Math.min(maxWidth, newWidth)))
+    }
 
-  const handleEnd = useCallback(() => {
-    const dragDuration = Date.now() - dragStartTime
-    const isQuickClick = dragDuration < 200 && dragDistance < 5 // Quick click with minimal movement
+    const handleEnd = () => {
+      const dragDuration = Date.now() - dragStartTime
+      const isQuickClick = dragDuration < 200 && dragDistance < 5 // Quick click with minimal movement
 
-    setIsDragging(false)
-    document.body.style.cursor = 'auto'
-    document.body.style.userSelect = 'auto'
+      setIsDragging(false)
+      document.body.style.cursor = 'auto'
+      document.body.style.userSelect = 'auto'
 
-    // If it was a quick click (not a drag), toggle the panel
-    if (isQuickClick) {
+      // If it was a quick click (not a drag), toggle the panel
+      if (isQuickClick) {
+        const currentWidth = width.get()
+        if (currentWidth > MIN_WIDTH / 2) {
+          // Panel is open, close it
+          animate(width, 0, { type: 'spring', stiffness: 400, damping: 40 })
+        } else {
+          // Panel is closed, open it to default width
+          const targetWidth = 320
+          animate(width, targetWidth, { type: 'spring', stiffness: 400, damping: 40 })
+        }
+        return
+      }
+
+      // Normal drag behavior
       const currentWidth = width.get()
-      if (currentWidth > MIN_WIDTH / 2) {
-        // Panel is open, close it
-        animate(width, 0, { type: 'spring', stiffness: 400, damping: 40 })
-      } else {
-        // Panel is closed, open it to default width
-        const targetWidth = window.innerWidth < 768 ? 320 : 320
-        animate(width, targetWidth, { type: 'spring', stiffness: 400, damping: 40 })
-      }
-      return
-    }
-
-    // Normal drag behavior
-    const currentWidth = width.get()
-    if (currentWidth < MIN_WIDTH) {
-      if (currentWidth > MIN_WIDTH / 2) {
-        animate(width, MIN_WIDTH, { type: 'spring', stiffness: 400, damping: 40 })
-      } else {
-        animate(width, 0, { type: 'spring', stiffness: 400, damping: 40 })
+      if (currentWidth < MIN_WIDTH) {
+        if (currentWidth > MIN_WIDTH / 2) {
+          animate(width, MIN_WIDTH, { type: 'spring', stiffness: 400, damping: 40 })
+        } else {
+          animate(width, 0, { type: 'spring', stiffness: 400, damping: 40 })
+        }
       }
     }
-  }, [width, dragStartTime, dragDistance])
 
-  useEffect(() => {
-    if (isDragging) {
-      document.addEventListener('mousemove', handleMove)
-      document.addEventListener('mouseup', handleEnd)
-      // Use passive: false for touchmove to allow preventDefault
-      document.addEventListener('touchmove', handleMove, { passive: false })
-      document.addEventListener('touchend', handleEnd)
-    }
+    document.addEventListener('mousemove', handleMove)
+    document.addEventListener('mouseup', handleEnd)
+    // Use passive: false for touchmove to allow preventDefault
+    document.addEventListener('touchmove', handleMove, { passive: false })
+    document.addEventListener('touchend', handleEnd)
+
     return () => {
       document.removeEventListener('mousemove', handleMove)
       document.removeEventListener('mouseup', handleEnd)
       document.removeEventListener('touchmove', handleMove)
       document.removeEventListener('touchend', handleEnd)
     }
-  }, [isDragging, handleMove, handleEnd])
+  }, [isDragging, dragStartX, dragStartTime, dragDistance, width])
 
   return { width, handleStart }
 }
@@ -158,12 +157,12 @@ export function ResizableWrapper({ headings: headingsJson, children, className }
   }, [])
 
   // Callback to close TOC on mobile when heading is clicked
-  const handleMobileHeadingClick = useCallback(() => {
+  const handleMobileHeadingClick = () => {
     if (window.innerWidth < 768) {
       // Close the TOC panel on mobile
       animate(width, 0, { type: 'spring', stiffness: 400, damping: 40 })
     }
-  }, [width])
+  }
 
   // Handle clicking outside TOC to close it on mobile
   useEffect(() => {

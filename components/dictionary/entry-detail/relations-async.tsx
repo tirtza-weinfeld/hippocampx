@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { fetchSenseRelationsByEntryId } from "@/lib/db/neon/queries/dictionary/entry-complete";
+import { fetchSenseRelationsByEntryId } from "@/lib/db/queries/dictionary/entry-complete";
 import { RelationsGrid } from "./relations-grid";
 import type { EntryBasic } from "./types";
 

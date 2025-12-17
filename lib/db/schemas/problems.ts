@@ -1,5 +1,5 @@
 /**
- * Problems Schema - Vercel Database
+ * Problems Schema
  */
 
 import { pgTable, index, uniqueIndex, text, timestamp, uuid, integer, jsonb, pgEnum } from "drizzle-orm/pg-core";

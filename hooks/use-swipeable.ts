@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useRef, useState, useCallback, useEffect } from "react"
+import { useRef, useState, useEffect } from "react"
 
 interface SwipeableOptions {
   onSwipedLeft?: () => void
@@ -43,29 +43,26 @@ export function useSwipeable({
   const mouseStartY = useRef<number | null>(null)
 
   // Handle touch start
-  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+  const handleTouchStart = (e: React.TouchEvent) => {
     setTouchStartX(e.targetTouches[0].clientX)
     setTouchStartY(e.targetTouches[0].clientY)
     setIsSwiping(true)
-  }, [])
+  }
 
   // Handle touch move
-  const handleTouchMove = useCallback(
-    (e: React.TouchEvent) => {
-      if (preventDefaultTouchmoveEvent) {
-        e.preventDefault()
-      }
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (preventDefaultTouchmoveEvent) {
+      e.preventDefault()
+    }
 
-      if (!isSwiping) return
+    if (!isSwiping) return
 
-      setTouchEndX(e.targetTouches[0].clientX)
-      setTouchEndY(e.targetTouches[0].clientY)
-    },
-    [isSwiping, preventDefaultTouchmoveEvent],
-  )
+    setTouchEndX(e.targetTouches[0].clientX)
+    setTouchEndY(e.targetTouches[0].clientY)
+  }
 
   // Handle touch end
-  const handleTouchEnd = useCallback(() => {
+  const handleTouchEnd = () => {
     if (!isSwiping || touchStartX === null || touchEndX === null || touchStartY === null || touchEndY === null) {
       setIsSwiping(false)
       return
@@ -99,39 +96,25 @@ export function useSwipeable({
     setTouchEndX(null)
     setTouchStartY(null)
     setTouchEndY(null)
-  }, [
-    isSwiping,
-    onSwipedDown,
-    onSwipedLeft,
-    onSwipedRight,
-    onSwipedUp,
-    swipeThreshold,
-    touchEndX,
-    touchEndY,
-    touchStartX,
-    touchStartY,
-  ])
+  }
 
   // Handle mouse events for desktop testing
-  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+  const handleMouseDown = (e: React.MouseEvent) => {
     mouseStartX.current = e.clientX
     mouseStartY.current = e.clientY
     setIsSwiping(true)
-  }, [])
+  }
 
-  const handleMouseMove = useCallback(
-    (e: React.MouseEvent) => {
-      if (!isSwiping) return
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isSwiping) return
 
-      setTouchEndX(e.clientX)
-      setTouchEndY(e.clientY)
-    },
-    [isSwiping],
-  )
+    setTouchEndX(e.clientX)
+    setTouchEndY(e.clientY)
+  }
 
-  const handleMouseUp = useCallback(() => {
+  const handleMouseUp = () => {
     handleTouchEnd()
-  }, [handleTouchEnd])
+  }
 
   // Add global mouse event listeners
   useEffect(() => {

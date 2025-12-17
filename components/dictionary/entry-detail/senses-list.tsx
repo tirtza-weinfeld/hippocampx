@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence, useReducedMotion } from "motion/react";
 import { Music } from "lucide-react";
-import type { SenseWithDetails } from "@/lib/db/neon/queries/dictionary/types";
+import type { SenseWithDetails } from "@/lib/db/queries/dictionary/types";
 
 interface SensesListProps {
   senses: SenseWithDetails[];

@@ -2,7 +2,7 @@
 
 import { use } from "react";
 import { EntryListClient } from "./entry-list-client";
-import type { InitialFetchResult } from "@/lib/db/neon/queries/dictionary/index";
+import type { InitialFetchResult } from "@/lib/db/queries/dictionary";
 
 interface DictionaryContentProps {
   entriesPromise: Promise<InitialFetchResult>;

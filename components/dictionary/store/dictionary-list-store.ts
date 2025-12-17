@@ -5,7 +5,7 @@ import { persist, createJSONStorage } from 'zustand/middleware'
 import type {
   EntryWithPreview,
   InfiniteScrollCursor,
-} from '@/lib/db/neon/queries/dictionary/index'
+} from '@/lib/db/queries/dictionary'
 
 /** Filter state stored per language */
 type LanguageFilterState = {

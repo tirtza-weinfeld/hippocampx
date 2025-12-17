@@ -1,9 +1,9 @@
 import { Suspense } from 'react';
-import { getSolutionsByProblemId } from '@/lib/db/vercel/queries/problems';
+import { getSolutionsByProblemId } from '@/lib/db/queries/problems';
 import { AgentCardShell, AgentSection } from '@/components/agent';
 import { AgentCardShellContent } from '@/components/agent/agent-card-shell-content';
 import { TimeComplexityBadge } from '@/components/agent/time-complexity-badge';
-import type { Problem, Solution } from '@/lib/db/vercel/schema';
+import type { Problem, Solution } from '@/lib/db/schema';
 import type { SectionType } from '@/components/agent/agent-section-tab';
 import { MarkdownRenderer } from '@/components/mdx/parse/markdown-renderer';
 import CodeBlock from '@/components/mdx/code/code-block';

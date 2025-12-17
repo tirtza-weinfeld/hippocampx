@@ -31,20 +31,49 @@
   }
 }
 
-html {
-  transition: color var(--transition-theme),
-    background-color var(--transition-theme),
-    border-color var(--transition-theme);
+/* View Transitions - GPU-accelerated, non-blocking */
+::view-transition-old(.theme-update),
+::view-transition-new(.theme-update),
+::view-transition-old(.page-exit),
+::view-transition-new(.page-enter) {
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform, opacity;
 }
 
-html[data-theme-transition="true"] * {
-  transition: var(--transition-theme);
+/* Theme toggle - fast crossfade */
+::view-transition-old(.theme-update),
+::view-transition-new(.theme-update) {
+  animation-duration: 150ms;
 }
 
+/* Navigation - subtle slide */
+::view-transition-old(.page-exit) {
+  animation: 200ms cubic-bezier(0.4, 0, 0.2, 1) page-out;
+}
+::view-transition-new(.page-enter) {
+  animation: 200ms cubic-bezier(0.4, 0, 0.2, 1) page-in;
+}
+
+@keyframes page-out {
+  to { opacity: 0; transform: translateY(4px); }
+}
+@keyframes page-in {
+  from { opacity: 0; transform: translateY(-4px); }
+}
+
+/* Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(.theme-update),
+  ::view-transition-new(.theme-update),
+  ::view-transition-old(.page-exit),
+  ::view-transition-new(.page-enter) {
+    animation: none;
+  }
+}
 
 
 h1 ::first-letter {
-  font-family: "Great Vibes", cursive; /* fancy font just for 1st letter */
+  font-family: var(--font-great-vibes), cursive;
   font-size: 4.5rem;
   font-weight: normal;
   letter-spacing: 0;

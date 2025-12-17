@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import type { SymbolMetadata } from '@/lib/types';
 
 interface CodeTooltipProps {
@@ -18,33 +18,33 @@ export default function CodeTooltip({ symbolName, metadata, children }: CodeTool
     ? JSON.parse(metadata) as SymbolMetadata
     : metadata;
 
-  const handleClick = useCallback((event: React.MouseEvent) => {
+  const handleClick = (event: React.MouseEvent) => {
     event.preventDefault();
     event.stopPropagation();
-    
+
     setPosition({ x: event.clientX, y: event.clientY });
     setIsOpen(true);
-  }, []);
+  };
 
-  const handleKeyDown = useCallback((event: React.KeyboardEvent) => {
+  const handleKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
       const rect = event.currentTarget.getBoundingClientRect();
       setPosition({ x: rect.left + rect.width / 2, y: rect.top });
       setIsOpen(true);
     }
-  }, []);
+  };
 
-  const handleClose = useCallback(() => {
+  const handleClose = () => {
     setIsOpen(false);
-  }, []);
+  };
 
   // Close tooltip when clicking outside
-  const handleBackdropClick = useCallback((event: React.MouseEvent) => {
+  const handleBackdropClick = (event: React.MouseEvent) => {
     if (event.target === event.currentTarget) {
       handleClose();
     }
-  }, [handleClose]);
+  };
 
   return (
     <>

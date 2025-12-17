@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useCallback } from 'react'
+import React, { useState } from 'react'
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import { cn } from '@/lib/utils'
@@ -54,15 +54,15 @@ export function CodeEditor({
     }
   })
 
-  const openFile = useCallback((file: CodeFile, targetGroupId?: string) => {
+  const openFile = (file: CodeFile, targetGroupId?: string) => {
     setEditorState(prev => {
       const newFiles = new Map(prev.files)
       newFiles.set(file.id, file)
-      
+
       const groupId = targetGroupId || prev.activeGroupId
       const targetGroup = prev.splitConfig.groups.find(g => g.id === groupId)
       if (!targetGroup) return prev
-      
+
       const existingTab = targetGroup.tabs.find(t => t.fileId === file.id)
       if (existingTab) {
         return {
@@ -71,7 +71,7 @@ export function CodeEditor({
           activeGroupId: groupId,
           splitConfig: {
             ...prev.splitConfig,
-            groups: prev.splitConfig.groups.map(g => 
+            groups: prev.splitConfig.groups.map(g =>
               g.id === groupId
                 ? {
                     ...g,
@@ -86,21 +86,21 @@ export function CodeEditor({
           }
         }
       }
-      
+
       const newTab = {
         id: `tab-${Date.now()}`,
         fileId: file.id,
         isActive: true,
         isPinned: false
       }
-      
+
       return {
         ...prev,
         files: newFiles,
         activeGroupId: groupId,
         splitConfig: {
           ...prev.splitConfig,
-          groups: prev.splitConfig.groups.map(g => 
+          groups: prev.splitConfig.groups.map(g =>
             g.id === groupId
               ? {
                   ...g,
@@ -115,31 +115,31 @@ export function CodeEditor({
         }
       }
     })
-  }, [])
+  }
 
-  const closeFile = useCallback((fileId: string, groupId?: string) => {
+  const closeFile = (fileId: string, groupId?: string) => {
     setEditorState(prev => {
       const targetGroupId = groupId || prev.activeGroupId
       const group = prev.splitConfig.groups.find(g => g.id === targetGroupId)
       if (!group) return prev
-      
+
       const tabIndex = group.tabs.findIndex(t => t.fileId === fileId)
       if (tabIndex === -1) return prev
-      
+
       const newTabs = group.tabs.filter(t => t.fileId !== fileId)
       let newActiveTabId = group.activeTabId
-      
+
       if (group.activeTabId === group.tabs[tabIndex].id && newTabs.length > 0) {
         newActiveTabId = newTabs[Math.min(tabIndex, newTabs.length - 1)].id
       } else if (newTabs.length === 0) {
         newActiveTabId = null
       }
-      
+
       return {
         ...prev,
         splitConfig: {
           ...prev.splitConfig,
-          groups: prev.splitConfig.groups.map(g => 
+          groups: prev.splitConfig.groups.map(g =>
             g.id === targetGroupId
               ? { ...g, tabs: newTabs, activeTabId: newActiveTabId }
               : g
@@ -147,15 +147,15 @@ export function CodeEditor({
         }
       }
     })
-  }, [])
+  }
 
-  const switchTab = useCallback((tabId: string, groupId: string) => {
+  const switchTab = (tabId: string, groupId: string) => {
     setEditorState(prev => ({
       ...prev,
       activeGroupId: groupId,
       splitConfig: {
         ...prev.splitConfig,
-        groups: prev.splitConfig.groups.map(g => 
+        groups: prev.splitConfig.groups.map(g =>
           g.id === groupId
             ? {
                 ...g,
@@ -169,22 +169,22 @@ export function CodeEditor({
         )
       }
     }))
-  }, [])
+  }
 
-  const moveTab = useCallback((tabId: string, fromGroupId: string, toGroupId: string, toIndex: number) => {
+  const moveTab = (tabId: string, fromGroupId: string, toGroupId: string, toIndex: number) => {
     setEditorState(prev => {
       const fromGroup = prev.splitConfig.groups.find(g => g.id === fromGroupId)
       const toGroup = prev.splitConfig.groups.find(g => g.id === toGroupId)
-      
+
       if (!fromGroup || !toGroup) return prev
-      
+
       const tab = fromGroup.tabs.find(t => t.id === tabId)
       if (!tab) return prev
-      
+
       const newFromTabs = fromGroup.tabs.filter(t => t.id !== tabId)
       const newToTabs = [...toGroup.tabs]
       newToTabs.splice(toIndex, 0, tab)
-      
+
       return {
         ...prev,
         splitConfig: {
@@ -201,23 +201,23 @@ export function CodeEditor({
         }
       }
     })
-  }, [])
+  }
 
-  const closeSplit = useCallback((groupId: string) => {
+  const closeSplit = (groupId: string) => {
     setEditorState(prev => {
       // Don't allow closing if only one group remains
       if (prev.splitConfig.groups.length <= 1) return prev
-      
+
       const groupToClose = prev.splitConfig.groups.find(g => g.id === groupId)
       if (!groupToClose) return prev
-      
+
       // If closing the active group, switch to another group
       let newActiveGroupId = prev.activeGroupId
       if (prev.activeGroupId === groupId) {
         const remainingGroups = prev.splitConfig.groups.filter(g => g.id !== groupId)
         newActiveGroupId = remainingGroups[0]?.id || prev.activeGroupId
       }
-      
+
       return {
         ...prev,
         activeGroupId: newActiveGroupId,
@@ -227,20 +227,20 @@ export function CodeEditor({
         }
       }
     })
-  }, [])
+  }
 
-  const splitEditor = useCallback((direction: 'horizontal' | 'vertical', groupId: string, tabId?: string) => {
+  const splitEditor = (direction: 'horizontal' | 'vertical', groupId: string, tabId?: string) => {
     setEditorState(prev => {
       const sourceGroup = prev.splitConfig.groups.find(g => g.id === groupId)
       if (!sourceGroup) return prev
-      
+
       // Get the tab to split (either specified tab or active tab)
-      const tabToSplit = tabId 
+      const tabToSplit = tabId
         ? sourceGroup.tabs.find(t => t.id === tabId)
         : sourceGroup.tabs.find(t => t.id === sourceGroup.activeTabId)
-      
+
       if (!tabToSplit) return prev
-      
+
       // Create new group with a DUPLICATE of the tab (same file, new tab ID)
       const newGroupId = `group-${Date.now()}`
       const duplicatedTab = {
@@ -249,23 +249,23 @@ export function CodeEditor({
         isActive: true,
         isPinned: tabToSplit.isPinned
       }
-      
+
       const newGroup: EditorGroup = {
         id: newGroupId,
         tabs: [duplicatedTab],
         activeTabId: duplicatedTab.id
       }
-      
+
       // Find where to insert the new group
       const sourceIndex = prev.splitConfig.groups.findIndex(g => g.id === groupId)
       const newGroups = [...prev.splitConfig.groups]
-      
+
       // INSERT new group right after the source group (don't modify source group at all)
       newGroups.splice(sourceIndex + 1, 0, newGroup)
-      
+
       // Keep the same overall direction, or set it if this is the first split
       const newDirection = prev.splitConfig.groups.length === 1 ? direction : prev.splitConfig.direction
-      
+
       return {
         ...prev,
         activeGroupId: newGroupId,
@@ -275,9 +275,9 @@ export function CodeEditor({
         }
       }
     })
-  }, [])
+  }
 
-  const updateFileContent = useCallback((fileId: string, content: string) => {
+  const updateFileContent = (fileId: string, content: string) => {
     setEditorState(prev => {
       const newFiles = new Map(prev.files)
       const file = newFiles.get(fileId)
@@ -286,7 +286,7 @@ export function CodeEditor({
       }
       return { ...prev, files: newFiles }
     })
-  }, [])
+  }
 
   const actions = {
     openFile,

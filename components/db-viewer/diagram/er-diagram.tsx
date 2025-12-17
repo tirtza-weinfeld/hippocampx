@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback, useMemo, useEffect } from "react";
+import { useState, useRef, useMemo, useEffect } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "motion/react";
 import { computeSchemaLayout } from "@/lib/db-viewer/er-layout";
 import type { SchemaTopology } from "@/lib/db-viewer/types";
@@ -56,7 +56,7 @@ export function ERDiagram({ topology, onTableSelect }: ERDiagramProps) {
     [topology, hiddenTables]
   );
 
-  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+  const handleMouseDown = (e: React.MouseEvent) => {
     if (e.button !== 0) return;
     setIsDragging(true);
     gestureRef.current.dragStart = {
@@ -65,9 +65,9 @@ export function ERDiagram({ topology, onTableSelect }: ERDiagramProps) {
       tx: transform.x,
       ty: transform.y,
     };
-  }, [transform.x, transform.y]);
+  };
 
-  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+  const handleMouseMove = (e: React.MouseEvent) => {
     const { dragStart } = gestureRef.current;
     if (!isDragging || !dragStart) return;
 
@@ -76,14 +76,14 @@ export function ERDiagram({ topology, onTableSelect }: ERDiagramProps) {
       x: dragStart.tx + e.clientX - dragStart.x,
       y: dragStart.ty + e.clientY - dragStart.y,
     }));
-  }, [isDragging]);
+  };
 
-  const handleMouseUp = useCallback(() => {
+  const handleMouseUp = () => {
     setIsDragging(false);
     gestureRef.current.dragStart = null;
-  }, []);
+  };
 
-  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+  const handleTouchStart = (e: React.TouchEvent) => {
     if (e.touches.length === 1) {
       const touch = e.touches[0];
       setIsDragging(true);
@@ -104,9 +104,9 @@ export function ERDiagram({ topology, onTableSelect }: ERDiagramProps) {
         y: (t1.clientY + t2.clientY) / 2,
       };
     }
-  }, [transform.x, transform.y]);
+  };
 
-  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+  const handleTouchMove = (e: React.TouchEvent) => {
     const { dragStart, pinchDistance } = gestureRef.current;
 
     if (e.touches.length === 1 && isDragging && dragStart) {
@@ -128,25 +128,25 @@ export function ERDiagram({ topology, onTableSelect }: ERDiagramProps) {
 
       gestureRef.current.pinchDistance = distance;
     }
-  }, [isDragging]);
+  };
 
-  const handleTouchEnd = useCallback(() => {
+  const handleTouchEnd = () => {
     setIsDragging(false);
     gestureRef.current = {
       dragStart: null,
       pinchDistance: null,
       pinchCenter: null,
     };
-  }, []);
+  };
 
-  const handleWheel = useCallback((e: React.WheelEvent) => {
+  const handleWheel = (e: React.WheelEvent) => {
     e.preventDefault();
     const delta = e.deltaY > 0 ? 1 / ZOOM_STEP : ZOOM_STEP;
     setTransform(prev => ({
       ...prev,
       scale: clampScale(prev.scale * delta),
     }));
-  }, []);
+  };
 
   // Prevent default touch behavior for smooth pinch zoom
   useEffect(() => {
@@ -163,25 +163,25 @@ export function ERDiagram({ topology, onTableSelect }: ERDiagramProps) {
     return () => container.removeEventListener("touchmove", preventDefault);
   }, []);
 
-  const zoomIn = useCallback(() => {
+  const zoomIn = () => {
     setTransform(prev => ({
       ...prev,
       scale: clampScale(prev.scale * ZOOM_STEP),
     }));
-  }, []);
+  };
 
-  const zoomOut = useCallback(() => {
+  const zoomOut = () => {
     setTransform(prev => ({
       ...prev,
       scale: clampScale(prev.scale / ZOOM_STEP),
     }));
-  }, []);
+  };
 
-  const resetView = useCallback(() => {
+  const resetView = () => {
     setTransform({ x: 0, y: 0, scale: 1 });
-  }, []);
+  };
 
-  const fitView = useCallback(() => {
+  const fitView = () => {
     const container = containerRef.current;
     if (!container) return;
 
@@ -197,7 +197,7 @@ export function ERDiagram({ topology, onTableSelect }: ERDiagramProps) {
       y: Math.max(50, (rect.height - layout.viewBox.height * scale) / 2),
       scale,
     });
-  }, [layout.viewBox]);
+  };
 
   // Auto-fit on initial mount
   useEffect(() => {
@@ -205,7 +205,7 @@ export function ERDiagram({ topology, onTableSelect }: ERDiagramProps) {
     return () => clearTimeout(timer);
   }, [fitView]);
 
-  const toggleTable = useCallback((name: string) => {
+  const toggleTable = (name: string) => {
     setHiddenTables(prev => {
       const next = new Set(prev);
       if (next.has(name)) {
@@ -215,14 +215,11 @@ export function ERDiagram({ topology, onTableSelect }: ERDiagramProps) {
       }
       return next;
     });
-  }, []);
+  };
 
-  const showAll = useCallback(() => setHiddenTables(new Set()), []);
+  const showAll = () => setHiddenTables(new Set());
 
-  const hideAll = useCallback(
-    () => setHiddenTables(new Set(topology.tables.map(t => t.name))),
-    [topology.tables]
-  );
+  const hideAll = () => setHiddenTables(new Set(topology.tables.map(t => t.name)));
 
   const transitionDuration = prefersReducedMotion ? 0 : 0.5;
 

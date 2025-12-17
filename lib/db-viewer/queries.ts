@@ -9,10 +9,8 @@ import "server-only";
 
 import { cacheLife } from "next/cache";
 import { sql, count, asc, desc, ilike, or } from "drizzle-orm";
-import { neonDb } from "@/lib/db/neon/connection";
-import { vercelDb } from "@/lib/db/vercel/connection";
-import * as neonSchema from "@/lib/db/neon/schema";
-import * as vercelSchema from "@/lib/db/vercel/schema";
+import { db } from "@/lib/db/connection";
+import * as schema from "@/lib/db/schema";
 import type {
   DatabaseProvider,
   TableInfo,
@@ -22,98 +20,98 @@ import type {
   QueryOptions,
 } from "./types";
 
-// Table registry - maps table names to their schemas and providers
+// Table registry - maps table names to their schemas
 const TABLE_REGISTRY: Partial<Record<string, TableInfo>> = {
-  // Neon tables
+  // Dictionary tables
   lexical_entries: {
     name: "lexical_entries",
     provider: "neon",
-    schema: neonSchema.lexicalEntries,
+    schema: schema.lexicalEntries,
     description: "Main dictionary entries with lemma and part of speech",
   },
   word_forms: {
     name: "word_forms",
     provider: "neon",
-    schema: neonSchema.wordForms,
+    schema: schema.wordForms,
     description: "Inflected forms of lexical entries",
   },
   senses: {
     name: "senses",
     provider: "neon",
-    schema: neonSchema.senses,
+    schema: schema.senses,
     description: "Word meanings and definitions",
   },
   sense_relations: {
     name: "sense_relations",
     provider: "neon",
-    schema: neonSchema.senseRelations,
+    schema: schema.senseRelations,
     description: "Relationships between senses (synonyms, antonyms, etc.)",
   },
   examples: {
     name: "examples",
     provider: "neon",
-    schema: neonSchema.examples,
+    schema: schema.examples,
     description: "Usage examples for senses",
   },
   contributors: {
     name: "contributors",
     provider: "neon",
-    schema: neonSchema.contributors,
+    schema: schema.contributors,
     description: "Authors, composers, and other contributors",
   },
   sources: {
     name: "sources",
     provider: "neon",
-    schema: neonSchema.sources,
+    schema: schema.sources,
     description: "Books, movies, and other source materials",
   },
   source_credits: {
     name: "source_credits",
     provider: "neon",
-    schema: neonSchema.sourceCredits,
+    schema: schema.sourceCredits,
     description: "Credits linking contributors to sources",
   },
   source_parts: {
     name: "source_parts",
     provider: "neon",
-    schema: neonSchema.sourceParts,
+    schema: schema.sourceParts,
     description: "Hierarchical parts of sources (acts, songs, chapters)",
   },
   entry_audio: {
     name: "entry_audio",
     provider: "neon",
-    schema: neonSchema.entryAudio,
+    schema: schema.entryAudio,
     description: "Audio pronunciations for entries",
   },
   categories: {
     name: "categories",
     provider: "neon",
-    schema: neonSchema.categories,
+    schema: schema.categories,
     description: "Tag categories for organizing senses",
   },
   tags: {
     name: "tags",
     provider: "neon",
-    schema: neonSchema.tags,
+    schema: schema.tags,
     description: "Tags for classifying senses",
   },
   sense_tags: {
     name: "sense_tags",
     provider: "neon",
-    schema: neonSchema.senseTags,
+    schema: schema.senseTags,
     description: "Links between senses and tags",
   },
-  // Vercel tables
+  // Problems tables
   problems: {
     name: "problems",
-    provider: "vercel",
-    schema: vercelSchema.problems,
+    provider: "neon",
+    schema: schema.problems,
     description: "Algorithm problems for practice",
   },
   solutions: {
     name: "solutions",
-    provider: "vercel",
-    schema: vercelSchema.solutions,
+    provider: "neon",
+    schema: schema.solutions,
     description: "Solutions to algorithm problems",
   },
 };
@@ -197,7 +195,6 @@ export async function getTableMetadata(
   if (!tableInfo) return null;
 
   const columns = extractColumnInfo(tableInfo.schema);
-  const db = tableInfo.provider === "neon" ? neonDb : vercelDb;
 
   // Get row count
   const result = await db
@@ -230,7 +227,6 @@ export async function queryTableData(
     searchColumns = [],
   } = options;
 
-  const db = tableInfo.provider === "neon" ? neonDb : vercelDb;
   const offset = (page - 1) * pageSize;
 
   // Build the query
@@ -287,8 +283,6 @@ export async function getRowById(
   const tableInfo = TABLE_REGISTRY[tableName];
   if (!tableInfo) return null;
 
-  const db = tableInfo.provider === "neon" ? neonDb : vercelDb;
-
   // Find the primary key column (usually 'id')
   const schema = tableInfo.schema as unknown as Record<string, unknown>;
   const idColumn = schema.id;
@@ -318,7 +312,6 @@ export async function getTableStats(): Promise<
   const results = await Promise.all(
     tableEntries.map(async (tableInfo) => {
       try {
-        const db = tableInfo.provider === "neon" ? neonDb : vercelDb;
         const result = await db
           .select({ count: count() })
           .from(tableInfo.schema);

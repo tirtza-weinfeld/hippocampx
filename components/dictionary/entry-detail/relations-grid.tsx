@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { motion, useReducedMotion } from "motion/react";
 import type { Route } from "next";
-import type { SenseRelationInfo } from "@/lib/db/neon/queries/dictionary/types";
+import type { SenseRelationInfo } from "@/lib/db/queries/dictionary/types";
 
 interface RelationsGridProps {
   relations: SenseRelationInfo[];

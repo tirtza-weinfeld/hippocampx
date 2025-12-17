@@ -1,8 +1,8 @@
 "use server";
 
 import { eq } from "drizzle-orm";
-import { neonDb } from "@/lib/db/neon/connection";
-import { lexicalEntries, entryAudio } from "@/lib/db/neon/schema";
+import { db } from "@/lib/db/connection";
+import { lexicalEntries, entryAudio } from "@/lib/db/schema";
 import { synthesizeSpeech } from "./tts";
 import { uploadAudio, generateAudioKey } from "@/lib/storage/r2";
 
@@ -24,7 +24,7 @@ async function getOrCreateWordAudio(
   }
 
   // Check database for existing audio URL
-  const existingAudio = await neonDb
+  const existingAudio = await db
     .select({ audio_url: entryAudio.audio_url })
     .from(entryAudio)
     .where(eq(entryAudio.entry_id, entryId))
@@ -35,7 +35,7 @@ async function getOrCreateWordAudio(
   }
 
   // Verify entry exists
-  const entryExists = await neonDb
+  const entryExists = await db
     .select({ id: lexicalEntries.id })
     .from(lexicalEntries)
     .where(eq(lexicalEntries.id, entryId))
@@ -62,7 +62,7 @@ async function getOrCreateWordAudio(
   }
 
   // Store URL in database
-  await neonDb
+  await db
     .insert(entryAudio)
     .values({
       entry_id: entryId,

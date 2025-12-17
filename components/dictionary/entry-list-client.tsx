@@ -11,7 +11,7 @@ import type {
   EntryWithPreview,
   InfiniteScrollCursor,
   PageInfo,
-} from "@/lib/db/neon/queries/dictionary/index";
+} from "@/lib/db/queries/dictionary";
 
 export function EntryListClient({
   initialEntries,

@@ -5,7 +5,7 @@ import {
   type FetchMoreWithCursorOptions,
   type InfiniteScrollResult,
   type EntryWithPreview,
-} from "@/lib/db/neon/queries/dictionary/index";
+} from "@/lib/db/queries/dictionary";
 
 export async function fetchMoreWithCursor(
   options: FetchMoreWithCursorOptions

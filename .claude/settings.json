@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if echo \"$CLAUDE_TOOL_INPUT\" | grep -qE 'pnpm (eslint|tsc|jest)|npx (eslint|tsc|jest)|^eslint |^tsc |^jest '; then echo 'BLOCKED: Use pnpm lint, pnpm build, or pnpm test instead' >&2; exit 2; fi"
+          }
+        ]
+      }
+    ]
+  }
+}

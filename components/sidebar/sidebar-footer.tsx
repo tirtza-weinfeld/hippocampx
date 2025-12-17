@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { InfinityFontSelector } from "./infinity-font-selector"
 import { ThemeToggle } from "@/components/theme/theme-toggle"
-import { SparklesToggle } from "@/components/old/calculus/ui/sparkles-toggle"
+// import { SparklesToggle } from "@/components/sidebar/sparkles-toggle"
 
 type SidebarFooterProps = {
   readonly isExpanded: boolean
@@ -32,7 +32,7 @@ export function SidebarFooter({ isExpanded, isMobile = false, onSearchClick }: S
       <footer className="shrink-0 border-t border-sidebar-border p-3">
         <div className="flex items-center justify-between">
           <InfinityFontSelector />
-          <SparklesToggle side="top" />
+          {/* <SparklesToggle side="top" /> */}
           {searchButton}
           <ThemeToggle side="top" />
         </div>
@@ -44,7 +44,7 @@ export function SidebarFooter({ isExpanded, isMobile = false, onSearchClick }: S
     <footer className="border-t border-sidebar-border p-3">
       <div className={cn("flex items-center", isExpanded ? "justify-between" : "flex-col gap-3")}>
         <InfinityFontSelector />
-        <SparklesToggle side={isExpanded ? "top" : "right"} />
+        {/* <SparklesToggle side={isExpanded ? "top" : "right"} /> */}
 
         <Tooltip>
           <TooltipTrigger asChild>{searchButton}</TooltipTrigger>

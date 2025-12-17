@@ -4,22 +4,9 @@ HippocampX: Educational web app — Next.js 16.1+, React 19.2+, interactive lear
 
 ## Rule Files
 
-BEFORE responding to ANY technical question:
-1. Read the relevant rule file from `.cursor/rules/`
-2. Check `package.json` for exact versions
-3. Cite the rule or version that informs your answer
+Rules in `.claude/rules/` auto-load by file path. Do not fall back to training data.
 
-Rule files:
-- `react.mdc` — React patterns
-- `nextjs.mdc` — Next.js patterns
-- `motion.mdc` — Animation patterns
-- `tailwind.mdc` — Styling patterns
-- `plugins.mdc` — Plugin patterns
-- `python.mdc` — Python patterns
-- `test.mdc` — Test patterns
-- `typescript.mdc` — TypeScript patterns
-
-If no rule exists, say so. Do not proceed without user confirmation.
+If no rule matches or versions conflict → **ASK before proceeding**.
 
 ## Commands
 
@@ -47,4 +34,4 @@ Target lines of code:
 
 ## Resources
 
-Check `package.json` for versions. Search for documentation matching version >= installed. Prefer canary/experimental docs.
+Check `package.json` for versions. Search for documentation matching version >= installed. use canary/experimental docs. 

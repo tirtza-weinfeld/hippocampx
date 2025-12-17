@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useRef, useEffect, memo, useTransition, useDeferredValue } from 'react'
+import { useState, useRef, useEffect, memo, useTransition, useDeferredValue } from 'react'
 import type { HighlightedCode } from '@/lib/types'
 
 interface CodeBlockInteractiveProps {
@@ -18,12 +18,12 @@ export const CodeBlockInteractive = memo(function CodeBlockInteractive({
   // Defer tooltip updates for better performance
   const deferredTooltipSymbol = useDeferredValue(tooltipSymbol)
 
-  // Close tooltip with useCallback for performance
-  const closeTooltip = useCallback(() => {
+  // Close tooltip
+  const closeTooltip = () => {
     startTransition(() => {
       setTooltipSymbol(null)
     })
-  }, [startTransition])
+  }
 
   // Handle escape key to close tooltip
   useEffect(() => {
@@ -40,14 +40,14 @@ export const CodeBlockInteractive = memo(function CodeBlockInteractive({
   }, [tooltipSymbol, closeTooltip])
 
   // Handle clicks on code content to detect symbols
-  const handleCodeClick = useCallback((event: React.MouseEvent) => {
+  const handleCodeClick = (event: React.MouseEvent) => {
     const target = event.target as HTMLElement
-    
+
     // Check if the clicked element has tooltip data
     if (target.hasAttribute('data-tooltip')) {
       const symbolName = target.getAttribute('data-symbol')
       const metadata = target.getAttribute('data-metadata')
-      
+
       if (symbolName && metadata) {
         startTransition(() => {
           setTooltipSymbol(symbolName)
@@ -55,32 +55,32 @@ export const CodeBlockInteractive = memo(function CodeBlockInteractive({
         })
       }
     }
-  }, [startTransition])
+  }
 
   // Handle keyboard navigation for accessibility
-  const handleKeyDown = useCallback((event: React.KeyboardEvent) => {
+  const handleKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault()
       const target = event.target as HTMLElement
-      
+
       // Check if the focused element has tooltip data
       if (target.hasAttribute('data-tooltip')) {
         const symbolName = target.getAttribute('data-symbol')
         const metadata = target.getAttribute('data-metadata')
-        
+
         if (symbolName && metadata) {
           const rect = target.getBoundingClientRect()
           startTransition(() => {
             setTooltipSymbol(symbolName)
-            setTooltipPosition({ 
-              x: rect.left + rect.width / 2, 
-              y: rect.top 
+            setTooltipPosition({
+              x: rect.left + rect.width / 2,
+              y: rect.top
             })
           })
         }
       }
     }
-  }, [startTransition])
+  }
 
   return (
     <>

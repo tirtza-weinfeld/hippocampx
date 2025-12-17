@@ -1,0 +1,11 @@
+:has(.notes) {
+    --primary: var(--color-blue-500);
+    --accent: var(--color-blue-300);
+    --secondary: var(--color-blue-500);;
+}
+
+.dark :has(.notes) {
+    --primary: var(--color-blue-500);
+    --accent: var(--color-blue-300);
+    --secondary: var(--color-blue-500);
+}

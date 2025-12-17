@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useCallback } from 'react'
+import React from 'react'
 import { MoreHorizontal, Plus } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -28,12 +28,12 @@ export function EditorTabBar({ group, files, actions, isActive, totalGroups }: E
   //     actions.switchTab(group.activeTabId, group.id)
   //   }
   // }
-  const moveTab = useCallback((dragIndex: number, hoverIndex: number) => {
+  const moveTab = (dragIndex: number, hoverIndex: number) => {
     const draggedTab = group.tabs[dragIndex]
     if (!draggedTab) return
 
     actions.moveTab(draggedTab.id, group.id, group.id, hoverIndex)
-  }, [group.tabs, group.id, actions])
+  }
 
   const handleNewFile = () => {
     const newFile = {

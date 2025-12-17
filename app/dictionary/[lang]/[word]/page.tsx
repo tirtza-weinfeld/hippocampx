@@ -8,7 +8,7 @@ import {
   RelationsAsync,
 } from "@/components/dictionary/entry-detail";
 import { getOrCreateEntryAudio } from "@/lib/actions/word-audio";
-import { fetchEntryBasic } from "@/lib/db/neon/queries/dictionary/entry-complete";
+import { fetchEntryBasic } from "@/lib/db/queries/dictionary/entry-complete";
 
 export default async function EntryDetailPage(props: {
   params: Promise<{ lang: string; word: string }>;

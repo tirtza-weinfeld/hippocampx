@@ -1,3 +1,15 @@
+:has(.problems) {
+
+    --primary: var(--color-yellow-600);
+    --accent: var(--color-orange-700);
+    --secondary: var(--color-purple-800);;
+}
+
+.dark :has(.problems) {
+    --primary: var(--color-yellow-400);
+    --accent: var(--color-orange-500);
+    --secondary: var(--color-purple-600);
+}
 /* :root{
   :is([data-section-type="problem-difficulty"]){
     --link: linear-gradient(to right, var(--color-red-500), var(--color-sky-400), var(--color-red-400), var(--color-red-300), var(--color-red-600));

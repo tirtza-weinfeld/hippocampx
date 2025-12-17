@@ -1,18 +1,15 @@
 /**
- * Problems Queries - Vercel Database
+ * Problems Queries
  */
 
 import "server-only";
 
 import { cacheLife } from "next/cache";
-import { drizzle } from "drizzle-orm/vercel-postgres";
-import { sql as vercelSql } from "@vercel/postgres";
 import { eq } from "drizzle-orm";
-import { problems, solutions } from "../schema";
-import type { Problem, Solution } from "../schema";
+import { neonDb } from "../../connection";
+import { problems, solutions } from "../../schema";
+import type { Problem, Solution } from "../../schema";
 import { formatIntuitionContent, formatTimeComplexity } from "@/lib/utils/format-problem-content";
-
-const db = drizzle(vercelSql);
 
 /**
  * Get all problems (lightweight, for filtering)
@@ -21,7 +18,7 @@ export async function getProblems(): Promise<Problem[]> {
   'use cache: remote'
   cacheLife('hours')
 
-  return db.select().from(problems).orderBy(problems.number);
+  return neonDb.select().from(problems).orderBy(problems.number);
 }
 
 /**
@@ -33,7 +30,7 @@ export async function getSolutionsByProblemId(
   'use cache: remote'
   cacheLife('hours')
 
-  const rawSolutions = await db
+  const rawSolutions = await neonDb
     .select()
     .from(solutions)
     .where(eq(solutions.problem_id, problemId))

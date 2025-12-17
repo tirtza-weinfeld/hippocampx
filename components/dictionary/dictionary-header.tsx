@@ -9,7 +9,7 @@ import { getDictionaryListActions, useIsExpanded } from "./store/dictionary-list
 import type {
   InitialFetchResult,
   FilterStats,
-} from "@/lib/db/neon/queries/dictionary/index";
+} from "@/lib/db/queries/dictionary";
 
 interface DictionaryHeaderProps {
   initialQuery?: string;

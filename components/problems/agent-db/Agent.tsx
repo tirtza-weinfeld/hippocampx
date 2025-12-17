@@ -3,7 +3,7 @@
 import { cacheLife } from 'next/cache'
 import { Suspense } from 'react';
 import { AgentProblemsView } from '@/components/agent';
-import { getProblems } from '@/lib/db/vercel/queries/problems';
+import { getProblems } from '@/lib/db/queries/problems';
 import { AgentProblemCard } from './agent-problem-card';
 
 /**

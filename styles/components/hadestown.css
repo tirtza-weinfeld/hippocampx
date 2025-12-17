@@ -1,35 +1,14 @@
-
-/* Backface visibility fix for card flipping */
-/* .backface-hidden {
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-  }
-  
-  .rotate-y-180 {
-  transform: rotateY(180deg);
-  }
-   */
-
-.hadestown {
-
+/* Route theme: hadestown - activated by any .hadestown descendant */
+body:has(.hadestown) {
   --primary: var(--color-red-500);
   --accent: var(--color-orange-500);
   --secondary: var(--color-purple-500);
-/* 
-  --background: var(--color-orange-100); 
-  --foreground: var(--color-purple-900); */
-  
 }
 
-.dark .hadestown {
+.dark body:has(.hadestown) {
   --primary: var(--color-red-500);
   --accent: var(--color-orange-500);
   --secondary: var(--color-purple-500);
-  /* --color-background: var(--color-red-500); */
-  /* --background: var(--color-orange-100);  */
-  /* --foreground: var(--color-purple-900); */
-  
-  
 }
 /* Add these styles to fix 3D card flipping */
 .perspective-1000 {

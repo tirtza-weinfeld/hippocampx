@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition, useCallback } from "react";
+import { useState, useTransition } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import type { QueryResult, SortConfig, ColumnInfo } from "@/lib/db-viewer/types";
 import { fetchTableData } from "@/lib/db-viewer/actions";
@@ -46,7 +46,7 @@ export function DataTable({
   const [isPending, startTransition] = useTransition();
   const [selectedCell, setSelectedCell] = useState<CellInfo | null>(null);
 
-  const handleCellClick = useCallback((column: ColumnInfo, value: unknown) => {
+  const handleCellClick = (column: ColumnInfo, value: unknown) => {
     if (isTruncated(value)) {
       setSelectedCell({
         columnName: column.name,
@@ -54,7 +54,7 @@ export function DataTable({
         value,
       });
     }
-  }, []);
+  };
 
   function handleSort(column: string) {
     const currentDirection = sort?.column === column ? sort.direction : null;

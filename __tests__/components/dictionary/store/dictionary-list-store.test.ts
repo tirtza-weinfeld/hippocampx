@@ -1,7 +1,7 @@
 import { describe, test, expect, beforeEach, vi } from "vitest"
 import { act } from "@testing-library/react"
 import { useDictionaryListStore } from "@/components/dictionary/store/dictionary-list-store"
-import type { WordWithPreview, InfiniteScrollCursor } from "@/lib/db/neon/queries/dictionary/index"
+import type { EntryWithPreview as WordWithPreview, InfiniteScrollCursor } from "@/lib/db/queries/dictionary"
 
 type RestorationState = {
   words: WordWithPreview[]

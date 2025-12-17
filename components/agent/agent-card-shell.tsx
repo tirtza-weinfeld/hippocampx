@@ -4,7 +4,7 @@ import { type ReactNode } from 'react'
 import { Activity } from 'react'
 import { AgentHeader } from './agent-header'
 import { useAgentDialogStore } from './store/agent-dialog-store'
-import type { Problem } from '@/lib/db/vercel/schema'
+import type { Problem } from '@/lib/db/schema'
 
 type AgentCardShellProps = {
   children: ReactNode

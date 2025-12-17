@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { fetchSensesByEntryId } from "@/lib/db/neon/queries/dictionary/entry-complete";
+import { fetchSensesByEntryId } from "@/lib/db/queries/dictionary/entry-complete";
 import { SensesList } from "./senses-list";
 import type { EntryBasic } from "./types";
 
