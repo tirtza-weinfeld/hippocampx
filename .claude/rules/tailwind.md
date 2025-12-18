@@ -49,7 +49,7 @@ For default HTML element styles. Rarely needed—prefer utilities on `<html>`/`<
 }
 ```
 
-## @layer components (overridable multi-property classes)
+## @layer components (overridable multi-property classes, Rarely needed—prefer utilities on `<html>`/`<body>`)
 
 For reusable classes that **utilities can override**:
 ```css

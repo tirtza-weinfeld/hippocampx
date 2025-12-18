@@ -88,7 +88,7 @@ export interface SchemaColumn {
 
 export interface SchemaTable {
   name: string;
-  provider: DatabaseProvider;
+  schema: string;
   columns: SchemaColumn[];
 }
 
@@ -110,8 +110,52 @@ export interface TablePosition {
   height: number;
 }
 
+export interface ColumnSelection {
+  table: string;
+  column: string;
+  type: "pk" | "fk";
+}
+
 export interface SchemaLayout {
   positions: Record<string, TablePosition>;
   paths: Record<string, string>;
   viewBox: { x: number; width: number; height: number };
+}
+
+// ============================================================================
+// ER Diagram Interaction Types
+// ============================================================================
+
+export interface CanvasDragState {
+  x: number;
+  y: number;
+  tx: number;
+  ty: number;
+}
+
+export interface TableDragState {
+  tableName: string;
+  startX: number;
+  startY: number;
+  tableStartX: number;
+  tableStartY: number;
+}
+
+export interface SchemaBound {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  index: number;
+}
+
+export interface HighlightedColumns {
+  pk: { table: string; column: string } | null;
+  fks: Array<{ table: string; column: string }>;
+}
+
+export interface Transform {
+  x: number;
+  y: number;
+  scale: number;
 }

@@ -11,7 +11,8 @@ If no rule matches or versions conflict → **ASK before proceeding**.
 ## Commands
 
 Run tools through pnpm scripts:
-- `pnpm lint` — linting
+- `pnpm lint` — lint all files
+- `pnpm lint <path>` — lint file, directory, or pattern (e.g., `pnpm lint lib/db-viewer/types.ts`, `pnpm lint lib/db-viewer/`, `pnpm lint lib/**/*.ts`)
 - `pnpm build` — production build
 - `pnpm build:plugins` — TypeScript compilation
 - `pnpm test` — unit tests

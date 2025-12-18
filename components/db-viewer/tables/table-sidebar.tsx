@@ -11,7 +11,7 @@ interface TableStat {
   name: string;
   provider: DatabaseProvider;
   rowCount: number;
-  description?: string;
+  schema: string;
 }
 
 interface TableSidebarProps {
@@ -35,6 +35,16 @@ function formatRowCount(count: number): string {
   return count.toLocaleString();
 }
 
+function groupTablesBySchema(tables: TableStat[]): Map<string, TableStat[]> {
+  const grouped = new Map<string, TableStat[]>();
+  for (const table of tables) {
+    const existing = grouped.get(table.schema) ?? [];
+    existing.push(table);
+    grouped.set(table.schema, existing);
+  }
+  return grouped;
+}
+
 export function TableSidebar({
   tables,
   selectedTable,
@@ -45,11 +55,7 @@ export function TableSidebar({
   const [search, setSearch] = useState("");
 
   const filteredTables = tables.filter((table) => {
-    return (
-      search === "" ||
-      table.name.toLowerCase().includes(search.toLowerCase()) ||
-      table.description?.toLowerCase().includes(search.toLowerCase())
-    );
+    return search === "" || table.name.toLowerCase().includes(search.toLowerCase());
   });
 
   return (
@@ -93,6 +99,9 @@ interface CollapsedSidebarProps {
 }
 
 function CollapsedSidebar({ tables, selectedTable, onTableSelect, onExpand }: CollapsedSidebarProps) {
+  const schemaIndexMap = buildSchemaIndexMap(tables);
+  const [hoveredTable, setHoveredTable] = useState<{ name: string; schema: string; top: number } | null>(null);
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -114,37 +123,59 @@ function CollapsedSidebar({ tables, selectedTable, onTableSelect, onExpand }: Co
       <div className="flex-1 overflow-y-auto scrollbar-thin space-y-1.5">
         {tables.map((table, index) => {
           const isActive = selectedTable === table.name;
+          const schemaIndex = (schemaIndexMap.get(table.schema) ?? 0) % 6;
+          const schemaColor = `var(--db-er-schema-${schemaIndex})`;
 
           return (
             <motion.button
               key={table.name}
               type="button"
               onClick={() => onTableSelect(table.name)}
+              onMouseEnter={(e) => {
+                const rect = e.currentTarget.getBoundingClientRect();
+                setHoveredTable({ name: table.name, schema: table.schema, top: rect.top + rect.height / 2 });
+              }}
+              onMouseLeave={() => setHoveredTable(null)}
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: index * 0.02 }}
-              className={`
-                w-full p-2 rounded-xl transition-all group
-                ${isActive
-                  ? "bg-gradient-to-br from-db-neon/20 to-db-neon/5 shadow-sm"
-                  : "hover:bg-db-surface-raised/70"
-                }
-              `}
-              title={formatTableName(table.name)}
+              className={`w-full p-2 rounded-xl transition-all ${isActive ? "bg-db-surface-raised/80" : "hover:bg-db-surface-raised/70"}`}
             >
-              <div className={`
-                size-9 rounded-xl flex items-center justify-center text-xs font-bold transition-all
-                ${isActive
-                  ? "bg-gradient-to-br from-db-neon to-db-neon/80 text-white shadow-md"
-                  : "bg-db-neon/10 text-db-neon group-hover:bg-db-neon/15"
-                }
-              `}>
+              <div
+                className="size-9 rounded-xl flex items-center justify-center text-xs font-bold transition-all"
+                style={{
+                  background: isActive ? schemaColor : `color-mix(in oklch, ${schemaColor} 15%, transparent)`,
+                  color: isActive ? "white" : schemaColor,
+                }}
+              >
                 {table.name.charAt(0).toUpperCase()}
               </div>
             </motion.button>
           );
         })}
       </div>
+
+      {/* Tooltip */}
+      <AnimatePresence>
+        {hoveredTable && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, x: -8 }}
+            animate={{ opacity: 1, scale: 1, x: 0 }}
+            exit={{ opacity: 0, scale: 0.95, x: -8 }}
+            transition={{ type: "spring", stiffness: 500, damping: 30 }}
+            className="fixed left-[76px] z-[100] pointer-events-none"
+            style={{ top: hoveredTable.top, transform: "translateY(-50%)" }}
+          >
+            {/* Arrow */}
+            <div className="absolute -left-1.5 top-1/2 -translate-y-1/2 size-3 rotate-45 bg-db-surface-raised border-l border-b border-db-border/50" />
+            {/* Content */}
+            <div className="relative px-3 py-2 rounded-xl bg-db-surface-raised border border-db-border/50 shadow-xl backdrop-blur-sm">
+              <p className="text-sm font-semibold text-db-text">{formatTableName(hoveredTable.name)}</p>
+              <p className="text-[10px] uppercase tracking-wider text-db-text-muted mt-0.5">{hoveredTable.schema}</p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }
@@ -159,6 +190,11 @@ interface ExpandedSidebarProps {
   onSearchChange: (value: string) => void;
 }
 
+function buildSchemaIndexMap(tables: TableStat[]): Map<string, number> {
+  const schemas = [...new Set(tables.map(t => t.schema))];
+  return new Map(schemas.map((s, i) => [s, i]));
+}
+
 function ExpandedSidebar({
   tables,
   filteredTables,
@@ -168,6 +204,25 @@ function ExpandedSidebar({
   search,
   onSearchChange,
 }: ExpandedSidebarProps) {
+  const [expandedSchemas, setExpandedSchemas] = useState<Set<string>>(() => {
+    return new Set(tables.map(t => t.schema));
+  });
+
+  const groupedTables = groupTablesBySchema(filteredTables);
+  const schemaIndexMap = buildSchemaIndexMap(tables);
+
+  function toggleSchema(schema: string) {
+    setExpandedSchemas(prev => {
+      const next = new Set(prev);
+      if (next.has(schema)) {
+        next.delete(schema);
+      } else {
+        next.add(schema);
+      }
+      return next;
+    });
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -209,19 +264,82 @@ function ExpandedSidebar({
         />
       </div>
 
-      {/* Table List */}
+      {/* Table List grouped by schema */}
       <div className="flex-1 overflow-y-auto scrollbar-thin px-3 pb-4">
-        {filteredTables.length > 0 && (
-          <div className="space-y-0.5">
-            {filteredTables.map((table, index) => (
-              <TableItem
-                key={table.name}
-                table={table}
-                isSelected={selectedTable === table.name}
-                onSelect={() => onTableSelect(table.name)}
-                index={index}
-              />
-            ))}
+        {groupedTables.size > 0 && (
+          <div className="space-y-3">
+            {Array.from(groupedTables.entries()).map(([schema, schemaTables]) => {
+              const isExpanded = expandedSchemas.has(schema);
+              const schemaIndex = (schemaIndexMap.get(schema) ?? 0) % 6;
+
+              return (
+                <div key={schema} data-db-schema={schemaIndex}>
+                  {/* Schema Header */}
+                  <button
+                    type="button"
+                    onClick={() => toggleSchema(schema)}
+                    className="w-full flex items-center gap-2.5 px-2 py-2 rounded-xl hover:bg-db-surface-raised/50 transition-colors group"
+                    aria-expanded={isExpanded}
+                  >
+                    <motion.svg
+                      className="size-4 text-db-text-muted group-hover:text-db-text transition-colors"
+                      viewBox="0 0 16 16"
+                      fill="currentColor"
+                      animate={{ rotate: isExpanded ? 0 : -90 }}
+                      transition={{ duration: 0.15 }}
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M4.22 6.22a.75.75 0 011.06 0L8 8.94l2.72-2.72a.75.75 0 111.06 1.06l-3.25 3.25a.75.75 0 01-1.06 0L4.22 7.28a.75.75 0 010-1.06z"
+                        clipRule="evenodd"
+                      />
+                    </motion.svg>
+                    <span
+                      className="size-2.5 rounded-full shrink-0"
+                      style={{ background: `var(--db-er-schema-${schemaIndex})` }}
+                    />
+                    <span className="text-xs font-semibold uppercase tracking-wide text-db-text-muted group-hover:text-db-text transition-colors">
+                      {schema}
+                    </span>
+                    <span
+                      className="ml-auto text-xs tabular-nums px-2 py-0.5 rounded-lg font-medium"
+                      style={{
+                        background: `color-mix(in oklch, var(--db-er-schema-${schemaIndex}) 15%, transparent)`,
+                        color: `var(--db-er-schema-${schemaIndex})`,
+                      }}
+                    >
+                      {schemaTables.length}
+                    </span>
+                  </button>
+
+                  {/* Tables in this schema */}
+                  <AnimatePresence initial={false}>
+                    {isExpanded && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.15, ease: "easeOut" }}
+                        className="overflow-hidden"
+                      >
+                        <div className="space-y-0.5 pt-1">
+                          {schemaTables.map((table, index) => (
+                            <TableItem
+                              key={table.name}
+                              table={table}
+                              isSelected={selectedTable === table.name}
+                              onSelect={() => onTableSelect(table.name)}
+                              index={index}
+                              schemaIndex={schemaIndex}
+                            />
+                          ))}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              );
+            })}
           </div>
         )}
 
@@ -251,9 +369,12 @@ interface TableItemProps {
   isSelected: boolean;
   onSelect: () => void;
   index: number;
+  schemaIndex: number;
 }
 
-function TableItem({ table, isSelected, onSelect, index }: TableItemProps) {
+function TableItem({ table, isSelected, onSelect, index, schemaIndex }: TableItemProps) {
+  const schemaColor = `var(--db-er-schema-${schemaIndex})`;
+
   return (
     <motion.button
       type="button"
@@ -263,41 +384,41 @@ function TableItem({ table, isSelected, onSelect, index }: TableItemProps) {
       transition={{ delay: index * 0.015, duration: 0.2 }}
       className={`
         w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all group
-        ${isSelected
-          ? "bg-gradient-to-r from-db-neon/15 to-db-neon/5"
-          : "hover:bg-db-surface-raised/60"
-        }
+        ${isSelected ? "bg-db-surface-raised/80" : "hover:bg-db-surface-raised/60"}
       `}
     >
       {/* Icon */}
-      <div className={`
-        size-8 rounded-lg flex items-center justify-center text-[11px] font-bold transition-all flex-shrink-0
-        ${isSelected
-          ? "bg-db-neon text-white shadow-sm"
-          : "bg-db-neon/10 text-db-neon group-hover:bg-db-neon/15"
-        }
-      `}>
+      <div
+        className="size-8 rounded-lg flex items-center justify-center text-[11px] font-bold transition-all flex-shrink-0"
+        style={{
+          background: isSelected ? schemaColor : `color-mix(in oklch, ${schemaColor} 15%, transparent)`,
+          color: isSelected ? "white" : schemaColor,
+        }}
+      >
         {table.name.charAt(0).toUpperCase()}
       </div>
 
       {/* Content */}
       <div className="flex-1 min-w-0">
-        <p className={`text-sm font-medium truncate transition-colors ${
-          isSelected ? "text-db-neon" : "text-db-text group-hover:text-db-text"
-        }`}>
-          {formatTableName(table.name)}
+        <p
+          className="text-sm font-medium truncate transition-colors"
+          style={{ color: isSelected ? schemaColor : undefined }}
+        >
+          {isSelected ? formatTableName(table.name) : <span className="text-db-text group-hover:text-db-text">{formatTableName(table.name)}</span>}
         </p>
       </div>
 
       {/* Row count */}
-      <span className={`
-        text-[11px] font-medium tabular-nums px-2 py-0.5 rounded-md transition-all
-        ${isSelected
-          ? "bg-db-neon/20 text-db-neon"
-          : "text-db-text-subtle group-hover:text-db-text-muted"
-        }
-      `}>
-        {formatRowCount(table.rowCount)}
+      <span
+        className="text-[11px] font-medium tabular-nums px-2 py-0.5 rounded-md transition-all"
+        style={{
+          background: isSelected ? `color-mix(in oklch, ${schemaColor} 20%, transparent)` : undefined,
+          color: isSelected ? schemaColor : undefined,
+        }}
+      >
+        <span className={isSelected ? "" : "text-db-text-subtle group-hover:text-db-text-muted"}>
+          {formatRowCount(table.rowCount)}
+        </span>
       </span>
     </motion.button>
   );
@@ -321,11 +442,7 @@ export function MobileSidebar({
   const [search, setSearch] = useState("");
 
   const filteredTables = tables.filter((table) => {
-    return (
-      search === "" ||
-      table.name.toLowerCase().includes(search.toLowerCase()) ||
-      table.description?.toLowerCase().includes(search.toLowerCase())
-    );
+    return search === "" || table.name.toLowerCase().includes(search.toLowerCase());
   });
 
   function handleTableSelect(tableName: string) {

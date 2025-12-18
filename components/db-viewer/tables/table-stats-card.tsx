@@ -46,7 +46,7 @@ export function TableStatsCard({
         group relative w-full text-left rounded-xl border p-4
         transition-all duration-200 bg-db-surface
         ${isSelected
-          ? "border-db-border ring-2 ring-offset-2 ring-offset-background ring-db-neon"
+          ? "border-db-border ring-2 ring-offset-2 ring-offset-background ring-db-neon-glow"
           : "border-db-border hover:bg-db-row-hover"
         }
       `}

@@ -98,48 +98,337 @@ function calculateTableHeight(table: SchemaTable): number {
 }
 
 /**
- * Calculate positions for all visible tables in a grid layout
+ * Build adjacency list for tables within a schema based on relationships.
+ */
+function buildAdjacencyGraph(
+  tableNames: Set<string>,
+  relationships: SchemaRelationship[]
+): Map<string, Set<string>> {
+  const graph = new Map<string, Set<string>>();
+
+  for (const name of tableNames) {
+    graph.set(name, new Set());
+  }
+
+  for (const rel of relationships) {
+    if (tableNames.has(rel.from.table) && tableNames.has(rel.to.table)) {
+      graph.get(rel.from.table)?.add(rel.to.table);
+      graph.get(rel.to.table)?.add(rel.from.table);
+    }
+  }
+
+  return graph;
+}
+
+/**
+ * Find connected components using Union-Find.
+ */
+function findConnectedComponents(
+  tableNames: string[],
+  adjacency: Map<string, Set<string>>
+): string[][] {
+  const parent = new Map<string, string>();
+  const rank = new Map<string, number>();
+
+  // Initialize
+  for (const name of tableNames) {
+    parent.set(name, name);
+    rank.set(name, 0);
+  }
+
+  function find(x: string): string {
+    const parentX = parent.get(x);
+    if (parentX !== undefined && parentX !== x) {
+      parent.set(x, find(parentX));
+    }
+    return parent.get(x) ?? x;
+  }
+
+  function union(x: string, y: string) {
+    const rootX = find(x);
+    const rootY = find(y);
+    if (rootX === rootY) return;
+
+    const rankX = rank.get(rootX) ?? 0;
+    const rankY = rank.get(rootY) ?? 0;
+
+    if (rankX < rankY) {
+      parent.set(rootX, rootY);
+    } else if (rankX > rankY) {
+      parent.set(rootY, rootX);
+    } else {
+      parent.set(rootY, rootX);
+      rank.set(rootX, rankX + 1);
+    }
+  }
+
+  // Union connected tables
+  for (const [table, neighbors] of adjacency) {
+    for (const neighbor of neighbors) {
+      union(table, neighbor);
+    }
+  }
+
+  // Group by root
+  const components = new Map<string, string[]>();
+  for (const name of tableNames) {
+    const root = find(name);
+    const group = components.get(root) ?? [];
+    group.push(name);
+    components.set(root, group);
+  }
+
+  return Array.from(components.values());
+}
+
+/**
+ * Order tables within a component using BFS from most-connected node.
+ * This ensures related tables are placed sequentially.
+ */
+function orderByBFS(
+  component: string[],
+  adjacency: Map<string, Set<string>>
+): string[] {
+  if (component.length <= 1) return component;
+
+  // Find most-connected node as start
+  let startNode = component[0];
+  let maxConnections = 0;
+
+  for (const name of component) {
+    const connections = adjacency.get(name)?.size ?? 0;
+    if (connections > maxConnections) {
+      maxConnections = connections;
+      startNode = name;
+    }
+  }
+
+  // BFS traversal
+  const visited = new Set<string>();
+  const result: string[] = [];
+  const queue: string[] = [startNode];
+
+  while (queue.length > 0) {
+    const current = queue.shift();
+    if (current === undefined || visited.has(current)) continue;
+    visited.add(current);
+    result.push(current);
+
+    // Add neighbors sorted by connection count (most connected first)
+    const neighbors = Array.from(adjacency.get(current) ?? [])
+      .filter(n => !visited.has(n) && component.includes(n))
+      .sort((a, b) => (adjacency.get(b)?.size ?? 0) - (adjacency.get(a)?.size ?? 0));
+
+    queue.push(...neighbors);
+  }
+
+  // Add any unvisited nodes (disconnected within component)
+  for (const name of component) {
+    if (!visited.has(name)) {
+      result.push(name);
+    }
+  }
+
+  return result;
+}
+
+interface SchemaBlock {
+  schema: string;
+  tables: Array<{ table: SchemaTable; localX: number; localY: number; height: number }>;
+  width: number;
+  height: number;
+}
+
+/**
+ * Calculate schema block layout using graph-based placement.
+ * Connected tables are placed adjacent to each other.
+ */
+function calculateSchemaBlock(
+  schemaTables: SchemaTable[],
+  relationships: SchemaRelationship[]
+): Omit<SchemaBlock, "schema"> {
+  if (schemaTables.length === 0) {
+    return { tables: [], width: 0, height: 0 };
+  }
+
+  const tableNames = new Set(schemaTables.map(t => t.name));
+  const tableMap = new Map(schemaTables.map(t => [t.name, t]));
+
+  // Build adjacency graph
+  const adjacency = buildAdjacencyGraph(tableNames, relationships);
+
+  // Find connected components
+  const components = findConnectedComponents(Array.from(tableNames), adjacency);
+
+  // Sort components by size (largest first)
+  components.sort((a, b) => b.length - a.length);
+
+  // Order tables within each component using BFS
+  const orderedTables: SchemaTable[] = [];
+  for (const component of components) {
+    const ordered = orderByBFS(component, adjacency);
+    for (const name of ordered) {
+      const table = tableMap.get(name);
+      if (table) orderedTables.push(table);
+    }
+  }
+
+  // Determine optimal column count based on table count
+  const tableCount = orderedTables.length;
+  const cols = tableCount <= 2 ? tableCount : Math.min(3, Math.ceil(Math.sqrt(tableCount)));
+
+  // Place tables in columns, keeping related tables in same/adjacent columns
+  const tablePositions: Array<{ table: SchemaTable; localX: number; localY: number; height: number }> = [];
+  const colHeights: number[] = Array.from({ length: cols }, () => 0);
+
+  for (let i = 0; i < orderedTables.length; i++) {
+    const table = orderedTables[i];
+    const height = calculateTableHeight(table);
+
+    // For first few tables, fill columns left-to-right
+    // After that, use shortest column to balance heights
+    let targetCol: number;
+    if (i < cols) {
+      targetCol = i;
+    } else {
+      // Find shortest column
+      targetCol = 0;
+      for (let c = 1; c < cols; c++) {
+        if (colHeights[c] < colHeights[targetCol]) targetCol = c;
+      }
+    }
+
+    const localX = targetCol * (LAYOUT.TABLE_WIDTH + LAYOUT.GAP_X);
+    const localY = colHeights[targetCol];
+
+    tablePositions.push({ table, localX, localY, height });
+    colHeights[targetCol] += height + LAYOUT.GAP_Y;
+  }
+
+  // Calculate block dimensions
+  const blockWidth = cols * LAYOUT.TABLE_WIDTH + (cols - 1) * LAYOUT.GAP_X;
+  const blockHeight = Math.max(...colHeights) - LAYOUT.GAP_Y;
+
+  return { tables: tablePositions, width: blockWidth, height: Math.max(0, blockHeight) };
+}
+
+/**
+ * Sort schema blocks by table count and relationship density.
+ * Larger/more connected schemas first.
+ */
+function sortSchemaBlocks(blocks: SchemaBlock[]): SchemaBlock[] {
+  return [...blocks].sort((a, b) => {
+    // More tables first
+    if (b.tables.length !== a.tables.length) {
+      return b.tables.length - a.tables.length;
+    }
+    // Then by area
+    const areaA = a.width * a.height;
+    const areaB = b.width * b.height;
+    if (areaB !== areaA) return areaB - areaA;
+    // Then alphabetically
+    return a.schema.localeCompare(b.schema);
+  });
+}
+
+/**
+ * Place schema blocks using skyline bin-packing for compact layout.
+ * Minimizes total area while keeping schemas grouped.
+ */
+function placeSchemaBlocks(
+  blocks: SchemaBlock[]
+): Map<string, { offsetX: number; offsetY: number }> {
+  const SCHEMA_GAP = 30;
+  const sortedBlocks = sortSchemaBlocks(blocks);
+  const placements = new Map<string, { offsetX: number; offsetY: number }>();
+
+  if (sortedBlocks.length === 0) return placements;
+
+  // Skyline algorithm: track the "skyline" of placed blocks
+  // skyline[x] = height at position x
+  const maxWidth = Math.max(...sortedBlocks.map(b => b.width)) * 3 + SCHEMA_GAP * 2;
+  const skyline: number[] = Array.from({ length: Math.ceil(maxWidth) + 1 }, () => 0);
+
+  for (const block of sortedBlocks) {
+    const blockWidth = block.width + SCHEMA_GAP;
+    let bestX = 0;
+    let bestY = Infinity;
+
+    // Find position with minimum Y where block fits
+    for (let x = 0; x <= maxWidth - blockWidth; x++) {
+      // Find max height in this x range
+      let maxY = 0;
+      for (let i = x; i < x + blockWidth && i < skyline.length; i++) {
+        maxY = Math.max(maxY, skyline[i]);
+      }
+
+      if (maxY < bestY) {
+        bestY = maxY;
+        bestX = x;
+      }
+    }
+
+    // Place block at bestX, bestY
+    placements.set(block.schema, {
+      offsetX: LAYOUT.PADDING + bestX,
+      offsetY: LAYOUT.PADDING + bestY,
+    });
+
+    // Update skyline
+    const newHeight = bestY + block.height + SCHEMA_GAP;
+    for (let i = bestX; i < bestX + blockWidth && i < skyline.length; i++) {
+      skyline[i] = newHeight;
+    }
+  }
+
+  return placements;
+}
+
+/**
+ * Calculate positions for all tables, grouped by schema.
+ * Uses graph-based layout within schemas and compact bin-packing between schemas.
  */
 function calculatePositions(
   tables: SchemaTable[],
   sortedNames: string[],
-  hiddenTables: Set<string>
+  relationships: SchemaRelationship[]
 ): Record<string, TablePosition> {
   const positions: Record<string, TablePosition> = {};
   const tableMap = new Map(tables.map(t => [t.name, t]));
-  const visibleNames = sortedNames.filter(name => !hiddenTables.has(name));
 
-  const rowHeights: number[] = [];
-  let currentRow = 0;
-  let currentCol = 0;
-
-  for (const name of visibleNames) {
+  // Group tables by schema
+  const schemaGroups = new Map<string, SchemaTable[]>();
+  for (const name of sortedNames) {
     const table = tableMap.get(name);
     if (!table) continue;
+    const group = schemaGroups.get(table.schema) ?? [];
+    group.push(table);
+    schemaGroups.set(table.schema, group);
+  }
 
-    const height = calculateTableHeight(table);
+  // Calculate block for each schema
+  const schemaBlocks: SchemaBlock[] = [];
+  for (const [schema, schemaTables] of schemaGroups) {
+    const block = calculateSchemaBlock(schemaTables, relationships);
+    schemaBlocks.push({ schema, ...block });
+  }
 
-    if (currentCol >= LAYOUT.COLUMNS) {
-      currentCol = 0;
-      currentRow++;
+  // Place schema blocks using bin-packing
+  const placements = placeSchemaBlocks(schemaBlocks);
+
+  // Apply placements to table positions
+  for (const block of schemaBlocks) {
+    const placement = placements.get(block.schema);
+    if (!placement) continue;
+
+    for (const { table, localX, localY, height } of block.tables) {
+      positions[table.name] = {
+        x: placement.offsetX + localX,
+        y: placement.offsetY + localY,
+        width: LAYOUT.TABLE_WIDTH,
+        height,
+      };
     }
-
-    let y = LAYOUT.PADDING;
-    for (let r = 0; r < currentRow; r++) {
-      y += (rowHeights[r] ?? 0) + LAYOUT.GAP_Y;
-    }
-
-    const currentRowHeight = rowHeights[currentRow] ?? 0;
-    rowHeights[currentRow] = Math.max(currentRowHeight, height);
-
-    positions[name] = {
-      x: LAYOUT.PADDING + currentCol * (LAYOUT.TABLE_WIDTH + LAYOUT.GAP_X),
-      y,
-      width: LAYOUT.TABLE_WIDTH,
-      height,
-    };
-
-    currentCol++;
   }
 
   return positions;
@@ -232,16 +521,14 @@ function generatePaths(
 // ============================================================================
 
 /**
- * Compute complete layout for schema diagram
+ * Compute complete layout for schema diagram.
+ * Layout is stable regardless of visibility state.
  */
-export function computeSchemaLayout(
-  topology: SchemaTopology,
-  hiddenTables: Set<string> = new Set()
-): SchemaLayout {
+export function computeSchemaLayout(topology: SchemaTopology): SchemaLayout {
   const { tables, relationships } = topology;
 
   const sortedNames = topologicalSort(tables, relationships);
-  const positions = calculatePositions(tables, sortedNames, hiddenTables);
+  const positions = calculatePositions(tables, sortedNames, relationships);
   const paths = generatePaths(relationships, positions, tables);
 
   let minX = Infinity;
@@ -275,4 +562,16 @@ export function computeSchemaLayout(
 export function getColumnY(table: SchemaTable, columnName: string): number {
   const colIndex = table.columns.findIndex(c => c.name === columnName);
   return LAYOUT.HEADER_HEIGHT + (colIndex + 0.5) * LAYOUT.COLUMN_HEIGHT;
+}
+
+/**
+ * Generate paths for relationships given current positions.
+ * Used for dynamic path updates when tables are dragged.
+ */
+export function generatePathsFromPositions(
+  relationships: SchemaRelationship[],
+  positions: Record<string, TablePosition>,
+  tables: SchemaTable[]
+): Record<string, string> {
+  return generatePaths(relationships, positions, tables);
 }

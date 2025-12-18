@@ -6,13 +6,10 @@
  */
 
 @theme inline {
-  /* Provider accent colors */
+  /* Accent colors */
   --color-db-neon: var(--db-neon);
   --color-db-neon-soft: var(--db-neon-soft);
   --color-db-neon-glow: var(--db-neon-glow);
-  --color-db-vercel: var(--db-vercel);
-  --color-db-vercel-soft: var(--db-vercel-soft);
-  --color-db-vercel-glow: var(--db-vercel-glow);
 
   /* Surfaces with depth */
   --color-db-surface: var(--db-surface);
@@ -42,9 +39,6 @@
   --db-neon: oklch(0.72 0.19 160);
   --db-neon-soft: oklch(0.72 0.19 160 / 8%);
   --db-neon-glow: oklch(0.72 0.19 160 / 25%);
-  --db-vercel: oklch(0.65 0.18 250);
-  --db-vercel-soft: oklch(0.65 0.18 250 / 8%);
-  --db-vercel-glow: oklch(0.65 0.18 250 / 25%);
 
   /* Light mode surfaces */
   --db-surface: oklch(0.99 0.002 264);
@@ -70,9 +64,6 @@
   --db-neon: oklch(0.78 0.18 160);
   --db-neon-soft: oklch(0.78 0.18 160 / 12%);
   --db-neon-glow: oklch(0.78 0.18 160 / 30%);
-  --db-vercel: oklch(0.72 0.16 250);
-  --db-vercel-soft: oklch(0.72 0.16 250 / 12%);
-  --db-vercel-glow: oklch(0.72 0.16 250 / 30%);
 
   /* Dark mode surfaces with depth */
   --db-surface: oklch(0.16 0.014 264);
@@ -98,20 +89,8 @@
   background: linear-gradient(135deg, var(--color-db-neon), oklch(0.65 0.22 170));
 }
 
-@utility bg-db-gradient-vercel {
-  background: linear-gradient(135deg, var(--color-db-vercel), oklch(0.58 0.20 260));
-}
-
 @utility text-db-gradient-neon {
   background: linear-gradient(135deg, var(--color-db-neon), oklch(0.80 0.16 150));
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
-}
-
-@utility text-db-gradient-vercel {
-  background: linear-gradient(135deg, var(--color-db-vercel), oklch(0.78 0.14 240));
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -128,10 +107,6 @@
 /* Glow effects */
 @utility shadow-db-neon {
   box-shadow: 0 0 20px var(--color-db-neon-glow), 0 4px 12px oklch(0 0 0 / 10%);
-}
-
-@utility shadow-db-vercel {
-  box-shadow: 0 0 20px var(--color-db-vercel-glow), 0 4px 12px oklch(0 0 0 / 10%);
 }
 
 /* Refined scrollbar */
@@ -187,15 +162,6 @@
   }
 }
 
-/* Ring focus utilities */
-@utility ring-db-neon {
-  --tw-ring-color: var(--color-db-neon-glow);
-}
-
-@utility ring-db-vercel {
-  --tw-ring-color: var(--color-db-vercel-glow);
-}
-
 /* Type badge color tokens */
 @theme inline {
   --color-db-type-number: var(--db-type-number);
@@ -213,8 +179,8 @@
 }
 
 :root {
-  --db-type-number: var(--color-db-vercel);
-  --db-type-number-bg: var(--color-db-vercel-soft);
+  --db-type-number: oklch(0.65 0.18 250);
+  --db-type-number-bg: oklch(0.65 0.18 250 / 10%);
   --db-type-string: var(--color-db-neon);
   --db-type-string-bg: var(--color-db-neon-soft);
   --db-type-boolean: oklch(0.65 0.16 85);

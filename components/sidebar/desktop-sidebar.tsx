@@ -32,7 +32,11 @@ export function DesktopSidebar({ className }: DesktopSidebarProps) {
     <div className={cn("flex-col", className)}>
       <aside
         id="desktop-sidebar"
-        className="fixed inset-y-1 left-1 z-20 flex flex-col rounded-2xl border border-sidebar-border bg-sidebar/95 shadow-lg backdrop-blur-md transition-[width] duration-300 ease-out"
+        className="fixed inset-y-1 left-1 z-20 flex flex-col rounded-2xl
+        shadow-2xl shadow-sky-400/30
+        bg-sidebar/95 backdrop-blur-md transition-[width] duration-300 ease-out 
+        
+        "
         style={{ width: isExpanded ? SIDEBAR_WIDTH_EXPANDED : SIDEBAR_WIDTH_COLLAPSED }}
       >
         <SidebarHeader isExpanded={isExpanded} />

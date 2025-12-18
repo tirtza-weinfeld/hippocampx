@@ -1,0 +1,807 @@
+/**
+ * DB Viewer ER Diagram Styles
+ *
+ * Theme tokens: fill-db-er-card, stroke-db-er-line, text-db-er-pk
+ * Component classes: db-er-panel, db-er-control-btn, etc.
+ */
+
+@theme inline {
+  /* Card surfaces */
+  --color-db-er-card: var(--db-er-card);
+  --color-db-er-card-header: var(--db-er-card-header);
+  --color-db-er-border: var(--db-er-border);
+
+  /* Text */
+  --color-db-er-text: var(--db-er-text);
+  --color-db-er-text-muted: var(--db-er-text-muted);
+  --color-db-er-text-type: var(--db-er-text-type);
+
+  /* Primary key */
+  --color-db-er-pk: var(--db-er-pk);
+  --color-db-er-pk-soft: var(--db-er-pk-soft);
+
+  /* Foreign key */
+  --color-db-er-fk: var(--db-er-fk);
+  --color-db-er-fk-soft: var(--db-er-fk-soft);
+
+  /* Relationship lines */
+  --color-db-er-line: var(--db-er-line);
+  --color-db-er-line-pk: var(--db-er-line-pk);
+  --color-db-er-line-fk: var(--db-er-line-fk);
+
+  /* Controls */
+  --color-db-er-control: var(--db-er-control);
+
+  /* Schema accent */
+  --color-db-er-schema: var(--db-er-schema);
+}
+
+:root {
+  --db-er-card: var(--color-white);
+  --db-er-card-header: var(--color-gray-100);
+  --db-er-border: var(--color-gray-300);
+
+  --db-er-text: var(--color-gray-800);
+  --db-er-text-muted: var(--color-gray-500);
+  --db-er-text-type: var(--color-gray-400);
+
+  --db-er-pk: var(--color-amber-800);
+  --db-er-pk-soft: var(--color-amber-100);
+
+  --db-er-fk: var(--color-blue-800);
+  --db-er-fk-soft: var(--color-blue-100);
+
+  --db-er-line: var(--color-gray-400);
+  --db-er-line-pk: var(--color-amber-500);
+  --db-er-line-fk: var(--color-blue-500);
+
+  --db-er-control: oklch(0.98 0.005 264);
+  --db-er-surface: oklch(0.96 0.005 264);
+}
+
+.dark {
+  --db-er-card: var(--color-gray-800);
+  --db-er-card-header: var(--color-gray-900);
+  --db-er-border: var(--color-gray-600);
+
+  --db-er-text: var(--color-gray-100);
+  --db-er-text-muted: var(--color-gray-400);
+  --db-er-text-type: var(--color-gray-500);
+
+  --db-er-pk: var(--color-amber-300);
+  --db-er-pk-soft: oklch(from var(--color-amber-900) l c h / 40%);
+
+  --db-er-fk: var(--color-blue-300);
+  --db-er-fk-soft: oklch(from var(--color-blue-900) l c h / 40%);
+
+  --db-er-line: var(--color-gray-500);
+  --db-er-line-pk: var(--color-amber-400);
+  --db-er-line-fk: var(--color-blue-400);
+
+  --db-er-control: oklch(0.18 0.01 264);
+  --db-er-surface: oklch(0.14 0.01 264);
+}
+
+/* ============================================
+   @utility - Properties without Tailwind utils
+   ============================================ */
+
+/* Canvas cursor (grab/grabbing not in Tailwind) */
+@utility db-er-canvas {
+  cursor: grab;
+  &:active { cursor: grabbing; }
+}
+
+/* Scrollbar styling (scrollbar-width, ::-webkit-scrollbar) */
+@utility db-er-scrollable {
+  scrollbar-width: thin;
+  scrollbar-color: oklch(from var(--color-db-er-border) l c h / 40%) transparent;
+
+  &::-webkit-scrollbar { width: 4px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb {
+    background: oklch(from var(--color-db-er-border) l c h / 40%);
+    border-radius: 2px;
+    &:hover { background: oklch(from var(--color-db-er-border) l c h / 60%); }
+  }
+}
+
+/* Custom checkbox (appearance: none, ::after pseudo) */
+@utility db-er-check {
+  appearance: none;
+  position: relative;
+  width: 14px;
+  height: 14px;
+  background: transparent;
+  border: 1.5px solid oklch(from var(--db-er-schema, var(--color-db-neon)) l c h / 45%);
+  border-radius: 4px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 100ms ease-out;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e");
+    background-size: 12px;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0;
+    transform: scale(0.5);
+    transition: all 100ms ease-out;
+  }
+
+  &:hover { border-color: var(--db-er-schema, var(--color-db-neon)); }
+
+  &:checked {
+    background: var(--db-er-schema, var(--color-db-neon));
+    border-color: var(--db-er-schema, var(--color-db-neon));
+    &::after { opacity: 1; transform: scale(1); }
+  }
+
+  &:indeterminate {
+    background: var(--db-er-schema, var(--color-db-neon));
+    border-color: var(--db-er-schema, var(--color-db-neon));
+    &::after {
+      background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3crect x='4' y='7' width='8' height='2' rx='1'/%3e%3c/svg%3e");
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid oklch(from var(--db-er-schema, var(--color-db-neon)) l c h / 50%);
+    outline-offset: 1px;
+  }
+}
+
+/* ============================================
+   @layer components - Multi-property classes
+   ============================================ */
+
+@layer components {
+  /* ========================================
+     2026 Visibility Panel - Bleeding Edge
+     ======================================== */
+
+  /* Trigger pill - Floating glass with iridescent glow */
+  .db-er-trigger {
+    --trigger-glow: oklch(0.7 0.15 250);
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2, 8px);
+    padding: var(--spacing-2, 8px) var(--spacing-3, 12px);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    color: var(--color-db-er-text);
+    background: oklch(from var(--db-er-control) l c h / 80%);
+    border: 1px solid oklch(from var(--color-db-er-border) l c h / 25%);
+    border-radius: 100px;
+    backdrop-filter: blur(16px) saturate(180%);
+    box-shadow:
+      0 0 0 1px oklch(1 0 0 / 5%) inset,
+      0 1px 1px oklch(1 0 0 / 10%) inset,
+      0 2px 4px oklch(0 0 0 / 4%),
+      0 4px 8px oklch(0 0 0 / 6%),
+      0 8px 16px oklch(0 0 0 / 4%);
+    cursor: pointer;
+    user-select: none;
+    isolation: isolate;
+
+    /* Iridescent shimmer layer */
+    &::before {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      border-radius: inherit;
+      background: conic-gradient(
+        from 180deg at 50% 50%,
+        oklch(0.7 0.12 280 / 0%),
+        oklch(0.7 0.15 250 / 15%),
+        oklch(0.7 0.12 200 / 0%),
+        oklch(0.7 0.15 160 / 15%),
+        oklch(0.7 0.12 280 / 0%)
+      );
+      opacity: 0;
+      transition: opacity 200ms ease-out;
+      z-index: -1;
+      mask: linear-gradient(#000, #000) content-box, linear-gradient(#000, #000);
+      mask-composite: exclude;
+      padding: 1px;
+    }
+
+    &:hover::before { opacity: 1; }
+
+    &:hover {
+      background: oklch(from var(--db-er-control) l c h / 90%);
+      border-color: oklch(from var(--color-db-er-border) l c h / 15%);
+      box-shadow:
+        0 0 0 1px oklch(1 0 0 / 8%) inset,
+        0 1px 2px oklch(1 0 0 / 15%) inset,
+        0 4px 8px oklch(0 0 0 / 6%),
+        0 8px 16px oklch(0 0 0 / 8%),
+        0 16px 32px oklch(0 0 0 / 6%),
+        0 0 24px oklch(from var(--trigger-glow) l c h / 8%);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow:
+        0 0 0 2px var(--db-er-control),
+        0 0 0 4px oklch(0.65 0.2 250 / 60%);
+    }
+
+    /* Count badge */
+    & .db-er-count {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 32px;
+      padding: 2px 6px;
+      font-size: 10px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      color: oklch(0.98 0 0);
+      background: linear-gradient(
+        135deg,
+        oklch(0.55 0.15 250),
+        oklch(0.5 0.18 280)
+      );
+      border-radius: 100px;
+      box-shadow:
+        0 1px 2px oklch(0 0 0 / 15%),
+        0 0 8px oklch(0.6 0.15 265 / 25%) inset;
+    }
+  }
+
+  .dark .db-er-trigger {
+    --trigger-glow: oklch(0.65 0.18 250);
+    background: oklch(from var(--db-er-control) l c h / 70%);
+    border-color: oklch(from var(--color-db-er-border) l c h / 20%);
+
+    &:hover {
+      background: oklch(from var(--db-er-control) l c h / 80%);
+      box-shadow:
+        0 0 0 1px oklch(1 0 0 / 5%) inset,
+        0 1px 2px oklch(1 0 0 / 8%) inset,
+        0 4px 8px oklch(0 0 0 / 20%),
+        0 8px 16px oklch(0 0 0 / 25%),
+        0 16px 32px oklch(0 0 0 / 15%),
+        0 0 32px oklch(from var(--trigger-glow) l c h / 15%);
+    }
+  }
+
+  /* Dropdown - Multi-layer glass with animated border */
+  .db-er-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 100;
+    margin-top: var(--spacing-2, 8px);
+    padding: var(--spacing-2, 8px);
+    width: 17rem;
+    max-height: min(26rem, 70vh);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    background: oklch(from var(--db-er-control) l c h / 75%);
+    border-radius: 16px;
+    backdrop-filter: blur(24px) saturate(180%);
+    isolation: isolate;
+
+    /* Animated gradient border */
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      padding: 1px;
+      background: linear-gradient(
+        135deg,
+        oklch(0.7 0.1 250 / 40%),
+        oklch(0.7 0.1 200 / 20%),
+        oklch(0.7 0.1 280 / 40%)
+      );
+      mask: linear-gradient(#000, #000) content-box, linear-gradient(#000, #000);
+      mask-composite: exclude;
+      pointer-events: none;
+    }
+
+    /* Soft inner glow */
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      box-shadow:
+        0 0 0 1px oklch(1 0 0 / 8%) inset,
+        0 1px 2px oklch(1 0 0 / 10%) inset;
+      pointer-events: none;
+    }
+
+    /* Outer shadow layers */
+    box-shadow:
+      0 4px 8px oklch(0 0 0 / 4%),
+      0 8px 16px oklch(0 0 0 / 6%),
+      0 16px 32px oklch(0 0 0 / 8%),
+      0 32px 64px oklch(0 0 0 / 10%);
+  }
+
+  .dark .db-er-dropdown {
+    background: oklch(from var(--db-er-control) l c h / 65%);
+    box-shadow:
+      0 4px 8px oklch(0 0 0 / 15%),
+      0 8px 16px oklch(0 0 0 / 20%),
+      0 16px 32px oklch(0 0 0 / 25%),
+      0 32px 64px oklch(0 0 0 / 20%);
+
+    &::before {
+      background: linear-gradient(
+        135deg,
+        oklch(0.5 0.12 250 / 30%),
+        oklch(0.5 0.12 200 / 15%),
+        oklch(0.5 0.12 280 / 30%)
+      );
+    }
+  }
+
+  /* Segmented control - Floating pill selector */
+  .db-er-segmented {
+    position: relative;
+    display: flex;
+    gap: 2px;
+    padding: 3px;
+    background: oklch(from var(--color-db-er-border) l c h / 15%);
+    border-radius: 10px;
+    border: 1px solid oklch(from var(--color-db-er-border) l c h / 10%);
+  }
+
+  .db-er-segment {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    padding: var(--spacing-1-5, 6px) var(--spacing-2, 8px);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: var(--color-db-er-text-muted);
+    background: transparent;
+    border: none;
+    border-radius: 7px;
+    cursor: pointer;
+    transition: color 150ms ease-out;
+
+    &:hover {
+      color: var(--color-db-er-text);
+    }
+
+    &:active {
+      background: oklch(from var(--color-db-er-border) l c h / 20%);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 2px oklch(0.65 0.2 250 / 50%) inset;
+    }
+  }
+
+  /* Animated segment indicator (positioned by JS) */
+  .db-er-segment-indicator {
+    position: absolute;
+    top: 3px;
+    bottom: 3px;
+    left: 3px;
+    width: calc(50% - 4px);
+    background: oklch(from var(--db-er-control) l c h / 90%);
+    border-radius: 7px;
+    box-shadow:
+      0 1px 3px oklch(0 0 0 / 8%),
+      0 0 0 1px oklch(1 0 0 / 5%) inset;
+    pointer-events: none;
+  }
+
+  /* Scrollable list area */
+  .db-er-list {
+    flex: 1;
+    overflow-y: auto;
+    margin-top: var(--spacing-2, 8px);
+    padding-right: var(--spacing-1, 4px);
+  }
+
+  /* Schema group header - Refined hover state */
+  .db-er-schema-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2, 8px);
+    padding: var(--spacing-1-5, 6px) var(--spacing-2, 8px);
+    margin-bottom: 2px;
+    border-radius: 8px;
+    color: var(--color-db-er-text);
+    transition: background 120ms ease-out;
+
+    &:hover {
+      background: oklch(from var(--color-db-er-border) l c h / 12%);
+    }
+
+    /* Schema color dot with glow */
+    & .db-er-schema-dot {
+      position: relative;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--db-er-schema);
+      box-shadow: 0 0 6px oklch(from var(--db-er-schema) l c h / 40%);
+    }
+  }
+
+  /* Table item row - Subtle lift effect */
+  .db-er-table-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2, 8px);
+    padding: var(--spacing-1, 4px) var(--spacing-2, 8px);
+    margin-left: var(--spacing-5, 20px);
+    border-radius: 6px;
+    color: var(--color-db-er-text);
+    cursor: pointer;
+    transition: all 100ms ease-out;
+
+    &:hover {
+      background: oklch(from var(--color-db-er-border) l c h / 10%);
+      transform: translateX(2px);
+    }
+  }
+
+  /* Control panel glass surface */
+  .db-er-glass {
+    background: oklch(from var(--db-er-control) l c h / 85%);
+    border: 1px solid oklch(from var(--color-db-er-border) l c h / 30%);
+    border-radius: var(--radius-lg, 8px);
+    box-shadow: 0 2px 8px oklch(0 0 0 / 8%);
+    backdrop-filter: blur(12px);
+  }
+
+  /* Control input (search, slider) */
+  .db-er-input {
+    background: transparent;
+    font-size: 11px;
+    color: var(--color-db-er-text);
+    outline: none;
+
+    &::placeholder { color: oklch(from var(--color-db-er-text-muted) l c h / 60%); }
+  }
+
+  /* Zoom slider track */
+  .db-er-slider {
+    appearance: none;
+    width: 80px;
+    height: 4px;
+    background: oklch(from var(--color-db-er-border) l c h / 40%);
+    border-radius: 2px;
+    cursor: pointer;
+
+    &::-webkit-slider-thumb {
+      appearance: none;
+      width: 12px;
+      height: 12px;
+      background: var(--color-db-er-text);
+      border-radius: 50%;
+      cursor: grab;
+      transition: transform 100ms ease-out;
+
+      &:active { cursor: grabbing; transform: scale(1.15); }
+    }
+
+    &::-moz-range-thumb {
+      width: 12px;
+      height: 12px;
+      background: var(--color-db-er-text);
+      border: none;
+      border-radius: 50%;
+      cursor: grab;
+    }
+  }
+}
+
+/* Schema colors via data attribute */
+:root {
+  --db-er-schema-0: var(--color-blue-500);
+  --db-er-schema-1: var(--color-emerald-500);
+  --db-er-schema-2: var(--color-violet-500);
+  --db-er-schema-3: var(--color-orange-500);
+  --db-er-schema-4: var(--color-pink-500);
+  --db-er-schema-5: var(--color-cyan-500);
+}
+
+.dark {
+  --db-er-schema-0: var(--color-blue-400);
+  --db-er-schema-1: var(--color-emerald-400);
+  --db-er-schema-2: var(--color-violet-400);
+  --db-er-schema-3: var(--color-orange-400);
+  --db-er-schema-4: var(--color-pink-400);
+  --db-er-schema-5: var(--color-cyan-400);
+}
+
+[data-db-schema] { --db-er-schema: var(--db-er-schema-0); }
+[data-db-schema="1"] { --db-er-schema: var(--db-er-schema-1); }
+[data-db-schema="2"] { --db-er-schema: var(--db-er-schema-2); }
+[data-db-schema="3"] { --db-er-schema: var(--db-er-schema-3); }
+[data-db-schema="4"] { --db-er-schema: var(--db-er-schema-4); }
+[data-db-schema="5"] { --db-er-schema: var(--db-er-schema-5); }
+
+/* ============================================
+   Bottom Panel - Draggable, Resizable
+   ============================================ */
+
+@layer components {
+  /* Main panel container */
+  .db-er-panel {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    background: var(--db-er-control);
+    border-top: 1px solid var(--color-db-er-border);
+    transition: height 150ms ease-out;
+  }
+
+  /* Resize handle */
+  .db-er-panel-handle {
+    position: absolute;
+    top: -4px;
+    left: 0;
+    right: 0;
+    height: 8px;
+    cursor: ns-resize;
+    z-index: 10;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 3px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 32px;
+      height: 3px;
+      background: var(--color-db-er-border);
+      border-radius: 2px;
+      opacity: 0.5;
+      transition: opacity 150ms;
+    }
+
+    &:hover::before {
+      opacity: 1;
+    }
+  }
+
+  /* Header row */
+  .db-er-panel-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3, 12px);
+    padding: var(--spacing-2, 8px) var(--spacing-3, 12px);
+    border-bottom: 1px solid oklch(from var(--color-db-er-border) l c h / 50%);
+    flex-shrink: 0;
+  }
+
+  /* Collapse toggle */
+  .db-er-panel-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    color: var(--color-db-er-text-muted);
+    border-radius: 6px;
+    transition: all 100ms;
+
+    &:hover {
+      color: var(--color-db-er-text);
+      background: oklch(from var(--color-db-er-border) l c h / 15%);
+    }
+  }
+
+  /* Visibility badge */
+  .db-er-panel-badge {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-1-5, 6px);
+    padding: var(--spacing-1, 4px) var(--spacing-2, 8px);
+    color: var(--color-db-er-text);
+    background: oklch(from var(--color-db-er-border) l c h / 10%);
+    border-radius: 6px;
+  }
+
+  /* Search */
+  .db-er-panel-search {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2, 8px);
+    flex: 1;
+    max-width: 240px;
+    padding: var(--spacing-1-5, 6px) var(--spacing-2-5, 10px);
+    background: oklch(from var(--color-db-er-border) l c h / 8%);
+    border: 1px solid oklch(from var(--color-db-er-border) l c h / 15%);
+    border-radius: 8px;
+    transition: all 150ms;
+
+    &:focus-within {
+      border-color: oklch(0.6 0.15 250 / 40%);
+      box-shadow: 0 0 0 2px oklch(0.6 0.15 250 / 10%);
+    }
+  }
+
+  .db-er-panel-dropdown {
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    padding: var(--spacing-1, 4px);
+    background: var(--db-er-control);
+    border: 1px solid var(--color-db-er-border);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px oklch(0 0 0 / 15%);
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+  .db-er-panel-result {
+    display: block;
+    width: 100%;
+    padding: var(--spacing-1-5, 6px) var(--spacing-2, 8px);
+    text-align: left;
+    font-size: 11px;
+    color: var(--color-db-er-text);
+    border-radius: 6px;
+
+    &:hover, &.active {
+      background: oklch(from var(--color-db-er-border) l c h / 15%);
+    }
+  }
+
+  /* Zoom */
+  .db-er-panel-zoom {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2, 8px);
+  }
+
+  .db-er-panel-presets {
+    position: absolute;
+    bottom: calc(100% + 4px);
+    right: 0;
+    min-width: 60px;
+    padding: var(--spacing-1, 4px);
+    background: var(--db-er-control);
+    border: 1px solid var(--color-db-er-border);
+    border-radius: 6px;
+    box-shadow: 0 4px 12px oklch(0 0 0 / 15%);
+  }
+
+  /* Action buttons */
+  .db-er-panel-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    color: var(--color-db-er-text-muted);
+    border-radius: 6px;
+    transition: all 100ms;
+
+    &:hover {
+      color: var(--color-db-er-text);
+      background: oklch(from var(--color-db-er-border) l c h / 15%);
+    }
+  }
+
+  /* Body */
+  .db-er-panel-body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
+    padding: var(--spacing-2, 8px) var(--spacing-3, 12px);
+    gap: var(--spacing-2, 8px);
+  }
+
+  /* Quick actions */
+  .db-er-panel-actions {
+    display: flex;
+    gap: var(--spacing-2, 8px);
+    flex-shrink: 0;
+  }
+
+  .db-er-panel-action {
+    padding: var(--spacing-1, 4px) var(--spacing-2-5, 10px);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    color: var(--color-db-er-text-muted);
+    background: oklch(from var(--color-db-er-border) l c h / 8%);
+    border: 1px solid oklch(from var(--color-db-er-border) l c h / 12%);
+    border-radius: 5px;
+    transition: all 100ms;
+
+    &:hover {
+      color: var(--color-db-er-text);
+      background: oklch(from var(--color-db-er-border) l c h / 15%);
+    }
+  }
+
+  /* Schema list */
+  .db-er-panel-schemas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-2, 8px);
+    flex: 1;
+    overflow-y: auto;
+    align-content: flex-start;
+  }
+
+  .db-er-panel-schema {
+    flex: 1 1 180px;
+    max-width: 280px;
+    padding: var(--spacing-2, 8px);
+    background: oklch(from var(--color-db-er-border) l c h / 5%);
+    border: 1px solid oklch(from var(--color-db-er-border) l c h / 10%);
+    border-radius: 8px;
+  }
+
+  .db-er-panel-schema-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-1-5, 6px);
+    color: var(--color-db-er-text);
+  }
+
+  .db-er-panel-tables {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-1, 4px);
+    margin-top: var(--spacing-2, 8px);
+    padding-top: var(--spacing-2, 8px);
+    border-top: 1px solid oklch(from var(--color-db-er-border) l c h / 10%);
+  }
+
+  .db-er-panel-table {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-1, 4px);
+    padding: var(--spacing-0-5, 2px) var(--spacing-2, 8px);
+    font-size: 10px;
+    font-family: var(--font-mono, monospace);
+    color: var(--color-db-er-text-muted);
+    background: oklch(from var(--color-db-er-border) l c h / 6%);
+    border-radius: 100px;
+    cursor: pointer;
+    transition: all 100ms;
+
+    &:hover {
+      background: oklch(from var(--color-db-er-border) l c h / 12%);
+      color: var(--color-db-er-text);
+    }
+  }
+
+  .db-er-chip-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: oklch(from var(--color-db-er-border) l c h / 30%);
+    transition: all 100ms;
+
+    &.visible {
+      background: var(--db-er-schema);
+      box-shadow: 0 0 4px oklch(from var(--db-er-schema) l c h / 50%);
+    }
+  }
+}

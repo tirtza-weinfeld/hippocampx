@@ -17,18 +17,9 @@ import type {
   SchemaColumn,
   SchemaRelationship,
   ForeignKeyRef,
-  DatabaseProvider,
 } from "./types";
 
-import * as schema from "@/lib/db/schema";
-
-// ============================================================================
-// Schema Registry
-// ============================================================================
-
-const SCHEMA_MODULES = {
-  neon: schema,
-} as const satisfies Partial<Record<DatabaseProvider, Record<string, unknown>>>;
+import * as schemas from "@/lib/db/schemas";
 
 // ============================================================================
 // Table Detection
@@ -40,16 +31,20 @@ function isPgTable(value: unknown): value is AnyPgTable {
 
 function extractTablesFromModule(
   module: Record<string, unknown>,
-  provider: DatabaseProvider
-): Array<{ name: string; provider: DatabaseProvider; schema: AnyPgTable }> {
-  const tables: Array<{ name: string; provider: DatabaseProvider; schema: AnyPgTable }> = [];
+  schemaName: string
+): Array<{ name: string; schema: string; tableSchema: AnyPgTable }> {
+  const tables: Array<{
+    name: string;
+    schema: string;
+    tableSchema: AnyPgTable;
+  }> = [];
 
   for (const [, value] of Object.entries(module)) {
     if (isPgTable(value)) {
       tables.push({
         name: getTableName(value),
-        provider,
-        schema: value,
+        schema: schemaName,
+        tableSchema: value,
       });
     }
   }
@@ -131,18 +126,18 @@ export const buildSchemaTopology = cache(function buildSchemaTopology(): SchemaT
   const tables: SchemaTable[] = [];
   const relationships: SchemaRelationship[] = [];
 
-  for (const [provider, module] of Object.entries(SCHEMA_MODULES)) {
-    const providerTables = extractTablesFromModule(
+  for (const [schemaName, module] of Object.entries(schemas)) {
+    const schemaTables = extractTablesFromModule(
       module as Record<string, unknown>,
-      provider as DatabaseProvider
+      schemaName
     );
 
-    for (const entry of providerTables) {
-      const columns = extractSchemaColumns(entry.schema);
+    for (const entry of schemaTables) {
+      const columns = extractSchemaColumns(entry.tableSchema);
 
       tables.push({
         name: entry.name,
-        provider: entry.provider,
+        schema: entry.schema,
         columns,
       });
 
@@ -165,16 +160,48 @@ export function getSchemaTableNames(): string[] {
   return buildSchemaTopology().tables.map(t => t.name);
 }
 
-export function getTablesByProvider(): Partial<Record<DatabaseProvider, string[]>> {
+export function getTablesBySchema(): Record<string, string[]> {
   const topology = buildSchemaTopology();
-  const result: Partial<Record<DatabaseProvider, string[]>> = { neon: [] };
+  const result: Record<string, string[]> = {};
 
   for (const table of topology.tables) {
-    if (!result[table.provider]) {
-      result[table.provider] = [];
-    }
-    result[table.provider]!.push(table.name);
+    (result[table.schema] ??= []).push(table.name);
   }
 
   return result;
 }
+
+// ============================================================================
+// Table Registry (for queries)
+// ============================================================================
+
+export interface TableRegistryEntry {
+  name: string;
+  schema: string;
+  tableSchema: AnyPgTable;
+}
+
+/**
+ * Build a dynamic registry of all tables with their Drizzle schemas.
+ * Used by queries.ts to query any table without manual registration.
+ */
+export const getTableRegistry = cache(function getTableRegistry(): Map<string, TableRegistryEntry> {
+  const registry = new Map<string, TableRegistryEntry>();
+
+  for (const [schemaName, module] of Object.entries(schemas)) {
+    const tables = extractTablesFromModule(
+      module as Record<string, unknown>,
+      schemaName
+    );
+
+    for (const entry of tables) {
+      registry.set(entry.name, {
+        name: entry.name,
+        schema: entry.schema,
+        tableSchema: entry.tableSchema,
+      });
+    }
+  }
+
+  return registry;
+});

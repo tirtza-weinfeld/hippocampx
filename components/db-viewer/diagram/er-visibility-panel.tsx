@@ -1,156 +1,374 @@
 "use client";
 
-import { useState, useId } from "react";
-import { motion, AnimatePresence } from "motion/react";
+import { useState, useId, useRef, useEffect } from "react";
+import { motion, AnimatePresence, useReducedMotion } from "motion/react";
 import type { SchemaTable } from "@/lib/db-viewer/types";
 
 interface ERVisibilityPanelProps {
   tables: SchemaTable[];
   hiddenTables: Set<string>;
+  schemaIndexMap: Map<string, number>;
   onToggle: (tableName: string) => void;
+  onToggleSchema: (tableNames: string[], show: boolean) => void;
   onShowAll: () => void;
   onHideAll: () => void;
 }
 
-const panelVariants = {
-  hidden: { opacity: 0, y: -8, scale: 0.95 },
-  visible: { opacity: 1, y: 0, scale: 1 },
-} as const;
+function groupTablesBySchema(tables: SchemaTable[]): Map<string, SchemaTable[]> {
+  const grouped = new Map<string, SchemaTable[]>();
+  for (const table of tables) {
+    const existing = grouped.get(table.schema) ?? [];
+    existing.push(table);
+    grouped.set(table.schema, existing);
+  }
+  return grouped;
+}
+
+// Spring configs for 2026 feel
+const springConfig = { stiffness: 400, damping: 30 };
+const springConfigSoft = { stiffness: 300, damping: 25 };
 
 export function ERVisibilityPanel({
   tables,
   hiddenTables,
+  schemaIndexMap,
   onToggle,
+  onToggleSchema,
   onShowAll,
   onHideAll,
 }: ERVisibilityPanelProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [hasOpenedOnce, setHasOpenedOnce] = useState(false);
+  const [collapsedSchemas, setCollapsedSchemas] = useState<Set<string>>(() => new Set());
   const panelId = useId();
+  const containerRef = useRef<HTMLDivElement>(null);
   const visibleCount = tables.length - hiddenTables.size;
+  const reduced = useReducedMotion();
+
+  const groupedTables = groupTablesBySchema(tables);
+
+  // Track if panel has been opened (all schemas expanded by default)
+  function handleOpen() {
+    setIsOpen(prev => {
+      if (!prev && !hasOpenedOnce) setHasOpenedOnce(true);
+      return !prev;
+    });
+  }
+
+  // Check if schema is expanded (all expanded by default after first open)
+  function isSchemaExpanded(schema: string) {
+    return hasOpenedOnce && !collapsedSchemas.has(schema);
+  }
+
+  // Close on click outside
+  useEffect(() => {
+    if (!isOpen) return;
+
+    function handleClick(e: MouseEvent) {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    }
+
+    document.addEventListener("pointerdown", handleClick);
+    return () => document.removeEventListener("pointerdown", handleClick);
+  }, [isOpen]);
+
+  // Close on Escape
+  useEffect(() => {
+    if (!isOpen) return;
+
+    function handleKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setIsOpen(false);
+    }
+
+    document.addEventListener("keydown", handleKey);
+    return () => document.removeEventListener("keydown", handleKey);
+  }, [isOpen]);
+
+  function toggleSchema(schema: string) {
+    setCollapsedSchemas(prev => {
+      const next = new Set(prev);
+      if (next.has(schema)) {
+        next.delete(schema);
+      } else {
+        next.add(schema);
+      }
+      return next;
+    });
+  }
 
   return (
-    <div className="absolute top-4 left-4">
-      {/* Toggle Button */}
+    <div
+      ref={containerRef}
+      className="absolute top-4 left-60 z-50"
+      onPointerDown={e => e.stopPropagation()}
+      onDoubleClick={e => e.stopPropagation()}
+      onWheel={e => e.stopPropagation()}
+    >
+      {/* Trigger - Floating glass pill */}
       <motion.button
         type="button"
-        onClick={() => setIsOpen(prev => !prev)}
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
-        className="er-control-panel flex items-center gap-2 px-3 py-2 hover:bg-er-control-hover transition-colors focus-visible:ring-2 focus-visible:ring-db-neon focus-visible:outline-none"
+        onClick={handleOpen}
+        className="db-er-trigger"
         aria-expanded={isOpen}
         aria-controls={panelId}
         aria-label={`Table visibility: ${visibleCount} of ${tables.length} visible`}
+        whileHover={reduced ? {} : { scale: 1.02, y: -1 }}
+        whileTap={reduced ? {} : { scale: 0.97 }}
+        transition={{ type: "spring", ...springConfig }}
       >
-        <svg
-          className="size-4 text-er-text"
+        {/* Animated eye icon */}
+        <motion.svg
+          className="size-4"
+          viewBox="0 0 20 20"
           fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          strokeWidth={2}
-          aria-hidden="true"
+          animate={reduced ? {} : { scale: isOpen ? 1.1 : 1 }}
+          transition={{ type: "spring", ...springConfigSoft }}
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"
+          <motion.path
+            d="M10 12a2 2 0 100-4 2 2 0 000 4z"
+            fill="currentColor"
+            animate={reduced ? {} : { scale: isOpen ? 0.85 : 1 }}
+            style={{ originX: "50%", originY: "50%" }}
+            transition={{ type: "spring", ...springConfig }}
           />
           <path
+            d="M2.458 10C3.732 6.943 6.523 5 10 5s6.268 1.943 7.542 5c-1.274 3.057-4.065 5-7.542 5S3.732 13.057 2.458 10z"
+            stroke="currentColor"
+            strokeWidth="1.5"
             strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+            fill="none"
           />
-        </svg>
-        <span className="text-xs font-medium text-er-text tabular-nums">
+        </motion.svg>
+
+        {/* Count badge with gradient */}
+        <span className="db-er-count">
           {visibleCount}/{tables.length}
         </span>
+
+        {/* Chevron with spring rotation */}
         <motion.svg
-          className="size-3 text-er-text-muted"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          strokeWidth={2}
+          className="size-3 opacity-60"
+          viewBox="0 0 16 16"
+          fill="currentColor"
           animate={{ rotate: isOpen ? 180 : 0 }}
-          transition={{ duration: 0.2 }}
-          aria-hidden="true"
+          transition={{ type: "spring", ...springConfig }}
         >
-          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+          <path
+            fillRule="evenodd"
+            d="M4.22 6.22a.75.75 0 011.06 0L8 8.94l2.72-2.72a.75.75 0 111.06 1.06l-3.25 3.25a.75.75 0 01-1.06 0L4.22 7.28a.75.75 0 010-1.06z"
+            clipRule="evenodd"
+          />
         </motion.svg>
       </motion.button>
 
-      {/* Dropdown Panel */}
+      {/* Dropdown - Multi-layer glass */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
             id={panelId}
-            variants={panelVariants}
-            initial="hidden"
-            animate="visible"
-            exit="hidden"
-            transition={{ duration: 0.15, ease: "easeOut" }}
-            className="er-control-panel mt-2 p-3 w-56 max-h-72 overflow-y-auto scrollbar-thin"
-            onWheel={e => e.stopPropagation()}
+            initial={{ opacity: 0, y: -8, scale: 0.95, filter: "blur(4px)" }}
+            animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+            exit={{ opacity: 0, y: -6, scale: 0.97, filter: "blur(2px)" }}
+            transition={{
+              type: "spring",
+              ...springConfigSoft,
+              opacity: { duration: reduced ? 0 : 0.15 },
+              filter: { duration: reduced ? 0 : 0.2 },
+            }}
+            className="db-er-dropdown"
             role="region"
             aria-label="Table visibility controls"
           >
-            {/* Quick Actions */}
-            <div className="flex gap-2 mb-3 pb-3 border-b border-er-border">
-              <motion.button
-                type="button"
-                onClick={onShowAll}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="flex-1 px-2 py-1.5 text-[10px] font-medium text-er-text rounded-lg hover:bg-db-neon/10 hover:text-db-neon transition-colors focus-visible:ring-2 focus-visible:ring-db-neon focus-visible:outline-none"
-              >
-                Show All
-              </motion.button>
-              <motion.button
-                type="button"
-                onClick={onHideAll}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="flex-1 px-2 py-1.5 text-[10px] font-medium text-er-text rounded-lg hover:bg-er-control-hover transition-colors focus-visible:ring-2 focus-visible:ring-db-neon focus-visible:outline-none"
-              >
-                Hide All
-              </motion.button>
-            </div>
+            {/* Segmented control with animated indicator */}
+            <SegmentedControl onShowAll={onShowAll} onHideAll={onHideAll} reduced={reduced} />
 
-            {/* Table List */}
-            <div className="space-y-1" role="list" aria-label="Tables">
-              {tables.map(table => {
-                const isVisible = !hiddenTables.has(table.name);
-                const checkboxId = `${panelId}-${table.name}`;
+            {/* List with staggered entries */}
+            <motion.div
+              className="db-er-list db-er-scrollable"
+              role="list"
+              initial="hidden"
+              animate="visible"
+              variants={{
+                hidden: {},
+                visible: { transition: { staggerChildren: reduced ? 0 : 0.03, delayChildren: 0.05 } },
+              }}
+            >
+              {Array.from(groupedTables.entries()).map(([schema, schemaTables]) => {
+                const isExpanded = isSchemaExpanded(schema);
+                const tableNames = schemaTables.map(t => t.name);
+                const schemaVisibleCount = tableNames.filter(name => !hiddenTables.has(name)).length;
+                const allVisible = schemaVisibleCount === schemaTables.length;
+                const someVisible = schemaVisibleCount > 0 && schemaVisibleCount < schemaTables.length;
+                const schemaIndex = (schemaIndexMap.get(schema) ?? 0) % 6;
 
                 return (
-                  <label
-                    key={table.name}
-                    htmlFor={checkboxId}
-                    className="flex items-center gap-2 px-2 py-1.5 cursor-pointer rounded-lg transition-colors hover:bg-er-control-hover"
-                    role="listitem"
+                  <motion.div
+                    key={schema}
+                    role="group"
+                    data-db-schema={schemaIndex}
+                    variants={{
+                      hidden: { opacity: 0, x: -8 },
+                      visible: { opacity: 1, x: 0 },
+                    }}
+                    transition={{ type: "spring", ...springConfigSoft }}
                   >
-                    <input
-                      id={checkboxId}
-                      type="checkbox"
-                      checked={isVisible}
-                      onChange={() => onToggle(table.name)}
-                      className="er-checkbox"
-                      aria-describedby={`${checkboxId}-desc`}
-                    />
-                    <span
-                      id={`${checkboxId}-desc`}
-                      className="text-xs text-er-text font-mono truncate"
-                    >
-                      {table.name}
-                    </span>
-                    <span className="ml-auto text-[9px] text-er-text-muted">
-                      {table.columns.length} cols
-                    </span>
-                  </label>
+                    {/* Schema header */}
+                    <div className="db-er-schema-header">
+                      <input
+                        type="checkbox"
+                        checked={allVisible}
+                        ref={el => {
+                          if (el) el.indeterminate = someVisible;
+                        }}
+                        onChange={() => onToggleSchema(tableNames, !allVisible)}
+                        className="db-er-check"
+                        aria-label={`Toggle all ${schema} tables`}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => toggleSchema(schema)}
+                        className="flex-1 flex items-center gap-2 min-w-0 focus-visible:outline-none"
+                        aria-expanded={isExpanded}
+                      >
+                        <motion.svg
+                          className="size-3 opacity-50 shrink-0"
+                          viewBox="0 0 16 16"
+                          fill="currentColor"
+                          animate={{ rotate: isExpanded ? 0 : -90 }}
+                          transition={{ type: "spring", ...springConfig }}
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M4.22 6.22a.75.75 0 011.06 0L8 8.94l2.72-2.72a.75.75 0 111.06 1.06l-3.25 3.25a.75.75 0 01-1.06 0L4.22 7.28a.75.75 0 010-1.06z"
+                            clipRule="evenodd"
+                          />
+                        </motion.svg>
+                        <span className="db-er-schema-dot" />
+                        <span className="text-[10px] font-semibold uppercase tracking-wide truncate">
+                          {schema}
+                        </span>
+                        <span className="ml-auto text-[9px] opacity-40 tabular-nums shrink-0">
+                          {schemaVisibleCount}/{schemaTables.length}
+                        </span>
+                      </button>
+                    </div>
+
+                    {/* Tables with staggered animation */}
+                    <AnimatePresence initial={false}>
+                      {isExpanded && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{
+                            height: { type: "spring", ...springConfigSoft },
+                            opacity: { duration: reduced ? 0 : 0.12 },
+                          }}
+                          className="overflow-hidden"
+                        >
+                          {schemaTables.map((table, i) => {
+                            const isVisible = !hiddenTables.has(table.name);
+
+                            return (
+                              <motion.label
+                                key={table.name}
+                                className="db-er-table-item"
+                                role="listitem"
+                                initial={{ opacity: 0, x: -4 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{
+                                  delay: reduced ? 0 : i * 0.02,
+                                  type: "spring",
+                                  ...springConfigSoft,
+                                }}
+                                whileHover={reduced ? {} : { x: 2 }}
+                              >
+                                <input
+                                  type="checkbox"
+                                  checked={isVisible}
+                                  onChange={() => onToggle(table.name)}
+                                  className="db-er-check"
+                                />
+                                <span className="text-[11px] font-mono truncate flex-1">
+                                  {table.name}
+                                </span>
+                                <span className="text-[9px] opacity-35 tabular-nums">
+                                  {table.columns.length}
+                                </span>
+                              </motion.label>
+                            );
+                          })}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
                 );
               })}
-            </div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
+    </div>
+  );
+}
+
+// Segmented control with animated sliding indicator
+function SegmentedControl({
+  onShowAll,
+  onHideAll,
+  reduced,
+}: {
+  onShowAll: () => void;
+  onHideAll: () => void;
+  reduced: boolean | null;
+}) {
+  const [hovered, setHovered] = useState<"show" | "hide" | null>(null);
+
+  return (
+    <div className="db-er-segmented">
+      {/* Animated background indicator */}
+      <AnimatePresence>
+        {hovered && (
+          <motion.div
+            className="db-er-segment-indicator"
+            layoutId="segment-indicator"
+            initial={{ opacity: 0 }}
+            animate={{
+              opacity: 1,
+              x: hovered === "hide" ? "calc(100% + 2px)" : 0,
+            }}
+            exit={{ opacity: 0 }}
+            transition={{
+              type: "spring",
+              ...springConfig,
+              opacity: { duration: reduced ? 0 : 0.1 },
+            }}
+          />
+        )}
+      </AnimatePresence>
+
+      <motion.button
+        type="button"
+        onClick={onShowAll}
+        className="db-er-segment"
+        onHoverStart={() => setHovered("show")}
+        onHoverEnd={() => setHovered(null)}
+        whileTap={reduced ? {} : { scale: 0.97 }}
+      >
+        Show All
+      </motion.button>
+      <motion.button
+        type="button"
+        onClick={onHideAll}
+        className="db-er-segment"
+        onHoverStart={() => setHovered("hide")}
+        onHoverEnd={() => setHovered(null)}
+        whileTap={reduced ? {} : { scale: 0.97 }}
+      >
+        Hide All
+      </motion.button>
     </div>
   );
 }

@@ -19,7 +19,9 @@
 @import "./dictionary.css";
 @import "./er-diagram.css";
 @import "./db-viewer.css";
+@import "./db-er-diagram.css";
 @import "../test-gradient.css";
+
 /* @import "./mermaid.css"; */
 /* @import "./nav.css"; */
 /* @import "./difficulty.css"; */

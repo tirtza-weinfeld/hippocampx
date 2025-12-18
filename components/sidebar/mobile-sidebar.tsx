@@ -55,7 +55,7 @@ export function MobileSidebar({ className }: MobileSidebarProps) {
 
       <motion.aside
         id="mobile-sidebar"
-        className="fixed inset-y-0 left-0 z-50 flex w-[85%] max-w-80 flex-col rounded-r-2xl border-r border-sidebar-border bg-sidebar/98 shadow-2xl backdrop-blur-lg"
+        className="fixed inset-y-0 left-0 z-50 flex w-[85%] max-w-80 flex-col rounded-r-2xl bg-sidebar/98 shadow-2xl backdrop-blur-lg"
         initial={{ x: "-100%" }}
         animate={{ x: isMobileOpen ? 0 : "-100%" }}
         transition={springTransition}

@@ -13,14 +13,14 @@ interface ColumnFilterProps {
 }
 
 const DATA_TYPE_BADGES: Record<string, { bg: string; text: string }> = {
-  integer: { bg: "bg-db-vercel/10", text: "text-db-vercel" },
-  smallint: { bg: "bg-db-vercel/10", text: "text-db-vercel" },
-  bigint: { bg: "bg-db-vercel/10", text: "text-db-vercel" },
-  real: { bg: "bg-db-vercel/10", text: "text-db-vercel" },
-  "double precision": { bg: "bg-db-vercel/10", text: "text-db-vercel" },
-  numeric: { bg: "bg-db-vercel/10", text: "text-db-vercel" },
-  serial: { bg: "bg-db-vercel/10", text: "text-db-vercel" },
-  number: { bg: "bg-db-vercel/10", text: "text-db-vercel" },
+  integer: { bg: "bg-db-type-number-bg", text: "text-db-type-number" },
+  smallint: { bg: "bg-db-type-number-bg", text: "text-db-type-number" },
+  bigint: { bg: "bg-db-type-number-bg", text: "text-db-type-number" },
+  real: { bg: "bg-db-type-number-bg", text: "text-db-type-number" },
+  "double precision": { bg: "bg-db-type-number-bg", text: "text-db-type-number" },
+  numeric: { bg: "bg-db-type-number-bg", text: "text-db-type-number" },
+  serial: { bg: "bg-db-type-number-bg", text: "text-db-type-number" },
+  number: { bg: "bg-db-type-number-bg", text: "text-db-type-number" },
   boolean: { bg: "bg-amber-500/10", text: "text-amber-600 dark:text-amber-400" },
   timestamp: { bg: "bg-db-surface-raised", text: "text-db-text-muted" },
   "timestamp with time zone": { bg: "bg-db-surface-raised", text: "text-db-text-muted" },

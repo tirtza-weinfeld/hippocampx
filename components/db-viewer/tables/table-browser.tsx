@@ -23,7 +23,7 @@ interface TableStat {
   name: string;
   provider: DatabaseProvider;
   rowCount: number;
-  description?: string;
+  schema: string;
 }
 
 interface TableBrowserProps {
@@ -122,10 +122,6 @@ export function TableBrowser({
     setMetadata(null);
     updateUrl(null);
   }
-
-  const selectedTableInfo = selectedTable
-    ? initialStats.find((t) => t.name === selectedTable)
-    : null;
 
   const isLoadingNewTable = isPending || (selectedTable && !data);
 
