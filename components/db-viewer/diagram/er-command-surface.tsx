@@ -84,11 +84,12 @@ export function ERCommandSurface({
   const quickMenuRef = useRef<HTMLDivElement>(null);
   const [showSearchDropup, setShowSearchDropup] = useState(false);
   const searchDropupRef = useRef<HTMLDivElement>(null);
+  const [showZoom, setShowZoom] = useState(false);
+  const zoomRef = useRef<HTMLDivElement>(null);
 
   const [query, setQuery] = useState("");
   const deferredQuery = useDeferredValue(query);
   const [activeIndex, setActiveIndex] = useState(-1);
-  const [showZoom, setShowZoom] = useState(false);
 
   const visibleCount = tables.length - hiddenTables.size;
   const groupedTables = useMemo(() => groupTablesBySchema(tables), [tables]);
@@ -154,6 +155,18 @@ export function ERCommandSurface({
     return () => document.removeEventListener("pointerdown", handleClick);
   }, [showSearchDropup]);
 
+  // Close zoom popup on click outside
+  useEffect(() => {
+    if (!showZoom) return;
+    function handleClick(e: MouseEvent) {
+      if (zoomRef.current && !zoomRef.current.contains(e.target as Node)) {
+        setShowZoom(false);
+      }
+    }
+    document.addEventListener("pointerdown", handleClick);
+    return () => document.removeEventListener("pointerdown", handleClick);
+  }, [showZoom]);
+
   const selectTable = useCallback(
     (name: string) => {
       onFocusTable(name);
@@ -213,7 +226,7 @@ export function ERCommandSurface({
       <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-db-er-border/50 to-transparent" />
 
       {/* Content */}
-      <div className="relative h-full flex items-center gap-3 px-4">
+      <div className="relative h-full flex items-center gap-2 sm:gap-3 px-2 sm:px-4">
         {/* Count - opens visibility dropup */}
         <div ref={quickMenuRef} className="relative">
           <motion.button
@@ -405,8 +418,8 @@ export function ERCommandSurface({
           </AnimatePresence>
         </div>
 
-        {/* Search */}
-        <div ref={searchDropupRef} className="relative flex-1 max-w-56">
+        {/* Search - shrinks on small screens, hidden below 400px via container query */}
+        <div ref={searchDropupRef} className="relative flex-1 min-w-0 max-w-56 max-sm:max-w-32">
           <div className="db-er-panel-search">
             <svg className="size-3.5 text-db-er-text-muted shrink-0" viewBox="0 0 16 16" fill="currentColor">
               <path d="M11.5 7a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0Zm-.82 4.74a6 6 0 1 1 1.06-1.06l3.04 3.04a.75.75 0 1 1-1.06 1.06l-3.04-3.04Z" />
@@ -510,10 +523,10 @@ export function ERCommandSurface({
                           transition={{ type: "spring", ...springSoft }}
                         >
                           <span className="db-er-schema-dot shrink-0" />
-                          <span className="text-[11px] font-mono text-db-er-text truncate flex-1">
+                          <span className="text-[11px] font-mono text-db-er-text truncate flex-1 min-w-0">
                             <HighlightedText text={table.name} query={deferredQuery} />
                           </span>
-                          <span className="text-[9px] text-db-er-text-muted/50 uppercase tracking-wide shrink-0">
+                          <span className="text-[9px] text-db-er-text-muted/50 uppercase tracking-wide shrink-0 hidden sm:block">
                             {table.schema}
                           </span>
                         </motion.button>
@@ -529,42 +542,55 @@ export function ERCommandSurface({
         {/* Actions */}
         <div className="flex items-center gap-1 ml-auto">
           {/* Zoom */}
-          <div className="db-er-panel-zoom">
+          <div
+            ref={zoomRef}
+            className="relative flex items-center"
+          >
+            {/* Slider - desktop only */}
             <input
               type="range"
               min={25}
               max={200}
               value={pct}
               onChange={e => onSetScale(Number(e.target.value) / 100)}
-              className="db-er-slider"
+              className="db-er-slider hidden sm:block"
             />
-            <div className="relative" onPointerEnter={() => setShowZoom(true)} onPointerLeave={() => setShowZoom(false)}>
-              <button className="px-2 py-1 text-[10px] font-medium tabular-nums text-db-er-text-muted hover:text-db-er-text rounded transition-colors">
-                {pct}%
-              </button>
-              <AnimatePresence>
-                {showZoom && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 4 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0 }}
-                    className="db-er-panel-presets"
-                  >
-                    {ZOOM_PRESETS.map(v => (
-                      <button
-                        key={v}
-                        onClick={() => { onSetScale(v); setShowZoom(false); }}
-                        className={`block w-full px-2.5 py-1 text-[10px] text-left rounded transition-colors ${
-                          Math.abs(scale - v) < 0.02 ? "text-db-er-text font-medium bg-db-er-border/15" : "text-db-er-text-muted hover:text-db-er-text hover:bg-db-er-border/10"
-                        }`}
-                      >
-                        {v * 100}%
-                      </button>
-                    ))}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
+            {/* Percentage button - opens preset dropdown */}
+            <motion.button
+              type="button"
+              onClick={() => setShowZoom(v => !v)}
+              whileTap={reduced ? {} : { scale: 0.95 }}
+              className="px-2 py-1 text-[10px] font-medium tabular-nums text-db-er-text-muted hover:text-db-er-text hover:bg-db-er-border/10 rounded transition-colors"
+              onPointerEnter={() => setShowZoom(true)}
+              onPointerLeave={() => setShowZoom(false)}
+            >
+              {pct}%
+            </motion.button>
+            <AnimatePresence>
+              {showZoom && (
+                <motion.div
+                  initial={{ opacity: 0, y: 4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  className="db-er-panel-presets"
+                  onPointerEnter={() => setShowZoom(true)}
+                  onPointerLeave={() => setShowZoom(false)}
+                >
+                  {ZOOM_PRESETS.map(v => (
+                    <button
+                      key={v}
+                      type="button"
+                      onClick={() => { onSetScale(v); setShowZoom(false); }}
+                      className={`block w-full px-2.5 py-1.5 text-[10px] text-left rounded transition-colors ${
+                        Math.abs(scale - v) < 0.02 ? "text-db-er-text font-medium bg-db-er-border/15" : "text-db-er-text-muted hover:text-db-er-text hover:bg-db-er-border/10"
+                      }`}
+                    >
+                      {v * 100}%
+                    </button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           <motion.button

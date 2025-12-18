@@ -7,7 +7,7 @@ import { useERDiagramStore } from "@/lib/db-viewer/er-store";
 import { computeSchemaIndexMap, computeHighlightedColumns, computeSchemaBounds, isTableElement } from "@/lib/db-viewer/er-utils";
 import { CANVAS_ZOOM, TABLE_ZOOM, clampCanvasScale, clampTableZoom } from "@/lib/db-viewer/er-constants";
 import type { SchemaTopology, ColumnSelection, TablePosition, CanvasDragState, TableDragState } from "@/lib/db-viewer/types";
-import { useContainerResize, useInitPositions, useAutoFit, useZoomTargetReset, useWheelZoom, usePointerHover } from "./use-er-effects";
+import { useContainerResize, useInitPositions, useAutoFit, useZoomTargetReset, useWheelZoom, usePointerHover, usePinchZoom } from "./use-er-effects";
 
 export function useERDiagram(topology: SchemaTopology) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -186,6 +186,7 @@ export function useERDiagram(topology: SchemaTopology) {
   const zoomTargetRef = useZoomTargetReset();
   useWheelZoom(containerRef, zoomTargetRef, setTransform, handleTableZoom);
   usePointerHover(containerRef, setHoveredTable);
+  usePinchZoom(containerRef, setTransform);
 
   return {
     containerRef, transform, selectedColumn, tableZooms, focusedTable, tableZIndexes,
