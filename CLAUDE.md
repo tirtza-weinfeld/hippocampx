@@ -2,11 +2,9 @@
 
 HippocampX: Educational web app — Next.js 16.1+, React 19.2+, interactive learning modules.
 
-## Rule Files
+## Rules
 
-Rules in `.claude/rules/` auto-load by file path. Do not fall back to training data.
-
-If no rule matches or versions conflict → **ASK before proceeding**.
+Consult `.cursor/rules/` for technology-specific guidelines. Read relevant rule files before working on matching file types.
 
 ## Commands
 
