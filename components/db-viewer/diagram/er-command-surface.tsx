@@ -214,19 +214,19 @@ export function ERCommandSurface({
   return (
     <div
       id={panelId}
-      className="absolute bottom-0 inset-x-0 z-40 h-11"
+      className="fixed bottom-0 inset-x-0 z-40 pb-[env(safe-area-inset-bottom)] sm:absolute sm:pb-0"
       onPointerDown={e => e.stopPropagation()}
       onDoubleClick={e => e.stopPropagation()}
       onWheel={e => e.stopPropagation()}
     >
       {/* Glass surface */}
-      <div className="absolute inset-0 bg-db-er-control/90 backdrop-blur-2xl border-t border-db-er-border/30 rounded-t-xl" />
+      <div className="absolute inset-0 h-12 sm:h-11 bg-db-er-control/90 backdrop-blur-2xl border-t border-db-er-border/30 rounded-t-xl" />
 
       {/* Gradient accent line */}
       <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-db-er-border/50 to-transparent" />
 
       {/* Content */}
-      <div className="relative h-full flex items-center gap-2 sm:gap-3 px-2 sm:px-4">
+      <div className="relative h-12 sm:h-11 flex items-center gap-2 sm:gap-3 px-2 sm:px-4">
         {/* Count - opens visibility dropup */}
         <div ref={quickMenuRef} className="relative">
           <motion.button
@@ -555,14 +555,12 @@ export function ERCommandSurface({
               onChange={e => onSetScale(Number(e.target.value) / 100)}
               className="db-er-slider hidden sm:block"
             />
-            {/* Percentage button - opens preset dropdown */}
+            {/* Percentage button - opens preset dropdown (click-based for mobile) */}
             <motion.button
               type="button"
               onClick={() => setShowZoom(v => !v)}
               whileTap={reduced ? {} : { scale: 0.95 }}
               className="px-2 py-1 text-[10px] font-medium tabular-nums text-db-er-text-muted hover:text-db-er-text hover:bg-db-er-border/10 rounded transition-colors"
-              onPointerEnter={() => setShowZoom(true)}
-              onPointerLeave={() => setShowZoom(false)}
             >
               {pct}%
             </motion.button>
@@ -573,8 +571,6 @@ export function ERCommandSurface({
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0 }}
                   className="db-er-panel-presets"
-                  onPointerEnter={() => setShowZoom(true)}
-                  onPointerLeave={() => setShowZoom(false)}
                 >
                   {ZOOM_PRESETS.map(v => (
                     <button

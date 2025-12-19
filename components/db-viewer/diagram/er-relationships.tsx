@@ -13,8 +13,8 @@ interface ERRelationshipsProps {
 
 const lineVariants = {
   hidden: { pathLength: 0, opacity: 0 },
-  visible: { pathLength: 1, opacity: 0.6 },
-  dimmed: { pathLength: 1, opacity: 0.15 },
+  visible: { pathLength: 1, opacity: 0.9 },
+  dimmed: { pathLength: 1, opacity: 0.7 },
   highlighted: { pathLength: 1, opacity: 1 },
 } as const;
 
@@ -81,7 +81,7 @@ export function ERRelationships({
               : "url(#er-arrowhead)";
 
           const animateState = isHidden
-            ? "dimmed"
+            ? "hidden"
             : highlight
               ? "highlighted"
               : hasSelection

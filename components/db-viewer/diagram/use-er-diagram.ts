@@ -4,7 +4,7 @@ import { useState, useRef } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { computeSchemaLayout, generatePathsFromPositions, LAYOUT } from "@/lib/db-viewer/er-layout";
 import { useERDiagramStore } from "@/lib/db-viewer/er-store";
-import { computeSchemaIndexMap, computeHighlightedColumns, computeSchemaBounds, isTableElement } from "@/lib/db-viewer/er-utils";
+import { computeSchemaIndexMap, computeDomainIndexMap, computeHighlightedColumns, computeSchemaBounds, computeDomainBounds, isTableElement } from "@/lib/db-viewer/er-utils";
 import { CANVAS_ZOOM, TABLE_ZOOM, clampCanvasScale, clampTableZoom } from "@/lib/db-viewer/er-constants";
 import type { SchemaTopology, ColumnSelection, TablePosition, CanvasDragState, TableDragState } from "@/lib/db-viewer/types";
 import { useContainerResize, useInitPositions, useAutoFit, useZoomTargetReset, useWheelZoom, usePointerHover, usePinchZoom } from "./use-er-effects";
@@ -23,6 +23,7 @@ export function useERDiagram(topology: SchemaTopology) {
     focusedTable,
     tableZIndexes,
     positions: storedPositions,
+    expandedTables,
     _hasHydrated,
   } = useERDiagramStore(useShallow(s => ({
     hiddenTables: s.hiddenTables,
@@ -32,6 +33,7 @@ export function useERDiagram(topology: SchemaTopology) {
     focusedTable: s.focusedTable,
     tableZIndexes: s.tableZIndexes,
     positions: s.positions,
+    expandedTables: s.expandedTables,
     _hasHydrated: s._hasHydrated,
   })));
 
@@ -41,7 +43,7 @@ export function useERDiagram(topology: SchemaTopology) {
   const {
     toggleTable, showAllTables, hideAllTables, toggleSchema, setTransform, setScale,
     panTo, setSelectedColumn, setTableZoom, setFocusedTable, bringTableToFront,
-    setPositions, updatePosition, resetLayout: storeResetLayout,
+    setPositions, updatePosition, resetLayout: storeResetLayout, toggleTableExpanded,
   } = useERDiagramStore.getState();
 
   // Local state
@@ -56,18 +58,16 @@ export function useERDiagram(topology: SchemaTopology) {
   const hasStoredPositions = Object.keys(storedPositions).length > 0;
   const positions = hasStoredPositions ? storedPositions : initialLayout.positions;
   const schemaIndexMap = computeSchemaIndexMap(topology.tables);
+  const domainIndexMap = computeDomainIndexMap(topology.tables);
   const schemaBounds = computeSchemaBounds(topology.tables, hiddenTables, positions, schemaIndexMap);
+  const domainBounds = computeDomainBounds(topology.tables, hiddenTables, positions, domainIndexMap);
   const paths = generatePathsFromPositions(topology.relationships, positions, topology.tables);
   const highlightedColumns = computeHighlightedColumns(selectedColumn, topology.relationships);
 
-  // Table zoom handlers
+  // Table zoom handler for keyboard shortcuts
   function handleTableZoom(tableName: string, delta: number) {
     const current = tableZooms[tableName] ?? 1;
     setTableZoom(tableName, clampTableZoom(current * (delta > 0 ? TABLE_ZOOM.step : 1 / TABLE_ZOOM.step)));
-  }
-
-  function handleTableZoomToggle(tableName: string) {
-    setTableZoom(tableName, (tableZooms[tableName] ?? 1) > 1 ? 1 : TABLE_ZOOM.preset);
   }
 
   function handleTableZoomSet(tableName: string, zoom: number) {
@@ -104,10 +104,11 @@ export function useERDiagram(topology: SchemaTopology) {
     setIsDraggingTable(false);
   }
 
-  // Canvas pointer handlers
+  // Canvas pointer handlers - touch disabled to allow page scroll on mobile
   function handlePointerDown(e: React.PointerEvent) {
     if (e.button !== 0 || isTableElement(e.target as Element)) return;
     setFocusedTable(null);
+    if (e.pointerType === "touch") return; // Allow page scroll on mobile
     e.currentTarget.setPointerCapture(e.pointerId);
     setIsDragging(true);
     dragRef.current = { x: e.clientX, y: e.clientY, tx: transform.x, ty: transform.y };
@@ -190,12 +191,12 @@ export function useERDiagram(topology: SchemaTopology) {
 
   return {
     containerRef, transform, selectedColumn, tableZooms, focusedTable, tableZIndexes,
-    positions, hiddenTables, schemaIndexMap, schemaBounds, paths, highlightedColumns,
-    isDragging, isDraggingTable, hoveredTable, previewTable, containerSize,
+    positions, hiddenTables, schemaIndexMap, domainIndexMap, schemaBounds, domainBounds, paths, highlightedColumns,
+    isDragging, isDraggingTable, hoveredTable, previewTable, containerSize, expandedTables,
     handlePointerDown, handlePointerMove, handlePointerUp, handlePointerCancel,
-    handleKeyDown, handleColumnSelect, handleTableZoomToggle, handleTableZoomSet,
+    handleKeyDown, handleColumnSelect,
     handleTableDragStart, handleSetScale, fitView, handleResetLayout, focusTable,
     setPreviewTable, handleHideAll, toggleTable, toggleSchema, showAllTables,
-    panTo, bringTableToFront, setFocusedTable,
+    panTo, bringTableToFront, setFocusedTable, toggleTableExpanded,
   };
 }

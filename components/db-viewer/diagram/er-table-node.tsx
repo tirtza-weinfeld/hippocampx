@@ -1,7 +1,6 @@
 "use client";
 
-import { useRef, useCallback } from "react";
-import { motion } from "motion/react";
+import { motion, useReducedMotion } from "motion/react";
 import { LAYOUT } from "@/lib/db-viewer/er-layout";
 import type { SchemaTable, ColumnSelection } from "@/lib/db-viewer/types";
 
@@ -16,27 +15,20 @@ interface ERTableNodeProps {
   y: number;
   onColumnSelect: (selection: ColumnSelection | null) => void;
   highlightedColumns: HighlightedColumns;
-  reducedMotion?: boolean;
   zoom: number;
-  onZoomToggle: () => void;
-  onZoomSet: (zoom: number) => void;
   highlightMode?: "hover" | "focused" | "preview" | null;
   onDragStart: (clientX: number, clientY: number) => void;
   onBringToFront: () => void;
   schemaIndex: number;
+  domainIndex?: number;
+  expanded?: boolean;
+  onToggleExpanded?: () => void;
 }
 
-interface PinchState {
-  initialDistance: number;
-  initialZoom: number;
-}
-
-const DOUBLE_TAP_DELAY = 300;
-
-const columnVariants = {
-  idle: { fill: "transparent" },
-  hover: { fill: "oklch(0.95 0.003 264 / 8%)" },
-} as const;
+// Height for expanded column row (description + example)
+const EXPANDED_ROW_HEIGHT = 16;
+// Width increase when expanded to show full descriptions
+const EXPANDED_WIDTH_INCREASE = 100;
 
 export function ERTableNode({
   table,
@@ -44,93 +36,31 @@ export function ERTableNode({
   y,
   onColumnSelect,
   highlightedColumns,
-  reducedMotion = false,
   zoom,
-  onZoomToggle,
-  onZoomSet,
   highlightMode = null,
   onDragStart,
   onBringToFront,
   schemaIndex,
+  domainIndex,
+  expanded = false,
+  onToggleExpanded,
 }: ERTableNodeProps) {
-  const height = LAYOUT.HEADER_HEIGHT + table.columns.length * LAYOUT.COLUMN_HEIGHT + 8;
+  const reducedMotion = useReducedMotion();
+  // Calculate dimensions based on expanded state
+  const hasDescriptions = table.description || table.columns.some(col => col.description || col.example);
+  const baseHeight = LAYOUT.HEADER_HEIGHT + table.columns.length * LAYOUT.COLUMN_HEIGHT + 8;
+  const expandedExtraHeight = expanded && hasDescriptions
+    ? table.columns.filter(col => col.description || col.example).length * EXPANDED_ROW_HEIGHT
+    : 0;
+  const height = baseHeight + expandedExtraHeight;
+  const width = expanded && hasDescriptions
+    ? LAYOUT.TABLE_WIDTH + EXPANDED_WIDTH_INCREASE
+    : LAYOUT.TABLE_WIDTH;
   const animationDuration = reducedMotion ? 0 : 0.25;
 
-  // Refs for gesture detection
-  const lastTapRef = useRef<number>(0);
-  const pinchRef = useRef<PinchState | null>(null);
-  const activeTouchesRef = useRef<Map<number, PointerEvent>>(new Map());
-
   // Calculate center point for zoom transform
-  const centerX = x + LAYOUT.TABLE_WIDTH / 2;
+  const centerX = x + width / 2;
   const centerY = y + height / 2;
-
-  // Double-tap detection and pinch start
-  const handlePointerDown = useCallback(
-    (e: React.PointerEvent) => {
-      // Always bring table to front on any click
-      onBringToFront();
-
-      // Track touch for pinch detection
-      if (e.pointerType === "touch") {
-        activeTouchesRef.current.set(e.pointerId, e.nativeEvent);
-
-        // Pinch start: two fingers down
-        if (activeTouchesRef.current.size === 2) {
-          const touches = Array.from(activeTouchesRef.current.values());
-          const dx = touches[1].clientX - touches[0].clientX;
-          const dy = touches[1].clientY - touches[0].clientY;
-          const distance = Math.hypot(dx, dy);
-          pinchRef.current = { initialDistance: distance, initialZoom: zoom };
-          e.stopPropagation();
-          return;
-        }
-
-        // Double-tap detection (single finger)
-        if (activeTouchesRef.current.size === 1) {
-          const now = Date.now();
-          if (now - lastTapRef.current < DOUBLE_TAP_DELAY) {
-            onZoomToggle();
-            lastTapRef.current = 0;
-            e.stopPropagation();
-          } else {
-            lastTapRef.current = now;
-          }
-        }
-      }
-    },
-    [zoom, onZoomToggle, onBringToFront]
-  );
-
-  // Pinch move
-  const handlePointerMove = useCallback(
-    (e: React.PointerEvent) => {
-      if (e.pointerType === "touch" && activeTouchesRef.current.has(e.pointerId)) {
-        activeTouchesRef.current.set(e.pointerId, e.nativeEvent);
-
-        if (pinchRef.current && activeTouchesRef.current.size === 2) {
-          const touches = Array.from(activeTouchesRef.current.values());
-          const dx = touches[1].clientX - touches[0].clientX;
-          const dy = touches[1].clientY - touches[0].clientY;
-          const distance = Math.hypot(dx, dy);
-          const scale = distance / pinchRef.current.initialDistance;
-          onZoomSet(pinchRef.current.initialZoom * scale);
-          e.stopPropagation();
-        }
-      }
-    },
-    [onZoomSet]
-  );
-
-  // Pinch end
-  const handlePointerUp = useCallback((e: React.PointerEvent) => {
-    if (e.pointerType === "touch") {
-      activeTouchesRef.current.delete(e.pointerId);
-      if (activeTouchesRef.current.size < 2) {
-        pinchRef.current = null;
-      }
-    }
-  }, []);
 
   const getColumnHighlight = (colName: string): "pk" | "fk" | null => {
     // Check if this column is the highlighted PK
@@ -148,18 +78,14 @@ export function ERTableNode({
   const handleTablePointerDown = (e: React.PointerEvent) => {
     if (e.button !== 0) return;
     e.stopPropagation();
-
-    // Start drag
+    onBringToFront();
     onDragStart(e.clientX, e.clientY);
-
-    // Also handle pinch/double-tap for mobile
-    handlePointerDown(e);
   };
 
   return (
     <motion.g
       data-table-name={table.name}
-      data-db-schema={schemaIndex % 6}
+      data-db-schema={(domainIndex ?? schemaIndex) % 6}
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{
         opacity: 1,
@@ -169,11 +95,9 @@ export function ERTableNode({
       style={{
         transformOrigin: `${centerX}px ${centerY}px`,
         cursor: "grab",
+        touchAction: "none", // Allow table drag on mobile
       }}
       onPointerDown={handleTablePointerDown}
-      onPointerMove={handlePointerMove}
-      onPointerUp={handlePointerUp}
-      onPointerCancel={handlePointerUp}
       role="group"
       aria-label={`Table: ${table.name}, ${table.columns.length} columns${zoom !== 1 ? `, Zoom: ${Math.round(zoom * 100)}%` : ""}`}
       className="outline-none"
@@ -183,14 +107,13 @@ export function ERTableNode({
       <rect
         x={x}
         y={y}
-        width={LAYOUT.TABLE_WIDTH}
+        width={width}
         height={height}
         rx={12}
-        className="fill-db-er-card"
+        className="db-er-card-bg fill-db-er-card"
         style={{
           stroke: "var(--db-er-schema)",
           strokeOpacity: 0.5,
-          filter: "drop-shadow(0 2px 8px oklch(0 0 0 / 8%))",
         }}
       />
 
@@ -199,7 +122,7 @@ export function ERTableNode({
         <rect
           x={x - 2}
           y={y - 2}
-          width={LAYOUT.TABLE_WIDTH + 4}
+          width={width + 4}
           height={height + 4}
           rx={14}
           className="fill-none"
@@ -212,7 +135,7 @@ export function ERTableNode({
         <rect
           x={x - 3}
           y={y - 3}
-          width={LAYOUT.TABLE_WIDTH + 6}
+          width={width + 6}
           height={height + 6}
           rx={15}
           className="fill-none"
@@ -224,7 +147,7 @@ export function ERTableNode({
         <rect
           x={x - 2}
           y={y - 2}
-          width={LAYOUT.TABLE_WIDTH + 4}
+          width={width + 4}
           height={height + 4}
           rx={14}
           className="fill-none animate-pulse"
@@ -238,7 +161,7 @@ export function ERTableNode({
       <rect
         x={x}
         y={y}
-        width={LAYOUT.TABLE_WIDTH}
+        width={width}
         height={LAYOUT.HEADER_HEIGHT}
         rx={12}
         className="fill-db-er-card-header"
@@ -246,7 +169,7 @@ export function ERTableNode({
       <rect
         x={x}
         y={y + LAYOUT.HEADER_HEIGHT - 12}
-        width={LAYOUT.TABLE_WIDTH}
+        width={width}
         height={12}
         className="fill-db-er-card-header"
       />
@@ -268,15 +191,58 @@ export function ERTableNode({
       <text
         x={x + 14}
         y={y + 26}
-        className="fill-db-er-text text-[13px] font-semibold"
-        style={{ fontFamily: "var(--font-mono)" }}
+        className="fill-db-er-text text-sm font-semibold tracking-tight"
+        // style={{ fontFamily: "var(--font-mono)" }}
       >
         {table.name}
+        {!expanded && (table.description || table.domain) && (
+          <title>{`${table.description ?? ""}${table.domain ? `\n[${table.domain}]` : ""}`}</title>
+        )}
       </text>
+
+      {/* Table description when expanded */}
+      {expanded && table.description && (
+        <text
+          x={x + 14}
+          y={y + 40}
+          className="fill-db-er-text-muted text-[9px] italic"
+        >
+          {table.description.length > 50 ? `${table.description.slice(0, 50)}…` : table.description}
+          {table.domain && (
+            <tspan className="fill-db-er-text-type"> [{table.domain}]</tspan>
+          )}
+        </text>
+      )}
+
+      {/* Expand toggle button - only show if columns have descriptions */}
+      {hasDescriptions && onToggleExpanded && (
+        <g
+          transform={`translate(${x + width - 32}, ${y + 12})`}
+          onClick={(e) => { e.stopPropagation(); onToggleExpanded(); }}
+          className="cursor-pointer"
+          role="button"
+          aria-label={expanded ? "Collapse details" : "Expand details"}
+        >
+          <rect
+            width={20}
+            height={18}
+            rx={4}
+            className="fill-db-er-text-muted/10 hover:fill-db-er-text-muted/20 transition-colors"
+          />
+          <text
+            x={10}
+            y={13}
+            textAnchor="middle"
+            className="text-[10px] fill-db-er-text-muted select-none pointer-events-none"
+          >
+            {expanded ? "−" : "?"}
+          </text>
+        </g>
+      )}
 
       {/* Zoom Badge (only shown when zoom !== 1) */}
       {zoom !== 1 && (
-        <g transform={`translate(${x + LAYOUT.TABLE_WIDTH - 50}, ${y + 12})`}>
+        <g transform={`translate(${x + width - 50}, ${y + 12})`}>
           <rect
             width={40}
             height={18}
@@ -288,7 +254,7 @@ export function ERTableNode({
             y={13}
             textAnchor="middle"
             className="text-[9px] font-bold fill-db-er-text-muted"
-            style={{ fontFamily: "var(--font-mono)" }}
+            // style={{ fontFamily: "var(--font-mono)" }}
           >
             {Math.round(zoom * 100)}%
           </text>
@@ -297,7 +263,12 @@ export function ERTableNode({
 
       {/* Columns */}
       {table.columns.map((col, i) => {
-        const colY = y + LAYOUT.HEADER_HEIGHT + i * LAYOUT.COLUMN_HEIGHT;
+        // Calculate Y offset accounting for expanded descriptions of previous columns
+        const prevExpandedCount = expanded
+          ? table.columns.slice(0, i).filter(c => c.description || c.example).length
+          : 0;
+        const colY = y + LAYOUT.HEADER_HEIGHT + i * LAYOUT.COLUMN_HEIGHT + prevExpandedCount * EXPANDED_ROW_HEIGHT;
+        const hasColDescription = col.description || col.example;
         const isLastColumn = i === table.columns.length - 1;
         const isClickable = col.isPrimaryKey || col.foreignKey;
         const highlight = getColumnHighlight(col.name);
@@ -311,6 +282,9 @@ export function ERTableNode({
           }
         };
 
+        // Total row height including description when expanded
+        const rowHeight = LAYOUT.COLUMN_HEIGHT + (expanded && hasColDescription ? EXPANDED_ROW_HEIGHT : 0);
+
         return (
           <g
             key={col.name}
@@ -320,21 +294,19 @@ export function ERTableNode({
             onClick={isClickable ? handleColumnClick : undefined}
           >
             {/* Column hover background */}
-            <motion.rect
+            <rect
               x={x + 1}
               y={colY}
-              width={LAYOUT.TABLE_WIDTH - 2}
-              height={LAYOUT.COLUMN_HEIGHT}
-              variants={columnVariants}
-              initial="idle"
-              whileHover={isClickable ? "hover" : "idle"}
-              rx={isLastColumn ? 11 : 0}
-              className={highlight === "pk"
-                ? "fill-db-er-line-pk/20"
-                : highlight === "fk"
-                  ? "fill-db-er-line-fk/20"
-                  : "fill-transparent"
-              }
+              width={width - 2}
+              height={rowHeight}
+              rx={isLastColumn && !expanded ? 11 : 0}
+              className={`db-er-column-row${isClickable ? " clickable" : ""}${
+                highlight === "pk"
+                  ? " fill-db-er-line-pk/20"
+                  : highlight === "fk"
+                    ? " fill-db-er-line-fk/20"
+                    : ""
+              }`}
             />
 
             {/* Column name */}
@@ -342,21 +314,38 @@ export function ERTableNode({
               x={x + 12}
               y={colY + 18}
               className="fill-db-er-text text-[11px]"
-              style={{ fontFamily: "var(--font-mono)" }}
+              // style={{ fontFamily: "var(--font-mono)" }}
             >
               {col.name}
+              {!expanded && hasColDescription && (
+                <title>{`${col.description ?? ""}${col.example ? `\nExample: ${col.example}` : ""}`}</title>
+              )}
             </text>
 
             {/* Column type */}
             <text
-              x={x + LAYOUT.TABLE_WIDTH - 12}
+              x={x + width - 12}
               y={colY + 18}
               textAnchor="end"
-              className="fill-db-er-text-type text-[10px]"
-              style={{ fontFamily: "var(--font-mono)" }}
+              className="fill-db-er-text-type text-[0.7rem] tracking-tighter"
+              // style={{ fontFamily: "var(--font-mono)" }}
             >
               {col.type.length > 12 ? `${col.type.slice(0, 12)}…` : col.type}
             </text>
+
+            {/* Expanded description row */}
+            {expanded && hasColDescription && (
+              <text
+                x={x + 16}
+                y={colY + LAYOUT.COLUMN_HEIGHT + 10}
+                className="fill-db-er-text-muted text-[9px] italic"
+              >
+                {col.description}
+                {col.example && (
+                  <tspan className="fill-db-er-text-type"> → {col.example}</tspan>
+                )}
+              </text>
+            )}
 
             {/* Primary Key Badge */}
             {col.isPrimaryKey && (
@@ -414,9 +403,9 @@ export function ERTableNode({
             {!isLastColumn && (
               <line
                 x1={x + 8}
-                y1={colY + LAYOUT.COLUMN_HEIGHT}
-                x2={x + LAYOUT.TABLE_WIDTH - 8}
-                y2={colY + LAYOUT.COLUMN_HEIGHT}
+                y1={colY + rowHeight}
+                x2={x + width - 8}
+                y2={colY + rowHeight}
                 className="stroke-db-er-border/50"
               />
             )}

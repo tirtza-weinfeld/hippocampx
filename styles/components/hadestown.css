@@ -10,6 +10,7 @@ body:has(.hadestown) {
   --accent: var(--color-orange-500);
   --secondary: var(--color-purple-500);
 }
+
 /* Add these styles to fix 3D card flipping */
 .perspective-1000 {
   perspective: 1000px;

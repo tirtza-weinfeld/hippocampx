@@ -1,17 +1,10 @@
 "use client";
 
-import { useEffect, useEffectEvent, useRef, useCallback } from "react";
+import { useEffect, useEffectEvent, useRef } from "react";
 import { useERDiagramStore } from "@/lib/db-viewer/er-store";
 import { findTableAtPoint } from "@/lib/db-viewer/er-utils";
 import { CANVAS_ZOOM, clampCanvasScale } from "@/lib/db-viewer/er-constants";
 import type { TablePosition, Transform } from "@/lib/db-viewer/types";
-
-interface PinchState {
-  initialDistance: number;
-  initialScale: number;
-  centerX: number;
-  centerY: number;
-}
 
 interface ContainerSize {
   width: number;
@@ -143,92 +136,11 @@ export function usePointerHover(
   }, [containerRef, setHoveredTable]);
 }
 
-export function usePinchZoom(
-  containerRef: React.RefObject<HTMLDivElement | null>,
-  setTransform: (t: Transform) => void
-) {
-  const pinchRef = useRef<PinchState | null>(null);
-  const activeTouchesRef = useRef<Map<number, PointerEvent>>(new Map());
-
-  const handlePinchZoom = useCallback((newScale: number, centerX: number, centerY: number) => {
-    const t = useERDiagramStore.getState().transform;
-    const clampedScale = clampCanvasScale(newScale);
-    // Zoom toward pinch center
-    const scaleRatio = clampedScale / t.scale;
-    const newX = centerX - (centerX - t.x) * scaleRatio;
-    const newY = centerY - (centerY - t.y) * scaleRatio;
-    setTransform({ x: newX, y: newY, scale: clampedScale });
-  }, [setTransform]);
-
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    function isTableElement(target: Element): boolean {
-      let cur: Element | null = target;
-      while (cur && cur !== container) {
-        if (cur.hasAttribute("data-table-name")) return true;
-        cur = cur.parentElement;
-      }
-      return false;
-    }
-
-    function handlePointerDown(e: PointerEvent) {
-      if (e.pointerType !== "touch") return;
-      // Skip if targeting a table (tables handle their own pinch)
-      if (isTableElement(e.target as Element)) return;
-
-      activeTouchesRef.current.set(e.pointerId, e);
-
-      if (activeTouchesRef.current.size === 2) {
-        const touches = Array.from(activeTouchesRef.current.values());
-        const dx = touches[1].clientX - touches[0].clientX;
-        const dy = touches[1].clientY - touches[0].clientY;
-        const distance = Math.hypot(dx, dy);
-        const centerX = (touches[0].clientX + touches[1].clientX) / 2;
-        const centerY = (touches[0].clientY + touches[1].clientY) / 2;
-        const t = useERDiagramStore.getState().transform;
-        pinchRef.current = { initialDistance: distance, initialScale: t.scale, centerX, centerY };
-      }
-    }
-
-    function handlePointerMove(e: PointerEvent) {
-      if (e.pointerType !== "touch") return;
-      if (!activeTouchesRef.current.has(e.pointerId)) return;
-
-      activeTouchesRef.current.set(e.pointerId, e);
-
-      if (pinchRef.current && activeTouchesRef.current.size === 2) {
-        const touches = Array.from(activeTouchesRef.current.values());
-        const dx = touches[1].clientX - touches[0].clientX;
-        const dy = touches[1].clientY - touches[0].clientY;
-        const distance = Math.hypot(dx, dy);
-        const scale = distance / pinchRef.current.initialDistance;
-        const newScale = pinchRef.current.initialScale * scale;
-        const centerX = (touches[0].clientX + touches[1].clientX) / 2;
-        const centerY = (touches[0].clientY + touches[1].clientY) / 2;
-        handlePinchZoom(newScale, centerX, centerY);
-      }
-    }
-
-    function handlePointerUp(e: PointerEvent) {
-      if (e.pointerType !== "touch") return;
-      activeTouchesRef.current.delete(e.pointerId);
-      if (activeTouchesRef.current.size < 2) {
-        pinchRef.current = null;
-      }
-    }
-
-    container.addEventListener("pointerdown", handlePointerDown);
-    container.addEventListener("pointermove", handlePointerMove);
-    container.addEventListener("pointerup", handlePointerUp);
-    container.addEventListener("pointercancel", handlePointerUp);
-
-    return () => {
-      container.removeEventListener("pointerdown", handlePointerDown);
-      container.removeEventListener("pointermove", handlePointerMove);
-      container.removeEventListener("pointerup", handlePointerUp);
-      container.removeEventListener("pointercancel", handlePointerUp);
-    };
-  }, [containerRef, handlePinchZoom]);
+/**
+ * Canvas pinch-to-zoom disabled on mobile to prevent accidental zoom during pan.
+ * Zoom is available via command surface controls.
+ */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export function usePinchZoom(_containerRef: React.RefObject<HTMLDivElement | null>, _setTransform: (t: Transform) => void) {
+  // No-op: pinch zoom disabled on mobile for better UX
 }

@@ -74,7 +74,7 @@
   --db-er-fk: var(--color-blue-300);
   --db-er-fk-soft: oklch(from var(--color-blue-900) l c h / 40%);
 
-  --db-er-line: var(--color-gray-500);
+  --db-er-line: var(--color-gray-400);
   --db-er-line-pk: var(--color-amber-400);
   --db-er-line-fk: var(--color-blue-400);
 
@@ -456,6 +456,25 @@
     }
   }
 
+  /* Card background with shadow */
+  .db-er-card-bg {
+    filter: drop-shadow(0 2px 8px oklch(0 0 0 / 8%));
+  }
+
+  .dark .db-er-card-bg {
+    filter: drop-shadow(0 2px 8px oklch(0 0 0 / 25%));
+  }
+
+  /* Column row - clickable hover state */
+  .db-er-column-row {
+    fill: transparent;
+    transition: fill 150ms ease-out;
+
+    &.clickable:hover {
+      fill: oklch(from var(--color-db-er-border) l c h / 12%);
+    }
+  }
+
   /* Control panel glass surface */
   .db-er-glass {
     background: oklch(from var(--db-er-control) l c h / 85%);
@@ -778,8 +797,8 @@
     align-items: center;
     gap: var(--spacing-1, 4px);
     padding: var(--spacing-0-5, 2px) var(--spacing-2, 8px);
-    font-size: 10px;
-    font-family: var(--font-mono, monospace);
+    /* font-size: 10px; */
+    /* font-family: var(--font-mono, monospace); */
     color: var(--color-db-er-text-muted);
     background: oklch(from var(--color-db-er-border) l c h / 6%);
     border-radius: 100px;

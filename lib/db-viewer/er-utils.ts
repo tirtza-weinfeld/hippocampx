@@ -22,6 +22,15 @@ export function computeSchemaIndexMap(tables: SchemaTopology["tables"]): Map<str
 }
 
 /**
+ * Build a map from domain name to a numeric index for consistent coloring.
+ * Domains come from DB comments (e.g., Lexicon, Semantic Graph, Provenance, Ontology).
+ */
+export function computeDomainIndexMap(tables: SchemaTopology["tables"]): Map<string, number> {
+  const domains = [...new Set(tables.map(t => t.domain).filter((d): d is string => !!d))].sort();
+  return new Map(domains.map((d, i) => [d, i]));
+}
+
+/**
  * Compute which columns should be highlighted based on a selected column.
  * Returns the primary key and all related foreign keys.
  */
@@ -93,6 +102,49 @@ export function computeSchemaBounds(
         width: pos.width + SCHEMA_BOUNDS_PADDING * 2,
         height: pos.height + SCHEMA_BOUNDS_PADDING * 2,
         index: schemaIndexMap.get(table.schema) ?? 0,
+      });
+    }
+  }
+
+  return Object.fromEntries(bounds);
+}
+
+/**
+ * Compute bounding boxes for each domain to draw background regions.
+ * Domains come from DB comments (e.g., Lexicon, Semantic Graph, Provenance, Ontology).
+ */
+export function computeDomainBounds(
+  tables: SchemaTopology["tables"],
+  hiddenTables: Set<string>,
+  positions: Record<string, TablePosition>,
+  domainIndexMap: Map<string, number>
+): Record<string, SchemaBound> {
+  const bounds = new Map<string, SchemaBound>();
+
+  for (const table of tables) {
+    if (hiddenTables.has(table.name)) continue;
+    if (!table.domain) continue;
+    const pos = positions[table.name] as TablePosition | undefined;
+    if (!pos) continue;
+
+    const existing = bounds.get(table.domain);
+
+    if (existing) {
+      const newX = Math.min(existing.x, pos.x - SCHEMA_BOUNDS_PADDING);
+      const newY = Math.min(existing.y, pos.y - SCHEMA_BOUNDS_PADDING);
+      const right = Math.max(existing.x + existing.width, pos.x + pos.width + SCHEMA_BOUNDS_PADDING);
+      const bottom = Math.max(existing.y + existing.height, pos.y + pos.height + SCHEMA_BOUNDS_PADDING);
+      existing.x = newX;
+      existing.y = newY;
+      existing.width = right - newX;
+      existing.height = bottom - newY;
+    } else {
+      bounds.set(table.domain, {
+        x: pos.x - SCHEMA_BOUNDS_PADDING,
+        y: pos.y - SCHEMA_BOUNDS_PADDING,
+        width: pos.width + SCHEMA_BOUNDS_PADDING * 2,
+        height: pos.height + SCHEMA_BOUNDS_PADDING * 2,
+        index: domainIndexMap.get(table.domain) ?? 0,
       });
     }
   }

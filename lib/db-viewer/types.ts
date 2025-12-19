@@ -84,12 +84,16 @@ export interface SchemaColumn {
   type: string;
   isPrimaryKey: boolean;
   foreignKey?: ForeignKeyRef;
+  description?: string;
+  example?: string;
 }
 
 export interface SchemaTable {
   name: string;
   schema: string;
   columns: SchemaColumn[];
+  description?: string;
+  domain?: string;
 }
 
 export interface SchemaRelationship {

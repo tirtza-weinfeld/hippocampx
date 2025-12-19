@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { buildSchemaTopology } from "@/lib/db-viewer/schema-topology";
+import { buildSchemaTopologyWithComments } from "@/lib/db-viewer/schema-topology";
 import { DiagramViewer } from "@/components/db-viewer";
 
 export const metadata = {
@@ -7,8 +7,8 @@ export const metadata = {
   description: "Visualize database schema relationships",
 };
 
-function DiagramLoader() {
-  const topology = buildSchemaTopology();
+async function DiagramLoader() {
+  const topology = await buildSchemaTopologyWithComments();
   return <DiagramViewer topology={topology} />;
 }
 

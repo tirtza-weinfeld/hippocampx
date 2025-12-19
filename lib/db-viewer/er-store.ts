@@ -23,6 +23,8 @@ interface ERDiagramState {
   zCounter: number;
   /** Whether initial layout has been applied */
   hasInitialLayout: boolean;
+  /** Tables with expanded details view */
+  expandedTables: Record<string, boolean>;
   /** Whether store has been hydrated from storage */
   _hasHydrated: boolean;
 }
@@ -63,6 +65,10 @@ interface ERDiagramActions {
   // Layout
   setHasInitialLayout: (value: boolean) => void;
   resetLayout: () => void;
+
+  // Expanded tables
+  toggleTableExpanded: (tableName: string) => void;
+  setTableExpanded: (tableName: string, expanded: boolean) => void;
 }
 
 const INITIAL_STATE: ERDiagramState = {
@@ -75,6 +81,7 @@ const INITIAL_STATE: ERDiagramState = {
   positions: {},
   zCounter: 1,
   hasInitialLayout: false,
+  expandedTables: {},
   _hasHydrated: false,
 };
 
@@ -183,6 +190,26 @@ export const useERDiagramStore = create<ERDiagramState & ERDiagramActions>()(
           tableZIndexes: {},
           zCounter: 1,
           hasInitialLayout: false,
+          expandedTables: {},
+        }),
+
+      // Expanded tables
+      toggleTableExpanded: (tableName) =>
+        set((state) => ({
+          expandedTables: {
+            ...state.expandedTables,
+            [tableName]: !state.expandedTables[tableName],
+          },
+        })),
+
+      setTableExpanded: (tableName, expanded) =>
+        set((state) => {
+          if (!expanded) {
+            const { [tableName]: _, ...rest } = state.expandedTables;
+            void _;
+            return { expandedTables: rest };
+          }
+          return { expandedTables: { ...state.expandedTables, [tableName]: true } };
         }),
     }),
     {
@@ -198,6 +225,7 @@ export const useERDiagramStore = create<ERDiagramState & ERDiagramActions>()(
         positions: state.positions,
         zCounter: state.zCounter,
         hasInitialLayout: state.hasInitialLayout,
+        expandedTables: state.expandedTables,
       }),
       onRehydrateStorage: () => () => {
         useERDiagramStore.setState({ _hasHydrated: true });
@@ -229,5 +257,7 @@ export function getERDiagramActions() {
     updatePosition: state.updatePosition,
     setHasInitialLayout: state.setHasInitialLayout,
     resetLayout: state.resetLayout,
+    toggleTableExpanded: state.toggleTableExpanded,
+    setTableExpanded: state.setTableExpanded,
   };
 }

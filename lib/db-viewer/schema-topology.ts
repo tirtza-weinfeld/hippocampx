@@ -3,13 +3,16 @@
  *
  * Dynamically extracts tables and foreign key relationships from Drizzle schemas
  * to build a complete topology for ER diagram rendering.
+ *
+ * Supports enriching topology with pg_catalog comments (description | domain/example).
  */
 
 import "server-only";
 
 import { cache } from "react";
-import { getTableColumns, getTableName, is } from "drizzle-orm";
+import { getTableColumns, getTableName, is, sql } from "drizzle-orm";
 import { PgTable, getTableConfig } from "drizzle-orm/pg-core";
+import { db } from "@/lib/db/connection";
 import type { AnyPgTable, PgColumn } from "drizzle-orm/pg-core";
 import type {
   SchemaTopology,
@@ -205,3 +208,119 @@ export const getTableRegistry = cache(function getTableRegistry(): Map<string, T
 
   return registry;
 });
+
+// ============================================================================
+// Comment Introspection (pg_catalog)
+// ============================================================================
+
+/**
+ * Parse a comment string with format "Description | Domain" or "Description | Example"
+ */
+function parseComment(comment: string | null): { description?: string; extra?: string } {
+  if (!comment) return {};
+
+  const parts = comment.split(" | ");
+  return {
+    description: parts[0]?.trim() || undefined,
+    extra: parts[1]?.trim() || undefined,
+  };
+}
+
+/**
+ * Fetch all table comments from pg_catalog
+ */
+async function fetchTableComments(): Promise<Map<string, { description?: string; domain?: string }>> {
+  const result = await db.execute<{ table_name: string; comment: string | null }>(sql`
+    SELECT
+      c.relname AS table_name,
+      obj_description(c.oid, 'pg_class') AS comment
+    FROM pg_class c
+    JOIN pg_namespace n ON n.oid = c.relnamespace
+    WHERE c.relkind = 'r'
+      AND n.nspname = 'public'
+      AND obj_description(c.oid, 'pg_class') IS NOT NULL
+  `);
+
+  const comments = new Map<string, { description?: string; domain?: string }>();
+
+  for (const row of result.rows) {
+    const parsed = parseComment(row.comment);
+    comments.set(row.table_name, {
+      description: parsed.description,
+      domain: parsed.extra,
+    });
+  }
+
+  return comments;
+}
+
+/**
+ * Fetch all column comments from pg_catalog
+ */
+async function fetchColumnComments(): Promise<Map<string, { description?: string; example?: string }>> {
+  const result = await db.execute<{ table_name: string; column_name: string; comment: string | null }>(sql`
+    SELECT
+      c.relname AS table_name,
+      a.attname AS column_name,
+      col_description(c.oid, a.attnum) AS comment
+    FROM pg_class c
+    JOIN pg_namespace n ON n.oid = c.relnamespace
+    JOIN pg_attribute a ON a.attrelid = c.oid
+    WHERE c.relkind = 'r'
+      AND n.nspname = 'public'
+      AND a.attnum > 0
+      AND NOT a.attisdropped
+      AND col_description(c.oid, a.attnum) IS NOT NULL
+  `);
+
+  const comments = new Map<string, { description?: string; example?: string }>();
+
+  for (const row of result.rows) {
+    const key = `${row.table_name}.${row.column_name}`;
+    const parsed = parseComment(row.comment);
+    comments.set(key, {
+      description: parsed.description,
+      example: parsed.extra,
+    });
+  }
+
+  return comments;
+}
+
+/**
+ * Build schema topology enriched with comments from pg_catalog.
+ * This queries the database for COMMENT ON metadata.
+ */
+export async function buildSchemaTopologyWithComments(): Promise<SchemaTopology> {
+  const baseTopology = buildSchemaTopology();
+
+  const [tableComments, columnComments] = await Promise.all([
+    fetchTableComments(),
+    fetchColumnComments(),
+  ]);
+
+  const enrichedTables: SchemaTable[] = baseTopology.tables.map(table => {
+    const tableComment = tableComments.get(table.name);
+
+    const enrichedColumns: SchemaColumn[] = table.columns.map(column => {
+      const colComment = columnComments.get(`${table.name}.${column.name}`);
+      return {
+        ...column,
+        description: colComment?.description,
+        example: colComment?.example,
+      };
+    });
+
+    return {
+      ...table,
+      description: tableComment?.description,
+      domain: tableComment?.domain,
+      columns: enrichedColumns,
+    };
+  });
+
+  return {
+    tables: enrichedTables,
+    relationships: baseTopology.relationships,
+  };
+}

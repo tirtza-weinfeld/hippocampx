@@ -6,7 +6,7 @@ import type { SchemaTopology, TablePosition } from "@/lib/db-viewer/types";
 import { ERTableNode } from "./er-table-node";
 import { ERCommandSurface } from "./er-command-surface";
 import { ERRelationships } from "./er-relationships";
-import { ERMinimap } from "./er-minimap";
+// import { ERMinimap } from "./er-minimap";
 import { ERDefs } from "./er-defs";
 import { ERSchemaBackgrounds } from "./er-schema-backgrounds";
 import { useERDiagram } from "./use-er-diagram";
@@ -30,22 +30,23 @@ export function ERDiagram({ topology }: ERDiagramProps) {
     positions,
     hiddenTables,
     schemaIndexMap,
+    domainIndexMap,
     schemaBounds,
+    domainBounds,
     paths,
     highlightedColumns,
     isDragging,
     isDraggingTable,
     hoveredTable,
     previewTable,
-    containerSize,
+    expandedTables,
+    // containerSize,
     handlePointerDown,
     handlePointerMove,
     handlePointerUp,
     handlePointerCancel,
     handleKeyDown,
     handleColumnSelect,
-    handleTableZoomToggle,
-    handleTableZoomSet,
     handleTableDragStart,
     handleSetScale,
     fitView,
@@ -56,15 +57,16 @@ export function ERDiagram({ topology }: ERDiagramProps) {
     toggleTable,
     toggleSchema,
     showAllTables,
-    panTo,
+    // panTo,
     bringTableToFront,
     setFocusedTable,
+    toggleTableExpanded,
   } = useERDiagram(topology);
 
   return (
     <div
       ref={containerRef}
-      className="relative size-full db-er-canvas overflow-hidden touch-none select-none outline-none"
+      className="relative size-full pb-14 sm:pb-0 db-er-canvas overflow-hidden select-none outline-none"
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
@@ -73,7 +75,7 @@ export function ERDiagram({ topology }: ERDiagramProps) {
       tabIndex={0}
       style={{ cursor: isDraggingTable ? "move" : isDragging ? "grabbing" : "grab" }}
       role="application"
-      aria-label="Entity Relationship Diagram - drag to pan, +/- to zoom hovered table"
+      aria-label="Entity Relationship Diagram - drag to pan"
     >
       <svg
         ref={svgRef}
@@ -87,6 +89,7 @@ export function ERDiagram({ topology }: ERDiagramProps) {
       >
         <ERDefs />
         <ERSchemaBackgrounds schemaBounds={schemaBounds} />
+        <ERSchemaBackgrounds schemaBounds={domainBounds} />
         <ERRelationships
           relationships={topology.relationships}
           paths={paths}
@@ -112,10 +115,7 @@ export function ERDiagram({ topology }: ERDiagramProps) {
                   y={pos.y}
                   onColumnSelect={handleColumnSelect}
                   highlightedColumns={highlightedColumns}
-                  reducedMotion={prefersReducedMotion ?? false}
                   zoom={tableZooms[table.name] ?? 1}
-                  onZoomToggle={() => handleTableZoomToggle(table.name)}
-                  onZoomSet={(zoomLevel: number) => handleTableZoomSet(table.name, zoomLevel)}
                   highlightMode={
                     focusedTable === table.name ? "focused" :
                     previewTable === table.name ? "preview" :
@@ -124,6 +124,9 @@ export function ERDiagram({ topology }: ERDiagramProps) {
                   onDragStart={(clientX: number, clientY: number) => handleTableDragStart(table.name, clientX, clientY)}
                   onBringToFront={() => { bringTableToFront(table.name); setFocusedTable(table.name); }}
                   schemaIndex={schemaIndexMap.get(table.schema) ?? 0}
+                  domainIndex={table.domain ? domainIndexMap.get(table.domain) ?? 0 : undefined}
+                  expanded={expandedTables[table.name] ?? false}
+                  onToggleExpanded={() => toggleTableExpanded(table.name)}
                 />
               );
             })}
@@ -134,7 +137,7 @@ export function ERDiagram({ topology }: ERDiagramProps) {
         Drag to pan, use controls to zoom
       </div>
 
-      {containerSize.width > 0 && (
+      {/* {containerSize.width > 0 && (
         <ERMinimap
           positions={positions}
           hiddenTables={hiddenTables}
@@ -145,7 +148,7 @@ export function ERDiagram({ topology }: ERDiagramProps) {
           tables={topology.tables}
           onPan={panTo}
         />
-      )}
+      )} */}
 
       <ERCommandSurface
         tables={topology.tables}
