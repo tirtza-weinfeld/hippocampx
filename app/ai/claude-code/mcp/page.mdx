@@ -1,0 +1,173 @@
+# MCP (Model Context Protocol)
+
+## Resizable Table of Contents
+
+## What Is MCP?
+
+MCP connects Claude Code to **external tools and data sources**. GitHub, databases, APIs, file systems — anything with an MCP server becomes available as tools Claude can call.
+
+Key insight: **MCP connects Claude to data. Skills teach Claude what to do with that data.** Use both together for complete solutions.
+
+## Configuration Location
+
+| Location | Scope |
+|----------|-------|
+| `.mcp.json` | Project (commit to repo) |
+| `~/.claude/mcp.json` | User-wide |
+
+## Adding MCP Servers
+
+### Via CLI
+
+```bash
+# Project scope (committed to repo)
+claude mcp add github -s project
+
+# User scope (all projects)
+claude mcp add filesystem -s user
+
+# Local scope (this machine only)
+claude mcp add postgres -s local
+```
+
+### Via Config
+
+`.mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "github": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_TOKEN": "${GITHUB_TOKEN}"
+      }
+    }
+  }
+}
+```
+
+## Tool Naming
+
+MCP tools follow the pattern:
+
+```
+mcp__<server>__<tool>
+```
+
+Examples:
+- `mcp__github__search_repositories`
+- `mcp__filesystem__read_file`
+- `mcp__postgres__query`
+
+## Common MCP Servers
+
+| Server | Purpose | Command |
+|--------|---------|---------|
+| github | GitHub API | `@modelcontextprotocol/server-github` |
+| filesystem | File access | `@modelcontextprotocol/server-filesystem` |
+| postgres | PostgreSQL | `@modelcontextprotocol/server-postgres` |
+| memory | Persistent memory | `@modelcontextprotocol/server-memory` |
+
+## Configuration Options
+
+```json
+{
+  "mcpServers": {
+    "my-server": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["path/to/server.js"],
+      "env": {
+        "API_KEY": "${MY_API_KEY}"
+      },
+      "cwd": "/path/to/working/dir"
+    }
+  }
+}
+```
+
+| Field | Description |
+|-------|-------------|
+| `type` | Connection type (`stdio`, `sse`) |
+| `command` | Executable to run |
+| `args` | Command arguments |
+| `env` | Environment variables |
+| `cwd` | Working directory |
+
+## Environment Variables
+
+Reference environment variables with `${VAR_NAME}`:
+
+```json
+{
+  "env": {
+    "GITHUB_TOKEN": "${GITHUB_TOKEN}",
+    "DATABASE_URL": "${DATABASE_URL}"
+  }
+}
+```
+
+## Scoping
+
+| Scope | Flag | Location | Use Case |
+|-------|------|----------|----------|
+| Project | `-s project` | `.mcp.json` | Team sharing (committed) |
+| User | `-s user` | `~/.claude/mcp.json` | Personal (all projects) |
+| Local | `-s local` | `.mcp.json.local` | Machine-specific |
+
+## Using with Hooks
+
+Target MCP tools in hooks:
+
+```json
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "mcp__github__*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'GitHub operation requested'"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+## Debugging
+
+Launch with debug flag:
+
+```bash
+claude --mcp-debug
+```
+
+List connected servers:
+
+```
+/mcp
+```
+
+## Context Management
+
+MCP servers consume context. Monitor and manage:
+
+```
+/context
+```
+
+Remove unused servers to reduce context usage.
+
+## Best Practices
+
+1. **Commit project MCP configs** — Share with team via `.mcp.json`
+2. **Use environment variables** — Never hardcode secrets
+3. **Scope appropriately** — Project for shared, user for personal
+4. **Monitor context** — Remove unused servers
+5. **Debug connection issues** — Use `--mcp-debug` flag

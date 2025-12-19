@@ -1,0 +1,226 @@
+# Hooks
+
+## Resizable Table of Contents
+
+## What Are Hooks?
+
+Hooks are **lifecycle automation**. Shell commands that run at specific events — session start, tool use, permission requests, context compaction. Use them for validation, enforcement, and injecting dynamic context.
+
+## Configuration Location
+
+| Location | Scope | Use |
+|----------|-------|-----|
+| `.claude/settings.json` | Project (shareable) | Team standards |
+| `.claude/settings.local.json` | Project (personal) | Local overrides |
+| `~/.claude/settings.json` | User-wide | Personal defaults |
+
+## Hook Types
+
+### Lifecycle Hooks
+
+| Hook | When | Use Case |
+|------|------|----------|
+| `SessionStart` | Session begins | Inject context (git status, TODOs) |
+| `Stop` | Claude finishes responding | Force continuation |
+| `SubagentStop` | Subagent task completes | Post-process results |
+
+### Action Hooks
+
+| Hook | When | Use Case |
+|------|------|----------|
+| `PreToolUse` | Before tool executes | Block/approve/modify actions |
+| `PostToolUse` | After tool completes | Lint, format, validate |
+| `PermissionRequest` | Permission dialog appears | Auto-approve or block |
+
+### Context Hooks
+
+| Hook | When | Use Case |
+|------|------|----------|
+| `UserPromptSubmit` | You submit a prompt | Inject dynamic info |
+| `PreCompact` | Before context compaction | Preserve important data |
+
+## Configuration Format
+
+```json
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "prettier --write \"$CLAUDE_TOOL_INPUT_FILE_PATH\""
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+## Matcher Syntax
+
+| Pattern | Example | Matches |
+|---------|---------|---------|
+| Single | `"Write"` | Write tool only |
+| Multiple | `"Write\|Edit"` | Write or Edit |
+| Wildcard | `"*"` | All tools |
+| Arguments | `"Bash(npm test*)"` | Bash with npm test commands |
+| MCP | `"mcp__github__.*"` | All GitHub MCP tools |
+
+Matchers are case-sensitive.
+
+## Environment Variables
+
+| Variable | Description |
+|----------|-------------|
+| `$CLAUDE_TOOL_INPUT_FILE_PATH` | File being operated on |
+| `$CLAUDE_PROJECT_DIR` | Project root directory |
+| `$CLAUDE_TOOL_NAME` | Name of the tool |
+| `$CLAUDE_CODE_REMOTE` | Remote session info |
+
+## Hook Responses
+
+**Exit codes:**
+- `0` = Success (stdout added to context)
+- `2` = Block (action prevented)
+
+**Structured JSON output:**
+```json
+{
+  "decision": "approve",
+  "reason": "Test command is safe",
+  "updatedInput": { "command": "npm test -- --coverage" }
+}
+```
+
+| Field | Purpose |
+|-------|---------|
+| `decision` | `approve`, `block`, `allow`, `deny` |
+| `reason` | Explanation for Claude |
+| `continue` | Force continuation (Stop hooks) |
+| `updatedInput` | Modify tool parameters |
+
+## Examples
+
+### Inject Context at Session Start
+
+```json
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "git status --short && echo '---' && cat TODO.md"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+### Auto-Approve Test Commands
+
+```json
+{
+  "hooks": {
+    "PermissionRequest": [
+      {
+        "matcher": "Bash(npm test*)",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '{\"decision\": \"approve\"}'"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+### Lint After Edit
+
+```json
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "pnpm lint \"$CLAUDE_TOOL_INPUT_FILE_PATH\""
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+### Block Sensitive Files
+
+```json
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if echo \"$CLAUDE_TOOL_INPUT_FILE_PATH\" | grep -qE '\\.(env|pem|key)$'; then exit 2; fi"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+### Preserve Data Before Compaction
+
+```json
+{
+  "hooks": {
+    "PreCompact": [
+      {
+        "matcher": "auto",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cp \"$CLAUDE_TRANSCRIPT_PATH\" ~/backups/"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+## Behavior
+
+- **Timeout**: 60 seconds (configurable per hook)
+- **Parallel**: Multiple matching hooks run simultaneously
+- **Deduplication**: Identical commands auto-deduplicated
+- **Safeguard**: Direct config edits require review in `/hooks` menu
+
+## Debugging
+
+Access transcript files (JSONL format):
+```bash
+tail -f /path/to/transcript.jsonl | jq
+```
+
+## Security Best Practices
+
+1. **Quote variables**: `"$VAR"` not `$VAR`
+2. **Validate inputs**: Never trust input blindly
+3. **Block path traversal**: Check for `..` in paths
+4. **Use absolute paths**: Reference `$CLAUDE_PROJECT_DIR`
+5. **Skip sensitive files**: `.env`, `.git/`, keys

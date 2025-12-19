@@ -1,0 +1,40 @@
+# Claude Code
+
+## Resizable Table of Contents
+## Overview
+
+Claude Code has four extension mechanisms. All are markdown/config files — the difference is **when** they load and **how** they run.
+
+| Mechanism | Location | Trigger | Isolation |
+|-----------|----------|---------|-----------|
+| [**Skills**](./skills) | `.claude/skills/*/SKILL.md` | Auto (context match) | No |
+| [**Subagents**](./subagents) | `.claude/agents/*.md` | Explicit or auto | Yes (subprocess) |
+| [**Hooks**](./hooks) | `settings.json` | Lifecycle events | Yes (shell) |
+| [**MCP**](./mcp) | `.mcp.json` | Tool calls | Yes (server) |
+
+→ **[See all four working together](./example)** (React 19 workflow)
+
+## When to Use What
+
+**Skills** — Expertise that applies automatically when working on matching files. No user action needed.
+
+**Subagents** — Isolated specialists for discrete tasks. Run in separate context, return results, don't pollute main conversation.
+
+**Hooks** — Validation and automation at lifecycle events (pre/post tool use). Catch mistakes, enforce standards.
+
+**MCP** — Connect external tools and data sources. GitHub, databases, APIs.
+
+## Key Insight
+
+Instructions alone don't override training data bias. What works:
+
+1. **Code examples in context** — actual patterns influence generation
+2. **Automated validation** — hooks catch mistakes after generation
+3. **Isolation** — load only relevant instructions per task
+
+## Best Practices (2025)
+
+- Use `/context` to monitor usage, remove unused MCP servers
+- Combine skills + hooks: hooks auto-activate appropriate skills
+- Scope MCP servers: user (`-s user`), project (`-s project`), local (`-s local`)
+- Security: validate hook inputs, quote shell vars, block path traversal
