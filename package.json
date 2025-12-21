@@ -16,6 +16,7 @@
     "db:seed:collections": "tsx lib/db/seeds/scripts/seed-collections.ts",
     "db:seed:songs": "tsx lib/db/seeds/scripts/seed-songs.ts",
     "db:seed:dictionary": "tsx lib/db/seeds/scripts/seed-dictionary.ts",
+    "db:run": "tsx scripts/run-sql.ts",
     "problems:create": "python3 backend/scripts/problems/create_problem.py",
     "problems:extract-lsp-index": "python3 backend/scripts/problems/generate_lsp_index.py --root backend/algorithms --out lib/extracted-metadata/lsp_index.json",
     "problems:extract-symbol-tags": "python3 backend/scripts/problems/generate_symbol_tags.py --root backend/algorithms --out lib/extracted-metadata/symbol_tags.json",

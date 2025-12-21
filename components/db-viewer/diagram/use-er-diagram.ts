@@ -55,13 +55,14 @@ export function useERDiagram(topology: SchemaTopology) {
 
   // Computed values
   const initialLayout = computeSchemaLayout(topology);
-  const hasStoredPositions = Object.keys(storedPositions).length > 0;
-  const positions = hasStoredPositions ? storedPositions : initialLayout.positions;
+  // Merge: stored positions override initial, so drag updates persist while other tables keep initial positions
+  const hasAllStoredPositions = topology.tables.every(t => t.name in storedPositions);
+  const positions = { ...initialLayout.positions, ...storedPositions };
   const schemaIndexMap = computeSchemaIndexMap(topology.tables);
   const domainIndexMap = computeDomainIndexMap(topology.tables);
-  const schemaBounds = computeSchemaBounds(topology.tables, hiddenTables, positions, schemaIndexMap);
-  const domainBounds = computeDomainBounds(topology.tables, hiddenTables, positions, domainIndexMap);
-  const paths = generatePathsFromPositions(topology.relationships, positions, topology.tables);
+  const schemaBounds = computeSchemaBounds(topology.tables, hiddenTables, positions, schemaIndexMap, expandedTables);
+  const domainBounds = computeDomainBounds(topology.tables, hiddenTables, positions, domainIndexMap, expandedTables);
+  const paths = generatePathsFromPositions(topology.relationships, positions, topology.tables, expandedTables);
   const highlightedColumns = computeHighlightedColumns(selectedColumn, topology.relationships);
 
   // Table zoom handler for keyboard shortcuts
@@ -182,8 +183,8 @@ export function useERDiagram(topology: SchemaTopology) {
 
   // Effects
   useContainerResize(containerRef, setContainerSize);
-  useInitPositions(_hasHydrated, hasStoredPositions, initialLayout.positions, setPositions);
-  useAutoFit(_hasHydrated, transform, fitView);
+  useInitPositions(_hasHydrated, hasAllStoredPositions, initialLayout.positions, setPositions);
+  useAutoFit(_hasHydrated, hasAllStoredPositions, transform, fitView);
   const zoomTargetRef = useZoomTargetReset();
   useWheelZoom(containerRef, zoomTargetRef, setTransform, handleTableZoom);
   usePointerHover(containerRef, setHoveredTable);

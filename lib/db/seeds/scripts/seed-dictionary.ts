@@ -98,50 +98,58 @@ async function getSenseId(
 
 /**
  * Predefined categories for tags.
- * Tags are parsed as "category:tagName" or default to "topic" category.
+ *
+ * 3 orthogonal filter dimensions for learners:
+ * - register: HOW the word is used (style/formality)
+ * - region: WHERE the word is used (geographic)
+ * - level: WHO should learn it (proficiency)
+ *
+ * Domain/topic handled via sense definitions + embeddings, not tags.
  */
 const CATEGORY_DEFINITIONS: Array<{ id: string; displayName: string; aiDescription?: string }> = [
-  { id: "topic", displayName: "Topic", aiDescription: "Subject domain (medical, legal, technology, etc.)" },
-  { id: "register", displayName: "Register", aiDescription: "Formality level (slang, archaic, poetic, colloquial)" },
-  { id: "connotation", displayName: "Connotation", aiDescription: "Emotional tone (positive, negative, neutral)" },
-  { id: "test-prep", displayName: "Test Prep", aiDescription: "Standardized test vocabulary (GRE, SAT, TOEFL)" },
-  { id: "frequency", displayName: "Frequency", aiDescription: "How common the word is (rare, common)" },
-  { id: "region", displayName: "Region", aiDescription: "Geographic usage (British, American, Australian)" },
+  { id: "register", displayName: "Register", aiDescription: "Usage style: formal, informal, slang, literary, technical, vulgar, archaic, dated" },
+  { id: "region", displayName: "Region", aiDescription: "Geographic variety: British, American, Australian, Irish, Indian, South African, global" },
+  { id: "level", displayName: "Level", aiDescription: "CEFR proficiency: A1, A2, B1, B2, C1, C2, academic, native" },
 ];
 
 /**
  * Map tag names to their categories.
  * Format: "tagName" -> "categoryId"
- * If a tag is not in this map, it defaults to "topic".
+ * Default: "register" (most common dimension for unlisted tags)
  */
 const TAG_CATEGORY_MAP: Record<string, string> = {
-  // Register (formality/style)
-  slang: "register",
-  archaic: "register",
-  poetic: "register",
-  colloquial: "register",
+  // Register (style/formality)
   formal: "register",
   informal: "register",
+  slang: "register",
   literary: "register",
+  technical: "register",
   vulgar: "register",
-  // Connotation (emotional tone)
-  negative: "connotation",
-  positive: "connotation",
-  neutral: "connotation",
-  pejorative: "connotation",
-  // Test prep
-  GRE: "test-prep",
-  SAT: "test-prep",
-  TOEFL: "test-prep",
-  IELTS: "test-prep",
-  // Frequency
-  rare: "frequency",
-  common: "frequency",
-  // Region
+  archaic: "register",
+  dated: "register",
+  poetic: "register",
+  colloquial: "register",
+  // Region (geographic)
   British: "region",
   American: "region",
   Australian: "region",
-  // All other tags (emotion, nature, morality, religion, etc.) default to "topic"
+  Irish: "region",
+  Indian: "region",
+  "South African": "region",
+  global: "region",
+  // Level (CEFR proficiency)
+  A1: "level",
+  A2: "level",
+  B1: "level",
+  B2: "level",
+  C1: "level",
+  C2: "level",
+  academic: "level",
+  native: "level",
+  GRE: "level",
+  SAT: "level",
+  TOEFL: "level",
+  IELTS: "level",
 };
 
 // =============================================================================
@@ -165,7 +173,7 @@ async function seedCategories(db: DbType): Promise<void> {
 
 /** Get category ID for a tag name */
 function getCategoryForTag(tagName: string): string {
-  return TAG_CATEGORY_MAP[tagName] ?? "topic";
+  return TAG_CATEGORY_MAP[tagName] ?? "register";
 }
 
 async function getOrCreateTag(db: DbType, tagName: string): Promise<number> {

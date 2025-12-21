@@ -4,10 +4,8 @@ import {
   useState,
   useRef,
   useEffect,
-  useCallback,
   useDeferredValue,
   useId,
-  useMemo,
 } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "motion/react";
 import type { SchemaTable } from "@/lib/db-viewer/types";
@@ -21,6 +19,7 @@ interface ERCommandSurfaceProps {
   tables: SchemaTable[];
   hiddenTables: Set<string>;
   schemaIndexMap: Map<string, number>;
+  domainIndexMap: Map<string, number>;
   scale: number;
   onToggle: (tableName: string) => void;
   onToggleSchema: (tableNames: string[], show: boolean) => void;
@@ -33,6 +32,9 @@ interface ERCommandSurfaceProps {
   onPreviewTable: (tableName: string | null) => void;
 }
 
+/**
+ * Group tables by schema, with domain info preserved for display.
+ */
 function groupTablesBySchema(tables: SchemaTable[]): Map<string, SchemaTable[]> {
   const grouped = new Map<string, SchemaTable[]>();
   for (const table of tables) {
@@ -62,6 +64,7 @@ export function ERCommandSurface({
   tables,
   hiddenTables,
   schemaIndexMap,
+  domainIndexMap,
   scale,
   onToggle,
   onToggleSchema,
@@ -92,19 +95,19 @@ export function ERCommandSurface({
   const [activeIndex, setActiveIndex] = useState(-1);
 
   const visibleCount = tables.length - hiddenTables.size;
-  const groupedTables = useMemo(() => groupTablesBySchema(tables), [tables]);
+  const groupedTables = groupTablesBySchema(tables);
   const pct = Math.round(scale * 100);
 
-  const visibleTables = useMemo(
-    () => tables.filter(t => !hiddenTables.has(t.name)).toSorted((a, b) => a.name.localeCompare(b.name)),
-    [tables, hiddenTables]
-  );
+  const visibleTables = tables
+    .filter(t => !hiddenTables.has(t.name))
+    .toSorted((a, b) => a.name.localeCompare(b.name));
 
-  const searchResults = useMemo(() => {
-    if (!deferredQuery) return visibleTables;
-    const q = deferredQuery.toLowerCase();
-    return visibleTables.filter(t => t.name.toLowerCase().includes(q) || t.schema.toLowerCase().includes(q));
-  }, [visibleTables, deferredQuery]);
+  const searchResults = deferredQuery
+    ? visibleTables.filter(t => {
+        const q = deferredQuery.toLowerCase();
+        return t.name.toLowerCase().includes(q) || t.schema.toLowerCase().includes(q);
+      })
+    : visibleTables;
 
   // "/" to focus search
   useEffect(() => {
@@ -167,16 +170,13 @@ export function ERCommandSurface({
     return () => document.removeEventListener("pointerdown", handleClick);
   }, [showZoom]);
 
-  const selectTable = useCallback(
-    (name: string) => {
-      onFocusTable(name);
-      setQuery("");
-      setActiveIndex(-1);
-      setShowSearchDropup(false);
-      inputRef.current?.blur();
-    },
-    [onFocusTable]
-  );
+  function selectTable(name: string) {
+    onFocusTable(name);
+    setQuery("");
+    setActiveIndex(-1);
+    setShowSearchDropup(false);
+    inputRef.current?.blur();
+  }
 
   function onSearchKey(e: React.KeyboardEvent) {
     if (e.key === "ArrowDown") {
@@ -309,6 +309,9 @@ export function ERCommandSurface({
                     const someVisible = schemaVisibleCount > 0 && schemaVisibleCount < schemaTables.length;
                     const idx = (schemaIndexMap.get(schema) ?? 0) % 6;
                     const isExpanded = quickMenuExpanded.has(schema);
+                    // Group tables by domain within this schema
+                    const domains = [...new Set(schemaTables.map(t => t.domain).filter((d): d is string => !!d))];
+                    const hasDomains = domains.length > 0;
 
                     return (
                       <motion.div
@@ -362,7 +365,7 @@ export function ERCommandSurface({
                           </button>
                         </div>
 
-                        {/* Tables */}
+                        {/* Tables - grouped by domain if domains exist */}
                         <AnimatePresence initial={false}>
                           {isExpanded && (
                             <motion.div
@@ -376,35 +379,83 @@ export function ERCommandSurface({
                               className="overflow-hidden"
                             >
                               <div className="pl-6 space-y-0.5">
-                                {schemaTables.map((table, i) => {
-                                  const isVisible = !hiddenTables.has(table.name);
-                                  return (
-                                    <motion.label
-                                      key={table.name}
-                                      initial={{ opacity: 0, x: -4 }}
-                                      animate={{ opacity: 1, x: 0 }}
-                                      transition={{
-                                        delay: reduced ? 0 : i * 0.015,
-                                        type: "spring",
-                                        ...springSoft,
-                                      }}
-                                      className="flex items-center gap-2 px-2 py-1 rounded-md hover:bg-db-er-border/10 transition-colors cursor-pointer"
-                                    >
-                                      <input
-                                        type="checkbox"
-                                        checked={isVisible}
-                                        onChange={() => onToggle(table.name)}
-                                        className="db-er-check"
-                                      />
-                                      <span className="text-[10px] font-mono text-db-er-text truncate flex-1">
-                                        {table.name}
-                                      </span>
-                                      <span className="text-[9px] tabular-nums text-db-er-text-muted/40">
-                                        {table.columns.length}
-                                      </span>
-                                    </motion.label>
-                                  );
-                                })}
+                                {hasDomains ? (
+                                  // Show tables grouped by domain
+                                  [...domains, null].map(domain => {
+                                    const domainTables = schemaTables.filter(t => t.domain === domain);
+                                    if (domainTables.length === 0) return null;
+                                    const domainIdx = domain ? (domainIndexMap.get(domain) ?? 0) % 6 : idx;
+                                    return (
+                                      <div key={domain ?? "__no_domain__"} data-db-schema={domainIdx}>
+                                        {domain && (
+                                          <div className="text-[9px] font-medium uppercase tracking-wide text-db-er-text-muted/70 px-2 pt-1.5 pb-0.5">
+                                            {domain}
+                                          </div>
+                                        )}
+                                        {domainTables.map((table, i) => {
+                                          const isVisible = !hiddenTables.has(table.name);
+                                          return (
+                                            <motion.label
+                                              key={table.name}
+                                              initial={{ opacity: 0, x: -4 }}
+                                              animate={{ opacity: 1, x: 0 }}
+                                              transition={{
+                                                delay: reduced ? 0 : i * 0.015,
+                                                type: "spring",
+                                                ...springSoft,
+                                              }}
+                                              className="flex items-center gap-2 px-2 py-1 rounded-md hover:bg-db-er-border/10 transition-colors cursor-pointer"
+                                            >
+                                              <input
+                                                type="checkbox"
+                                                checked={isVisible}
+                                                onChange={() => onToggle(table.name)}
+                                                className="db-er-check"
+                                              />
+                                              <span className="text-[10px] font-mono text-db-er-text truncate flex-1">
+                                                {table.name}
+                                              </span>
+                                              <span className="text-[9px] tabular-nums text-db-er-text-muted/40">
+                                                {table.columns.length}
+                                              </span>
+                                            </motion.label>
+                                          );
+                                        })}
+                                      </div>
+                                    );
+                                  })
+                                ) : (
+                                  // No domains - show tables directly
+                                  schemaTables.map((table, i) => {
+                                    const isVisible = !hiddenTables.has(table.name);
+                                    return (
+                                      <motion.label
+                                        key={table.name}
+                                        initial={{ opacity: 0, x: -4 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{
+                                          delay: reduced ? 0 : i * 0.015,
+                                          type: "spring",
+                                          ...springSoft,
+                                        }}
+                                        className="flex items-center gap-2 px-2 py-1 rounded-md hover:bg-db-er-border/10 transition-colors cursor-pointer"
+                                      >
+                                        <input
+                                          type="checkbox"
+                                          checked={isVisible}
+                                          onChange={() => onToggle(table.name)}
+                                          className="db-er-check"
+                                        />
+                                        <span className="text-[10px] font-mono text-db-er-text truncate flex-1">
+                                          {table.name}
+                                        </span>
+                                        <span className="text-[9px] tabular-nums text-db-er-text-muted/40">
+                                          {table.columns.length}
+                                        </span>
+                                      </motion.label>
+                                    );
+                                  })
+                                )}
                               </div>
                             </motion.div>
                           )}

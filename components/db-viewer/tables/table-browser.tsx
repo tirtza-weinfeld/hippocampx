@@ -3,7 +3,7 @@
 import { useState, useMemo, useTransition } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import Link from "next/link";
-import { TableSidebar, MobileSidebar } from "./table-sidebar";
+import { TableSidebar } from "./table-sidebar";
 import { DataTable } from "./data-table";
 import { ColumnFilter } from "./column-filter";
 import {
@@ -24,6 +24,7 @@ interface TableStat {
   provider: DatabaseProvider;
   rowCount: number;
   schema: string;
+  domain?: string;
 }
 
 interface TableBrowserProps {
@@ -64,7 +65,6 @@ export function TableBrowser({
   const [isPending, startTransition] = useTransition();
 
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   const hiddenColumnsArray = useHiddenColumns(selectedTable);
   const hiddenColumns = useMemo(() => new Set(hiddenColumnsArray), [hiddenColumnsArray]);
@@ -95,12 +95,8 @@ export function TableBrowser({
   }
 
   function handleTableSelect(tableName: string) {
-    if (tableName === selectedTable) {
-      setMobileSidebarOpen(false);
-      return;
-    }
 
-    setMobileSidebarOpen(false);
+
     setSelectedTable(tableName);
     setData(null);
     setMetadata(null);
@@ -127,22 +123,13 @@ export function TableBrowser({
 
   return (
     <div className="flex h-full overflow-hidden bg-linear-to-r from-transparent via-db-surface to-transparent">
-      {/* Desktop Sidebar */}
+      {/* Sidebar (responsive: desktop panel + mobile bottom sheet) */}
       <TableSidebar
         tables={initialStats}
         selectedTable={selectedTable ?? null}
         onTableSelect={handleTableSelect}
         isCollapsed={sidebarCollapsed}
         onCollapsedChange={setSidebarCollapsed}
-      />
-
-      {/* Mobile Sidebar */}
-      <MobileSidebar
-        tables={initialStats}
-        selectedTable={selectedTable ?? null}
-        onTableSelect={handleTableSelect}
-        isOpen={mobileSidebarOpen}
-        onClose={() => setMobileSidebarOpen(false)}
       />
 
       {/* Main Content */}
@@ -246,61 +233,7 @@ export function TableBrowser({
           </AnimatePresence>
         </div>
 
-        {/* Mobile FAB */}
-        <motion.button
-          type="button"
-          onClick={() => setMobileSidebarOpen(!mobileSidebarOpen)}
-          initial={{ scale: 0, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ delay: 0.2, type: "spring", stiffness: 300 }}
-          className={`
-            lg:hidden fixed bottom-6 right-6 z-30 flex items-center gap-2 px-4 py-3 rounded-xl font-medium shadow-lg transition-all
-            ${mobileSidebarOpen
-              ? "bg-db-surface-raised text-db-text border border-db-border/50 shadow-md"
-              : "bg-gradient-to-r from-db-neon to-db-neon/80 text-white shadow-db-neon/25"
-            }
-            hover:scale-105 active:scale-95
-          `}
-        >
-          <AnimatePresence mode="wait">
-            {mobileSidebarOpen ? (
-              <motion.svg
-                key="close"
-                initial={{ rotate: -90, opacity: 0 }}
-                animate={{ rotate: 0, opacity: 1 }}
-                exit={{ rotate: 90, opacity: 0 }}
-                transition={{ duration: 0.15 }}
-                className="size-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </motion.svg>
-            ) : (
-              <motion.svg
-                key="open"
-                initial={{ rotate: 90, opacity: 0 }}
-                animate={{ rotate: 0, opacity: 1 }}
-                exit={{ rotate: -90, opacity: 0 }}
-                transition={{ duration: 0.15 }}
-                className="size-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"
-                />
-              </motion.svg>
-            )}
-          </AnimatePresence>
-          <span className="text-sm font-medium">{mobileSidebarOpen ? "Close" : `${initialStats.length} Tables`}</span>
-        </motion.button>
+   
       </main>
     </div>
   );

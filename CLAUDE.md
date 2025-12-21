@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-HippocampX: Educational web app — Next.js 16.1+, React 19.2+, interactive learning modules.
+HippocampX: Educational web app — Next.js *16.1+* , React *19.2+*, interactive learning modules.
 
 ## Rules
 

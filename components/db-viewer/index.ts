@@ -8,7 +8,6 @@
 export {
   TableBrowser,
   TableSidebar,
-  MobileSidebar,
   DataTable,
   ColumnFilter,
   SearchInput,
@@ -19,8 +18,7 @@ export {
   Pagination,
   SortIcon,
   CellDetailModal,
-  MobileBottomSheet,
-  MobileTableList,
+
 } from "./tables";
 
 // ER Diagram components

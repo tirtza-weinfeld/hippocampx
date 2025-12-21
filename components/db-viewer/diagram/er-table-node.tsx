@@ -25,10 +25,9 @@ interface ERTableNodeProps {
   onToggleExpanded?: () => void;
 }
 
-// Height for expanded column row (description + example)
-const EXPANDED_ROW_HEIGHT = 16;
-// Width increase when expanded to show full descriptions
-const EXPANDED_WIDTH_INCREASE = 100;
+function copyToClipboard(text: string) {
+  void navigator.clipboard.writeText(text);
+}
 
 export function ERTableNode({
   table,
@@ -46,15 +45,10 @@ export function ERTableNode({
   onToggleExpanded,
 }: ERTableNodeProps) {
   const reducedMotion = useReducedMotion();
-  // Calculate dimensions based on expanded state
   const hasDescriptions = table.description || table.columns.some(col => col.description || col.example);
-  const baseHeight = LAYOUT.HEADER_HEIGHT + table.columns.length * LAYOUT.COLUMN_HEIGHT + 8;
-  const expandedExtraHeight = expanded && hasDescriptions
-    ? table.columns.filter(col => col.description || col.example).length * EXPANDED_ROW_HEIGHT
-    : 0;
-  const height = baseHeight + expandedExtraHeight;
+  const height = LAYOUT.HEADER_HEIGHT + table.columns.length * LAYOUT.COLUMN_HEIGHT + 8;
   const width = expanded && hasDescriptions
-    ? LAYOUT.TABLE_WIDTH + EXPANDED_WIDTH_INCREASE
+    ? LAYOUT.TABLE_WIDTH + LAYOUT.EXPANDED_WIDTH
     : LAYOUT.TABLE_WIDTH;
   const animationDuration = reducedMotion ? 0 : 0.25;
 
@@ -189,10 +183,10 @@ export function ERTableNode({
 
       {/* Table Name */}
       <text
-        x={x + 14}
+        x={x + (hasDescriptions && onToggleExpanded ? 36 : 14)}
         y={y + 26}
-        className="fill-db-er-text text-sm font-semibold tracking-tight"
-        // style={{ fontFamily: "var(--font-mono)" }}
+        className="fill-db-er-text text-sm font-semibold tracking-tight cursor-pointer hover:underline"
+        onClick={(e) => { e.stopPropagation(); copyToClipboard(table.name); }}
       >
         {table.name}
         {!expanded && (table.description || table.domain) && (
@@ -200,24 +194,29 @@ export function ERTableNode({
         )}
       </text>
 
+
+
       {/* Table description when expanded */}
       {expanded && table.description && (
-        <text
-          x={x + 14}
-          y={y + 40}
-          className="fill-db-er-text-muted text-[9px] italic"
+        <foreignObject
+          x={x + LAYOUT.TABLE_WIDTH + 8}
+          y={y + 4}
+          width={LAYOUT.EXPANDED_WIDTH - 16}
+          height={LAYOUT.HEADER_HEIGHT - 4}
         >
-          {table.description.length > 50 ? `${table.description.slice(0, 50)}…` : table.description}
-          {table.domain && (
-            <tspan className="fill-db-er-text-type"> [{table.domain}]</tspan>
-          )}
-        </text>
+          <p className="text-[10px] font-medium text-db-er-text-muted leading-relaxed">
+            {table.description}
+            {table.domain && (
+              <span className="text-db-er-text-type block text-[9px]">[{table.domain}]</span>
+            )}
+          </p>
+        </foreignObject>
       )}
 
-      {/* Expand toggle button - only show if columns have descriptions */}
+      {/* Expand toggle button - left side, only show if columns have descriptions */}
       {hasDescriptions && onToggleExpanded && (
         <g
-          transform={`translate(${x + width - 32}, ${y + 12})`}
+          transform={`translate(${x + 10}, ${y + 12})`}
           onClick={(e) => { e.stopPropagation(); onToggleExpanded(); }}
           className="cursor-pointer"
           role="button"
@@ -235,7 +234,7 @@ export function ERTableNode({
             textAnchor="middle"
             className="text-[10px] fill-db-er-text-muted select-none pointer-events-none"
           >
-            {expanded ? "−" : "?"}
+            {expanded ? "‹" : "›"}
           </text>
         </g>
       )}
@@ -263,11 +262,7 @@ export function ERTableNode({
 
       {/* Columns */}
       {table.columns.map((col, i) => {
-        // Calculate Y offset accounting for expanded descriptions of previous columns
-        const prevExpandedCount = expanded
-          ? table.columns.slice(0, i).filter(c => c.description || c.example).length
-          : 0;
-        const colY = y + LAYOUT.HEADER_HEIGHT + i * LAYOUT.COLUMN_HEIGHT + prevExpandedCount * EXPANDED_ROW_HEIGHT;
+        const colY = y + LAYOUT.HEADER_HEIGHT + i * LAYOUT.COLUMN_HEIGHT;
         const hasColDescription = col.description || col.example;
         const isLastColumn = i === table.columns.length - 1;
         const isClickable = col.isPrimaryKey || col.foreignKey;
@@ -282,8 +277,7 @@ export function ERTableNode({
           }
         };
 
-        // Total row height including description when expanded
-        const rowHeight = LAYOUT.COLUMN_HEIGHT + (expanded && hasColDescription ? EXPANDED_ROW_HEIGHT : 0);
+        const rowHeight = LAYOUT.COLUMN_HEIGHT;
 
         return (
           <g
@@ -299,7 +293,7 @@ export function ERTableNode({
               y={colY}
               width={width - 2}
               height={rowHeight}
-              rx={isLastColumn && !expanded ? 11 : 0}
+              rx={isLastColumn ? 11 : 0}
               className={`db-er-column-row${isClickable ? " clickable" : ""}${
                 highlight === "pk"
                   ? " fill-db-er-line-pk/20"
@@ -313,8 +307,8 @@ export function ERTableNode({
             <text
               x={x + 12}
               y={colY + 18}
-              className="fill-db-er-text text-[11px]"
-              // style={{ fontFamily: "var(--font-mono)" }}
+              className="fill-db-er-text text-[11px] cursor-pointer hover:underline"
+              onClick={(e) => { e.stopPropagation(); copyToClipboard(col.name); }}
             >
               {col.name}
               {!expanded && hasColDescription && (
@@ -324,27 +318,29 @@ export function ERTableNode({
 
             {/* Column type */}
             <text
-              x={x + width - 12}
+              x={x + LAYOUT.TABLE_WIDTH - 12}
               y={colY + 18}
               textAnchor="end"
               className="fill-db-er-text-type text-[0.7rem] tracking-tighter"
-              // style={{ fontFamily: "var(--font-mono)" }}
             >
-              {col.type.length > 12 ? `${col.type.slice(0, 12)}…` : col.type}
+              {col.type}
             </text>
 
-            {/* Expanded description row */}
+            {/* Inline description (horizontal expansion) */}
             {expanded && hasColDescription && (
-              <text
-                x={x + 16}
-                y={colY + LAYOUT.COLUMN_HEIGHT + 10}
-                className="fill-db-er-text-muted text-[9px] italic"
+              <foreignObject
+                x={x + LAYOUT.TABLE_WIDTH + 8}
+                y={colY + 2}
+                width={LAYOUT.EXPANDED_WIDTH - 16}
+                height={LAYOUT.COLUMN_HEIGHT}
               >
-                {col.description}
-                {col.example && (
-                  <tspan className="fill-db-er-text-type"> → {col.example}</tspan>
-                )}
-              </text>
+                <p className="text-[10px] text-db-er-text-muted leading-normal">
+                  {col.description}
+                  {col.example && (
+                    <span className="text-db-er-text-type"> → {col.example}</span>
+                  )}
+                </p>
+              </foreignObject>
             )}
 
             {/* Primary Key Badge */}

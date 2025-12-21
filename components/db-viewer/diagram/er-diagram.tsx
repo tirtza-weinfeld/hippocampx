@@ -89,7 +89,7 @@ export function ERDiagram({ topology }: ERDiagramProps) {
       >
         <ERDefs />
         <ERSchemaBackgrounds schemaBounds={schemaBounds} />
-        <ERSchemaBackgrounds schemaBounds={domainBounds} />
+        <ERSchemaBackgrounds schemaBounds={domainBounds} offsetY={30} />
         <ERRelationships
           relationships={topology.relationships}
           paths={paths}
@@ -154,6 +154,7 @@ export function ERDiagram({ topology }: ERDiagramProps) {
         tables={topology.tables}
         hiddenTables={hiddenTables}
         schemaIndexMap={schemaIndexMap}
+        domainIndexMap={domainIndexMap}
         scale={transform.scale}
         onToggle={toggleTable}
         onToggleSchema={toggleSchema}

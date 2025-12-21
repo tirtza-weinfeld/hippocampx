@@ -12,10 +12,9 @@ COMMENT ON COLUMN lexical_entries.lemma IS 'Canonical dictionary form | "run"';
 COMMENT ON COLUMN lexical_entries.part_of_speech IS 'Grammatical category enum | "verb"';
 COMMENT ON COLUMN lexical_entries.language_code IS 'ISO 639-1 code | "en"';
 COMMENT ON COLUMN lexical_entries.discriminator IS 'Homograph disambiguator (1, 2..) | 1';
-COMMENT ON COLUMN lexical_entries.embedding IS '1536d Half-precision semantic vector | [0.01, -0.2...]';
 COMMENT ON COLUMN lexical_entries.metadata IS 'Etymology and morphology JSON | {"root": "rinnan"}';
 COMMENT ON COLUMN lexical_entries.created_at IS 'Immutable creation timestamp | 2024-01-01T12:00:00Z';
-COMMENT ON COLUMN lexical_entries.updated_at IS 'Last modification timestamp | 2024-01-02T15:30:00Z';
+COMMENT ON COLUMN lexical_entries.updated_at IS 'Auto-updated for vector staleness detection | 2024-01-02T15:30:00Z';
 
 -- Table: word_forms
 COMMENT ON TABLE word_forms IS 'Inflectional morphology and variations | Lexicon';
@@ -30,9 +29,9 @@ COMMENT ON COLUMN senses.id IS 'Auto-generated primary key | 444';
 COMMENT ON COLUMN senses.entry_id IS 'Parent lexical entry ID | 202';
 COMMENT ON COLUMN senses.definition IS 'Textual explanation of meaning | "To move at a speed faster than a walk"';
 COMMENT ON COLUMN senses.order_index IS 'Rank for UI display (0=primary) | 0';
-COMMENT ON COLUMN senses.embedding IS '1536d Half-precision semantic vector | [0.88, 0.12...]';
 COMMENT ON COLUMN senses.is_synthetic IS 'Boolean flag: True if AI-generated | false';
 COMMENT ON COLUMN senses.verification_status IS 'Editorial workflow state | "verified"';
+COMMENT ON COLUMN senses.updated_at IS 'Auto-updated for vector staleness detection | 2024-01-02T15:30:00Z';
 
 -- Table: entry_audio
 COMMENT ON TABLE entry_audio IS 'Phonetic and spoken data assets | Lexicon';
@@ -99,8 +98,8 @@ COMMENT ON COLUMN examples.sense_id IS 'Linked definition ID | 444';
 COMMENT ON COLUMN examples.text IS 'The usage sentence | "She ran into the woods."';
 COMMENT ON COLUMN examples.language_code IS 'ISO 639-1 code | "en"';
 COMMENT ON COLUMN examples.source_part_id IS 'Specific citation location ID | 200';
-COMMENT ON COLUMN examples.embedding IS '1536d Half-precision semantic vector | [0.11, 0.98...]';
 COMMENT ON COLUMN examples.cached_citation IS 'Denormalized display string | "Into the Woods, Act 1"';
+COMMENT ON COLUMN examples.updated_at IS 'Auto-updated for vector staleness detection | 2024-01-02T15:30:00Z';
 
 -- ============================================================================
 -- 4. DOMAIN: ONTOLOGY (Taxonomy)
@@ -111,16 +110,35 @@ COMMENT ON TABLE categories IS 'High-level conceptual domains (Root Nodes) | Ont
 COMMENT ON COLUMN categories.id IS 'Natural key / Slug | "register"';
 COMMENT ON COLUMN categories.display_name IS 'UI Label | "Register"';
 COMMENT ON COLUMN categories.ai_description IS 'LLM system prompt context | "Tags indicating social formality"';
+COMMENT ON COLUMN categories.updated_at IS 'Auto-updated for vector staleness detection | 2024-01-02T15:30:00Z';
 
 -- Table: tags
 COMMENT ON TABLE tags IS 'Specific attribute markers (Leaf Nodes) | Ontology';
 COMMENT ON COLUMN tags.id IS 'Auto-generated primary key | 15';
 COMMENT ON COLUMN tags.category_id IS 'Parent category slug | "register"';
 COMMENT ON COLUMN tags.name IS 'Tag label | "formal"';
-COMMENT ON COLUMN tags.metadata IS 'UI properties | {"color": "#ff0000"}';
+COMMENT ON COLUMN tags.metadata IS 'Arbitrary key-value store | {"deprecated": true}';
 
 -- Table: sense_tags
 COMMENT ON TABLE sense_tags IS 'Edges linking Senses to Ontology Nodes | Ontology';
 COMMENT ON COLUMN sense_tags.sense_id IS 'Target sense ID | 444';
 COMMENT ON COLUMN sense_tags.tag_id IS 'Applied tag ID | 15';
 COMMENT ON COLUMN sense_tags.explanation IS 'Reasoning for tag application | "Used in legal proceedings"';
+
+-- ============================================================================
+-- 5. DOMAIN: VECTORS (Embedding Tables - Created via Factory)
+-- ============================================================================
+-- Vector tables are created dynamically per embedding model using factories in vectors.ts
+-- Pattern: {entity}_vec_{model_name} (e.g., lexical_entries_vec_brain_a)
+--
+-- Architecture:
+-- - Embeddings separated from core tables for multi-model support
+-- - Each vector table has: entity_id (FK), embedding (halfvec), updated_at
+-- - Staleness detection: core.updated_at > vector.updated_at = needs re-embedding
+-- - HNSW index on embedding column for fast similarity search
+--
+-- Factories:
+-- - createCategoryVectorTable(name, dimensions)
+-- - createLexicalEntryVectorTable(name, dimensions)
+-- - createSenseVectorTable(name, dimensions)
+-- - createExampleVectorTable(name, dimensions)

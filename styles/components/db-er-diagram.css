@@ -34,9 +34,12 @@
 
   /* Schema accent */
   --color-db-er-schema: var(--db-er-schema);
+
+  --color-db-er-description: var(--db-er-description);
 }
 
 :root {
+  --db-er-description: var(--color-sky-500);
   --db-er-card: var(--color-white);
   --db-er-card-header: var(--color-gray-100);
   --db-er-border: var(--color-gray-300);
@@ -60,6 +63,7 @@
 }
 
 .dark {
+  --db-er-description: var(--color-sky-600);
   --db-er-card: var(--color-gray-800);
   --db-er-card-header: var(--color-gray-900);
   --db-er-border: var(--color-gray-600);

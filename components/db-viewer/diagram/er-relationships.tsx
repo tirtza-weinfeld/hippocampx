@@ -1,7 +1,9 @@
 "use client";
 
+import { useRef, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import type { SchemaRelationship, ColumnSelection } from "@/lib/db-viewer/types";
+import { MARKER_STUB } from "@/lib/db-viewer/er-layout";
 
 interface ERRelationshipsProps {
   relationships: SchemaRelationship[];
@@ -12,11 +14,66 @@ interface ERRelationshipsProps {
 }
 
 const lineVariants = {
-  hidden: { pathLength: 0, opacity: 0 },
-  visible: { pathLength: 1, opacity: 0.9 },
-  dimmed: { pathLength: 1, opacity: 0.7 },
-  highlighted: { pathLength: 1, opacity: 1 },
+  hidden: { opacity: 0 },
+  visible: { opacity: 0.9 },
+  dimmed: { opacity: 0.7 },
+  highlighted: { opacity: 1 },
 } as const;
+
+interface RelationshipPathProps {
+  rel: SchemaRelationship;
+  path: string;
+  animateState: "hidden" | "visible" | "dimmed" | "highlighted";
+  strokeClass: string;
+  markerStart: string;
+  markerEnd: string;
+  transitionDuration: number;
+}
+
+function RelationshipPath({
+  rel,
+  path,
+  animateState,
+  strokeClass,
+  markerStart,
+  markerEnd,
+  transitionDuration,
+}: RelationshipPathProps) {
+  const pathRef = useRef<SVGPathElement>(null);
+  const [dashArray, setDashArray] = useState(`0 ${MARKER_STUB} 9999`);
+
+  useEffect(() => {
+    if (pathRef.current) {
+      const length = pathRef.current.getTotalLength();
+      // Dash pattern: gap (hide start stub), visible (curve), gap (hide end stub)
+      const visibleLength = Math.max(0, length - 2 * MARKER_STUB);
+      setDashArray(`0 ${MARKER_STUB} ${visibleLength} ${MARKER_STUB}`);
+    }
+  }, [path]);
+
+  return (
+    <motion.path
+      ref={pathRef}
+      key={rel.id}
+      d={path}
+      variants={lineVariants}
+      initial="hidden"
+      animate={animateState}
+      exit="hidden"
+      transition={{
+        duration: transitionDuration,
+        ease: "easeOut",
+      }}
+      className={strokeClass}
+      strokeWidth={2}
+      fill="none"
+      strokeLinecap="round"
+      strokeDasharray={dashArray}
+      markerStart={markerStart}
+      markerEnd={markerEnd}
+    />
+  );
+}
 
 function getRelationHighlight(
   rel: SchemaRelationship,
@@ -74,11 +131,19 @@ export function ERRelationships({
               ? "stroke-db-er-line-fk"
               : "stroke-db-er-line";
 
-          const markerEnd = highlight === "pk"
-            ? "url(#er-arrowhead-pk)"
+          // Arrow on the "many" side (FK/from side) using markerStart
+          const markerStart = highlight === "pk"
+            ? "url(#er-arrowhead-start-pk)"
             : highlight === "fk"
-              ? "url(#er-arrowhead-fk)"
-              : "url(#er-arrowhead)";
+              ? "url(#er-arrowhead-start-fk)"
+              : "url(#er-arrowhead-start)";
+
+          // Circle on the "one" side (PK/to side) using markerEnd
+          const markerEnd = highlight === "pk"
+            ? "url(#er-circle-end-pk)"
+            : highlight === "fk"
+              ? "url(#er-circle-end-fk)"
+              : "url(#er-circle-end)";
 
           const animateState = isHidden
             ? "hidden"
@@ -89,22 +154,15 @@ export function ERRelationships({
                 : "visible";
 
           return (
-            <motion.path
+            <RelationshipPath
               key={rel.id}
-              d={path}
-              variants={lineVariants}
-              initial="hidden"
-              animate={animateState}
-              exit="hidden"
-              transition={{
-                duration: transitionDuration,
-                ease: "easeOut",
-              }}
-              className={strokeClass}
-              strokeWidth={highlight ? 3 : 2}
-              fill="none"
-              strokeLinecap="round"
+              rel={rel}
+              path={path}
+              animateState={animateState}
+              strokeClass={strokeClass}
+              markerStart={markerStart}
               markerEnd={markerEnd}
+              transitionDuration={transitionDuration}
             />
           );
         })}

@@ -25,7 +25,20 @@ export const LAYOUT = {
   GAP_Y: 50,
   COLUMNS: 4,
   PADDING: 80,
+  EXPANDED_WIDTH: 280,
 } as const;
+
+/**
+ * Calculate table width accounting for expansion state
+ */
+function calculateTableWidth(table: SchemaTable, expanded: boolean): number {
+  if (!expanded) return LAYOUT.TABLE_WIDTH;
+
+  const hasDescriptions = table.description || table.columns.some(col => col.description || col.example);
+  if (!hasDescriptions) return LAYOUT.TABLE_WIDTH;
+
+  return LAYOUT.TABLE_WIDTH + LAYOUT.EXPANDED_WIDTH;
+}
 
 // ============================================================================
 // Topological Sort
@@ -438,8 +451,14 @@ function calculatePositions(
 // Path Generation
 // ============================================================================
 
+// Marker stub length - matches marker size (8 units × strokeWidth of 2)
+// Used for both arrow (start) and circle (end) markers
+export const MARKER_STUB = 16;
+
 /**
- * Generate SVG path for a relationship line using smooth bezier curves
+ * Generate SVG path for a relationship line using smooth bezier curves.
+ * Chooses the shortest path by comparing all four side combinations.
+ * Includes straight stubs at both ends for markers (arrow at start, circle at end).
  */
 function generatePath(
   from: TablePosition,
@@ -447,7 +466,9 @@ function generatePath(
   fromColumn: string,
   toColumn: string,
   fromTable: SchemaTable,
-  toTable: SchemaTable
+  toTable: SchemaTable,
+  fromWidth: number,
+  toWidth: number
 ): string {
   const fromColIndex = fromTable.columns.findIndex(c => c.name === fromColumn);
   const toColIndex = toTable.columns.findIndex(c => c.name === toColumn);
@@ -455,28 +476,65 @@ function generatePath(
   const fromY = from.y + LAYOUT.HEADER_HEIGHT + (fromColIndex + 0.5) * LAYOUT.COLUMN_HEIGHT;
   const toY = to.y + LAYOUT.HEADER_HEIGHT + (toColIndex + 0.5) * LAYOUT.COLUMN_HEIGHT;
 
-  const fromCenterX = from.x + from.width / 2;
-  const toCenterX = to.x + to.width / 2;
+  // Calculate all four possible connection points
+  const fromLeft = from.x;
+  const fromRight = from.x + fromWidth;
+  const toLeft = to.x;
+  const toRight = to.x + toWidth;
 
-  let startX: number;
-  let endX: number;
-  let curveDir: number;
+  // Calculate distances for each combination (using squared distance to avoid sqrt)
+  const dy2 = (toY - fromY) ** 2;
+  const options = [
+    { startX: fromLeft, endX: toLeft, dist: (toLeft - fromLeft) ** 2 + dy2 },      // left-to-left
+    { startX: fromLeft, endX: toRight, dist: (toRight - fromLeft) ** 2 + dy2 },    // left-to-right
+    { startX: fromRight, endX: toLeft, dist: (toLeft - fromRight) ** 2 + dy2 },    // right-to-left
+    { startX: fromRight, endX: toRight, dist: (toRight - fromRight) ** 2 + dy2 },  // right-to-right
+  ];
 
-  if (fromCenterX < toCenterX) {
-    startX = from.x + from.width;
-    endX = to.x;
-    curveDir = 1;
+  // Find shortest path
+  const best = options.reduce((a, b) => (a.dist < b.dist ? a : b));
+  const { startX, endX } = best;
+
+  // Determine curve direction based on which sides we're connecting
+  const fromSide = startX === fromLeft ? "left" : "right";
+  const toSide = endX === toLeft ? "left" : "right";
+
+  // Start stub direction (horizontal, away from table) - for arrow marker
+  const startStubDir = fromSide === "left" ? -1 : 1;
+  const startStubX = startX + MARKER_STUB * startStubDir;
+
+  // End stub direction (horizontal, away from table) - for circle marker
+  const endStubDir = toSide === "left" ? -1 : 1;
+  const endStubX = endX + MARKER_STUB * endStubDir;
+
+  // Control point offset direction: curves should bow outward from the tables
+  const dx = Math.abs(endStubX - startStubX);
+  const baseOffset = Math.min(dx * 0.4, 60);
+
+  let curveStartOffset: number;
+  let curveEndOffset: number;
+
+  if (fromSide === "left" && toSide === "left") {
+    // Both left: curve bows left (negative X)
+    curveStartOffset = -baseOffset;
+    curveEndOffset = -baseOffset;
+  } else if (fromSide === "right" && toSide === "right") {
+    // Both right: curve bows right (positive X)
+    curveStartOffset = baseOffset;
+    curveEndOffset = baseOffset;
+  } else if (fromSide === "right" && toSide === "left") {
+    // Right to left: S-curve
+    curveStartOffset = baseOffset;
+    curveEndOffset = -baseOffset;
   } else {
-    startX = from.x;
-    endX = to.x + to.width;
-    curveDir = -1;
+    // Left to right: reverse S-curve
+    curveStartOffset = -baseOffset;
+    curveEndOffset = baseOffset;
   }
 
-  const dx = Math.abs(endX - startX);
-  const controlOffset = Math.min(dx * 0.4, 60) * curveDir;
-
-  // Bezier curve for smooth connections
-  return `M ${startX} ${fromY} C ${startX + controlOffset} ${fromY}, ${endX - controlOffset} ${toY}, ${endX} ${toY}`;
+  // Path: start stub (arrow) + bezier curve + end stub (circle)
+  // M = move to start, L = line to stub, C = bezier curve, L = line to end
+  return `M ${startX} ${fromY} L ${startStubX} ${fromY} C ${startStubX + curveStartOffset} ${fromY}, ${endStubX + curveEndOffset} ${toY}, ${endStubX} ${toY} L ${endX} ${toY}`;
 }
 
 /**
@@ -485,7 +543,8 @@ function generatePath(
 function generatePaths(
   relationships: SchemaRelationship[],
   positions: Record<string, TablePosition>,
-  tables: SchemaTable[]
+  tables: SchemaTable[],
+  expandedTables: Record<string, boolean> = {}
 ): Record<string, string> {
   const paths: Record<string, string> = {};
   const tableMap = new Map(tables.map(t => [t.name, t]));
@@ -503,13 +562,19 @@ function generatePaths(
     // Skip if position is missing (table may be hidden)
     if (!fromPos || !toPos) continue;
 
+    // Calculate effective widths accounting for expansion
+    const fromWidth = calculateTableWidth(fromTable, expandedTables[fromTable.name] ?? false);
+    const toWidth = calculateTableWidth(toTable, expandedTables[toTable.name] ?? false);
+
     paths[rel.id] = generatePath(
       fromPos,
       toPos,
       rel.from.column,
       rel.to.column,
       fromTable,
-      toTable
+      toTable,
+      fromWidth,
+      toWidth
     );
   }
 
@@ -566,12 +631,13 @@ export function getColumnY(table: SchemaTable, columnName: string): number {
 
 /**
  * Generate paths for relationships given current positions.
- * Used for dynamic path updates when tables are dragged.
+ * Used for dynamic path updates when tables are dragged or expanded.
  */
 export function generatePathsFromPositions(
   relationships: SchemaRelationship[],
   positions: Record<string, TablePosition>,
-  tables: SchemaTable[]
+  tables: SchemaTable[],
+  expandedTables: Record<string, boolean> = {}
 ): Record<string, string> {
-  return generatePaths(relationships, positions, tables);
+  return generatePaths(relationships, positions, tables, expandedTables);
 }

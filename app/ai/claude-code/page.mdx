@@ -7,12 +7,12 @@ Claude Code has four extension mechanisms. All are markdown/config files — the
 
 | Mechanism | Location | Trigger | Isolation |
 |-----------|----------|---------|-----------|
-| [**Skills**](./skills) | `.claude/skills/*/SKILL.md` | Auto (context match) | No |
-| [**Subagents**](./subagents) | `.claude/agents/*.md` | Explicit or auto | Yes (subprocess) |
-| [**Hooks**](./hooks) | `settings.json` | Lifecycle events | Yes (shell) |
-| [**MCP**](./mcp) | `.mcp.json` | Tool calls | Yes (server) |
+| [**Skills**](./claude-code/skills) | `.claude/skills/*/SKILL.md` | Auto (context match) | No |
+| [**Subagents**](./claude-code/subagents) | `.claude/agents/*.md` | Explicit or auto | Yes (subprocess) |
+| [**Hooks**](./claude-code/hooks) | `settings.json` | Lifecycle events | Yes (shell) |
+| [**MCP**](./claude-code/mcp) | `.mcp.json` | Tool calls | Yes (server) |
 
-→ **[See all four working together](./example)** (React 19 workflow)
+→ **[See all four working together](./claude-code/example)** (React 19 workflow)
 
 ## When to Use What
 
@@ -38,3 +38,4 @@ Instructions alone don't override training data bias. What works:
 - Combine skills + hooks: hooks auto-activate appropriate skills
 - Scope MCP servers: user (`-s user`), project (`-s project`), local (`-s local`)
 - Security: validate hook inputs, quote shell vars, block path traversal
+

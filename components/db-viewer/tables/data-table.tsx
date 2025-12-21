@@ -116,7 +116,7 @@ export function DataTable({
         </AnimatePresence>
 
         <div className="h-full overflow-auto scrollbar-thin">
-          <table className="w-full border-collapse min-w-max">
+          <table className="w-full border-collapse min-w-max ">
             <thead className="sticky top-0 z-10">
               <tr>
                 {columns.map((column, idx) => {
@@ -180,7 +180,7 @@ export function DataTable({
                           onClick={() => handleCellClick(column, value)}
                           className={`
                             px-4 py-3 text-sm border-b border-db-border/20
-                            ${isNumeric ? "font-mono tabular-nums text-right" : ""}
+                            ${isNumeric ? "font-mono tabular-nums" : ""}
                             ${colIndex === 0 ? "rounded-bl-lg" : ""}
                             ${colIndex === columns.length - 1 ? "rounded-br-lg" : ""}
                             ${truncated ? "cursor-pointer hover:bg-db-surface-raised/30" : ""}
@@ -191,7 +191,7 @@ export function DataTable({
                               null
                             </span>
                           ) : (
-                            <span className={`${DATA_TYPE_COLORS[normalizedType] ?? "text-db-text"} break-words ${truncated ? "underline decoration-dotted decoration-db-border/50 underline-offset-2" : ""}`}>
+                            <span className={` ${DATA_TYPE_COLORS[normalizedType] ?? "text-db-text"} break-words ${truncated ? "underline decoration-dotted decoration-db-border/50 underline-offset-2" : ""}`}>
                               {formatCellValue(value)}
                             </span>
                           )}

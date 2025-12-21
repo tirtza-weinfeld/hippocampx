@@ -40,17 +40,18 @@ export function useInitPositions(
 
 export function useAutoFit(
   hasHydrated: boolean,
+  hasPositions: boolean,
   transform: Transform,
   fitView: () => void
 ) {
   useEffect(() => {
-    if (!hasHydrated) return;
+    if (!hasHydrated || !hasPositions) return;
     if (transform.x === 0 && transform.y === 0 && transform.scale === 1) {
       const timer = setTimeout(fitView, 100);
       return () => clearTimeout(timer);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hasHydrated]);
+  }, [hasHydrated, hasPositions]);
 }
 
 export function useZoomTargetReset() {

@@ -11,7 +11,7 @@ import { cacheLife } from "next/cache";
 import { sql, count, asc, desc, ilike, or } from "drizzle-orm";
 import type { AnyPgTable } from "drizzle-orm/pg-core";
 import { db } from "@/lib/db/connection";
-import { getTableRegistry } from "./schema-topology";
+import { getTableRegistry, buildSchemaTopologyWithComments } from "./schema-topology";
 import type {
   DatabaseProvider,
   TableMetadata,
@@ -184,12 +184,16 @@ export async function getRowById(
  * Get table statistics for dashboard
  */
 export async function getTableStats(): Promise<
-  { name: string; provider: DatabaseProvider; rowCount: number; schema: string }[]
+  { name: string; provider: DatabaseProvider; rowCount: number; schema: string; domain?: string }[]
 > {
   'use cache'
   cacheLife('hours')
 
   const registry = getTableRegistry();
+  const topology = await buildSchemaTopologyWithComments();
+
+  // Build domain map from topology
+  const domainMap = new Map(topology.tables.map(t => [t.name, t.domain]));
 
   const results = await Promise.all(
     Array.from(registry.values()).map(async (entry) => {
@@ -203,6 +207,7 @@ export async function getTableStats(): Promise<
           provider: "neon" as DatabaseProvider,
           rowCount: result[0]?.count ?? 0,
           schema: entry.schema,
+          domain: domainMap.get(entry.name),
         };
       } catch {
         return {
@@ -210,6 +215,7 @@ export async function getTableStats(): Promise<
           provider: "neon" as DatabaseProvider,
           rowCount: 0,
           schema: entry.schema,
+          domain: domainMap.get(entry.name),
         };
       }
     })

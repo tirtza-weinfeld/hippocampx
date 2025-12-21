@@ -5,7 +5,8 @@
  */
 
 export { TableBrowser } from "./table-browser";
-export { TableSidebar, MobileSidebar } from "./table-sidebar";
+export { TableSidebar } from "./table-sidebar";
+export type { TableStat } from "./sidebar-utils";
 export { DataTable } from "./data-table";
 export { ColumnFilter } from "./column-filter";
 export { SearchInput, useSearchState } from "./search-input";
@@ -15,5 +16,3 @@ export { PaginationSkeleton } from "./pagination-skeleton";
 export { Pagination } from "./pagination";
 export { SortIcon } from "./sort-icon";
 export { CellDetailModal } from "./cell-detail-modal";
-export { MobileBottomSheet } from "./mobile-bottom-sheet";
-export { MobileTableList } from "./mobile-table-list";

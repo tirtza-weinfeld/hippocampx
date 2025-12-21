@@ -7,11 +7,13 @@
 import type {
   SchemaTopology,
   SchemaRelationship,
+  SchemaTable,
   TablePosition,
   ColumnSelection,
   SchemaBound,
   HighlightedColumns,
 } from "./types";
+import { LAYOUT } from "./er-layout";
 
 /**
  * Build a map from schema name to a numeric index for consistent coloring.
@@ -67,6 +69,27 @@ export function computeHighlightedColumns(
 }
 
 const SCHEMA_BOUNDS_PADDING = 20;
+// Extra top padding for schema label (schema background extends this far above tables)
+const SCHEMA_TOP_PADDING = 60;
+// Extra top padding for domains (domain background extends this far above tables)
+const DOMAIN_TOP_PADDING = 60;
+
+/**
+ * Calculate actual table width accounting for expansion state.
+ * Matches the logic in er-table-node.tsx.
+ */
+function getActualTableWidth(
+  table: SchemaTable,
+  baseWidth: number,
+  expanded: boolean
+): number {
+  if (!expanded) return baseWidth;
+
+  const hasDescriptions = table.description || table.columns.some(col => col.description || col.example);
+  if (!hasDescriptions) return baseWidth;
+
+  return baseWidth + LAYOUT.EXPANDED_WIDTH;
+}
 
 /**
  * Compute bounding boxes for each schema to draw background regions.
@@ -75,7 +98,8 @@ export function computeSchemaBounds(
   tables: SchemaTopology["tables"],
   hiddenTables: Set<string>,
   positions: Record<string, TablePosition>,
-  schemaIndexMap: Map<string, number>
+  schemaIndexMap: Map<string, number>,
+  expandedTables: Record<string, boolean> = {}
 ): Record<string, SchemaBound> {
   const bounds = new Map<string, SchemaBound>();
 
@@ -84,12 +108,14 @@ export function computeSchemaBounds(
     const pos = positions[table.name] as TablePosition | undefined;
     if (!pos) continue;
 
+    // Calculate actual width accounting for expansion
+    const actualWidth = getActualTableWidth(table, pos.width, expandedTables[table.name] ?? false);
     const existing = bounds.get(table.schema);
 
     if (existing) {
       const newX = Math.min(existing.x, pos.x - SCHEMA_BOUNDS_PADDING);
-      const newY = Math.min(existing.y, pos.y - SCHEMA_BOUNDS_PADDING);
-      const right = Math.max(existing.x + existing.width, pos.x + pos.width + SCHEMA_BOUNDS_PADDING);
+      const newY = Math.min(existing.y, pos.y - SCHEMA_TOP_PADDING);
+      const right = Math.max(existing.x + existing.width, pos.x + actualWidth + SCHEMA_BOUNDS_PADDING);
       const bottom = Math.max(existing.y + existing.height, pos.y + pos.height + SCHEMA_BOUNDS_PADDING);
       existing.x = newX;
       existing.y = newY;
@@ -98,9 +124,9 @@ export function computeSchemaBounds(
     } else {
       bounds.set(table.schema, {
         x: pos.x - SCHEMA_BOUNDS_PADDING,
-        y: pos.y - SCHEMA_BOUNDS_PADDING,
-        width: pos.width + SCHEMA_BOUNDS_PADDING * 2,
-        height: pos.height + SCHEMA_BOUNDS_PADDING * 2,
+        y: pos.y - SCHEMA_TOP_PADDING,
+        width: actualWidth + SCHEMA_BOUNDS_PADDING * 2,
+        height: pos.height + SCHEMA_TOP_PADDING + SCHEMA_BOUNDS_PADDING,
         index: schemaIndexMap.get(table.schema) ?? 0,
       });
     }
@@ -117,7 +143,8 @@ export function computeDomainBounds(
   tables: SchemaTopology["tables"],
   hiddenTables: Set<string>,
   positions: Record<string, TablePosition>,
-  domainIndexMap: Map<string, number>
+  domainIndexMap: Map<string, number>,
+  expandedTables: Record<string, boolean> = {}
 ): Record<string, SchemaBound> {
   const bounds = new Map<string, SchemaBound>();
 
@@ -127,12 +154,14 @@ export function computeDomainBounds(
     const pos = positions[table.name] as TablePosition | undefined;
     if (!pos) continue;
 
+    // Calculate actual width accounting for expansion
+    const actualWidth = getActualTableWidth(table, pos.width, expandedTables[table.name] ?? false);
     const existing = bounds.get(table.domain);
 
     if (existing) {
       const newX = Math.min(existing.x, pos.x - SCHEMA_BOUNDS_PADDING);
-      const newY = Math.min(existing.y, pos.y - SCHEMA_BOUNDS_PADDING);
-      const right = Math.max(existing.x + existing.width, pos.x + pos.width + SCHEMA_BOUNDS_PADDING);
+      const newY = Math.min(existing.y, pos.y - DOMAIN_TOP_PADDING);
+      const right = Math.max(existing.x + existing.width, pos.x + actualWidth + SCHEMA_BOUNDS_PADDING);
       const bottom = Math.max(existing.y + existing.height, pos.y + pos.height + SCHEMA_BOUNDS_PADDING);
       existing.x = newX;
       existing.y = newY;
@@ -141,9 +170,9 @@ export function computeDomainBounds(
     } else {
       bounds.set(table.domain, {
         x: pos.x - SCHEMA_BOUNDS_PADDING,
-        y: pos.y - SCHEMA_BOUNDS_PADDING,
-        width: pos.width + SCHEMA_BOUNDS_PADDING * 2,
-        height: pos.height + SCHEMA_BOUNDS_PADDING * 2,
+        y: pos.y - DOMAIN_TOP_PADDING,
+        width: actualWidth + SCHEMA_BOUNDS_PADDING * 2,
+        height: pos.height + DOMAIN_TOP_PADDING + SCHEMA_BOUNDS_PADDING,
         index: domainIndexMap.get(table.domain) ?? 0,
       });
     }

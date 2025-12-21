@@ -1,9 +1,9 @@
-import { globalIgnores } from "eslint/config";
+import { defineConfig, globalIgnores } from "eslint/config";
 import nextPlugin from "@next/eslint-plugin-next";
 import reactHooks from "eslint-plugin-react-hooks";
 import tseslint from "typescript-eslint";
 
-export default tseslint.config(
+export default defineConfig(
   // React 19.2+ strictest: recommended-latest with React Compiler rules
   reactHooks.configs.flat["recommended-latest"],
 
