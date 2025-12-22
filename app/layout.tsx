@@ -4,27 +4,24 @@ import { ThemeProvider } from "@/components/theme/theme-provider";
 import { Sidebar } from "@/components/sidebar/sidebar";
 import AppFooter from "@/components/layout/app-footer";
 import { cookies } from "next/headers";
-import { type FontKey, fontVariables } from "@/lib/fonts";
+import { fontVariables } from "@/lib/fonts";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
 export { metadata, viewport } from "@/lib/metadata";
 
 async function RootLayoutContent({ children }: { children: React.ReactNode }) {
   const cookieStore = await cookies()
-  const font = (cookieStore.get("font")?.value ?? "inter") as FontKey
   const sidebarDefaultOpen = cookieStore.get("sidebar_state")?.value === "true"
 
   return (
-    <ThemeProvider defaultFont={font}>
-      <TooltipProvider delayDuration={0}>
-        <Sidebar defaultOpen={sidebarDefaultOpen}>
-          <div className="flex flex-col min-h-screen">
-            <main className="flex-1">{children}</main>
-            <AppFooter />
-          </div>
-        </Sidebar>
-      </TooltipProvider>
-    </ThemeProvider>
+    <TooltipProvider delayDuration={0}>
+      <Sidebar defaultOpen={sidebarDefaultOpen}>
+        <div className="flex flex-col min-h-screen">
+          <main className="flex-1">{children}</main>
+          <AppFooter />
+        </div>
+      </Sidebar>
+    </TooltipProvider>
   )
 }
 
@@ -64,9 +61,11 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className={fontVariables}>
       <body className="antialiased">
-        <Suspense fallback={<LayoutSkeleton />}>
-          <RootLayoutContent>{children}</RootLayoutContent>
-        </Suspense>
+        <ThemeProvider>
+          <Suspense fallback={<LayoutSkeleton />}>
+            <RootLayoutContent>{children}</RootLayoutContent>
+          </Suspense>
+        </ThemeProvider>
       </body>
     </html>
   )

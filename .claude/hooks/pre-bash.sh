@@ -42,4 +42,10 @@ if echo "$command" | grep -qE 'curl.*\|\s*(sh|bash|zsh)'; then
   exit 2
 fi
 
+# Block npx/npm - this project uses pnpm
+if echo "$command" | grep -qE '^(npx|npm)\s'; then
+  echo "Blocked: Use pnpm instead of npm/npx" >&2
+  exit 2
+fi
+
 exit 0

@@ -27,8 +27,8 @@ File limits (lines):
 ## Correction Protocol
 
 When called out for bad behavior:
-1. Stop immediately
+1. **STOP IMMEDIATELY** — no more tool calls until analysis is complete
 2. Analyze the failure
-3. Propose fix (update CLAUDE.md, add hook, or modify skill)
-4. Implement the fix
+3. Propose fix (update CLAUDE.md, add hook, or modify skill) — wait for approval
+4. Implement the fix only after user approves
 5. Resume task
