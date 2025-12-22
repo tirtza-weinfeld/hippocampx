@@ -24,6 +24,8 @@ export interface ForeignKeyRef {
 
 export interface ColumnInfo {
   name: string;
+  /** JavaScript property name for data access (camelCase) */
+  propertyName: string;
   dataType: string;
   isNullable: boolean;
   isPrimaryKey: boolean;

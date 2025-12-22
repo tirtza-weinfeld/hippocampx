@@ -4,6 +4,11 @@ import Link from "next/link";
 import { motion, useReducedMotion } from "motion/react";
 import type { Route } from "next";
 import type { SenseRelationInfo } from "@/lib/db/queries/dictionary/types";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 interface RelationsGridProps {
   relations: SenseRelationInfo[];
@@ -66,28 +71,40 @@ export function RelationsGrid({ relations, languageCode }: RelationsGridProps) {
               )}`;
 
               return (
-                <Link
+                <span
                   key={`${relation.id}-${relation.relationType}`}
-                  href={relatedUrl as Route}
+                  className="inline-flex items-center gap-1.5"
                 >
-                  <motion.span
-                    whileHover={shouldReduceMotion ? {} : { scale: 1.03 }}
-                    whileTap={shouldReduceMotion ? {} : { scale: 0.97 }}
-                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full
-                      bg-dict-surface-2 hover:bg-dict-surface-3
-                      border border-dict-border hover:border-dict-border-hover
-                      text-sm font-medium text-dict-text hover:text-dict-primary
-                      transition-colors duration-150 cursor-pointer
-                      shadow-xs hover:shadow-dict-sm"
-                  >
-                    {relation.targetEntryLemma}
-                    {relation.explanation && (
-                      <span className="text-xs text-dict-text-tertiary font-normal max-w-32 truncate">
-                        ({relation.explanation})
-                      </span>
-                    )}
-                  </motion.span>
-                </Link>
+                  <Link href={relatedUrl as Route}>
+                    <motion.span
+                      whileHover={shouldReduceMotion ? {} : { scale: 1.03 }}
+                      whileTap={shouldReduceMotion ? {} : { scale: 0.97 }}
+                      className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full
+                        bg-dict-surface-2 hover:bg-dict-surface-3
+                        border border-dict-border hover:border-dict-border-hover
+                        text-sm font-medium text-dict-text hover:text-dict-primary
+                        transition-colors duration-150 cursor-pointer
+                        shadow-xs hover:shadow-dict-sm"
+                    >
+                      {relation.targetEntryLemma}
+                      {relation.isSynthetic && relation.verificationStatus !== "verified" && (
+                        <span className="text-xs opacity-60">✨</span>
+                      )}
+                    </motion.span>
+                  </Link>
+                  {relation.explanation && (
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <button className="text-xs text-dict-text-tertiary max-w-32 truncate text-left hover:text-dict-text-secondary">
+                          ({relation.explanation})
+                        </button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto max-w-xs text-sm">
+                        {relation.explanation}
+                      </PopoverContent>
+                    </Popover>
+                  )}
+                </span>
               );
             })}
           </div>

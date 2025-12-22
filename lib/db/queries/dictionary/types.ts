@@ -155,6 +155,8 @@ export interface SenseRelationInfo {
   relationType: string;
   strength: number | null;
   explanation: string | null;
+  isSynthetic: boolean;
+  verificationStatus: string | null;
   targetSenseId: number;
   targetDefinition: string;
   targetEntryLemma: string;

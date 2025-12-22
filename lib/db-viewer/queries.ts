@@ -55,6 +55,7 @@ function extractColumnInfo(tableSchema: AnyPgTable): ColumnInfo[] {
 
       columns.push({
         name: column.name ?? key,
+        propertyName: key,
         dataType: sqlType,
         isNullable: !column.notNull,
         isPrimaryKey: column.primaryKey ?? false,

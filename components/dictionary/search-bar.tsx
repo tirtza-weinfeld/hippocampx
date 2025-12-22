@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search, Globe } from "lucide-react";
+import { Search, Globe, X } from "lucide-react";
 import { getDictionaryListActions } from "./store/dictionary-list-store";
 
 const DEBOUNCE_DELAY = 300;
@@ -29,6 +29,7 @@ export function SearchBar({
   const pathname = usePathname();
   const [, startTransition] = useTransition();
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   function buildUrl(query: string, language: string): Route {
     const params = new URLSearchParams();
@@ -69,6 +70,20 @@ export function SearchBar({
         router.push(buildUrl(newQuery, currentLang));
       });
     }, DEBOUNCE_DELAY);
+  }
+
+  function handleClear() {
+    if (inputRef.current) {
+      inputRef.current.value = "";
+      inputRef.current.focus();
+    }
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+    }
+    const currentLang = searchParams.get("lang") || "en";
+    startTransition(function updateUrl() {
+      router.push(buildUrl("", currentLang));
+    });
   }
 
   function handleLanguageChange(newLanguage: string) {
@@ -129,13 +144,25 @@ export function SearchBar({
       </Label>
       <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-dict-text-tertiary" />
       <Input
+        ref={inputRef}
         id="dict-search"
-        type="search"
+        type="text"
         placeholder="Search words..."
         defaultValue={initialQuery || ""}
         onChange={handleQueryChange}
-        className="pl-9 pr-28 h-9 text-sm bg-dict-surface-1 border-dict-border text-dict-text placeholder:text-dict-text-tertiary focus:border-dict-border-focus focus:ring-2 focus:ring-dict-focus-ring rounded-xl w-full"
+        className="pl-9 pr-28 h-9 text-base sm:text-sm bg-dict-surface-1 border-dict-border text-dict-text placeholder:text-dict-text-tertiary focus:border-dict-border-focus focus:ring-2 focus:ring-dict-focus-ring rounded-xl w-full"
       />
+      {/* Clear button - positioned closer on mobile (icon-only lang), further on desktop (lang with text) */}
+      {initialQuery && (
+        <button
+          type="button"
+          onClick={handleClear}
+          className="absolute right-12 md:right-24 top-1/2 -translate-y-1/2 p-1.5 rounded-full text-dict-text-tertiary hover:text-dict-text hover:bg-dict-hover transition-colors"
+          aria-label="Clear search"
+        >
+          <X className="size-4" />
+        </button>
+      )}
       {/* Language selector inside search */}
       <div className="absolute right-1 top-1/2 -translate-y-1/2">
         <Select defaultValue={initialLanguage} onValueChange={handleLanguageChange}>

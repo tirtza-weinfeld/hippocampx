@@ -142,3 +142,9 @@ COMMENT ON COLUMN sense_tags.explanation IS 'Reasoning for tag application | "Us
 -- - createLexicalEntryVectorTable(name, dimensions)
 -- - createSenseVectorTable(name, dimensions)
 -- - createExampleVectorTable(name, dimensions)
+
+-- Table: senses_vec_openai
+COMMENT ON TABLE senses_vec_openai IS 'OpenAI text-embedding-3-small vectors for sense similarity | Vectors';
+COMMENT ON COLUMN senses_vec_openai.sense_id IS 'FK to senses table | 444';
+COMMENT ON COLUMN senses_vec_openai.embedding IS 'halfvec(1536) for cosine similarity search | [-0.011, 0.045, ...]';
+COMMENT ON COLUMN senses_vec_openai.updated_at IS 'Embedding generation timestamp (compare with senses.updated_at for staleness) | 2024-01-02T15:30:00Z';

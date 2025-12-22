@@ -185,7 +185,10 @@ export const sources = pgTable(
     reliability_score: real("reliability_score").default(0.5),
     metadata: jsonb("metadata"),
   },
-  () => [index("idx_source_title_trgm").using("gin", sql.raw(`"title" gin_trgm_ops`))]
+  (table) => [
+    index("idx_source_title_trgm").using("gin", sql.raw(`"title" gin_trgm_ops`)),
+    unique("uq_source_type_title").on(table.type, table.title),
+  ]
 );
 
 export const sourceCredits = pgTable(
@@ -260,6 +263,7 @@ export const examples = pgTable(
     index("idx_example_sense").on(table.sense_id),
     index("idx_example_source_part").on(table.source_part_id),
     index("idx_example_text_trgm").using("gin", sql.raw(`"text" gin_trgm_ops`)),
+    unique("uq_example_sense_text").on(table.sense_id, table.text),
   ]
 );
 

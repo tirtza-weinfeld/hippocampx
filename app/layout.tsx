@@ -10,7 +10,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { cacheLife, cacheTag } from "next/cache";
 import 'katex/dist/katex.min.css';
 
-export { metadata } from "@/lib/metadata";
+export { metadata, viewport } from "@/lib/metadata";
 
 async function RootLayoutContent({ children }: { children: React.ReactNode }) {
   'use cache: private'

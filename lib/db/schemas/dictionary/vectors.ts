@@ -62,6 +62,7 @@ export function createSenseVectorTable(name: string, dimensions: number) {
         .references(() => senses.id, { onDelete: "cascade" }),
       embedding: createHalfvec(dimensions)("embedding").notNull(),
       updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
+      relationScanAt: timestamp("relation_scan_at", { withTimezone: true }),
     },
     (table) => [
       index(`idx_${name}_vec`).using("hnsw", table.embedding.op("halfvec_cosine_ops")),
@@ -88,3 +89,9 @@ export function createExampleVectorTable(name: string, dimensions: number) {
     ]
   )
 }
+
+// ============================================================================
+// CONCRETE TABLES - OpenAI text-embedding-3-small (1536 dims)
+// ============================================================================
+
+export const sensesVecOpenai = createSenseVectorTable("senses_vec_openai", 1536)

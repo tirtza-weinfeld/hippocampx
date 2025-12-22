@@ -51,7 +51,7 @@ export const IT_FUNDAMENTAL_DATA_EXPANDED: LexicalEntrySeed[] = [
       {
         definition: "The definite article; indicates a specific noun.",
         order_index: 0,
-        tags: ["fundamental", "grammar"],
+        tags: ["grammar"],
         examples: [
           { text: "Il cane abbaia." }, // il
           { text: "Lo zaino è pesante." }, // lo
@@ -104,7 +104,7 @@ export const IT_FUNDAMENTAL_DATA_EXPANDED: LexicalEntrySeed[] = [
       {
         definition: "The indefinite article; indicates a non-specific noun.",
         order_index: 0,
-        tags: ["fundamental", "grammar"],
+        tags: ["grammar"],
         examples: [
           { text: "Ho visto un film interessante." }, // un
           { text: "Vorrei uno specchio." }, // uno
@@ -165,7 +165,7 @@ export const IT_FUNDAMENTAL_DATA_EXPANDED: LexicalEntrySeed[] = [
       {
         definition: "To exist; to have a specific identity, nature, or condition.",
         order_index: 0,
-        tags: ["fundamental", "auxiliary"],
+        tags: ["auxiliary"],
         examples: [
           { text: "Io sono italiano." },
           { text: "Tu sei felice?" },
@@ -225,7 +225,7 @@ export const IT_FUNDAMENTAL_DATA_EXPANDED: LexicalEntrySeed[] = [
       {
         definition: "To possess or hold something; also used as an auxiliary for transitive verbs.",
         order_index: 0,
-        tags: ["fundamental", "auxiliary"],
+        tags: ["auxiliary"],
         examples: [
           { text: "Io ho un gatto." },
           { text: "Hai fame?" },
@@ -289,7 +289,7 @@ export const IT_FUNDAMENTAL_DATA_EXPANDED: LexicalEntrySeed[] = [
       {
         definition: "Pleasing to the senses or mind aesthetically.",
         order_index: 0,
-        tags: ["fundamental", "adjective"],
+        tags: [],
         examples: [
           { text: "Che bel cane!" }, // bel + consonant
           { text: "È un bell'uomo." }, // bell' + vowel
@@ -336,7 +336,7 @@ export const IT_FUNDAMENTAL_DATA_EXPANDED: LexicalEntrySeed[] = [
       {
         definition: "The whole quantity or extent of; every.",
         order_index: 0,
-        tags: ["fundamental", "quantifier"],
+        tags: ["quantifier"],
         examples: [
           { text: "Ho mangiato tutto il pane." },
           { text: "Tutti i ragazzi sono qui." },

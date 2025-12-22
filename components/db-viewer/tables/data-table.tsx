@@ -121,13 +121,13 @@ export function DataTable({
               <tr>
                 {columns.map((column, idx) => {
                   const badge = getTypeBadge(column.dataType);
-                  const sortDirection = sort?.column === column.name
+                  const sortDirection = sort?.column === column.propertyName
                     ? sort.direction
                     : null;
                   return (
                     <th
                       key={column.name}
-                      onClick={() => handleSort(column.name)}
+                      onClick={() => handleSort(column.propertyName)}
                       className={`
                         group cursor-pointer select-none text-left transition-all
                         bg-db-surface-raised/95 backdrop-blur-sm
@@ -168,7 +168,7 @@ export function DataTable({
                     className="group transition-colors hover:bg-db-row-hover/50"
                   >
                     {columns.map((column, colIndex) => {
-                      const value = row[column.name];
+                      const value = row[column.propertyName];
                       const isNull = value === null || value === undefined;
                       const normalizedType = column.dataType.toLowerCase();
                       const isNumeric = ["integer", "real", "number"].includes(normalizedType);

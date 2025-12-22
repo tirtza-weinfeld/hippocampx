@@ -44,6 +44,8 @@ import { HADESTOWN_DOUBT_COMES_IN_DICTIONARY_DATA } from "./lyrics/hadestown/dou
 import { NO_ONE_MOURNS_THE_WICKED_DATA } from "./lyrics/wicked-part-1/no-one-mourns-the-wicked";
 import { IT_FUNDAMENTAL_DATA_EXPANDED } from "./words/it/fundamentals";
 import { WONDERFUL_DATA } from "./lyrics/wicked-part-2/wonderful";
+import { ANATOMY_DATA } from "./words/en/anatomy";
+import { PRACTICAL_VOCAB_DATA } from "./words/en/practical-vocab";
 
 // =============================================================================
 // ENUM TYPES (derived from schema)
@@ -169,4 +171,6 @@ export const dictionaryData: LexicalEntrySeed[] = [
   ...DEAR_OLD_SHIZ_DICTIONARY_DATA,
   ...HADESTOWN_DOUBT_COMES_IN_DICTIONARY_DATA,
   ...WONDERFUL_DATA,
+  ...ANATOMY_DATA,
+  ...PRACTICAL_VOCAB_DATA,
 ];

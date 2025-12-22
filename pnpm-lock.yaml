@@ -349,6 +349,9 @@ importers:
       hast-util-to-string:
         specifier: ^3.0.1
         version: 3.0.1
+      openai:
+        specifier: ^6.15.0
+        version: 6.15.0(ws@8.18.3(bufferutil@4.0.9))(zod@4.1.13)
       postcss:
         specifier: ^8.5.6
         version: 8.5.6
@@ -4970,6 +4973,18 @@ packages:
 
   oniguruma-to-es@4.3.4:
     resolution: {integrity: sha512-3VhUGN3w2eYxnTzHn+ikMI+fp/96KoRSVK9/kMTcFqj1NRDh2IhQCKvYxDnWePKRXY/AqH+Fuiyb7VHSzBjHfA==}
+
+  openai@6.15.0:
+    resolution: {integrity: sha512-F1Lvs5BoVvmZtzkUEVyh8mDQPPFolq4F+xdsx/DO8Hee8YF3IGAlZqUIsF+DVGhqf4aU0a3bTghsxB6OIsRy1g==}
+    hasBin: true
+    peerDependencies:
+      ws: ^8.18.0
+      zod: ^3.25 || ^4.0
+    peerDependenciesMeta:
+      ws:
+        optional: true
+      zod:
+        optional: true
 
   optionator@0.9.4:
     resolution: {integrity: sha512-6IpQ7mKUxRcZNLIObR0hz7lxsapSSIYNZJwXPGeF0mTVqGKFIXj1DQcMoT22S3ROcLyY/rz0PWaWZ9ayWmad9g==}
@@ -11438,6 +11453,11 @@ snapshots:
       oniguruma-parser: 0.12.1
       regex: 6.0.1
       regex-recursion: 6.0.2
+
+  openai@6.15.0(ws@8.18.3(bufferutil@4.0.9))(zod@4.1.13):
+    optionalDependencies:
+      ws: 8.18.3(bufferutil@4.0.9)
+      zod: 4.1.13
 
   optionator@0.9.4:
     dependencies:

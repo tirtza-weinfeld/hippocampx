@@ -35,7 +35,9 @@ export function SchemaTableList({
       <div className="flex flex-col gap-0.5 pt-0.5 group-data-[collapsed]/sidebar:gap-1 group-data-[collapsed]/sidebar:pt-0">
         {hasDomains
           ? [...domains, null].map((domain) => {
-              const domainTables = schemaTables.filter((t) => t.domain === domain);
+              const domainTables = schemaTables.filter((t) =>
+                domain ? t.domain === domain : !t.domain
+              );
               if (domainTables.length === 0) return null;
               const domainIdx = domain ? (domainIndexMap.get(domain) ?? 0) % 6 : schemaIndex;
 
