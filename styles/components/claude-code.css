@@ -1,11 +1,13 @@
 body:has(.claude-code) {
-    --primary: var(--color-red-500);
+    --primary: var(--color-orange-600);
     --accent: var(--color-orange-500);
     --secondary: var(--color-orange-500);
   }
-  
+
   .dark body:has(.claude-code) {
-    --primary: var(--color-orange-500);
+    --primary: var(--color-orange-400);
     --accent: var(--color-orange-500);
     --secondary: var(--color-orange-500);
   }
+
+  

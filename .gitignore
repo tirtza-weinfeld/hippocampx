@@ -44,6 +44,9 @@ next-env.d.ts
 
 TODO.md
 
+# claude
+.claude/settings.local.json
+
 # /.cursor
 
 /logs
@@ -51,3 +54,6 @@ TODO.md
 __pycache__/
 venv/
 .venv/
+
+
+

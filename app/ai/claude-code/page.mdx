@@ -1,20 +1,22 @@
 # Claude Code
 
 ## Resizable Table of Contents
+
 ## Overview
 
-Claude Code has four extension mechanisms. All are markdown/config files — the difference is **when** they load and **how** they run.
+Claude Code operates through **tools** (built-in capabilities) and **extensions** (customizations).
 
 | Mechanism | Location | Trigger | Isolation |
 |-----------|----------|---------|-----------|
-| [**Skills**](./claude-code/skills) | `.claude/skills/*/SKILL.md` | Auto (context match) | No |
-| [**Subagents**](./claude-code/subagents) | `.claude/agents/*.md` | Explicit or auto | Yes (subprocess) |
-| [**Hooks**](./claude-code/hooks) | `settings.json` | Lifecycle events | Yes (shell) |
-| [**MCP**](./claude-code/mcp) | `.mcp.json` | Tool calls | Yes (server) |
-
-→ **[See all four working together](./claude-code/example)** (React 19 workflow)
+| **Tools** | Built-in | Direct use | No |
+| **Skills** | `.claude/skills/*/SKILL.md` | Auto (context match) | No |
+| **Subagents** | `.claude/agents/*.md` | Explicit or auto | Yes (subprocess) |
+| **Hooks** | `settings.json` | Lifecycle events | Yes (shell) |
+| **MCP** | `.mcp.json` | Tool calls | Yes (server) |
 
 ## When to Use What
+
+**Tools** — The primitives. Read files, execute commands, search code. Extensions build on these.
 
 **Skills** — Expertise that applies automatically when working on matching files. No user action needed.
 
@@ -32,10 +34,845 @@ Instructions alone don't override training data bias. What works:
 2. **Automated validation** — hooks catch mistakes after generation
 3. **Isolation** — load only relevant instructions per task
 
+---
+
+## Tools
+
+Tools are Claude Code's **built-in capabilities** — the primitives for reading, writing, searching, and executing. Extensions (skills, hooks, MCP, subagents) build on top of these.
+
+### Core Tools
+
+| Tool | Purpose | Permission |
+|------|---------|------------|
+| `Read` | Read file contents | Auto |
+| `Write` | Create/overwrite files | Ask |
+| `Edit` | Targeted string replacement | Ask |
+| `Glob` | Find files by pattern | Auto |
+| `Grep` | Search file contents (regex) | Auto |
+| `Bash` | Execute shell commands | Ask |
+| `WebFetch` | Fetch URL content | Ask |
+| `WebSearch` | Search the web | Ask |
+| `NotebookEdit` | Edit Jupyter cells | Ask |
+| `Task` | Spawn subagents | Auto |
+| `LSP` | Language server operations | Auto |
+| `TodoWrite` | Task list management | Auto |
+| `AskUserQuestion` | Interactive user queries | Auto |
+| `MCPSearch` | Discover/load MCP tools | Auto |
+| `KillShell` | Terminate background shells | Auto |
+
+### Tool Details
+
+**Read** — Reads files, images, PDFs, Jupyter notebooks. Multimodal — can interpret visual content.
+
+```text
+Read file.tsx           # Full file
+Read file.tsx:100-200   # Line range
+Read image.png          # Visual analysis
+```
+
+**Write** — Creates or overwrites entire files. Use `Edit` for targeted changes.
+
+**Edit** — Exact string replacement. Requires unique `old_string` match.
+
+```json
+{
+  "file_path": "/path/to/file.tsx",
+  "old_string": "const x = 1",
+  "new_string": "const x = 2",
+  "replace_all": false
+}
+```
+
+**Glob** — Pattern matching for files. Returns paths sorted by modification time.
+
+| Pattern | Matches |
+|---------|---------|
+| `**/*.tsx` | All TSX files |
+| `src/**/*.ts` | TS files in src |
+| `*.{js,ts}` | JS or TS in cwd |
+
+**Grep** — Ripgrep-powered content search. Supports regex, file type filters, context lines.
+
+| Mode | Output |
+|------|--------|
+| `files_with_matches` | File paths (default) |
+| `content` | Matching lines |
+| `count` | Match counts |
+
+**Bash** — Executes shell commands. 2-minute default timeout, 10-minute max. Runs in sandbox by default.
+
+**Task** — Spawns isolated subagents for complex work.
+
+| Type | Purpose |
+|------|---------|
+| `Explore` | Codebase exploration |
+| `Plan` | Implementation planning |
+| `general-purpose` | Multi-step autonomous tasks |
+
+**LSP** — Language Server Protocol operations for code intelligence.
+
+| Operation | Purpose |
+|-----------|---------|
+| `goToDefinition` | Find symbol definition |
+| `findReferences` | Find all usages |
+| `hover` | Get type/docs |
+| `documentSymbol` | List file symbols |
+| `workspaceSymbol` | Search project symbols |
+| `incomingCalls` | Find callers |
+| `outgoingCalls` | Find callees |
+
+### Prefer Specialized Tools over Bash
+
+| Instead of | Use |
+|------------|-----|
+| `cat file.txt` | `Read` |
+| `grep -r pattern` | `Grep` |
+| `find . -name "*.ts"` | `Glob` |
+| `sed -i 's/old/new/'` | `Edit` |
+| `echo "content" > file` | `Write` |
+
+### Context Efficiency
+
+| Cost | Tools | Why |
+|------|-------|-----|
+| **Cheap** | Glob, Grep (`files_with_matches`), LSP | Return minimal data |
+| **Medium** | Grep (`content`), Edit, Task | Targeted output |
+| **Expensive** | Read (large files), Bash (verbose), WebFetch | Full content in context |
+
+### Common Workflows
+
+**Code changes:** `Glob → Grep → Read → Edit`
+
+**Exploration:** `Task (Explore) → Read specific files`
+
+**Feature:** `Task (Plan) → TodoWrite → [Edit/Write loop] → Bash (test)`
+
+**Debugging:** `Read (error file) → LSP (references) → Grep (pattern) → Edit`
+
+---
+
+## Skills
+
+Skills are **procedural knowledge** — instructions that teach Claude *how* to do things. They encode multi-step workflows, institutional knowledge, and domain expertise that survives team turnover.
+
+> "Projects say 'here's what you need to know.' Skills say 'here's how to do things.'"
+
+### When to Use Skills
+
+**Use Skills for:**
+- Multi-step workflows involving multiple tools
+- Processes requiring consistency (code reviews, compliance checks)
+- Capturing institutional knowledge
+- Workflows that need to survive team turnover
+
+**Don't use Skills for:**
+- Simple one-off tasks
+- Pure data access (use MCP instead)
+- Project-specific context (use CLAUDE.md)
+
+### How Loading Works
+
+Skills use **progressive disclosure** to preserve context:
+
+1. **Metadata loads first** (~100 tokens) — name, description, globs
+2. **Full instructions load when relevant** (under 5k tokens)
+3. **Bundled files load only as required**
+
+### File Structure
+
+```
+.claude/skills/
+└── react-19/
+    ├── SKILL.md          # Required: instructions
+    ├── examples/         # Optional: code examples
+    │   ├── form-action.tsx
+    │   └── data-fetch.tsx
+    └── templates/        # Optional: starter files
+```
+
+### SKILL.md Format
+
+```markdown
+---
+name: react-19
+description: React 19.2+ patterns for Next.js 16
+globs: ["**/*.tsx", "**/*.jsx"]
+---
+
+# React 19.2+ Canary Patterns
+
+## Do Use
+- `ref` as a prop (forwardRef is deprecated)
+- `use(promise)` to unwrap promises in render
+- `use(context)` instead of useContext
+- `useActionState(action, initialState)` for form state + pending
+- `useOptimistic(state, updateFn)` for instant UI feedback
+- `useFormStatus()` for submit button pending states
+- `<form action={serverAction}>` for submissions
+- `<Activity mode="visible|hidden">` for background rendering
+- `<ViewTransition>` for animated transitions (canary)
+- `useEffectEvent()` to separate event logic from Effects
+- Server Components by default
+- React Compiler handles memoization
+
+## Don't Use
+- forwardRef — pass ref as a prop
+- useCallback/useMemo — compiler handles it
+- useContext — use `use(Context)` instead
+- useEffect for data fetching — use `use(promise)` or RSC
+- onChange + useState for forms — use `useActionState`
+- useFormState — renamed to `useActionState`
+```
+
+### Frontmatter Options
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `name` | Yes | Skill identifier (used in `/skill-name`) |
+| `description` | Yes | When this skill applies — Claude uses this to decide loading |
+| `globs` | No | File patterns that auto-trigger loading |
+
+### Examples Over Instructions
+
+**Examples in context influence generation more than instructions.**
+
+```
+.claude/skills/react-19/
+├── SKILL.md
+└── examples/
+    ├── form-action.tsx      # useActionState + useOptimistic
+    ├── activity-prerender.tsx  # Activity for route pre-rendering
+    └── effect-event.tsx     # useEffectEvent pattern
+```
+
+---
+
+## Subagents
+
+> **Agent** = AI that acts autonomously (perceive → decide → use tools → observe → repeat). Claude Code is an agent. A **subagent** is just an agent spawned by another agent — same concept, isolated context.
+
+Subagents are **isolated specialists**. They run in a separate context (subprocess), complete a task, and return results. Their instructions don't persist in your main conversation.
+
+**Isolated context heaps**: Each subagent has its own context window. They don't get confused by each other's context, and they don't pollute your main conversation.
+
+### File Location
+
+| Location | Scope |
+|----------|-------|
+| `.claude/agents/*.md` | Project-specific |
+| `~/.claude/agents/*.md` | All projects |
+
+### File Format
+
+```markdown
+---
+name: react-19-reviewer
+description: Reviews React code for modern patterns. Use after writing components.
+tools: Read, Grep, Glob
+model: inherit
+---
+
+You review React components for React 19.2+ best practices.
+
+## Check For
+
+- No forwardRef (refs are props now)
+- No useCallback/useMemo (compiler handles it)
+- Server components by default
+- useActionState for forms
+- use() for data fetching
+
+## Output Format
+
+For each file:
+1. Issues found (with line numbers)
+2. How to fix
+3. Modern pattern example
+```
+
+### Frontmatter Options
+
+| Field | Required | Default | Description |
+|-------|----------|---------|-------------|
+| `name` | Yes | — | Lowercase with hyphens |
+| `description` | Yes | — | When to invoke this agent |
+| `tools` | No | All | Comma-separated tool list |
+| `model` | No | sonnet | `sonnet`, `opus`, `haiku`, `inherit`, or `dynamic` |
+| `skills` | No | — | Skills to auto-load |
+| `permissionMode` | No | default | `default`, `acceptEdits`, `bypassPermissions` |
+
+**Dynamic model selection**: Use `model: dynamic` to let Claude choose the best model for the task (Haiku for simple searches, Opus for complex reasoning).
+
+### Invoking Subagents
+
+**Automatic** — Claude delegates based on description:
+```
+> Review my React components for modern patterns
+```
+
+**Explicit** — Request by name:
+```
+> Use the react-19-reviewer agent to check Dashboard.tsx
+```
+
+**CLI** — Interactive management:
+```
+/agents
+```
+
+### Built-in Subagents
+
+| Name | Model | Purpose |
+|------|-------|---------|
+| `Explore` | Haiku | Fast codebase searching |
+| `Plan` | — | Implementation planning |
+
+---
+
+## Hooks
+
+Hooks are **lifecycle automation**. Shell commands that run at specific events — session start, tool use, permission requests, context compaction. Use them for validation, enforcement, and injecting dynamic context.
+
+### Configuration Location
+
+| Location | Scope | Use |
+|----------|-------|-----|
+| `.claude/settings.json` | Project (shareable) | Team standards |
+| `.claude/settings.local.json` | Project (personal) | Local overrides |
+| `~/.claude/settings.json` | User-wide | Personal defaults |
+
+### Hook Types
+
+#### Lifecycle Hooks
+
+| Hook | When | Use Case |
+|------|------|----------|
+| `SessionStart` | Session begins | Inject context (git status, TODOs) |
+| `Stop` | Claude finishes responding | Force continuation |
+| `SubagentStop` | Subagent task completes | Post-process results |
+
+#### Action Hooks
+
+| Hook | When | Use Case |
+|------|------|----------|
+| `PreToolUse` | Before tool executes | Block/approve/modify actions |
+| `PostToolUse` | After tool completes | Lint, format, validate |
+| `PermissionRequest` | Permission dialog appears | Auto-approve or block |
+
+#### Context Hooks
+
+| Hook | When | Use Case |
+|------|------|----------|
+| `UserPromptSubmit` | You submit a prompt | Inject dynamic info |
+| `PreCompact` | Before context compaction | Preserve important data |
+
+### Configuration Format
+
+```json
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "prettier --write \"$CLAUDE_TOOL_INPUT_FILE_PATH\""
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+### Matcher Syntax
+
+| Pattern | Example | Matches |
+|---------|---------|---------|
+| Single | `"Write"` | Write tool only |
+| Multiple | `"Write\|Edit"` | Write or Edit |
+| Wildcard | `"*"` | All tools |
+| Arguments | `"Bash(npm test*)"` | Bash with npm test commands |
+| MCP | `"mcp__github__.*"` | All GitHub MCP tools |
+
+Matchers are case-sensitive.
+
+### Environment Variables
+
+| Variable | Description |
+|----------|-------------|
+| `$CLAUDE_TOOL_INPUT_FILE_PATH` | File being operated on |
+| `$CLAUDE_PROJECT_DIR` | Project root directory |
+| `$CLAUDE_TOOL_NAME` | Name of the tool |
+| `$CLAUDE_CODE_REMOTE` | Remote session info |
+
+### Hook Responses
+
+**Exit codes:**
+- `0` = Success (stdout added to context)
+- `2` = Block (action prevented)
+
+**Structured JSON output:**
+```json
+{
+  "decision": "approve",
+  "reason": "Test command is safe",
+  "updatedInput": { "command": "npm test -- --coverage" }
+}
+```
+
+| Field | Purpose |
+|-------|---------|
+| `decision` | `approve`, `block`, `allow`, `deny` |
+| `reason` | Explanation for Claude |
+| `continue` | Force continuation (Stop hooks) |
+| `updatedInput` | Modify tool parameters |
+
+### Hook Examples
+
+**Inject Context at Session Start:**
+```json
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "git status --short && echo '---' && cat TODO.md"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+**Auto-Approve Test Commands:**
+```json
+{
+  "hooks": {
+    "PermissionRequest": [
+      {
+        "matcher": "Bash(npm test*)",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '{\"decision\": \"approve\"}'"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+**Block Sensitive Files:**
+```json
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if echo \"$CLAUDE_TOOL_INPUT_FILE_PATH\" | grep -qE '\\.(env|pem|key)$'; then exit 2; fi"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+---
+
+## MCP (Model Context Protocol)
+
+MCP provides **secure, standardized connectivity** to external systems. GitHub, databases, APIs, file systems — anything with an MCP server becomes available as tools Claude can call.
+
+> "MCP is like having access to the aisles. Skills are like an employee's expertise."
+
+**Use MCP when you need Claude to *access* something, not *know how* to do it.**
+
+### MCP vs Skills
+
+| Concern | MCP | Skills |
+|---------|-----|--------|
+| Purpose | Connectivity — the "what" | Expertise — the "how" |
+| Handles | API syntax, tool usage, data access | Workflow logic, sequencing, output formatting |
+| Scope | Generic instructions | Domain-specific procedures |
+
+One skill can orchestrate multiple MCP servers. One MCP server supports dozens of skills.
+
+### Configuration Locations
+
+| Location | Scope | Use Case |
+|----------|-------|----------|
+| `.mcp.json` | Project | Team sharing (commit to repo) |
+| `.mcp.json.local` | Local | Machine-specific (gitignored) |
+| `~/.claude/mcp.json` | User | Personal (all projects) |
+
+### Adding MCP Servers
+
+```bash
+# Project scope (committed to repo)
+claude mcp add github -s project
+
+# User scope (all projects)
+claude mcp add filesystem -s user
+
+# Local scope (this machine only, gitignored)
+claude mcp add postgres -s local
+```
+
+### Configuration
+
+`.mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "github": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_TOKEN": "${GITHUB_TOKEN}"
+      }
+    }
+  }
+}
+```
+
+### Tool Naming Convention
+
+```
+mcp__<server>__<tool>
+```
+
+Examples:
+- `mcp__github__search_repositories`
+- `mcp__filesystem__read_file`
+- `mcp__postgres__query`
+
+### Available MCP Servers
+
+| Server | Purpose | Package |
+|--------|---------|---------|
+| github | GitHub API | `@modelcontextprotocol/server-github` |
+| filesystem | File access | `@modelcontextprotocol/server-filesystem` |
+| postgres | PostgreSQL | `@modelcontextprotocol/server-postgres` |
+| memory | Persistent memory | `@modelcontextprotocol/server-memory` |
+| notion | Notion pages | `@modelcontextprotocol/server-notion` |
+| brave-search | Web search | `@modelcontextprotocol/server-brave-search` |
+
+Full list: [github.com/modelcontextprotocol/servers](https://github.com/modelcontextprotocol/servers)
+
+### Configuration Options
+
+```json
+{
+  "mcpServers": {
+    "my-server": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["path/to/server.js"],
+      "env": {
+        "API_KEY": "${MY_API_KEY}"
+      },
+      "cwd": "/path/to/working/dir"
+    }
+  }
+}
+```
+
+| Field | Description |
+|-------|-------------|
+| `type` | Connection type: `stdio` (local) or `sse` (remote) |
+| `command` | Executable to run |
+| `args` | Command arguments |
+| `env` | Environment variables (use `${VAR}` syntax) |
+| `cwd` | Working directory |
+
+### Using with Hooks
+
+Target MCP tools in hooks for validation or logging:
+
+```json
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "mcp__github__*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'GitHub operation: $TOOL_NAME'"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+### Using with Skills
+
+Skills orchestrate MCP tools with domain expertise:
+
+```markdown
+---
+name: meeting-prep
+description: Prepare meeting briefs from Notion
+globs: []
+---
+
+# Meeting Preparation
+
+When preparing for meetings:
+
+1. Search Notion for the project page using `mcp__notion__search`
+2. Retrieve previous meeting notes
+3. Check stakeholder profiles
+4. Structure output as:
+   - Key decisions needed
+   - Open questions
+   - Relevant context
+```
+
+---
+
+## Permissions
+
+### Permission Levels
+
+| Level | Behavior |
+|-------|----------|
+| `Auto` | Runs without asking |
+| `Ask` | Requires approval |
+| `Deny` | Blocked entirely |
+
+Configure in `.claude/settings.json`:
+
+```json
+{
+  "permissions": {
+    "allow": ["Read", "Glob", "Grep", "Task"],
+    "deny": ["WebSearch"],
+    "ask": ["Bash", "Edit", "Write"]
+  }
+}
+```
+
+---
+
+## Example: React 19 Workflow
+
+All four mechanisms working together to enforce modern React 19.2+ patterns and prevent legacy code generation.
+
+| Mechanism | Role |
+|-----------|------|
+| **Skill** | Teaches React 19 patterns |
+| **Subagent** | Reviews components for legacy patterns |
+| **Hook** | Auto-triggers review after edits |
+| **MCP** | Connects to Storybook for component preview |
+
+### The Problem
+
+Claude's training data includes years of legacy React patterns:
+- `forwardRef` (deprecated)
+- `useCallback`/`useMemo` (compiler handles)
+- `useEffect` for data fetching (use `use()`)
+- `onChange` + `useState` for forms (use `useActionState`)
+
+### The Solution
+
+**1. Skill: React 19 Patterns**
+
+`.claude/skills/react-19/SKILL.md`:
+
+```markdown
+---
+name: react-19
+description: Modern React 19.2+ patterns and best practices
+globs: ["**/*.tsx", "**/*.jsx"]
+---
+
+# React 19.2+ Patterns
+
+You are an expert in modern React. Follow these patterns exactly.
+
+## Do Use
+
+- `ref` as a prop (no forwardRef wrapper)
+- `use()` for data fetching in components
+- `useActionState` for form state and submission
+- `useEffectEvent` for stable event callbacks
+- `<Activity>` for hide/show without unmount
+- `<ViewTransition>` for animations
+- Server Components by default
+
+## Don't Use
+
+- forwardRef (deprecated — ref is now a regular prop)
+- useCallback/useMemo (React Compiler handles memoization)
+- useEffect for data fetching (use `use()` with Suspense)
+- onChange + useState for forms (use `useActionState`)
+- PropTypes (use TypeScript)
+- defaultProps (use default parameters)
+
+## Examples
+
+See `examples/` folder for correct patterns.
+```
+
+`.claude/skills/react-19/examples/form-action.tsx`:
+
+```tsx
+'use client'
+
+import { useActionState } from 'react'
+import { submitForm } from './actions'
+
+export function ContactForm() {
+  const [state, formAction, isPending] = useActionState(submitForm, null)
+
+  return (
+    <form action={formAction}>
+      <input name="email" type="email" required />
+      <button disabled={isPending}>
+        {isPending ? 'Sending...' : 'Submit'}
+      </button>
+      {state?.error && <p>{state.error}</p>}
+    </form>
+  )
+}
+```
+
+**2. Subagent: React Reviewer**
+
+`.claude/agents/react-reviewer.md`:
+
+```markdown
+---
+name: react-reviewer
+description: Reviews React code for modern patterns. Use PROACTIVELY after writing components.
+tools: Read, Grep, Glob
+model: haiku
+skills: react-19
+---
+
+You review React components for React 19.2+ best practices.
+
+## Check For
+
+Legacy patterns that must be replaced:
+
+| Legacy | Modern |
+|--------|--------|
+| `forwardRef` | `ref` as prop |
+| `useCallback` | Remove (compiler) |
+| `useMemo` | Remove (compiler) |
+| `useEffect` + fetch | `use()` |
+| `useState` + `onChange` | `useActionState` |
+| `PropTypes` | TypeScript |
+
+## Output Format
+
+For each file reviewed:
+
+1. **Issues Found** (with line numbers)
+2. **How to Fix** (specific code change)
+3. **Modern Pattern** (correct example)
+
+If no issues: "✓ Component follows React 19.2+ patterns"
+```
+
+**3. Hook: Auto-Review on Edit**
+
+`.claude/settings.json`:
+
+```json
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if echo \"$CLAUDE_TOOL_INPUT_FILE_PATH\" | grep -qE '\\.(tsx|jsx)$'; then echo '{\"message\": \"React component modified — consider running react-reviewer\"}'; fi"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+### How They Work Together
+
+```text
+You: "Create a contact form component"
+
+1. SKILL LOADS
+   → Claude sees globs match *.tsx
+   → React 19 patterns injected into context
+
+2. CLAUDE WRITES CODE
+   → Uses useActionState (not useState + onChange)
+   → Uses ref as prop (not forwardRef)
+
+3. HOOK TRIGGERS
+   → PostToolUse detects .tsx file edited
+   → Suggests running react-reviewer
+
+4. SUBAGENT REVIEWS
+   → react-reviewer spawns with react-19 skill
+   → Checks for legacy patterns
+   → Reports any issues found
+```
+
+### File Structure
+
+```text
+.claude/
+├── skills/
+│   └── react-19/
+│       ├── SKILL.md
+│       └── examples/
+│           ├── form-action.tsx
+│           ├── data-fetch.tsx
+│           └── ref-prop.tsx
+├── agents/
+│   └── react-reviewer.md
+└── settings.json
+
+.mcp.json
+```
+
+---
+
+## Commands
+
+```bash
+/skills          # Check loaded skills
+/agents          # Manage subagents
+/context         # Monitor context usage
+/allowed-tools   # View/manage permissions
+/mcp             # List MCP servers
+/hooks           # Review hook configuration
+```
+
 ## Best Practices (2025)
 
 - Use `/context` to monitor usage, remove unused MCP servers
 - Combine skills + hooks: hooks auto-activate appropriate skills
 - Scope MCP servers: user (`-s user`), project (`-s project`), local (`-s local`)
 - Security: validate hook inputs, quote shell vars, block path traversal
-
+- Examples over instructions: include working code in skills
+- Single responsibility: one clear purpose per subagent
+- Limit tools: only grant subagents what they need

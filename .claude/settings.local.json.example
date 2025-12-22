@@ -1,0 +1,12 @@
+{
+  "_comment": "Copy to settings.local.json for personal overrides (not committed)",
+  "permissions": {
+    "allow": [
+      "Bash(git commit*)",
+      "Bash(git push origin *)"
+    ]
+  },
+  "env": {
+    "CLAUDE_CODE_DEBUG": "0"
+  }
+}

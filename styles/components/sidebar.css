@@ -20,4 +20,3 @@
   --shadow-sidebar-btn: 0 2px 8px --alpha(var(--primary) / 25%), inset 0 1px 0 oklch(1 0 0 / 15%);
   --shadow-sidebar-btn-hover: 0 4px 16px --alpha(var(--primary) / 35%), inset 0 1px 0 oklch(1 0 0 / 20%);
 }
-

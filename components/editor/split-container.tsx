@@ -52,8 +52,8 @@ export function SplitContainer({
   }
 
   return (
-    <ResizablePanelGroup 
-      direction={direction}
+    <ResizablePanelGroup
+      orientation={direction}
       className="h-full"
     >
       {groups.map((group, index) => (

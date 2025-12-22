@@ -52,6 +52,7 @@
     }
   },
   "include": [
+    // ".claude/**/*.tsx",
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
@@ -61,6 +62,7 @@
     ".next/dev/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    ".claude"
   ]
 }

@@ -1,260 +1,240 @@
 ---
 alwaysApply: true
 ---
-# Tailwind CSS
+# Tailwind CSS 4.1+ (v4.1.18) — React 19 / Next.js 16
 
-## Entry Point
+## Setup
+
 ```css
 @import "tailwindcss";
 ```
 
-## @theme (design tokens → utilities)
+Zero config. No `tailwind.config.js`. No `@tailwind` directives.
 
-**@theme** — new tokens, generates utilities:
+## @theme — Design Tokens
+
 ```css
 @theme {
-  --color-brand: oklch(0.7 0.15 264);
+  --color-brand: oklch(0.7 0.15 250);
+  --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --animate-wiggle: wiggle 1s ease-in-out infinite;
+  @keyframes wiggle { 0%, 100% { transform: rotate(-3deg); } 50% { transform: rotate(3deg); } }
 }
 ```
-Usage: `bg-brand`, `text-brand`
 
-**@theme inline + :root/.dark** — for dark mode support:
+## Dark Mode
+
+**Default `dark:` = `@media (prefers-color-scheme: dark)`**
+
+For class-based (next-themes), override the variant:
+
+```css
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+```
+
+For data-attribute based:
+
+```css
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+```
+
+## @theme inline — Semantic Tokens
+
 ```css
 :root {
   --background: oklch(0.98 0.01 264);
+  --foreground: oklch(0.15 0.01 264);
   --primary: oklch(0.6 0.15 180);
 }
+
 .dark {
-  --background: oklch(0.15 0.01 264);
+  --background: oklch(0.12 0.02 264);
+  --foreground: oklch(0.95 0.01 264);
   --primary: oklch(0.7 0.12 180);
 }
 
 @theme inline {
   --color-background: var(--background);
+  --color-foreground: var(--foreground);
   --color-primary: var(--primary);
 }
 ```
-Usage: `bg-background text-primary` — dark mode works automatically via CSS cascade.
 
-**No `dark:` prefix needed for mapped tokens.** Use `dark:` only for Tailwind's built-in colors.
+Usage: `bg-background text-primary ring-ring border-border` — all semantic, no `dark:` prefix needed.
 
-**Rule:** `@theme` for new tokens. `@theme inline` + `:root`/`.dark` for dark mode.
+## Theme Functions
 
-## @layer base (element defaults)
-
-For default HTML element styles. Rarely needed—prefer utilities on `<html>`/`<body>`.
 ```css
-@layer base {
-  h1 { font-size: var(--text-2xl); }
-}
+--color-primary-soft: --alpha(var(--primary) / 10%);
+--color-overlay: --alpha(var(--background) / 80%);
+padding: --spacing(4) --spacing(6);
 ```
 
-## @layer components (overridable multi-property classes)
+## Theme Namespaces
 
-For reusable classes that **utilities can override**:
-```css
-@layer components {
-  .card {
-    background-color: var(--color-white);
-    border-radius: var(--radius-lg);
-    padding: --spacing(6);
-  }
-}
-```
-Usage: `card rounded-none` — utility overrides component's `border-radius`
+| Namespace | Generates |
+|-----------|-----------|
+| `--color-*` | `bg-*`, `text-*`, `border-*`, `fill-*` |
+| `--shadow-*` | `shadow-*` |
+| `--ease-*` | `ease-*` |
+| `--animate-*` | `animate-*` |
+| `--breakpoint-*` | `sm:`, `md:`, `3xl:` |
+| `--container-*` | `@sm:`, `@md:` |
 
-**Rule:** `@layer components` for base styles needing utility overrides.
+## @utility — Custom Utilities
 
-## @utility (CSS properties without Tailwind utilities)
-
-Only for CSS properties Tailwind has no utilities for. Never for colors, spacing, or properties with existing utilities.
-
-**Nested** — use `&` for pseudo-elements/selectors:
 ```css
 @utility scrollbar-thin {
   scrollbar-width: thin;
   &::-webkit-scrollbar { width: 6px; }
-  &::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-}
-```
-
-**Functional utilities** — use `--value()` to match `@theme` tokens:
-```css
-@theme {
-  --gradient-brand: linear-gradient(...);
-  --gradient-sunset: linear-gradient(...);
 }
 
 @utility text-gradient-* {
   background: --value(--gradient-*);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 ```
-Usage: `text-gradient-brand`, `text-gradient-sunset`
 
-**`--value()` forms:**
-- `--value(--theme-var-*)` — match theme tokens
-- `--value(integer)` / `--value(number)` / `--value(percentage)` — bare values
-- `--value([integer])` — arbitrary values like `utility-[42]`
-- `--value("inherit", "initial")` — literal strings
+**--value()**: `integer`, `number`, `percentage`, `[type]`, `"literal"`, `--theme-*`
+**--modifier()**: `text-lg/relaxed`, `text-base/7`
 
-## @custom-variant
-
-Define once in globals.css:
-```css
-@custom-variant dark (&:is(.dark *));
-```
-Usage: `bg-white dark:bg-gray-900`
-
-## Build-Time Functions
-
-Use inside `@theme`, `@theme inline`, or `@utility` definitions:
+## @layer — Cascade
 
 ```css
-@theme inline {
-  --color-primary-soft: --alpha(var(--primary) / 10%);  /* derive transparent variant */
-  --color-overlay: --alpha(var(--background) / 80%);
-}
-
-@utility card {
-  padding: --spacing(4) --spacing(6);  /* compute spacing */
-  border-radius: var(--radius-lg);
+@layer components {
+  .card { padding: --spacing(6); border-radius: var(--radius-lg); }
 }
 ```
 
-## Theme Namespaces
+Overridable: `<div className="card rounded-none">`
 
-**Primary (used in this project):**
-| Namespace | Token Example | Generated Utilities |
-|-----------|---------------|---------------------|
-| `--color-*` | `--color-brand` | `bg-brand`, `text-brand`, `border-brand`, `fill-brand`, `stroke-brand` |
-| `--animate-*` | `--animate-fade-in` | `animate-fade-in` |
-| `--ease-*` | `--ease-fluid` | `ease-fluid` |
-| `--shadow-*` | `--shadow-glow` | `shadow-glow` |
+## @source — Content
 
-**Rarely customized (Tailwind defaults usually sufficient):**
-| Namespace | Purpose |
-|-----------|---------|
-| `--font-*` | Font families (`font-display`) |
-| `--text-*` | Font sizes only, NOT colors (`text-micro`) |
-| `--spacing-*` | Spacing scale (`p-18`, `gap-72`) |
-| `--radius-*` | Border radius (`rounded-pill`) |
-| `--breakpoint-*` | Responsive variants (`3xl:*`) |
-| `--container-*` | Container query variants (`@8xl:*`) |
-
-## Animations
-
-`@theme` for static values, `@theme inline` when shorthand uses var().
-@keyframes defined inside same block — var() inside resolves at runtime.
 ```css
-@theme {
-  --animate-wiggle: wiggle 1s ease-in-out infinite;
-  @keyframes wiggle { 0%, 100% { transform: rotate(-3deg); } 50% { transform: rotate(3deg); } }
-}
+@source "../node_modules/@company/ui";
+@source not "./legacy";
+@source inline("{hover:,}ring-{1,2,4}");
 ```
-Usage: `animate-wiggle`, `animate-[spin_2s_linear_infinite]` (one-off)
 
-## State Variants
+## Container Queries
 
-**Interactive:** `hover:`, `active:`, `focus-visible:` (keyboard), `focus-within:` (child focused)
-**Form:** `disabled:`, `invalid:`, `required:`, `checked:`, `placeholder-shown:`, `autofill:`
-**Structural:** `first:`, `last:`, `odd:`, `even:`, `empty:`, `has-[...]:`
-**Group/Peer:** `group-hover:`, `peer-invalid:`, `in-[...]:`
+```tsx
+<div className="@container">
+  <div className="grid-cols-1 @sm:grid-cols-2 @lg:grid-cols-4" />
+</div>
+```
 
-**Pseudo-elements:** `before:`, `after:`, `placeholder:`, `selection:`, `marker:`, `file:`, `backdrop:`
-**Accessibility:** `motion-reduce:`, `contrast-more:`, `forced-colors:`, `inert:`
-**Media:** `print:`, `portrait:`, `landscape:`, `noscript:`
-**State:** `open:` (details/popover), `starting:` (entry animation), `aria-expanded:`, `data-[...]:`
-**Selectors:** `*:` (children), `**:` (descendants)
+Named: `@container/card` + `@md/card:flex-row`
+Range: `@min-sm:@max-lg:hidden`
 
-`focus-visible:` not `focus:` for keyboard-only rings. `disabled:` cancels hover/focus.
-Stack: `dark:md:hover:bg-primary`
+## Text Shadows
 
-## Responsive
-
-**Viewport:** `sm:`, `md:`, `lg:`, `xl:`, `2xl:` — range: `md:max-lg:`
-**Container:** `@container` + `@sm:`, `@md:` — named: `@container/sidebar` + `@sm/sidebar:`
-**Pointer:** `pointer-coarse:` (touch), `pointer-fine:` (mouse)
-**Safe alignment:** `justify-center-safe` prevents overflow when centering
-
-## Gradients
-
-**Linear:** `bg-linear-to-r`, `bg-linear-45` + `from-*`, `via-*`, `to-*`
-**Radial/Conic:** `bg-radial`, `bg-conic`
-**Stops:** `from-10%`, `via-30%`, `to-90%`
-For text gradients, use `@utility text-gradient-*` (see @utility section).
-
-## Transitions
-
-`transition-colors` (hover), `transition-transform` (scale), `transition-shadow`, `transition-opacity`
-Avoid `transition-all` (perf). Add `duration-*` and `ease-*`.
-Patterns: `hover:scale-105 transition-transform`, `hover:shadow-xl transition-shadow`, `hover:blur-none transition-[filter]`
-
-## Filters
-
-**Blur:** `blur-sm`, `backdrop-blur-md`
-**Effects:** `grayscale`, `brightness-*`, `contrast-*`, `saturate-*`
-**Glassmorphism:** `bg-white/10 backdrop-blur-md backdrop-saturate-150`
-Use `transition-[filter]` when animating filters.
-
-## Shadows
-
-**Box:** `shadow-lg`, colored: `shadow-blue-500/25`
-**Drop:** `drop-shadow-lg` for SVG/PNG, colored: `drop-shadow-cyan-500/50`
-**Text:** `text-shadow-{2xs,xs,sm,md,lg}`, colored: `text-shadow-sky-300/50`
+```tsx
+<h1 className="text-shadow-lg text-shadow-primary/30" />
+```
 
 ## Masks
 
-Gradient masks: transparent=hidden, opaque=visible.
-- **Edge fade**: `mask-{t,r,b,l}-from-{%}`, `mask-{x,y}-from-{%}` (both sides)
-- **Radial**: `mask-radial-from-{%}`, `mask-radial-at-{position}`, `mask-circle`
-- **Arbitrary**: `mask-[url(/shape.svg)]`
+```tsx
+<div className="mask-b-from-50% mask-radial-from-70%" />
+```
 
-## Layout & Sizing
+## 3D Transforms
 
-`size-6` = `w-6 h-6`. `aspect-video`, `aspect-square`, `aspect-[4/3]`.
-`inset-0` = `top-0 right-0 bottom-0 left-0`. `inset-x-*`, `inset-y-*`.
-`divide-y`, `divide-x` — borders between children. `divide-gray-200`.
+```tsx
+<div className="perspective-500 rotate-x-12 rotate-y-6 transform-3d backface-hidden" />
+```
 
-## Text
+## Gradients
 
-`truncate` — single line with ellipsis. `line-clamp-{1-6}` — multi-line truncate.
-`wrap-break-word` — break long words. `wrap-anywhere` — break in flex.
+```tsx
+<div className="bg-linear-45 from-indigo-500 to-pink-500" />
+<div className="bg-linear-to-r/oklch from-blue-500 to-cyan-400" />
+<div className="bg-radial-[at_25%_25%] from-white to-zinc-900" />
+<div className="bg-conic from-red-500 to-green-500" />
+```
 
-## Accessibility
+## Shadows
 
-`sr-only` — visible to screen readers only. `not-sr-only` — undo.
-`forced-colors:` variant for Windows High Contrast mode.
+```tsx
+<div className="shadow-xl shadow-primary/25" />
+<svg className="drop-shadow-xl drop-shadow-cyan-500/50" />
+<div className="shadow-lg inset-shadow-sm inset-ring-1" />
+```
 
-## SVG
+## Variants
 
-`fill-current`/`stroke-current` inherit parent's `text-*` color. Use `size-*` for dimensions.
-Hover: parent `text-gray-500 hover:text-blue-600` + child `fill-current`
-
-## Scroll
-
-`scroll-smooth` on html. `overscroll-contain` on modals/drawers.
-`scroll-mt-*` for anchor offset with fixed headers.
-Snap: `snap-x snap-mandatory overflow-x-auto` + children `snap-center`
+**Interactive:** `hover:` `active:` `focus-visible:` `focus-within:`
+**Form:** `disabled:` `user-valid:` `user-invalid:` `checked:` `autofill:`
+**Structural:** `first:` `last:` `odd:` `even:` `empty:` `has-[]:` `nth-*:`
+**Ancestor:** `in-[.sidebar]:` `in-[[data-open]]:`
+**State:** `open:` `starting:` `inert:` `modal:`
+**A11y:** `motion-reduce:` `motion-safe:` `contrast-more:` `forced-colors:`
+**Device:** `pointer-fine:` `pointer-coarse:` `any-pointer-*:`
+**Negation:** `not-hover:` `not-disabled:` `not-has-[]:`
+**Data:** `data-[state=open]:` `aria-expanded:`
+**Descendants:** `*:` `**:` `details-content:`
 
 ## Common Patterns
 
-**Hover lift:** `hover:-translate-y-1 hover:shadow-lg transition`
-**Press:** `active:scale-95 transition-transform`
-**Focus ring:** `focus-visible:ring-2 focus-visible:ring-ring outline-none` (`ring-*` = box-shadow outline)
-**Disabled:** `disabled:opacity-50 disabled:pointer-events-none`
-**Entry:** `starting:opacity-0 starting:translate-y-2 transition`
+```tsx
+{/* Hover lift */}
+<div className="hover:-translate-y-1 hover:shadow-xl transition-all" />
 
-Always pair transforms with `transition`.
+{/* Press */}
+<button className="active:scale-[0.98] transition-transform" />
 
-## Best Practices
+{/* Focus ring */}
+<button className="focus-visible:ring-2 focus-visible:ring-ring outline-none" />
 
-1. **`:root`/`.dark` → raw tokens** (`--brand`) **→ `@theme inline` → namespaced** (`--color-brand`)
-2. **OKLCH strictly** - All colors in `oklch()` format
-3. **`--spacing()` / `--alpha()` inside definitions only** - Never in className
-4. **Container queries for components** - `@container` + `@md:`
-5. **motion-safe/motion-reduce** - Always respect user preferences
-6. **No duplicate @keyframes** - Define once per animation name
-7. **No `dark:` for mapped tokens** - Dark mode works via CSS cascade
+{/* Disabled */}
+<button className="disabled:opacity-50 disabled:pointer-events-none" />
+
+{/* Entry animation */}
+<div className="starting:opacity-0 starting:translate-y-2 transition-all" />
+
+{/* Glassmorphism */}
+<div className="bg-background/80 backdrop-blur-xl backdrop-saturate-150" />
+
+{/* Touch targets */}
+<button className="p-2 pointer-coarse:p-4" />
+
+{/* Form validation */}
+<input className="user-valid:border-green-500 user-invalid:border-red-500" required />
+
+{/* Text gradient */}
+<h1 className="bg-linear-to-r from-primary to-accent bg-clip-text text-transparent" />
+
+{/* Container responsive */}
+<div className="@container">
+  <div className="flex-col @md:flex-row @lg:grid-cols-3" />
+</div>
+
+{/* Scroll fade */}
+<div className="mask-b-from-80% overflow-y-auto" />
+
+{/* Popover animation */}
+<div popover className="transition-discrete starting:open:opacity-0 open:opacity-100" />
+
+{/* Auto-resize textarea */}
+<textarea className="field-sizing-content min-h-20 max-h-64" />
+```
+
+## Anti-Patterns
+
+| Avoid | Use |
+|-------|-----|
+| `@tailwind base/components/utilities` | `@import "tailwindcss"` |
+| `tailwind.config.js` | `@theme` in CSS |
+| `bg-gradient-to-r` | `bg-linear-to-r` |
+| `theme()` | `var(--color-*)` |
+| Viewport for components | `@container` |
+| `group` class | `in-*` variant |
+| `focus:` | `focus-visible:` |
+| `transition-all` | `transition-colors`, `transition-transform` |
+| `dark:` for mapped tokens | CSS cascade |
+| Hex colors | OKLCH `oklch(L C H)` |
+| `@apply` | `@layer components` |

@@ -17,14 +17,7 @@ export type NavigationItem = {
 
 export const routes: NavigationItem[] = [
     { title: 'Home', href: '/', icon: Home, color: "text-blue-500", bgColor: "bg-purple-500/10", },
-    // {title: 'Claude', href: '/ai/claude-code', icon: ClaudeIcon, color: "text-orange-500", bgColor: "bg-orange-500/10", children: [
-    //     { title: 'Overview', href: '/ai/claude-code', icon: ClaudeIcon, color: "text-orange-500", bgColor: "bg-orange-500/10" },
-    //     { title: 'Skills', href: '/ai/claude-code/skills', icon: Brain, color: "text-blue-500", bgColor: "bg-blue-500/10" },
-    //     { title: 'Subagents', href: '/ai/claude-code/subagents', icon: Brain, color: "text-blue-500", bgColor: "bg-blue-500/10" },
-    //     { title: 'Hooks', href: '/ai/claude-code/hooks', icon: Brain, color: "text-blue-500", bgColor: "bg-blue-500/10" },
-    //     { title: 'MCP', href: '/ai/claude-code/mcp', icon: Brain, color: "text-blue-500", bgColor: "bg-blue-500/10" },
-    //     { title: 'Example', href: '/ai/claude-code/example', icon: Brain, color: "text-blue-500", bgColor: "bg-blue-500/10" }
-    // ]},
+    // {title: 'Claude', href: '/ai/claude-code', icon: ClaudeIcon, color: "text-orange-500", bgColor: "bg-orange-500/10"},
     // { title: 'Database', href: '/db', icon: Database, color: "text-blue-500", bgColor: "bg-purple-500/10",
     //     children: [
     //         { title: 'Overview', href: '/db', icon: Database, color: "text-blue-500", bgColor: "bg-purple-500/10" },

@@ -1,10 +1,13 @@
 "use client"
 
-import { createContext, useSyncExternalStore, use, startTransition, ViewTransition } from "react"
+import { createContext, useSyncExternalStore, use, startTransition } from "react"
+// import { ViewTransition } from "react"
 import { ThemeProvider as NextThemesProvider } from "next-themes"
 import type { ThemeProviderProps } from "next-themes"
 import type { ReactNode } from "react"
 import type { FontKey } from "@/lib/fonts"
+// import { usePathname } from 'next/navigation'
+// import { useSelectedLayoutSegment } from 'next/navigation'
 
 type ExtendedThemeProviderProps = ThemeProviderProps & {
   children: ReactNode
@@ -61,6 +64,12 @@ export function ThemeProvider({
   fontStorageKey = "font",
   ...props
 }: ExtendedThemeProviderProps) {
+
+   // const segment = useSelectedLayoutSegment()
+  // const pathname = usePathname() 
+  // const route = pathname.slice(1) 
+
+  
   const store = useSyncExternalStore(
     (onStoreChange) => {
       const fontStore = createFontStore(fontStorageKey, defaultFont)
@@ -89,15 +98,17 @@ export function ThemeProvider({
         storageKey="theme"
         {...props}
       >
-        <ViewTransition
+        {/* <ViewTransition
           enter={{ default: "page-enter" }}
           exit={{ default: "page-exit" }}
           update={{ default: "theme-update" }}
-        >
-          <div className="min-h-screen w-full">
+        > */}
+          {/* <div className="min-h-screen w-full "data-route={segment ?? undefined} > */}
+          {/* <div className="min-h-screen w-full "data-route={route} > */}
+          <div className="min-h-screen w-full ">
             {children}
           </div>
-        </ViewTransition>
+        {/* </ViewTransition> */}
       </NextThemesProvider>
     </ThemeContext.Provider>
   )

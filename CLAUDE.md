@@ -1,51 +1,34 @@
-# CLAUDE.md
+# HippocampX
 
-HippocampX: Educational web app — Next.js *16.1+* , React *19.2+*, interactive learning modules.
+Educational web app — Next.js 16.1, React 19.3, interactive learning modules.
 
-## Rules
+## Stack
 
-Consult `.cursor/rules/` for technology-specific guidelines. Read relevant rule files before working on matching file types.
+Check `/context` for loaded skills. Check `package.json` for versions — use canary/experimental docs.
 
-## Commands
+## Code Style
 
-Run tools through pnpm scripts:
-- `pnpm lint` — lint all files
-- `pnpm lint <path>` — lint file, directory, or pattern (e.g., `pnpm lint lib/db-viewer/types.ts`, `pnpm lint lib/db-viewer/`, `pnpm lint lib/**/*.ts`)
-- `pnpm build` — production build
-- `pnpm build:plugins` — TypeScript compilation
-- `pnpm test` — unit tests
-- `pnpm test:e2e` — e2e tests
-- `pnpm dev` — development server
+Commits: `type(scope): description` — no AI attribution.
 
-## Commits
-
-Format: `type(scope): description`
-
-Commit as the user only. No AI attribution.
-
-## File Size
-
-Target lines of code:
-- React components: 100-200 (max 300)
+File limits (lines):
+- Components: 100-200 (max 300)
 - Utilities/hooks: 50-150 (max 250)
 - API routes: 50-100 (max 200)
-- Split files exceeding 400-500 lines
+- Split files > 400 lines
 
-## Resources
+## Guardrails
 
-Check `package.json` for versions. Search for documentation matching version >= installed. use canary/experimental docs.
+- Read before edit — never propose changes to unseen code
+- Verify before assume — check project files, don't guess
+- Minimal changes — only what's requested, no drive-by refactors
+- Use loaded skills — don't fall back to training data patterns
+- Web searches — use versions from line 3 (Next.js 16.1, React 19.3), never training data versions
 
-## Behavior Correction
+## Correction Protocol
 
-When user calls out bad behavior:
-1. STOP — do not continue the task
-2. Analyze what went wrong and why
-3. Propose a concrete fix (rule, hook, or CLAUDE.md update)
-4. Implement the fix immediately — this persists across sessions
-5. Only then resume the task
-
-Examples of bad behavior:
-- Reading files already in context
-- Ignoring loaded rules, falling back to training data
-- Not reading files when explicitly referenced
-- Giving hypothetical answers without checking actual project files 
+When called out for bad behavior:
+1. Stop immediately
+2. Analyze the failure
+3. Propose fix (update CLAUDE.md, add hook, or modify skill)
+4. Implement the fix
+5. Resume task

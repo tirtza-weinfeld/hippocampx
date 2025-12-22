@@ -34,7 +34,7 @@ export default async function Agent() {
   }));
 
 
- 
+
 
   // Create problem components map - each card fetches its own solutions
   const problemComponents = Object.fromEntries(

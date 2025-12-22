@@ -330,8 +330,8 @@ export function CodeEditor({
             </div>
           </div>
         ) : (
-          <ResizablePanelGroup 
-            direction={editorState.splitConfig.direction}
+          <ResizablePanelGroup
+            orientation={editorState.splitConfig.direction}
             className="h-full"
           >
             {editorState.splitConfig.groups.map((group, index) => (
