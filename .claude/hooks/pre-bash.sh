@@ -48,4 +48,11 @@ if echo "$command" | grep -qE '^(npx|npm)\s'; then
   exit 2
 fi
 
+# Block pnpm with raw tool names - use scripts instead
+# pnpm eslint → pnpm lint, pnpm tsc → pnpm build, etc.
+if echo "$command" | grep -qE '^pnpm\s+(eslint|tsc|typescript|prettier|vitest|playwright|jest|drizzle-kit)\b'; then
+  echo "Blocked: Use pnpm scripts (e.g., 'pnpm lint' not 'pnpm eslint'). Check package.json for available scripts." >&2
+  exit 2
+fi
+
 exit 0

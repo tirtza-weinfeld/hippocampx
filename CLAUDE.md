@@ -6,6 +6,14 @@ Educational web app — Next.js 16.1, React 19.3, interactive learning modules.
 
 Check `/context` for loaded skills. Check `package.json` for versions — use canary/experimental docs.
 
+## Commands
+
+Use pnpm scripts, never raw tools:
+- `pnpm lint` — not `pnpm eslint`
+- `pnpm build` — not `pnpm tsc`
+- `pnpm test` — not `pnpm vitest`
+- `pnpm db:generate` — not `pnpm drizzle-kit`
+
 ## Code Style
 
 Commits: `type(scope): description` — no AI attribution.

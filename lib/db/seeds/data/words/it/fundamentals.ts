@@ -174,7 +174,7 @@ export const IT_FUNDAMENTAL_DATA_EXPANDED: LexicalEntrySeed[] = [
         relations: [
           {
             target_lemma: "avere",
-            relation_type: "nuance",
+            relation_type: "analog",
             explanation: "The other primary auxiliary verb in Italian.",
           },
         ],

@@ -95,7 +95,7 @@ export const DEAR_OLD_SHIZ_DICTIONARY_DATA: LexicalEntrySeed[] = [
         order_index: 0,
         tags: ["emotion", "positive"],
         relations: [
-          { target_lemma: "proud", target_pos: "adjective", relation_type: "nuance" },
+          { target_lemma: "proud", target_pos: "adjective", relation_type: "derivation" },
         ],
       },
     ],
@@ -138,7 +138,7 @@ export const DEAR_OLD_SHIZ_DICTIONARY_DATA: LexicalEntrySeed[] = [
           },
         ],
         relations: [
-          { target_lemma: "have", target_pos: "verb", relation_type: "nuance", explanation: "Archaic third-person singular form" },
+          { target_lemma: "have", target_pos: "verb", relation_type: "derivation", explanation: "Archaic third-person singular form" },
         ],
       },
     ],
@@ -181,7 +181,7 @@ export const DEAR_OLD_SHIZ_DICTIONARY_DATA: LexicalEntrySeed[] = [
         order_index: 0,
         tags: ["emotion", "respect", "formal", "positive"],
         relations: [
-          { target_lemma: "revere", target_pos: "verb", relation_type: "nuance", explanation: "Noun form of the verb" },
+          { target_lemma: "revere", target_pos: "verb", relation_type: "derivation", explanation: "Noun form of the verb" },
         ],
       },
     ],

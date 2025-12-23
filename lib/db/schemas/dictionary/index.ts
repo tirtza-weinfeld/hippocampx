@@ -27,6 +27,7 @@ import {
   categories,
   tags,
   senseTags,
+  senseNotations,
 } from "./tables";
 
 // Re-export everything
@@ -61,6 +62,9 @@ export type InsertTag = InferInsertModel<typeof tags>;
 
 export type SenseTag = InferSelectModel<typeof senseTags>;
 export type InsertSenseTag = InferInsertModel<typeof senseTags>;
+
+export type SenseNotation = InferSelectModel<typeof senseNotations>;
+export type InsertSenseNotation = InferInsertModel<typeof senseNotations>;
 
 export type Contributor = InferSelectModel<typeof contributors>;
 export type InsertContributor = InferInsertModel<typeof contributors>;

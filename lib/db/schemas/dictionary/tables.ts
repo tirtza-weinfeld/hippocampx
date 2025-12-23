@@ -37,6 +37,8 @@ import {
   sourceTypeEnum,
   creditRoleEnum,
   verificationStatusEnum,
+  senseDifficultyEnum,
+  notationTypeEnum,
 } from "./enums";
 import { PolyglotGrammarSchema } from "./validators";
 
@@ -55,6 +57,9 @@ export const lexicalEntries = pgTable(
     // Homograph discriminator: distinguishes "bass" (fish) from "bass" (instrument)
     discriminator: integer("discriminator").default(1).notNull(),
 
+    // Corpus frequency rank (1 = most common word in language)
+    frequency_rank: integer("frequency_rank"),
+
     metadata: jsonb("metadata"),
 
     created_at: timestamp("created_at", { withTimezone: true }).defaultNow(),
@@ -70,6 +75,7 @@ export const lexicalEntries = pgTable(
       table.discriminator
     ),
     index("idx_entry_lemma_trgm").using("gin", sql.raw(`"lemma" gin_trgm_ops`)),
+    index("idx_entry_frequency_rank").on(table.frequency_rank),
   ]
 );
 
@@ -105,6 +111,10 @@ export const senses = pgTable(
     definition: text("definition").notNull(),
     order_index: integer("order_index").default(0), // Display order (0 = primary sense)
 
+    // Educational metadata
+    difficulty: senseDifficultyEnum("difficulty"),
+    usage_frequency: real("usage_frequency"), // 0.0-1.0, this sense's share of word usage
+
     is_synthetic: boolean("is_synthetic").default(false),
     verification_status: verificationStatusEnum("verification_status")
       .default("unverified")
@@ -116,6 +126,7 @@ export const senses = pgTable(
   },
   (table) => [
     index("idx_sense_entry").on(table.entry_id),
+    index("idx_sense_difficulty").on(table.difficulty),
   ]
 );
 
@@ -326,4 +337,20 @@ export const senseTags = pgTable(
     explanation: text("explanation"),
   },
   (table) => [primaryKey({ columns: [table.sense_id, table.tag_id] })]
+);
+
+export const senseNotations = pgTable(
+  "sense_notations",
+  {
+    id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+    sense_id: integer("sense_id")
+      .notNull()
+      .references(() => senses.id, { onDelete: "cascade" }),
+    type: notationTypeEnum("type").notNull(),
+    value: text("value").notNull(),
+  },
+  (table) => [
+    index("idx_notation_sense").on(table.sense_id),
+    index("idx_notation_type").on(table.type),
+  ]
 );

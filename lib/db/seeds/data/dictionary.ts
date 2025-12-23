@@ -32,6 +32,8 @@ import type {
   relationTypeEnum,
   sourceTypeEnum,
   creditRoleEnum,
+  senseDifficultyEnum,
+  notationTypeEnum,
   EnglishGrammarSchema,
   GermanGrammarSchema,
   ItalianGrammarSchema,
@@ -46,6 +48,7 @@ import { IT_FUNDAMENTAL_DATA_EXPANDED } from "./words/it/fundamentals";
 import { WONDERFUL_DATA } from "./lyrics/wicked-part-2/wonderful";
 import { ANATOMY_DATA } from "./words/en/anatomy";
 import { PRACTICAL_VOCAB_DATA } from "./words/en/practical-vocab";
+import { CALCULUS_DATA } from "./words/en/calculus";
 
 // =============================================================================
 // ENUM TYPES (derived from schema)
@@ -55,6 +58,8 @@ type PartOfSpeech = (typeof partOfSpeechEnum.enumValues)[number];
 type RelationType = (typeof relationTypeEnum.enumValues)[number];
 type SourceType = (typeof sourceTypeEnum.enumValues)[number];
 type CreditRole = (typeof creditRoleEnum.enumValues)[number];
+type SenseDifficulty = (typeof senseDifficultyEnum.enumValues)[number];
+type NotationType = (typeof notationTypeEnum.enumValues)[number];
 
 // =============================================================================
 // GRAMMATICAL FEATURES (polyglot support)
@@ -130,14 +135,23 @@ export type SenseRelationSeed = {
   explanation?: string;
 };
 
+/** Alternative representation (formula, pronunciation, etc.) */
+export type NotationSeed = {
+  type: NotationType;
+  value: string;
+};
+
 /** A meaning/definition of a word */
 export type SenseSeed = {
   definition: string;
   order_index?: number; // 0 = primary sense
+  difficulty?: SenseDifficulty;
+  usage_frequency?: number; // 0.0-1.0, this sense's share of word usage
   is_synthetic?: boolean;
   examples?: ExampleSeed[];
   tags?: string[];
   relations?: SenseRelationSeed[];
+  notations?: NotationSeed[];
 };
 
 /** Inflected word form with grammatical features */
@@ -154,6 +168,7 @@ export type LexicalEntrySeed = {
   lemma: string;
   part_of_speech: PartOfSpeech;
   language_code: string;
+  frequency_rank?: number; // Corpus rank (1 = most common word)
   forms?: WordFormSeed[];
   senses: SenseSeed[];
   metadata?: Record<string, unknown>;
@@ -173,4 +188,5 @@ export const dictionaryData: LexicalEntrySeed[] = [
   ...WONDERFUL_DATA,
   ...ANATOMY_DATA,
   ...PRACTICAL_VOCAB_DATA,
+  ...CALCULUS_DATA,
 ];

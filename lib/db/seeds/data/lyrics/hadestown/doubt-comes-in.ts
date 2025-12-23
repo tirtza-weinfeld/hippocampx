@@ -77,7 +77,7 @@ export const HADESTOWN_DOUBT_COMES_IN_DICTIONARY_DATA: LexicalEntrySeed[] = [
         order_index: 0,
         tags: ["emotion", "negative"],
         relations: [
-          { target_lemma: "doubt", target_pos: "noun", relation_type: "nuance" },
+          { target_lemma: "doubt", target_pos: "noun", relation_type: "derivation" },
         ],
       },
     ],
@@ -255,7 +255,7 @@ export const HADESTOWN_DOUBT_COMES_IN_DICTIONARY_DATA: LexicalEntrySeed[] = [
         order_index: 0,
         tags: ["personality", "negative"],
         relations: [
-          { target_lemma: "fickle", target_pos: "adjective", relation_type: "nuance" },
+          { target_lemma: "fickle", target_pos: "adjective", relation_type: "synonym" },
         ],
       },
     ],

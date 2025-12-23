@@ -24,11 +24,13 @@ export const relationTypeEnum = pgEnum("relationtype", [
   "translation",
   "synonym",
   "antonym",
-  "hypernym",
-  "hyponym",
-  "meronym",
-  "holonym",
-  "nuance",
+  "hypernym",     // Broader: Square → Shape (Shape is hypernym of Square)
+  "hyponym",      // Narrower: Shape → Square (Square is hyponym of Shape)
+  "meronym",      // Part-of: Wheel → Car (Wheel is part of Car)
+  "holonym",      // Whole-of: Car → Wheel (Car contains Wheel)
+  "analog",       // Discrete↔Continuous: Sigma → Integral (symmetric)
+  "case_variant", // Case pair: Sigma ↔ sigma (symmetric)
+  "derivation",   // Morphological: integrate → integral
 ]);
 
 export const sourceTypeEnum = pgEnum("sourcetype", [
@@ -58,4 +60,18 @@ export const verificationStatusEnum = pgEnum("verificationstatus", [
   "pending_review", // Human currently editing
   "verified", // Signed off by human
   "canonical", // Authoritative source (Oxford, Merriam-Webster, etc.)
+]);
+
+export const senseDifficultyEnum = pgEnum("sense_difficulty", [
+  "beginner",
+  "intermediate",
+  "advanced",
+]);
+
+export const notationTypeEnum = pgEnum("notation_type", [
+  "formula",
+  "pronunciation",
+  "abbreviation",
+  "mnemonic",
+  "symbol",
 ]);
