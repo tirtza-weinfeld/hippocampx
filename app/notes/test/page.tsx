@@ -12,6 +12,7 @@ import { MarkdownRenderer } from '@/components/mdx/parse/markdown-renderer';
 // import N from './n.mdx'
 // import { MathRenderer } from '@/components/mdx/parse/renderers/math-renderer'
 import M from './m.mdx'
+import C from './c.mdx'
 // import CodeBlock from '@/components/mdx/code/code-block'
 export default function TestPage() {
   //   const code = `
@@ -31,6 +32,7 @@ export default function TestPage() {
   // const text = 'Given banana piles `piles` and hour limit `h`, find the minimum eating speed\n' +" *hi* "+
   //     ' **$k$** such that $\\sum_{i=1}^{|piles|} \\lceil \\frac{p_i}{k} \\rceil \\leq h$ where each hour Koko eats up to `k` bananas from one pile (any leftover hour is wasted)'
 
+  
   const mathtext = String.raw`
 
 # Math Color Tests
@@ -108,10 +110,8 @@ $$
 
       {/* <MarkdownRenderer>{mathtext}</MarkdownRenderer> */}
 
-      //
-      <M />
-
-
+      {/* <M /> */}
+<C />
       {/* <CodeBlock className="language-python" >
         {code}
       </CodeBlock> */}
