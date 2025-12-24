@@ -18,6 +18,7 @@ export default defineConfig({
       '.next/',
       'backend/tests/**', // Exclude Python tests
       'e2e/**', // E2E tests handled by Playwright
+      '__tests__/browser/**', // Browser tests run separately
     ],
     coverage: {
       provider: 'v8',

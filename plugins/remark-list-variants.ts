@@ -1,6 +1,7 @@
 import { visit } from 'unist-util-visit'
 import type { Plugin } from 'unified'
-import type { Root, List, ListItem, Text, Parent, Node, RootContent } from 'mdast'
+import type { Root, List, ListItem, Text, Node, RootContent } from 'mdast'
+import type { Parent } from 'unist'
 import type { VFile } from 'vfile'
 
 interface MdxJsxFlowElement {
@@ -42,53 +43,42 @@ const remarkListVariants: Plugin<[], Root> = () => {
     // Recursive function to process nodes and track nesting level
     function processNode(node: RootContent, parent: Root | Parent | List | ListItem, index: number | undefined, currentLevel: number): void {
       if (node.type === 'list') {
-        const list = node as List
-        if (!parent || index === undefined) return
+        if (index === undefined) return
 
         // Transform this list with the current level
-        if (list.ordered) {
-          transformOrderedList(list, file, parent, index, currentLevel)
+        if (node.ordered) {
+          transformOrderedList(node, file, parent, index, currentLevel)
         } else {
-          transformUnorderedList(list, file, parent, index, currentLevel)
+          transformUnorderedList(node, file, parent, index, currentLevel)
         }
 
         // Process children with the same level (list items don't increase level)
-        if (list.children) {
-          list.children.forEach((child, childIndex) => {
-            processNode(child as RootContent, list, childIndex, currentLevel)
-          })
-        }
+        node.children.forEach((child, childIndex) => {
+          processNode(child, node, childIndex, currentLevel)
+        })
       } else if (node.type === 'listItem') {
-        const listItem = node as ListItem
         // Process listItem children, incrementing level for nested lists
-        if (listItem.children) {
-          listItem.children.forEach((child, childIndex: number) => {
-            if (child.type === 'list') {
-              // Nested list gets incremented level
-              processNode(child as RootContent, listItem, childIndex, currentLevel + 1)
-            } else {
-              // Other children keep the same level
-              processNode(child as RootContent, listItem, childIndex, currentLevel)
-            }
-          })
-        }
+        node.children.forEach((child, childIndex) => {
+          if (child.type === 'list') {
+            // Nested list gets incremented level
+            processNode(child, node, childIndex, currentLevel + 1)
+          } else {
+            // Other children keep the same level
+            processNode(child, node, childIndex, currentLevel)
+          }
+        })
       } else if ('children' in node) {
         // Process other nodes recursively without changing level
-        const parentNode = node as Parent
-        if (parentNode.children) {
-          parentNode.children.forEach((child, childIndex: number) => {
-            processNode(child as RootContent, parentNode, childIndex, currentLevel)
-          })
-        }
+        node.children.forEach((child, childIndex) => {
+          processNode(child, node, childIndex, currentLevel)
+        })
       }
     }
     
     // Start processing from the root with level 1
-    if (tree.children) {
-      tree.children.forEach((child, index) => {
-        processNode(child, tree, index, 1)
-      })
-    }
+    tree.children.forEach((child, index) => {
+      processNode(child, tree, index, 1)
+    })
   }
 }
 

@@ -1,8 +1,6 @@
-"use client"
+'use client'
 
-import { useEffect, useRef } from "react"
-import katex from "katex"
-import "katex/dist/katex.min.css"
+import katex from 'katex'
 
 interface MathRendererProps {
   latex: string
@@ -10,38 +8,43 @@ interface MathRendererProps {
   className?: string
 }
 
-export function MathRenderer({ latex, display = false, className = "" }: MathRendererProps) {
-  const containerRef = useRef<HTMLSpanElement>(null)
+export function MathRenderer({ latex, display = false, className = '' }: MathRendererProps) {
+  const processedEquation = latex.replace(/\\\\/g, '\\')
 
-  useEffect(() => {
-    if (!containerRef.current) return
+  const ref = (el: HTMLSpanElement | null) => {
+    if (!el) return
 
     try {
-      // Process the equation (similar to your existing math components)
-      const processedEquation = latex.replace(/\\\\/g, "\\")
-
-      katex.render(processedEquation, containerRef.current, {
+      katex.render(processedEquation, el, {
         throwOnError: false,
         displayMode: display,
         strict: false,
         trust: true,
-        output: "html",
+        output: 'html',
         maxSize: 10,
         maxExpand: 1000,
         minRuleThickness: 0.04
       })
+
+      // Replace KaTeX inline color styles with data-step attributes
+      el.querySelectorAll<HTMLElement>('[style*="color"]').forEach(node => {
+        const style = node.getAttribute('style') || ''
+        const match = style.match(/color:\s*(\w+)/)
+        if (match) {
+          node.setAttribute('data-step', match[1])
+          node.removeAttribute('style')
+        }
+      })
     } catch (error) {
-      console.error("KaTeX rendering error:", error)
-      if (containerRef.current) {
-        containerRef.current.textContent = display ? `$$${latex}$$` : `$${latex}$`
-      }
+      console.error('KaTeX rendering error:', error)
+      el.textContent = display ? `$$${latex}$$` : `$${latex}$`
     }
-  }, [latex, display])
+  }
 
   return (
     <span
-      ref={containerRef}
-      className={`katex-container ${className}`}
+      ref={ref}
+      className={`katex-container ${className}`.trim()}
     />
   )
 }

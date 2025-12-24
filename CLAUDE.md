@@ -9,7 +9,7 @@ Check `/context` for loaded skills. Check `package.json` for versions — use ca
 ## Commands
 
 Use pnpm scripts, never raw tools:
-- `pnpm lint` — not `pnpm eslint`
+- `pnpm lint [path]` — lint all, specific file, or folder (no flags)
 - `pnpm build` — not `pnpm tsc`
 - `pnpm test` — not `pnpm vitest`
 - `pnpm db:generate` — not `pnpm drizzle-kit`

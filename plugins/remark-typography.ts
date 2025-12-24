@@ -1,79 +1,65 @@
 import type { Strong, Emphasis, InlineCode } from 'mdast'
 import type { Plugin } from 'unified'
-import type { Node } from 'unist'
+import type { Root } from 'mdast'
 import { visit } from 'unist-util-visit'
 import { isValidColorName, getStepColor } from './lib/step-colors.js'
 
-const remarkTypography: Plugin = () => {
-  return (tree: Node) => {
-    visit(tree, (node: Node) => {
-      if (node.type === 'strong') {
-        transformStepSyntax(node as Strong)
-      }
+interface HastData {
+  hProperties?: Record<string, string>
+}
 
-      if (node.type === 'emphasis') {
-        transformStepSyntax(node as Emphasis)
-      }
-
-      if (node.type === 'inlineCode') {
-        transformStepSyntax(node as InlineCode)
+const remarkTypography: Plugin<[], Root> = () => {
+  return (tree) => {
+    visit(tree, (node) => {
+      if (node.type === 'strong' || node.type === 'emphasis' || node.type === 'inlineCode') {
+        transformStepSyntax(node)
       }
     })
   }
 }
 
-function transformStepSyntax(node: Strong | Emphasis | InlineCode) {
+function transformStepSyntax(node: Strong | Emphasis | InlineCode): void {
   let text: string
   let updateText: (content: string) => void
 
-  // Handle different node structures
   if (node.type === 'inlineCode') {
-    // InlineCode has value directly on the node
-    text = (node as InlineCode).value || ''
-    updateText = (content: string) => {
-      ;(node as InlineCode).value = content
+    text = node.value
+    updateText = (content) => {
+      node.value = content
     }
   } else {
-    // Strong and Emphasis have children with text nodes
-    const strongOrEmphasis = node as Strong | Emphasis
-    if (!strongOrEmphasis.children || strongOrEmphasis.children.length === 0) return
+    if (node.children.length === 0) return
 
-    const firstChild = strongOrEmphasis.children[0]
+    const firstChild = node.children[0]
     if (firstChild.type !== 'text') return
 
-    text = firstChild.value as string
-    updateText = (content: string) => {
+    text = firstChild.value
+    updateText = (content) => {
       firstChild.value = content
     }
   }
 
-  // Check for step syntax at the beginning: [1!]hi or [red!]hi
   const stepMatch = text.match(/^\[([^!]+)!\](.*)$/)
-  if (!stepMatch) return
+  if (stepMatch === null) return
 
   const [, stepOrColor, content] = stepMatch
 
-  // Determine step value
-  let stepValue: string | null = null
+  let stepValue: string | undefined
 
   if (/^\d+$/.test(stepOrColor)) {
-    // Numeric step - convert to color
     const stepNumber = parseInt(stepOrColor, 10)
     stepValue = getStepColor(stepNumber)
   } else if (isValidColorName(stepOrColor)) {
-    // Color name
     stepValue = stepOrColor
   }
 
-  if (!stepValue) return
+  if (stepValue === undefined) return
 
-  // Update the text content (remove step marker)
   updateText(content)
 
-  // Add step data attribute
-  if (!node.data) node.data = {}
-  const data = node.data as any
-  if (!data.hProperties) data.hProperties = {}
+  const data = (node.data ?? {}) as HastData
+  node.data = data
+  data.hProperties = data.hProperties ?? {}
   data.hProperties['data-step'] = stepValue
 }
 

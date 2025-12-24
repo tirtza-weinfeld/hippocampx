@@ -1,0 +1,9 @@
+// {
+//   "typescript.tsdk": "node_modules/typescript/lib",
+//   "editor.codeActionsOnSave": {
+//     "source.fixAll.eslint": "explicit"
+//   },
+//   "eslint.validate": ["typescript", "typescriptreact"],
+//   "typescript.preferences.includePackageJsonAutoImports": "on",
+//   "typescript.suggestionActions.enabled": false
+// }

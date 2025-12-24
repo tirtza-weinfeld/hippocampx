@@ -1,4 +1,4 @@
-import type { Heading, Parent, Text, RootContent } from 'mdast'
+import type { Heading, Parent, RootContent } from 'mdast'
 import type { Plugin } from 'unified'
 import type { Node } from 'unist'
 import { visit } from 'unist-util-visit'
@@ -50,10 +50,8 @@ export const remarkHeaderSection: Plugin<[PluginOptions?]> = () => {
       if (!node.data) node.data = {}
       if (!node.data.hProperties) node.data.hProperties = {}
       node.data.hProperties.id = customId
-      
+
       // Add component prop to the heading node
-      if (!node.data) node.data = {}
-      if (!node.data.hProperties) node.data.hProperties = {}
       node.data.hProperties['component'] = `${componentName}Header`
       
       // Find content after this heading until the next heading of same or higher level
@@ -102,7 +100,7 @@ function updateHeadingContent(node: Heading, newText: string) {
 function removeComponentDirective(node: Heading) {
   // Remove the [!...] part from the first text node
   if (node.children.length > 0 && node.children[0].type === 'text') {
-    const textNode = node.children[0] as Text
+    const textNode = node.children[0]
     // Remove component directive but preserve single trailing space for proper spacing with following nodes
     textNode.value = textNode.value.replace(/^\[!\w+\]\s*/, '')
     

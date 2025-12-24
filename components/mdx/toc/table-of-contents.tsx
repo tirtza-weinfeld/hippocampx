@@ -1,10 +1,10 @@
 "use client"
 
-import React, { useRef, useEffect, useState, useMemo } from 'react'
+import { useRef, useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { ExpandCollapseIcon, ChevronIcon } from '@/components/svgs/toc-icons'
-import { InlineMath } from '../inline-math'
+import { MathRenderer } from '../parse/renderers/math-renderer'
 
 interface TocHeading {
   text: string
@@ -40,7 +40,7 @@ const renderRichContent = (richContent: TocRichContent[]) => {
         return (
           <span key={index}>
             {needsSpaceBefore && ' '}
-            <InlineMath>{item.content}</InlineMath>
+            <MathRenderer latex={item.content} />
           </span>
         )
       
@@ -49,7 +49,7 @@ const renderRichContent = (richContent: TocRichContent[]) => {
           <span key={index}>
             {needsSpaceBefore && ' '}
             <span data-step={item.stepColor}>
-              <InlineMath>{item.content}</InlineMath>
+              <MathRenderer latex={item.content} />
             </span>
           </span>
         )
@@ -68,7 +68,7 @@ const renderTextWithMath = (text: string) => {
     if (part.match(/^\$[^$]+\$$/)) {
       // This is a math expression
       const mathContent = part.slice(1, -1)
-      return <InlineMath key={index}>{mathContent}</InlineMath>
+      return <MathRenderer key={index} latex={mathContent} />
     }
     // Regular text
     return part
@@ -86,52 +86,43 @@ export function TableOfContents({ headings: rawHeadings, className, maxHeight = 
 
 
 
-  // Memoize headings to prevent unnecessary re-renders
-  const headings = useMemo(() => {
-    let result: TocHeading[] = []
-
-    // Handle both array and JSON string props
+  // Parse headings from string or array
+  const parseHeadings = (): TocHeading[] => {
     if (typeof rawHeadings === 'string') {
       try {
-        const parsed = JSON.parse(rawHeadings)
+        const parsed = JSON.parse(rawHeadings) as unknown
         if (Array.isArray(parsed)) {
-          result = parsed
+          return parsed as TocHeading[]
         }
       } catch (e) {
         console.error("Failed to parse TOC headings from JSON string:", e)
       }
-    } else if (Array.isArray(rawHeadings)) {
-      result = rawHeadings
+      return []
     }
-
-    return result
-  }, [rawHeadings])
+    return Array.isArray(rawHeadings) ? rawHeadings : []
+  }
+  const headings = parseHeadings()
 
   // Group headings by h2 sections
-  const groupHeadingsByH2 = (headings: TocHeading[]) => {
+  const groupHeadingsByH2 = (items: TocHeading[]) => {
     const groups: { h2: TocHeading; children: TocHeading[] }[] = []
     let currentH2: TocHeading | null = null
     let currentChildren: TocHeading[] = []
 
-    headings.forEach((heading) => {
+    for (const heading of items) {
       if (heading.level === 2) {
-        // Save previous group if exists
         if (currentH2) {
           groups.push({ h2: currentH2, children: currentChildren })
         }
-        // Start new group
         currentH2 = heading
         currentChildren = []
       } else if (heading.level > 2 && currentH2) {
-        // Add as child of current h2
         currentChildren.push(heading)
       } else if (heading.level === 1) {
-        // h1 headings are standalone
         groups.push({ h2: heading, children: [] })
       }
-    })
+    }
 
-    // Add the last group
     if (currentH2) {
       groups.push({ h2: currentH2, children: currentChildren })
     }

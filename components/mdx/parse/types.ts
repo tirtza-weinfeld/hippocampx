@@ -16,6 +16,8 @@ export type TokenType =
   | 'mathDisplay'
   | 'list'
   | 'listItem'
+  | 'heading'
+  | 'paragraph'
 
 export interface TextToken extends Token {
   type: 'text'
@@ -91,6 +93,17 @@ export interface CodeBlockToken extends Token {
   meta?: string
 }
 
+export interface HeadingToken extends Token {
+  type: 'heading'
+  level: 1 | 2 | 3 | 4 | 5 | 6
+  children: ParsedToken[]
+}
+
+export interface ParagraphToken extends Token {
+  type: 'paragraph'
+  children: ParsedToken[]
+}
+
 export type ParsedToken =
   | TextToken
   | StrongToken
@@ -102,6 +115,8 @@ export type ParsedToken =
   | MathDisplayToken
   | ListToken
   | ListItemToken
+  | HeadingToken
+  | ParagraphToken
 
 export interface ParseResult {
   tokens: ParsedToken[]

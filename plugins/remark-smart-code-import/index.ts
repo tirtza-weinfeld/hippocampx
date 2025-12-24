@@ -484,9 +484,9 @@ const remarkSmartCodeImport: Plugin = () => {
       }
       
       // If file= is in the language identifier, extract it and set proper lang/meta
-      if (hasFileInLang && !hasFileInMeta) {
+      if (hasFileInLang && !hasFileInMeta && node.lang) {
         // Extract the actual language and file path from lang
-        const langMatch = node.lang!.match(/^(\w+)?\s*file=(.+)$/) || node.lang!.match(/^file=(.+)$/);
+        const langMatch = node.lang.match(/^(\w+)?\s*file=(.+)$/) ?? node.lang.match(/^file=(.+)$/);
         if (langMatch) {
           if (langMatch[2]) {
             // Format: "python file=example.py"
@@ -500,7 +500,8 @@ const remarkSmartCodeImport: Plugin = () => {
         }
       }
 
-      const parsed = parseMeta(node.meta!);
+      if (!node.meta) return;
+      const parsed = parseMeta(node.meta);
       if (!parsed) {
         return;
       }

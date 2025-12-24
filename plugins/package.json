@@ -18,6 +18,7 @@
     "./remark-list-variants": "./dist/remark-list-variants.js",
     "./remark-collapsible-section": "./dist/remark-collapsible-section.js",
     "./remark-section-wrapper": "./dist/remark-section-wrapper.js",
-    "./remark-er-diagram": "./dist/remark-er-diagram.js"
+    "./remark-er-diagram": "./dist/remark-er-diagram.js",
+    "./rehype-katex-colors": "./dist/rehype-katex-colors.js"
   }
 }

@@ -34,11 +34,12 @@ export function MarkdownRenderer({ children, className }: MarkdownRendererProps)
     return <InlineCode>{text}</InlineCode>
   }
 
-  // Check if the text contains block-level content (lists or fenced code blocks)
+  // Check if the text contains block-level content (headers, lists, or fenced code blocks)
+  const hasHeaders = /^#{1,6}\s/m.test(text)
   const hasLists = /^[ \t]*[-*+]\s|^\d+\.\s/m.test(text)
   const hasCodeBlocks = /^[ \t]*```/m.test(text)
 
-  if (hasLists || hasCodeBlocks) {
+  if (hasHeaders || hasLists || hasCodeBlocks) {
     // Use block parser for block-level content
     const blockParser = new BlockParser(text)
     const tokens = blockParser.parse()

@@ -25,15 +25,6 @@ Enable `cacheComponents: true` in next.config.ts.
 
 Cache routes, components, or functions. Data fetching cached as part of static shell.
 
-```tsx
-async function getData() {
-  'use cache'
-  cacheLife('hours')
-  cacheTag('my-data')
-  return fetch('/api/data')
-}
-```
-
 ### Serialization Rules
 
 **Supported:** primitives, plain objects, arrays, Date, Map, Set, React elements (pass-through only)
@@ -42,49 +33,17 @@ async function getData() {
 
 ### Pass-Through Pattern
 
-Accept non-serializable values without introspecting them:
-
-```tsx
-async function CachedWrapper({ children }: { children: ReactNode }) {
-  'use cache'
-  // DON'T read/modify children - just pass through
-  return <div>{children}</div>
-}
-```
+Accept non-serializable values (children, actions) without introspecting them.
 
 ### Runtime API Constraint
 
-Cannot access `cookies()`, `headers()`, `searchParams` inside cached scope. Read outside and pass as args:
-
-```tsx
-// ❌ Wrong - runtime API inside cache
-async function Cached() {
-  'use cache'
-  const cookie = cookies().get('theme') // Error!
-}
-
-// ✅ Correct - pass as argument
-async function Page() {
-  const theme = (await cookies()).get('theme')
-  return <Cached theme={theme} />
-}
-```
+Cannot access `cookies()`, `headers()`, `searchParams` inside cached scope. Read outside and pass as args.
 
 → `examples/use-cache.tsx`
 
 ## `"use cache: private"`
 
 Allows runtime APIs inside cache. Results cached in **browser memory only**, never on server.
-
-```tsx
-async function getRecommendations(productId: string) {
-  'use cache: private'
-  cacheLife({ stale: 60 }) // min 30s required
-
-  const session = (await cookies()).get('session')?.value
-  return getPersonalizedRecs(productId, session)
-}
-```
 
 **Constraints:**
 - Executes on every server render
@@ -96,15 +55,6 @@ async function getRecommendations(productId: string) {
 ## `"use cache: remote"`
 
 Stores output in remote cache. Durable across instances/deployments.
-
-```tsx
-async function getProductPrice(productId: string, currency: string) {
-  'use cache: remote'
-  cacheTag(`price-${productId}`)
-  cacheLife({ expire: 3600 })
-  return db.products.getPrice(productId, currency)
-}
-```
 
 **Use when:**
 - Rate-limited APIs

@@ -72,7 +72,7 @@ export class MathParser {
   static extractMathTokens(text: string): { tokens: (MathToken | MathDisplayToken)[]; remaining: string } {
     const parser = new MathParser(text)
     const allTokens = parser.parse()
-    const mathTokens = allTokens.filter(token => token.type === 'math' || token.type === 'mathDisplay') as (MathToken | MathDisplayToken)[]
+    const mathTokens = allTokens.filter((token): token is MathToken | MathDisplayToken => token.type === 'math' || token.type === 'mathDisplay')
 
     // Build remaining text by skipping over math token ranges
     // Sort tokens by start position in reverse order to maintain correct positions

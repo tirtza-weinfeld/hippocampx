@@ -1,73 +1,76 @@
+/* ==========================================================================
+   KaTeX Math Styling
+   Colors handled via data-step attribute (set in math-renderer.tsx)
+   which step.css maps to --step variable
+   ========================================================================== */
 
-.katex span[style*="color: red"]    { --step: var(--color-red-500)  }
-.katex span[style*="color: blue"]   { --step: var(--color-blue-500)  }
-.katex span[style*="color: green"]  { --step: var(--color-green-500)  }
-.katex span[style*="color: yellow"] { --step: var(--color-yellow-500)  }
-.katex span[style*="color: purple"] { --step: var(--color-purple-500)  }
-.katex span[style*="color: pink"] { --step: var(--color-pink-500)  }
-.katex span[style*="color: teal"] { --step: var(--color-teal-500)  }
-.katex span[style*="color: indigo"] { --step: var(--color-indigo-500)  }
-.katex span[style*="color: gray"] { --step: var(--color-gray-500)  }
-.katex span[style*="color: black"] { --step: var(--color-gray-900)  }
-.katex span[style*="color: white"] { --step: var(--color-gray-100)  }
-.katex span[style*="color: orange"] { --step: var(--color-orange-500)  }
-.katex span[style*="color: blue"] { --step: var(--color-blue-500)  }
-.katex span[style*="color: sky"] { --step: var(--color-sky-500)  }
+/* --------------------------------------------------------------------------
+   Default Step Colors
+   -------------------------------------------------------------------------- */
 
-/* em .katex *,strong .katex * */
-.alert .katex,
-.table-of-contents .katex,
-em .katex,
-strong .katex{
- 
-  background: inherit !important;
-  color: inherit !important;
+/* Default math: gray */
+:root .katex { --step: var(--color-blue-600) }
+.dark .katex { --step: var(--color-blue-300) }
 
-  
-}
+/* Em/Strong WITHOUT data-step: sky (matches text-em-gradient/bg-strong-gradient) */
+:where(em:not([data-step]), strong:not([data-step])) .katex { --step: var(--color-sky-500) }
+
+/* Inside [data-step]: inherit from parent (step.css sets --step on [data-step] elements) */
+[data-step] .katex:not([data-step]) { --step: inherit }
+
+
+/* --------------------------------------------------------------------------
+   SVG Elements: Apply step color to vector graphics
+   -------------------------------------------------------------------------- */
 
 .katex svg * {
-  color: var(--step) !important;
-  /* fill: currentColor !important; */
-  /* stroke: currentColor !important; */
+  color: var(--step);
 }
 
+/* --------------------------------------------------------------------------
+   Base KaTeX Styles
+   -------------------------------------------------------------------------- */
 
-/* Basic KaTeX styles */
 .katex {
   font-size: 1.1em;
-  text-rendering: auto;
-  background: transparent! important;
-
+  background: transparent;
   display: inline-block;
 
-
-  *{
-    background: linear-gradient(to right, --alpha(var(--step) / 100%), --alpha(var(--step) / 20%) , --alpha(var(--step) / 40%));
+  /* Gradient text - only on content elements, not structural/layout */
+  :where(.mord, .mop, .mrel, .mopen, .mclose, .mpunct, .minner, .mbin, .texttt, .textrm, .textsf) {
+    background: linear-gradient(
+      to right bottom,
+      --alpha(var(--step) / 100%),
+      --alpha(var(--step) / 90%),
+      --alpha(var(--step) / 80%)
+    );
     background-size: 200% 100%;
     background-position: 0% 50%;
-    background-clip: text !important;
-    color: transparent !important;
-    /* display: inline-block; */
-    &:hover span{
-      background-position: 100% 20%;
-    }
-
+    background-clip: text;
+    color: transparent;
+    
   }
 
+  /* Structural elements: transparent bg, solid color */
+  :where(.strut, .pstrut, .vlist, .vlist-t, .vlist-r, .vlist-s, .hide-tail, .rule) {
+    background: transparent;
+  }
+
+  /* Fraction line: solid border color */
+  .frac-line {
+    border-color: var(--step);
+  }
 }
 
+/* --------------------------------------------------------------------------
+   Container Styles
+   -------------------------------------------------------------------------- */
 
 .katex-container {
-
   display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  
-}
+  place-items: center;
 
-/* Fix vertical alignment */
-.katex-container .katex {
-  vertical-align: middle;
+  & .katex {
+    vertical-align: middle;
+  }
 }
-

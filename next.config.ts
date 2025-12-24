@@ -8,20 +8,19 @@ const withMDX = createMDX({
       'remark-math',
       'remark-gfm',
       '@hippocampx/plugins/remark-typography',
-
       '@hippocampx/plugins/remark-section-list',
       '@hippocampx/plugins/remark-github-alerts',
       '@hippocampx/plugins/remark-code-copy',
       '@hippocampx/plugins/remark-feature-list',
       '@hippocampx/plugins/remark-list-variants',
       '@hippocampx/plugins/toc-plugin',
-
       '@hippocampx/plugins/remark-section-wrapper',
       '@hippocampx/plugins/remark-er-diagram',
 
       ],
     rehypePlugins: [
       'rehype-katex',
+      '@hippocampx/plugins/rehype-katex-colors',
       ['rehype-mdx-code-props', { tagName: 'code' }],
       'rehype-slug',
       ['rehype-autolink-headings',

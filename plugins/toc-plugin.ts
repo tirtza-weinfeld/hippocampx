@@ -32,26 +32,24 @@ const RESIZABLE_TOC_HEADING = 'Resizable Table of Contents'
  * Extract step color from styled node using the same logic as remarkTypography
  */
 function extractStepColorFromStyledNode(node: Parent): string | undefined {
-  if (!node.children || node.children.length === 0) return undefined
-  
+  if (node.children.length === 0) return undefined
+
   const firstChild = node.children[0]
   if (firstChild.type !== 'text') return undefined
-  
+
   const textNode = firstChild as Text
-  const text = textNode.value as string
-  const stepMatch = text.match(/^\[([^!]+)!\](.*)$/)
-  if (!stepMatch) return undefined
-  
+  const stepMatch = textNode.value.match(/^\[([^!]+)!\](.*)$/)
+  if (stepMatch === null) return undefined
+
   const [, stepOrColor] = stepMatch
-  
-  // Determine step value
+
   if (/^\d+$/.test(stepOrColor)) {
-    const stepNumber = parseInt(stepOrColor, 10)
-    return getStepColor(stepNumber)
-  } else if (isValidColorName(stepOrColor)) {
+    return getStepColor(parseInt(stepOrColor, 10))
+  }
+  if (isValidColorName(stepOrColor)) {
     return stepOrColor
   }
-  
+
   return undefined
 }
 
@@ -91,9 +89,7 @@ function extractRichContentFromHeading(node: Heading): TocRichContent[] {
       const stepColor = (styledNode.data?.hProperties?.['data-step'] as string) ||
                        extractStepColorFromStyledNode(styledNode)
 
-      if (styledNode.children && Array.isArray(styledNode.children)) {
-        styledNode.children.forEach((child: Node) => processNode(child, stepColor))
-      }
+      styledNode.children.forEach((child: Node) => processNode(child, stepColor))
     } else if ('children' in node && Array.isArray(node.children)) {
       const parentNode = node as Parent
       parentNode.children.forEach((child: Node) => processNode(child, parentStepColor))
@@ -106,17 +102,16 @@ function extractRichContentFromHeading(node: Heading): TocRichContent[] {
 
 
 const remarkInjectToc: Plugin<[], Parent> = () => (tree) => {
-  // console.log('--- TOC Plugin Start ---')
-  // console.log(JSON.stringify(tree, null, 2))
-
   const slugger = new GithubSlugger()
   const headings: TocHeading[] = []
-  let tocHeadingIndex = -1
-  let tocParent: Parent | null = null
-  let isResizableLayout = false
-  let h1Index = -1
 
-  // console.log('TOC Plugin starting...')
+  // Use state object to help ESLint track mutations in callbacks
+  const state = {
+    tocHeadingIndex: -1,
+    tocParent: null as Parent | null,
+    isResizableLayout: false,
+    h1Index: -1,
+  }
 
   // First pass: collect all headings and find the TOC heading
   visit(tree, 'heading', (node: Heading, index, parent) => {
@@ -136,30 +131,29 @@ const remarkInjectToc: Plugin<[], Parent> = () => (tree) => {
     // Create a temporary cleaned node for rich content extraction
     const cleanedNode = structuredClone(node)
     if (cleanedNode.children.length > 0 && cleanedNode.children[0].type === 'text') {
-      const textNode = cleanedNode.children[0] as Text
-      textNode.value = textNode.value.replace(/^\[!(?:collapsible(?::expand)?)?\(?(?:[^)]+)?\)?\]\s*/i, '')
+      cleanedNode.children[0].value = cleanedNode.children[0].value.replace(/^\[!(?:collapsible(?::expand)?)?\(?(?:[^)]+)?\)?\]\s*/i, '')
     }
     const richContent = extractRichContentFromHeading(cleanedNode)
 
     if (!displayText || !slugText) return
 
     // Find and store the H1 index
-    if (node.depth === 1 && h1Index === -1) {
-      h1Index = index
+    if (node.depth === 1 && state.h1Index === -1) {
+      state.h1Index = index
     }
 
     // Check if this is the TOC heading (regular or resizable)
     if (displayText.toLowerCase() === TOC_HEADING.toLowerCase() && node.depth === 2) {
-      tocHeadingIndex = index
-      tocParent = parent
-      isResizableLayout = false
+      state.tocHeadingIndex = index
+      state.tocParent = parent
+      state.isResizableLayout = false
       return
     }
 
     if (displayText.toLowerCase() === RESIZABLE_TOC_HEADING.toLowerCase() && node.depth === 2) {
-      tocHeadingIndex = index
-      tocParent = parent
-      isResizableLayout = true
+      state.tocHeadingIndex = index
+      state.tocParent = parent
+      state.isResizableLayout = true
       return // Don't include "Resizable Table of Contents" in the TOC itself
     }
 
@@ -173,29 +167,26 @@ const remarkInjectToc: Plugin<[], Parent> = () => (tree) => {
     })
   })
 
-  // console.log('Collected headings:', headings)
-  // console.log('TOC heading index:', tocHeadingIndex)
-
   // Second pass: replace the TOC heading with the component
-  if (tocHeadingIndex !== -1 && tocParent && headings.length > 0) {
-    const componentName = isResizableLayout ? 'ResizableWrapper' : 'TableOfContents'
-    
-    if (isResizableLayout) {
+  if (state.tocHeadingIndex !== -1 && state.tocParent && headings.length > 0) {
+    const componentName = state.isResizableLayout ? 'ResizableWrapper' : 'TableOfContents'
+
+    if (state.isResizableLayout) {
       // For resizable layout, we want to wrap content starting from the H1.
       // The Resizable TOC heading itself will be removed from the flow.
 
       // Determine the starting index for content. It should be the H1.
       // Fallback to the TOC heading index if H1 isn't found before it.
-      const contentStartIndex = h1Index !== -1 && h1Index < tocHeadingIndex ? h1Index : tocHeadingIndex
+      const contentStartIndex = state.h1Index !== -1 && state.h1Index < state.tocHeadingIndex ? state.h1Index : state.tocHeadingIndex
 
       // Grab all nodes from the start index to the end.
-      const nodesToWrapAndFilter = (tocParent as Parent).children.slice(contentStartIndex)
-      
+      const nodesToWrapAndFilter = state.tocParent.children.slice(contentStartIndex)
+
       // Filter out the 'Resizable Table of Contents' node from this selection.
-      const contentToWrap = nodesToWrapAndFilter.filter((node, index) => {
-        // The actual index of the TOC heading in the original `children` array is `tocHeadingIndex`.
-        // Its index inside our `nodesToWrapAndFilter` slice is `tocHeadingIndex - contentStartIndex`.
-        return contentStartIndex + index !== tocHeadingIndex
+      const contentToWrap = nodesToWrapAndFilter.filter((_node, index) => {
+        // The actual index of the TOC heading in the original `children` array is `state.tocHeadingIndex`.
+        // Its index inside our `nodesToWrapAndFilter` slice is `state.tocHeadingIndex - contentStartIndex`.
+        return contentStartIndex + index !== state.tocHeadingIndex
       })
 
       const jsxNode = {
@@ -215,12 +206,12 @@ const remarkInjectToc: Plugin<[], Parent> = () => (tree) => {
         ],
         children: contentToWrap
       }
-      
+
       // Remove everything from the content start index onwards from the original tree
-      ;(tocParent as Parent).children.splice(contentStartIndex)
-      
+      state.tocParent.children.splice(contentStartIndex)
+
       // Add the new ResizableWrapper that contains the wrapped content
-      ;(tocParent as Parent).children.push(jsxNode)
+      state.tocParent.children.push(jsxNode)
     } else {
       // For regular TOC, just replace the heading
       const jsxNode = {
@@ -235,11 +226,9 @@ const remarkInjectToc: Plugin<[], Parent> = () => (tree) => {
         ],
         children: []
       }
-      
-      ;(tocParent as Parent).children.splice(tocHeadingIndex, 1, jsxNode)
+
+      state.tocParent.children.splice(state.tocHeadingIndex, 1, jsxNode)
     }
-  } else {
-    // console.log('Not injecting component - conditions not met')
   }
 }
 

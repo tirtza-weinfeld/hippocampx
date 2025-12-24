@@ -17,6 +17,36 @@ interface ParsedMeta {
   preservedMeta: string[];
 }
 
+// Type definitions for JSON structures
+interface SymbolEntry {
+  code?: string;
+}
+
+interface SymbolTagsData {
+  [key: string]: SymbolEntry | undefined;
+}
+
+interface SolutionEntry {
+  code?: string;
+}
+
+interface SolutionsMap {
+  [fileName: string]: SolutionEntry | undefined;
+}
+
+interface ProblemEntry {
+  solutions?: SolutionsMap;
+}
+
+interface ProblemsMap {
+  [problemName: string]: ProblemEntry | undefined;
+}
+
+interface ProblemsMetadataData {
+  problems?: ProblemsMap;
+  core?: ProblemsMap;
+}
+
 function parseMeta(meta: string): ParsedMeta | null {
   const metaParts = meta.split(/\s+/);
   let filePath = '';
@@ -66,10 +96,10 @@ function buildSymbolKey(filePath: string, functionName: string): string {
 
 function extractFromSymbolTags(content: string, symbolKey: string): string | null {
   try {
-    const data = JSON.parse(content);
+    const data = JSON.parse(content) as SymbolTagsData;
     const symbol = data[symbolKey];
 
-    if (symbol && symbol.code) {
+    if (symbol?.code) {
       return symbol.code;
     } else {
       // console.warn(`Symbol '${symbolKey}' not found in symbol_tags.json`);
@@ -83,28 +113,24 @@ function extractFromSymbolTags(content: string, symbolKey: string): string | nul
 
 function extractFromProblemsMetadata(content: string, filePath: string): string | null {
   try {
-    const data = JSON.parse(content);
+    const data = JSON.parse(content) as ProblemsMetadataData;
 
     // Map file path to JSON path in problems_metadata.json
     const match = filePath.match(/^problems\/([^\/]+)\/([^\/]+)\.py$/);
     if (match) {
       const problemName = match[1];
       const fileName = match[2];
+      const fullFileName = `${fileName}.py`;
 
       // Navigate to problems.problemName.solutions
-      if (data.problems && data.problems[problemName] && data.problems[problemName].solutions) {
-        const solutions = data.problems[problemName].solutions;
-        const fullFileName = `${fileName}.py`;
+      const problem = data.problems?.[problemName]
+      const solutions = problem?.solutions
+      const solution = solutions?.[fullFileName]
 
-        // Access the solution file directly (handles keys with dots)
-        if (solutions[fullFileName] && solutions[fullFileName].code) {
-          return solutions[fullFileName].code;
-        } else {
-          console.warn(`Solution '${fullFileName}' not found for problem '${problemName}'`);
-          return null;
-        }
+      if (solution?.code) {
+        return solution.code;
       } else {
-        // console.warn(`Problem '${problemName}' not found in problems_metadata.json`);
+        console.warn(`Solution '${fullFileName}' not found for problem '${problemName}'`);
         return null;
       }
     }
@@ -114,21 +140,17 @@ function extractFromProblemsMetadata(content: string, filePath: string): string 
     if (coreMatch) {
       const algorithmName = coreMatch[1];
       const fileName = coreMatch[2];
+      const fullFileName = `${fileName}.py`;
 
       // Navigate to core.algorithmName.solutions
-      if (data.core && data.core[algorithmName] && data.core[algorithmName].solutions) {
-        const solutions = data.core[algorithmName].solutions;
-        const fullFileName = `${fileName}.py`;
+      const algorithm = data.core?.[algorithmName]
+      const solutions = algorithm?.solutions
+      const solution = solutions?.[fullFileName]
 
-        // Access the solution file directly (handles keys with dots)
-        if (solutions[fullFileName] && solutions[fullFileName].code) {
-          return solutions[fullFileName].code;
-        } else {
-          console.warn(`Solution '${fullFileName}' not found for algorithm '${algorithmName}'`);
-          return null;
-        }
+      if (solution?.code) {
+        return solution.code;
       } else {
-        // console.warn(`Algorithm '${algorithmName}' not found in problems_metadata.json`);
+        console.warn(`Solution '${fullFileName}' not found for algorithm '${algorithmName}'`);
         return null;
       }
     }
@@ -163,9 +185,9 @@ const remarkCodeCopy: Plugin = () => {
       }
 
       // If file= is in the language identifier, extract it and set proper lang/meta
-      if (hasFileInLang && !hasFileInMeta) {
+      if (hasFileInLang && !hasFileInMeta && node.lang) {
         // Extract the actual language and file path from lang
-        const langMatch = node.lang!.match(/^(\w+)?\s*file=(.+)$/) || node.lang!.match(/^file=(.+)$/);
+        const langMatch = node.lang.match(/^(\w+)?\s*file=(.+)$/) ?? node.lang.match(/^file=(.+)$/);
         if (langMatch) {
           if (langMatch[2]) {
             // Format: "python file=example.py"
@@ -179,7 +201,8 @@ const remarkCodeCopy: Plugin = () => {
         }
       }
 
-      const parsed = parseMeta(node.meta!);
+      if (!node.meta) return;
+      const parsed = parseMeta(node.meta);
       if (!parsed) {
         return;
       }

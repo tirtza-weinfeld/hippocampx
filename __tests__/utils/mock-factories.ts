@@ -45,11 +45,11 @@ export const createMockMdxComponents = () => ({
     }, children)
   ),
   
-  InlineMath: vi.fn(({ children }: { children: string }) =>
+  MathRenderer: vi.fn(({ latex }: { latex: string }) =>
     React.createElement('span', {
-      'data-testid': 'inline-math',
-      className: 'inline-math',
-    }, children)
+      'data-testid': 'math-renderer',
+      className: 'katex-container',
+    }, latex)
   ),
 
   Table: vi.fn(({ children }: { children: React.ReactNode }) =>

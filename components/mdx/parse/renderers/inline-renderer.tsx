@@ -25,25 +25,25 @@ function renderToken(token: ParsedToken, key: number): React.ReactNode {
       return renderText(token.content, token.stepData, key)
 
     case 'strong':
-      return renderStrong(token as StrongToken, key)
+      return renderStrong(token, key)
 
     case 'emphasis':
-      return renderEmphasis(token as EmphasisToken, key)
+      return renderEmphasis(token, key)
 
     case 'inlineCode':
-      return renderInlineCode(token as InlineCodeToken, key)
+      return renderInlineCode(token, key)
 
     case 'link':
-      return renderLink(token as LinkToken, key)
+      return renderLink(token, key)
 
     case 'math':
-      return renderInlineMath(token as MathToken, key)
+      return renderInlineMath(token, key)
 
     case 'mathDisplay':
-      return renderDisplayMath(token as MathDisplayToken, key)
+      return renderDisplayMath(token, key)
 
     case 'list':
-      return renderList(token as ListToken, key)
+      return renderList(token, key)
 
     case 'listItem':
       // List items should be rendered within their parent list
@@ -51,7 +51,7 @@ function renderToken(token: ParsedToken, key: number): React.ReactNode {
 
     default:
       // Fallback for any unknown token types
-      return String((token as Token).content || '')
+      return (token as Token).content || ''
   }
 }
 
@@ -124,7 +124,7 @@ function extractTextContent(tokens: (Token | string)[]): string {
     if (typeof token === 'string') return token
     if ('content' in token && token.content) return token.content
     if ('children' in token && token.children && Array.isArray(token.children)) {
-      return extractTextContent(token.children)
+      return extractTextContent(token.children as (Token | string)[])
     }
     return ''
   }).join('')

@@ -63,9 +63,9 @@ const remarkFeatureList: Plugin<[], Root> = () => {
     // Detect and mark feature patterns: "~ Feature text"
     visit(tree, 'listItem', (listItem: ListItem, index, parent) => {
       if (!parent || index === undefined) return
-      
+
       const paragraph = listItem.children[0]
-      if (!paragraph || paragraph.type !== 'paragraph') return
+      if (paragraph.type !== 'paragraph') return
 
       const fullText = reconstructMarkdownFromParagraph(paragraph)
       const text = fullText.trim()

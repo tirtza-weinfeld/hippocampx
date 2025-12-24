@@ -3,31 +3,13 @@
   "compilerOptions": {
     "outDir": "../node_modules/@hippocampx/plugins/dist",
     "rootDir": ".",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
-    "skipLibCheck": true,
-    "strict": false,
-    "noImplicitAny": false,
     "noEmit": false
   },
-  "include": [
-    "./mdx-latex-loader.ts",
-    "./remark-typography.ts",
-    "./remark-code-tabs.ts",
-    "./remark-header-section.ts",
-    "./remark-section-list.ts",
-    "./toc-plugin.ts",
-    "./remark-github-alerts.ts",
-    "./remark-code-copy",
-    "./remark-feature-list.ts",
-    "./remark-list-variants.ts",
-    "./remark-collapsible-section.ts",
-    "./mdx-text-extraction.ts",
-    "./remark-section-wrapper.ts",
-    "./remark-er-diagram.ts",
-    "./lib/step-colors.ts",
-    "./mdast-types.d.ts"
-  ],
+  "include": ["./**/*.ts"],
   "exclude": ["node_modules", "dist"]
 }

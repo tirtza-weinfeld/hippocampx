@@ -117,19 +117,12 @@ export function Strong ({ children, ...props }: TypographyProps) {
       className={cn(
         "font-semibold ",
         " px-1.5 py-0.5 ",
-        // "px-1",
         "inline-block",
         "rounded-sm",
-        // "bg-code-background-gradient",
-        // " hover:shadow-xs hover:shadow-strong-shadow",
-        // "bg-strong-background"
-        // "border-b-1 border-step/50 ",
         "shadow-xs  ",
-        // "border border-step border-1",
         "bg-linear-to-r  from-step/10 via-step/5 to-transparent",
         "hover:bg-linear-to-l",
         "transition-all duration-300",
-        // className
       )}
       {...props}
     >

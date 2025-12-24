@@ -1,50 +1,65 @@
-# hi
+# Math Color Tests
+
+## Resizable Table Of Contents
+
+## Basic Colors $\color{red}{\log(5)}$ $\log(5)$
+
+ ("apple" = red gradient )
+here is $\color{red}{\text{apple}}$
+
+ ("banana" = yellow gradient )
+here is $\color{yellow}{\text{banana}}$
+
+ ("cucumber" = green gradient )
+here is $\textcolor{green}{\text{cucumber}}$
+
+ ("dolphin" = blue gradient )
+here is $\color{blue}{\text{dolphin}}$
+
+ ("elephant" = pink gradient )
+here is $\color{pink}{\text{elephant}}$
+
+ ("falcon" = indigo gradient )
+here is $\color{indigo}{\text{falcon}}$
+
+## Partial Color
+
+ ("x +" = gray gradient, "y = 10" = red gradient — \color is a switch, not scoped )
+partial $x + \color{red}{y} = 10$
+
+ $x + \textcolor{red}{y} = 10$     # textcolor takes an argument
+  
+ $x + {\color{red}y} = 10$         # wrap BOTH color switch AND content in
 
 
-## Resizable Table of Contents
+## Strong (bold)
 
-Given banana piles `piles` and hour limit `h`, find the minimum eating speed 
-*hi*  **[red!]$k\in\mathbb{N}$** such that $\sum_{i=1}^{|piles|} \lceil \frac{p_i}{k} \rceil \leq h$ where each hour Koko eats up to `k` bananas from one pile (any leftover hour is wasted)'
+ ("tasty" = sky-teal gradient, "cherry" = red gradient )
+**tasty $\textcolor{red}{\text{cherry}}$**
 
-## Math
+ ("juicy grape" = red gradient, background tint from [red!] )
+**[red!]juicy $\text{grape}$**
 
-sweet math $\log(n)$..
+ ("fresh lemon" = red gradient, "kiwi" = green gradient, background tint )
+**[red!]fresh $\textcolor{green}{\text{kiwi}}$ $\text{lemon}$**
 
-see $\delta(s, v),\ \forall v \in V$.
+## Em (italic)
 
-## $log(n)$ math
+ ("sweet" = sky-teal gradient, "mango" = red gradient )
+*sweet $\textcolor{red}{\text{mango}}$*
 
-$\delta(s, v),\ \forall v \in V$.
+ ("ripe nectarine" = red gradient, background tint from [red!] )
+*[red!]ripe $\text{nectarine}$*
 
-hi red $\color{red}{x^2 + y^2}$
+ ("delicious papaya" = red gradient, "nectarine" = green gradient, background tint )
+*[red!]delicious $\textcolor{green}{\text{nectarine}}$ $\text{papaya}$*
 
-$\color{yellow}{x^2 + y^2}$
+*[red!]delicious *[green!]nectarine* papaya*
 
-$x + \color{red}{y} = 10$
+## Block Math
 
-$\color{pink}{E = mc^2}$
-
-$\textcolor{green}{\text{gradient hi how are you}}$
-
-**$\color{red}{\text{gradient}}$**
-
-///
-
-**[red!]hi strong $\textcolor{green}{\text{gradient}} {\text{gradient}}$**
-
-
-*[red!]hi em $\textcolor{green}{\text{gradient}}{\text{gradient}}$*
-
-///
-
-*hi cool $\textcolor{red}{\text{gradient}}$*
-
-
-
-**[pink!]$\color{blue}{\boldsymbol{\nabla f}}$**
-
-
+ ("nabla f" = green gradient, centered )
 $$
-\color{indigo}{\boldsymbol{\nabla f} }
+\color{green}{\boldsymbol{\nabla f}}
 $$
 

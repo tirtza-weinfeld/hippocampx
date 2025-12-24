@@ -22,8 +22,8 @@ interface MdxJsxFlowElement extends Node {
   children: RootContent[]
 }
 
-export const remarkSectionWrapper: Plugin<[PluginOptions?]> = (options = {}) => {
-  const { depths = [2, 3, 4, 5, 6] } = options
+export const remarkSectionWrapper: Plugin<[PluginOptions?]> = (options) => {
+  const { depths = [2, 3, 4, 5, 6] } = options ?? {}
 
   return (tree: Node) => {
     const slugger = new GithubSlugger()
@@ -117,7 +117,7 @@ export const remarkSectionWrapper: Plugin<[PluginOptions?]> = (options = {}) => 
           children: [{ type: 'text', value: cleanHeadingText.trim() }]
         }
         // Copy ID data if it exists, but nothing else
-        if (node.data?.hProperties?.id) {
+        if (node.data.hProperties.id) {
           headingNode.data = {
             hProperties: {
               id: node.data.hProperties.id
@@ -192,8 +192,9 @@ function updateHeadingContent(node: Heading, newText: string): void {
     removeCollapsibleDirective(node)
   } else {
     // Only text content - modify the existing text node in place
-    if (node.children.length > 0 && node.children[0].type === 'text') {
-      (node.children[0] as Text).value = newText
+    const firstChild = node.children[0]
+    if (firstChild.type === 'text') {
+      firstChild.value = newText
     } else {
       // Fallback: create new text node if needed
       node.children = [{ type: 'text', value: newText }]
@@ -203,8 +204,9 @@ function updateHeadingContent(node: Heading, newText: string): void {
 
 function removeCollapsibleDirective(node: Heading): void {
   // Remove the [!collapsible], [!collapsible:expand], or specialized component directives from the first text node
-  if (node.children.length > 0 && node.children[0].type === 'text') {
-    const textNode = node.children[0] as Text
+  const firstChild = node.children[0]
+  if (firstChild.type === 'text') {
+    const textNode = firstChild
     // Remove component directive (including specialized format) but preserve single trailing space for proper spacing with following nodes
     textNode.value = textNode.value.replace(/^\[!(?:collapsible(?::expand)?)?\(?(?:[^)]+)?\)?\]\s*/i, '')
 
@@ -229,7 +231,7 @@ function extractSectionContent(parent: Parent, headingIndex: number, currentDept
     const node = parent.children[i]
 
     // Stop at next heading of same or higher level
-    if (node.type === 'heading' && (node as Heading).depth <= currentDepth) {
+    if (node.type === 'heading' && node.depth <= currentDepth) {
       break
     }
 
@@ -246,7 +248,7 @@ function extractSectionContent(parent: Parent, headingIndex: number, currentDept
       // Stop only if the wrapped section is same or higher level (depth <= currentDepth)
       if (componentName === 'Section' || componentName === 'CollapsibleSection') {
         const jsxElement = node as unknown as MdxJsxFlowElement
-        const depthAttr = jsxElement.attributes?.find((attr: MdxJsxAttribute) => attr.name === 'data-depth')
+        const depthAttr = jsxElement.attributes.find((attr: MdxJsxAttribute) => attr.name === 'data-depth')
         const wrappedDepth = depthAttr ? Number(depthAttr.value) : undefined
 
         // If we can determine the depth and it's same or higher level, stop

@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/lib/utils";
+import { Em } from "@/components/mdx/typography";
 
 interface ProblemDefinitionProps {
   children: React.ReactNode;
@@ -16,21 +16,15 @@ export function ProblemDefinitionHeader({ children, className }: ProblemDefiniti
   )
 }
 
-export function ProblemDefinitionContent({ children, className, ...props }: ProblemDefinitionProps) {
+export function ProblemDefinitionContent({ children, ...props }: ProblemDefinitionProps) {
   return (
-    <div {...props} className={cn(
-
-      // "border-l-4", "bg-link-gradient",
-
-
-      "mb-3", className,
-      // "[&_p]:bg-red-500",
-      "[&_p]:text-em-gradient [&_p]:italic"
-    )}>
-      {/* <Em {...props}> */}
+    // <div {...props} className={cn(
+    //   "mb-3", className,
+    //   "[&_p]:text-em-gradient [&_p]:italic"
+    // )}>
+      <Em {...props}>
       {children}
-      {/* </Em> */}
+      </Em>
 
-    </div>
   );
 }

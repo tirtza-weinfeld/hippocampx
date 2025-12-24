@@ -122,7 +122,8 @@ function analyzeExternalConnections(
     const toInDomain = tableSet.has(rel.to.table)
 
     if (fromInDomain) {
-      const info = result.get(rel.from.table)!
+      const info = result.get(rel.from.table)
+      if (!info) continue
       if (toInDomain) {
         // Internal connection
         info.internalConnections.push(rel.to.table)
@@ -142,7 +143,8 @@ function analyzeExternalConnections(
 
     if (toInDomain && !fromInDomain) {
       // INCOMING: this table receives FK from another domain
-      const info = result.get(rel.to.table)!
+      const info = result.get(rel.to.table)
+      if (!info) continue
       const sourceDomain = tableToDomain.get(rel.from.table)
       if (sourceDomain !== undefined) {
         const sourcePos = domainGrid.get(sourceDomain) ?? { row: 0, col: 0 }
@@ -182,9 +184,6 @@ function sortByHubDistance(
   incomingFKs: Map<string, string[]>,
   outgoingFKs: Map<string, string[]>
 ): string[] {
-  // Build adjacency for internal connections
-  const connected = new Set<string>()
-
   // Direct connections to hub (either direction)
   const hubIncoming = incomingFKs.get(hubTable) ?? []
   const hubOutgoing = outgoingFKs.get(hubTable) ?? []
@@ -259,7 +258,8 @@ function computeInternalDomainLayouts(
     const interfaceTables = new Map<string, Set<Direction>>() // table -> directions
 
     for (const table of domain.tables) {
-      const info = connectionInfo.get(table)!
+      const info = connectionInfo.get(table)
+      if (!info) continue
       const directions = getExternalDirections(info.externalConnections)
 
       if (directions.size > 0) {
@@ -525,7 +525,8 @@ function computeDomainGrid(
       let avgRow = 0
       let avgCol = 0
       for (const cd of connectedDomains) {
-        const pos = grid.get(cd)!
+        const pos = grid.get(cd)
+        if (!pos) continue
         avgRow += pos.row
         avgCol += pos.col
       }

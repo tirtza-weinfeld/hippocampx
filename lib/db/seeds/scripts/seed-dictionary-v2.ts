@@ -19,6 +19,7 @@ import {
   senses,
   examples,
   senseRelations,
+  senseNotations,
   categories,
   tags,
   senseTags,
@@ -31,6 +32,7 @@ import {
   type InsertWordForm,
   type InsertExample,
   type InsertSenseRelation,
+  type InsertSenseNotation,
   type InsertTag,
   type InsertSenseTag,
   type InsertSource,
@@ -94,6 +96,7 @@ type Collected = {
   senseTags: Array<{ senseKey: SenseKey; tagName: string }>;
   examples: Array<{ senseKey: SenseKey; data: Omit<InsertExample, "sense_id" | "source_part_id">; sourceKey?: SourceKey; sourcePath?: string[] }>;
   relations: Array<{ sourceKey: SenseKey; targetKey: SenseKey; data: Omit<InsertSenseRelation, "source_sense_id" | "target_sense_id"> }>;
+  notations: Array<{ senseKey: SenseKey; data: Omit<InsertSenseNotation, "sense_id"> }>;
   sources: Map<SourceKey, InsertSource>;
   sourceParts: Map<string, { sourceKey: SourceKey; path: string[]; data: Omit<InsertSourcePart, "source_id" | "parent_part_id"> }>;
   contributors: Map<string, InsertContributor>;
@@ -125,6 +128,7 @@ function collect(data: LexicalEntrySeed[]): Collected {
     senseTags: [],
     examples: [],
     relations: [],
+    notations: [],
     sources: new Map(),
     sourceParts: new Map(),
     contributors: new Map(),
@@ -269,6 +273,19 @@ function collect(data: LexicalEntrySeed[]): Collected {
           });
         }
       }
+
+      // Collect notations
+      if (sense.notations) {
+        for (const notation of sense.notations) {
+          collected.notations.push({
+            senseKey,
+            data: {
+              type: notation.type,
+              value: notation.value,
+            },
+          });
+        }
+      }
     }
   }
 
@@ -289,6 +306,7 @@ async function insertAll(db: DbType, collected: Collected): Promise<void> {
   console.log(`   Tags: ${collected.tags.size}`);
   console.log(`   Examples: ${collected.examples.length}`);
   console.log(`   Relations: ${collected.relations.length}`);
+  console.log(`   Notations: ${collected.notations.length}`);
   console.log(`   Sources: ${collected.sources.size}`);
 
   // === CATEGORIES ===
@@ -530,6 +548,22 @@ async function insertAll(db: DbType, collected: Collected): Promise<void> {
     }
   }
 
+  // === NOTATIONS ===
+  console.log("⏳ Inserting notations...");
+  const notationRows: InsertSenseNotation[] = [];
+  for (const notation of collected.notations) {
+    const senseId = senseIdMap.get(notation.senseKey);
+    if (senseId) {
+      notationRows.push({ sense_id: senseId, ...notation.data });
+    }
+  }
+  if (notationRows.length > 0) {
+    const CHUNK_SIZE = 500;
+    for (let i = 0; i < notationRows.length; i += CHUNK_SIZE) {
+      await db.insert(senseNotations).values(notationRows.slice(i, i + CHUNK_SIZE)).onConflictDoNothing();
+    }
+  }
+
   // === RELATIONS ===
   console.log("⏳ Inserting relations...");
   const relationRows: InsertSenseRelation[] = [];
@@ -574,6 +608,7 @@ async function insertAll(db: DbType, collected: Collected): Promise<void> {
   console.log("\n✅ Done!");
   console.log(`   Entries: ${entryIdMap.size}`);
   console.log(`   Senses: ${senseIdMap.size}`);
+  console.log(`   Notations: ${notationRows.length}`);
   console.log(`   Relations: ${relationRows.length}`);
 }
 

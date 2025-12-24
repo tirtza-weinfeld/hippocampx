@@ -49,10 +49,11 @@ export default defineConfig(
     "backend/**",
     ".venv/**",
     "__tests__/**",
+    ".claude/**",
     "**/old/calculus/**",
     "**/old/binary/**",
     "**/old/infinity/**",
     "**/old/ai/**",
-    "**/scripts/**",
+    // "**/scripts/**",
   ]),
 );

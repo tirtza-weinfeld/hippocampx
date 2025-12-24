@@ -1,6 +1,81 @@
-import type { ParsedToken, ListToken, ListItemToken, CodeBlockToken } from '../types'
+import type { ParsedToken, ListToken, ListItemToken, CodeBlockToken, HeadingToken, MathDisplayToken, ParagraphToken } from '../types'
 import { InlineParser } from './inline-parser'
+import { MathParser } from './math-parser'
 import { cleanTextContent, calculateDisplayNumber } from '@/lib/list-processing-utils'
+
+/**
+ * Parse text with math extraction + inline parsing
+ * Handles math expressions before inline parsing to preserve LaTeX
+ */
+function parseWithMath(text: string): ParsedToken[] {
+  if (!MathParser.hasMath(text)) {
+    return new InlineParser(text).parse()
+  }
+
+  // Extract math tokens and replace with placeholders
+  const mathParser = new MathParser(text)
+  const allParsedTokens = mathParser.parse()
+  const mathTokens = allParsedTokens.filter(t => t.type === 'math' || t.type === 'mathDisplay')
+  const sortedMath = [...mathTokens].sort((a, b) => b.start - a.start)
+
+  // Create placeholder map
+  const placeholderMap = new Map<string, ParsedToken>()
+  let textWithPlaceholders = text
+
+  // Replace math expressions with unique placeholders (from right to left)
+  sortedMath.forEach((mathToken, index) => {
+    const placeholder = `___MATH${sortedMath.length - 1 - index}___`
+    placeholderMap.set(placeholder, mathToken)
+    textWithPlaceholders =
+      textWithPlaceholders.slice(0, mathToken.start) +
+      placeholder +
+      textWithPlaceholders.slice(mathToken.end)
+  })
+
+  // Parse the text with placeholders
+  const tokensWithPlaceholders = new InlineParser(textWithPlaceholders).parse()
+
+  // Recursively replace placeholders with math tokens
+  function replaceInTokens(tokens: ParsedToken[]): ParsedToken[] {
+    const result: ParsedToken[] = []
+
+    for (const token of tokens) {
+      if (token.type === 'text' && token.content.includes('___MATH')) {
+        const parts = token.content.split(/(___MATH\d+___)/)
+        let position = token.start
+
+        for (const part of parts) {
+          if (part.startsWith('___MATH')) {
+            const mathToken = placeholderMap.get(part)
+            if (mathToken) {
+              result.push(mathToken)
+              position = mathToken.end
+            }
+          } else if (part) {
+            result.push({
+              type: 'text',
+              content: part,
+              start: position,
+              end: position + part.length
+            } as ParsedToken)
+            position += part.length
+          }
+        }
+      } else if ('children' in token && Array.isArray(token.children) && token.children.length > 0) {
+        result.push({
+          ...token,
+          children: replaceInTokens(token.children as ParsedToken[])
+        } as ParsedToken)
+      } else {
+        result.push(token)
+      }
+    }
+
+    return result
+  }
+
+  return replaceInTokens(tokensWithPlaceholders)
+}
 
 // Collapsible item patterns - each with pattern and default title
 const COLLAPSIBLE_PATTERNS = [
@@ -28,14 +103,42 @@ export class BlockParser {
         continue
       }
 
-      // If no block element found, parse as inline content
-      const line = this.lines[this.position]
-      if (line.trim()) {
-        const inlineParser = new InlineParser(line)
-        const inlineTokens = inlineParser.parse()
-        tokens.push(...inlineTokens)
+      // If no block element found, collect lines into a paragraph
+      const paragraphLines: string[] = []
+      const start = this.position
+
+      while (this.position < this.lines.length) {
+        const line = this.lines[this.position]
+
+        // Empty line ends the paragraph
+        if (!line.trim()) {
+          this.position++
+          break
+        }
+
+        // Block element starts - don't consume it
+        if (this.isHeading(line) || this.isBlockMathStart(line) ||
+            this.isCodeBlockStart(line) || this.isListStart(line)) {
+          break
+        }
+
+        paragraphLines.push(line)
+        this.position++
       }
-      this.position++
+
+      // Create paragraph if we collected any lines
+      if (paragraphLines.length > 0) {
+        const content = paragraphLines.join(' ')
+        const children = parseWithMath(content)
+        const paragraph: ParagraphToken = {
+          type: 'paragraph',
+          content,
+          children,
+          start,
+          end: this.position
+        }
+        tokens.push(paragraph)
+      }
     }
 
     return tokens
@@ -45,6 +148,16 @@ export class BlockParser {
     if (this.position >= this.lines.length) return null
 
     const currentLine = this.lines[this.position]
+
+    // Check if this line is a heading
+    if (this.isHeading(currentLine)) {
+      return this.parseHeading()
+    }
+
+    // Check if this line starts block math ($$)
+    if (this.isBlockMathStart(currentLine)) {
+      return this.parseBlockMath()
+    }
 
     // Check if this line starts a fenced code block
     if (this.isCodeBlockStart(currentLine)) {
@@ -57,6 +170,82 @@ export class BlockParser {
     }
 
     return null
+  }
+
+  private isBlockMathStart(line: string): boolean {
+    return /^\s*\$\$/.test(line)
+  }
+
+  private parseBlockMath(): MathDisplayToken {
+    const start = this.position
+    const firstLine = this.lines[this.position]
+
+    // Check if it's a single-line block math: $$ content $$
+    const singleLineMatch = firstLine.match(/^\s*\$\$(.+)\$\$\s*$/)
+    if (singleLineMatch) {
+      this.position++
+      return {
+        type: 'mathDisplay',
+        content: singleLineMatch[1].trim(),
+        latex: singleLineMatch[1].trim(),
+        start,
+        end: this.position
+      }
+    }
+
+    // Multi-line block math
+    this.position++ // Skip opening $$
+    const contentLines: string[] = []
+
+    while (this.position < this.lines.length) {
+      const line = this.lines[this.position]
+
+      // Check for closing $$
+      if (/^\s*\$\$\s*$/.test(line)) {
+        this.position++
+        break
+      }
+
+      contentLines.push(line)
+      this.position++
+    }
+
+    const latex = contentLines.join('\n').trim()
+
+    return {
+      type: 'mathDisplay',
+      content: latex,
+      latex,
+      start,
+      end: this.position
+    }
+  }
+
+  private isHeading(line: string): boolean {
+    return /^#{1,6}\s/.test(line)
+  }
+
+  private parseHeading(): HeadingToken {
+    const start = this.position
+    const line = this.lines[this.position]
+    const match = line.match(/^(#{1,6})\s+(.*)$/)
+
+    const level = (match?.[1].length || 1) as 1 | 2 | 3 | 4 | 5 | 6
+    const content = match?.[2] || ''
+
+    this.position++
+
+    // Parse the heading content with math support
+    const children = parseWithMath(content)
+
+    return {
+      type: 'heading',
+      content,
+      level,
+      children,
+      start,
+      end: this.position
+    }
   }
 
   private isCodeBlockStart(line: string): boolean {
@@ -228,9 +417,7 @@ export class BlockParser {
       // Check if this is a list item at our level
       if (this.isListItemAtLevel(line, baseIndent)) {
         const item = this.parseListItem(currentLevel, baseIndent)
-        if (item) {
-          items.push(item)
-        }
+        items.push(item)
       } else {
         // Check if this is a nested list at a deeper level
         const currentIndent = this.getIndentationLevel(line)
@@ -353,8 +540,8 @@ export class BlockParser {
       cleanedText = collapsibleInfo.cleanedContent
     }
 
-    // Parse the cleaned content as inline markdown
-    const inlineTokens = cleanedText ? new InlineParser(cleanedText).parse() : []
+    // Parse the cleaned content as inline markdown (with math support)
+    const inlineTokens = cleanedText ? parseWithMath(cleanedText) : []
 
     // Combine inline tokens with any nested tokens
     const allChildren = [...inlineTokens, ...nestedTokens]

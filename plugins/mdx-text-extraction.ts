@@ -38,7 +38,7 @@ export function extractDisplayTextFromHeading(node: Heading): string {
     } else if (node.type === 'strong' || node.type === 'emphasis') {
       const parentNode = node as ParentNode
       // Handle styled text (including data-step attributes)
-      const styledText = extractTextFromChildren(parentNode.children || [], false) // false = don't clean math
+      const styledText = extractTextFromChildren(parentNode.children, false) // false = don't clean math
       if (styledText) {
         textParts.push(styledText)
       }
@@ -92,7 +92,7 @@ export function extractTextFromHeading(node: Heading): string {
       const parentNode = node as ParentNode
       // Handle styled text (including data-step attributes)
       // Extract text from children and treat as separate word(s)
-      const styledText = extractTextFromChildren(parentNode.children || [], true) // true = clean math
+      const styledText = extractTextFromChildren(parentNode.children, true) // true = clean math
       if (styledText) {
         textParts.push(styledText)
       }
@@ -135,8 +135,8 @@ function extractTextFromChildren(children: Node[], cleanMath: boolean = true): s
       if (mathContent) {
         textParts.push(mathContent)
       }
-    } else if ('children' in child && Array.isArray(child.children)) {
-      const nestedText = extractTextFromChildren(child.children, cleanMath)
+    } else if ('children' in child && Array.isArray((child as ParentNode).children)) {
+      const nestedText = extractTextFromChildren((child as ParentNode).children, cleanMath)
       if (nestedText) {
         textParts.push(nestedText)
       }
