@@ -1,3 +1,3 @@
 export default function GamesPage() {
-  return <div>GamesPage</div>;
+  return <div >GamesPage</div>;
 }

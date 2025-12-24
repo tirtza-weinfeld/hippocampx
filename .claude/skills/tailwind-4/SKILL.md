@@ -2,7 +2,7 @@
 name: tailwind-4
 description: Tailwind CSS 4.1+ patterns. Use when styling components, responsive design, container queries, masks, shadows, or animations. (project)
 ---
-
+[TODO:refactor this skill to examples]
 # Tailwind 4.1+
 
 ## Setup

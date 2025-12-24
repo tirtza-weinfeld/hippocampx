@@ -1,33 +1,33 @@
 /* Test file for @utility text-gradient-* with dark mode support */
 
 /* Step 1: Raw tokens in :root (light mode) */
-:root {
+/* :root {
   --grad-brand: linear-gradient(to right, var(--color-teal-500), var(--color-sky-400), var(--color-teal-600));
   --grad-sunset: linear-gradient(to right, var(--color-orange-400), var(--color-pink-500), var(--color-purple-500));
   --grad-ocean: linear-gradient(to right, var(--color-blue-400), var(--color-cyan-400), var(--color-teal-400));
   --grad-fire: linear-gradient(to right, var(--color-red-500), var(--color-orange-400), var(--color-yellow-400));
-}
+} */
 
 /* Step 2: Dark mode overrides */
-.dark {
+/* .dark {
   --grad-brand: linear-gradient(to right, var(--color-teal-400), var(--color-sky-300), var(--color-teal-500));
   --grad-sunset: linear-gradient(to right, var(--color-orange-300), var(--color-pink-400), var(--color-purple-400));
   --grad-ocean: linear-gradient(to right, var(--color-blue-300), var(--color-cyan-300), var(--color-teal-300));
   --grad-fire: linear-gradient(to right, var(--color-red-400), var(--color-orange-300), var(--color-yellow-300));
-}
+} */
 
 /* Step 3: @theme maps raw tokens -> enables --value() matching */
-@theme {
+/* @theme {
   --gradient-brand: var(--grad-brand);
   --gradient-sunset: var(--grad-sunset);
   --gradient-ocean: var(--grad-ocean);
   --gradient-fire: var(--grad-fire);
-}
+} */
 
 /* Step 4: Functional utility matches @theme tokens */
-@utility text-gradient-* {
+/* @utility text-gradient-* {
   background: --value(--gradient-*);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-}
+} */

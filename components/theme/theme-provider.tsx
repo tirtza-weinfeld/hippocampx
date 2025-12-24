@@ -95,6 +95,7 @@ export function ThemeProvider({
         attribute="class"
         defaultTheme={props.defaultTheme || "system"}
         enableSystem
+        enableColorScheme={false}
         storageKey="theme"
         {...props}
       >

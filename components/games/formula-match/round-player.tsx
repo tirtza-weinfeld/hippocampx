@@ -3,6 +3,7 @@
 import { useState, startTransition, ViewTransition } from "react";
 import { MathRenderer } from "@/components/mdx/parse/renderers/math-renderer";
 import type { FormulaLemmaPair } from "@/lib/db/queries/games/formula-match";
+import { Button } from "../button";
 
 type GameState = "playing" | "correct" | "incorrect";
 
@@ -68,41 +69,56 @@ export function RoundPlayer({
   };
 
   return (
-    <>
-      <p>
-        Question {currentIndex + 1} of {round.pairs.length}
-      </p>
+    <div>
+      {/* Progress indicator */}
+      <div>
+        <p>
+          Question {currentIndex + 1} of {round.pairs.length}
+        </p>
+        <div>
+          <div style={{ width: `${((currentIndex + 1) / round.pairs.length) * 100}%` }} />
+        </div>
+      </div>
 
+      {/* Formula card */}
       <ViewTransition>
         <div key={currentIndex}>
-          <MathRenderer latex={current.formula} />
+          <div>
+            <MathRenderer latex={current.formula} />
+          </div>
         </div>
       </ViewTransition>
 
-      <div>
+      {/* Option buttons */}
+      <div className="grid grid-cols-2 gap-2 w-fit">
         {round.options.map((lemma) => (
-          <button
+          <Button
             key={lemma}
             onClick={() => handleAnswer(lemma)}
             disabled={state !== "playing"}
           >
             {lemma}
-          </button>
+          </Button>
         ))}
       </div>
 
+      {/* Feedback panel */}
       <ViewTransition>
         {state !== "playing" && (
           <div data-state={state}>
-            <p>
-              {state === "correct" ? "Correct!" : `Wrong! It was: ${current.lemma}`}
+            <p data-state={state}>
+              {state === "correct" ? "Correct!" : `Incorrect — it was "${current.lemma}"`}
             </p>
+
             <button onClick={handleNext}>
-              {isLastQuestion ? "New Round" : "Next"}
+              {isLastQuestion ? "Start New Round" : "Continue"}
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
             </button>
           </div>
         )}
       </ViewTransition>
-    </>
+    </div>
   );
 }

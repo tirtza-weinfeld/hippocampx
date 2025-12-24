@@ -14,7 +14,9 @@ export function FormulaMatchGame({
   const [score, setScore] = useState(0);
 
   if (pairs.length === 0) {
-    return <p>No formulas available. Add formula notations to the dictionary first.</p>;
+    return (
+      <p>No formulas available. Add formula notations to the dictionary first.</p>
+    );
   }
 
   const handleRoundComplete = (correct: number) => {
@@ -23,8 +25,10 @@ export function FormulaMatchGame({
   };
 
   return (
-    <div className="flex flex-col gap-6">
-      <p className="text-2xl font-bold text-gradient-fm-score">Score: {score}</p>
+    <div>
+      <p>
+        Score: <span>{score}</span>
+      </p>
       <RoundPlayer
         key={roundKey}
         pairs={pairs}

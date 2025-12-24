@@ -1,0 +1,27 @@
+/* :root {
+  --gradient-games-background: linear-gradient(135deg, --alpha(var(--color-gray-50) / 50%), var(--color-white));
+}
+.dark {
+  --gradient-games-background: linear-gradient(135deg, var(--color-gray-800), var(--color-black));
+}
+
+@theme inline{
+--gradient-games-background: var(--gradient-games-background);
+}
+
+
+
+ 
+ @utility bg-gradient-* {
+    background: --value(--gradient-*); 
+    opacity: --modifier(number);  
+  }
+
+@utility text-gradient-* {
+    background: --value(--gradient-*);
+    opacity: --modifier(number);
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+ */

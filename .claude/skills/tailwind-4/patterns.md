@@ -1,5 +1,17 @@
 # Tailwind 4.1+ — Patterns
 
+## Built-in Utilities — Don't Redefine
+
+Tailwind 4 ships with these. Never redefine in `@theme`:
+
+- `rounded-*` (sm, md, lg, xl, 2xl, 3xl, full)
+- `shadow-*` (xs, sm, md, lg, xl, 2xl)
+- `blur-*` (sm, md, lg, xl, 2xl, 3xl)
+- `ease-*` (linear, in, out, in-out)
+- `duration-*` (75, 100, 150, 200, 300, 500, 700, 1000)
+
+Only use `@theme` for **custom** tokens (semantic colors, brand shadows, spring easing).
+
 ## Entry Animation
 `starting:opacity-0 starting:translate-y-2 transition-[opacity,transform]`
 
