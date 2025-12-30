@@ -1,89 +1,64 @@
-# Tailwind 4.1+ — Custom Utilities
+# Tailwind 4.1+ — Utilities
 
-## @utility — Simple
+## @theme Namespaces → Auto-Generated Utilities
 
-```css
-@utility scrollbar-thin {
-  scrollbar-width: thin;
-  &::-webkit-scrollbar { width: 6px; }
-}
+| Namespace | Generates |
+|-----------|-----------|
+| `--color-*` | `bg-*`, `text-*`, `border-*`, `fill-*` |
+| `--font-*` | `font-*` |
+| `--spacing-*` | `p-*`, `m-*`, `gap-*`, `w-*`, `h-*` |
+| `--radius-*` | `rounded-*` |
+| `--shadow-*` | `shadow-*` |
+| `--ease-*` | `ease-*` |
+| `--animate-*` | `animate-*` (keyframes inside @theme) |
+| `--breakpoint-*` | `sm:`, `md:`, `3xl:` |
+| `--container-*` | `@sm:`, `@md:` |
 
-@utility text-balance { text-wrap: balance; }
-@utility text-pretty { text-wrap: pretty; }
-@utility content-auto { content-visibility: auto; }
-```
+**Prefer @theme** when namespace exists. Use `@utility` only for multi-property compositions.
 
-## @utility — Functional with --value()
+## @theme vs @utility
 
-```css
-@theme {
-  --gradient-brand: linear-gradient(135deg, var(--primary), var(--accent));
-}
+| Need | Use |
+|------|-----|
+| Animation | `--animate-*` in `@theme` |
+| Color | `--color-*` in `@theme` |
+| Multi-property | `@utility` with `--value()` |
 
-@utility text-gradient-* {
-  background: --value(--gradient-*);
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-```
+## @utility
 
-Usage: `text-gradient-brand`
+Wildcard `*` at end of name. Don't use for component shortcuts (use React).
 
-### --value() Types
+## --value() Modes
 
-| Type | Example |
-|------|---------|
-| Theme token | `--value(--gradient-*)` |
-| Bare value | `--value(integer)`, `--value(number)` |
-| Arbitrary | `--value([percentage])`, `--value([length])` |
-| Literal | `--value("inherit", "initial")` |
+| Mode | Syntax | Matches |
+|------|--------|---------|
+| Theme | `--value(--namespace-*)` | `tab-2` → `--tab-size-2` |
+| Bare | `--value(integer)` | `indent-4` → `4` |
+| Literal | `--value("a", "b")` | `wrap-balance` → `balance` |
+| Arbitrary | `--value([length])` | `perspective-[30rem]` → `30rem` |
 
-Types: `integer`, `number`, `percentage`, `ratio`, `length`, `angle`, `color`, `url`, `position`
+Combine left-to-right: `--value(--repeat-*, integer, "infinite")`
 
-### Combined --value()
-
-```css
-@utility opacity-* {
-  opacity: --value([percentage]);
-  opacity: calc(--value(integer) * 1%);
-  opacity: --value(--opacity-*);
-}
-```
-
-Last match wins.
+→ See `examples/utility-value-modes.css`
 
 ## --modifier()
 
-```css
-@utility text-* {
-  font-size: --value(--text-*, [length]);
-  line-height: --modifier(--leading-*, [length], [*]);
-}
-```
+Slash syntax: `utility-value/modifier`
 
-Usage: `text-lg/relaxed`, `text-base/7`
+→ See `examples/utility-modifiers.css`
 
-## Negative Values
+## Examples
 
-```css
-@utility inset-* { inset: --spacing(--value(integer)); }
-@utility -inset-* { inset: calc(--spacing(--value(integer)) * -1); }
-```
+| Pattern | File |
+|---------|------|
+| Functional + OKLCH | `examples/utility-functional.css` |
+| Negative pairs | `examples/utility-negative.css` |
+| Nesting (pseudo, states) | `examples/utility-nesting.css` |
+| Fractions (ratio type) | `examples/utility-fractions.css` |
+| Dark mode (@theme inline) | `examples/theme-dark-mode.css` |
 
-## @layer — Cascade
+## @layer / @source
 
-```css
-@layer base {
-  html { font-family: var(--font-sans); }
-}
-```
+`@layer base` for defaults. `@layer components` — escape hatch only.
 
-`@layer components` — escape hatch for third-party/legacy only. Prefer utilities in JSX.
-
-## @source — Content Detection
-
-```css
-@source "../node_modules/@company/ui";
-@source not "./legacy";
-@source inline("{hover:,}ring-{1,2,4}");
-```
+`@source "../path"` to include, `@source not "./path"` to exclude.

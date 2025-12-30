@@ -10,7 +10,9 @@ export default defineConfig({
     include: ['__tests__/browser/**/*.{test,spec}.{ts,tsx}'],
     browser: {
       enabled: true,
-      provider: playwright(),
+      provider: playwright({
+        launchOptions: { channel: 'chrome' },
+      }),
       instances: [
         { browser: 'chromium' },
       ],

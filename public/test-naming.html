@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Naming Conventions Comparison</title>
+  <style>
+    body {
+      padding: 2rem;
+      font-family: system-ui;
+      background: #f5f5f5;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .dark body { background: #1a1a1a; color: #f5f5f5; }
+
+    h1 { margin-bottom: 2rem; }
+    h2 { margin: 2rem 0 1rem; color: #666; font-size: 0.875rem; text-transform: uppercase; }
+
+    .row {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      align-items: center;
+    }
+
+    .label {
+      width: 120px;
+      font-size: 0.75rem;
+      color: #888;
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      border: none;
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    /* ============================================
+       CURRENT: heavy / light / outline / ghost
+       ============================================ */
+    .btn.heavy {
+      background: linear-gradient(155deg, #7c3aed 0%, #6d28d9 50%, #5b21b6 100%);
+      color: white;
+      box-shadow: 0 2px 8px -2px rgba(109, 40, 217, 0.4);
+    }
+    .btn.light {
+      background: rgba(109, 40, 217, 0.1);
+      color: #6d28d9;
+      border: 1px solid rgba(109, 40, 217, 0.2);
+    }
+    .btn.outline {
+      background: transparent;
+      color: #6d28d9;
+      border: 1.5px solid #6d28d9;
+    }
+    .btn.ghost {
+      background: transparent;
+      color: #6d28d9;
+      border: 1px solid transparent;
+    }
+
+    /* ============================================
+       RADIX: solid / soft / outline / ghost
+       ============================================ */
+    .btn.solid {
+      background: linear-gradient(155deg, #7c3aed 0%, #6d28d9 50%, #5b21b6 100%);
+      color: white;
+      box-shadow: 0 2px 8px -2px rgba(109, 40, 217, 0.4);
+    }
+    .btn.soft {
+      background: rgba(109, 40, 217, 0.1);
+      color: #6d28d9;
+      border: 1px solid rgba(109, 40, 217, 0.2);
+    }
+    /* outline and ghost same as above */
+
+    /* ============================================
+       MATERIAL: filled / tonal / outlined / text
+       ============================================ */
+    .btn.filled {
+      background: linear-gradient(155deg, #7c3aed 0%, #6d28d9 50%, #5b21b6 100%);
+      color: white;
+      box-shadow: 0 2px 8px -2px rgba(109, 40, 217, 0.4);
+    }
+    .btn.tonal {
+      background: rgba(109, 40, 217, 0.1);
+      color: #6d28d9;
+      border: 1px solid rgba(109, 40, 217, 0.2);
+    }
+    .btn.outlined {
+      background: transparent;
+      color: #6d28d9;
+      border: 1.5px solid #6d28d9;
+    }
+    .btn.text {
+      background: transparent;
+      color: #6d28d9;
+      border: 1px solid transparent;
+    }
+
+    .comparison {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    .system {
+      padding: 1.5rem;
+      background: white;
+      border-radius: 1rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .system h3 {
+      margin: 0 0 1rem;
+      font-size: 1rem;
+    }
+
+    .system .buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    code {
+      background: #f0f0f0;
+      padding: 0.125rem 0.375rem;
+      border-radius: 0.25rem;
+      font-size: 0.75rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>Naming Convention Comparison</h1>
+
+  <p>Same visual styles, different class names:</p>
+
+  <div class="comparison">
+    <!-- Current naming -->
+    <div class="system">
+      <h3>Current (custom)</h3>
+      <div class="buttons">
+        <button class="btn heavy">heavy</button>
+        <button class="btn light">light</button>
+        <button class="btn outline">outline</button>
+        <button class="btn ghost">ghost</button>
+      </div>
+      <p style="margin-top: 1rem; font-size: 0.75rem; color: #666;">
+        <code>class="control primary heavy"</code>
+      </p>
+    </div>
+
+    <!-- Radix naming -->
+    <div class="system">
+      <h3>Radix UI style</h3>
+      <div class="buttons">
+        <button class="btn solid">solid</button>
+        <button class="btn soft">soft</button>
+        <button class="btn outline">outline</button>
+        <button class="btn ghost">ghost</button>
+      </div>
+      <p style="margin-top: 1rem; font-size: 0.75rem; color: #666;">
+        <code>class="control primary solid"</code>
+      </p>
+    </div>
+
+    <!-- Material naming -->
+    <div class="system">
+      <h3>Material 3 style</h3>
+      <div class="buttons">
+        <button class="btn filled">filled</button>
+        <button class="btn tonal">tonal</button>
+        <button class="btn outlined">outlined</button>
+        <button class="btn text">text</button>
+      </div>
+      <p style="margin-top: 1rem; font-size: 0.75rem; color: #666;">
+        <code>class="control primary filled"</code>
+      </p>
+    </div>
+  </div>
+
+  <h2 style="margin-top: 3rem;">Usage in your code</h2>
+
+  <div style="background: #1e1e1e; color: #d4d4d4; padding: 1.5rem; border-radius: 0.5rem; font-family: monospace; font-size: 0.875rem;">
+    <div style="color: #6a9955;">// Current</div>
+    <div>&lt;button class="<span style="color: #ce9178;">control critical heavy</span>"&gt;</div>
+    <div>&lt;div class="<span style="color: #ce9178;">surface warning light</span>"&gt;</div>
+    <br>
+    <div style="color: #6a9955;">// With Radix naming</div>
+    <div>&lt;button class="<span style="color: #ce9178;">control critical solid</span>"&gt;</div>
+    <div>&lt;div class="<span style="color: #ce9178;">surface warning soft</span>"&gt;</div>
+    <br>
+    <div style="color: #6a9955;">// With Material naming</div>
+    <div>&lt;button class="<span style="color: #ce9178;">control critical filled</span>"&gt;</div>
+    <div>&lt;div class="<span style="color: #ce9178;">surface warning tonal</span>"&gt;</div>
+  </div>
+
+  <p style="margin-top: 2rem; color: #666;">
+    All three produce identical visuals. Pick whichever vocabulary feels right to you.
+  </p>
+</body>
+</html>

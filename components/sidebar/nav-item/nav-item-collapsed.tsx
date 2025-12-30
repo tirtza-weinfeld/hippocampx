@@ -67,7 +67,7 @@ export function NavItemCollapsedWithChildren({ item, pathname, registerRef }: Na
         </Tooltip>
         <PopoverContent
           side="right"
-          className="w-56 p-0 bg-background border rounded-lg max-h-[80vh]"
+          className="w-56 p-0 bg-background border-none shadow-sky-400/30 shadow-lg rounded-lg max-h-[80vh]"
           align="start"
           alignOffset={-5}
           sideOffset={12}
@@ -85,7 +85,7 @@ export function NavItemCollapsedWithChildren({ item, pathname, registerRef }: Na
               },
             }}
           >
-            <div className="flex items-center gap-2 px-3 py-2 text-sm font-medium border-b pb-2 mb-1 flex-shrink-0">
+            <div className="flex items-center gap-2 px-3 py-2 text-sm font-medium border-b border-sky-400/20 pb-2 mb-1 flex-shrink-0">
               <Icon className={cn("size-4", item.color)} />
               <span className="bg-linear-to-r from-teal-500 to-blue-500 bg-clip-text text-transparent">
                 {item.title}

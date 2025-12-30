@@ -1,0 +1,56 @@
+/* Gradient background with optional weight via modifier */
+/* Usage: bg-gradient-fm-primary, bg-gradient-fm-primary/20 */
+@utility bg-gradient-* {
+  --_gradient-weight: --modifier(integer, [*]);
+  position: relative;
+  isolation: isolate;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: --value(--gradient-*);
+    opacity: calc(var(--_gradient-weight, 100) / 100);
+    pointer-events: none;
+  }
+}
+
+/* Gradient text */
+@utility text-gradient-* {
+  background: --value(--gradient-*);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Gradient glow shadow from color token */
+/* Usage: glow-gradient-fm-term, glow-gradient-fm-error/50 */
+@utility glow-gradient-* {
+  --_glow-intensity: --modifier(integer, [*]);
+  --_glow-color: --value(--color-*);
+  box-shadow:
+    0 0 1.5rem oklch(from var(--_glow-color) l c h / calc(var(--_glow-intensity, 25) * 1%)),
+    0 0 3rem oklch(from var(--_glow-color) l c h / calc(var(--_glow-intensity, 25) * 0.6%));
+}
+
+/* Gradient border via background + padding trick */
+@utility border-gradient-* {
+  --_gradient: --value(--gradient-*);
+  position: relative;
+  background: var(--_gradient);
+  background-origin: border-box;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    background: var(--background);
+    border-radius: inherit;
+  }
+
+  > * {
+    position: relative;
+  }
+}

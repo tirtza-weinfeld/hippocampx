@@ -1,0 +1,392 @@
+/* =============================================================================
+   HIPPOCAMPX — BLEEDING EDGE THEME (FLATTENED, NO TAILWIND)
+   Native CSS only - no @function, manual expansion of all calls
+   ============================================================================= */
+
+@layer tokens, base, system;
+
+/* -----------------------------------------------------------------------------
+   TOKENS
+----------------------------------------------------------------------------- */
+@layer tokens {
+:root {
+  --scheme: light;
+  color-scheme: light;
+
+  --hue: 265;
+  --chroma: 0.14;
+
+  /* surface lightness */
+  --l-surface-quiet: 0.97;
+  --l-surface-mid: 0.94;
+  --l-surface-loud: 0.9;
+
+  /* ink */
+  --ink-base: oklch(0.18 0 265);
+
+  /* intents */
+  --intent-accent: oklch(0.6 0.14 265);
+  --intent-positive: oklch(0.62 0.14 145);
+  --intent-caution: oklch(0.68 0.14 85);
+  --intent-destructive: oklch(0.58 0.14 25);
+
+  /* interaction deltas */
+  --d-hover: 12%;
+  --d-active: 22%;
+
+  /* ramps */
+  --ramp-tint: 10%;
+  --ramp-shade: 12%;
+
+  /* axis defaults */
+  --role: surface;
+  --intent: base;
+  --emphasis: mid;
+  --weight: solid;
+
+  /* surface base (mid emphasis default) */
+  --surface-base: oklch(0.94 0 265);
+
+  /* intent source (base = surface) */
+  --intent-src: var(--surface-base);
+  --intent-boost: 12%;
+  --intent-color: color-mix(in oklch, var(--surface-base), var(--intent-src) 12%);
+
+  /* border */
+  --border: color-mix(in oklch, var(--surface-base), var(--ink-base) 18%);
+
+  /* intent ramp */
+  --i0: color-mix(in oklch, var(--intent-color), white 10%);
+  --i1: var(--intent-color);
+  --i2: color-mix(in oklch, var(--intent-color), black 12%);
+
+  /* surface gradient stops */
+  --aura: 8%;
+  --g-surface-a: color-mix(in oklch, var(--surface-base), var(--intent-color) 8%);
+  --g-surface-b: color-mix(in oklch, var(--surface-base), var(--intent-color) 4%);
+  --g-surface-c: color-mix(in oklch, var(--surface-base), var(--ink-base) 4%);
+}
+
+:root[data-scheme="dark"] {
+  --scheme: dark;
+  color-scheme: dark;
+
+  /* surface lightness */
+  --l-surface-quiet: 0.1;
+  --l-surface-mid: 0.13;
+  --l-surface-loud: 0.18;
+
+  /* ink */
+  --ink-base: oklch(0.92 0 265);
+
+  /* surface base (mid emphasis default) */
+  --surface-base: oklch(0.13 0 265);
+
+  /* recalc dependent values */
+  --intent-src: var(--surface-base);
+  --intent-color: color-mix(in oklch, var(--surface-base), var(--intent-src) 12%);
+  --border: color-mix(in oklch, var(--surface-base), var(--ink-base) 18%);
+
+  --i0: color-mix(in oklch, var(--intent-color), white 10%);
+  --i1: var(--intent-color);
+  --i2: color-mix(in oklch, var(--intent-color), black 12%);
+
+  --g-surface-a: color-mix(in oklch, var(--surface-base), var(--intent-color) 8%);
+  --g-surface-b: color-mix(in oklch, var(--surface-base), var(--intent-color) 4%);
+  --g-surface-c: color-mix(in oklch, var(--surface-base), var(--ink-base) 4%);
+}
+}
+
+/* -----------------------------------------------------------------------------
+   BASE
+----------------------------------------------------------------------------- */
+@layer base {
+:where(html, body) {
+  background: linear-gradient(180deg, var(--g-surface-a), var(--g-surface-b) 45%, var(--g-surface-c));
+  color: var(--ink-base);
+}
+}
+
+/* -----------------------------------------------------------------------------
+   SYSTEM
+----------------------------------------------------------------------------- */
+@layer system {
+/* --- INTENT CLASSES --- */
+.accent {
+  --intent: accent;
+  --intent-src: var(--intent-accent);
+  --intent-color: color-mix(in oklch, var(--surface-base), var(--intent-src) var(--intent-boost));
+  --i0: color-mix(in oklch, var(--intent-color), white 10%);
+  --i1: var(--intent-color);
+  --i2: color-mix(in oklch, var(--intent-color), black 12%);
+}
+
+.positive {
+  --intent: positive;
+  --intent-src: var(--intent-positive);
+  --intent-color: color-mix(in oklch, var(--surface-base), var(--intent-src) var(--intent-boost));
+  --i0: color-mix(in oklch, var(--intent-color), white 10%);
+  --i1: var(--intent-color);
+  --i2: color-mix(in oklch, var(--intent-color), black 12%);
+}
+
+.caution {
+  --intent: caution;
+  --intent-src: var(--intent-caution);
+  --intent-color: color-mix(in oklch, var(--surface-base), var(--intent-src) var(--intent-boost));
+  --i0: color-mix(in oklch, var(--intent-color), white 10%);
+  --i1: var(--intent-color);
+  --i2: color-mix(in oklch, var(--intent-color), black 12%);
+}
+
+.destructive {
+  --intent: destructive;
+  --intent-src: var(--intent-destructive);
+  --intent-color: color-mix(in oklch, var(--surface-base), var(--intent-src) var(--intent-boost));
+  --i0: color-mix(in oklch, var(--intent-color), white 10%);
+  --i1: var(--intent-color);
+  --i2: color-mix(in oklch, var(--intent-color), black 12%);
+}
+
+.base {
+  --intent: base;
+  --intent-src: var(--surface-base);
+  --intent-color: color-mix(in oklch, var(--surface-base), var(--intent-src) var(--intent-boost));
+  --i0: color-mix(in oklch, var(--intent-color), white 10%);
+  --i1: var(--intent-color);
+  --i2: color-mix(in oklch, var(--intent-color), black 12%);
+}
+
+/* --- EMPHASIS CLASSES --- */
+.quiet {
+  --emphasis: quiet;
+  --intent-boost: 8%;
+  --aura: 4%;
+}
+
+.mid {
+  --emphasis: mid;
+  --intent-boost: 12%;
+  --aura: 8%;
+}
+
+.loud {
+  --emphasis: loud;
+  --intent-boost: 18%;
+  --aura: 12%;
+}
+
+/* --- WEIGHT CLASSES --- */
+.solid { --weight: solid; }
+.soft { --weight: soft; }
+.outline { --weight: outline; }
+.ghost { --weight: ghost; }
+
+/* --- ROLE: SURFACE --- */
+.surface {
+  --role: surface;
+  background: linear-gradient(180deg, var(--g-surface-a), var(--g-surface-b) 45%, var(--g-surface-c));
+  border: 1px solid var(--border);
+  color: var(--ink-base);
+}
+
+/* --- ROLE: INK (gradient text) --- */
+.ink {
+  --role: ink;
+  background-image: linear-gradient(90deg, var(--i0), var(--i1), var(--i2));
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.ink.quiet {
+  background-image: linear-gradient(90deg,
+    color-mix(in oklch, var(--i0), var(--surface-base) 45%),
+    color-mix(in oklch, var(--i1), var(--surface-base) 55%),
+    color-mix(in oklch, var(--i2), var(--surface-base) 45%)
+  );
+}
+
+.ink.loud {
+  background-image: linear-gradient(90deg,
+    color-mix(in oklch, var(--i1), white 12%),
+    var(--i1),
+    color-mix(in oklch, var(--i1), black 18%)
+  );
+}
+
+/* --- ROLE: AFFORDANCE --- */
+.affordance {
+  --role: affordance;
+
+  /* solid stops */
+  --s0: var(--i0);
+  --s1: var(--i1);
+  --s2: var(--i2);
+
+  /* soft stops */
+  --t0: color-mix(in oklch, var(--surface-base), var(--i1) 16%);
+  --t1: color-mix(in oklch, var(--surface-base), var(--i1) 10%);
+  --t2: color-mix(in oklch, var(--surface-base), var(--ink-base) 4%);
+
+  /* outline stops */
+  --o0: color-mix(in oklch, var(--surface-base), var(--i1) 6%);
+  --o1: color-mix(in oklch, var(--surface-base), var(--i1) 3%);
+  --o2: color-mix(in oklch, var(--surface-base), var(--ink-base) 3%);
+
+  /* ghost stops */
+  --g0: color-mix(in oklch, var(--surface-base), var(--i1) 3%);
+  --g1: color-mix(in oklch, var(--surface-base), var(--i1) 1.5%);
+  --g2: color-mix(in oklch, var(--surface-base), var(--ink-base) 2.5%);
+
+  /* text color - fallback since contrast-color() has no support */
+  --on: oklch(0.98 0 0);
+
+  border: 1px solid transparent;
+  color: transparent;
+}
+
+/* AFFORDANCE: SOLID */
+.affordance.solid {
+  background-image:
+    linear-gradient(135deg, var(--s0), var(--s1), var(--s2)),
+    linear-gradient(135deg, var(--s0), var(--s1), var(--s2)),
+    linear-gradient(90deg, var(--on), var(--on), var(--on));
+  background-origin: padding-box, border-box, padding-box;
+  background-clip: padding-box, border-box, text;
+}
+
+.affordance.solid:hover {
+  background-image:
+    linear-gradient(135deg,
+      color-mix(in oklch, var(--s0), black 12%),
+      color-mix(in oklch, var(--s1), black 12%),
+      color-mix(in oklch, var(--s2), black 12%)),
+    linear-gradient(135deg, var(--s0), var(--s1), var(--s2)),
+    linear-gradient(90deg, var(--on), var(--on), var(--on));
+  background-origin: padding-box, border-box, padding-box;
+  background-clip: padding-box, border-box, text;
+}
+
+.affordance.solid:active {
+  background-image:
+    linear-gradient(135deg,
+      color-mix(in oklch, var(--s0), black 22%),
+      color-mix(in oklch, var(--s1), black 22%),
+      color-mix(in oklch, var(--s2), black 22%)),
+    linear-gradient(135deg, var(--s0), var(--s1), var(--s2)),
+    linear-gradient(90deg, var(--on), var(--on), var(--on));
+  background-origin: padding-box, border-box, padding-box;
+  background-clip: padding-box, border-box, text;
+}
+
+/* AFFORDANCE: SOFT */
+.affordance.soft {
+  background-image:
+    linear-gradient(180deg, var(--t0), var(--t1) 45%, var(--t2)),
+    linear-gradient(135deg, var(--t0), var(--t1), var(--t2)),
+    linear-gradient(90deg, var(--s0), var(--s1), var(--s2));
+  background-origin: padding-box, border-box, padding-box;
+  background-clip: padding-box, border-box, text;
+}
+
+.affordance.soft:hover {
+  background-image:
+    linear-gradient(180deg,
+      color-mix(in oklch, var(--t0), black 4%),
+      color-mix(in oklch, var(--t1), black 4%) 45%,
+      color-mix(in oklch, var(--t2), black 4%)),
+    linear-gradient(135deg, var(--t0), var(--t1), var(--t2)),
+    linear-gradient(90deg, var(--s0), var(--s1), var(--s2));
+  background-origin: padding-box, border-box, padding-box;
+  background-clip: padding-box, border-box, text;
+}
+
+.affordance.soft:active {
+  background-image:
+    linear-gradient(180deg,
+      color-mix(in oklch, var(--t0), black 8%),
+      color-mix(in oklch, var(--t1), black 8%) 45%,
+      color-mix(in oklch, var(--t2), black 8%)),
+    linear-gradient(135deg, var(--t0), var(--t1), var(--t2)),
+    linear-gradient(90deg, var(--s0), var(--s1), var(--s2));
+  background-origin: padding-box, border-box, padding-box;
+  background-clip: padding-box, border-box, text;
+}
+
+/* AFFORDANCE: OUTLINE */
+.affordance.outline {
+  background-image:
+    linear-gradient(180deg, var(--o0), var(--o1) 45%, var(--o2)),
+    linear-gradient(135deg, var(--s0), var(--s1), var(--s2)),
+    linear-gradient(90deg, var(--s0), var(--s1), var(--s2));
+  background-origin: padding-box, border-box, padding-box;
+  background-clip: padding-box, border-box, text;
+}
+
+.affordance.outline:hover {
+  background-image:
+    linear-gradient(180deg,
+      color-mix(in oklch, var(--o0), black 2%),
+      color-mix(in oklch, var(--o1), black 2%) 45%,
+      color-mix(in oklch, var(--o2), black 2%)),
+    linear-gradient(135deg, var(--s0), var(--s1), var(--s2)),
+    linear-gradient(90deg, var(--s0), var(--s1), var(--s2));
+  background-origin: padding-box, border-box, padding-box;
+  background-clip: padding-box, border-box, text;
+}
+
+.affordance.outline:active {
+  background-image:
+    linear-gradient(180deg,
+      color-mix(in oklch, var(--o0), black 4%),
+      color-mix(in oklch, var(--o1), black 4%) 45%,
+      color-mix(in oklch, var(--o2), black 4%)),
+    linear-gradient(135deg, var(--s0), var(--s1), var(--s2)),
+    linear-gradient(90deg, var(--s0), var(--s1), var(--s2));
+  background-origin: padding-box, border-box, padding-box;
+  background-clip: padding-box, border-box, text;
+}
+
+/* AFFORDANCE: GHOST */
+.affordance.ghost {
+  background-image:
+    linear-gradient(180deg, var(--g0), var(--g1) 45%, var(--g2)),
+    linear-gradient(transparent, transparent),
+    linear-gradient(90deg, var(--s0), var(--s1), var(--s2));
+  background-origin: padding-box, border-box, padding-box;
+  background-clip: padding-box, border-box, text;
+}
+
+.affordance.ghost:hover {
+  background-image:
+    linear-gradient(180deg,
+      color-mix(in oklch, var(--g0), black 2%),
+      color-mix(in oklch, var(--g1), black 2%) 45%,
+      color-mix(in oklch, var(--g2), black 2%)),
+    linear-gradient(transparent, transparent),
+    linear-gradient(90deg, var(--s0), var(--s1), var(--s2));
+  background-origin: padding-box, border-box, padding-box;
+  background-clip: padding-box, border-box, text;
+}
+
+.affordance.ghost:active {
+  background-image:
+    linear-gradient(180deg,
+      color-mix(in oklch, var(--g0), black 4%),
+      color-mix(in oklch, var(--g1), black 4%) 45%,
+      color-mix(in oklch, var(--g2), black 4%)),
+    linear-gradient(transparent, transparent),
+    linear-gradient(90deg, var(--s0), var(--s1), var(--s2));
+  background-origin: padding-box, border-box, padding-box;
+  background-clip: padding-box, border-box, text;
+}
+
+/* AFFORDANCE: FOCUS */
+.affordance:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px color-mix(in oklch, var(--surface-base), var(--s1) 30%),
+    0 0 0 6px color-mix(in oklch, var(--surface-base), var(--s1) 12%);
+}
+}

@@ -1,5 +1,8 @@
 import { Suspense } from "react";
 import "@/styles/globals.css";
+// import "@/styles-bleeding/globals.css";
+// import "@/styles-bleeding/theme-tw4.css";
+// import "@/styles-bleeding/theme-flat.css";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import { Sidebar } from "@/components/sidebar/sidebar";
 import AppFooter from "@/components/layout/app-footer";
@@ -60,6 +63,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning className={fontVariables}>
+
       <body className="antialiased">
         <ThemeProvider>
           <Suspense fallback={<LayoutSkeleton />}>

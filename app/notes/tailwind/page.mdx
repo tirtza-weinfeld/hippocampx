@@ -1,944 +1,377 @@
-# Tailwind CSS v4.1: The Complete Guide
-## Resizable Table Of Contents
+import {
+  ScrollbarDemo,
+  FocusRingDemo,
+  SurfaceDemo,
+  BadgeDemo,
+  GlowDemo,
+  TabSizeDemo,
+  BareValuesDemo,
+  LiteralValuesDemo,
+  ArbitraryValuesDemo,
+  CombinedValuesDemo,
+  NegativeValuesDemo,
+  ModifiersDemo,
+  FractionsDemo,
+  TabsBareDemo,
+  OrderDemo,
+  TabModeDemo,
+  VisibilityDemo,
+  TabArbitraryDemo,
+  SpaceDemo,
+  AlphaDemo,
+  IndentDemo,
+  PushDemo,
+  GridColsModifierDemo,
+  BasisDemo,
+} from '@/components/notes/tailwind'
 
-> **Major Paradigm Shift**: Tailwind v4.1 moves from JavaScript configuration to pure CSS with `@theme`, delivering 100x faster builds and built-in container queries.
+# Tailwind 4 Custom Utilities
 
-## Why v4.1 Changes Everything
+## Resizable Table of Contents
 
-Tailwind v4.1 represents the most significant architectural change since the framework's inception. The shift to CSS-first configuration eliminates JavaScript complexity while unlocking native browser performance and modern CSS features.
+---
 
-**Core Improvements:**
-- **Zero Configuration** - No `tailwind.config.js` needed in most projects
-- **CSS-Native Design Tokens** - Configure everything with `@theme` directive
-- **Microsecond Rebuilds** - 100x faster incremental builds
-- **Built-in Container Queries** - True component-level responsiveness
-- **Modern CSS Features** - Text shadows, masks, OKLCH colors, device targeting
+## The Core Concept
 
-## Getting Started
+When you write `@utility foo-*`, the `*` captures whatever comes after `foo-`.
 
-### Installation
-
-Install Tailwind CSS v4.1 with your package manager:
-
-```bash
-pnpm add tailwindcss @tailwindcss/postcss
-# or
-npm install tailwindcss @tailwindcss/postcss
-```
-
-### Basic Configuration
-
-Create your `globals.css` with the new CSS-first approach:
+The `--value()` function tells Tailwind **how to interpret** that captured value.
 
 ```css
-@import "tailwindcss";
-
-@theme {
-  /* OKLCH Colors - Wide gamut support */
-  --color-brand-50: oklch(0.99 0.01 220);
-  --color-brand-500: oklch(0.64 0.24 220);
-  --color-brand-900: oklch(0.25 0.15 220);
-  
-  /* Typography Scale */
-  --font-display: "Inter", system-ui, sans-serif;
-  --text-hero: clamp(2rem, 8vw, 6rem);
-  
-  /* Custom Spacing */
-  --spacing-tight: 0.125rem;
-  --spacing-loose: 0.375rem;
-  
-  /* Extended Breakpoints */
-  --breakpoint-xs: 475px;
-  --breakpoint-3xl: 1920px;
-}
-
-@layer base {
-  html { color-scheme: light dark; }
-  body { font-family: var(--font-sans); }
-  h1, h2, h3, h4, h5, h6 { font-family: var(--font-display); }
-}
-
-@layer components {
-  .btn {
-    @apply px-4 py-2 rounded-lg font-medium transition-colors;
-  }
-  
-  .btn-primary {
-    @apply bg-brand-500 text-white hover:bg-brand-600;
-  }
-}
-
-@layer utilities {
-  .glass {
-    backdrop-filter: blur(12px);
-    background: rgba(255, 255, 255, 0.1);
-  }
+@utility layer-* {
+  z-index: --value(???);  /* What goes here? */
 }
 ```
 
-## Understanding Theme Variables vs Custom Utilities
+There are **4 modes** for `--value()`:
 
-This is one of the most important concepts in v4.1. There are **two ways** to create utilities:
+| Mode | Syntax | Matches | Example |
+|------|--------|---------|---------|
+| Theme | `--value(--namespace-*)` | Tokens from `@theme` | `layer-high` |
+| Bare | `--value(type)` | Raw CSS values | `layer-50` |
+| Literal | `--value("keyword")` | Exact strings | `layer-auto` |
+| Arbitrary | `--value([type])` | Bracket syntax | `layer-[999]` |
 
-### 1. Theme Variables (Auto-Generated Utilities)
+---
 
-Theme variables automatically create utilities based on **naming conventions**. Tailwind recognizes specific prefixes and generates utilities for you:
+## 1. Theme Values — `--value(--namespace-*)`
+
+Match against tokens defined in `@theme`:
 
 ```css
 @theme {
-  /* COLOR: --color-* creates bg-*, text-*, border-* utilities */
-  --color-primary: oklch(0.64 0.24 220);
-  /* ✅ Auto-creates: bg-primary, text-primary, border-primary */
-  
-  /* FONT: --font-* creates font-* utilities */
-  --font-display: "Inter", sans-serif;
-  /* ✅ Auto-creates: font-display */
-  
-  /* SPACING: --spacing-* creates p-*, m-*, w-*, h-* utilities */
-  --spacing-tight: 0.125rem;
-  /* ✅ Auto-creates: p-tight, m-tight, w-tight, h-tight, etc. */
-  
-  /* TEXT: --text-* creates text-* utilities for font-size */
-  --text-hero: clamp(2rem, 8vw, 6rem);
-  /* ✅ Auto-creates: text-hero */
-  
-  /* SHADOW: --shadow-* creates shadow-* utilities */
-  --shadow-glow: 0 0 20px var(--color-primary);
-  /* ✅ Auto-creates: shadow-glow */
+  --tab-size-2: 2;
+  --tab-size-4: 4;
+  --tab-size-github: 8;
+}
+
+@utility tab-* {
+  tab-size: --value(--tab-size-*);
 }
 ```
 
-**Usage in HTML:**
-```html
-<div class="bg-primary text-white p-tight shadow-glow">
-  <h1 class="font-display text-hero">Hello World</h1>
-</div>
-```
+| Class | Resolves to |
+|-------|-------------|
+| `tab-2` | `tab-size: 2` |
+| `tab-github` | `tab-size: 8` |
+| `tab-50` | Nothing (no `--tab-size-50`) |
 
-### 2. Custom Utilities (Manual Creation)
+<TabSizeDemo />
 
-When you need utilities that **don't fit** the theme variable patterns, you create them manually with `@utility`:
+### Theme + OKLCH Relative Colors
 
-```css
-/* ❌ Theme variables CAN'T do this - multiple CSS properties */
-@utility glass {
-    backdrop-filter: blur(12px) saturate(190%);
-    background: rgba(255, 255, 255, 0.09);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
-}
-
-/* ❌ Theme variables CAN'T do this - pseudo-selectors */
-@utility focus-ring {
-  &:focus-visible {
-    outline: 2px solid var(--color-blue-500);
-    outline-offset: 2px;
-    border-radius: 0.25rem;
-  }
-}
-
-/* ❌ Theme variables CAN'T do this - vendor prefixes */
-@utility scrollbar-hidden {
-    scrollbar-width: none;
-    &::-webkit-scrollbar {
-      display: none;
-  }
-}
-
-/* ❌ Theme variables CAN'T do this - complex selectors */
-@utility button-pressed {
-  &:active {
-    transform: translateY(1px);
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
-  }
-}
-
-/* ❌ Theme variables CAN'T do this - arbitrary value selectors */
-@utility first-child-bold {
-  & > *:first-child {
-    font-weight: 600;
-    color: var(--color-red-500);
-  }
-}
-```
-
-**Usage in HTML:**
-```html
-<div class="glass">Glass morphism effect</div>
-<button class="focus-ring button-pressed">Interactive button</button>
-<div class="scrollbar-hidden">Hidden scrollbar</div>
-<div class="first-child-bold">
-  <p>This first paragraph will be bold and red</p>
-  <p>This second paragraph stays normal</p>
-</div>
-```
-
-**Alternative: Use Tailwind's arbitrary value selectors directly in HTML:**
-```html
-<div class="[&>*:first-child]:font-semibold [&>*:first-child]:text-red-500">
-  <p>This first child becomes bold and red</p>
-  <p>This stays normal styling</p>
-</div>
-```
-
-## Regular Pseudo-Class Syntax vs Arbitrary Value Selectors
-
-### When Regular `first:` and `last:` Syntax Works
-
-Regular Tailwind pseudo-class utilities work when you're styling **the element itself** based on its position relative to siblings:
-
-```html
-<!-- ✅ WORKS: Styling the <li> elements themselves -->
-<ul>
-  <li class="flex py-4 first:pt-5 first:border-t last:pb-5 last:border-b border-red-500">
-    <div class="ml-3">
-      <p>John Doe</p>
-      <p>john@example.com</p>
-    </div>
-  </li>
-  <li class="flex py-4 first:pt-5 first:border-t last:pb-5 last:border-b border-red-500">
-    <div class="ml-3">
-      <p>Jane Smith</p>
-      <p>jane@example.com</p>
-    </div>
-  </li>
-</ul>
-```
-
-**Why this works:**
-- `first:pt-5` applies to the **first** `<li>` element among its siblings
-- `last:pb-5` applies to the **last** `<li>` element among its siblings  
-- You're styling the container (`<li>`) based on its position
-
-### When You Need Arbitrary Value Selectors
-
-Use `[&>*:first-child]:` when you want to style **child elements** inside a container:
-
-```html
-<!-- ✅ WORKS: Styling children inside the container -->
-<div class="[&>*:first-child]:font-semibold [&>*:first-child]:text-red-500">
-  <p>This first paragraph becomes bold and red</p>
-  <p>This second paragraph stays normal</p>
-  <p>This third paragraph stays normal</p>
-</div>
-```
-
-**Why you need arbitrary syntax here:**
-- You want to style the **first child** (`<p>`) **inside** the `<div>`
-- Regular `first:` would try to style the `<div>` itself, not its children
-- `[&>*:first-child]:` means "target the first child element of this container"
-
-### Key Rule: Target vs Container
-
-**Regular syntax (`first:`, `last:`):**
-- Styles **the element itself** based on its position among siblings
-- Use when the element you're applying classes to IS the target
-
-**Arbitrary selector syntax (`[&>*:first-child]:`):**
-- Styles **child elements** based on selectors
-- Use when you want to reach "into" the element and style its contents
-
-### Real-World Examples
-
-```html
-<!-- ✅ Style navigation items themselves -->
-<nav>
-  <a class="px-4 py-2 first:rounded-l-lg last:rounded-r-lg">Home</a>
-  <a class="px-4 py-2 first:rounded-l-lg last:rounded-r-lg">About</a>
-  <a class="px-4 py-2 first:rounded-l-lg last:rounded-r-lg">Contact</a>
-</nav>
-
-<!-- ✅ Style content inside cards -->
-<div class="[&>h2:first-child]:mt-0 [&>p:last-child]:mb-0">
-  <h2>Card Title</h2>
-  <p>Some content here.</p>
-  <p>Last paragraph with no bottom margin.</p>
-</div>
-
-<!-- ✅ Style table rows themselves -->
-<table>
-  <tr class="first:border-t-2 last:border-b-2">
-    <td>Data 1</td>
-  </tr>
-  <tr class="first:border-t-2 last:border-b-2">
-    <td>Data 2</td>
-  </tr>
-</table>
-```
-
-### When to Use Each Approach
-
-**Use Theme Variables When:**
-- ✅ You need **design tokens** (colors, fonts, spacing, shadows)
-- ✅ You want **multiple related utilities** (bg-*, text-*, border-* for colors)
-- ✅ You're defining **design system values**
-- ✅ You want **CSS variables** accessible elsewhere
-
-**Use Custom Utilities When:**
-- ✅ You need **multiple CSS properties** in one utility
-- ✅ You need **pseudo-selectors** (`:hover`, `:focus`, `:active`)
-- ✅ You need **vendor prefixes** or browser-specific code
-- ✅ You're creating **component-like patterns**
-- ✅ The utility **doesn't fit** theme variable naming conventions
-- ✅ You need **arbitrary value selectors** like `[&>*:first-child]:font-semibold [&>*:first-child]:text-red-500`
-
-### Real-World Example
+Theme values shine when combined with relative color syntax:
 
 ```css
 @theme {
-  /* Design tokens - auto-generate utilities */
-  --color-brand-500: oklch(0.64 0.24 220);
-  --spacing-card: 1.5rem;
-  --radius-card: 0.75rem;
-  --shadow-card: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  --color-surface-critical: oklch(0.55 0.22 25);
+  --color-surface-success: oklch(0.55 0.18 145);
 }
 
-/* Complex pattern - needs custom utility */
-@utility card {
-  background: var(--color-white);
-  padding: var(--spacing-card);
-  border-radius: var(--radius-card);
-  box-shadow: var(--shadow-card);
-  border: 1px solid var(--color-gray-200);
-  transition: all 0.2s ease;
-  
-  &:hover {
-    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
-    transform: translateY(-2px);
-  }
+@utility surface-* {
+  --base: --value(--color-surface-*);
+
+  background: linear-gradient(145deg, var(--base), oklch(from var(--base) calc(l - 0.1) c h));
+  color: oklch(from var(--base) calc(l + 0.45) 0.02 h);
 }
 ```
 
-**HTML Usage:**
-```html
-<!-- Mix of both approaches -->
-<div class="card bg-brand-500 text-white">
-  <!-- 'card' = custom utility -->
-  <!-- 'bg-brand-500', 'text-white' = theme variable utilities -->
-</div>
-```
+<SurfaceDemo />
 
-This way you get the best of both worlds: **automatic utilities for design tokens** and **manual utilities for complex patterns**!
+<BadgeDemo />
 
-### Gradients: The Correct Approach
+<GlowDemo />
 
-**❌ Wrong:** Don't use `--color-*` for gradients
-```css
-@theme {
-  /* This WON'T work - gradients can't auto-generate text-*, border-* */
-  --color-brand: linear-gradient(45deg, #3b82f6, #8b5cf6);
-}
-```
+---
 
-**✅ Correct:** Use Tailwind's built-in gradient system (recommended)
-```html
-<div class="bg-linear-45 from-indigo-500 via-purple-500 to-pink-500">Background gradient</div>
-<div class="bg-radial-[at_25%_25%] from-white to-zinc-900">Radial gradient</div>
-```
+## 2. Bare Values — `--value(type)`
 
-**✅ For text gradients:** Use custom utilities
-```css
-@utility text-gradient-brand {
-  background: linear-gradient(45deg, var(--color-blue-600), var(--color-purple-600));
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-```
-
-### Theme Variable Namespace Rules
-
-**What auto-generates multiple utilities:**
-```css
-@theme {
-  /* ✅ Simple colors - generates bg-*, text-*, border-* */
-  --color-primary: oklch(0.64 0.24 220);
-  --color-secondary: #3b82f6;
-  
-  /* ✅ Simple spacing - generates p-*, m-*, w-*, h-* */
-  --spacing-tight: 0.125rem;
-  
-  /* ✅ Simple shadows - generates shadow-* */
-  --shadow-glow: 0 0 20px rgba(59, 130, 246, 0.3);
-}
-```
-
-**What creates single-purpose utilities:**
-```css
-@theme {
-  /* ✅ Background images - generates only bg-* */
-  --background-image-hero: linear-gradient(45deg, #3b82f6, #8b5cf6);
-  --background-image-pattern: url('/pattern.svg');
-  
-  /* ✅ Border radius - generates only rounded-* */
-  --radius-card: 0.75rem;
-  
-  /* ✅ Font families - generates only font-* */
-  --font-display: "Inter", sans-serif;
-}
-```
-
-### Practical Gradient Strategies
-
-**Strategy 1: Theme variables for gradient colors, custom utilities for application**
-```css
-@theme {
-  /* Define the colors */
-  --color-gradient-start: oklch(0.64 0.24 220);
-  --color-gradient-end: oklch(0.7 0.25 280);
-}
-
-/* Apply them in custom utilities */
-@utility bg-brand-gradient {
-  background: linear-gradient(45deg, 
-    var(--color-gradient-start), 
-    var(--color-gradient-end));
-}
-
-@utility text-brand-gradient {
-  background: linear-gradient(45deg, 
-    var(--color-gradient-start), 
-    var(--color-gradient-end));
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-```
-
-**✅ Built-in Gradient System (Preferred)**
-
-Tailwind v4 includes comprehensive gradient utilities with modern syntax:
-
-```html
-<!-- Linear gradients with angles -->
-<div class="bg-linear-45 from-indigo-500 via-purple-500 to-pink-500">45° gradient</div>
-<div class="bg-linear-135 from-blue-500 to-green-500">135° gradient</div>
-<div class="bg-linear-to-r from-cyan-500 to-blue-500">Directional gradient</div>
-
-<!-- Color interpolation for smoother transitions -->
-<div class="bg-linear-to-r/oklch from-indigo-500 to-teal-400">OKLCH interpolation</div>
-<div class="bg-linear-to-r/srgb from-indigo-500 to-teal-400">sRGB interpolation</div>
-
-<!-- Radial gradients with positioning -->
-<div class="bg-radial from-purple-500 to-pink-500">Basic radial</div>
-<div class="bg-radial-[at_25%_25%] from-white to-zinc-900 to-75%">Positioned radial</div>
-
-<!-- Conic gradients -->
-<div class="bg-conic from-red-500 to-red-500 w-32 h-32 rounded-full">Color wheel</div>
-<div class="bg-conic-[from_45deg] from-purple-500 to-orange-500">Rotated conic</div>
-```
-
-### Complete Namespace Reference
-
-| Namespace | Generates | Example Variable | Generated Utilities |
-|-----------|-----------|------------------|-------------------|
-| `--color-*` | Color utilities | `--color-brand-500` | `bg-brand-500`, `text-brand-500`, `border-brand-500` |
-| `--font-*` | Font families | `--font-display` | `font-display` |
-| `--text-*` | Typography scale | `--text-hero` | `text-hero` |
-| `--spacing-*` | Spacing/sizing | `--spacing-tight` | `p-tight`, `m-tight`, `w-tight`, `h-tight` |
-| `--breakpoint-*` | Responsive variants | `--breakpoint-3xl` | `3xl:*` variants |
-| `--container-*` | Container queries | `--container-sidebar` | `@sidebar:*`, `max-w-sidebar` |
-| `--shadow-*` | Box shadows | `--shadow-glow` | `shadow-glow` |
-| `--text-shadow-*` | Text shadows | `--text-shadow-soft` | `text-shadow-soft` |
-| `--ease-*` | Timing functions | `--ease-bounce` | `ease-bounce` |
-| `--animate-*` | Animations | `--animate-slide` | `animate-slide` |
-
-## Container Queries: Component-Level Responsiveness
-
-One of v4.1's most powerful features is built-in container queries, enabling true component-level responsive design.
-
-### Basic Container Query Usage
-
-```html
-<!-- Step 1: Mark element as container -->
-<div class="@container max-w-4xl">
-  <!-- Step 2: Use @sm, @md, @lg variants -->
-  <div class="grid grid-cols-1 @md:grid-cols-2 @lg:grid-cols-3 gap-4">
-    <div class="p-4 @sm:p-6">
-      Content adapts to container size, not viewport!
-    </div>
-  </div>
-</div>
-```
-
-### Named Containers for Precision
-
-```html
-<!-- Sidebar with named container -->
-<aside class="@container/sidebar w-64 xl:w-80">
-  <nav class="@lg/sidebar:flex @lg/sidebar:flex-col space-y-2">
-    <a class="@md/sidebar:text-sm @lg/sidebar:text-base">Dashboard</a>
-    <a class="@md/sidebar:text-sm @lg/sidebar:text-base">Settings</a>
-  </nav>
-</aside>
-
-<!-- Main content with different container -->
-<main class="@container/content flex-1">
-  <article class="@xl/content:prose-xl @lg/content:prose-lg prose">
-    <h1>Article adapts to available content space</h1>
-  </article>
-</main>
-```
-
-### When to Use Container vs Viewport Queries
-
-**Use Container Queries For:**
-- Component-level responsiveness
-- Reusable components that adapt to their space
-- Sidebar navigation, cards, modals
-- Content that needs to work in various contexts
-
-**Use Viewport Queries For:**
-- Overall layout structure
-- Global navigation changes
-- Page-level responsive behavior
-
-## Revolutionary v4.1 Features
-
-### Text Shadows (Finally Here!)
-
-After 20+ years and six years of community requests, text shadows have arrived in Tailwind CSS v4.1:
-
-```html
-<!-- Five size variants from 2xs to lg -->
-<p class="text-shadow-2xs">Ultra subtle shadow</p>
-<p class="text-shadow-xs">Extra small shadow</p>
-<p class="text-shadow-sm">Small shadow</p>
-<p class="text-shadow-md">Medium shadow</p>
-<p class="text-shadow-lg">Large shadow</p>
-
-<!-- Colored shadows -->
-<button class="text-sky-950 text-shadow-2xs text-shadow-sky-300">Book a demo</button>
-<button class="text-gray-950 dark:text-white dark:text-shadow-2xs">See pricing</button>
-
-<!-- Opacity modifiers on size utilities -->
-<p class="text-shadow-lg">Full opacity shadow</p>
-<p class="text-shadow-lg/20">20% opacity shadow</p>
-<p class="text-shadow-lg/50">50% opacity shadow</p>
-```
-
-### Advanced CSS Masking
-
-CSS masking allows you to selectively hide portions of an element using images or gradients. Tailwind's masking utilities provide composable controls that mirror the background API but are specifically designed for layering effects.
-
-**What is CSS Masking?**
-- **Purpose**: Hide or reveal parts of elements using gradients or images
-- **Use cases**: Fade effects, complex reveals, image compositions
-- **Advantage**: GPU-accelerated, works with any element content
-
-**Core Mask Types:**
-
-**1. Directional Linear Masks**
-```html
-<!-- Single-side fade effects -->
-<div class="mask-t-from-50% bg-[url(/img/mountains.jpg)]">
-  Top fade starting at 50%
-</div>
-
-<div class="mask-r-from-30% bg-[url(/img/mountains.jpg)]">
-  Right fade starting at 30%
-</div>
-
-<div class="mask-b-from-20% mask-b-to-80% bg-[url(/img/mountains.jpg)]">
-  Bottom fade range: 20% to 80%
-</div>
-
-<div class="mask-l-from-50% mask-l-to-90% bg-[url(/img/mountains.jpg)]">
-  Left fade range with precise control
-</div>
-```
-
-**2. Radial Masks**
-```html
-<!-- Circular reveal effects -->
-<div class="mask-radial-from-80% bg-[url(/img/keyboard.png)]">
-  Circular fade from 80% radius
-</div>
-
-<!-- Positioned radial masks -->
-<div class="mask-radial-at-top-left mask-radial-from-40% mask-radial-to-70% bg-[url(/img/hero.jpg)]">
-  Radial fade positioned at top-left corner
-</div>
-
-<div class="mask-radial-[ellipse_at_center] mask-radial-from-60% bg-[url(/img/product.jpg)]">
-  Custom elliptical mask shape
-</div>
-```
-
-**3. Composable Multi-Layer Masks**
-```html
-<!-- Combine linear and radial effects -->
-<div class="mask-b-from-50% mask-radial-from-80% bg-[url(/img/mountains.jpg)]">
-  Bottom linear fade + radial spotlight
-</div>
-
-<div class="mask-r-from-80% mask-t-from-80% mask-radial-from-70% mask-radial-to-85% bg-[url(/img/landscape.jpg)]">
-  Multi-directional + radial masking
-</div>
-
-<!-- Complex artistic effects -->
-<div class="mask-linear-45 mask-from-transparent mask-from-20% mask-to-black mask-to-80% mask-radial-at-bottom-right mask-radial-from-60% bg-[url(/img/abstract.jpg)]">
-  Diagonal + positioned radial combination
-</div>
-```
-
-**4. Image-Based Masks**
-```html
-<!-- Use images as masks -->
-<div class="mask-[url(/masks/organic-shape.svg)] bg-linear-to-br from-purple-500 to-pink-500">
-  SVG shape mask over gradient
-</div>
-
-<div class="mask-[url(/masks/texture.png)] bg-[url(/img/photo.jpg)]">
-  Texture-based reveal effect
-</div>
-```
-
-**Key Masking Principles:**
-
-**Layering Logic:**
-- Multiple masks multiply together (intersection)
-- `transparent` areas hide content
-- `black`/`white` areas reveal content
-- Gradients create smooth transitions
-
-**Performance Tips:**
-- Use `will-change: mask` for animated masks
-- Prefer CSS gradients over image masks when possible
-- Test across browsers (Safari requires `-webkit-` prefixes)
-
-**Common Patterns:**
-
-**Hero Image Fade-Out:**
-```html
-<section class="mask-b-from-70% bg-[url(/hero.jpg)] bg-cover min-h-screen">
-  <div class="pt-20 text-center text-white">
-    <h1>Content fades naturally into page</h1>
-  </div>
-</section>
-```
-
-**Card Hover Reveal:**
-```html
-<div class="group relative overflow-hidden">
-  <div class="mask-radial-from-0% group-hover:mask-radial-from-100% bg-[url(/product.jpg)] transition-all duration-700">
-    <!-- Image reveals on hover -->
-  </div>
-</div>
-```
-
-**Text Over Image Integration:**
-```html
-<div class="relative">
-  <div class="mask-t-from-60% mask-b-from-40% bg-[url(/background.jpg)]"></div>
-  <div class="absolute inset-0 flex items-center justify-center">
-    <h2 class="text-4xl font-bold text-white">Perfectly Integrated Text</h2>
-  </div>
-</div>
-```
-
-### Smart Input Device Targeting
-
-Target specific input devices with `pointer-*` and `any-pointer-*` variants:
-
-```html
-<!-- pointer-coarse: Primary pointing device is imprecise (touch) -->
-<button class="px-4 py-2 pointer-coarse:px-8 pointer-coarse:py-4 pointer-coarse:min-h-[44px]">
-  Larger touch targets on mobile
-</button>
-
-<!-- pointer-fine: Primary pointing device is precise (mouse) -->
-<div class="pointer-fine:hover:shadow-xl transition-shadow">
-  Hover effects only on precise pointers
-</div>
-
-<!-- any-pointer-coarse: ANY pointing device is imprecise -->
-<div class="any-pointer-coarse:pb-safe-area-inset-bottom">
-  Responds if ANY input device is touch-based
-</div>
-
-<!-- any-pointer-fine: ANY pointing device is precise -->
-<div class="any-pointer-fine:hover:scale-105">
-  Hover if ANY input device supports it
-</div>
-```
-
-### Other v4.1 Features
-
-**Improved Browser Compatibility:**
-- Better fallbacks for older browsers (Safari 15+)
-- Graceful degradation without breaking layouts
-
-**Text Wrapping Control:**
-```html
-<div class="overflow-wrap-break-word">Handles very long German words</div>
-<div class="overflow-wrap-anywhere">More aggressive text wrapping</div>
-```
-
-**Baseline Alignment:**
-```html
-<div class="flex items-baseline-last">Align to last baseline</div>
-<div class="self-baseline-last">Individual baseline alignment</div>
-```
-
-**Safe Alignment:**
-```html
-<div class="flex justify-center-safe">Content stays visible when overflowing</div>
-```
-
-**New Variants:**
-```html
-<div class="hidden noscript:block">JavaScript required message</div>
-<input class="border user-valid:border-green-500 user-invalid:border-red-500" />
-<div class="shadow-xl inverted-colors:shadow-none">Adapts to inverted colors</div>
-<details class="details-content:mt-3">Better accordion styling</details>
-```
-
-**Source Control:**
-```css
-@source not "./src/components/legacy"  /* Ignore paths */
-@source inline("underline {hover:,}bg-red-{50,100,200}")  /* Safelist utilities */
-```
-
-## Advanced Customization
-
-### Enhanced Gradients
-
-Tailwind CSS v4 introduces powerful gradient utilities with modern syntax and advanced color interpolation modes.
-
-**Linear Gradients with Precise Control:**
-```html
-<!-- Directional gradients -->
-<div class="bg-linear-to-r from-cyan-500 to-blue-500">Left to right</div>
-<div class="bg-linear-to-br from-pink-400 via-red-500 to-yellow-500">Diagonal with via</div>
-
-<!-- Angle-based gradients -->
-<div class="bg-linear-45 from-indigo-500 to-purple-500">45° gradient</div>
-<div class="bg-linear-135 from-blue-500 to-green-500">135° gradient</div>
-<div class="bg-linear-[17deg] from-violet-500 to-orange-500">Custom 17° angle</div>
-```
-
-**Color Stop Positioning:**
-```html
-<!-- Precise color stop control -->
-<div class="bg-linear-to-r from-red-500 from-10% via-yellow-500 via-30% to-green-500 to-90%">
-  Custom stop positions
-</div>
-
-<div class="bg-linear-to-b from-blue-500 from-0% to-transparent to-50%">
-  Fade out at 50%
-</div>
-```
-
-**Advanced Color Interpolation:**
-```html
-<!-- OKLCH color space - perceptually uniform -->
-<div class="bg-linear-to-r/oklch from-blue-500 to-green-500">
-  Smooth OKLCH interpolation
-</div>
-
-<!-- Different color spaces -->
-<div class="bg-linear-to-r/srgb from-red-500 to-blue-500">sRGB space</div>
-<div class="bg-linear-to-r/oklab from-yellow-500 to-purple-500">Oklab space</div>
-<div class="bg-linear-to-r/hsl from-orange-500 to-pink-500">HSL space</div>
-```
-
-**Radial Gradients:**
-```html
-<!-- Basic radial gradients -->
-<div class="bg-radial from-purple-500 to-pink-500">Center radial</div>
-<div class="bg-radial from-blue-400 from-40% to-blue-700 to-70%">With stop control</div>
-
-<!-- Positioned radial gradients -->
-<div class="bg-radial-[at_top_left] from-green-400 to-blue-500">Top-left origin</div>
-<div class="bg-radial-[at_25%_25%] from-white to-zinc-900 to-75%">Custom position</div>
-
-<!-- Elliptical gradients -->
-<div class="bg-radial-[ellipse_at_center] from-red-500 via-yellow-500 to-pink-500">
-  Elliptical shape
-</div>
-```
-
-**Conic Gradients:**
-```html
-<!-- Basic conic gradients -->
-<div class="bg-conic from-red-500 to-red-500 w-32 h-32 rounded-full">Color wheel</div>
-<div class="bg-conic from-purple-500 via-blue-500 to-green-500">Multi-stop conic</div>
-
-<!-- Angled conic gradients -->
-<div class="bg-conic-[from_45deg] from-orange-500 to-red-500">45° rotation</div>
-<div class="bg-conic-[from_180deg_at_25%_50%] from-blue-500 to-purple-500">
-  Rotated with custom center
-</div>
-```
-
-**Text Gradients:**
-```html
-<!-- Gradient text effects -->
-<h1 class="bg-linear-to-r from-blue-600 via-green-500 to-indigo-400 bg-clip-text text-transparent text-6xl font-bold">
-  Gradient Text
-</h1>
-
-<p class="bg-conic from-pink-500 via-red-500 to-yellow-500 bg-clip-text text-transparent text-4xl">
-  Conic text gradient
-</p>
-```
-
-**Complex Multi-Layer Effects:**
-```html
-<!-- Combine gradients with other features -->
-<div class="relative bg-linear-to-br from-purple-900 via-blue-900 to-indigo-900">
-  <div class="absolute inset-0 bg-radial-[ellipse_at_top] from-transparent via-sky-500/10 to-transparent"></div>
-  <div class="relative p-8 text-white">
-    <h2>Layered gradient effects</h2>
-  </div>
-</div>
-```
-
-**Performance-Optimized Patterns:**
-```html
-<!-- Use CSS custom properties for dynamic gradients -->
-<div class="bg-linear-to-r" style="--tw-gradient-from: var(--color-primary); --tw-gradient-to: var(--color-secondary);">
-  Dynamic theme-aware gradient
-</div>
-```
-
-### Custom Utilities
-
-Create reusable design patterns with custom utilities:
+Match raw values validated as a CSS data type:
 
 ```css
-@utility glass {
-  backdrop-filter: blur(12px) saturate(190%);
-  background: rgba(255, 255, 255, 0.09);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+@utility layer-* {
+  z-index: --value(integer);
 }
 
-@utility focus-ring {
-  &:focus-visible {
-    outline: 2px solid var(--color-blue-500);
-    outline-offset: 2px;
-    border-radius: 0.25rem;
-  }
+@utility cols-* {
+  column-count: --value(integer);
+}
+```
+
+| Class | Resolves to |
+|-------|-------------|
+| `layer-10` | `z-index: 10` |
+| `layer-999` | `z-index: 999` |
+| `layer-foo` | Nothing (not an integer) |
+
+**Available types:** `integer`, `number`, `ratio`, `percentage`
+
+<BareValuesDemo />
+
+<TabsBareDemo />
+
+<OrderDemo />
+
+---
+
+## 3. Literal Values — `--value("keyword")`
+
+Match exact CSS keywords (notice the quotes):
+
+```css
+@utility wrap-* {
+  text-wrap: --value("balance", "pretty", "stable");
 }
 
+@utility clip-* {
+  overflow: --value("visible", "hidden", "scroll", "auto");
+}
+```
+
+| Class | Resolves to |
+|-------|-------------|
+| `wrap-balance` | `text-wrap: balance` |
+| `clip-hidden` | `overflow: hidden` |
+| `wrap-foo` | Nothing (not in the list) |
+
+<LiteralValuesDemo />
+
+<TabModeDemo />
+
+<VisibilityDemo />
+
+---
+
+## 4. Arbitrary Values — `--value([type])`
+
+Match bracket syntax `[value]` (notice the square brackets):
+
+```css
+@utility curve-* {
+  border-radius: --value([length]);
+}
+
+@utility fade-* {
+  opacity: --value([percentage]);
+}
+```
+
+| Class | Resolves to |
+|-------|-------------|
+| `curve-[12px]` | `border-radius: 12px` |
+| `curve-[1.5rem]` | `border-radius: 1.5rem` |
+| `fade-[75%]` | `opacity: 75%` |
+| `curve-12` | Nothing (no brackets) |
+
+**Available types:** `length`, `percentage`, `integer`, `number`, `color`, `angle`, `url`, `*`, and more.
+
+<ArbitraryValuesDemo />
+
+<TabArbitraryDemo />
+
+<SpaceDemo />
+
+---
+
+## 5. Combining Modes
+
+You can support multiple modes in one utility.
+
+### Option A: Multiple Declarations
+
+Write separate declarations — failures are silently omitted:
+
+```css
+@utility opacity-* {
+  opacity: --value(--opacity-*);        /* try theme first */
+  opacity: calc(--value(integer) * 1%); /* then bare (convert to %) */
+  opacity: --value([percentage]);       /* then arbitrary */
+}
+```
+
+| Class | Which matches | Result |
+|-------|---------------|--------|
+| `opacity-50` | Theme | `opacity: 0.5` |
+| `opacity-75` | Bare → calc | `opacity: 75%` |
+| `opacity-[80%]` | Arbitrary | `opacity: 80%` |
+
+### Option B: Comma-Separated Args
+
+Single `--value()` with multiple args, resolves left-to-right:
+
+```css
+@utility indent-* {
+  tab-size: --value(--tab-size-*, integer, [integer]);
+}
+```
+
+First match wins.
+
+<CombinedValuesDemo />
+
+<AlphaDemo />
+
+<IndentDemo />
+
+---
+
+## 6. Negative Values
+
+Register separate utilities with a leading dash:
+
+```css
+@utility spin-* {
+  transform: rotate(calc(--value(integer) * 1deg));
+}
+
+@utility -spin-* {
+  transform: rotate(calc(--value(integer) * -1deg));
+}
+```
+
+**Usage:** `spin-45`, `-spin-45`
+
+<NegativeValuesDemo />
+
+### Using `--spacing()` Theme Function
+
+```css
+@utility push-* {
+  inset: --spacing(--value(integer));
+}
+
+@utility -push-* {
+  inset: calc(--spacing(--value(integer)) * -1);
+}
+```
+
+`--spacing(4)` resolves to `1rem` (4 × 0.25rem).
+
+<PushDemo />
+
+---
+
+## 7. Modifiers — `--modifier()`
+
+`--modifier()` works like `--value()` but reads from after the `/`:
+
+```css
+@utility type-* {
+  font-size: --value(--text-*, [length]);
+  line-height: --modifier(--leading-*, [length], [*]);
+}
+```
+
+| Class | Result |
+|-------|--------|
+| `type-lg` | `font-size: 1.125rem` |
+| `type-lg/relaxed` | `font-size: 1.125rem; line-height: 1.625` |
+| `type-lg/[1.8]` | `font-size: 1.125rem; line-height: 1.8` |
+
+<ModifiersDemo />
+
+```css
+@utility grid-cols-* {
+  display: grid;
+  grid-template-columns: repeat(--value(integer), minmax(0, 1fr));
+  gap: --modifier([length]);
+}
+```
+
+<GridColsModifierDemo />
+
+---
+
+## 8. Fractions — `ratio` Type
+
+The `ratio` type treats the value as a fraction:
+
+```css
+@utility span-* {
+  width: calc(--value(ratio) * 100%);
+}
+
+@utility frame-* {
+  aspect-ratio: --value(--aspect-*, ratio, [ratio]);
+}
+```
+
+| Class | Result |
+|-------|--------|
+| `span-1/2` | `width: 50%` |
+| `span-2/3` | `width: 66.67%` |
+| `frame-16/9` | `aspect-ratio: 16/9` |
+
+<FractionsDemo />
+
+<BasisDemo />
+
+---
+
+## 9. Complex Utilities with Nesting
+
+Use `@utility` when you need pseudo-elements or multiple properties:
+
+```css
 @utility scrollbar-hidden {
   scrollbar-width: none;
+
   &::-webkit-scrollbar {
     display: none;
   }
 }
-```
 
-### Custom Variants (Advanced)
+@utility focus-ring-gradient {
+  outline: none;
 
-Create custom variants for specialized use cases:
-
-```css
-@variant reduced-motion (@media (prefers-reduced-motion: reduce));
-@variant high-contrast (@media (prefers-contrast: high));
-@variant theme-dark (&:where([data-theme="dark"] *));
-```
-
-## Migration from v3 to v4
-
-### Automated Migration
-
-Tailwind provides an automated upgrade tool:
-
-```bash
-npx @tailwindcss/upgrade
-```
-
-This tool handles most breaking changes automatically, but manual review is recommended.
-
-### Key Breaking Changes
-
-**Configuration:**
-- Replace `@tailwind` directives with `@import "tailwindcss"`
-- Move configuration from `tailwind.config.js` to CSS `@theme`
-- No `content` array needed - automatic detection
-
-**Utility Changes:**
-- `bg-opacity-*` → opacity modifiers (`bg-black/50`)
-- `shadow-sm` → `shadow-xs`, `shadow` → `shadow-sm`
-- `bg-gradient-*` → `bg-linear-*`
-
-**Example Migration:**
-
-```css
-/* v3 Syntax */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-/* v4 Syntax */
-@import "tailwindcss";
-
-@theme {
-  --color-primary: #3b82f6;
+  &:focus-visible {
+    box-shadow:
+      0 0 0 2px oklch(0.98 0 0),
+      0 0 0 4px oklch(0.65 0.2 250);
+  }
 }
 ```
 
-## Performance & Best Practices
+<ScrollbarDemo />
 
-### Performance Improvements
+<FocusRingDemo />
 
-v4.1 delivers unprecedented build performance:
+---
 
-- **Full builds:** 5x faster than v3
-- **Incremental builds:** 100x+ faster (microseconds)
-- **Bundle size:** Smaller, optimized CSS output
-- **Memory usage:** Significantly reduced
-- **Browser performance:** Native CSS features
+## Quick Reference
 
-### Development Best Practices
+| Mode | Syntax | Example |
+|------|--------|---------|
+| Theme | `--value(--namespace-*)` | `--value(--color-*)` |
+| Bare | `--value(type)` | `--value(integer)` |
+| Literal | `--value("keyword")` | `--value("auto", "none")` |
+| Arbitrary | `--value([type])` | `--value([length])` |
+| Combined | `--value(a, b, c)` | `--value(--opacity-*, integer)` |
+| Modifier | `--modifier(...)` | `--modifier([length])` |
+| Fraction | `--value(ratio)` | `span-1/2` |
 
-**✅ Optimal Patterns:**
+### Bare Types
+`integer`, `number`, `ratio`, `percentage`
 
-**CSS-First Configuration:**
-```css
-@theme {
-  --color-brand: oklch(0.64 0.24 220);
-  --font-display: "Inter", sans-serif;
-}
-```
-
-**Layer Organization:**
-```css
-@layer base { /* Global HTML styling */ }
-@layer components { /* Reusable component patterns */ }
-@layer utilities { /* Custom single-purpose utilities */ }
-```
-
-**Container Queries:**
-```html
-<div class="@container">
-  <div class="@md:flex @md:items-center">
-    <!-- Component-level responsiveness -->
-  </div>
-</div>
-```
-
-**Prefer Built-in Features:**
-- Use Tailwind's gradient utilities over custom CSS
-- Leverage text shadows, masks, and device targeting
-- Use theme variables for design tokens, `@utility` for complex patterns
-
-**❌ Anti-Patterns to Avoid:**
-
-- Using `--color-*` for gradients (use built-in gradient utilities instead)
-- Mixing v3 and v4 syntax  
-- Bypassing the layer system with `!important`
-- Using viewport queries when container queries are more appropriate
-- Creating custom utilities when theme variables would work
-- Ignoring accessibility considerations for motion and input device variants
-
-## Conclusion
-
-Tailwind CSS v4.1 represents a fundamental evolution in utility-first CSS. By embracing CSS-native features and eliminating JavaScript complexity, it delivers unprecedented performance while unlocking powerful new capabilities.
-
-The move to CSS-first configuration, built-in container queries, and modern features like text shadows and input device targeting make v4.1 the definitive tool for building responsive, performant, and accessible web interfaces.
-
-Start your migration today and experience the future of utility-first CSS development.
+### Arbitrary Types
+`length`, `percentage`, `integer`, `number`, `color`, `angle`, `url`, `position`, `bg-size`, `*`

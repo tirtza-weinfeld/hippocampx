@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en" data-scheme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bleeding Edge Theme Test</title>
+  <link rel="stylesheet" href="/bleeding-theme.css">
+  <style>
+    /* Browser support banner */
+    .browser-warning {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: #fef3c7;
+      color: #92400e;
+      padding: 1rem;
+      text-align: center;
+      font-size: 0.875rem;
+      z-index: 1000;
+      display: none;
+    }
+    .browser-warning.show { display: block; }
+    .browser-warning a { color: #b45309; font-weight: 600; }
+    .browser-warning code { background: #fde68a; padding: 0.125rem 0.375rem; border-radius: 0.25rem; }
+    body.has-warning { padding-top: 5rem; }
+    /* Reset and base styles for testing */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+      padding: 2rem;
+    }
+
+    .test-grid {
+      display: grid;
+      gap: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .section {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .section-title {
+      font-size: 0.875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid currentColor;
+      opacity: 0.6;
+    }
+
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .sample {
+      padding: 1rem 1.5rem;
+      border-radius: 0.5rem;
+      min-width: 120px;
+      text-align: center;
+    }
+
+    .sample-large {
+      padding: 2rem;
+      border-radius: 0.75rem;
+    }
+
+    button.sample {
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+
+    .scheme-toggle {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      padding: 0.75rem 1.25rem;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      font-weight: 600;
+      border: 2px solid currentColor;
+      background: transparent;
+      font-size: 0.875rem;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .card {
+      padding: 1.5rem;
+      border-radius: 0.75rem;
+    }
+
+    .card h3 {
+      margin-bottom: 0.5rem;
+    }
+
+    .card p {
+      font-size: 0.875rem;
+      opacity: 0.8;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="browser-warning" id="browserWarning">
+    <strong>⚠️ CSS @function is experimental.</strong>
+    Requires <a href="https://www.google.com/chrome/canary/" target="_blank">Chrome Canary</a>
+    with <code>chrome://flags/#enable-experimental-web-platform-features</code> enabled,
+    or Safari Technology Preview 214+.
+    <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@function" target="_blank">MDN docs →</a>
+  </div>
+  <button class="scheme-toggle" onclick="toggleScheme()">Toggle Dark/Light</button>
+
+  <div class="test-grid">
+    <!-- Header -->
+    <header>
+      <h1 class="ink accent loud" style="font-size: 2.5rem; margin-bottom: 0.5rem;">
+        Bleeding Edge Theme
+      </h1>
+      <p class="ink base quiet">
+        Testing gradients everywhere — independent of Next.js themes and Tailwind
+      </p>
+    </header>
+
+    <!-- Layer Role Tests -->
+    <section class="section">
+      <div class="section-title">Role: Layer (Gradient Fill)</div>
+
+      <div class="row">
+        <div class="sample sample-large layer quiet base">
+          .layer.quiet.base
+        </div>
+        <div class="sample sample-large layer mid base">
+          .layer.mid.base
+        </div>
+        <div class="sample sample-large layer loud base">
+          .layer.loud.base
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="sample layer quiet accent">
+          .layer.quiet.accent
+        </div>
+        <div class="sample layer mid accent">
+          .layer.mid.accent
+        </div>
+        <div class="sample layer loud accent">
+          .layer.loud.accent
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="sample layer mid positive">.layer.positive</div>
+        <div class="sample layer mid caution">.layer.caution</div>
+        <div class="sample layer mid destructive">.layer.destructive</div>
+      </div>
+    </section>
+
+    <!-- Ink Role Tests -->
+    <section class="section">
+      <div class="section-title">Role: Ink (Gradient Text)</div>
+
+      <div class="row" style="font-size: 1.5rem; font-weight: 600;">
+        <span class="ink quiet base">.ink.quiet.base</span>
+        <span class="ink mid base">.ink.mid.base</span>
+        <span class="ink loud base">.ink.loud.base</span>
+      </div>
+
+      <div class="row" style="font-size: 1.25rem; font-weight: 500;">
+        <span class="ink quiet accent">.ink.quiet.accent</span>
+        <span class="ink mid accent">.ink.mid.accent</span>
+        <span class="ink loud accent">.ink.loud.accent</span>
+      </div>
+
+      <div class="row" style="font-size: 1.25rem; font-weight: 500;">
+        <span class="ink mid positive">.ink.positive</span>
+        <span class="ink mid caution">.ink.caution</span>
+        <span class="ink mid destructive">.ink.destructive</span>
+      </div>
+    </section>
+
+    <!-- Affordance Role Tests -->
+    <section class="section">
+      <div class="section-title">Role: Affordance (Fill + Gradient Text)</div>
+
+      <h4 style="margin-top: 0.5rem;">Solid Weight</h4>
+      <div class="row">
+        <button class="sample affordance solid accent">Accent Solid</button>
+        <button class="sample affordance solid positive">Positive Solid</button>
+        <button class="sample affordance solid caution">Caution Solid</button>
+        <button class="sample affordance solid destructive">Destructive Solid</button>
+        <button class="sample affordance solid base">Base Solid</button>
+      </div>
+
+      <h4>Soft Weight</h4>
+      <div class="row">
+        <button class="sample affordance soft accent">Accent Soft</button>
+        <button class="sample affordance soft positive">Positive Soft</button>
+        <button class="sample affordance soft caution">Caution Soft</button>
+        <button class="sample affordance soft destructive">Destructive Soft</button>
+        <button class="sample affordance soft base">Base Soft</button>
+      </div>
+
+      <h4>Outline Weight</h4>
+      <div class="row">
+        <button class="sample affordance outline accent">Accent Outline</button>
+        <button class="sample affordance outline positive">Positive Outline</button>
+        <button class="sample affordance outline caution">Caution Outline</button>
+        <button class="sample affordance outline destructive">Destructive Outline</button>
+        <button class="sample affordance outline base">Base Outline</button>
+      </div>
+
+      <h4>Ghost Weight</h4>
+      <div class="row">
+        <button class="sample affordance ghost accent">Accent Ghost</button>
+        <button class="sample affordance ghost positive">Positive Ghost</button>
+        <button class="sample affordance ghost caution">Caution Ghost</button>
+        <button class="sample affordance ghost destructive">Destructive Ghost</button>
+        <button class="sample affordance ghost base">Base Ghost</button>
+      </div>
+    </section>
+
+    <!-- Emphasis Variations -->
+    <section class="section">
+      <div class="section-title">Emphasis Variations (Accent Intent)</div>
+
+      <div class="row">
+        <button class="sample affordance solid quiet accent">Quiet Solid</button>
+        <button class="sample affordance solid mid accent">Mid Solid</button>
+        <button class="sample affordance solid loud accent">Loud Solid</button>
+      </div>
+
+      <div class="row">
+        <button class="sample affordance soft quiet accent">Quiet Soft</button>
+        <button class="sample affordance soft mid accent">Mid Soft</button>
+        <button class="sample affordance soft loud accent">Loud Soft</button>
+      </div>
+    </section>
+
+    <!-- Card Examples -->
+    <section class="section">
+      <div class="section-title">Composed Examples</div>
+
+      <div class="card-grid">
+        <div class="card layer quiet base">
+          <h3 class="ink accent loud">Feature Card</h3>
+          <p>A quiet base layer with accent ink heading. Demonstrates role composition.</p>
+          <div class="button-row">
+            <button class="sample affordance solid accent" style="padding: 0.5rem 1rem;">Primary</button>
+            <button class="sample affordance ghost accent" style="padding: 0.5rem 1rem;">Secondary</button>
+          </div>
+        </div>
+
+        <div class="card layer mid accent">
+          <h3 class="ink base loud">Accent Card</h3>
+          <p>A mid emphasis accent layer showing intent-tinted backgrounds.</p>
+          <div class="button-row">
+            <button class="sample affordance solid base" style="padding: 0.5rem 1rem;">Action</button>
+            <button class="sample affordance outline base" style="padding: 0.5rem 1rem;">Cancel</button>
+          </div>
+        </div>
+
+        <div class="card layer quiet positive">
+          <h3 class="ink positive loud">Success Card</h3>
+          <p>Positive intent layer for success states and confirmations.</p>
+          <div class="button-row">
+            <button class="sample affordance solid positive" style="padding: 0.5rem 1rem;">Confirm</button>
+          </div>
+        </div>
+
+        <div class="card layer quiet destructive">
+          <h3 class="ink destructive loud">Danger Card</h3>
+          <p>Destructive intent layer for warnings and dangerous actions.</p>
+          <div class="button-row">
+            <button class="sample affordance solid destructive" style="padding: 0.5rem 1rem;">Delete</button>
+            <button class="sample affordance ghost destructive" style="padding: 0.5rem 1rem;">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Focus States -->
+    <section class="section">
+      <div class="section-title">Focus States (Tab through buttons)</div>
+      <div class="row">
+        <button class="sample affordance solid accent">Focus Me</button>
+        <button class="sample affordance soft positive">Focus Me</button>
+        <button class="sample affordance outline caution">Focus Me</button>
+        <button class="sample affordance ghost destructive">Focus Me</button>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    function toggleScheme() {
+      const html = document.documentElement;
+      const current = html.getAttribute('data-scheme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-scheme', next);
+    }
+
+    // Allow keyboard toggle with 'd' key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'd' && !e.ctrlKey && !e.metaKey && e.target.tagName !== 'INPUT') {
+        toggleScheme();
+      }
+    });
+
+    // Check for CSS @function support
+    function checkCSSFunctionSupport() {
+      // Test if @function is supported by checking if a custom function works
+      const testEl = document.createElement('div');
+      testEl.style.cssText = '--test: 1';
+      document.body.appendChild(testEl);
+
+      // Check computed style of a themed element
+      const layerEl = document.querySelector('.layer');
+      if (layerEl) {
+        const bg = getComputedStyle(layerEl).backgroundImage;
+        // If @function works, we'll have a gradient; if not, likely 'none' or fallback
+        if (bg === 'none' || bg === '') {
+          document.getElementById('browserWarning').classList.add('show');
+          document.body.classList.add('has-warning');
+        }
+      }
+      testEl.remove();
+    }
+
+    // Run check after styles load
+    requestAnimationFrame(() => {
+      requestAnimationFrame(checkCSSFunctionSupport);
+    });
+  </script>
+</body>
+</html>

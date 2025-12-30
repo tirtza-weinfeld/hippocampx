@@ -1,0 +1,281 @@
+@import "tailwindcss";
+
+/* =============================================================================
+   HIPPOCAMPX — BLEEDING EDGE THEME (TAILWIND 4 VERSION)
+   Same composable classes as theme.css, but using Tailwind 4 patterns
+   instead of CSS @function and if()
+
+   Usage: <div class="surface accent loud"> or <button class="affordance destructive solid">
+   ============================================================================= */
+
+/* -----------------------------------------------------------------------------
+   SCHEME VARIANT
+----------------------------------------------------------------------------- */
+@custom-variant dark (&:where([data-scheme="dark"], [data-scheme="dark"] *));
+
+/* -----------------------------------------------------------------------------
+   THEME TOKENS
+----------------------------------------------------------------------------- */
+@theme {
+  --hue: 265;
+  --chroma: 0.14;
+
+  --color-intent-accent: oklch(0.6 0.14 265);
+  --color-intent-positive: oklch(0.62 0.14 145);
+  --color-intent-caution: oklch(0.68 0.14 85);
+  --color-intent-destructive: oklch(0.58 0.14 25);
+
+  --d-hover: 12%;
+  --d-active: 22%;
+  --ramp-tint: 10%;
+  --ramp-shade: 12%;
+}
+
+/* -----------------------------------------------------------------------------
+   SCHEME-AWARE VARIABLES
+----------------------------------------------------------------------------- */
+:root {
+  --surface-quiet: oklch(0.97 0 var(--hue));
+  --surface-mid: oklch(0.94 0 var(--hue));
+  --surface-loud: oklch(0.9 0 var(--hue));
+  --ink-base: oklch(0.18 0 var(--hue));
+
+  /* Current axis values (defaults) */
+  --current-surface: var(--surface-mid);
+  --current-intent: var(--surface-mid);
+  --aura: 8%;
+}
+
+:root[data-scheme="dark"] {
+  --surface-quiet: oklch(0.1 0 var(--hue));
+  --surface-mid: oklch(0.13 0 var(--hue));
+  --surface-loud: oklch(0.18 0 var(--hue));
+  --ink-base: oklch(0.92 0 var(--hue));
+  color-scheme: dark;
+}
+
+/* -----------------------------------------------------------------------------
+   BASE STYLES
+----------------------------------------------------------------------------- */
+@layer base {
+  html, body {
+    background: linear-gradient(
+      180deg,
+      color-mix(in oklch, var(--surface-mid), var(--color-intent-accent) 8%),
+      color-mix(in oklch, var(--surface-mid), var(--color-intent-accent) 4%) 45%,
+      color-mix(in oklch, var(--surface-mid), var(--ink-base) 4%)
+    );
+    color: var(--ink-base);
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   AXIS: EMPHASIS (sets --current-surface and --aura)
+----------------------------------------------------------------------------- */
+@utility quiet {
+  --current-surface: var(--surface-quiet);
+  --aura: 4%;
+}
+
+@utility mid {
+  --current-surface: var(--surface-mid);
+  --aura: 8%;
+}
+
+@utility loud {
+  --current-surface: var(--surface-loud);
+  --aura: 12%;
+}
+
+/* -----------------------------------------------------------------------------
+   AXIS: INTENT (sets --current-intent)
+----------------------------------------------------------------------------- */
+@utility base {
+  --current-intent: var(--current-surface);
+}
+
+@utility accent {
+  --current-intent: var(--color-intent-accent);
+}
+
+@utility positive {
+  --current-intent: var(--color-intent-positive);
+}
+
+@utility caution {
+  --current-intent: var(--color-intent-caution);
+}
+
+@utility destructive {
+  --current-intent: var(--color-intent-destructive);
+}
+
+/* -----------------------------------------------------------------------------
+   ROLE: SURFACE (gradient fill + border)
+----------------------------------------------------------------------------- */
+@utility surface {
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklch, var(--current-surface), var(--current-intent) var(--aura)),
+    color-mix(in oklch, var(--current-surface), var(--current-intent) calc(var(--aura) / 2)) 45%,
+    color-mix(in oklch, var(--current-surface), var(--ink-base) 4%)
+  );
+  border: 1px solid color-mix(in oklch, var(--current-surface), var(--ink-base) 18%);
+  color: var(--ink-base);
+}
+
+/* -----------------------------------------------------------------------------
+   ROLE: INK (gradient text)
+----------------------------------------------------------------------------- */
+@utility ink {
+  --i0: color-mix(in oklch, var(--current-intent), white var(--ramp-tint));
+  --i1: var(--current-intent);
+  --i2: color-mix(in oklch, var(--current-intent), black var(--ramp-shade));
+
+  background-image: linear-gradient(90deg, var(--i0), var(--i1), var(--i2));
+  background-clip: text;
+  color: transparent;
+
+  /* quiet modifier: blend toward surface */
+  &.quiet {
+    --i0: color-mix(in oklch, var(--current-intent), var(--current-surface) 45%);
+    --i1: color-mix(in oklch, var(--current-intent), var(--current-surface) 55%);
+    --i2: color-mix(in oklch, var(--current-intent), var(--current-surface) 45%);
+  }
+
+  /* loud modifier: more contrast */
+  &.loud {
+    --i0: color-mix(in oklch, var(--current-intent), white 12%);
+    --i2: color-mix(in oklch, var(--current-intent), black 18%);
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   ROLE: AFFORDANCE (fill + border + text gradients)
+   Weight modifiers: solid, soft, outline, ghost
+----------------------------------------------------------------------------- */
+@utility affordance {
+  /* Intent ramp */
+  --i0: color-mix(in oklch, var(--current-intent), white var(--ramp-tint));
+  --i1: var(--current-intent);
+  --i2: color-mix(in oklch, var(--current-intent), black var(--ramp-shade));
+
+  /* Default to solid weight */
+  --fill-a: var(--i0);
+  --fill-b: var(--i1);
+  --fill-c: var(--i2);
+  --fill-grad: linear-gradient(135deg, var(--fill-a), var(--fill-b), var(--fill-c));
+  --border-grad: linear-gradient(135deg, var(--i0), var(--i1), var(--i2));
+  --on: contrast-color(var(--i1));
+  --fg-grad: linear-gradient(90deg, var(--on), var(--on), var(--on));
+
+  border: 1px solid transparent;
+  background-image: var(--fill-grad), var(--border-grad), var(--fg-grad);
+  background-origin: padding-box, border-box, padding-box;
+  background-clip: padding-box, border-box, text;
+  color: transparent;
+
+  &:hover {
+    --fill-a: color-mix(in oklch, var(--i0), black var(--d-hover));
+    --fill-b: color-mix(in oklch, var(--i1), black var(--d-hover));
+    --fill-c: color-mix(in oklch, var(--i2), black var(--d-hover));
+  }
+
+  &:active {
+    --fill-a: color-mix(in oklch, var(--i0), black var(--d-active));
+    --fill-b: color-mix(in oklch, var(--i1), black var(--d-active));
+    --fill-c: color-mix(in oklch, var(--i2), black var(--d-active));
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 2px color-mix(in oklch, var(--current-surface), var(--i1) 30%),
+      0 0 0 6px color-mix(in oklch, var(--current-surface), var(--i1) 12%);
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   WEIGHT: SOLID (default - full gradient fill, contrast ink)
+----------------------------------------------------------------------------- */
+@utility solid {
+  --fill-a: var(--i0);
+  --fill-b: var(--i1);
+  --fill-c: var(--i2);
+  --fill-grad: linear-gradient(135deg, var(--fill-a), var(--fill-b), var(--fill-c));
+  --border-grad: linear-gradient(135deg, var(--i0), var(--i1), var(--i2));
+  --on: contrast-color(var(--i1));
+  --fg-grad: linear-gradient(90deg, var(--on), var(--on), var(--on));
+}
+
+/* -----------------------------------------------------------------------------
+   WEIGHT: SOFT (tinted fill, intent ink)
+----------------------------------------------------------------------------- */
+@utility soft {
+  --fill-a: color-mix(in oklch, var(--current-surface), var(--i1) 16%);
+  --fill-b: color-mix(in oklch, var(--current-surface), var(--i1) 10%);
+  --fill-c: color-mix(in oklch, var(--current-surface), var(--ink-base) 4%);
+  --fill-grad: linear-gradient(180deg, var(--fill-a), var(--fill-b) 45%, var(--fill-c));
+  --border-grad: linear-gradient(135deg, var(--fill-a), var(--fill-b), var(--fill-c));
+  --fg-grad: linear-gradient(90deg, var(--i0), var(--i1), var(--i2));
+
+  &:hover {
+    --fill-a: color-mix(in oklch, var(--current-surface), var(--i1) 20%);
+    --fill-b: color-mix(in oklch, var(--current-surface), var(--i1) 14%);
+    --fill-c: color-mix(in oklch, var(--current-surface), var(--ink-base) 8%);
+  }
+
+  &:active {
+    --fill-a: color-mix(in oklch, var(--current-surface), var(--i1) 24%);
+    --fill-b: color-mix(in oklch, var(--current-surface), var(--i1) 18%);
+    --fill-c: color-mix(in oklch, var(--current-surface), var(--ink-base) 12%);
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   WEIGHT: OUTLINE (minimal fill, strong border, intent ink)
+----------------------------------------------------------------------------- */
+@utility outline {
+  --fill-a: color-mix(in oklch, var(--current-surface), var(--i1) 6%);
+  --fill-b: color-mix(in oklch, var(--current-surface), var(--i1) 3%);
+  --fill-c: color-mix(in oklch, var(--current-surface), var(--ink-base) 3%);
+  --fill-grad: linear-gradient(180deg, var(--fill-a), var(--fill-b) 45%, var(--fill-c));
+  --border-grad: linear-gradient(135deg, var(--i0), var(--i1), var(--i2));
+  --fg-grad: linear-gradient(90deg, var(--i0), var(--i1), var(--i2));
+
+  &:hover {
+    --fill-a: color-mix(in oklch, var(--current-surface), var(--i1) 10%);
+    --fill-b: color-mix(in oklch, var(--current-surface), var(--i1) 6%);
+    --fill-c: color-mix(in oklch, var(--current-surface), var(--ink-base) 6%);
+  }
+
+  &:active {
+    --fill-a: color-mix(in oklch, var(--current-surface), var(--i1) 14%);
+    --fill-b: color-mix(in oklch, var(--current-surface), var(--i1) 9%);
+    --fill-c: color-mix(in oklch, var(--current-surface), var(--ink-base) 9%);
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   WEIGHT: GHOST (barely there fill, no border, intent ink)
+----------------------------------------------------------------------------- */
+@utility ghost {
+  --fill-a: color-mix(in oklch, var(--current-surface), var(--i1) 3%);
+  --fill-b: color-mix(in oklch, var(--current-surface), var(--i1) 1.5%);
+  --fill-c: color-mix(in oklch, var(--current-surface), var(--ink-base) 2.5%);
+  --fill-grad: linear-gradient(180deg, var(--fill-a), var(--fill-b) 45%, var(--fill-c));
+  --border-grad: linear-gradient(transparent, transparent);
+  --fg-grad: linear-gradient(90deg, var(--i0), var(--i1), var(--i2));
+
+  &:hover {
+    --fill-a: color-mix(in oklch, var(--current-surface), var(--i1) 6%);
+    --fill-b: color-mix(in oklch, var(--current-surface), var(--i1) 4%);
+    --fill-c: color-mix(in oklch, var(--current-surface), var(--ink-base) 5%);
+  }
+
+  &:active {
+    --fill-a: color-mix(in oklch, var(--current-surface), var(--i1) 9%);
+    --fill-b: color-mix(in oklch, var(--current-surface), var(--i1) 6%);
+    --fill-c: color-mix(in oklch, var(--current-surface), var(--ink-base) 7%);
+  }
+}

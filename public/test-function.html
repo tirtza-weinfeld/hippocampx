@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSS @function Test</title>
+  <link rel="stylesheet" href="/test-function.css">
+</head>
+<body style="padding: 2rem; font-family: system-ui;">
+  <h1>CSS @function Test</h1>
+
+  <h3>Test 1: @function + light-dark()</h3>
+  <div class="test-box box-adaptive"></div>
+
+  <h3>Test 2: @function plain (no light-dark)</h3>
+  <div class="test-box box-plain"></div>
+
+  <h3>Test 3: light-dark() directly (no @function)</h3>
+  <div class="test-box box-direct"></div>
+
+  <h3>Test 4: Plain oklch (baseline)</h3>
+  <div class="test-box box-baseline"></div>
+
+  <hr style="margin: 2rem 0;">
+
+  <p>
+    <strong>Results:</strong><br>
+    - If only Test 4 shows color → @function not supported<br>
+    - If Test 3 & 4 show color → @function broken, light-dark works<br>
+    - If Test 2, 3, 4 show color → light-dark inside @function broken<br>
+    - If all show color → everything works!
+  </p>
+
+  <button onclick="document.documentElement.style.colorScheme = document.documentElement.style.colorScheme === 'dark' ? 'light' : 'dark'" style="margin-top: 1rem; padding: 0.5rem 1rem;">
+    Toggle color-scheme (light/dark)
+  </button>
+</body>
+</html>

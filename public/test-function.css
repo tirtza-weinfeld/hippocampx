@@ -1,0 +1,44 @@
+/* Pure CSS test — no Tailwind processing */
+
+/* Test 1: @function with light-dark (requires color-scheme) */
+@function --adaptive(--base <color>) returns <color> {
+  result: light-dark(
+    var(--base),
+    oklch(from var(--base) calc(l + 0.15) calc(c * 0.9) h)
+  );
+}
+
+/* Test 2: @function with .dark class (manual toggle) */
+@function --adaptive-class(--light <color>, --dark <color>) returns <color> {
+  result: var(--light);
+}
+
+:root {
+  color-scheme: light dark;
+
+  /* Test 1: light-dark inside function */
+  --test-adaptive: --adaptive(oklch(0.58 0.26 29));
+
+  /* Test 2: plain function, no light-dark */
+  --test-plain: --adaptive-class(oklch(0.58 0.26 29), oklch(0.73 0.23 29));
+
+  /* Test 3: light-dark directly (no function) */
+  --test-direct: light-dark(
+    oklch(0.58 0.26 29),
+    oklch(0.73 0.23 29)
+  );
+
+  /* Test 4: plain oklch (baseline) */
+  --test-baseline: oklch(0.58 0.26 29);
+}
+
+.test-box {
+  width: 100px;
+  height: 100px;
+  margin: 0.5rem 0;
+}
+
+.box-adaptive { background: var(--test-adaptive); }
+.box-plain { background: var(--test-plain); }
+.box-direct { background: var(--test-direct); }
+.box-baseline { background: var(--test-baseline); }

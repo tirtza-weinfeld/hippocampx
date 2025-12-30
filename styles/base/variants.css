@@ -1,0 +1,4 @@
+/* Control state variants - matches element or children of element with data-state */
+@custom-variant selected (&:where([data-state="selected"], [data-state="selected"] *));
+@custom-variant success (&:where([data-state="success"], [data-state="success"] *));
+@custom-variant error (&:where([data-state="error"], [data-state="error"] *));

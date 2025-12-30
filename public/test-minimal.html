@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Minimal CSS Function Test</title>
+  <style id="test-css">
+/* Test 1: Basic function */
+@function --test1(--a, --b) {
+  result: color-mix(in oklch, var(--a), var(--b) 50%);
+}
+
+/* Test 2: Function with types */
+@function --test2(--a <color>, --b <color>) returns <color> {
+  result: color-mix(in oklch, var(--a), var(--b) 50%);
+}
+
+/* Test 3: Function with if() */
+@function --test3(--mode) {
+  result: if(style(--mode: dark): blue; else: red);
+}
+
+/* Test 4: Nested function call */
+@function --outer(--x) {
+  result: --test1(var(--x), white);
+}
+
+:root {
+  --mode: light;
+
+  /* Direct literals */
+  --r1: --test1(red, blue);
+
+  /* With types */
+  --r2: --test2(red, blue);
+
+  /* With if */
+  --r3: --test3(var(--mode));
+
+  /* Nested */
+  --r4: --outer(green);
+
+  /* Var reference */
+  --base-color: oklch(0.5 0.2 250);
+  --r5: --test1(var(--base-color), white);
+}
+
+body {
+  font-family: monospace;
+  padding: 2rem;
+}
+.result {
+  padding: 1rem;
+  margin: 0.5rem 0;
+  border: 1px solid #ccc;
+}
+  </style>
+</head>
+<body>
+  <h1>CSS @function Tests</h1>
+
+  <div class="result" id="r1">--r1 (basic): <span></span></div>
+  <div class="result" id="r2">--r2 (typed): <span></span></div>
+  <div class="result" id="r3">--r3 (if): <span></span></div>
+  <div class="result" id="r4">--r4 (nested): <span></span></div>
+  <div class="result" id="r5">--r5 (var arg): <span></span></div>
+
+  <script>
+    const root = getComputedStyle(document.documentElement);
+    ['r1', 'r2', 'r3', 'r4', 'r5'].forEach(id => {
+      const val = root.getPropertyValue('--' + id).trim();
+      const el = document.querySelector('#' + id + ' span');
+      el.textContent = val || '(empty)';
+      el.parentElement.style.background = val || '#fee';
+    });
+  </script>
+</body>
+</html>

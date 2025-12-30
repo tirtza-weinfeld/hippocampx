@@ -1,4 +1,4 @@
-/* :root {
+:root {
   --gradient-games-background: linear-gradient(135deg, --alpha(var(--color-gray-50) / 50%), var(--color-white));
 }
 .dark {
@@ -7,14 +7,19 @@
 
 @theme inline{
 --gradient-games-background: var(--gradient-games-background);
+/* --gradient-opacity:100% */
 }
-
-
-
- 
+/* 
  @utility bg-gradient-* {
     background: --value(--gradient-*); 
-    opacity: --modifier(number);  
+    opacity: --modifier(fraction,number,[percentage]);  
+    
+  }
+  @utility mask-gradient-* {
+    mask-image: linear-gradient(
+      oklch(100% 0 0 / --value([percentage])),
+      oklch(100% 0 0 / --value([percentage]))
+    );
   }
 
 @utility text-gradient-* {
@@ -24,4 +29,14 @@
     -webkit-text-fill-color: transparent;
   }
 
+
+
+@utility shadow-gradient-* {
+  --shadow-gradient: --value(--gradient-*);
+  box-shadow: 0 4px 16px --alpha(var(--shadow-gradient) / 20%);
+}
  */
+
+
+
+  

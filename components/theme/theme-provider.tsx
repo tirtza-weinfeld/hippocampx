@@ -92,10 +92,10 @@ export function ThemeProvider({
   return (
     <ThemeContext.Provider value={{ font: store, setFont }}>
       <NextThemesProvider
-        attribute="class"
+        attribute={["class", "data-scheme"]}
         defaultTheme={props.defaultTheme || "system"}
         enableSystem
-        // enableColorScheme={false}
+        enableColorScheme
         storageKey="theme"
         {...props}
       >

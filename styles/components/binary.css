@@ -6,3 +6,5 @@ body:has(.binary) {
 .dark body:has(.binary) {
   --accent: var(--color-blue-800);
 }
+
+

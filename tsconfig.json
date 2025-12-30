@@ -34,6 +34,9 @@
       "@/styles/*": [
         "./styles/*"
       ],
+      "@/styles-bleeding/*": [
+        "./styles-bleeding/*"
+      ],
       "@/hooks/*": [
         "./hooks/*"
       ],

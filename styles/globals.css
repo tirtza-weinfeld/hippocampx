@@ -1,4 +1,11 @@
+
+
+
+/* @import "../styles-bleeding/theme.css"; */
+/* @import "../styles-bleeding/theme-tw4.css"; */
+
 @import "tailwindcss";
+
 @import "katex/dist/katex.min.css";
 
 @import "./theme.css";
@@ -22,7 +29,8 @@
 
 
 
-
+:root { color-scheme: light; }
+.dark { color-scheme: dark; }
 
 
 @layer base {
@@ -84,3 +92,4 @@ h1 ::first-letter {
   letter-spacing: 0;
   vertical-align: middle;
 }
+

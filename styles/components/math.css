@@ -39,6 +39,7 @@
 
   /* Gradient text - only on content elements, not structural/layout */
   :where(.mord, .mop, .mrel, .mopen, .mclose, .mpunct, .minner, .mbin, .texttt, .textrm, .textsf) {
+    /* background: var(--step-gradient); */
     background: linear-gradient(
       to right bottom,
       --alpha(var(--step) / 100%),

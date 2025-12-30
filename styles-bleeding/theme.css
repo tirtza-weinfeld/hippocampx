@@ -1,0 +1,404 @@
+/* @import "tailwindcss"; */
+
+/* =============================================================================
+  HIPPOCAMPX — BLEEDING EDGE THEME (GRADIENTS EVERYWHERE)
+  Axes:
+    role:     surface | ink | affordance
+    intent:   accent | positive | caution | destructive | base
+    emphasis: quiet | mid | loud
+    weight:   solid | soft | outline | ghost
+  Constraint:
+    scheme:   light | dark   (<html data-scheme="...">)
+  Notes:
+    - contrast-color() ONLY
+    - No flat colors: even "solid ink" is a degenerate gradient
+    - Affordance uses multi-layer backgrounds so fill + gradient text work without spans
+  ============================================================================= */
+
+@layer tokens, base, system;
+
+/* -----------------------------------------------------------------------------
+  TOKENS
+----------------------------------------------------------------------------- */
+@layer tokens {
+:root {
+  --scheme: light;
+}
+:root[data-scheme="dark"] {
+  --scheme: dark;
+  color-scheme: dark;
+}
+:root[data-scheme="light"] {
+  --scheme: light;
+  color-scheme: light;
+}
+
+@function --pick(--light type(*), --dark type(*)) returns type(*) {
+  result: if(style(--scheme: dark): var(--dark) ; else: var(--light) ;);
+}
+
+@function --neutral(--l <number>) returns <color> {
+  result: oklch(var(--l) 0 var(--hue));
+}
+@function --mix(--a <color>, --b <color>, --pct <percentage>) returns <color> {
+  result: color-mix(in oklch, var(--a), var(--b) var(--pct));
+}
+@function --tint(--c <color>, --pct <percentage>) returns <color> {
+  result: color-mix(in oklch, var(--c), white var(--pct));
+}
+@function --shade(--c <color>, --pct <percentage>) returns <color> {
+  result: color-mix(in oklch, var(--c), black var(--pct));
+}
+
+@function --grad-v3(--a <color>, --b <color>, --c <color>) returns <image> {
+  result: linear-gradient(180deg, var(--a), var(--b) 45%, var(--c));
+}
+@function --grad-d3(--a <color>, --b <color>, --c <color>) returns <image> {
+  result: linear-gradient(135deg, var(--a), var(--b), var(--c));
+}
+@function --grad-text(--a <color>, --b <color>, --c <color>) returns <image> {
+  result: linear-gradient(90deg, var(--a), var(--b), var(--c));
+}
+
+@function --emph() returns <percentage> {
+  result: if(
+    style(--emphasis: loud): 12%; style(--emphasis: quiet): 4%; else: 8%;
+  );
+}
+
+/* @theme { */
+:root {
+  --hue: 265;
+  --chroma: 0.14;
+
+  --l-surface-quiet-light: 0.97;
+  --l-surface-mid-light: 0.94;
+  --l-surface-loud-light: 0.9;
+
+  --l-surface-quiet-dark: 0.1;
+  --l-surface-mid-dark: 0.13;
+  --l-surface-loud-dark: 0.18;
+
+  --l-ink-light: 0.18;
+  --l-ink-dark: 0.92;
+
+  --intent-accent: oklch(0.6 var(--chroma) var(--hue));
+  --intent-positive: oklch(0.62 var(--chroma) 145);
+  --intent-caution: oklch(0.68 var(--chroma) 85);
+  --intent-destructive: oklch(0.58 var(--chroma) 25);
+
+  --d-hover: 12%;
+  --d-active: 22%;
+
+  --ramp-tint: 10%;
+  --ramp-shade: 12%;
+}
+
+:root {
+  /* axis defaults */
+  --role: surface;
+  --intent: base;
+  --emphasis: mid;
+  --weight: solid;
+
+  /* derived neutrals - compute colors first, then select via if() */
+  --ink-base: --neutral(--pick(var(--l-ink-light), var(--l-ink-dark)));
+
+  --l-surface-quiet: --pick(
+    var(--l-surface-quiet-light),
+    var(--l-surface-quiet-dark)
+  );
+  --l-surface-mid: --pick(var(--l-surface-mid-light), var(--l-surface-mid-dark));
+  --l-surface-loud: --pick(var(--l-surface-loud-light), var(--l-surface-loud-dark));
+
+  /* Pre-compute surface colors (workaround: Chrome @function bug with if() + nested fn) */
+  --surface-quiet: --neutral(var(--l-surface-quiet));
+  --surface-mid: --neutral(var(--l-surface-mid));
+  --surface-loud: --neutral(var(--l-surface-loud));
+
+  /* surface-base: for display only (not passed to functions) */
+  --surface-base: if(style(--emphasis: loud): var(--surface-loud) ;
+    style(--emphasis: quiet): var(--surface-quiet) ;
+    else: var(--surface-mid) ;
+  );
+
+  /* intent-src: resolve to actual color (not if() result) */
+  --intent-src: if(style(--intent: accent): var(--intent-accent) ;
+    style(--intent: positive): var(--intent-positive) ;
+    style(--intent: caution): var(--intent-caution) ;
+    style(--intent: destructive): var(--intent-destructive) ;
+    style(--emphasis: loud): var(--surface-loud) ;
+    style(--emphasis: quiet): var(--surface-quiet) ;
+    else: var(--surface-mid) ;
+  );
+
+  /* emphasis boost */
+  --intent-boost: if(style(--emphasis: loud): 18%; style(--emphasis: quiet): 8%; else: 12%;
+  );
+
+  /* intent-color: test with completely literal colors */
+  --intent-color: --mix(oklch(0.94 0 265), oklch(0.94 0 265), 12%);
+
+  /* structural */
+  --border: --mix(
+    if(style(--emphasis: loud): var(--surface-loud) ; style(--emphasis: quiet): var(--surface-quiet) ; else: var(--surface-mid) ;),
+    var(--ink-base),
+    18%
+  );
+
+  /* intent ramps */
+  --i0: --tint(var(--intent-color), var(--ramp-tint));
+  --i1: var(--intent-color);
+  --i2: --shade(var(--intent-color), var(--ramp-shade));
+
+  /* surface gradients (always) */
+  --aura: --emph();
+  --g-surface-a: --mix(
+    if(style(--emphasis: loud): var(--surface-loud) ; style(--emphasis: quiet): var(--surface-quiet) ; else: var(--surface-mid) ;),
+    var(--intent-color),
+    var(--aura)
+  );
+  --g-surface-b: --mix(
+    if(style(--emphasis: loud): var(--surface-loud) ; style(--emphasis: quiet): var(--surface-quiet) ; else: var(--surface-mid) ;),
+    var(--intent-color),
+    calc(var(--aura) / 2)
+  );
+  --g-surface-c: --mix(
+    if(style(--emphasis: loud): var(--surface-loud) ; style(--emphasis: quiet): var(--surface-quiet) ; else: var(--surface-mid) ;),
+    var(--ink-base),
+    4%
+  );
+}
+}
+
+/* -----------------------------------------------------------------------------
+  BASE
+----------------------------------------------------------------------------- */
+@layer base {
+:where(html, body) {
+  background: --grad-v3(--g-surface-a, --g-surface-b, --g-surface-c);
+  color: var(--ink-base);
+}
+}
+
+/* -----------------------------------------------------------------------------
+  SYSTEM
+----------------------------------------------------------------------------- */
+@layer system {
+/* axes: role */
+:where(.surface) {
+  --role: surface;
+}
+:where(.ink) {
+  --role: ink;
+}
+:where(.affordance) {
+  --role: affordance;
+}
+
+/* axes: intent */
+:where(.accent) {
+  --intent: accent;
+}
+:where(.positive) {
+  --intent: positive;
+}
+:where(.caution) {
+  --intent: caution;
+}
+:where(.destructive) {
+  --intent: destructive;
+}
+:where(.base) {
+  --intent: base;
+}
+
+/* axes: emphasis */
+:where(.quiet) {
+  --emphasis: quiet;
+}
+:where(.mid) {
+  --emphasis: mid;
+}
+:where(.loud) {
+  --emphasis: loud;
+}
+
+/* axes: weight */
+:where(.solid) {
+  --weight: solid;
+}
+:where(.soft) {
+  --weight: soft;
+}
+:where(.outline) {
+  --weight: outline;
+}
+:where(.ghost) {
+  --weight: ghost;
+}
+
+/* role: surface (gradient fill) */
+:where(.surface) {
+  background: --grad-v3(var(--g-surface-a), var(--g-surface-b), var(--g-surface-c));
+  border: 1px solid var(--border);
+  color: var(--ink-base);
+}
+
+/* role: ink (gradient text ALWAYS) */
+:where(.ink) {
+  background-image: --grad-text(var(--i0), var(--i1), var(--i2));
+  background-clip: text;
+  color: transparent;
+
+  &.quiet {
+    background-image: --grad-text(
+      --mix(var(--i0), var(--surface-base), 45%),
+      --mix(var(--i1), var(--surface-base), 55%),
+      --mix(var(--i2), var(--surface-base), 45%)
+    );
+  }
+
+  &.loud {
+    background-image: --grad-text(
+      --tint(var(--i1), 12%),
+      var(--i1),
+      --shade(var(--i1), 18%)
+    );
+  }
+}
+
+/* role: affordance (fill + gradient text without spans) */
+:where(.affordance) {
+  /* === paint primitives (all gradients; defined as stop triples so we can shade on state) === */
+
+  /* solid stops */
+  --s0: var(--i0);
+  --s1: var(--i1);
+  --s2: var(--i2);
+
+  /* soft stops (tinted toward surface) */
+  --t0: --mix(var(--surface-base), var(--i1), 16%);
+  --t1: --mix(var(--surface-base), var(--i1), 10%);
+  --t2: --mix(var(--surface-base), var(--ink-base), 4%);
+
+  /* outline stops (very subtle fill) */
+  --o0: --mix(var(--surface-base), var(--i1), 6%);
+  --o1: --mix(var(--surface-base), var(--i1), 3%);
+  --o2: --mix(var(--surface-base), var(--ink-base), 3%);
+
+  /* ghost stops (barely there fill) */
+  --g0: --mix(var(--surface-base), var(--i1), 3%);
+  --g1: --mix(var(--surface-base), var(--i1), 1.5%);
+  --g2: --mix(var(--surface-base), var(--ink-base), 2.5%);
+
+  /* background images (base) */
+  --bg-solid: --grad-d3(var(--s0), var(--s1), var(--s2));
+  --bg-soft: --grad-v3(var(--t0), var(--t1), var(--t2));
+  --bg-outline: --grad-v3(var(--o0), var(--o1), var(--o2));
+  --bg-ghost: --grad-v3(var(--g0), var(--g1), var(--g2));
+
+  /* background images (hover) — shade stops, then recompose */
+  --bg-solid-hover: --grad-d3(
+    --shade(var(--s0), var(--d-hover)),
+    --shade(var(--s1), var(--d-hover)),
+    --shade(var(--s2), var(--d-hover))
+  );
+  --bg-soft-hover: --grad-v3(
+    --shade(var(--t0), 4%),
+    --shade(var(--t1), 4%),
+    --shade(var(--t2), 4%)
+  );
+  --bg-outline-hover: --grad-v3(
+    --shade(var(--o0), 2%),
+    --shade(var(--o1), 2%),
+    --shade(var(--o2), 2%)
+  );
+  --bg-ghost-hover: --grad-v3(
+    --shade(var(--g0), 2%),
+    --shade(var(--g1), 2%),
+    --shade(var(--g2), 2%)
+  );
+
+  /* background images (active) */
+  --bg-solid-active: --grad-d3(
+    --shade(var(--s0), var(--d-active)),
+    --shade(var(--s1), var(--d-active)),
+    --shade(var(--s2), var(--d-active))
+  );
+  --bg-soft-active: --grad-v3(
+    --shade(var(--t0), 8%),
+    --shade(var(--t1), 8%),
+    --shade(var(--t2), 8%)
+  );
+  --bg-outline-active: --grad-v3(
+    --shade(var(--o0), 4%),
+    --shade(var(--o1), 4%),
+    --shade(var(--o2), 4%)
+  );
+  --bg-ghost-active: --grad-v3(
+    --shade(var(--g0), 4%),
+    --shade(var(--g1), 4%),
+    --shade(var(--g2), 4%)
+  );
+
+  /* border gradients by weight */
+  --border-grad-solid: --grad-d3(var(--s0), var(--s1), var(--s2));
+  --border-grad-soft: --grad-d3(var(--t0), var(--t1), var(--t2));
+  --border-grad-outline: --grad-d3(var(--s0), var(--s1), var(--s2));
+  --border-grad-ghost: linear-gradient(transparent, transparent);
+
+  /* text gradients:
+    - solid: derive on-color via contrast-color(), then degenerate gradient
+    - others: intent gradient */
+  --on: contrast-color(var(--s1));
+  --fg-solid: --grad-text(var(--on), var(--on), var(--on));
+  --fg-intent: --grad-text(var(--s0), var(--s1), var(--s2));
+
+  /* hoisted: computed once, reused in all states */
+  --border-grad: if(
+    style(--weight: solid): var(--border-grad-solid) ; style(--weight: soft):
+      var(--border-grad-soft) ; style(--weight: outline):
+      var(--border-grad-outline) ; else: var(--border-grad-ghost) ;
+  );
+  --fg: if(
+    style(--weight: solid): var(--fg-solid) ; else: var(--fg-intent) ;
+  );
+
+  border: 1px solid transparent;
+
+  /* === composed layers: fill (padding), border (border), text (text clip) === */
+  background-image: if(
+      style(--weight: solid): var(--bg-solid) ; style(--weight: soft):
+        var(--bg-soft) ; style(--weight: outline): var(--bg-outline) ; else:
+        var(--bg-ghost) ;
+    ),
+    var(--border-grad), var(--fg);
+
+  background-origin: padding-box, border-box, padding-box;
+  background-clip: padding-box, border-box, text;
+  color: transparent;
+
+  &:hover {
+    background-image: if(style(--weight: solid): var(--bg-solid-hover) ; style(--weight: soft):
+          var(--bg-soft-hover) ; style(--weight: outline):
+          var(--bg-outline-hover) ; else: var(--bg-ghost-hover) ;
+      ),
+      var(--border-grad), var(--fg);
+  }
+
+  &:active {
+    background-image: if(style(--weight: solid): var(--bg-solid-active) ; style(--weight: soft):
+          var(--bg-soft-active) ; style(--weight: outline):
+          var(--bg-outline-active) ; else: var(--bg-ghost-active) ;
+      ),
+      var(--border-grad), var(--fg);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px --mix(var(--surface-base), var(--s1), 30%),
+      0 0 0 6px --mix(var(--surface-base), var(--s1), 12%);
+  }
+}
+}
