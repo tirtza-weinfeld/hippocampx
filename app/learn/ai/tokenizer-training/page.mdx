@@ -1,0 +1,275 @@
+
+# TikToken BPE
+
+## Resizable Table of Contents
+
+## UTF-8
+
+Text is a sequence of characters (letters, numbers, symbols).
+In a computer, text is stored as bytes using an encoding such as **UTF-8**.
+
+* A **byte** is an 8-bit number in the range **0–255**
+* UTF-8 encodes each character as **1 to 4 bytes**
+
+Examples:
+
+* `a` → `[97]`
+* `€` → `[226, 130, 172]`
+* 🙂 → `[240, 159, 153, 130]`
+
+Each number:
+
+* is a byte
+* already has a token
+* already has a token ID
+
+So the tokenizer sees:
+
+```
+[token240][token159][token153][token130]
+```
+
+Not “one emoji token”.
+
+**Key distinction**
+
+* Character ≠ byte
+* UTF-8 characters are made of bytes
+* Tokenization starts at the byte level
+
+---
+
+### What BPE does
+
+BPE may later learn to merge frequent byte sequences:
+
+```
+[240][159][153][130] → 🙂 
+```
+
+If the sequence is frequent enough.
+
+If not:
+
+* the emoji is still representable
+* tokenization never fails
+
+---
+
+## What `tokenizer.model` is
+
+`tokenizer.model` is a **static, learned artifact** created once, before model training.
+
+It contains **only learned data**:
+
+* **Token ID ↔ byte-sequence mappings**
+* **Implicit token priorities (insertion order)**
+
+Example entries (Base64-encoded byte sequences):
+
+```text
+IHdoZXJl 1901
+aW5lZA== 1903
+IGZpbmFs 1926
+```
+
+These represent byte sequences mapped to token IDs.
+
+`tokenizer.model` **does not contain**:
+
+* regex rules
+* training corpus
+* pair counts
+
+
+
+---
+
+## What inputs are used to create `tokenizer.model`
+
+Only two things:
+
+1. A **large text corpus**
+2. A **TikToken-style BPE training algorithm**
+
+---
+
+## Step 0 — Regex pre-tokenization (outside `tokenizer.model`)
+
+Before any byte processing, raw text is split using **fixed regex rules**.
+
+Example:
+
+```
+"happy happier"
+→ ["happy", " ", "happier"]
+```
+
+Important:
+
+* Regex operates on **text**, not bytes
+* Regex rules are **not learned**
+* Regex rules are **defined in code/config**, not in `tokenizer.model`
+
+Each chunk is processed independently in the steps below.
+
+---
+
+## Step 1 — Normalize text → bytes
+
+Each chunk is converted to **UTF-8 bytes**.
+
+Running example:
+
+```
+happy happier happily unhappy happy happier
+```
+
+Symbolic byte view (letters shown for clarity):
+
+```text
+h a p p y ␠
+h a p p i e r ␠
+h a p p i l y ␠
+u n h a p p y ␠
+h a p p y ␠
+h a p p i e r
+```
+
+Each symbol is **one byte (0–255)**.
+
+---
+
+## Step 2 — Initialize the base vocabulary
+
+Before learning:
+
+```
+Vocabulary = all 256 byte values
+```
+
+Formally:
+
+```
+token 0   ↔ byte 0
+…
+token 255 ↔ byte 255
+```
+
+This guarantees **full coverage**.
+
+---
+
+## Step 3 — Count adjacent byte-token pairs
+
+Treat the corpus as a sequence of byte tokens:
+
+```text
+h a p p y
+h a p p i e r
+h a p p i l y
+u n h a p p y
+h a p p y
+h a p p i e r
+```
+
+Count all adjacent pairs globally.
+
+Relevant counts:
+
+```text
+(p, p) = 6
+(h, a) = 6
+(a, p) = 6
+(p, y) = 3
+(p, i) = 3
+```
+
+---
+
+## Step 4 — Add the highest-count pair as a token
+
+Highest count = `6`.
+A deterministic tie-breaker selects one.
+
+Assume:
+
+```
+(p, p) → pp
+```
+
+Actions:
+
+* Add token `pp`
+* Assign a new token ID and priority
+* **For training only**, rewrite the corpus:
+
+```text
+h a pp y
+h a pp i e r
+h a pp i l y
+u n h a pp y
+h a pp y
+h a pp i e r
+```
+
+Only the token definition and priority are stored.
+
+---
+
+## Step 5 — Recount and repeat
+
+Recount adjacent pairs:
+
+```text
+(a, pp) = 6
+(h, a)  = 6
+(pp, y) = 3
+(pp, i) = 3
+```
+
+Assume:
+
+```
+(a, pp) → app
+(h, app) → happ
+(happ, y) → happy
+```
+
+Each iteration:
+
+* adds **one token**
+* assigns a new ID and lower priority
+* temporarily rewrites the corpus
+
+---
+
+## Step 6 — Termination
+
+Stop when:
+
+* target vocabulary size is reached, or
+* no adjacent pair meets the threshold
+
+---
+
+## Step 7 — Final output (`tokenizer.model`)
+
+**Stored:**
+
+* Token ID ↔ byte-sequence mappings
+* Token priorities (implicit by insertion order)
+
+**Not stored:**
+
+* Regex rules
+* Corpus rewrites
+* Pair counts
+
+---
+
+## Final invariant
+
+> Tokenizer training is a single loop:
+> **count → select → add one token → rewrite → repeat**
+

@@ -17,22 +17,40 @@
   }
 }
 
-/* Gradient text */
+/* Gradient text with optional opacity via modifier */
+/* Usage: text-gradient-fm-title, text-gradient-fm-title/50 */
 @utility text-gradient-* {
-  background: --value(--gradient-*);
+  --_text-gradient-opacity: --modifier(integer, [*]);
+  background-image: --value(--gradient-*);
   background-clip: text;
   -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: transparent;
+  opacity: calc(var(--_text-gradient-opacity, 100) / 100);
 }
 
-/* Gradient glow shadow from color token */
-/* Usage: glow-gradient-fm-term, glow-gradient-fm-error/50 */
-@utility glow-gradient-* {
+/* Glow shadow from color token */
+/* Usage: glow-fm-term, glow-fm-error/50 */
+@utility glow-* {
   --_glow-intensity: --modifier(integer, [*]);
   --_glow-color: --value(--color-*);
   box-shadow:
     0 0 1.5rem oklch(from var(--_glow-color) l c h / calc(var(--_glow-intensity, 25) * 1%)),
     0 0 3rem oklch(from var(--_glow-color) l c h / calc(var(--_glow-intensity, 25) * 0.6%));
+}
+
+/* Noise texture overlay via ::after */
+/* Usage: bg-noise-games (uses --games-noise token) */
+@utility bg-noise-* {
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: --value(--*-noise);
+    background-repeat: repeat;
+    pointer-events: none;
+    mix-blend-mode: overlay;
+  }
 }
 
 /* Gradient border via background + padding trick */
@@ -52,5 +70,24 @@
 
   > * {
     position: relative;
+  }
+}
+
+/* Glass-morphism surface with backdrop blur */
+@utility glass-* {
+  --_surface: --value(--gradient-*);
+  position: relative;
+  isolation: isolate;
+  backdrop-filter: blur(12px) saturate(1.5);
+  -webkit-backdrop-filter: blur(12px) saturate(1.5);
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: var(--_surface);
+    pointer-events: none;
   }
 }

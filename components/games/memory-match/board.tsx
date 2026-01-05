@@ -21,6 +21,14 @@ export function MemoryBoard({
 
   const handleCardClick = (card: Card) => {
     if (matchedPairIds.has(card.pairId)) return;
+
+    // Clear error state on next click and start fresh with new card
+    if (errorIds.size > 0) {
+      setErrorIds(new Set());
+      setFlippedIds(new Set([card.id]));
+      return;
+    }
+
     if (flippedIds.has(card.id)) return;
     if (flippedIds.size >= 2) return;
 
@@ -46,32 +54,45 @@ export function MemoryBoard({
     }
   };
 
-  const handleAnimationEnd = (cardId: string) => {
-    if (errorIds.has(cardId)) {
-      setErrorIds(new Set());
-      setFlippedIds(new Set());
-    }
-  };
+  const progress = (matchedPairIds.size / pairCount) * 100;
 
   return (
-    <div>
-      {cards.map((card) => {
-        const isFlipped = flippedIds.has(card.id);
-        const isMatched = matchedPairIds.has(card.pairId);
-        const isError = errorIds.has(card.id);
+    <div className="space-y-6">
+      {/* Progress bar */}
+      <div className="h-2 rounded-full bg-gradient-mm-back/20 overflow-hidden">
+        <div
+          className="h-full rounded-full bg-gradient-mm-success glow-mm-success/30
+            transition-[width] duration-500 ease-out"
+          style={{ width: `${progress}%` }}
+        />
+      </div>
 
-        return (
-          <MemoryCard
-            key={card.id}
-            card={card}
-            isFlipped={isFlipped || isMatched}
-            isMatched={isMatched}
-            isError={isError}
-            onClick={() => handleCardClick(card)}
-            onAnimationEnd={() => handleAnimationEnd(card.id)}
-          />
-        );
-      })}
+      {/* Card grid */}
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 md:gap-4">
+        {cards.map((card) => {
+          const isFlipped = flippedIds.has(card.id);
+          const isMatched = matchedPairIds.has(card.pairId);
+          const isError = errorIds.has(card.id);
+
+          return (
+            <MemoryCard
+              key={card.id}
+              card={card}
+              isFlipped={isFlipped || isMatched}
+              isMatched={isMatched}
+              isError={isError}
+              onClick={() => handleCardClick(card)}
+            />
+          );
+        })}
+      </div>
+
+      {/* Match counter */}
+      <p className="text-center text-sm text-muted-foreground">
+        <span className="font-bold text-gradient-mm-text">{matchedPairIds.size}</span>
+        <span className="mx-1">/</span>
+        <span>{pairCount} matched</span>
+      </p>
     </div>
   );
 }

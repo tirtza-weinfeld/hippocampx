@@ -5,11 +5,16 @@ interface InlineMathNode extends Node {
   value: string
 }
 
+interface InlineCodeNode extends Node {
+  type: 'inlineCode'
+  value: string
+}
+
 interface ParentNode extends Node {
   children: Node[]
 }
 
-type MdastNode = Text | InlineMathNode | Strong | Emphasis | ParentNode
+type MdastNode = Text | InlineMathNode | InlineCodeNode | Strong | Emphasis | ParentNode
 
 /**
  * Extracts text content from a heading node for display purposes (TOC, etc.)
@@ -34,6 +39,12 @@ export function extractDisplayTextFromHeading(node: Heading): string {
       const mathContent = (mathNode.value || '').trim()
       if (mathContent) {
         textParts.push(`$${mathContent}$`)
+      }
+    } else if (node.type === 'inlineCode') {
+      const codeNode = node as InlineCodeNode
+      const codeContent = (codeNode.value || '').trim()
+      if (codeContent) {
+        textParts.push(codeContent)
       }
     } else if (node.type === 'strong' || node.type === 'emphasis') {
       const parentNode = node as ParentNode
@@ -88,6 +99,12 @@ export function extractTextFromHeading(node: Heading): string {
       if (mathContent) {
         textParts.push(mathContent)
       }
+    } else if (node.type === 'inlineCode') {
+      const codeNode = node as InlineCodeNode
+      const codeContent = (codeNode.value || '').trim()
+      if (codeContent) {
+        textParts.push(codeContent)
+      }
     } else if (node.type === 'strong' || node.type === 'emphasis') {
       const parentNode = node as ParentNode
       // Handle styled text (including data-step attributes)
@@ -104,10 +121,10 @@ export function extractTextFromHeading(node: Heading): string {
       )
     }
   }
-  
+
   // Process all children of the heading
   node.children.forEach((child) => visitTextNodes(child as MdastNode))
-  
+
   // Join with spaces to ensure proper word boundaries for slug generation
   return textParts.join(' ').trim()
 }
@@ -134,6 +151,12 @@ function extractTextFromChildren(children: Node[], cleanMath: boolean = true): s
         : `$${(mathNode.value || '').trim()}$` // Wrap in $ for TOC rendering when not cleaning
       if (mathContent) {
         textParts.push(mathContent)
+      }
+    } else if (child.type === 'inlineCode') {
+      const codeNode = child as InlineCodeNode
+      const codeContent = (codeNode.value || '').trim()
+      if (codeContent) {
+        textParts.push(codeContent)
       }
     } else if ('children' in child && Array.isArray((child as ParentNode).children)) {
       const nestedText = extractTextFromChildren((child as ParentNode).children, cleanMath)

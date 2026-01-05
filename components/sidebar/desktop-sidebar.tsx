@@ -29,7 +29,7 @@ export function DesktopSidebar({ className }: DesktopSidebarProps) {
   } = ctx
 
   return (
-    <div className={cn("flex-col", className)}>
+    <div className={cn("flex-col ", className)}>
       <aside
         id="desktop-sidebar"
         className="fixed inset-y-1 left-1 z-20 flex flex-col rounded-2xl
@@ -41,7 +41,7 @@ export function DesktopSidebar({ className }: DesktopSidebarProps) {
       >
         <SidebarHeader isExpanded={isExpanded} />
 
-        <nav className="flex-1 overflow-y-auto px-3 py-2">
+        <nav className="flex-1 overflow-y-auto px-3 py-2 ">
           <ul className="space-y-1">
             {navigationItems.map((item) => (
               <NavItem

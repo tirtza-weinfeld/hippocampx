@@ -15,13 +15,18 @@ interface TocHeading {
 }
 
 interface TocRichContent {
-  type: 'text' | 'math' | 'styled-math'
+  type: 'text' | 'math' | 'styled-math' | 'code'
   content: string
   stepColor?: string // For styled content
 }
 
 interface InlineMathNode {
   type: 'inlineMath'
+  value: string
+}
+
+interface InlineCodeNode {
+  type: 'inlineCode'
   value: string
 }
 
@@ -82,6 +87,12 @@ function extractRichContentFromHeading(node: Heading): TocRichContent[] {
         } else {
           richContent.push({ type: 'math', content: mathContent })
         }
+      }
+    } else if (node.type === 'inlineCode') {
+      const codeNode = node as InlineCodeNode
+      const codeContent = (codeNode.value || '').trim()
+      if (codeContent) {
+        richContent.push({ type: 'code', content: codeContent })
       }
     } else if (node.type === 'strong' || node.type === 'emphasis') {
       const styledNode = node as Strong | Emphasis

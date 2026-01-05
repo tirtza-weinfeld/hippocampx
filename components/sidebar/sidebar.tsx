@@ -38,7 +38,7 @@ export function Sidebar({ children, defaultOpen }: SidebarProps) {
   return (
     <SidebarProvider value={contextValue}>
       <div className="flex min-h-screen">
-        <DesktopSidebar className="hidden md:flex" />
+        <DesktopSidebar className="hidden md:flex " />
         <MobileSidebar className="flex md:hidden" />
 
         <div

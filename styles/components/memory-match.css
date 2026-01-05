@@ -1,0 +1,130 @@
+/* Memory Match Game */
+
+:root {
+  /* Card back - dark glass with subtle blue tint */
+  --gradient-mm-back: linear-gradient(
+    145deg,
+    oklch(0.28 0.03 260),
+    oklch(0.24 0.04 240),
+    oklch(0.28 0.03 220)
+  );
+
+  /* Card front - soft neutral glass */
+  --gradient-mm-front: linear-gradient(145deg, oklch(0.96 0.01 250), oklch(0.94 0.015 230));
+
+  /* Title text - cyan → blue → indigo (sophisticated sweep) */
+  --gradient-mm-text: linear-gradient(135deg, oklch(0.65 0.15 220), oklch(0.60 0.18 250), oklch(0.65 0.15 280));
+
+  /* Text on card front - deep blue → indigo */
+  --gradient-mm-front-text: linear-gradient(135deg, oklch(0.35 0.14 250), oklch(0.32 0.16 270), oklch(0.35 0.12 290));
+
+  /* Selected state - lifted glass */
+  --gradient-mm-selected: linear-gradient(145deg, oklch(0.94 0.02 250), oklch(0.91 0.025 230));
+
+  /* Error - vibrant coral → rose → pink */
+  --gradient-mm-error: linear-gradient(135deg, oklch(0.68 0.22 25), oklch(0.65 0.24 5), oklch(0.68 0.20 345));
+
+  /* Error text - dark warm gradient */
+  --gradient-mm-error-text: linear-gradient(135deg, oklch(0.30 0.14 20), oklch(0.28 0.12 5), oklch(0.30 0.10 350));
+
+  /* Success/matched - muted teal (faded, done state) */
+  --gradient-mm-success: linear-gradient(135deg, oklch(0.80 0.08 180), oklch(0.78 0.10 195), oklch(0.80 0.08 210));
+  --gradient-mm-success-text: linear-gradient(135deg, oklch(0.30 0.10 185), oklch(0.28 0.12 200), oklch(0.30 0.08 215));
+
+  /* Glow colors */
+  --color-mm-back: oklch(0.35 0.06 250);
+  --color-mm-front: oklch(0.60 0.08 250);
+  --color-mm-error: oklch(0.65 0.22 15);
+  --color-mm-success: oklch(0.70 0.12 180);
+}
+
+.dark {
+  /* Card back - deep charcoal with subtle blue */
+  --gradient-mm-back: linear-gradient(
+    145deg,
+    oklch(0.22 0.025 260),
+    oklch(0.18 0.03 240),
+    oklch(0.22 0.025 220)
+  );
+
+  /* Card front - dark glass */
+  --gradient-mm-front: linear-gradient(145deg, oklch(0.20 0.02 250), oklch(0.17 0.025 230));
+
+  /* Title text - bright cyan → blue → indigo */
+  --gradient-mm-text: linear-gradient(135deg, oklch(0.78 0.14 220), oklch(0.75 0.16 250), oklch(0.78 0.14 280));
+
+  /* Text on card front - bright blue → indigo */
+  --gradient-mm-front-text: linear-gradient(135deg, oklch(0.85 0.12 250), oklch(0.82 0.14 270), oklch(0.85 0.10 290));
+
+  /* Selected - lifted dark glass */
+  --gradient-mm-selected: linear-gradient(145deg, oklch(0.24 0.03 250), oklch(0.20 0.035 230));
+
+  /* Error - deep coral → rose → pink */
+  --gradient-mm-error: linear-gradient(135deg, oklch(0.52 0.20 25), oklch(0.48 0.22 5), oklch(0.52 0.18 345));
+
+  /* Error text - bright warm gradient */
+  --gradient-mm-error-text: linear-gradient(135deg, oklch(0.92 0.12 20), oklch(0.90 0.10 5), oklch(0.92 0.08 350));
+
+  /* Success/matched - muted teal (faded, done state) */
+  --gradient-mm-success: linear-gradient(135deg, oklch(0.38 0.08 180), oklch(0.35 0.10 195), oklch(0.38 0.08 210));
+  --gradient-mm-success-text: linear-gradient(135deg, oklch(0.88 0.08 185), oklch(0.85 0.10 200), oklch(0.88 0.08 215));
+
+  /* Glow colors */
+  --color-mm-back: oklch(0.30 0.05 250);
+  --color-mm-front: oklch(0.45 0.06 250);
+  --color-mm-error: oklch(0.50 0.20 15);
+  --color-mm-success: oklch(0.50 0.10 180);
+}
+
+@theme inline {
+  /* Card gradients */
+  --gradient-mm-back: var(--gradient-mm-back);
+  --gradient-mm-front: var(--gradient-mm-front);
+  --gradient-mm-selected: var(--gradient-mm-selected);
+
+  /* Text gradients */
+  --gradient-mm-text: var(--gradient-mm-text);
+  --gradient-mm-front-text: var(--gradient-mm-front-text);
+
+  /* State gradients */
+  --gradient-mm-error: var(--gradient-mm-error);
+  --gradient-mm-error-text: var(--gradient-mm-error-text);
+  --gradient-mm-success: var(--gradient-mm-success);
+  --gradient-mm-success-text: var(--gradient-mm-success-text);
+
+  /* Glow colors */
+  --color-mm-back: var(--color-mm-back);
+  --color-mm-front: var(--color-mm-front);
+  --color-mm-error: var(--color-mm-error);
+  --color-mm-success: var(--color-mm-success);
+
+  /* Animations */
+  --animate-mm-flip: mm-flip 0.5s ease-out;
+  --animate-mm-shake: mm-shake 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  --animate-mm-glow: mm-glow 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes mm-flip {
+  0% { transform: scale(0.95) rotateY(0deg); }
+  50% { transform: scale(1.02) rotateY(5deg); }
+  100% { transform: scale(1) rotateY(0deg); }
+}
+
+@keyframes mm-shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  80% { transform: translateX(6px); }
+
+}
+/* @keyframes mm-shake {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(0.97); }
+} */
+
+@keyframes mm-glow {
+  0% { transform: scale(1); }
+  25% { transform: scale(1.06) rotate(-1deg); }
+  50% { transform: scale(1.08) rotate(1deg); }
+  75% { transform: scale(1.03) rotate(-0.5deg); }
+  100% { transform: scale(1); }
+}

@@ -47,22 +47,22 @@ export type CodeBlockProps = {
  */
 export default async function CodeBlock(props: CodeBlockProps) {
   // await new Promise(resolve => setTimeout(resolve, 3000))
-  const { className, meta, children: code } = { ...props }
-
+  const { className, meta, children } = { ...props }
+  const code = (children as string).trimEnd()
 
   const tooltipContent = await getTooltipContent()
-  const highlightedCode = await highlightCode(code as string, className.replace('language-', ''), meta as string)
+  const highlightedCode = await highlightCode(code, className.replace('language-', ''), meta as string)
   const highlightedCodeWithTooltips = tooltipifyJSX(
     highlightedCode,
     (qname) => renderTooltipContent(qname, tooltipContent)
   )
 
-  const codeLines = (code as string).split('\n');
+  const codeLines = code.split('\n');
   const totalLines = codeLines.length;
 
   return (
     <CodeBlockClient
-      code={code as string}
+      code={code}
       highlightedCodeWithTooltips={highlightedCodeWithTooltips}
       totalLines={totalLines}
     />

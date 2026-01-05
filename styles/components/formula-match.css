@@ -8,6 +8,7 @@
   /* Text gradients - vibrant for readability */
   --gradient-fm-term-text: linear-gradient(135deg, oklch(0.55 0.25 290), oklch(0.50 0.22 265), oklch(0.55 0.20 245));
   --gradient-fm-formula-text: linear-gradient(135deg, oklch(0.55 0.18 230), oklch(0.58 0.15 195), oklch(0.55 0.16 175));
+  --gradient-fm-title: linear-gradient(135deg, oklch(0.50 0.22 285), oklch(0.55 0.18 230), oklch(0.50 0.15 195));
 
   /* Selected - saturated overlay */
   --gradient-fm-term-selected: linear-gradient(135deg, oklch(0.60 0.24 290), oklch(0.55 0.22 265), oklch(0.60 0.20 240));
@@ -32,6 +33,7 @@
   /* Text gradients - bright for dark mode */
   --gradient-fm-term-text: linear-gradient(135deg, oklch(0.78 0.18 290), oklch(0.75 0.16 265), oklch(0.78 0.14 245));
   --gradient-fm-formula-text: linear-gradient(135deg, oklch(0.78 0.14 230), oklch(0.82 0.13 195), oklch(0.78 0.12 175));
+  --gradient-fm-title: linear-gradient(135deg, oklch(0.75 0.16 285), oklch(0.78 0.14 230), oklch(0.75 0.12 195));
 
   /* Selected - vibrant overlay */
   --gradient-fm-term-selected: linear-gradient(135deg, oklch(0.72 0.20 290), oklch(0.68 0.18 265), oklch(0.72 0.16 240));
@@ -56,6 +58,7 @@
   /* Text gradients */
   --gradient-fm-term-text: var(--gradient-fm-term-text);
   --gradient-fm-formula-text: var(--gradient-fm-formula-text);
+  --gradient-fm-title: var(--gradient-fm-title);
 
   /* State gradients */
   --gradient-fm-term-selected: var(--gradient-fm-term-selected);

@@ -1,0 +1,54 @@
+# Inference
+
+## Resizable Table of Contents
+
+Using the trained model to generate text.
+
+## Autoregressive Generation
+
+Models generate **one token at a time**, feeding each output back as input:
+
+```
+Input:  "The cat sat on the"
+         ↓ forward pass
+Output: "mat" (token 1)
+
+Input:  "The cat sat on the mat"
+         ↓ forward pass
+Output: "." (token 2)
+
+...and so on
+```
+
+This is why it's called **autoregressive** — each prediction depends on all previous tokens.
+
+## The Forward Pass
+
+1. Tokenize input
+2. Look up embeddings
+3. Pass through transformer layers (attention + MLP)
+4. Output: probability distribution over vocabulary
+
+## Temperature & Sampling
+
+The model outputs **logits** (raw scores) for every token in the vocabulary. Temperature controls how these become probabilities:
+
+### Low Temperature (0.1–0.3)
+- Sharpens distribution
+- Model picks the most likely token
+- More deterministic, less creative
+
+### High Temperature (0.8–1.2)
+- Flattens distribution
+- More randomness in selection
+- More creative, potentially incoherent
+
+### Temperature = 0
+- Always pick the highest probability token (greedy decoding)
+
+## Key Points
+
+- Weights are **frozen** — no learning happens
+- Each token requires a full forward pass
+- Temperature affects **sampling only**, not the model itself
+- Generation is inherently sequential (token-by-token)

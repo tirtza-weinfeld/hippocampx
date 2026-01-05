@@ -14,7 +14,7 @@ interface TocHeading {
 }
 
 interface TocRichContent {
-  type: 'text' | 'math' | 'styled-math'
+  type: 'text' | 'math' | 'styled-math' | 'code'
   content: string
   stepColor?: string // For styled content
 }
@@ -29,13 +29,26 @@ interface TableOfContentsProps {
 // Helper function to render rich content with proper styling
 const renderRichContent = (richContent: TocRichContent[]) => {
   return richContent.map((item, index) => {
-    // Add space before math elements (except at the beginning)
-    const needsSpaceBefore = index > 0 && (item.type === 'math' || item.type === 'styled-math')
-    
+    // Add space before all elements except the first one
+    const needsSpaceBefore = index > 0
+
     switch (item.type) {
       case 'text':
-        return <span key={index}>{item.content}</span>
-      
+        return (
+          <span key={index}>
+            {needsSpaceBefore && ' '}
+            {item.content}
+          </span>
+        )
+
+      case 'code':
+        return (
+          <span key={index}>
+            {needsSpaceBefore && ' '}
+            <code className="text-[0.9em] px-1 py-0.5 rounded bg-muted/50">{item.content}</code>
+          </span>
+        )
+
       case 'math':
         return (
           <span key={index}>
@@ -43,7 +56,7 @@ const renderRichContent = (richContent: TocRichContent[]) => {
             <MathRenderer latex={item.content} />
           </span>
         )
-      
+
       case 'styled-math':
         return (
           <span key={index}>
@@ -53,7 +66,7 @@ const renderRichContent = (richContent: TocRichContent[]) => {
             </span>
           </span>
         )
-      
+
       default:
         return <span key={index}>{item.content}</span>
     }

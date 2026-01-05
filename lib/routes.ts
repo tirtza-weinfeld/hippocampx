@@ -1,5 +1,5 @@
 import { Brain, Binary, Sparkles, InfinityIcon, ChartNoAxesCombinedIcon, Home, Calculator, BookOpen,
-    HelpCircle, Dumbbell, Lightbulb, Gamepad2, Pencil, Music, Flower, Puzzle, BookMarked,
+    HelpCircle, Dumbbell, Lightbulb, Gamepad2, Pencil, Music, Flower, Puzzle, BookMarked, Lock,
     // Database, Table,PuzzleIcon
 } from "lucide-react"
 // import { ClaudeIcon } from "@/components/icons/claude-icon"
@@ -17,6 +17,15 @@ export type NavigationItem = {
 
 export const routes: NavigationItem[] = [
     { title: 'Home', href: '/', icon: Home, color: "text-blue-500", bgColor: "bg-purple-500/10", },
+    {
+        title: 'Games', href: '/games', icon: Gamepad2, color: "text-fuchsia-500", bgColor: "bg-fuchsia-500/10",
+        children: [
+            { title: 'Overview', href: '/games', icon: Gamepad2, color: "text-fuchsia-500", bgColor: "bg-fuchsia-500/10" },
+            { title: 'Formula Match', href: '/games/formula-match', icon: Calculator, color: "text-fuchsia-500", bgColor: "bg-fuchsia-500/10" },
+            { title: 'Memory Match', href: '/games/memory-match', icon: Puzzle, color: "text-fuchsia-500", bgColor: "bg-fuchsia-500/10" },
+            { title: 'Word Vault', href: '/games/word-vault', icon: Lock, color: "text-fuchsia-500", bgColor: "bg-fuchsia-500/10" },
+        ],
+    },
     // {title: 'Claude', href: '/ai/claude-code', icon: ClaudeIcon, color: "text-orange-500", bgColor: "bg-orange-500/10"},
     // { title: 'Database', href: '/db', icon: Database, color: "text-blue-500", bgColor: "bg-purple-500/10",
     //     children: [

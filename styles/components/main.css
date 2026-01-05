@@ -24,9 +24,10 @@
 @import "./claude-code.css";
 @import "./games.css";
 @import "./formula-match.css";
+@import "./memory-match.css";
+@import "./word-vault.css";
  /* @import "./tailwind-utilities-demo.css";   */
 /* @import "./formula-match.css"; -- loaded directly, bypassing Tailwind */
-/* @import "./memory-match.css"; */
 /* @import "./mermaid.css"; */
 /* @import "./nav.css"; */
 /* @import "./difficulty.css"; */

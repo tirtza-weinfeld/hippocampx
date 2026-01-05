@@ -61,7 +61,7 @@ export function MatchingBoard({
           className="h-full rounded-full bg-gradient-fm-success
            transition-[width] 
            duration-500 ease-out
-            glow-gradient-fm-success"
+            glow-fm-success"
           style={{ width: `${progress}%` }}
         />
       </div>
@@ -88,11 +88,11 @@ export function MatchingBoard({
                     bg-gradient-fm-term/10
                     
                     selected:bg-gradient-fm-term-selected/15
-                    selected:glow-gradient-fm-term
+                    selected:glow-fm-term
                     selected:animate-fm-term-selected
 
                     error:bg-gradient-fm-error/15
-                    error:glow-gradient-fm-error
+                    error:glow-fm-error
                     error:animate-fm-error
 
                     success:bg-gradient-fm-success/15
@@ -124,8 +124,8 @@ export function MatchingBoard({
                   className="w-full min-h-14 px-5 py-4 rounded-2xl text-start font-medium text-sm sm:text-base
                     backdrop-blur-sm transition-all duration-200 ease-out
                     bg-gradient-fm-formula/10
-                    selected:bg-gradient-fm-formula-selected/15 selected:glow-gradient-fm-formula selected:animate-fm-formula-selected
-                    error:bg-gradient-fm-error/15 error:glow-gradient-fm-error error:animate-fm-error
+                    selected:bg-gradient-fm-formula-selected/15 selected:glow-fm-formula selected:animate-fm-formula-selected
+                    error:bg-gradient-fm-error/15 error:glow-fm-error error:animate-fm-error
                     success:bg-gradient-fm-success/15 success:animate-fm-success success:opacity-70
                     hover:not-disabled:-translate-y-0.5 active:not-disabled:scale-[0.98]"
                 >

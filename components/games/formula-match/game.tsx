@@ -22,7 +22,7 @@ export function FormulaMatchGame({
       <div className="flex min-h-[60vh] items-center justify-center p-6">
         <div
           className="relative max-w-md overflow-hidden rounded-3xl bg-gradient-fm-term/10 p-8 text-center
-            backdrop-blur-xl glow-gradient-fm-term/10
+            backdrop-blur-xl glow-fm-term/10
             starting:scale-95 starting:opacity-0
             transition-all duration-500 ease-out"
         >
@@ -69,7 +69,7 @@ export function FormulaMatchGame({
       <div className="flex min-h-[60vh] items-center justify-center p-6">
         <div
           className="relative max-w-md overflow-hidden rounded-3xl bg-gradient-fm-success/15 p-10 text-center
-            backdrop-blur-xl glow-gradient-fm-success/20
+            backdrop-blur-xl glow-fm-success/20
             starting:scale-90 starting:opacity-0
             transition-all duration-700 ease-out"
         >
@@ -110,9 +110,9 @@ export function FormulaMatchGame({
           <button
             onClick={handleRestart}
             className="rounded-2xl bg-gradient-fm-success/25 px-8 py-3 font-semibold
-              text-gradient-fm-success glow-gradient-fm-success/15
+              text-gradient-fm-success glow-fm-success/15
               transition-all duration-200 ease-out
-              hover:bg-gradient-fm-success/35 hover:glow-gradient-fm-success/30
+              hover:bg-gradient-fm-success/35 hover:glow-fm-success/30
               hover:-translate-y-0.5 active:scale-95"
           >
             Play Again
@@ -157,7 +157,7 @@ export function FormulaMatchGame({
 
         <div
           className="relative flex items-center gap-3 rounded-xl bg-gradient-fm-success/15
-            px-5 py-2 glow-gradient-fm-success/10"
+            px-5 py-2 glow-fm-success/10"
         >
           <Zap className="size-5 text-fm-success" strokeWidth={1.5} />
           <div className="flex flex-col items-center">

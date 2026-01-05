@@ -1,0 +1,21 @@
+# How Language Models Work
+
+Three phases, from text to tokens to intelligence.
+
+## The Pipeline
+
+```
+Tokenizer Training (offline)
+        ↓
+   Model Training
+        ↓
+     Inference
+```
+
+## Phases
+
+1. **[Tokenizer Training](/learn/ai/tokenizer-training)** — BPE learns to split text into tokens. Frozen before model training.
+
+2. **[Model Training](/learn/ai/model-training)** — Embeddings and transformer weights learned via gradient descent.
+
+3. **[Inference](/learn/ai/inference)** — Autoregressive forward passes generate text token-by-token.

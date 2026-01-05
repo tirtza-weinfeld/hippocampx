@@ -27,6 +27,7 @@ File limits (lines):
 ## Guardrails
 
 - Read before edit — never propose changes to unseen code
+- Smart file reading — max 400 lines per read; use `limit` parameter for larger files; ask permission to read more
 - Verify before assume — check project files, don't guess
 - Minimal changes — only what's requested, no drive-by refactors
 - Use loaded skills — don't fall back to training data patterns

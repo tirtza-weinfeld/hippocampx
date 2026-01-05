@@ -1,42 +1,109 @@
 :root {
-  --gradient-games-background: linear-gradient(135deg, --alpha(var(--color-gray-50) / 50%), var(--color-white));
+  /* Deep ocean mesh - blue-green pools with thermal warmth */
+  --gradient-games-mesh:
+    radial-gradient(ellipse 80% 55% at 20% 25%, oklch(0.92 0.06 195 / 65%) 0%, transparent 50%),
+    radial-gradient(ellipse 55% 75% at 85% 70%, oklch(0.90 0.08 155 / 50%) 0%, transparent 45%),
+    radial-gradient(ellipse 45% 45% at 55% 35%, oklch(0.94 0.05 50 / 35%) 0%, transparent 40%),
+    radial-gradient(ellipse 110% 65% at 50% 100%, oklch(0.88 0.07 210 / 45%) 0%, transparent 55%);
+
+  /* Ocean-thermal sweep - teal to warm coral */
+  --gradient-games-glow: conic-gradient(
+    from 180deg at 50% 50%,
+    oklch(0.88 0.10 195) 0deg,
+    oklch(0.86 0.12 170) 60deg,
+    oklch(0.88 0.14 150) 120deg,
+    oklch(0.90 0.10 60) 180deg,
+    oklch(0.88 0.08 40) 240deg,
+    oklch(0.86 0.10 210) 300deg,
+    oklch(0.88 0.10 195) 360deg
+  );
+
+  /* Frosted ocean glass */
+  --gradient-games-surface: linear-gradient(
+    155deg,
+    oklch(0.97 0.02 195 / 80%) 0%,
+    oklch(0.94 0.03 180 / 70%) 50%,
+    oklch(0.96 0.025 210 / 65%) 100%
+  );
+
+  /* Icon colors - ocean teal to acid green */
+  --color-games-icon-start: oklch(0.48 0.14 200);
+  --color-games-icon-end: oklch(0.55 0.22 150);
+
+  /* Grain texture */
+  --games-noise: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+
+  /* Accent colors - acid green + warm coral */
+  --color-games-glow: oklch(0.72 0.20 155);
+  --color-games-accent: oklch(0.65 0.18 50);
+
+  /* Text gradients - visible ocean-to-thermal shift */
+  --gradient-games-title: linear-gradient(105deg, oklch(0.35 0.12 200) 0%, oklch(0.40 0.18 160) 50%, oklch(0.45 0.14 55) 100%);
+  --gradient-games-text: linear-gradient(90deg, oklch(0.38 0.14 195) 0%, oklch(0.42 0.16 150) 100%);
+  --gradient-games-muted: linear-gradient(90deg, oklch(0.50 0.08 200) 0%, oklch(0.48 0.10 170) 100%);
+
+  /* Icon backdrop - ocean teal glow */
+  --gradient-games-icon-bg: linear-gradient(140deg, oklch(0.94 0.05 195 / 75%) 0%, oklch(0.90 0.07 165 / 55%) 100%);
 }
+
 .dark {
-  --gradient-games-background: linear-gradient(135deg, var(--color-gray-800), var(--color-black));
+  /* Mesh - green/amber pools, less teal */
+  --gradient-games-mesh:
+    radial-gradient(ellipse 80% 55% at 20% 25%, oklch(0.24 0.10 150 / 55%) 0%, transparent 50%),
+    radial-gradient(ellipse 55% 75% at 85% 70%, oklch(0.26 0.12 120 / 45%) 0%, transparent 45%),
+    radial-gradient(ellipse 45% 45% at 55% 35%, oklch(0.30 0.08 50 / 35%) 0%, transparent 40%),
+    radial-gradient(ellipse 110% 65% at 50% 100%, oklch(0.20 0.10 170 / 45%) 0%, transparent 55%);
+
+  /* Glow sweep - green to warm */
+  --gradient-games-glow: conic-gradient(
+    from 180deg at 50% 50%,
+    oklch(0.38 0.14 150) 0deg,
+    oklch(0.35 0.16 120) 72deg,
+    oklch(0.40 0.18 80) 144deg,
+    oklch(0.38 0.14 50) 216deg,
+    oklch(0.35 0.12 170) 288deg,
+    oklch(0.38 0.14 150) 360deg
+  );
+
+  /* Glass - high contrast gradient */
+  --gradient-games-surface: linear-gradient(
+    145deg,
+    oklch(0.38 0.06 150 / 85%) 0%,
+    oklch(0.12 0.07 130 / 70%) 50%,
+    oklch(0.22 0.055 160 / 65%) 100%
+  );
+
+  /* Icon colors - green to lime */
+  --color-games-icon-start: oklch(0.70 0.18 150);
+  --color-games-icon-end: oklch(0.78 0.22 120);
+
+  /* Grain */
+  --games-noise: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+
+  /* Accents - green/lime */
+  --color-games-glow: oklch(0.75 0.22 140);
+  --color-games-accent: oklch(0.80 0.20 100);
+
+  /* Text gradients - bright with visible hue sweep */
+  --gradient-games-title: linear-gradient(105deg, oklch(0.80 0.24 170) 0%, oklch(0.95 0.28 100) 50%, oklch(0.85 0.26 50) 100%);
+  --gradient-games-text: linear-gradient(100deg, oklch(0.78 0.22 160) 0%, oklch(0.92 0.26 80) 100%);
+  --gradient-games-muted: linear-gradient(90deg, oklch(0.65 0.18 150) 0%, oklch(0.80 0.16 100) 100%);
+
+  /* Icon backdrop - high contrast gradient */
+  --gradient-games-icon-bg: linear-gradient(140deg, oklch(0.45 0.14 150 / 90%) 0%, oklch(0.12 0.10 130 / 60%) 100%);
 }
 
-@theme inline{
---gradient-games-background: var(--gradient-games-background);
-/* --gradient-opacity:100% */
+@theme inline {
+  --gradient-games-mesh: var(--gradient-games-mesh);
+  --gradient-games-glow: var(--gradient-games-glow);
+  --gradient-games-surface: var(--gradient-games-surface);
+  --gradient-games-title: var(--gradient-games-title);
+  --gradient-games-text: var(--gradient-games-text);
+  --gradient-games-muted: var(--gradient-games-muted);
+  --gradient-games-icon-bg: var(--gradient-games-icon-bg);
+  --games-noise: var(--games-noise);
+  --color-games-glow: var(--color-games-glow);
+  --color-games-accent: var(--color-games-accent);
+  --color-games-icon-start: var(--color-games-icon-start);
+  --color-games-icon-end: var(--color-games-icon-end);
 }
-/* 
- @utility bg-gradient-* {
-    background: --value(--gradient-*); 
-    opacity: --modifier(fraction,number,[percentage]);  
-    
-  }
-  @utility mask-gradient-* {
-    mask-image: linear-gradient(
-      oklch(100% 0 0 / --value([percentage])),
-      oklch(100% 0 0 / --value([percentage]))
-    );
-  }
-
-@utility text-gradient-* {
-    background: --value(--gradient-*);
-    opacity: --modifier(number);
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-
-
-
-@utility shadow-gradient-* {
-  --shadow-gradient: --value(--gradient-*);
-  box-shadow: 0 4px 16px --alpha(var(--shadow-gradient) / 20%);
-}
- */
-
-
-
-  
