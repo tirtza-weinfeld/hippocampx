@@ -97,7 +97,7 @@ The **embedding table** (`tok_embeddings.weight`) has one row per vocabulary tok
 
 Embedding is a lookup: token ID 16425 → fetch row 16425 from the table.
 
-```
+```text
 Input:  [954, 10338, 13747, 290, 16425]     "The cat saw the mouse"
 
                 ↓ lookup each ID in embedding table
@@ -192,7 +192,7 @@ Token vectors (from embedding or previous layer)
    - `layers.N.attention.wv.weight` → Wv, shape `[n_kv_heads × head_dim, dim]`
 
    For each token in the sequence, compute:
-   ```
+   ```text
    Q = token_vector × Wq    → [n_heads × head_dim]
    K = token_vector × Wk    → [n_kv_heads × head_dim]
    V = token_vector × Wv    → [n_kv_heads × head_dim]
@@ -212,7 +212,7 @@ Token vectors (from embedding or previous layer)
 
    **The solution:** RoPE (Rotary Position Embedding) rotates each Q and K vector by an angle proportional to its position:
 
-   ```
+   ```text
    Position 0: rotate Q₀, K₀ by 0°
    Position 1: rotate Q₁, K₁ by θ
    Position 2: rotate Q₂, K₂ by 2θ
@@ -283,7 +283,7 @@ Token vectors (from embedding or previous layer)
 
    Using our running example: `"The cat saw the mouse"` → positions 0, 1, 2, 3, 4
 
-   ```
+   ```text
    For position 4 ("mouse"):
    Q₄ · K₀("The")   = 0.1
    Q₄ · K₁("cat")   = 0.8   ← high: knowing "cat" helps predict what "mouse" does next
@@ -363,7 +363,7 @@ Token vectors (from embedding or previous layer)
 
 5. **Weighted sum** of V's → output:
 
-   ```
+   ```text
    Output₄ = 0.14×V₀ + 0.28×V₁ + 0.23×V₂ + 0.14×V₃ + 0.21×V₄
                         ↑ "cat" contributes most
    ```
@@ -475,7 +475,7 @@ xv = self.cache_v[:bsz, : start_pos + seqlen]
 
 **Step by step for our example:**
 
-```
+```text
 Prompt processing: "The cat saw the mouse" (positions 0-4)
 ┌────────────────────────────────────────────────────────────────┐
 │ seqlen=5, start_pos=0                                          │
@@ -862,13 +862,13 @@ After `n_layers` of this, the last vector represents the entire input sequence. 
 
 | Component | File | Key Functions/Classes |
 |-----------|------|----------------------|
-| Embedding | [model.py](../model.py) | `Transformer.tok_embeddings` |
-| Attention | [model.py](../model.py) | `Attention.forward()` |
-| KV Cache | [model.py](../model.py) | `Attention.cache_k`, `Attention.cache_v` |
-| RoPE | [model.py](../model.py) | `apply_rotary_emb()`, `precompute_freqs_cis()` |
-| Scaled RoPE | [model.py](../model.py) | `apply_scaling()` |
-| Masking | [model.py](../model.py) | `create_chunked_attention_mask()` |
-| FFN | [ffn.py](../ffn.py) | `FeedForward.forward()` |
-| MoE | [moe.py](../moe.py) | `MoE.forward()`, `Experts.forward()` |
-| Generation | [generation.py](../generation.py) | `Llama4.generate()` |
-| Config | [args.py](../args.py) | `ModelArgs`, `MoEArgs` |
+| Embedding | [model.py](../model.py) ,[](https://github.com/tirtza-weinfeld/broca/blob/main/model.py)| `Transformer.tok_embeddings` |
+| Attention | [model.py](../model.py) ,[](https://github.com/tirtza-weinfeld/broca/blob/main/model.py)| `Attention.forward()` |
+| KV Cache | [model.py](../model.py) , [](https://github.com/tirtza-weinfeld/broca/blob/main/model.py)| `Attention.cache_k`, `Attention.cache_v` |
+| RoPE | [model.py](../model.py)  , [](https://github.com/tirtza-weinfeld/broca/blob/main/model.py)| `apply_rotary_emb()`, `precompute_freqs_cis()` |
+| Scaled RoPE | [model.py](../model.py)  , [](https://github.com/tirtza-weinfeld/broca/blob/main/model.py)| `apply_scaling()` |
+| Masking | [model.py](../model.py)  , [](https://github.com/tirtza-weinfeld/broca/blob/main/model.py)| `create_chunked_attention_mask()` |
+| FFN | [ffn.py](../ffn.py)  , [](https://github.com/tirtza-weinfeld/broca/blob/main/ffn.py)| `FeedForward.forward()` |
+| MoE | [moe.py](../moe.py)  , [](https://github.com/tirtza-weinfeld/broca/blob/main/moe.py)| `MoE.forward()`, `Experts.forward()` |
+| Generation | [generation.py](../generation.py) , [](https://github.com/tirtza-weinfeld/broca/blob/main/generation.py) | `Llama4.generate()` |
+| Config | [args.py](../args.py)  , [](https://github.com/tirtza-weinfeld/broca/blob/main/args.py)| `ModelArgs`, `MoEArgs` |
