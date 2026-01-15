@@ -1,0 +1,293 @@
+# Quantization: Fitting Large Models in Limited Memory
+
+## Resizable Table Of Contents
+
+Quantization compresses model weights from high precision (16-bit) to lower precision (8-bit or 4-bit), enabling large models to run on GPUs with limited VRAM.
+
+---
+
+## Why Quantization?
+
+Llama 4 Scout has **109 billion parameters**. In BFloat16 (2 bytes per parameter):
+
+```
+109B params × 2 bytes = 218 GB
+```
+
+No single GPU has 218 GB of VRAM. Even the H100 has only 80 GB.
+
+**Quantization solution:**
+```
+int4_mixed: 109B params × 0.5 bytes ≈ 55 GB  ← fits on H100 80GB!
+fp8_mixed:  109B params × 1 byte   ≈ 109 GB ← needs 2× H100
+```
+
+---
+
+## Quantization Modes
+
+Llama 4 supports two quantization modes ([api_types.py:207-210](../api_types.py#L207)):
+
+```python
+class QuantizationMode(StrEnum):
+    none = auto()       # Full precision (BFloat16)
+    fp8_mixed = auto()  # 8-bit floating point
+    int4_mixed = auto() # 4-bit integer
+```
+
+| Mode | Precision | Memory | Quality | Use Case |
+|------|-----------|--------|---------|----------|
+| none | BF16 | 100% | Best | Multi-GPU clusters |
+| fp8_mixed | FP8 | ~50% | Very good | 2× H100 |
+| int4_mixed | INT4 | ~25% | Good | Single H100 80GB |
+
+---
+
+## What Gets Quantized
+
+Not all weights are quantized — only the **MoE expert weights** (the largest part of the model) ([loader.py:73-82](../quantization/loader.py#L73)):
+
+```python
+def should_quantize_block(block: nn.Module) -> bool:
+    if not isinstance(block, TransformerBlock):
+        return False
+
+    is_moe = isinstance(block.feed_forward, MoE)
+    if quantization_mode == QuantizationMode.fp8_mixed:
+        # Skip first and last layers (they matter more for quality)
+        return is_moe and not (block.layer_id == 0 or block.layer_id == (model.n_layers - 1))
+
+    return is_moe
+```
+
+**What stays full precision:**
+- Embeddings (`tok_embeddings`, `output`)
+- Attention weights (`wq`, `wk`, `wv`, `wo`)
+- Non-MoE feed-forward layers
+- First and last MoE layers (fp8 mode)
+
+**What gets quantized:**
+- MoE expert weights (`w1`, `w2`, `w3`) — the bulk of parameters
+- Shared expert (int4 mode only)
+
+---
+
+## How Quantization Works
+
+### INT4 (4-bit integer)
+
+Each weight is stored as a 4-bit integer plus a scale factor:
+
+```
+Original BF16:  [-0.5, 0.3, -0.1, 0.8, ...]   (16 bits each)
+                        │
+                        ▼
+                  Quantize to int4
+                        │
+                        ▼
+INT4 values:    [-8, 4, -1, 10, ...]          (4 bits each)
+Scale factor:   0.08                          (one per group)
+                        │
+                        ▼
+Dequantize:     [-0.64, 0.32, -0.08, 0.80]   (approximate)
+```
+
+**Group quantization:** Weights are divided into groups (e.g., 128 values). Each group has its own scale factor, improving accuracy.
+
+### FP8 (8-bit floating point)
+
+Uses 8-bit floating point with dynamic scaling:
+
+```
+Original BF16:  [-0.5, 0.3, -0.1, 0.8, ...]   (16 bits each)
+                        │
+                        ▼
+FP8 values:     [FP8(-0.5), FP8(0.3), ...]    (8 bits each)
+Scale:          per-tensor or per-row
+```
+
+FP8 preserves more dynamic range than INT4 but uses more memory.
+
+---
+
+## Quantization Process
+
+The `convert_to_quantized_model` function handles quantization ([loader.py:55-180](../quantization/loader.py#L55)):
+
+```python
+def convert_to_quantized_model(
+    model: Transformer,
+    checkpoint_dir: str,
+    quantization_mode: str | None = None,
+) -> Transformer:
+    for _, block in model.named_modules():
+        if not should_quantize_block(block):
+            continue
+
+        moe = block.feed_forward
+
+        # Quantize routed experts
+        for key in ("w1", "w3", "w2"):
+            param = getattr(moe.experts, key)
+            setattr(moe.experts, key,
+                apply_quantization(f"{prefix}.experts.{key}", param))
+
+        # For int4: also quantize shared expert
+        if quantization_mode == QuantizationMode.int4_mixed:
+            for key in ("w1", "w3", "w2"):
+                param = getattr(moe.shared_expert, key)
+                param.weight = apply_quantization(...)
+```
+
+---
+
+## Pre-computed Scales
+
+If quantization scales are pre-computed (from a calibration run), they're loaded from files ([loader.py:87-98](../quantization/loader.py#L87)):
+
+```python
+int4_scales_path = Path(checkpoint_dir) / f"int4_scales_{rank}.pt"
+if int4_scales_path.is_file():
+    int4_scales = torch.load(int4_scales_path)
+
+    def apply_quantization(key, weight):
+        scale = int4_scales[key]
+        return load_int4(weight, scale, output_device=torch.device("cuda"))
+```
+
+Pre-computed scales give better quality than on-the-fly quantization.
+
+---
+
+## Custom SwiGLU for Quantized Weights
+
+Quantized weights need special matrix multiplication kernels ([loader.py:33-52](../quantization/loader.py#L33)):
+
+```python
+def swiglu_wrapper_no_reduce(self, x: Tensor):
+    from ..quantize_impls import ffn_swiglu
+    return ffn_swiglu(x, self.w1.weight, self.w3.weight, self.w2.weight)
+
+def experts_batched_swiglu_wrapper(self, x, w1, w3, w2):
+    from ..quantize_impls import bmm_nt
+    middle_out = F.silu(bmm_nt(x, w1)) * bmm_nt(x, w3)
+    return bmm_nt(middle_out, w2)
+```
+
+These wrappers use optimized kernels (from `fbgemm-gpu`) that can multiply with quantized weights directly.
+
+---
+
+## Running with Quantization
+
+### Chat Completion (Single H100)
+```bash
+torchrun --nproc_per_node=1 -m broca.scripts.chat_completion \
+    --checkpoint_dir /path/to/Llama-4-Scout-17B-16E-Instruct \
+    --quantization_mode int4_mixed \
+    --max_seq_len 4096
+```
+
+### Pre-quantize Weights
+```bash
+torchrun --nproc_per_node=8 -m broca.scripts.quantize \
+    --ckpt_dir /path/to/checkpoint \
+    --output_dir /path/to/output \
+    --quantization_mode fp8_mixed
+```
+
+---
+
+## Quality vs Memory Trade-off
+
+```
+┌────────────────────────────────────────────────────────────────────────────┐
+│                                                                            │
+│  Quality                                                                   │
+│    ▲                                                                       │
+│    │  ★ BF16 (no quantization)                                             │
+│    │                                                                       │
+│    │      ★ FP8 mixed                                                      │
+│    │                                                                       │
+│    │          ★ INT4 mixed                                                 │
+│    │                                                                       │
+│    └──────────────────────────────────────────────────────────────────▶    │
+│                                                      Memory saved          │
+│                                                                            │
+└────────────────────────────────────────────────────────────────────────────┘
+```
+
+**General guidance:**
+- Use BF16 if you have enough GPUs
+- Use FP8 for best quality with memory constraints
+- Use INT4 for single-GPU deployment (acceptable quality loss)
+
+---
+
+## Implementation Details
+
+### Memory Layout
+
+Quantized weights are stored differently ([loader.py:144-154](../quantization/loader.py#L144)):
+
+```python
+for key in ("w1", "w3", "w2"):
+    param = getattr(moe.experts, key)
+    setattr(
+        moe.experts,
+        key,
+        apply_quantization(
+            f"{prefix}.experts.{key}",
+            param.transpose(1, 2).contiguous(),  # transpose for efficient access
+        ),
+    )
+```
+
+### Progress Tracking
+
+Quantization can be slow, so progress is displayed ([loader.py:183-236](../quantization/loader.py#L183)):
+
+```python
+progress = Progress(
+    SpinnerColumn(),
+    BarColumn(),
+    TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
+    TimeElapsedColumn(),
+    TimeRemainingColumn(),
+)
+```
+
+---
+
+## Summary
+
+```text
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  QUANTIZATION                                                               │
+│                                                                             │
+│  Problem: Scout = 109B params × 2 bytes = 218 GB (too big for one GPU)      │
+│                                                                             │
+│  Solutions:                                                                 │
+│    int4_mixed: 4-bit integers     → ~55 GB  → fits H100 80GB                │
+│    fp8_mixed:  8-bit floats       → ~109 GB → needs 2× H100                 │
+│                                                                             │
+│  What's quantized:                                                          │
+│    ✓ MoE expert weights (w1, w2, w3)  ← most of the parameters              │
+│    ✓ Shared expert (int4 only)                                              │
+│    ✗ Embeddings, attention, first/last layers  ← stay full precision        │
+│                                                                             │
+│  Usage:                                                                     │
+│    --quantization_mode int4_mixed                                           │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Code Reference
+
+| Component | File | Key Functions |
+|-----------|------|---------------|
+| Quantization loader | [quantization/loader.py](../quantization/loader.py) | `convert_to_quantized_model()` |
+| Mode enum | [api_types.py](../api_types.py) | `QuantizationMode` |
+| Model loading | [generation.py](../generation.py) | `Llama4.build()` |
+| Quantize script | [scripts/quantize.py](../scripts/quantize.py) | Pre-quantization |

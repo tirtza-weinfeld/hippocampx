@@ -1,0 +1,309 @@
+# Vision: Multimodal Image Understanding
+
+## Resizable Table Of Contents
+
+Llama 4 Scout and Maverick are **natively multimodal** — they can process images alongside text. This document explains how images are encoded and integrated into the transformer.
+
+---
+
+## Overview
+
+Images go through three stages before reaching the text transformer:
+
+```text
+Image (RGB pixels)
+       │
+       ▼
+┌──────────────────────┐
+│  1. PATCH EMBEDDING  │  Split into patches, project to vectors
+│     (Conv2D)         │
+└──────────────────────┘
+       │
+       ▼
+┌──────────────────────┐
+│  2. VISION ENCODER   │  ViT transformer with 2D RoPE
+│     (VisionEncoder)  │  Patches attend to each other
+└──────────────────────┘
+       │
+       ▼
+┌──────────────────────┐
+│  3. PROJECTION       │  Pixel shuffle + MLP
+│     (VisionAdapter)  │  Map to text embedding dimension
+└──────────────────────┘
+       │
+       ▼
+  Image embeddings replace <|patch|> tokens in text sequence
+```
+
+---
+
+## Patch Embedding
+
+Images are divided into non-overlapping patches ([encoder.py:270-276](../vision/encoder.py#L270)):
+
+```python
+self.conv1 = ColumnParallelConv2dPatch(
+    in_channels=3,           # RGB
+    out_channels=dim,        # vision encoder dimension
+    kernel_size=patch_size,  # e.g., (14, 14)
+    stride=patch_size,       # non-overlapping
+)
+```
+
+**Example with 560×560 image, 14×14 patches:**
+```
+Image: [3, 560, 560]           ← 3 color channels, 560×560 pixels
+Patches: 560/14 = 40 per row/col
+Total: 40 × 40 = 1,600 patches
+Each patch: [14×14×3 = 588 values] → projected to [dim] vector
+Output: [1600, dim]            ← 1,600 patch embeddings
+```
+
+---
+
+## Vision Encoder (ViT)
+
+The patches are processed by a Vision Transformer ([encoder.py:253-296](../vision/encoder.py#L253)):
+
+```python
+class VisionEncoder(nn.Module):
+    def __init__(self, image_size, patch_size, dim, layers, heads, mlp_ratio):
+        self.conv1 = ColumnParallelConv2dPatch(...)      # patch embedding
+        self.class_embedding = nn.Parameter(...)          # [CLS] token
+        self.positional_embedding_vlm = nn.Parameter(...) # position encodings
+        self.transformer = _Transformer(...)              # ViT layers
+```
+
+**Architecture:**
+1. Add a learnable [CLS] token (for global image representation)
+2. Add positional embeddings
+3. Run through transformer layers (attention + FFN)
+4. Remove [CLS] token output (only keep patch outputs)
+
+---
+
+## 2D RoPE for Vision
+
+Unlike text (1D positions), images have 2D positions (x, y). The vision encoder uses **2D RoPE** ([encoder.py:320-330](../vision/encoder.py#L320)):
+
+```python
+# Compute separate frequencies for x and y coordinates
+rope_freq = self.get_rope_freqs(dim // heads // 2)
+freqs_x = self.compute_rope_freqs(rope_freq, packed_img_idx[:, :, PackingIndex.X] + 1)
+freqs_y = self.compute_rope_freqs(rope_freq, packed_img_idx[:, :, PackingIndex.Y] + 1)
+freqs = torch.cat([freqs_x, freqs_y], dim=-1)  # combine x and y
+self.freq_cis = torch.view_as_complex(...)
+```
+
+**Why 2D?** A patch at position (5, 3) should know it's 5 patches right and 3 patches down, not just "patch number 23". This preserves spatial relationships.
+
+---
+
+## Pixel Shuffle: Reducing Patch Count
+
+After the vision encoder, patches are downsampled using **pixel shuffle** ([embedding.py:43-56](../vision/embedding.py#L43)):
+
+```python
+class PixelShuffle(nn.Module):
+    def forward(self, x):
+        # x: [B, N, C] where N = number of patches
+        hh = ww = int(math.sqrt(x.shape[1]))  # e.g., 40×40
+        x = x.reshape(x.shape[0], hh, ww, -1)
+        x = pixel_shuffle_op(x, ps_ratio=self.ps_ratio)
+        return x.reshape(x.shape[0], -1, x.shape[-1])
+```
+
+**How it works:**
+- Groups of adjacent patches are merged
+- Spatial resolution decreases, channel count increases
+- Then MLP reduces channels back
+
+**Example with `pixel_shuffle_ratio=0.5`:**
+```
+Before: 40×40 = 1,600 patches, each [dim]
+After:  20×20 = 400 patches, each [4×dim] → MLP → [output_dim]
+```
+
+This reduces the number of tokens the text transformer needs to process.
+
+---
+
+## Vision Adapter
+
+The vision adapter projects encoded patches to the text embedding space ([embedding.py:106-133](../vision/embedding.py#L106)):
+
+```python
+class PixelShuffleMLP(torch.nn.Module):
+    def __init__(self, ps_ratio, input_dim, output_dim):
+        self.pixel_shuffle = PixelShuffle(ps_ratio)
+        self.mlp = SimpleMLP(
+            int(input_dim // (ps_ratio**2)),
+            output_dim,  # must match text transformer's dim
+        )
+```
+
+The output dimension must match the text transformer's hidden dimension (5,120 for Scout/Maverick) so image embeddings can be concatenated with text embeddings.
+
+---
+
+## Image Tokens: `<|patch|>` and `<|image|>`
+
+When encoding text+image input, special tokens mark where image content goes ([chat_format.py:101-144](../chat_format.py#L101)):
+
+```python
+def _encode_image(self, transformed_image):
+    tokens = [self.tokenizer.special_tokens["<|image_start|>"]]
+
+    if image_chunks == 1:  # single tile
+        tokens += [self.tokenizer.special_tokens["<|image|>"]]
+        tokens += [self.tokenizer.special_tokens["<|patch|>"]] * n_patches_per_chunk
+        tokens += [self.tokenizer.special_tokens["<|image_end|>"]]
+    else:  # multiple tiles (high resolution)
+        for y in range(ratio_h):
+            for x in range(ratio_w):
+                tokens += [self.tokenizer.special_tokens["<|patch|>"]] * n_patches_per_chunk
+                if x < ratio_w - 1:
+                    tokens.append(self.tokenizer.special_tokens["<|tile_x_separator|>"])
+            tokens.append(self.tokenizer.special_tokens["<|tile_y_separator|>"])
+        # Global view at the end
+        tokens += [self.tokenizer.special_tokens["<|image|>"]]
+        tokens += [self.tokenizer.special_tokens["<|patch|>"]] * n_patches_per_chunk
+        tokens += [self.tokenizer.special_tokens["<|image_end|>"]]
+
+    return tokens
+```
+
+**Token sequence example (single tile, 400 patches):**
+```
+<|image_start|><|image|><|patch|><|patch|>...(400 times)...<|patch|><|image_end|>
+```
+
+---
+
+## Variable-Size Images and Tiling
+
+High-resolution images are split into tiles ([chat_format.py:189](../chat_format.py#L189)):
+
+```python
+image_tiles, ar = self.dynamic_image_transform(image, max_num_chunks=self.max_num_chunks)
+if image_tiles.shape[0] > 1:
+    # Add global view of entire image
+    image_global = self.image_transform(image)
+    image_tiles = torch.cat((image_tiles, image_global), dim=0)
+```
+
+**Example: 2240×1120 image with 560×560 tile size:**
+```
+Tiles:
+  [0,0] [1,0] [2,0] [3,0]   ← row 0 (4 tiles)
+  [0,1] [1,1] [2,1] [3,1]   ← row 1 (4 tiles)
+
++ Global view (downscaled full image)
+
+Total: 9 tiles (8 local + 1 global)
+```
+
+The global view provides context that local tiles might miss.
+
+---
+
+## Scatter: Placing Image Embeddings
+
+After encoding, image embeddings replace `<|patch|>` placeholder tokens ([embedding.py:204-234](../vision/embedding.py#L204)):
+
+```python
+def scatter_embeddings(image_batch, image_mask, h_image, encoded_patches_proj):
+    for index in range(h_image.size(0)):
+        encoded_patches_per_sample = encoded_patches_list[index]
+        sample_image_mask = image_mask[index]
+
+        h_image[index].masked_scatter_(
+            sample_image_mask.expand(-1, h_image.size(-1)),
+            encoded_patches_per_sample[:n_tokens_to_fill],
+        )
+    return h_image
+```
+
+**Before scatter:**
+```
+Text tokens:    [<|bos|>, "Describe", "this", <|image_start|>, <|patch|>, <|patch|>, ..., <|image_end|>]
+Text embeddings: [emb,     emb,       emb,    emb,            zeros,     zeros,    ..., emb]
+                                                               ↑ placeholders
+```
+
+**After scatter:**
+```
+Combined:       [emb, emb, emb, emb, img_emb, img_emb, ..., emb]
+                                      ↑ vision encoder outputs
+```
+
+---
+
+## Vision-Specific Parameters
+
+From `VisionArgs` ([args.py:43-55](../args.py#L43)):
+
+| Parameter | Description | Typical Value |
+|-----------|-------------|---------------|
+| `image_size` | Input image dimensions | 560×560 |
+| `patch_size` | Size of each patch | 14×14 |
+| `dim` | Vision encoder hidden dim | 1,408 |
+| `n_layers` | Vision encoder layers | 32 |
+| `n_heads` | Attention heads | 16 |
+| `mlp_ratio` | FFN hidden dim multiplier | 4.0 |
+| `output_dim` | Projection output (= text dim) | 5,120 |
+| `pixel_shuffle_ratio` | Downsampling ratio | 0.5 |
+
+---
+
+## Data Flow Summary
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  IMAGE INPUT                                                                │
+│  RGB image: [3, 560, 560]                                                   │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  PATCH EMBEDDING (conv2d)                                                   │
+│  [3, 560, 560] → [1600, 1408]  (40×40 patches, each 1408-dim)               │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  VISION ENCODER (ViT with 2D RoPE)                                          │
+│  - Add [CLS] token: [1601, 1408]                                            │
+│  - Add 2D positional embeddings                                             │
+│  - 32 transformer layers                                                    │
+│  - Remove [CLS]: [1600, 1408]                                               │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  PIXEL SHUFFLE + MLP                                                        │
+│  [1600, 1408] → pixel shuffle → [400, 5632] → MLP → [400, 5120]             │
+│  (4× fewer patches, projected to text dim)                                  │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  SCATTER INTO TEXT SEQUENCE                                                 │
+│  Replace <|patch|> tokens with image embeddings                             │
+│  Now text transformer can attend to image content                           │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Code Reference
+
+| Component | File | Key Classes/Functions |
+|-----------|------|----------------------|
+| Vision encoder | [vision/encoder.py](../vision/encoder.py) | `VisionEncoder` |
+| 2D RoPE | [vision/encoder.py](../vision/encoder.py) | `compute_rope_freqs()` |
+| Pixel shuffle | [vision/embedding.py](../vision/embedding.py) | `PixelShuffle`, `pixel_shuffle_op()` |
+| Vision adapter | [vision/embedding.py](../vision/embedding.py) | `PixelShuffleMLP`, `VisionEmbeddings` |
+| Image encoding | [chat_format.py](../chat_format.py) | `ChatFormat._encode_image()` |
+| Scatter | [vision/embedding.py](../vision/embedding.py) | `scatter_embeddings()` |
+| Vision config | [args.py](../args.py) | `VisionArgs` |

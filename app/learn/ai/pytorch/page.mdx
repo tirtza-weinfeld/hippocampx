@@ -1,0 +1,676 @@
+# Modern PyTorch Concepts for SOTA AI
+
+## Resizable Table Of Contents
+
+A hands-on tutorial learning PyTorch through the Llama 4 implementation in this codebase.
+
+
+---
+
+## Concept 1: nn.Module - The Building Block
+
+Every neural network in PyTorch is built from `nn.Module`. It's the base class that provides:
+- Parameter registration (weights get tracked automatically)
+- Forward pass definition
+- State dict saving/loading
+
+### Real Example: SwiGLU FeedForward Network
+
+From `ffn.py:52-88`:
+
+```python
+class FeedForward(nn.Module):
+    def __init__(
+        self,
+        dim: int,
+        hidden_dim: int,
+        do_reduce: bool = True,
+    ):
+        super().__init__()  # MUST call this first!
+        self.do_reduce = do_reduce
+
+        # Layers assigned to self are automatically registered as parameters
+        self.w1 = ColumnParallelLinear(dim, hidden_dim, bias=False, ...)
+        self.w2 = RowParallelLinear(hidden_dim, dim, bias=False, ...)
+        self.w3 = ColumnParallelLinear(dim, hidden_dim, bias=False, ...)
+
+    def forward(self, x):
+        # SwiGLU activation: SiLU(xW1) * xW3, then project with W2
+        x = F.silu(F.linear(x, self.w1.weight)) * F.linear(x, self.w3.weight)
+        out = F.linear(x, self.w2.weight)
+        return out
+```
+
+### Key Patterns
+
+1. **Inherit from `nn.Module`**
+2. **Call `super().__init__()` first** in your `__init__`
+3. **Define layers as attributes** - they're automatically tracked
+4. **Define `forward()`** - the computation graph
+
+### SwiGLU Explained
+
+SwiGLU is the activation function used in Llama models:
+
+```
+output = SiLU(x @ W1) * (x @ W3)  # element-wise multiply
+output = output @ W2              # project back
+```
+
+It outperforms simple ReLU by having a "gating" mechanism (the `*` operation).
+
+### Exercise
+
+Q: How many matrix multiplications happen in one `forward()` call?
+A: Three - `F.linear(x, w1)`, `F.linear(x, w3)`, and `F.linear(x, w2)`. The `*` is element-wise, not matrix multiply.
+
+---
+
+## Concept 2: Tensors - Shape, Dtype, Device
+
+Tensors are n-dimensional arrays. Understanding their three core properties is essential for debugging.
+
+### The Three Properties
+
+```python
+x = torch.randn(2, 4, 512)
+
+x.shape   # torch.Size([2, 4, 512]) - dimensions
+x.dtype   # torch.float32 - data type
+x.device  # device(type='cuda', index=0) - where it lives
+```
+
+### Common Shapes in Transformers
+
+| Shape | Meaning |
+|-------|---------|
+| `(B, S, D)` | Batch, Sequence length, Hidden dimension |
+| `(B, H, S, D_head)` | Batch, Heads, Sequence, Head dimension |
+| `(B, S, V)` | Batch, Sequence, Vocabulary (logits) |
+
+### Real Example: Attention Shapes
+
+From `model.py:272-274`:
+
+```python
+# Input: (batch, seq_len, dim)
+# After Q/K/V projection and reshape:
+xq = xq.view(bsz, seqlen, self.n_heads, self.head_dim)      # (B, S, H, D_head)
+xk = xk.view(bsz, seqlen, self.n_kv_heads, self.head_dim)   # (B, S, KV_H, D_head)
+xv = xv.view(bsz, seqlen, self.n_kv_heads, self.head_dim)   # (B, S, KV_H, D_head)
+```
+
+### Data Types (dtypes)
+
+| dtype | Bits | Use Case |
+|-------|------|----------|
+| `torch.float32` | 32 | Default, training |
+| `torch.bfloat16` | 16 | Modern GPU training/inference |
+| `torch.float16` | 16 | Older GPU mixed precision |
+| `torch.int8` | 8 | Quantized weights |
+| `torch.int4` | 4 | Aggressive quantization |
+
+From `generation.py:185-189`:
+
+```python
+if torch.cuda.is_bf16_supported():
+    torch.set_default_dtype(torch.bfloat16)
+else:
+    torch.set_default_dtype(torch.float16)
+```
+
+### Device Management
+
+```python
+# Move tensor to GPU
+x = x.to("cuda")
+x = x.cuda()
+
+# Move to specific GPU
+x = x.to("cuda:1")
+
+# Move to CPU
+x = x.cpu()
+
+# Create on specific device
+x = torch.zeros(10, device="cuda")
+```
+
+### Common Errors and Fixes
+
+**RuntimeError: Expected all tensors to be on the same device**
+```python
+# Wrong - tensors on different devices
+y = x.cuda() + z.cpu()
+
+# Fix - move to same device
+y = x.cuda() + z.cuda()
+```
+
+**RuntimeError: expected scalar type Float but found BFloat16**
+```python
+# Fix - cast to same dtype
+y = x.float() + z.float()
+# Or
+y = x.to(z.dtype) + z
+```
+
+---
+
+## Concept 3: Tensor Operations
+
+Essential operations for understanding transformer code.
+
+### View vs Reshape
+
+```python
+x = torch.randn(2, 6)
+
+# view() - must be contiguous, shares memory
+y = x.view(3, 4)
+
+# reshape() - may copy if needed
+y = x.reshape(3, 4)
+
+# Rule: Use view() when you know tensor is contiguous
+#       Use reshape() when unsure
+```
+
+### Transpose and Permute
+
+```python
+x = torch.randn(2, 3, 4)  # (A, B, C)
+
+# Swap two dimensions
+x.transpose(0, 1)  # (B, A, C)
+
+# Reorder all dimensions
+x.permute(2, 0, 1)  # (C, A, B)
+```
+
+From `model.py:303`:
+```python
+# Attention needs (B, H, S, D) but we have (B, S, H, D)
+xq = xq.transpose(1, 2)  # (B, S, H, D) -> (B, H, S, D)
+```
+
+### Matrix Multiplication
+
+```python
+# Three ways to do matmul:
+y = torch.matmul(a, b)
+y = a @ b
+y = torch.mm(a, b)        # 2D only
+y = torch.bmm(a, b)       # batched, 3D only
+
+# F.linear applies weights transposed
+y = F.linear(x, weight)   # x @ weight.T
+```
+
+### Expand and Repeat
+
+```python
+x = torch.randn(1, 3)
+
+# expand() - broadcast without copying memory
+y = x.expand(4, 3)  # (4, 3), shares memory
+
+# repeat() - actually copies
+y = x.repeat(4, 1)  # (4, 3), new memory
+
+# repeat_interleave() - repeat elements
+x = torch.tensor([1, 2])
+x.repeat_interleave(3)  # tensor([1, 1, 1, 2, 2, 2])
+```
+
+From `model.py:305-306` (KV head replication for GQA):
+```python
+keys = keys.repeat_interleave(self.n_rep, dim=2)
+values = values.repeat_interleave(self.n_rep, dim=2)
+```
+
+### Scatter and Gather
+
+Used in MoE for routing tokens to experts.
+
+```python
+# gather - select elements by index
+values = torch.tensor([[1, 2], [3, 4]])
+indices = torch.tensor([[0, 0], [1, 0]])
+torch.gather(values, 1, indices)  # [[1, 1], [4, 3]]
+
+# scatter_add_ - accumulate values at indices (in-place)
+output.scatter_add_(dim, indices, source)
+```
+
+From `moe.py:236`:
+```python
+# Combine expert outputs back to original token positions
+y_aD.scatter_add_(dim=0, index=sorted_indices_aE, src=expert_out_aD)
+```
+
+---
+
+## Concept 4: RMSNorm - Modern Normalization
+
+RMSNorm is simpler and faster than LayerNorm. Used in Llama.
+
+### LayerNorm vs RMSNorm
+
+**LayerNorm** (traditional):
+```python
+# Normalizes to zero mean and unit variance
+y = (x - mean) / sqrt(variance + eps) * gamma + beta
+```
+
+**RMSNorm** (modern):
+```python
+# Only normalizes by RMS, no mean centering
+y = x / sqrt(mean(x^2) + eps) * gamma
+```
+
+### Real Implementation
+
+From `model.py:83-97`:
+
+```python
+def rmsnorm(x: Tensor, weight: Tensor, eps: float) -> Tensor:
+    # rsqrt = 1/sqrt for numerical stability
+    return x * torch.rsqrt(x.pow(2).mean(-1, keepdim=True) + eps) * weight
+
+
+class RMSNorm(nn.Module):
+    def __init__(self, dim: int, eps: float = 1e-6):
+        super().__init__()
+        self.eps = eps
+        self.weight = nn.Parameter(torch.ones(dim))  # learnable scale
+
+    def forward(self, x):
+        output = rmsnorm(x.float(), self.weight, self.eps)
+        return output.type_as(x)  # preserve original dtype
+```
+
+### Why RMSNorm?
+
+1. **Faster** - no mean computation
+2. **Simpler** - no beta (bias) parameter
+3. **Works just as well** for transformers
+
+### Key Operations
+
+```python
+x.pow(2)              # Square each element
+.mean(-1, keepdim=True)  # Mean over last dim, keep shape
+torch.rsqrt(...)      # 1/sqrt(), more stable than 1/torch.sqrt()
+.type_as(x)           # Cast back to original dtype
+```
+
+---
+
+## Concept 5: Rotary Position Embeddings (RoPE)
+
+RoPE encodes position by rotating query/key vectors. Unlike learned position embeddings, RoPE:
+- Generalizes to longer sequences
+- Captures relative position naturally
+- Works with KV caching
+
+### The Intuition
+
+Each position gets a rotation matrix. When you compute Q·K attention:
+- The rotation difference encodes relative position
+- Nearby tokens have small rotation differences
+- Far tokens have large rotation differences
+
+### Precomputing Frequencies
+
+From `model.py:120-134`:
+
+```python
+def precompute_freqs_cis(
+    dim: int,
+    end: int,
+    theta: float = 10000.0,
+    ...
+) -> Tensor:
+    # Each dimension pair gets a different frequency
+    freqs = 1.0 / (theta ** (torch.arange(0, dim, 2).float() / dim))
+
+    # Outer product: positions × frequencies
+    t = torch.arange(end)
+    freqs = torch.outer(t, freqs)
+
+    # Convert to complex numbers (cos + i*sin)
+    freqs_cis = torch.polar(torch.ones_like(freqs), freqs)
+    return freqs_cis
+```
+
+### Applying Rotation
+
+From `model.py:145-155`:
+
+```python
+def apply_rotary_emb(
+    xq: Tensor,
+    xk: Tensor,
+    freqs_cis: Tensor,
+) -> tuple[Tensor, Tensor]:
+    # Treat pairs of dims as complex numbers
+    xq_ = torch.view_as_complex(xq.float().reshape(*xq.shape[:-1], -1, 2))
+    xk_ = torch.view_as_complex(xk.float().reshape(*xk.shape[:-1], -1, 2))
+
+    # Complex multiplication = rotation!
+    xq_out = torch.view_as_real(xq_ * freqs_cis).flatten(3)
+    xk_out = torch.view_as_real(xk_ * freqs_cis).flatten(3)
+
+    return xq_out.type_as(xq), xk_out.type_as(xk)
+```
+
+### Key Operations
+
+```python
+torch.view_as_complex(x)  # Pairs of reals -> complex
+torch.view_as_real(x)     # Complex -> pairs of reals
+torch.polar(mag, angle)   # Create complex from magnitude and angle
+x * freqs_cis             # Complex multiplication = rotation
+```
+
+### Why Complex Numbers?
+
+Rotation in 2D is naturally expressed as complex multiplication:
+```
+(a + bi) * (cos θ + i sin θ) = rotated by θ
+```
+
+This is mathematically equivalent to a 2×2 rotation matrix, but faster.
+
+---
+
+## Concept 6: Scaled Dot-Product Attention
+
+The core operation of transformers. PyTorch 2.0+ provides `F.scaled_dot_product_attention()` with automatic optimizations.
+
+### The Math
+
+```
+Attention(Q, K, V) = softmax(QK^T / sqrt(d_k)) @ V
+```
+
+### Real Implementation
+
+From `model.py:308`:
+
+```python
+output = F.scaled_dot_product_attention(
+    xq,           # (B, H, S, D_head)
+    keys,         # (B, H, S, D_head)
+    values,       # (B, H, S, D_head)
+    attn_mask=mask,
+)
+```
+
+### Why Use the Built-in?
+
+PyTorch's SDPA automatically selects the best backend:
+- **FlashAttention** - memory efficient, O(N) instead of O(N²)
+- **Memory-efficient attention** - for longer sequences
+- **Math attention** - fallback
+
+You get FlashAttention speed without writing custom CUDA kernels.
+
+### Causal Masking
+
+From `model.py:499-508`:
+
+```python
+def _create_global_attn_mask(self, seqlen: int, device: torch.device) -> Tensor:
+    # Upper triangular = future tokens masked
+    mask = torch.full((seqlen, seqlen), float("-inf"), device=device)
+    mask = torch.triu(mask, diagonal=1)  # Keep upper triangle
+    return mask
+```
+
+The mask is `-inf` for positions that shouldn't attend (future tokens), so they become 0 after softmax.
+
+---
+
+## Concept 7: KV Cache for Efficient Generation
+
+During generation, we compute one token at a time. Without caching, we'd recompute K and V for all previous tokens each step. The KV cache stores them.
+
+### The Problem
+
+```
+Step 1: Process "The" → compute K1, V1
+Step 2: Process "cat" → compute K1, V1, K2, V2  ← K1, V1 recomputed!
+Step 3: Process "sat" → compute K1, V1, K2, V2, K3, V3  ← all recomputed!
+```
+
+### The Solution
+
+```
+Step 1: Process "The" → compute K1, V1, cache them
+Step 2: Process "cat" → compute K2, V2, concat with cached K1, V1
+Step 3: Process "sat" → compute K3, V3, concat with cached K1:2, V1:2
+```
+
+### Real Implementation
+
+From `model.py:213-235`:
+
+```python
+def setup_cache(self, bsz: int, max_seqlen: int, ...):
+    # Pre-allocate cache tensors
+    self.cache_k = torch.zeros(bsz, max_seqlen, self.n_kv_heads, self.head_dim)
+    self.cache_v = torch.zeros(bsz, max_seqlen, self.n_kv_heads, self.head_dim)
+
+def forward(self, x, start_pos: int, ...):
+    # ... compute xk, xv for current tokens ...
+
+    # Update cache at current position
+    self.cache_k[:bsz, start_pos : start_pos + seqlen] = xk
+    self.cache_v[:bsz, start_pos : start_pos + seqlen] = xv
+
+    # Use full cached keys/values for attention
+    keys = self.cache_k[:bsz, : start_pos + seqlen]
+    values = self.cache_v[:bsz, : start_pos + seqlen]
+```
+
+### Memory Consideration
+
+KV cache size per layer:
+```
+2 × batch_size × max_seq_len × n_kv_heads × head_dim × dtype_size
+```
+
+For Llama 4 Scout with 48 layers, this adds up. That's why Grouped Query Attention (GQA) uses fewer KV heads than Q heads.
+
+---
+
+## Concept 8: Mixture of Experts (MoE)
+
+MoE scales model capacity without proportionally scaling compute. Each token is routed to only K experts out of N total.
+
+### Architecture
+
+```
+Input → Router → Select top-K experts → Compute → Combine outputs
+                    ↓
+              Shared Expert (always active)
+```
+
+### Router
+
+From `moe.py:207-218`:
+
+```python
+def forward(self, x_aD: Tensor) -> Tensor:
+    # Router scores: which experts should handle each token?
+    router_scores_aE = torch.matmul(x_aD, self.router_DE)
+
+    # Select top-K experts per token
+    topk_weights_aK, topk_experts_aK = torch.topk(
+        router_scores_aE, k=self.moe_args.num_experts_per_tok
+    )
+
+    # Normalize with sigmoid
+    topk_weights_aK = torch.sigmoid(topk_weights_aK)
+```
+
+### Batched Expert Computation
+
+The trick: group all tokens going to each expert, process in batch.
+
+From `moe.py:225-236`:
+
+```python
+# Sort tokens by their assigned expert
+sorted_indices_aK = topk_experts_aK.flatten().argsort()
+
+# Process all tokens through all experts (batched)
+expert_out_aD = self.experts(x_aD[sorted_indices_aK // k])
+
+# Scatter results back to original positions
+y_aD.scatter_add_(dim=0, index=sorted_indices_aE, src=expert_out_aD)
+```
+
+### Shared Expert
+
+Always processes all tokens, combined with routed experts:
+
+```python
+# Shared expert output + routed expert outputs
+y_aD = y_aD + shared_expert_out_aD
+```
+
+---
+
+## Concept 9: Quantization
+
+Reduce model size and increase speed by using lower precision.
+
+### Types
+
+| Mode | Weights | Activations | Use Case |
+|------|---------|-------------|----------|
+| BF16 | 16-bit | 16-bit | Training, fast inference |
+| FP8 | 8-bit | 8-bit | H100 inference |
+| INT4 | 4-bit | 16-bit | Fit large models in memory |
+
+### INT4 Quantization
+
+From `quantize_impls.py:74-104`:
+
+```python
+def int4_row_quantize(x: Tensor, group_size: int = 128) -> Int4Weights:
+    # Reshape into groups
+    x = x.reshape(-1, group_size)
+
+    # Find scale per group
+    max_val = x.abs().amax(dim=1, keepdim=True)
+    scale = max_val / 7.0  # INT4 range is -8 to 7
+
+    # Quantize
+    x_int4 = (x / scale).round().clamp(-8, 7).to(torch.int8)
+
+    return Int4Weights(weight=x_int4, scale=scale)
+```
+
+### Bit Packing
+
+INT4 values are packed two per byte:
+
+```python
+def pack_int4(x: Tensor) -> Tensor:
+    # Two INT4 values → one INT8
+    low = x[..., ::2] & 0xF        # Even indices
+    high = x[..., 1::2] << 4       # Odd indices, shifted
+    return (low | high).to(torch.int8)
+```
+
+### Inference Mode
+
+From `generation.py:205`:
+
+```python
+@torch.inference_mode()  # Disables gradient tracking, faster
+def generate(self, ...):
+    ...
+```
+
+---
+
+## Concept 10: Model Parallelism
+
+Split the model across multiple GPUs.
+
+### Tensor Parallelism
+
+Split weight matrices across GPUs:
+
+```python
+# Column parallel: split output features
+#   GPU 0: W[:, :half]
+#   GPU 1: W[:, half:]
+self.w1 = ColumnParallelLinear(dim, hidden_dim, gather_output=False)
+
+# Row parallel: split input features
+#   GPU 0: W[:half, :]
+#   GPU 1: W[half:, :]
+self.w2 = RowParallelLinear(hidden_dim, dim, input_is_parallel=True)
+```
+
+### Communication Pattern
+
+```
+ColumnParallel (split output) → no communication needed
+RowParallel (split input) → all-reduce to sum partial results
+```
+
+From `moe.py:241`:
+
+```python
+return reduce_from_model_parallel_region(y_aD)  # All-reduce across GPUs
+```
+
+### Vocabulary Parallel Embedding
+
+Split vocabulary across GPUs:
+
+```python
+# Each GPU handles part of vocabulary
+self.tok_embeddings = VocabParallelEmbedding(vocab_size, dim)
+```
+
+### Launch with torchrun
+
+```bash
+torchrun --nproc_per_node=4 -m broca.scripts.chat_completion ...
+```
+
+This spawns 4 processes, each handling 1/4 of tensor-parallel operations.
+
+---
+
+## Quick Reference
+
+| Concept | Key Functions |
+|---------|---------------|
+| Modules | `nn.Module`, `forward()`, `super().__init__()` |
+| Tensors | `.shape`, `.dtype`, `.device`, `.to()` |
+| Reshape | `view()`, `reshape()`, `transpose()`, `permute()` |
+| MatMul | `@`, `torch.matmul()`, `F.linear()` |
+| RMSNorm | `torch.rsqrt()`, `.pow()`, `.mean()` |
+| RoPE | `torch.view_as_complex()`, `torch.polar()` |
+| Attention | `F.scaled_dot_product_attention()` |
+| MoE | `torch.topk()`, `scatter_add_()`, `gather()` |
+| Quantization | `torch.clamp()`, bitwise ops |
+| Parallel | `ColumnParallelLinear`, `RowParallelLinear` |
+
+---
+
+## Next Steps
+
+1. **Set breakpoints** in VS Code using the debug configuration in `.vscode/launch.json`
+2. **Step through** `model.py:Attention.forward()` to see Q, K, V computation
+3. **Trace MoE routing** in `moe.py:MoE.forward()` to see expert selection
+4. **Run debug mode**: `python -m broca.scripts.debug_local --checkpoint_dir debug_checkpoint`
