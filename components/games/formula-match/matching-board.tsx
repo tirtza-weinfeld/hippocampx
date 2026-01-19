@@ -11,14 +11,20 @@ type CardState = "default" | "selected" | "success" | "error";
 export function MatchingBoard({
   pairs,
   onComplete,
+  onProgress,
+  reviewMode = false,
 }: {
   pairs: FormulaLemmaPair[];
   onComplete: (correctCount: number) => void;
+  onProgress?: (matched: number) => void;
+  reviewMode?: boolean;
 }) {
   const [shuffledLemmas] = useState(() => shuffle(pairs));
   const [shuffledFormulas] = useState(() => shuffle(pairs));
   const [selected, setSelected] = useState<Selection | null>(null);
-  const [matchedIds, setMatchedIds] = useState<Set<number>>(() => new Set());
+  const [matchedIds, setMatchedIds] = useState<Set<number>>(() =>
+    reviewMode ? new Set(pairs.map((p) => p.id)) : new Set()
+  );
   const [errorCards, setErrorCards] = useState<Set<string>>(() => new Set());
 
   const getCardState = (pairId: number, type: "lemma" | "formula"): CardState => {
@@ -29,7 +35,7 @@ export function MatchingBoard({
   };
 
   const handleCardClick = (pair: FormulaLemmaPair, type: "lemma" | "formula") => {
-    if (matchedIds.has(pair.id)) return;
+    if (reviewMode || matchedIds.has(pair.id)) return;
     setErrorCards(new Set());
 
     const oppositeType = type === "lemma" ? "formula" : "lemma";
@@ -39,6 +45,7 @@ export function MatchingBoard({
         const newMatched = new Set(matchedIds).add(pair.id);
         setMatchedIds(newMatched);
         setSelected(null);
+        onProgress?.(newMatched.size);
         if (newMatched.size === pairs.length) {
           onComplete(pairs.length);
         }
@@ -150,12 +157,6 @@ export function MatchingBoard({
         </section>
       </div>
 
-      {/* Counter */}
-      <p className="text-center text-sm text-muted-foreground">
-        <span className="font-bold text-gradient-fm-success">{matchedIds.size}</span>
-        <span className="mx-1">/</span>
-        <span>{pairs.length} matched</span>
-      </p>
     </div>
   );
 }

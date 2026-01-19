@@ -34,10 +34,10 @@ export const routes: NavigationItem[] = [
             { title: 'Diagram', href: '/db/diagram', icon: PuzzleIcon, color: "text-blue-500", bgColor: "bg-purple-500/10" },
         ],
      },
-    //  {
-    //     title: 'Dictionary', href: '/dictionary', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10",
+     {
+        title: 'Dictionary', href: '/dictionary', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10",
        
-    // },
+    },
 
     // { title: 'New Calculus', href: '/calculus', icon: Home, color: "text-blue-500", bgColor: "bg-purple-500/10", },
     // { title: 'New Algebra', href: '/algebra', icon: Home, color: "text-blue-500", bgColor: "bg-purple-500/10", },

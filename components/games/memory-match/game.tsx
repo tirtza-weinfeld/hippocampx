@@ -1,6 +1,7 @@
 "use client";
 
 import { use, useState } from "react";
+import { ChevronLeft, ChevronRight, Zap } from "lucide-react";
 import type { FormulaLemmaPair } from "@/lib/db/queries/games/formula-match";
 import { shuffle, chunkArray, PAIRS_PER_ROUND } from "@/lib/games/utils";
 import { MemoryBoard } from "./board";
@@ -39,8 +40,13 @@ export function MemoryMatchGame({
   const allPairs = use(pairsPromise);
   const [shuffledPairs] = useState(() => shuffle(allPairs));
   const [rounds] = useState(() => chunkArray(shuffledPairs, PAIRS_PER_ROUND));
-  const [currentRoundIndex, setCurrentRoundIndex] = useState(0);
+  const [progressIndex, setProgressIndex] = useState(0);
+  const [viewingIndex, setViewingIndex] = useState(0);
   const [score, setScore] = useState(0);
+  const [completedRounds, setCompletedRounds] = useState<Set<number>>(
+    () => new Set()
+  );
+  const [currentRoundMatched, setCurrentRoundMatched] = useState(0);
 
   if (allPairs.length === 0) {
     return (
@@ -72,18 +78,28 @@ export function MemoryMatchGame({
     );
   }
 
-  const currentRound = rounds[currentRoundIndex];
-  const isSessionComplete = currentRoundIndex >= rounds.length;
+  const currentRound = rounds[viewingIndex];
+  const isSessionComplete = progressIndex >= rounds.length;
+  const isViewingCompletedRound = completedRounds.has(viewingIndex);
   const totalPairs = shuffledPairs.length;
 
+  const canGoBack = viewingIndex > 0;
+  const canGoForward = viewingIndex < progressIndex && viewingIndex < rounds.length - 1;
+
   const handleRoundComplete = (matchedCount: number) => {
+    setCompletedRounds((prev) => new Set(prev).add(viewingIndex));
     setScore((s) => s + matchedCount);
-    setCurrentRoundIndex((i) => i + 1);
+    setProgressIndex((i) => i + 1);
+    setViewingIndex((i) => i + 1);
+    setCurrentRoundMatched(0);
   };
 
   const handleRestart = () => {
-    setCurrentRoundIndex(0);
+    setProgressIndex(0);
+    setViewingIndex(0);
     setScore(0);
+    setCompletedRounds(new Set());
+    setCurrentRoundMatched(0);
   };
 
   if (isSessionComplete) {
@@ -169,25 +185,67 @@ export function MemoryMatchGame({
             rounded-full bg-gradient-mm-back/15 blur-2xl"
         />
 
-        <div className="relative flex flex-col items-center">
-          <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-            Round
-          </span>
-          <span className="text-xl font-bold text-gradient-mm-text">
-            {currentRoundIndex + 1}
-            <span className="text-muted-foreground font-normal">/{rounds.length}</span>
-          </span>
+        <div className="relative flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            {completedRounds.size > 0 && (
+              <button
+                type="button"
+                onClick={() => setViewingIndex((i) => i - 1)}
+                disabled={!canGoBack}
+                className="flex size-7 items-center justify-center rounded-md
+                  text-gradient-mm-text transition-all duration-200
+                  hover:bg-gradient-mm-back/20
+                  disabled:opacity-20 disabled:cursor-not-allowed"
+              >
+                <ChevronLeft className="size-4" strokeWidth={2.5} />
+              </button>
+            )}
+
+            <div className="text-center">
+              <p className="font-semibold text-gradient-mm-text tabular-nums">
+                Round {viewingIndex + 1}
+                <span className="text-muted-foreground/60 font-normal">
+                  {" "}/ {rounds.length}
+                </span>
+              </p>
+              {isViewingCompletedRound && (
+                <p className="text-xs text-gradient-mm-success-text">Reviewing</p>
+              )}
+            </div>
+
+            {completedRounds.size > 0 && (
+              <button
+                type="button"
+                onClick={() => setViewingIndex((i) => i + 1)}
+                disabled={!canGoForward}
+                className="flex size-7 items-center justify-center rounded-md
+                  text-gradient-mm-text transition-all duration-200
+                  hover:bg-gradient-mm-back/20
+                  disabled:opacity-20 disabled:cursor-not-allowed"
+              >
+                <ChevronRight className="size-4" strokeWidth={2.5} />
+              </button>
+            )}
+          </div>
         </div>
 
-        <div
-          className="relative flex items-center gap-3 rounded-xl
-            bg-gradient-mm-success/15 px-5 py-2 glow-mm-success/10"
-        >
-          <div className="flex flex-col items-center">
-            <span className="text-xs uppercase tracking-wider text-muted-foreground">
-              Score
+        {/* Right: Round Progress + Score */}
+        <div className="relative flex items-center gap-4">
+          {/* Round progress */}
+          <div className="flex items-center gap-1.5 text-sm tabular-nums">
+            <span className="font-semibold text-gradient-mm-success-text">
+              {isViewingCompletedRound ? currentRound.length : currentRoundMatched}
             </span>
-            <span className="text-2xl font-bold text-gradient-mm-success-text">
+            <span className="text-muted-foreground/50">/</span>
+            <span className="text-muted-foreground">{currentRound.length}</span>
+          </div>
+
+          <div className="h-6 w-px bg-border/50" />
+
+          {/* Total score */}
+          <div className="flex items-center gap-2">
+            <Zap className="size-4 text-gradient-mm-success-text" strokeWidth={2} />
+            <span className="text-lg font-bold text-gradient-mm-success-text tabular-nums">
               {score}
             </span>
           </div>
@@ -195,10 +253,12 @@ export function MemoryMatchGame({
       </div>
 
       <MemoryBoard
-        key={currentRoundIndex}
+        key={viewingIndex}
         cards={cards}
         pairCount={currentRound.length}
         onComplete={handleRoundComplete}
+        onProgress={setCurrentRoundMatched}
+        reviewMode={isViewingCompletedRound}
       />
     </div>
   );

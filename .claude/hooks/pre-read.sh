@@ -1,6 +1,6 @@
 #!/bin/bash
 # Pre-read hook: Enforce smart file reading
-# Blocks reading more than 400 lines without explicit limit
+# Blocks reading more than 400 lines without specifying which section to read
 
 set -e
 
@@ -10,6 +10,7 @@ input=$(cat)
 # Extract parameters from tool_input
 file_path=$(echo "$input" | jq -r '.tool_input.file_path // empty')
 limit=$(echo "$input" | jq -r '.tool_input.limit // empty')
+offset=$(echo "$input" | jq -r '.tool_input.offset // empty')
 
 # Exit silently if no file path
 if [ -z "$file_path" ]; then
@@ -21,15 +22,16 @@ if echo "$file_path" | grep -qiE '\.(png|jpg|jpeg|gif|webp|svg|ico|pdf|ipynb)$';
   exit 0
 fi
 
-# If no limit specified, check file size
-if [ -z "$limit" ]; then
-  # Check if file exists and get line count
-  if [ -f "$file_path" ]; then
-    line_count=$(wc -l < "$file_path" 2>/dev/null | tr -d ' ')
+# Check if file exists and get line count
+if [ -f "$file_path" ]; then
+  line_count=$(wc -l < "$file_path" 2>/dev/null | tr -d ' ')
 
-    if [ "$line_count" -gt 400 ]; then
-      echo "BLOCKED: File has $line_count lines. Use limit parameter (max 400) or ask for explicit permission to read more." >&2
-      echo "Suggestion: Read(file_path=\"$file_path\", limit=400)" >&2
+  # For files > 400 lines, require BOTH offset and limit to force intentional section selection
+  if [ "$line_count" -gt 400 ]; then
+    if [ -z "$limit" ] || [ -z "$offset" ]; then
+      echo "BLOCKED: File has $line_count lines. Specify BOTH offset and limit to read a specific section." >&2
+      echo "First use Grep to find relevant line numbers, or ask the user which section is needed." >&2
+      echo "Example: Read(file_path=\"$file_path\", offset=150, limit=100)" >&2
       exit 2
     fi
   fi

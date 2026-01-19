@@ -6,8 +6,9 @@
 
 import "server-only";
 
+import { cacheLife } from "next/cache";
 import { db } from "@/lib/db/connection";
-import { eq, and, sql } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import {
   senseNotations,
   senses,
@@ -27,6 +28,9 @@ export type FormulaLemmaPair = {
 export async function fetchFormulaLemmaPairs(
   languageCode = "en"
 ): Promise<FormulaLemmaPair[]> {
+  "use cache";
+  cacheLife("hours");
+
   const results = await db
     .select({
       id: senseNotations.id,
@@ -42,8 +46,7 @@ export async function fetchFormulaLemmaPairs(
         eq(senseNotations.type, "formula"),
         eq(lexicalEntries.language_code, languageCode)
       )
-    )
-    .orderBy(sql`random()`);
+    );
 
   return results.filter(
     (r) => r.formula && r.lemma && r.definition

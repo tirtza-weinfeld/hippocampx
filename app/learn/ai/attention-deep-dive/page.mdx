@@ -1,1 +1,151 @@
 # Attention Deep Dive
+
+## Resizable Table Of Contents
+
+This document covers advanced attention mechanisms in Llama 4. For the core attention walkthrough, see [transformer.md](transformer.md).
+
+---
+
+## Multi-head Attention
+
+Rather than one attention over all 5,120 dimensions, we split into 40 parallel attention "heads", each working on 128 dimensions.
+
+**Why multiple heads?** Each head operates on a different 128-dim slice with different learned weights. Running them in parallel lets the model compute multiple attention patterns at once.
+
+**The flow** (Llama 4: dim=5,120, n_heads=40, head_dim=128):
+
+1. **Project** ([model.py:286](../model.py#L286)): Q, K, V each start as flat vectors
+2. **Reshape** ([model.py:288-290](../model.py#L288)): Split into heads — Q becomes [40 heads × 128 dims], K and V become [8 heads × 128 dims] (fewer due to GQA, see below)
+3. **Attention per head**: Each head runs the full attention (RoPE → scores → softmax → weighted sum) on its 128-dim slice
+4. **Concatenate + mix** ([model.py:325-326](../model.py#L325)): Merge all 40 head outputs back to [5,120], then Wo mixes information across heads
+
+The Wo projection (`layers.N.attention.wo.weight`) is essential — without it, each head's contribution stays isolated in its original dimensions.
+
+**Multi-head vs MoE:** Multi-head splits dimensions (all heads run on all tokens). MoE splits tokens (different tokens go to different experts).
+
+---
+
+## Grouped Query Attention (GQA)
+
+Llama 4 uses 40 Q heads but only 8 K/V heads. Groups of 5 Q heads share the same K and V. This reduces KV cache memory by 5×.
+
+**How it works:**
+
+1. **Fewer K/V outputs** ([model.py:207-220](../model.py#L207)): Wk and Wv produce `n_kv_heads × head_dim = 1,024` outputs, while Wq produces `n_heads × head_dim = 5,120`
+2. **Repeat before attention** ([model.py:321-322](../model.py#L321)): K and V are repeated 5× (`n_rep = 40 // 8`) to match Q's head count
+3. **Shared attention**: Q₀-Q₄ all compute attention against the same K₀, V₀; Q₅-Q₉ share K₁, V₁; etc.
+
+**Visual:**
+
+```text
+Q heads:   Q₀  Q₁  Q₂  Q₃  Q₄ | Q₅  Q₆  Q₇  Q₈  Q₉ | ... | Q₃₅ Q₃₆ Q₃₇ Q₃₈ Q₃₉
+           └───────┬────────┘   └───────┬────────┘         └────────┬─────────┘
+K/V heads:         K₀,V₀               K₁,V₁        ...            K₇,V₇
+
+           (5 Q heads share 1 K/V head)
+```
+
+**Why GQA?** The KV cache stores K and V for all previous tokens during generation. With GQA, we store 8 K/V heads instead of 40, reducing cache memory by 5×. This is critical for long sequences.
+
+---
+
+## KV Cache
+
+During autoregressive generation, each new token needs to attend to all previous tokens. Without caching, we'd recompute K and V for every previous token at every step — O(n²) work for n tokens.
+
+**The solution:** Compute K and V once per token, cache them, reuse forever.
+
+**Cache shape** ([model.py:232-247](../model.py#L232)): [batch_size, max_seq_len, n_kv_heads, head_dim]
+
+Pre-allocated for the maximum sequence length. Memory scales with `max_seq_len × n_kv_heads × head_dim × n_layers`.
+
+**How it works** ([model.py:313-317](../model.py#L313)):
+
+1. **Store**: New token's K/V goes into `cache[:, start_pos : start_pos + seqlen]`
+2. **Retrieve**: Get ALL K/V from `cache[:, 0 : start_pos + seqlen]`
+
+**Example — generating after "The cat":**
+
+| Step   | New token | Compute                  | Q shape         | K/V shape (from cache) |
+| ------ | --------- | ------------------------ | --------------- | ---------------------- |
+| Prompt | "The cat" | K, V for positions 0-1   | [batch, 2, ...] | [batch, 2, ...]        |
+| Gen 1  | "ran"     | K, V for position 2 only | [batch, 1, ...] | [batch, 3, ...]        |
+| Gen 2  | "away"    | K, V for position 3 only | [batch, 1, ...] | [batch, 4, ...]        |
+
+Q is only computed for new tokens. K and V are computed once and cached.
+
+**Memory calculation for Scout:**
+
+```text
+Per layer: max_seq_len × n_kv_heads × head_dim × 2 (K and V) × bytes_per_element
+         = 131,072 × 8 × 128 × 2 × 2 (bf16)
+         = 512 MB per layer
+
+Total: 512 MB × 48 layers = 24 GB for KV cache alone
+```
+
+This is why GQA is essential — without it, the cache would be 5× larger (120 GB).
+
+---
+
+## iRoPE Architecture (Llama 4)
+
+Not all layers use RoPE. Every Nth layer is a "NoPE" layer ([model.py:337](../model.py#L337)):
+
+| Layer type             | Position encoding        | Attention range                |
+| ---------------------- | ------------------------ | ------------------------------ |
+| **RoPE** (most layers) | Q, K rotated by position | Local only (within chunk)      |
+| **NoPE** (every Nth)   | None                     | Global (all earlier positions) |
+
+RoPE layers can only attend within their chunk (default 8192 tokens). NoPE layers can attend to any earlier position but have no position information — they don't know how far away a token is, only that it came before.
+
+The mask selection happens at ([model.py:408](../model.py#L408)): NoPE layers get the global mask, RoPE layers get the chunked mask.
+
+**Why iRoPE?**
+
+RoPE's rotation angles grow with position. At very long positions (100k+ tokens), the angles become so large that numerical precision degrades. By interleaving NoPE layers (which have no position encoding), the model gets "anchor points" that see the full context without position noise.
+
+**Visual — 8 layers with NoPE every 4th layer:**
+
+```text
+Layer 0: RoPE  [chunk 0][chunk 1][chunk 2]...  ← local attention only
+Layer 1: RoPE  [chunk 0][chunk 1][chunk 2]...
+Layer 2: RoPE  [chunk 0][chunk 1][chunk 2]...
+Layer 3: NoPE  [────── global attention ──────]  ← sees everything
+Layer 4: RoPE  [chunk 0][chunk 1][chunk 2]...
+Layer 5: RoPE  [chunk 0][chunk 1][chunk 2]...
+Layer 6: RoPE  [chunk 0][chunk 1][chunk 2]...
+Layer 7: NoPE  [────── global attention ──────]
+```
+
+---
+
+## Attention Temperature Tuning
+
+([model.py:302-308](../model.py#L302)): If enabled in the model config, NoPE layers scale Q based on position. The scale grows logarithmically — no effect at short positions, larger at very long positions.
+
+**Formula:**
+
+```python
+floor_scale = attention_scale_base ** attention_scale_floor
+attn_scale = floor_scale + (attn_scale - floor_scale) * (1 - 1 / (position * attention_scale_factor + 1))
+```
+
+**What it does:**
+
+At short positions: scale ≈ `floor_scale` (minimal effect)
+At long positions: scale → `attn_scale` (sharper attention)
+
+**Why?** At long contexts, attention weights get spread across many tokens. Scaling Q makes the dot products larger, which makes softmax more "peaky" — the model focuses more strongly on the most relevant tokens instead of spreading attention thinly.
+
+---
+
+## Code Reference
+
+| Component     | File                    | Key Functions/Classes                          |
+| ------------- | ----------------------- | ---------------------------------------------- |
+| Multi-head    | [model.py](../model.py) | `Attention.forward()` reshape operations       |
+| GQA           | [model.py](../model.py) | `repeat_kv()`                                  |
+| KV Cache      | [model.py](../model.py) | `Attention.cache_k`, `Attention.cache_v`       |
+| iRoPE/NoPE    | [model.py](../model.py) | `use_rope` flag, mask selection                |
+| Temp tuning   | [model.py](../model.py) | `_compute_attn_scale()`                        |

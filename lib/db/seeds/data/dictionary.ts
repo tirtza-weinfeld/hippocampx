@@ -50,6 +50,8 @@ import { ANATOMY_DATA } from "./words/en/anatomy";
 import { PRACTICAL_VOCAB_DATA } from "./words/en/practical-vocab";
 import { CALCULUS_DATA } from "./words/en/calculus";
 import { VOCABULARY_DATA } from "./words/en/vocabulary";
+import { AI_ML_DATA } from "./words/en/ai-ml";
+import { VOCABULARY_DATA_ADDITIONS } from "./words/en/vocabulary_data_addition";
 
 // =============================================================================
 // ENUM TYPES (derived from schema)
@@ -191,4 +193,6 @@ export const dictionaryData: LexicalEntrySeed[] = [
   ...PRACTICAL_VOCAB_DATA,
   ...CALCULUS_DATA,
   ...VOCABULARY_DATA,
+  ...AI_ML_DATA,
+  ...VOCABULARY_DATA_ADDITIONS
 ];

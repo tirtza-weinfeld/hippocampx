@@ -595,7 +595,10 @@ async function insertAll(db: DbType, collected: Collected): Promise<void> {
     console.log(`   ⚠️  Skipped ${skippedRelations} relations (missing targets)`);
     if (missingTargets.size > 0) {
       const sorted = [...missingTargets].sort();
-      console.log(`   📝 Missing words (${sorted.length}): ${sorted.slice(0, 20).join(", ")}${sorted.length > 20 ? "..." : ""}`);
+      console.log(`   📝 Missing words (${sorted.length}):`);
+      for (const word of sorted) {
+        console.log(`      - ${word}`);
+      }
     }
   }
 

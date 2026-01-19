@@ -8,19 +8,23 @@ export function MemoryBoard({
   cards,
   pairCount,
   onComplete,
+  onProgress,
+  reviewMode = false,
 }: {
   cards: Card[];
   pairCount: number;
   onComplete: (matchedCount: number) => void;
+  onProgress?: (matched: number) => void;
+  reviewMode?: boolean;
 }) {
   const [flippedIds, setFlippedIds] = useState<Set<string>>(() => new Set());
-  const [matchedPairIds, setMatchedPairIds] = useState<Set<number>>(
-    () => new Set()
+  const [matchedPairIds, setMatchedPairIds] = useState<Set<number>>(() =>
+    reviewMode ? new Set(cards.filter((c) => c.type === "lemma").map((c) => c.pairId)) : new Set()
   );
   const [errorIds, setErrorIds] = useState<Set<string>>(() => new Set());
 
   const handleCardClick = (card: Card) => {
-    if (matchedPairIds.has(card.pairId)) return;
+    if (reviewMode || matchedPairIds.has(card.pairId)) return;
 
     // Clear error state on next click and start fresh with new card
     if (errorIds.size > 0) {
@@ -42,10 +46,12 @@ export function MemoryBoard({
       const [firstCard, secondCard] = flippedCards;
 
       if (firstCard.pairId === secondCard.pairId) {
-        setMatchedPairIds((prev) => new Set(prev).add(firstCard.pairId));
+        const newMatched = new Set(matchedPairIds).add(firstCard.pairId);
+        setMatchedPairIds(newMatched);
         setFlippedIds(new Set());
+        onProgress?.(newMatched.size);
 
-        if (matchedPairIds.size + 1 === pairCount) {
+        if (newMatched.size === pairCount) {
           onComplete(pairCount);
         }
       } else {
@@ -86,13 +92,6 @@ export function MemoryBoard({
           );
         })}
       </div>
-
-      {/* Match counter */}
-      <p className="text-center text-sm text-muted-foreground">
-        <span className="font-bold text-gradient-mm-text">{matchedPairIds.size}</span>
-        <span className="mx-1">/</span>
-        <span>{pairCount} matched</span>
-      </p>
     </div>
   );
 }
