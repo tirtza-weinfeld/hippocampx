@@ -7,7 +7,7 @@ name = "hippocampx-backend"
 version = "0.1.0"
 description = "HippocampX backend services"
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.14"
 dependencies = [
     "fastapi>=0.115.6",
     "uvicorn[standard]>=0.32.1",
@@ -29,6 +29,13 @@ dev = [
     "mypy>=1.13.0",
     "pre-commit>=4.0.1",
 ]
+scripts = [
+    "psycopg2-binary>=2.9.0",
+    "python-dotenv>=1.0.0",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["algorithms"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -89,7 +96,7 @@ exclude_lines = [
 ]
 
 [tool.ruff]
-target-version = "py313"
+target-version = "py314"
 line-length = 88
 extend-exclude = [
     "venv",
@@ -121,7 +128,7 @@ ignore = [
 "tests/*" = ["ARG", "B018"]
 
 [tool.mypy]
-python_version = "3.13"
+python_version = "3.14"
 strict = true
 warn_return_any = true
 warn_unused_configs = true

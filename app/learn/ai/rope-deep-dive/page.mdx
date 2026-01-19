@@ -1,0 +1,180 @@
+# RoPE Deep Dive
+
+## Resizable Table Of Contents
+
+This document covers the detailed mathematics of Rotary Position Embedding (RoPE). For the high-level overview, see [transformer.md](transformer.md).
+
+---
+
+## Why Rotation Works: Relative Position
+
+When computing attention scores (Q · K), the rotations interact. The dot product of two rotated vectors depends on the _angle between them_.
+
+If Q₄ ("mouse") is rotated by 4θ and K₁ ("cat") is rotated by 1θ, their dot product sees a difference of 3θ — the **relative distance** (4 - 1 = 3 positions apart).
+
+This means positions 3 apart always produce the same angular difference, whether it's positions (4,1) or (100,97). The model learns: "3 steps apart" always looks the same, regardless of absolute position.
+
+**Why only Q and K:** RoPE affects which tokens attend to each other (via Q·K scores). V is not rotated — the content a token contributes stays unchanged. Position influences attention weights, not the values being aggregated.
+
+---
+
+## How Rotation Works: Dimension Pairs
+
+Rotation is inherently a **2D operation** — you can only rotate a point in a plane. A single number can't be rotated; you need two numbers (x, y) to define a point that spins around the origin.
+
+So RoPE pairs up dimensions and rotates each pair independently:
+
+```text
+Q vector: [d₀, d₁, d₂, d₃, d₄, d₅, ...]
+             ↓       ↓       ↓
+          pair 0  pair 1  pair 2  ...
+
+Each pair is treated as a 2D point (x, y) and rotated.
+```
+
+For Scout/Maverick, `head_dim = dim / n_heads = 5,120 / 40 = 128`. So each head has 128 dimensions, and RoPE creates 64 independent 2D rotation planes (128 ÷ 2 = 64 pairs).
+
+---
+
+## Why Different Frequencies per Pair
+
+Each dimension pair rotates at a **different speed** (frequency). This is essential — if all pairs rotated at the same speed, positions would become indistinguishable after one full rotation cycle (360°).
+
+```text
+Pair 0: fast rotation   (10° per position) → cycles every 36 positions
+Pair 1: slower rotation (1° per position)  → cycles every 360 positions
+Pair 2: even slower     (0.1° per position)→ cycles every 3600 positions
+```
+
+At position 36, pair 0 has completed a full circle (back to 0°), but pairs 1 and 2 are at different angles. The **combination** of all pair angles creates a unique fingerprint for each position.
+
+Think of it like a clock: the second hand spins fast, the minute hand slower, the hour hand slowest. Together they uniquely identify any time.
+
+---
+
+## The Frequency Formula
+
+The base frequency for each pair is computed once at initialization ([model.py:128](../model.py#L128)):
+
+```python
+freqs = 1.0 / (theta ** (torch.arange(0, dim, 2)[: (dim // 2)].float() / dim))
+```
+
+Breaking this down for `dim=128` (head_dim) and `theta=500,000`:
+
+```text
+torch.arange(0, dim, 2)  = [0,     2,       4,       ..., 126    ]  ← 64 indices
+divide by dim (128)      = [0/128, 2/128,   4/128,   ..., 126/128]
+theta ** (...)           = [1,     1.23,    1.51,    ..., 403,000]
+1.0 / (...)              = [1.0,   0.81,    0.66,    ..., 0.0000025]
+                            ↓      ↓        ↓             ↓
+freqs                    = [freq₀, freq₁,   freq₂,   ..., freq₆₃ ]
+```
+
+Result: `freqs[0]` (freq₀) is the fastest, `freqs[63]` (freq₆₃) is ~400,000× slower.
+
+---
+
+## Precomputed Rotation Table (`freqs_cis`)
+
+At model initialization, all rotation angles are precomputed into a lookup table ([model.py:416-421](../model.py#L416)):
+
+```text
+freqs_cis table (positions × pairs):
+
+           Pair 0    Pair 1    Pair 2    ...
+Position 0:  0°        0°        0°
+Position 1:  freq₀×1   freq₁×1   freq₂×1
+Position 2:  freq₀×2   freq₁×2   freq₂×2
+...
+```
+
+The table is precomputed up to `max_seq_len × 2` positions (safety margin). During inference, we just look up the row for each token's position — no recalculation needed.
+
+The name `freqs_cis` means "frequencies as complex numbers" (cis = cos + i·sin). Each entry stores the rotation as a complex number, ready for direct multiplication.
+
+---
+
+## Applying the Rotation
+
+**Concrete example:** Token at position 1, with Q vector starting with [3, 4, ...]. We want to rotate pair 0, which is (3, 4).
+
+**Step 1: Look up the rotation**
+
+`freqs_cis[position=1, pair=0]` gives us the rotation as a complex number.
+
+Say the angle is 45°. Instead of storing 45°, `freqs_cis` stores: cos(45°) + i·sin(45°) = **0.71 + 0.71i**
+
+**Step 2: Convert the pair to complex**
+
+(3, 4) → **3 + 4i**
+
+**Step 3: Multiply (this is the rotation)**
+
+```text
+(3 + 4i) × (0.71 + 0.71i)
+
+= 3×0.71 + 3×0.71i + 4i×0.71 + 4i×0.71i
+= 2.13   + 2.13i   + 2.84i  + 2.84·i²
+                                 ↓
+                              i² = -1
+
+= 2.13 + 2.13i + 2.84i - 2.84
+= (2.13 - 2.84) + (2.13 + 2.84)i
+= -0.71 + 4.97i
+```
+
+**Step 4: Convert back to coordinates**
+
+-0.71 + 4.97i → **(-0.71, 4.97)**
+
+The original (3, 4) rotated by 45° becomes (-0.71, 4.97). These replace d₀ and d₁ in the Q vector.
+
+**Full picture — all pairs at once:**
+
+```text
+Original Q at position 1:  [3, 4, 7, 2, 1, 5, ...]
+                            └─┘  └─┘  └─┘
+                           pair0 pair1 pair2
+
+Lookup rotations:          freqs_cis[1,0]  freqs_cis[1,1]  freqs_cis[1,2]
+                              ↓               ↓               ↓
+                           0.71+0.71i      0.99+0.12i      0.99+0.05i
+                           (45°)           (7°)            (3°)
+
+Multiply each pair:        (3,4)×(...)     (7,2)×(...)     (1,5)×(...)
+                              ↓               ↓               ↓
+Rotated Q:                 [-0.71, 4.97,   6.69, 2.82,    0.74, 5.00, ...]
+```
+
+Each pair rotates by a different amount (based on its frequency). The same process applies to K. After rotation, Q·K produces position-aware attention scores.
+
+**In code** ([model.py:150-155](../model.py#L150)):
+
+```python
+# 1. Reshape into pairs, treat as complex: (d₀,d₁) → d₀+i·d₁
+xq_ = torch.view_as_complex(xq.float().reshape(*xq.shape[:-1], -1, 2))
+xk_ = torch.view_as_complex(xk.float().reshape(*xk.shape[:-1], -1, 2))
+
+# 2. Multiply by rotation (complex multiply = rotate), convert back to real
+xq_out = torch.view_as_real(xq_ * freqs_cis).flatten(3)
+xk_out = torch.view_as_real(xk_ * freqs_cis).flatten(3)
+```
+
+**Scale:** Per token, per RoPE layer:
+
+- 40 heads × 64 pairs = **2,560 pair rotations for Q**
+- 40 heads × 64 pairs = **2,560 pair rotations for K**
+- V is not rotated
+
+With 48 layers (most being RoPE layers), that's a lot of rotations — but they're all simple complex multiplications, highly parallelizable on GPU.
+
+---
+
+## Code Reference
+
+| Component        | File                    | Key Functions                          |
+| ---------------- | ----------------------- | -------------------------------------- |
+| Frequency init   | [model.py](../model.py) | `precompute_freqs_cis()`               |
+| Apply rotation   | [model.py](../model.py) | `apply_rotary_emb()`                   |
+| Scaled RoPE      | [model.py](../model.py) | `apply_scaling()`                      |

@@ -1,6 +1,6 @@
 import { Brain, Binary, Sparkles, InfinityIcon, ChartNoAxesCombinedIcon, Home, Calculator, BookOpen,
     HelpCircle, Dumbbell, Lightbulb, Gamepad2, Pencil, Music, Flower, Puzzle, BookMarked, Lock,
-    // Database, Table,PuzzleIcon
+    Database, Table,PuzzleIcon
 } from "lucide-react"
 // import { ClaudeIcon } from "@/components/icons/claude-icon"
 import { ElementType } from "react"
@@ -27,13 +27,13 @@ export const routes: NavigationItem[] = [
         ],
     },
     // {title: 'Claude', href: '/ai/claude-code', icon: ClaudeIcon, color: "text-orange-500", bgColor: "bg-orange-500/10"},
-    // { title: 'Database', href: '/db', icon: Database, color: "text-blue-500", bgColor: "bg-purple-500/10",
-    //     children: [
-    //         { title: 'Overview', href: '/db', icon: Database, color: "text-blue-500", bgColor: "bg-purple-500/10" },
-    //         { title: 'Tables', href: '/db/tables', icon: Table, color: "text-blue-500", bgColor: "bg-purple-500/10" },
-    //         { title: 'Diagram', href: '/db/diagram', icon: PuzzleIcon, color: "text-blue-500", bgColor: "bg-purple-500/10" },
-    //     ],
-    //  },
+    { title: 'Database', href: '/db', icon: Database, color: "text-blue-500", bgColor: "bg-purple-500/10",
+        children: [
+            { title: 'Overview', href: '/db', icon: Database, color: "text-blue-500", bgColor: "bg-purple-500/10" },
+            { title: 'Tables', href: '/db/tables', icon: Table, color: "text-blue-500", bgColor: "bg-purple-500/10" },
+            { title: 'Diagram', href: '/db/diagram', icon: PuzzleIcon, color: "text-blue-500", bgColor: "bg-purple-500/10" },
+        ],
+     },
     //  {
     //     title: 'Dictionary', href: '/dictionary', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10",
        

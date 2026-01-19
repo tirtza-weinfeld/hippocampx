@@ -1,874 +1,276 @@
-# The Transformer: How It Works
+# The Transformer
 
 ## Resizable Table Of Contents
 
-## Key Parameters
-
-| Parameter       | What it controls                      | Scout   | Maverick |
-| --------------- | ------------------------------------- | ------- | -------- |
-| **vocab_size**  | Number of tokens the model knows      | 202,048 | 202,048  |
-| **dim**         | Size of each vector (hidden size)     | 5,120   | 5,120    |
-| **n_layers**    | Number of transformer layers (depth)  | 48      | 48       |
-| **n_heads**     | Parallel attention heads (for Q)      | 40      | 40       |
-| **n_kv_heads**  | Key/Value heads (fewer = less memory) | 8       | 8        |
-| **num_experts** | Expert networks in MoE layers         | 16      | 128      |
-| **total_params**| Total model parameters                | 109B    | 400B     |
-| **active_params**| Parameters activated per token       | 17B     | 17B      |
-
-(Values from [MODEL_CARD.md](../MODEL_CARD.md) and [Hugging Face](https://huggingface.co/docs/transformers/model_doc/llama4#transformers.Llama4TextConfig).)
-
-**dim** controls how much information each vector holds. Larger values enable richer representations but require more memory and compute.
-
-**n_layers** controls how many times vectors get refined. More layers enable deeper reasoning but increase latency.
-
----
-
 ## Running Example
 
-We'll use these two sentences throughout:
-
 ```text
-"The cat saw the mouse and it ___"   → predicts: ran, hid, squeaked
-"I clicked the mouse and it ___"     → predicts: moved, opened, stopped
+"The cat saw the mouse"  →  predicts "ran", "hid", "squeaked"
+"I clicked the mouse"    →  predicts "moved", "opened", "stopped"
 ```
 
-Same word "mouse" (token 16425), but context produces different predictions.
-
-Try it: `make tokenize TEXT="The cat saw the mouse"`
-
+The token "mouse" (ID 16425) is identical in both inputs. The layers — attention (mixes context across positions) and FFN (transforms each position independently) — refine each token's representation, producing different logits.
+    
 ---
 
-## Input and Output
+## Overview
+
+The forward pass maps token IDs to logits:
 
 ```text
-Input:  [954, 10338, 13747, 290, 16425]  → "The cat saw the mouse" as 5 token IDs
-Output: [0.1, -2.3, 5.7, ...]            → vocab_size scores (one per possible next token)
+[954, 10338, 13747, 290, 16425]     "The cat saw the mouse"
+              ↓
+         EMBEDDING              token ID → table lookup → vector
+              ↓
+      48 TRANSFORMER LAYERS     attention mixes context; FFN transforms per-position
+              ↓
+       OUTPUT PROJECTION        last position's vector → logits
+              ↓
+      [202,048 logits]          one score per vocabulary token
 ```
 
-The highest score = the model's prediction for the next token.
+Sampling from these logits produces: "ran", "hid", "squeaked".
 
----
-
-## The Checkpoint
-
-A **checkpoint** is a file containing all the model's learned numbers — the "knowledge" acquired during training. Without a checkpoint, the model is just code that doesn't know anything.
-
-**What's inside:** Billions of floating-point numbers organized into **tensors** (n-dimensional arrays). A 1D tensor is a vector, 2D is a matrix, 3D+ extends to more dimensions. The checkpoint is a Python dict mapping string names to `torch.Tensor` objects.
-
-**How the code loads checkpoints** ([generation.py:124-125](../generation.py#L124)):
-```python
-ckpt_paths = sorted(Path(ckpt_dir).glob("*.pth"))  # find all .pth files
-assert len(ckpt_paths) > 0, f"no checkpoint files found in {ckpt_dir}"
-```
-
-Large models may be split across multiple `.pth` files (shards) for parallel loading across GPUs.
-
-**Tensor shapes for Scout** (head_dim = dim / n_heads = 5,120 / 40 = 128):
-
-```text
-tok_embeddings.weight         [202,048 × 5,120]     ← one row per vocabulary token
-layers.0.attention.wq.weight  [5,120 × 5,120]       ← Q: n_heads × head_dim = 40 × 128 = 5,120
-layers.0.attention.wk.weight  [1,024 × 5,120]       ← K: n_kv_heads × head_dim = 8 × 128 = 1,024 (GQA)
-layers.0.attention.wv.weight  [1,024 × 5,120]       ← V: n_kv_heads × head_dim = 8 × 128 = 1,024 (GQA)
-layers.0.attention.wo.weight  [5,120 × 5,120]       ← output projection
-layers.0.feed_forward.*                             ← FFN or MoE weights (see Stage 2)
-...
-layers.47.attention.*                               ← same structure, 48 layers total (0-47)
-...
-output.weight                 [202,048 × 5,120]     ← project back to vocabulary
-```
-
-**Why K and V are smaller:** Grouped Query Attention (GQA) uses fewer K/V heads (8) than Q heads (40). This reduces memory for the KV cache during generation. Each K/V head serves 5 Q heads (40 ÷ 8 = 5). See the GQA section below for details.
-
-**Two types of weights:**
-- **Lookup tables** (tok_embeddings): Shape `[vocab_size, dim]`. Each token ID indexes its own row. Token 16425 ("mouse") always fetches row 16425.
-- **Transformation matrices** (wq, wk, wv, wo, etc.): Applied to ANY vector via matrix multiplication. All tokens share the same matrices within a layer.
-
-Try it: `make inspect` to list all weights, `make inspect KEY="tok_embeddings.weight"` for details.
-
+**Logits:** Raw scores, one per vocabulary token. Can be any real number.
+**Sampling:** Softmax converts logits to probabilities (sum to 1), then a token is randomly selected weighted by those probabilities.
 ---
 
 ## Stage 1: Embedding
 
-Convert token IDs to vectors.
-
-The **embedding table** (`tok_embeddings.weight`) has one row per vocabulary token:
-- Shape: `vocab_size × dim` (e.g., 202,048 × 5,120 for Scout/Maverick)
-
-Embedding is a lookup: token ID 16425 → fetch row 16425 from the table.
+The **embedding table** (`tok_embeddings.weight`) maps each token ID to a learned vector. Shape: [vocab_size × dim] = [202,048 × 5,120].
 
 ```text
-Input:  [954, 10338, 13747, 290, 16425]     "The cat saw the mouse"
+Input:  [954, 10338, 13747, 290, 16425]
 
-                ↓ lookup each ID in embedding table
+                    ↓ table lookup
 
-Output: [seq_len × dim] matrix
+Output: 5 vectors, each 5,120 dimensions
 
-        Position 0: [...]                              ← "The" (row 954)
-        Position 1: [-0.002, -0.013, 0.005, ...]       ← " cat" (row 10338)
-        Position 2: [...]                              ← " saw" (row 13747)
-        Position 3: [...]                              ← " the" (row 290)
-        Position 4: [-0.002, 0.020, -0.004, ...]       ← " mouse" (row 16425)
+        Position 0: [0.01, -0.02, 0.03, ...]    ← row 954 ("The")
+        Position 1: [-0.002, -0.013, 0.005, ...] ← row 10338 ("cat")
+        Position 2: [...]                        ← row 13747 ("saw")
+        Position 3: [...]                        ← row 290 ("the")
+        Position 4: [-0.002, 0.020, -0.004, ...] ← row 16425 ("mouse")
 ```
 
-**What do -0.002, 0.020, -0.004 mean?** Individual values are uninterpretable. Evidence suggests meaning is distributed across all dimensions — no single number represents a specific concept like "is_small" or "is_scary". Similar tokens end up with similar vectors, but we cannot say what dimension 47 "means".
-
-**Key insight:** "mouse" gets the **same embedding** whether the sentence is about a cat or a computer. Token 16425 always maps to the same 5,120 numbers. Context-dependent meaning emerges later, in the attention layers.
-
-**Terminology from here on:**
-- **Position**: index in the sequence (0, 1, 2, 3, 4)
-- **Token**: the vector at that position (e.g., "token at position 4" = the vector for "mouse")
-- **Dimension**: index within the vector (0 to dim-1). When dim=5,120, dimensions range 0–5,119.
-
-Try it: `make embedding TOKEN_ID=16425`
+Token 16425 ("mouse") maps to the same vector regardless of context. The layers add context.
 
 ---
 
 ## Stage 2: Layers
 
-The vectors pass through n_layers. Each layer refines them:
-Attention (gather context) → FFN/MoE (process it).
+Each of the 48 layers has two operations:
+
+1. **Attention** — each position aggregates information from other positions
+2. **FFN/MoE** — each position is transformed independently
 
 ### Attention
 
-**The problem:** After embedding, "mouse" is the same vector whether the sentence is "The cat saw the mouse" or "I clicked the mouse". It has no context.
+Attention allows each position to incorporate information from other positions. Each position computes a weighted sum of all (causally visible) positions' values.
 
-**The solution:** Each token looks at other tokens and gathers information. In "The cat saw the mouse", position 4 ("mouse") looks at:
-- position 1 ("cat") → this tells me I'm an animal, not a device
-- position 2 ("saw") → this tells me I was perceived
+#### Step 1: Create Q, K, V
 
-After attention, the vector at position 4 is no longer just "mouse" — it's "mouse in an animal-chasing context". This updated vector helps predict the next word (ran, hid, squeaked).
+Each position's vector is projected into three vectors:
 
-**How it works:**
-
-```text
-Token vectors (from embedding or previous layer)
-       │
-       ▼
-┌──────────────────────────────────────────────────────────────┐
-│  1. PROJECT to Q, K, V                                       │
-│     token × Wq → Q    token × Wk → K    token × Wv → V       │
-└──────────────────────────────────────────────────────────────┘
-       │                      │                   │
-       ▼                      ▼                   │
-┌─────────────────────────────────────────┐      │
-│  2. APPLY RoPE (encode position)        │      │
-│     rotate Q, K by position-based angle │      │
-└─────────────────────────────────────────┘      │
-       │                      │                   │
-       ▼                      ▼                   │
-┌─────────────────────────────────────────┐      │
-│  2b. OPTIONAL: QK Normalization         │      │
-│     RMSNorm(Q), RMSNorm(K)              │      │
-└─────────────────────────────────────────┘      │
-       │                      │                   │
-       ▼                      ▼                   │
-┌─────────────────────────────────────────┐      │
-│  3. COMPUTE SCORES                      │      │
-│     Q · K → raw attention scores        │      │
-└─────────────────────────────────────────┘      │
-       │                                         │
-       ▼                                         │
-┌─────────────────────────────────────────┐      │
-│  4. MASK + SOFTMAX                      │      │
-│     mask future → softmax → weights     │      │
-└─────────────────────────────────────────┘      │
-       │                                         │
-       ▼                                         ▼
-┌──────────────────────────────────────────────────────────────┐
-│  5. WEIGHTED SUM                                             │
-│     weights × V → context-aware output                       │
-└──────────────────────────────────────────────────────────────┘
-       │
-       ▼
-  Output vectors (one per token, now with context)
-```
-
-1. **Project** each token's vector into Q, K, V:
-
-   Each layer has three weight matrices stored in the checkpoint:
-   - `layers.N.attention.wq.weight` → Wq, shape `[n_heads × head_dim, dim]`
-   - `layers.N.attention.wk.weight` → Wk, shape `[n_kv_heads × head_dim, dim]`
-   - `layers.N.attention.wv.weight` → Wv, shape `[n_kv_heads × head_dim, dim]`
-
-   For each token in the sequence, compute:
-   ```text
-   Q = token_vector × Wq    → [n_heads × head_dim]
-   K = token_vector × Wk    → [n_kv_heads × head_dim]
-   V = token_vector × Wv    → [n_kv_heads × head_dim]
-   ```
-
-   **One set of matrices per layer, applied to every token.** In "The cat saw the mouse", all 5 tokens use the same Wq to compute their Q vectors. Different tokens get different Q's because their input vectors differ, not because the matrix differs.
-
-   - **Q** (query): what this token is looking for
-   - **K** (key): how this token is found by others
-   - **V** (value): what this token contributes
-
-   (Named after database retrieval: query matches keys, returns values)
-
-2. **Apply RoPE** to Q and K (encode position):
-
-   **The problem:** Transformers process all tokens in parallel — they don't know word order. Without position info, "Cat chased mouse" and "Mouse chased cat" produce identical attention patterns.
-
-   **The solution:** RoPE (Rotary Position Embedding) rotates each Q and K vector by an angle proportional to its position:
-
-   ```text
-   Position 0: rotate Q₀, K₀ by 0°
-   Position 1: rotate Q₁, K₁ by θ
-   Position 2: rotate Q₂, K₂ by 2θ
-   ...
-   ```
-
-   The rotation operates on pairs of dimensions using complex multiplication ([model.py:150-155](../model.py#L150)):
-
-   ```python
-   xq_ = torch.view_as_complex(xq.float().reshape(*xq.shape[:-1], -1, 2))
-   xk_ = torch.view_as_complex(xk.float().reshape(*xk.shape[:-1], -1, 2))
-   freqs_cis = reshape_for_broadcast(freqs_cis, xq_)
-   xq_out = torch.view_as_real(xq_ * freqs_cis).flatten(3)  # complex multiply = rotate
-   xk_out = torch.view_as_real(xk_ * freqs_cis).flatten(3)
-   ```
-
-   **Why rotation encodes relative position:** The dot product Q·K between two rotated vectors depends on their *relative* rotation. If Q is rotated by 5θ and K by 3θ, their dot product sees a 2θ difference — regardless of absolute position. The model learns: "2 steps apart" always looks the same.
-
-   **Why only Q and K:** RoPE affects which tokens attend to each other (via Q·K scores). V is not rotated — the content a token contributes stays unchanged. Position influences attention weights, not the values being aggregated.
-
-   **Scaled RoPE: Extending Context Length** ([model.py:100-117](../model.py#L100), [args.py:72-74](../args.py#L72))
-
-   The base rotation angle θ determines how far the model can "see". With the original context length (8,192 tokens), positions beyond that become aliased — the model confuses position 10,000 with position 1,808 because they end up at similar angles.
-
-   **Scaled RoPE** stretches the rotation frequencies to support longer contexts (Llama 4 Scout supports up to 10M tokens). The key insight: high-frequency rotations (which change rapidly between positions) matter for nearby tokens, while low-frequency rotations (which change slowly) matter for distant relationships.
-
-   ```python
-   # model.py:100-117
-   def apply_scaling(freqs: torch.Tensor, scale_factor: float, high_freq_factor: float):
-       low_freq_factor = 1
-       old_context_len = 8192  # original llama3 length
-
-       for freq in freqs:
-           wavelen = 2 * math.pi / freq
-           if wavelen < high_freq_wavelen:        # high freq: keep unchanged
-               new_freqs.append(freq)
-           elif wavelen > low_freq_wavelen:       # low freq: scale down
-               new_freqs.append(freq / scale_factor)
-           else:                                  # mid freq: smooth interpolation
-               smooth = (old_context_len / wavelen - low_freq_factor) / (high_freq_factor - low_freq_factor)
-               new_freqs.append((1 - smooth) * freq / scale_factor + smooth * freq)
-   ```
-
-   **Three frequency bands:**
-   - **High frequency** (short wavelength): Unchanged — these handle local position discrimination
-   - **Low frequency** (long wavelength): Divided by `scale_factor` — stretches them to cover longer distances
-   - **Mid frequency**: Smoothly interpolated between scaled and unscaled
-
-   Controlled by `ModelArgs` parameters:
-   - `use_scaled_rope: bool` — enables scaling
-   - `rope_scaling_factor: float` — how much to stretch low frequencies
-   - `rope_high_freq_factor: float` — threshold between high and mid frequencies
-
-   The frequencies are precomputed once at model initialization ([model.py:120-134](../model.py#L120)) and passed to each layer during forward.
-
-   **2b. Optional: QK Normalization** ([model.py:279-281](../model.py#L279)):
-
-   When `use_qk_norm=True`, Q and K are normalized with RMSNorm after projection (but only for RoPE layers):
-   ```python
-   if self.use_qk_norm:
-       xq = rmsnorm(xq, self.norm_eps)
-       xk = rmsnorm(xk, self.norm_eps)
-   ```
-
-   This stabilizes attention scores and improves training with long sequences.
-
-3. **Compute attention scores** (Q · K for each position):
-
-   Using our running example: `"The cat saw the mouse"` → positions 0, 1, 2, 3, 4
-
-   ```text
-   For position 4 ("mouse"):
-   Q₄ · K₀("The")   = 0.1
-   Q₄ · K₁("cat")   = 0.8   ← high: knowing "cat" helps predict what "mouse" does next
-   Q₄ · K₂("saw")   = 0.6
-   Q₄ · K₃("the")   = 0.1
-   Q₄ · K₄("mouse") = 0.5
-   ```
-
-   **Dot product:** Multiply corresponding elements and sum.
-
-   `a · b = a₁b₁ + a₂b₂ + ... + aₙbₙ`
-
-   Geometric property: `a · b = |a| × |b| × cos(θ)` where θ is the angle between vectors.
-   - Same direction (θ=0°): cos=1 → high positive
-   - Perpendicular (θ=90°): cos=0 → zero
-   - Opposite (θ=180°): cos=-1 → negative
-
-   **Implementation:** This codebase uses PyTorch's `F.scaled_dot_product_attention` ([model.py:308](../model.py#L308)), which fuses steps 3-5 into a single optimized kernel with automatic scaling by √head_dim.
-
-4. **Apply mask + softmax** → attention weights:
-
-   **Masking:** Prevent positions from attending to later positions.
-
-   **With our example "The cat saw the mouse":**
-
-   ```text
-   Processing the prompt (seqlen=5, all at once):
-   ┌─────────────────────────────────────────────────────────────┐
-   │ Position 0 ("The")   can attend to: 0                       │
-   │ Position 1 ("cat")   can attend to: 0, 1                    │
-   │ Position 2 ("saw")   can attend to: 0, 1, 2                 │
-   │ Position 3 ("the")   can attend to: 0, 1, 2, 3              │
-   │ Position 4 ("mouse") can attend to: 0, 1, 2, 3, 4           │
-   │                                                             │
-   │ Mask needed: YES — all 5 computed in parallel, but position │
-   │ 2 must not see positions 3, 4 (they're "future" to it)      │
-   └─────────────────────────────────────────────────────────────┘
-                              ↓ generates "ran"
-
-   Generating token 1 (seqlen=1):
-   ┌─────────────────────────────────────────────────────────────┐
-   │ Position 5 ("ran")   can attend to: 0, 1, 2, 3, 4, 5        │
-   │                                                             │
-   │ Mask needed: NO — only 1 token processed, KV cache has 0-4  │
-   │ There's nothing "future" to hide.                           │
-   └─────────────────────────────────────────────────────────────┘
-                              ↓ generates "away"
-
-   Generating token 2 (seqlen=1):
-   ┌─────────────────────────────────────────────────────────────┐
-   │ Position 6 ("away")  can attend to: 0, 1, 2, 3, 4, 5, 6     │
-   │                                                             │
-   │ Mask needed: NO — KV cache has 0-5, nothing future exists   │
-   └─────────────────────────────────────────────────────────────┘
-   ```
-
-   **How?** Upper triangular matrix of `-inf` ([model.py:501-502](../model.py#L501)):
-
-   ```text
-   Position:  0    1    2    3    4
-         0 [  0, -inf, -inf, -inf, -inf ]   ← "The" sees only itself
-         1 [  0,   0,  -inf, -inf, -inf ]   ← "cat" sees 0-1
-         2 [  0,   0,    0,  -inf, -inf ]   ← "saw" sees 0-2
-         3 [  0,   0,    0,    0,  -inf ]   ← "the" sees 0-3
-         4 [  0,   0,    0,    0,    0  ]   ← "mouse" sees 0-4
-   ```
-
-   After softmax, `exp(-inf) = 0` → masked positions get zero weight.
-
-   **Note:** This is the global (causal) mask. RoPE layers use a chunked mask that also limits attention to within a chunk — see iRoPE section.
-
-   **Softmax** converts scores to weights between 0-1 that sum to 1:
-
-   `softmax: weight_i = exp(score_i) / Σⱼ exp(score_j)`
-
-   Why softmax? Raw scores can be negative, so we can't just divide by sum. `exp(x)` is always positive, making it safe to normalize. Bonus: exp() amplifies differences — high scores get proportionally higher weights.
-
-5. **Weighted sum** of V's → output:
-
-   ```text
-   Output₄ = 0.14×V₀ + 0.28×V₁ + 0.23×V₂ + 0.14×V₃ + 0.21×V₄
-                        ↑ "cat" contributes most
-   ```
-
-   (Scores and weights are illustrative)
-
-   Compare: in `"I clicked the mouse"`, position 3 ("mouse") would attend strongly to "clicked" instead of "cat" — same token, different context, different output vector.
-
----
-
-#### Multi-head Attention
-
-Rather than one attention over all dim dimensions, we run n_heads separate attentions in parallel, each over (dim / n_heads) dimensions.
-
-Using Scout config (dim=5,120, n_heads=40, n_kv_heads=8):
+- **Q** (query): used to compute attention scores against other positions
+- **K** (key): used to compute attention scores from other positions
+- **V** (value): the content that gets aggregated
 
 ```text
-head_dim = dim / n_heads = 5,120 / 40 = 128
-
-Q, K, V from step 1 (after Wq, Wk, Wv):
-  Q: [n_heads × head_dim] = [5,120]
-  K: [n_kv_heads × head_dim] = [1,024]  ← smaller due to GQA
-  V: [n_kv_heads × head_dim] = [1,024]  ← smaller due to GQA
-             ↓ reshape via .view() (model.py:272-274)
-Q per head: [40 heads × 128 dims]
-K per head: [8 kv_heads × 128 dims]
-V per head: [8 kv_heads × 128 dims]
-
-Each head runs steps 2-5 (RoPE → scores → mask → softmax → weighted sum) on its 128-dim slice.
-K and V are repeated 5× to match Q's head count (see GQA below).
-
-Head outputs: 40 × [128] → concatenate (model.py:309) → [5,120] → Wo (model.py:310) → [5,120]
+vector × Wq  →  Q    [5,120 → 5,120]
+vector × Wk  →  K    [5,120 → 1,024]  (smaller due to GQA)
+vector × Wv  →  V    [5,120 → 1,024]  (smaller due to GQA)
 ```
 
-`layers.N.attention.wo.weight` (shape `[dim, n_heads × head_dim]`) mixes information across heads. Without Wo, each head's contribution would stay isolated in its original dimensions.
+Wq, Wk, Wv are learned weight matrices. All positions use the same matrices.
 
-Unlike MoE (which routes different tokens to different experts), multi-head routes different dimensions to different heads. All heads always run on all tokens.
+#### Step 2: Add Position Information (RoPE)
 
----
+Q and K are computed identically at every position — without position encoding, the attention scores between "cat chased mouse" and "mouse chased cat" would be identical.
 
-#### Grouped Query Attention (GQA)
+RoPE (Rotary Position Embedding) encodes position by rotating Q and K vectors based on their position index. Position 0 is rotated by angle 0, position 1 by angle θ, position 2 by 2θ, etc.
 
-Llama 4 uses fewer K/V heads than Q heads to reduce memory usage.
+When computing Q₄ · K₁, the rotation angles (4θ and 1θ) produce a dot product that depends on their difference (3θ). This encodes **relative position** — "3 positions apart" — regardless of absolute position. (For the rotation math, see [rope-deep-dive.md](rope-deep-dive.md).)
 
-**The problem:** During generation, we store K and V for all previous tokens in a "KV cache". With 40 heads, each needing its own K and V, this cache grows large.
+#### Step 3: Compute Attention Scores
 
-**The solution:** Multiple Q heads share the same K and V.
+Attention scores are dot products between Q and K vectors:
 
 ```text
-Standard (n_heads=40, n_kv_heads=40):       Grouped Query (n_heads=40, n_kv_heads=8):
-  Q₀  uses K₀, V₀                             Q₀, Q₁, Q₂, Q₃, Q₄  share K₀, V₀
-  Q₁  uses K₁, V₁                             Q₅, Q₆, Q₇, Q₈, Q₉  share K₁, V₁
-  ...                                         ...
-  Q₃₉ uses K₃₉, V₃₉                           Q₃₅...Q₃₉ share K₇, V₇
+Position 4 ("mouse") computes:
 
-  KV cache: 40 sets                           KV cache: 8 sets (5× smaller)
+Q₄ · K₀ ("The")   = 0.1
+Q₄ · K₁ ("cat")   = 0.8   ← highest
+Q₄ · K₂ ("saw")   = 0.6
+Q₄ · K₃ ("the")   = 0.1
+Q₄ · K₄ ("mouse") = 0.5
 ```
 
-**How it works** ([model.py:177-181](../model.py#L177), [305-306](../model.py#L305)):
+Higher dot product → larger weight in the final sum.
 
-1. Wk and Wv produce fewer outputs: `n_kv_heads × head_dim` instead of `n_heads × head_dim`
-2. Before attention, K and V are repeated to match Q's head count:
-   ```python
-   n_rep = n_heads // n_kv_heads  # 40 // 8 = 5
-   xk = xk.repeat_interleave(n_rep, dim=1)  # 8 → 40 heads
-   xv = xv.repeat_interleave(n_rep, dim=1)  # 8 → 40 heads
-   ```
+#### Step 4: Mask and Softmax
 
-**Result:** Each group of 5 Q heads computes attention against the same K and V. The model learns to make good use of shared keys/values. Scout and Maverick use n_kv_heads=8 with n_heads=40, reducing KV cache by 5×.
+**Masking** sets attention scores to -∞ before softmax, forcing those weights to zero.
 
----
+**Causal mask** (all layers): Position i cannot attend to positions > i.
 
-#### KV Cache
+**Chunked mask** (RoPE layers only): Position i can only attend within its chunk.
 
-During autoregressive generation, each new token needs to attend to all previous tokens. Without caching, we'd recompute K and V for every previous token at every generation step — O(n²) work for n tokens.
+Llama 4 uses **iRoPE** — most layers apply RoPE and use chunked masking; every Nth layer skips RoPE (NoPE) and uses only the causal mask, allowing global attention across the full sequence.
 
-**The solution:** Cache the K and V vectors from previous positions and reuse them.
-
-**Cache structure** ([model.py:216-231](../model.py#L216)):
-
-```python
-# Shape: [batch_size, max_seq_len, n_kv_heads, head_dim]
-self.cache_k = torch.zeros((
-    args.max_batch_size,  # multiple sequences in parallel
-    args.max_seq_len,     # pre-allocated for maximum length
-    self.n_local_kv_heads,  # 8 for Scout/Maverick (GQA)
-    self.head_dim,        # 128
-))
-self.cache_v = torch.zeros(...)  # same shape
-```
-
-**Memory for Scout:** With `max_seq_len=131,072` and `n_kv_heads=8`:
-- Per layer: 8 × 131,072 × 128 × 2 (K+V) × 2 bytes (bf16) ≈ 512 MB
-- All 48 layers: ≈ 24 GB per sequence
-
-This is why GQA matters — with `n_kv_heads=40` (no GQA), this would be 5× larger (≈120 GB).
-
-**How the cache is used** ([model.py:297-301](../model.py#L297)):
-
-```python
-# 1. Store new K/V at current position
-self.cache_k[:bsz, start_pos : start_pos + seqlen] = xk
-self.cache_v[:bsz, start_pos : start_pos + seqlen] = xv
-
-# 2. Retrieve ALL K/V from position 0 to current
-xk = self.cache_k[:bsz, : start_pos + seqlen]
-xv = self.cache_v[:bsz, : start_pos + seqlen]
-```
-
-**Step by step for our example:**
+**Softmax** converts scores to weights that sum to 1:
 
 ```text
-Prompt processing: "The cat saw the mouse" (positions 0-4)
-┌────────────────────────────────────────────────────────────────┐
-│ seqlen=5, start_pos=0                                          │
-│ Compute K, V for all 5 tokens                                  │
-│ Store cache_k[:, 0:5], cache_v[:, 0:5]                         │
-│ Retrieve cache_k[:, 0:5], cache_v[:, 0:5]  (same as computed)  │
-│ Q has shape [batch, 5, heads, head_dim]                        │
-│ K, V have shape [batch, 5, heads, head_dim]                    │
-└────────────────────────────────────────────────────────────────┘
-
-Generating token 1: "ran" (position 5)
-┌────────────────────────────────────────────────────────────────┐
-│ seqlen=1, start_pos=5                                          │
-│ Compute K, V for position 5 only                               │
-│ Store cache_k[:, 5:6], cache_v[:, 5:6]                         │
-│ Retrieve cache_k[:, 0:6], cache_v[:, 0:6]  (includes cached!)  │
-│ Q has shape [batch, 1, heads, head_dim]    ← just new token    │
-│ K, V have shape [batch, 6, heads, head_dim] ← all 6 positions  │
-└────────────────────────────────────────────────────────────────┘
-
-Generating token 2: "away" (position 6)
-┌────────────────────────────────────────────────────────────────┐
-│ seqlen=1, start_pos=6                                          │
-│ Compute K, V for position 6 only                               │
-│ Store cache_k[:, 6:7], cache_v[:, 6:7]                         │
-│ Retrieve cache_k[:, 0:7], cache_v[:, 0:7]                      │
-│ Q: [batch, 1, heads, head_dim]                                 │
-│ K, V: [batch, 7, heads, head_dim]                              │
-└────────────────────────────────────────────────────────────────┘
+Position 4's attention weights (after softmax):
+  pos 0: 0.10    pos 1: 0.45    pos 2: 0.20    pos 3: 0.05    pos 4: 0.20
+         "The"         "cat"          "saw"          "the"         "mouse"
 ```
 
-**Efficiency gain:** For a 1000-token generation:
-- Without cache: Compute K, V for 1 + 2 + 3 + ... + 1000 = 500,500 tokens
-- With cache: Compute K, V for 1000 tokens (then reuse)
+#### Step 5: Weighted Sum of Values
 
-The Q vectors are only computed for new tokens. K and V are computed once per token and cached forever (within a sequence).
-
----
-
-#### iRoPE Architecture (Llama 4)
-
-Not all layers use RoPE. Every Nth layer is a "NoPE" layer (`nope_layer_interval`, see [model.py:321](../model.py#L321)):
-
-| Layer type | Position encoding | Attention range |
-|------------|-------------------|-----------------|
-| **RoPE** (most layers) | Q, K rotated | Chunked local (within `attention_chunk_size`) |
-| **NoPE** (every Nth) | None — purely content-based | Global (all earlier positions) |
-
-**Why mix both?**
-- RoPE + chunked attention: Efficient for local context (most language relationships are nearby)
-- NoPE + global attention: Lets information flow across distant positions without position bias
-
-NoPE layers also apply **attention temperature tuning** ([model.py:283-292](../model.py#L283)) when `attn_temperature_tuning=True`:
-
-```python
-if self.attn_temperature_tuning and not self.use_rope:
-    seq_positions = torch.arange(start_pos, start_pos + seqlen, device=xq.device, dtype=torch.float32)
-    attn_scales = torch.log(torch.floor((seq_positions + 1.0) / self.floor_scale) + 1.0) * self.attn_scale + 1.0
-    attn_scales = attn_scales.view(1, seqlen, 1, 1)
-    xq = xq * attn_scales
-```
-
-Q is scaled based on sequence position to improve very long context handling. The scaling is logarithmic, so it doesn't affect short contexts much but helps at very long lengths.
-
----
-
-#### Chunked Mask (RoPE layers)
-
-RoPE layers use a chunked mask ([model.py:535-542](../model.py#L535)) — causal + limited to current chunk.
-
-**Important:** The chunked mask is a **boolean tensor** (True = attend, False = block), while the global mask uses **float with -inf**. PyTorch's `F.scaled_dot_product_attention` handles both.
-
-With `attention_chunk_size=3`:
+The output for each position is a weighted sum of V vectors:
 
 ```text
-Position:  0    1    2  |  3    4    5  |  6  ...
-      0 [  T,   F,   F |   F,   F,   F |   F ]  ← chunk 0 (T=True, F=False)
-      1 [  T,   T,   F |   F,   F,   F |   F ]
-      2 [  T,   T,   T |   F,   F,   F |   F ]
-     -------------------+------------------+------
-      3 [  F,   F,   F |   T,   F,   F |   F ]  ← chunk 1 starts
-      4 [  F,   F,   F |   T,   T,   F |   F ]
-      5 [  F,   F,   F |   T,   T,   T |   F ]
+Output₄ = 0.10×V₀ + 0.45×V₁ + 0.20×V₂ + 0.05×V₃ + 0.20×V₄
 ```
 
-The mask logic ([model.py:540-541](../model.py#L540)):
-```python
-mask = (block_pos == 0) & (token_pos <= 0)  # same chunk AND causal
-```
+Position 4's output vector is 45% V₁ ("cat"), 20% V₂ ("saw"), etc. All positions compute this in parallel.
 
-**Which mask is used** ([model.py:390-392](../model.py#L390)):
-- NoPE layers → global mask (float, -inf for blocked positions)
-- RoPE layers → chunked mask (boolean, False for blocked positions)
+#### Combining Heads
 
-```python
-mask = global_attn_mask if self.is_nope_layer or local_attn_mask is None else local_attn_mask
-```
+In practice, attention runs in parallel across 40 "heads," each working on 128 dimensions. After attention, we concatenate all heads and multiply by another weight matrix (Wo) to mix information across heads.
 
----
+For details on multi-head attention, grouped query attention (GQA), and KV caching, see [attention-deep-dive.md](attention-deep-dive.md).
 
-#### Key Takeaway
+### FFN / MoE
 
-**Attention transforms context-free embeddings into context-aware representations.**
-
-Before attention: "mouse" is always the same vector (token 16425 → row 16425 in embedding table).
-
-After attention: "mouse" in "The cat saw the mouse" is a different vector than "mouse" in "I clicked the mouse" — because each gathered different information from surrounding tokens.
-
-This is the core mechanism that lets transformers understand language: the same word means different things in different contexts, and attention is how the model figures out which meaning applies.
-
-### Feed-Forward (or MoE)
-
-After attention mixes information across positions, the feed-forward network transforms each position's vector independently. Attention asks "what should I pay attention to?" — the feed-forward network asks "what does this mean?"
-
-#### The Basic Unit: SwiGLU
-
-Every feed-forward computation in Llama 4 uses **SwiGLU** ([ffn.py:83-85](../ffn.py#L83)) — a gated transformation.
-
-**Step by step:**
-
-1. **Two projections**: The input vector (size `dim` = 5,120) gets multiplied by two different weight matrices (w1 and w3). Each produces a larger vector (size `hidden_dim`). We now have two different transformations of the same input — call them A and B.
-
-2. **Gate**: Vector A passes through SiLU activation, then gets multiplied element-wise with vector B. This is the "gate" — wherever B is near zero, it blocks A at that position; wherever B is large, it lets A through.
-
-3. **Project back**: The gated result gets multiplied by a third matrix to return to the original size (`dim`).
-
-```python
-# ffn.py:83-85
-x = F.silu(F.linear(x, self.w1.weight)) * F.linear(x, self.w3.weight)
-out = F.linear(x, self.w2.weight)
-```
+**FFN** (Feed-Forward Network) transforms each position independently using SwiGLU:
 
 ```text
-input (dim)
-    │
-    ├────────────────┬────────────────┐
-    │                │                │
-    ▼                ▼                │
- path A (w1)      path B (w3)        │
- (expand)         (expand)           │
-    │                │                │
-    ▼                │                │
-SiLU activation      │                │
-    │                │                │
-    └───── × ────────┘   ← element-wise multiply (gating)
-           │
-           ▼
-       (w2: shrink)
-           │
-           ▼
-      output (dim)
+output = (SiLU(x @ W1) ⊙ (x @ W3)) @ W2
 ```
 
-**Why gate?** It lets the network learn to selectively block or pass information. Some dimensions might be relevant for this token, others not — the gate learns which.
+Two parallel projections (W1, W3) expand to a higher dimension. One passes through SiLU activation, then element-wise multiply (⊙), then W2 projects back. This applies element-wise nonlinearity to each position's vector.
+
+**MoE** (Mixture of Experts) uses multiple FFNs ("experts") instead of one:
+- A router (linear layer) scores each expert for the input
+- The top-scoring expert is selected (top_k=1)
+- A shared expert also processes every token
+- Output = shared expert output + (router score × selected expert output)
+
+MoE increases capacity without proportional compute — each token activates the shared expert plus 1 routed expert (out of 16 in Scout, 128 in Maverick).
+
+For details, see [ffn-moe-deep-dive.md](ffn-moe-deep-dive.md).
+
+### One Complete Layer
+
+For each position's vector x (5,120 dims):
+1. RMSNorm(x) → attention → **add** result to x → call this h
+2. RMSNorm(h) → FFN/MoE → **add** result to h → output
+
+RMSNorm scales the vector so its root-mean-square equals 1. The additions are residual connections — each operation's output is added to its input, preserving the original signal.
+
+Each layer's output becomes the next layer's input. After 48 layers, position 4's vector encodes "mouse" in the context of the preceding tokens.
 
 ---
 
-#### FFN: One Network for All Tokens
+## Stage 3: Output
 
-In FFN layers, every token passes through the same SwiGLU — meaning the same weight matrices process every token:
+Due to causal masking, each position only attends to earlier positions. The last position (position 4) is the only one whose vector has aggregated information from the entire sequence — so we project that vector to vocabulary size:
 
 ```text
-"The cat saw the mouse"
-
-token 0 ("The")   ──→ SwiGLU (weights w1, w2, w3) ──→ transformed token 0
-token 1 ("cat")   ──→ SwiGLU (same weights)       ──→ transformed token 1
-token 2 ("saw")   ──→ SwiGLU (same weights)       ──→ transformed token 2
-token 3 ("the")   ──→ SwiGLU (same weights)       ──→ transformed token 3
-token 4 ("mouse") ──→ SwiGLU (same weights)       ──→ transformed token 4
+final_vector [5,120]  ×  output.weight [202,048 × 5,120]  →  [202,048 logits]
 ```
 
-Each token is processed independently — no information flows between positions here. (Mixing information between positions is attention's job, which already happened before this step.)
-
----
-
-#### MoE: Multiple Specialized Networks
-
-**Mixture of Experts** has multiple SwiGLU networks ("experts") instead of one. Each token gets sent to a different expert based on its content.
-
-**Why?** Different tokens might benefit from different transformations. A token in a code context might need different processing than a token in a poetry context. Instead of one network that tries to handle everything, we have specialists.
-
-**How it works in Llama 4:**
-
-```text
-"The cat saw the mouse"
-         │
-         ▼
-┌─────────────────────────────────────────────────────────────────────┐
-│                                                                     │
-│  SHARED EXPERT (processes ALL tokens)                               │
-│  ┌────────────────────────────────────────────────────────────┐     │
-│  │ token 0 ──→ SwiGLU ──→ output 0                            │     │
-│  │ token 1 ──→ SwiGLU ──→ output 1                            │     │
-│  │ token 2 ──→ SwiGLU ──→ output 2                            │     │
-│  │ token 3 ──→ SwiGLU ──→ output 3                            │     │
-│  │ token 4 ──→ SwiGLU ──→ output 4                            │     │
-│  └────────────────────────────────────────────────────────────┘     │
-│                              +                                      │
-│  ROUTED EXPERTS (each token goes to ONE selected expert)            │
-│  ┌────────────────────────────────────────────────────────────┐     │
-│  │ Router decides: token 0 → Expert 2                         │     │
-│  │                 token 1 → Expert 5                         │     │
-│  │                 token 2 → Expert 1                         │     │
-│  │                 token 3 → Expert 2                         │     │
-│  │                 token 4 → Expert 5                         │     │
-│  │                                                            │     │
-│  │ Expert 1: processes token 2                                │     │
-│  │ Expert 2: processes token 0, token 3                       │     │
-│  │ Expert 5: processes token 1, token 4                       │     │
-│  │ (other experts: unused this time)                          │     │
-│  └────────────────────────────────────────────────────────────┘     │
-│                              =                                      │
-│  FINAL OUTPUT = shared output + routed output (added together)      │
-│                                                                     │
-└─────────────────────────────────────────────────────────────────────┘
-```
-
-**The router** decides which expert each token goes to ([moe.py:213-230](../moe.py#L213)):
-1. Each token's vector gets multiplied by a router matrix → score for each expert
-2. Top-k selection picks the highest-scoring expert(s) per token (default `top_k=1`)
-3. The token is scaled by the sigmoid of its score before being sent to the expert
-
-```python
-# moe.py:213-223
-router_scores = torch.matmul(x_aD, self.router_DE).transpose(0, 1)
-router_scores_aK, router_indices_aK = torch.topk(router_scores.transpose(0, 1), self.moe_args.top_k, dim=1)
-# ... scatter top-k scores back ...
-router_scores = torch.sigmoid(router_scores)  # sigmoid, not softmax!
-```
-
-**Why a shared expert?** ([moe.py:232](../moe.py#L232)) It guarantees every token gets meaningful processing. Even if the router makes a bad choice, the shared expert provides a baseline transformation.
-
-**Why sigmoid scores?** ([moe.py:223](../moe.py#L223)) The router uses sigmoid (squashes scores to 0-1 independently) rather than softmax. Expert 3 getting a high score doesn't force Expert 7's score down. Each expert is judged on its own merit for that token.
-
----
-
-#### MoE vs FFN Layers
-
-Not every layer must use MoE. The `interleave_moe_layer_step` parameter controls which layers use MoE vs plain FFN ([model.py:328-348](../model.py#L328)):
-
-```python
-if args.moe_args and (layer_id + 1) % args.moe_args.interleave_moe_layer_step == 0:
-    self.feed_forward = MoE(...)
-else:
-    self.feed_forward = FeedForward(...)
-```
-
-| Model    | `interleave_moe_layer_step` | Experts | MoE layers (0-indexed)       |
-| -------- | --------------------------- | ------- | ---------------------------- |
-| Scout    | 1                           | 16      | All 48 layers                |
-| Maverick | 2                           | 128     | 1, 3, 5, ... (24 layers)     |
-
-Scout uses MoE in every layer with 16 experts (~109B total params). Maverick alternates MoE/dense with 128 experts in half the layers (~400B total params). Both activate ~17B params per token.
-
----
-
-#### Why Use MoE?
-
-**More capacity without more compute per token.**
-
-With 16 experts, those layers have 16× as many expert weight matrices. But each token only uses 2 of them: the shared expert + 1 routed expert (since [`top_k=1`](../args.py#L34)). The model can store more learned patterns without making each token slower to process.
-
-**Experts naturally specialize.**
-
-During training, different experts learn to handle different types of content. One might get good at code, another at math, another at conversation. The router learns to match tokens to the right specialist.
-
-**With our running example:**
-
-After attention, "mouse" in "The cat saw the mouse" has absorbed animal-related context from "cat". Meanwhile, "mouse" in "I clicked the mouse" has absorbed technology-related context from "clicked". These are now different vectors. The router sees these differences and may send them to different experts — one that has learned biological patterns, another that has learned computing patterns.
-
-### Residual Connections and Normalization
-
-Each operation is wrapped with RMSNorm (pre-normalization) and a residual connection ([model.py:394-395](../model.py#L394)):
-
-```python
-h = x + self.attention(self.attention_norm(x), ...)
-out = h + self.feed_forward(self.ffn_norm(h))
-```
-
-- **RMSNorm** normalizes vectors before each operation (stabilizes training)
-- **Residual (+)** adds output back to input (preserves information, enables gradient flow)
-
----
-
-## Stage 3: Output Projection
-
-Take the vector at the **last position** and project it to vocabulary scores.
-
-```
-Last vector [5,120] → output.weight [202,048 × 5,120] → [202,048] scores
-```
-
-The weight matrix `output.weight` maps from hidden dimension to vocabulary size. Matrix multiplication: `[1 × 5,120] × [5,120 × 202,048] → [1 × 202,048]`.
-
-We use the last position because that's where context from all previous tokens has accumulated (due to causal masking — each position can only see earlier positions).
+Each logit corresponds to one vocabulary token. Higher logit → higher probability after softmax. Sampling from these probabilities produces the next token.
 
 ---
 
 ## Summary
 
 ```text
-┌─────────────────────────────────────────────────────────────────────────────┐
-│  INPUT                                                                      │
-│  Token IDs: [954, 10338, 13747, 290, 16425]  ("The cat saw the mouse")      │
-└─────────────────────────────────────────────────────────────────────────────┘
-                                      │
-                                      ▼
-┌─────────────────────────────────────────────────────────────────────────────┐
-│  STAGE 1: EMBEDDING                                                         │
-│  ┌─────────────────────────────────────────────────────────────────────┐    │
-│  │  tok_embeddings.weight [vocab_size × dim]                           │    │
-│  │  Token ID → lookup row → vector                                     │    │
-│  └─────────────────────────────────────────────────────────────────────┘    │
-│  Output: [5 × dim] matrix (one vector per token)                            │
-└─────────────────────────────────────────────────────────────────────────────┘
-                                      │
-                                      ▼
-┌─────────────────────────────────────────────────────────────────────────────┐
-│  STAGE 2: TRANSFORMER LAYERS (× n_layers)                                   │
-│                                                                             │
-│  ┌────────────────────────────────────────────────────────────────────┐     │
-│  │  ATTENTION                                                         │     │
-│  │  ┌──────────────────────────────────────────────────────────────┐  │     │
-│  │  │ 1. Project: token × Wq→Q, token × Wk→K, token × Wv→V         │  │     │
-│  │  │ 2. RoPE: rotate Q,K by position (skip in NoPE layers)        │  │     │
-│  │  │ 2b. QK Norm: RMSNorm Q,K (RoPE layers only, if enabled)      │  │     │
-│  │  │ 3. Scores: Q · K (dot product) via F.scaled_dot_product_attn │  │     │
-│  │  │ 4. Mask + Softmax: hide future, normalize → weights          │  │     │
-│  │  │ 5. Output: weighted sum of V's                               │  │     │
-│  │  │                                                              │  │     │
-│  │  │ (× n_heads in parallel, each on head_dim dimensions)         │  │     │
-│  │  │ (K,V shared across groups of Q heads via GQA)                │  │     │
-│  │  └──────────────────────────────────────────────────────────────┘  │     │
-│  │  h = x + attention(norm(x))  ← residual connection                 │     │
-│  └────────────────────────────────────────────────────────────────────┘     │
-│                                      │                                      │
-│                                      ▼                                      │
-│  ┌────────────────────────────────────────────────────────────────────┐     │
-│  │  FEED-FORWARD / MoE                                                │     │
-│  │  ┌──────────────────────────────────────────────────────────────┐  │     │
-│  │  │ SwiGLU: SiLU(x·W1) ⊙ (x·W3) → ·W2                            │  │     │
-│  │  │ FFN: one SwiGLU processes all tokens                         │  │     │
-│  │  │ MoE: router picks expert per token + shared expert for all   │  │     │
-│  │  └──────────────────────────────────────────────────────────────┘  │     │
-│  │  out = h + ffn(norm(h))  ← residual connection                     │     │
-│  └────────────────────────────────────────────────────────────────────┘     │
-│                                                                             │
-│  iRoPE: Most layers use RoPE + chunked attention                            │
-│         Every Nth layer: NoPE + global attention + temp tuning              │
-└─────────────────────────────────────────────────────────────────────────────┘
-                                      │
-                                      ▼
-┌─────────────────────────────────────────────────────────────────────────────┐
-│  STAGE 3: OUTPUT PROJECTION                                                 │
-│  ┌─────────────────────────────────────────────────────────────────────┐    │
-│  │  output.weight [vocab_size × dim]                                   │    │
-│  │  Last position vector → linear → vocab_size scores                  │    │
-│  └─────────────────────────────────────────────────────────────────────┘    │
-│  Output: [vocab_size] scores (one per possible next token)                  │
-└─────────────────────────────────────────────────────────────────────────────┘
-                                      │
-                                      ▼
-┌─────────────────────────────────────────────────────────────────────────────┐
-│  OUTPUT                                                                     │
-│  Highest score → predicted next token                                       │
-│  "The cat saw the mouse" → predicts: "ran", "hid", "squeaked", ...          │
-└─────────────────────────────────────────────────────────────────────────────┘
+"The cat saw the mouse"
+         ↓
+    [5 token IDs]
+         ↓
+┌─────────────────────────────────────────────────────────────┐
+│  EMBEDDING                                                  │
+│  Token ID → look up row in embedding table → vector         │
+│  Output: 5 vectors, each 5,120 dimensions                   │
+└─────────────────────────────────────────────────────────────┘
+         ↓
+┌─────────────────────────────────────────────────────────────┐
+│  LAYER 0                                                    │
+│                                                             │
+│  Attention: mix information across positions                │
+│      → Q·K scores → softmax → weighted sum of V             │
+│      → add to input (residual)                              │
+│                                                             │
+│  FFN/MoE: transform each position independently             │
+│      → add to input (residual)                              │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+         ↓
+      ... layers 1-46 ...
+         ↓
+┌─────────────────────────────────────────────────────────────┐
+│  LAYER 47                                                   │
+│  (same structure as layer 0, different learned weights)     │
+└─────────────────────────────────────────────────────────────┘
+         ↓
+┌─────────────────────────────────────────────────────────────┐
+│  OUTPUT PROJECTION                                          │
+│  Last position's vector × output.weight → 202,048 logits    │
+└─────────────────────────────────────────────────────────────┘
+         ↓
+    Sample from logits → "ran", "hid", "squeaked"
 ```
 
----
-
-## Why It Works
-
-Each layer transforms vectors:
-
-- Attention lets tokens gather relevant context from other tokens
-- Feed-forward processes that context (potentially via specialized experts)
-
-After `n_layers` of this, the last vector represents the entire input sequence. Projecting it to vocabulary scores produces high scores for tokens that fit the context.
+The key insight: **the layers transform context-free embeddings into context-aware representations.** Before the layers, "mouse" is always the same vector. After 48 layers, "mouse" in "The cat saw the mouse" is a different vector from "mouse" in "I clicked the mouse."
 
 ---
 
-## Code Reference
+## Reference
 
-| Component | File | Key Functions/Classes |
-|-----------|------|----------------------|
-| Embedding | [model.py](../model.py) ,[](https://github.com/tirtza-weinfeld/broca/blob/main/model.py)| `Transformer.tok_embeddings` |
-| Attention | [model.py](../model.py) ,[](https://github.com/tirtza-weinfeld/broca/blob/main/model.py)| `Attention.forward()` |
-| KV Cache | [model.py](../model.py) , [](https://github.com/tirtza-weinfeld/broca/blob/main/model.py)| `Attention.cache_k`, `Attention.cache_v` |
-| RoPE | [model.py](../model.py)  , [](https://github.com/tirtza-weinfeld/broca/blob/main/model.py)| `apply_rotary_emb()`, `precompute_freqs_cis()` |
-| Scaled RoPE | [model.py](../model.py)  , [](https://github.com/tirtza-weinfeld/broca/blob/main/model.py)| `apply_scaling()` |
-| Masking | [model.py](../model.py)  , [](https://github.com/tirtza-weinfeld/broca/blob/main/model.py)| `create_chunked_attention_mask()` |
-| FFN | [ffn.py](../ffn.py)  , [](https://github.com/tirtza-weinfeld/broca/blob/main/ffn.py)| `FeedForward.forward()` |
-| MoE | [moe.py](../moe.py)  , [](https://github.com/tirtza-weinfeld/broca/blob/main/moe.py)| `MoE.forward()`, `Experts.forward()` |
-| Generation | [generation.py](../generation.py) , [](https://github.com/tirtza-weinfeld/broca/blob/main/generation.py) | `Llama4.generate()` |
-| Config | [args.py](../args.py)  , [](https://github.com/tirtza-weinfeld/broca/blob/main/args.py)| `ModelArgs`, `MoEArgs` |
+### Key Parameters
+
+| Parameter    | Scout   | Maverick | Meaning                          |
+| ------------ | ------- | -------- | -------------------------------- |
+| dim          | 5,120   | 5,120    | Vector size                      |
+| n_layers     | 48      | 48       | Number of layers                 |
+| n_heads      | 40      | 40       | Attention heads (Q)              |
+| n_kv_heads   | 8       | 8        | K/V heads (GQA reduces memory)   |
+| num_experts  | 16      | 128      | Experts per MoE layer            |
+| vocab_size   | 202,048 | 202,048  | Vocabulary size                  |
+| total_params | 109B    | 400B     | Total parameters                 |
+| active_params| 17B     | 17B      | Parameters used per token        |
+
+### Code Locations
+
+| Component   | File                              | Function                         |
+| ----------- | --------------------------------- | -------------------------------- |
+| Embedding   | [model.py](../model.py)           | `Transformer.tok_embeddings`     |
+| Attention   | [model.py](../model.py)           | `Attention.forward()`            |
+| RoPE        | [model.py](../model.py)           | `apply_rotary_emb()`             |
+| FFN         | [ffn.py](../ffn.py)               | `FeedForward.forward()`          |
+| MoE         | [moe.py](../moe.py)               | `MoE.forward()`                  |
+| Generation  | [generation.py](../generation.py) | `Llama4.generate()`              |
+
+### Checkpoint Structure
+
+The model's learned weights are stored in `.pth` files:
+
+```text
+tok_embeddings.weight         [202,048 × 5,120]   embedding table
+layers.0.attention.wq.weight  [5,120 × 5,120]     Q projection
+layers.0.attention.wk.weight  [1,024 × 5,120]     K projection (smaller due to GQA)
+layers.0.attention.wv.weight  [1,024 × 5,120]     V projection (smaller due to GQA)
+layers.0.attention.wo.weight  [5,120 × 5,120]     output projection
+layers.0.feed_forward.mlp.fc1_weight  [27,306 × 5,120]   w1+w3 stacked (split on load)
+layers.0.feed_forward.mlp.fc2_weight  [5,120 × 13,653]   w2 (project back)
+...
+layers.47.*                                       (48 layers total)
+output.weight                 [202,048 × 5,120]   final projection
+```
+
+Explore with: `make inspect`

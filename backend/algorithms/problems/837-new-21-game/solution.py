@@ -37,7 +37,7 @@ def new21Game(n: int, k: int, maxPts: int) -> float:
 
     for i in range(1, n + 1):
         dp[i] = s / maxPts  # landing on i = average of reachable previous states
-        if i < k:  # i<k means game is still active → dp[i] enters window
+        if i < k:  # `i<k` means game is still active → `dp[i]` enters window
             s += dp[i]
         if i - maxPts >= 0 and i - maxPts < k:  # if oldest index was in window, remove it
             s -= dp[i - maxPts]

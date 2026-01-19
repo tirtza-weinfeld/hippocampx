@@ -77,6 +77,7 @@ const TAG_TO_CATEGORY: Record<string, string> = {
   formal: "register", informal: "register", literary: "register", technical: "register",
   slang: "register", vulgar: "register", archaic: "register", dated: "register",
   colloquial: "register", poetic: "register", rare: "register", obsolete: "register",
+  humorous: "register", humor: "register", jocular: "register", ironic: "register",
   // Region (geographic)
   British: "region", American: "region", Australian: "region", Irish: "region",
   Scottish: "region", "South African": "region", Canadian: "region",

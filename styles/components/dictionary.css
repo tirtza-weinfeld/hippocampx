@@ -456,3 +456,51 @@
   animation: var(--animate-dict-skeleton);
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   VIEW TRANSITIONS - Pagination animations
+   ═══════════════════════════════════════════════════════════════ */
+
+::view-transition-old(entry-list) {
+  animation: dict-fade-out 150ms ease-out;
+}
+
+::view-transition-new(entry-list) {
+  animation: dict-fade-in 150ms ease-out;
+}
+
+@keyframes dict-fade-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes dict-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   EXPAND/COLLAPSE - Definition height controlled by data attribute
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Default collapsed state */
+[data-expanded="false"] .dict-definition-content {
+  height: 1.25rem;
+}
+
+/* Expanded state */
+[data-expanded="true"] .dict-definition-content {
+  height: auto;
+}
+

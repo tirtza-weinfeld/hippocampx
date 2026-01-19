@@ -136,7 +136,7 @@ async function AgentProblemCardContent({
           {/* Intuition */}
           {solution.intuition && (
             <AgentSection section="intuition" file={solution.file_name}>
-              <MarkdownRenderer> {solution.intuition}</MarkdownRenderer>
+              <MarkdownRenderer>{solution.intuition}</MarkdownRenderer>
               {/* <pre> {solution.intuition}</pre> */}
             </AgentSection>
           )}

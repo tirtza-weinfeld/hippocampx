@@ -11,7 +11,7 @@ import { SidebarProvider } from "./sidebar-context"
 import { MobileSidebar } from "./mobile-sidebar"
 import { DesktopSidebar } from "./desktop-sidebar"
 import { SearchDialog } from "./search-dialog"
-import { navigationItems, SIDEBAR_WIDTH_EXPANDED, SIDEBAR_WIDTH_COLLAPSED } from "./constants"
+import { SIDEBAR_WIDTH_EXPANDED, SIDEBAR_WIDTH_COLLAPSED } from "./constants"
 
 export function Sidebar({ children, defaultOpen }: SidebarProps) {
   const isMobile = useMobileDetection()
@@ -51,12 +51,7 @@ export function Sidebar({ children, defaultOpen }: SidebarProps) {
         <SearchDialog
           isOpen={state.isSearchOpen}
           onClose={() => actions.setIsSearchOpen(false)}
-          navigationItems={navigationItems}
           onNavigate={actions.handleNavigation}
-          isMobile={isMobile}
-          isMobileOpen={state.isMobileOpen}
-          setIsMobileOpen={actions.setIsMobileOpen}
-          setIsSearchOpen={actions.setIsSearchOpen}
         />
       </div>
     </SidebarProvider>

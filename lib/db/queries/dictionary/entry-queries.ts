@@ -420,3 +420,130 @@ export function buildEntryWithPreview(
     exampleText: preview?.exampleText ?? null,
   };
 }
+
+// ============================================================================
+// OFFSET-BASED PAGINATION
+// ============================================================================
+
+interface OffsetQueryResult {
+  data: EntrySerialized[];
+  totalCount: number;
+}
+
+/** Offset-based entry fetch with filters */
+export async function fetchEntriesWithOffset(options: {
+  offset: number;
+  limit: number;
+  languageCode?: string;
+  sortBy?: SortField;
+  sortOrder?: SortOrder;
+  tagIds?: number[];
+  sourceIds?: number[];
+  sourcePartIds?: number[];
+}): Promise<OffsetQueryResult> {
+  'use cache'
+  cacheLife('hours')
+
+  const {
+    offset,
+    limit,
+    languageCode,
+    sortBy = "updated_at",
+    sortOrder = "desc",
+    tagIds,
+    sourceIds,
+    sourcePartIds,
+  } = options;
+
+  const filterEntryIds = await resolveFilterEntryIds({ tagIds, sourceIds, sourcePartIds });
+  if (filterEntryIds !== null && filterEntryIds.size === 0) {
+    return { data: [], totalCount: 0 };
+  }
+
+  const conditions = [];
+  if (languageCode) conditions.push(eq(lexicalEntries.language_code, languageCode));
+  if (filterEntryIds !== null) conditions.push(inArray(lexicalEntries.id, [...filterEntryIds]));
+
+  const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+  const sortColumn = getSortColumn(sortBy);
+
+  const [countResult, dataResult] = await Promise.all([
+    neonDb.select({ totalCount: count() }).from(lexicalEntries).where(whereClause),
+    neonDb
+      .select()
+      .from(lexicalEntries)
+      .where(whereClause)
+      .limit(limit)
+      .offset(offset)
+      .orderBy(
+        sortOrder === "asc" ? asc(sortColumn) : desc(sortColumn),
+        asc(lexicalEntries.id)
+      ),
+  ]);
+
+  return {
+    data: dataResult.map(serializeEntry),
+    totalCount: countResult[0].totalCount,
+  };
+}
+
+/** Offset-based search with filters */
+export async function searchEntriesWithOffset(options: {
+  query: string;
+  offset: number;
+  limit: number;
+  languageCode?: string;
+  sortBy?: SortField;
+  sortOrder?: SortOrder;
+  tagIds?: number[];
+  sourceIds?: number[];
+  sourcePartIds?: number[];
+}): Promise<OffsetQueryResult> {
+  'use cache'
+  cacheLife('hours')
+
+  const {
+    query,
+    offset,
+    limit,
+    languageCode = "en",
+    sortBy = "lemma",
+    sortOrder = "asc",
+    tagIds,
+    sourceIds,
+    sourcePartIds,
+  } = options;
+
+  const filterEntryIds = await resolveFilterEntryIds({ tagIds, sourceIds, sourcePartIds });
+  if (filterEntryIds !== null && filterEntryIds.size === 0) {
+    return { data: [], totalCount: 0 };
+  }
+
+  const conditions = [
+    ilike(lexicalEntries.lemma, `${query}%`),
+    eq(lexicalEntries.language_code, languageCode),
+  ];
+  if (filterEntryIds !== null) conditions.push(inArray(lexicalEntries.id, [...filterEntryIds]));
+
+  const whereClause = and(...conditions);
+  const sortColumn = getSortColumn(sortBy);
+
+  const [countResult, dataResult] = await Promise.all([
+    neonDb.select({ totalCount: count() }).from(lexicalEntries).where(whereClause),
+    neonDb
+      .select()
+      .from(lexicalEntries)
+      .where(whereClause)
+      .limit(limit)
+      .offset(offset)
+      .orderBy(
+        sortOrder === "asc" ? asc(sortColumn) : desc(sortColumn),
+        asc(lexicalEntries.id)
+      ),
+  ]);
+
+  return {
+    data: dataResult.map(serializeEntry),
+    totalCount: countResult[0].totalCount,
+  };
+}

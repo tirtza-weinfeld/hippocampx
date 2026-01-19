@@ -2,14 +2,12 @@
 .PHONY: test-cov test-watch lint format type-check check install dev-install clean
 .PHONY: play-tictactoe
 
-# Python and virtual environment
-PYTHON := python3.13
-VENV := venv
-VENV_BIN := $(VENV)/bin
-PIP := $(VENV_BIN)/pip
-PYTEST := $(VENV_BIN)/pytest
-RUFF := $(VENV_BIN)/ruff
-MYPY := $(VENV_BIN)/mypy
+# Python and virtual environment (using uv)
+PYTHON := .venv/bin/python
+VENV := .venv
+PYTEST := $(VENV)/bin/pytest
+RUFF := $(VENV)/bin/ruff
+MYPY := $(VENV)/bin/mypy
 
 # Testing commands
 test: ## Run all tests
@@ -55,16 +53,9 @@ type-check: ## Run type checking
 check: lint type-check ## Run all checks
 
 # Development setup
-install: ## Install production dependencies
-	$(PIP) install -r requirements.txt
-
-dev-install: ## Install development dependencies
-	$(PIP) install -r requirements.txt
-	$(PIP) install -e ".[test,dev]"
-
-venv: ## Create virtual environment
-	$(PYTHON) -m venv $(VENV)
-	$(PIP) install --upgrade pip
+setup: ## Create venv and install all dependencies
+	uv venv --python 3.14 .venv
+	uv pip install -e ".[dev,test,scripts]"
 
 clean: ## Clean up temporary files
 	rm -rf htmlcov/

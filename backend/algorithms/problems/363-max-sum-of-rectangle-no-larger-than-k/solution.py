@@ -10,7 +10,7 @@ def max_sum_of_rectangle_no_larger_than_k(mat: list[list[int]], k: int) -> int:
         mat = [list(r) for r in zip(*mat)]
         m, n = n, m
 
-    # [Kadane Fast-Path] classic Kadane; return value if ≤ k, else None → fall back to constrained step
+    # [Kadane Fast-Path] classic Kadane; return value if `≤ k`, else None → fall back to constrained step
     def kadane_leq(arr: list[int], K: int) -> int | None:
         best = cur = arr[0]
         for x in arr[1:]:

@@ -1,0 +1,144 @@
+# FFN & MoE Deep Dive
+
+## Resizable Table Of Contents
+
+This document covers the detailed implementation of feed-forward networks and Mixture of Experts in Llama 4.
+For the high-level overview, see [transformer.md](transformer.md).
+
+## Note on dimensions
+FFN and MoE process each token independently. Dimensions below are per-token. With multiple tokens, stack as rows:
+- [1, 10, 5120] (1 sequence, 10 tokens) → flatten → [10 × 5120]
+- [2, 5, 5120] (2 sequences, 5 tokens each) → flatten → [10 × 5120]
+
+Same result — each row is one token, processed independently. Matrix multiplication handles all rows at once.
+
+---
+
+## FFN (Feed-Forward Network)
+
+Each token is processed independently with the same weights ([ffn.py:83-85](../ffn.py#L83)):
+
+1. **Up projection**: The input is projected to a larger space by two weight matrices:
+   - `A = input × w1ᵀ` — content
+   - `B = input × w3ᵀ` — gate (controls which dimensions of SiLU(A) pass through)
+
+   For Maverick FFN layers (dim=5120, hidden_dim=13824): `[1 × 5120] · [5120 × 13824] = [1 × 13824]`
+
+2. **SwiGLU** (Swish-Gated Linear Unit): `SiLU(A) ⊙ B`[^1] — activate A, then gate with B.
+
+   * **SiLU** (Sigmoid Linear Unit, also called Swish):
+    `SiLU(A) applies a × sigmoid(a) to each element a ∈ A`.
+    For positive a, sigmoid(a) ≈ 1, so a × 1 ≈ a (passes). For negative a, sigmoid(a) ≈ 0, so a × 0 ≈ 0 (suppressed).
+    
+  * B then gates the result: B[i] ≈ 0 blocks, B[i] large passes.
+
+3. **Down projection**: `output × w2ᵀ` projects back to the original size.
+
+   `[1 × 13824] · [13824 × 5120] = [1 × 5120]`
+
+```text
+input [dim]
+    │
+    ├──────────┬──────────┐
+    ▼          ▼          │
+    A (w1)     B (w3)     │
+    │          │          │
+    ▼          │          │
+  SiLU         │          │
+    │          │          │
+    └──── ⊙ ───┘  (gate)  │
+         │                │
+         ▼                │
+      (w2)                │
+         │                │
+         ▼                │
+   output [dim] ──────────┘
+```
+
+**Checkpoint storage:** All under `layers.N.feed_forward.*`: w1 and w3 stored together as `mlp.fc1_weight` [(2 × hidden_dim) × dim] = [27648 × 5120], w2 as `mlp.fc2_weight`. On load, `FeedForward.load_hook` ([ffn.py:77-80](../ffn.py#L77)) splits fc1 and remaps to `w1`, `w3`, `w2`.
+
+---
+
+## MoE (Mixture of Experts)
+
+MoE replaces the single FFN with multiple "experts" — each a SwiGLU network with its own weights. Each token is routed to a subset of experts based on its content ([moe.py:207-242](../moe.py#L207)):
+
+1. **Shared expert** ([moe.py:232](../moe.py#L232)):
+   - Same as FFN above (up → SwiGLU → down), with `w1`, `w3`, `w2` mapped from `layers.N.feed_forward.{w_in_shared_FD, w_swiglu_FD, w_out_shared_DF}`
+   - Output added to routed expert output 
+
+2a. **Routing**: Project token through router weights to score each expert ([moe.py:213-223](../moe.py#L213)):
+   - `router_scores = token · router_DE` — router weight matrix [dim × num_experts] gives one score per expert
+   - `topk(router_scores, k)` selects best k (default k=1); rest masked to `-inf`
+   - `router_scores = sigmoid(router_scores)` — transforms scores to weights in (0,1)
+
+   For Scout (dim=5120, 16 experts): `[1 × 5120] · [5120 × 16] = [1 × 16]`
+   For Maverick (dim=5120, 128 experts): `[1 × 5120] · [5120 × 128] = [1 × 128]`
+
+2b. **Routed expert(s)** ([moe.py:225-233](../moe.py#L225)):
+   - Token copied for each expert, scaled by its weight (from 2a's sigmoid) → [num_experts × 5120] (most ≈0)
+   - Weights are 3D tensors: `w1[e]`, `w3[e]`, `w2[e]` is expert e's FFN weights
+   - All experts compute in parallel: [num_experts × 5120] → each row through `SiLU(x · w1[e]) ⊙ (x · w3[e])` then `· w2[e]` → [num_experts × 5120]
+
+3. **Combine** ([moe.py:236-240](../moe.py#L236)):
+   - Sum expert outputs: [num_experts × 5120] → [1 × 5120] (most rows ≈0, only selected contributes)
+   - Add to shared: [1 × 5120] + [1 × 5120] = [1 × 5120]
+
+```text
+token [dim]
+    │
+    ├───────────────────┬────────────────────┐
+    │                   │                    │
+    ▼                   ▼                    │
+(1) shared_expert   (2a) router_DE           │
+    │                   │                    │
+    │                   ▼                    │
+    │            router_scores               │
+    │                   │                    │
+    │                   ▼                    │
+    │              topk (k=1)                │
+    │                   │                    │
+    │                   ▼                    │
+    │              sigmoid                   │
+    │                   │                    │
+    │                   ▼                    │
+    │       token × router_scores            │
+    │                   │                    │
+    │                   ▼                    │
+    │           (2b) experts                 │
+    │                   │                    │
+    └───────(3) + ──────┘                    │
+             │                               │
+             ▼                               │
+       output [dim] ─────────────────────────┘
+```
+
+**Experts class** ([moe.py:54-131](../moe.py#L54)): Holds weights for ALL experts as 3D tensors (`w1`, `w2`, `w3` each `[num_experts × ...]`) and uses `torch.bmm` (batch matrix multiply) to process all experts in parallel.
+
+**Checkpoint storage:**
+- `layers.N.feed_forward.router_DE` — router weights
+- `layers.N.feed_forward.experts.{moe_w_in_eD_F, moe_w_swiglu_eD_F, moe_w_out_eF_D}` → remapped to `w1`, `w3`, `w2` by `Experts.load_hook` ([moe.py:97-113](../moe.py#L97))
+- `layers.N.feed_forward.{w_in_shared_FD, w_swiglu_FD, w_out_shared_DF}` → remapped to `shared_expert.{w1, w3, w2}` by `MoE.load_hook` ([moe.py:192-205](../moe.py#L192))
+
+---
+
+## MoE vs FFN Layers
+
+Which layers use MoE depends on the model ([model.py:344-364](../model.py#L344)):
+
+- **Scout**: All 48 layers use MoE with 16 experts. ~109B total params.
+- **Maverick**: Alternates — layers 1,3,5,... use MoE with 128 experts, layers 0,2,4,... use FFN. ~400B total params.
+
+Both activate ~17B params per token (shared expert + 1 routed).
+
+---
+
+## Why MoE?
+
+**More capacity, same compute per token.** With 16 experts, those layers have 16× as many weights. But each token only uses 2: shared + 1 routed (top_k=1). More learned patterns without slower inference.
+
+**Experts specialize.** During training, different experts learn different content types — code, math, conversation. The router learns to match tokens to specialists.
+
+---
+
+[^1]: Math notation: `×` for scalar multiplication and dimensions, `·` for matrix multiplication between shapes, `⊙` for element-wise (Hadamard) product.

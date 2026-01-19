@@ -222,7 +222,7 @@ function TooltipDescription({ meta }: { meta: TooltipMeta }) {
   return null;
 }
 
-function createTooltipParameters(allMetadata: Record<string, SymbolMetadata>) {
+function createTooltipParameters(allMetadata: Partial<Record<string, SymbolMetadata>>) {
   return function TooltipParameters({ meta }: { meta: TooltipMeta }) {
     if (!meta.args || !Array.isArray(meta.args) || meta.args.length === 0) {
       return null;
@@ -259,7 +259,7 @@ function createTooltipParameters(allMetadata: Record<string, SymbolMetadata>) {
 
             return (
               <div key={arg} className="p-3 bg-linear-to-r from-emerald-50/80 to-emerald-100/60 dark:from-emerald-900/30 dark:to-emerald-800/20  rounded-xl shadow-sm backdrop-blur-sm">
-                {paramMeta?.label && (
+                {paramMeta.label && (
                   <div className="mb-2">
                     <span className="inline-flex items-center px-2.5 py-1 bg-blue-100/80 dark:bg-blue-900/60 text-blue-800 dark:text-blue-200 rounded-lg text-xs font-medium
                      ">
@@ -267,7 +267,7 @@ function createTooltipParameters(allMetadata: Record<string, SymbolMetadata>) {
                     </span>
                   </div>
                 )}
-                {paramMeta?.summary && (
+                {paramMeta.summary && (
                   <div className="text-xs text-blue-800 dark:text-blue-200 leading-relaxed">
                     <MarkdownRenderer>{paramMeta.summary}</MarkdownRenderer>
                   </div>
@@ -308,7 +308,7 @@ function TooltipReturns({ meta }: { meta: TooltipMeta }) {
   ) : null;
 }
 
-function createTooltipVariables(allMetadata: Record<string, SymbolMetadata>) {
+function createTooltipVariables(allMetadata: Partial<Record<string, SymbolMetadata>>) {
   return function TooltipVariables({ meta }: { meta: TooltipMeta }) {
     if (!meta.variables || !Array.isArray(meta.variables) || meta.variables.length === 0) {
       return null;
@@ -461,7 +461,7 @@ function TooltipLeetcode({ meta }: { meta: TooltipMeta }) {
  */
 export function renderTooltipContent(
   qname: string,
-  TOOLTIP_CONTENT: Record<string, SymbolMetadata>
+  TOOLTIP_CONTENT: Partial<Record<string, SymbolMetadata>>
 ): React.ReactNode {
 
   // Check if this is an inline comment qname (format: "filename:comment-line:12")

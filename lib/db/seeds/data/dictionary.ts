@@ -49,6 +49,7 @@ import { WONDERFUL_DATA } from "./lyrics/wicked-part-2/wonderful";
 import { ANATOMY_DATA } from "./words/en/anatomy";
 import { PRACTICAL_VOCAB_DATA } from "./words/en/practical-vocab";
 import { CALCULUS_DATA } from "./words/en/calculus";
+import { VOCABULARY_DATA } from "./words/en/vocabulary";
 
 // =============================================================================
 // ENUM TYPES (derived from schema)
@@ -189,4 +190,5 @@ export const dictionaryData: LexicalEntrySeed[] = [
   ...ANATOMY_DATA,
   ...PRACTICAL_VOCAB_DATA,
   ...CALCULUS_DATA,
+  ...VOCABULARY_DATA,
 ];

@@ -8,8 +8,8 @@ def bellman_ford_classic(
     """
     Intuition: 
         Classic Bellman-Ford with early exit:
-        Raises on a reachable negative-weight cycle; 
-        otherwise returns dist[v] = δ(s,v).
+        Raises on a reachable negative-weight cycle;
+        otherwise returns $dist[v] = \delta(s,v)$.
 
     Expressions:
         'range(V - 1)': relax up to V-1 times, but return early if no update

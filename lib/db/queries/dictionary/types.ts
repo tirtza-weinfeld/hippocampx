@@ -43,6 +43,30 @@ export interface InfiniteScrollResult<T> {
 }
 
 // ============================================================================
+// OFFSET PAGINATION
+// ============================================================================
+
+export const PAGINATION_CONFIG = {
+  defaultPageSize: 50,
+  searchPageSize: 20,
+} as const;
+
+export interface OffsetPageInfo {
+  currentPage: number;
+  totalPages: number;
+  totalCount: number;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
+}
+
+export interface PageFetchResult {
+  entries: EntryWithPreview[];
+  pageInfo: OffsetPageInfo;
+  filterStats: FilterStats;
+  selectedFilters: SelectedFilters;
+}
+
+// ============================================================================
 // FETCH OPTIONS
 // ============================================================================
 

@@ -1,42 +1,32 @@
-"use client";
-
-import { use } from "react";
-import { EntryListClient } from "./entry-list-client";
-import type { InitialFetchResult } from "@/lib/db/queries/dictionary";
+import { EntryList } from "./entry-list";
+import { ExpandableEntryList } from "./expandable-entry-list";
+import type { PageFetchResult } from "@/lib/db/queries/dictionary";
 
 interface DictionaryContentProps {
-  entriesPromise: Promise<InitialFetchResult>;
+  entriesPromise: Promise<PageFetchResult>;
   serverQuery?: string;
-  initialLanguage: string;
-  filterKey: string;
   tagSlugs: string[];
   sourceSlugs: string[];
-  sourcePartSlugs: string[];
 }
 
-export function DictionaryContent({
+export async function DictionaryContent({
   entriesPromise,
   serverQuery,
-  initialLanguage,
-  filterKey,
   tagSlugs,
   sourceSlugs,
-  sourcePartSlugs,
 }: DictionaryContentProps) {
-  const result = use(entriesPromise);
+  const result = await entriesPromise;
 
   return (
     <div className="pt-4">
-      <EntryListClient
-        initialEntries={result.entries.data}
-        initialPageInfo={result.entries.pageInfo}
-        serverQuery={serverQuery}
-        initialLanguage={initialLanguage}
-        filterKey={filterKey}
-        tagSlugs={tagSlugs}
-        sourceSlugs={sourceSlugs}
-        sourcePartSlugs={sourcePartSlugs}
-      />
+      <ExpandableEntryList>
+        <EntryList
+          entries={result.entries}
+          tagSlugs={tagSlugs}
+          sourceSlugs={sourceSlugs}
+          query={serverQuery}
+        />
+      </ExpandableEntryList>
     </div>
   );
 }

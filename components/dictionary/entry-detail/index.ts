@@ -6,6 +6,7 @@ export { RelationsAsync } from "./relations-async";
 export { RelationsGrid } from "./relations-grid";
 export { SensesAsync } from "./senses-async";
 export { SensesList } from "./senses-list";
+export { SensesAnimation, SenseItemAnimation } from "./senses-animation";
 export { SensesWithHeaderAsync } from "./senses-with-header-async";
 
 // Skeletons
