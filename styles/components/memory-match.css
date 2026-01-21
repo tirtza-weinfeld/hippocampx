@@ -1,19 +1,19 @@
 /* Memory Match Game */
 
 :root {
-  /* Card back - dark glass with subtle blue tint */
+  /* Card back - soft light glass with subtle blue tint */
   --gradient-mm-back: linear-gradient(
     145deg,
-    oklch(0.28 0.03 260),
-    oklch(0.24 0.04 240),
-    oklch(0.28 0.03 220)
+    oklch(0.88 0.02 250),
+    oklch(0.85 0.06 240),
+    oklch(0.88 0.01 220)
   );
 
   /* Card front - soft neutral glass */
-  --gradient-mm-front: linear-gradient(145deg, oklch(0.96 0.01 250), oklch(0.94 0.015 230));
+  --gradient-mm-front: linear-gradient(145deg, oklch(0.98 0.01 250), oklch(0.96 0.015 230));
 
   /* Title text - cyan → blue → indigo (sophisticated sweep) */
-  --gradient-mm-text: linear-gradient(135deg, oklch(0.65 0.15 220), oklch(0.60 0.18 250), oklch(0.65 0.15 280));
+  --gradient-mm-text: linear-gradient(135deg, oklch(0.55 0.18 220), oklch(0.50 0.20 250), oklch(0.55 0.18 280));
 
   /* Text on card front - deep blue → indigo */
   --gradient-mm-front-text: linear-gradient(135deg, oklch(0.35 0.14 250), oklch(0.32 0.16 270), oklch(0.35 0.12 290));
@@ -22,20 +22,20 @@
   --gradient-mm-selected: linear-gradient(145deg, oklch(0.94 0.02 250), oklch(0.91 0.025 230));
 
   /* Error - vibrant coral → rose → pink */
-  --gradient-mm-error: linear-gradient(135deg, oklch(0.68 0.22 25), oklch(0.65 0.24 5), oklch(0.68 0.20 345));
+  --gradient-mm-error: linear-gradient(135deg, oklch(0.88 0.14 25), oklch(0.85 0.16 10), oklch(0.88 0.12 350));
 
   /* Error text - dark warm gradient */
-  --gradient-mm-error-text: linear-gradient(135deg, oklch(0.30 0.14 20), oklch(0.28 0.12 5), oklch(0.30 0.10 350));
+  --gradient-mm-error-text: linear-gradient(135deg, oklch(0.40 0.16 20), oklch(0.38 0.14 5), oklch(0.40 0.12 350));
 
   /* Success/matched - muted teal (faded, done state) */
-  --gradient-mm-success: linear-gradient(135deg, oklch(0.80 0.08 180), oklch(0.78 0.10 195), oklch(0.80 0.08 210));
+  --gradient-mm-success: linear-gradient(135deg, oklch(0.88 0.10 180), oklch(0.86 0.12 195), oklch(0.88 0.10 210));
   --gradient-mm-success-text: linear-gradient(135deg, oklch(0.30 0.10 185), oklch(0.28 0.12 200), oklch(0.30 0.08 215));
 
   /* Glow colors */
-  --color-mm-back: oklch(0.35 0.06 250);
-  --color-mm-front: oklch(0.60 0.08 250);
-  --color-mm-error: oklch(0.65 0.22 15);
-  --color-mm-success: oklch(0.70 0.12 180);
+  --color-mm-back: oklch(0.65 0.10 250);
+  --color-mm-front: oklch(0.75 0.08 250);
+  --color-mm-error: oklch(0.75 0.18 15);
+  --color-mm-success: oklch(0.78 0.14 180);
 }
 
 .dark {

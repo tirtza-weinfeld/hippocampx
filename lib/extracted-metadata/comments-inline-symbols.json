@@ -3,6 +3,8 @@
   "more/tictactoe/tictactoe_no_player_in_state.py:comment-line:89": "O to move → minimize X’s outcome",
   "problems/909-snakes-and-ladders/solution.py:comment-line:4": "Dummy 0 for 1-based indexing",
   "problems/394-decode-string/solution.py:comment-line:7": "remove \"[\"",
+  "problems/300-longest-increasing-subsequence/bottom-up.py:comment-line:2": "dp[i] = LIS length starting at i",
+  "problems/300-longest-increasing-subsequence/bottom-up-bfs.py:comment-line:5": "strict increasing; use bisect_right for non-decreasing",
   "problems/1143-longest-common-subsequence/bottom-up-prefix-1d.py:comment-line:1": "keep b the shorter to save space",
   "problems/460-lfu-cache/solution.py:comment-line:5": "key → value",
   "problems/460-lfu-cache/solution.py:comment-line:6": "key → freq",

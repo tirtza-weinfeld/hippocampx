@@ -1,6 +1,6 @@
 "use client"
 
-import { PanelLeft } from "lucide-react"
+import Image from "next/image"
 import { cn } from "@/lib/utils"
 
 type SidebarToggleProps = {
@@ -10,6 +10,7 @@ type SidebarToggleProps = {
 }
 
 export function SidebarToggle({ isOpen, onClick, isMobile = false }: SidebarToggleProps) {
+
   return (
     <button
       className={cn(
@@ -17,18 +18,29 @@ export function SidebarToggle({ isOpen, onClick, isMobile = false }: SidebarTogg
         "hover:bg-primary/10 active:scale-95",
         "transition-all duration-200",
         "outline-none",
-        isMobile ? "top-2 left-5" : "top-3.5 left-5"
+        isMobile ? "top-2 left-5" : "top-3.5 left-5",
+        isMobile && !isOpen && "bg-primary/10",
+        !isMobile && !isOpen && "left-4.5",
       )}
       onClick={onClick}
       aria-label={isMobile ? (isOpen ? "Close menu" : "Open menu") : (isOpen ? "Collapse sidebar" : "Expand sidebar")}
       aria-expanded={isOpen}
       aria-controls={isMobile ? "mobile-sidebar" : "desktop-sidebar"}
     >
-      <PanelLeft
-        className="size-6  text-primary transition-transform duration-200"
-        
-        style={{ transform: isOpen ? "rotate(180deg)" : "rotate(0deg)" }}
+      <Image
+        src={`/hippo/hippo.png`}
+        alt="Menu"
+        width={36}
+        height={36}
+        className={cn(
+          "size-9 object-contain drop-shadow-sm",
+          "mask-radial-from-80% mask-radial-at-center",
+          "dark:mask-radial-from-70%",
+          isOpen && "rotate-20"
+        )}
       />
+    
+        
     </button>
   )
 }

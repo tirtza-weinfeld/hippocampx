@@ -37,12 +37,12 @@ export function HeaderPagination({
   }
 
   return (
-    <div className="flex items-center rounded-full bg-dict-surface-2/80 backdrop-blur-sm">
+    <div className="flex items-center h-9 rounded-full bg-dict-surface-2/80 backdrop-blur-sm">
       {/* Previous */}
       <Link
         href={buildPageUrl(pageInfo.currentPage - 1)}
         prefetch={true}
-        className={`flex items-center justify-center size-7 rounded-l-full transition-colors duration-150 ${
+        className={`flex items-center justify-center px-2 rounded-l-full transition-colors duration-150 ${
           pageInfo.hasPrevPage
             ? "text-dict-text-secondary hover:text-dict-primary hover:bg-dict-hover"
             : "pointer-events-none text-dict-text-tertiary/40"
@@ -65,7 +65,7 @@ export function HeaderPagination({
       <Link
         href={buildPageUrl(pageInfo.currentPage + 1)}
         prefetch={true}
-        className={`flex items-center justify-center size-7 rounded-r-full transition-colors duration-150 ${
+        className={`flex items-center justify-center px-2 rounded-r-full transition-colors duration-150 ${
           pageInfo.hasNextPage
             ? "text-dict-text-secondary hover:text-dict-primary hover:bg-dict-hover"
             : "pointer-events-none text-dict-text-tertiary/40"

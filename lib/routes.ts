@@ -1,5 +1,5 @@
 import { Brain, Binary, Sparkles, InfinityIcon, ChartNoAxesCombinedIcon, Home, Calculator, BookOpen,
-    HelpCircle, Dumbbell, Lightbulb, Gamepad2, Pencil, Music, Flower, Puzzle, BookMarked, Lock,
+    HelpCircle, Dumbbell, Lightbulb, Gamepad2, Pencil, Music, Flower, Puzzle, BookMarked,
     Database, Table,PuzzleIcon
 } from "lucide-react"
 // import { ClaudeIcon } from "@/components/icons/claude-icon"

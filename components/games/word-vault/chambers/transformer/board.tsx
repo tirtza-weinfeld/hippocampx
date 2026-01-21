@@ -336,7 +336,7 @@ export function TransformerBoard({ puzzle, onComplete }: TransformerBoardProps) 
                   [&::-webkit-slider-thumb]:appearance-none
                   [&::-webkit-slider-thumb]:size-5
                   [&::-webkit-slider-thumb]:rounded-full
-                  [&::-webkit-slider-thumb]:bg-white
+                  [&::-webkit-slider-thumb]:bg-foreground
                   [&::-webkit-slider-thumb]:border-2
                   [&::-webkit-slider-thumb]:border-wv-primary
                   [&::-webkit-slider-thumb]:shadow-lg"

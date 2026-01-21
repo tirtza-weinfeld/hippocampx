@@ -352,5 +352,6 @@ export const senseNotations = pgTable(
   (table) => [
     index("idx_notation_sense").on(table.sense_id),
     index("idx_notation_type").on(table.type),
+    index("idx_notation_abbr_lookup").on(table.type, table.value),
   ]
 );

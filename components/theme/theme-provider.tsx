@@ -2,7 +2,7 @@
 
 import { createContext, useSyncExternalStore, use, startTransition } from "react"
 // import { ViewTransition } from "react"
-import { ThemeProvider as NextThemesProvider } from "next-themes"
+import { ThemeProvider as NextThemesProvider, useTheme as useNextTheme } from "next-themes"
 import type { ThemeProviderProps } from "next-themes"
 import type { ReactNode } from "react"
 import type { FontKey } from "@/lib/fonts"
@@ -115,11 +115,24 @@ export function ThemeProvider({
   )
 }
 
+const subscribe = () => () => {}
+const getSnapshot = () => true
+const getServerSnapshot = () => false
+
 export function useTheme() {
   const context = use(ThemeContext)
   if (context === undefined) {
     throw new Error("useTheme must be used within a ThemeProvider")
   }
-  return context
+  const nextTheme = useNextTheme()
+  const mounted = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot)
+  const colorScheme = mounted && nextTheme.resolvedTheme === "dark" ? "dark" : "light"
+
+  return {
+    ...context,
+    ...nextTheme,
+    mounted,
+    colorScheme,
+  }
 }
 

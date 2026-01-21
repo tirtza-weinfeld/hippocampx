@@ -9,6 +9,12 @@
   "problems/394-decode-string/solution.py": [
     7
   ],
+  "problems/300-longest-increasing-subsequence/bottom-up.py": [
+    2
+  ],
+  "problems/300-longest-increasing-subsequence/bottom-up-bfs.py": [
+    5
+  ],
   "problems/1143-longest-common-subsequence/bottom-up-prefix-1d.py": [
     1
   ],

@@ -4378,6 +4378,94 @@
       ]
     },
     {
+      "uri": "problems/300-longest-increasing-subsequence/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/300-longest-increasing-subsequence/bottom-up-bfs.py",
+      "symbols": [
+        {
+          "name": "longest_increasing_subsequence",
+          "detail": "longest_increasing_subsequence(nums: list[int]) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 10, "character": 21}},
+          "nameRange": {
+            "start": {
+              "line": 2,
+              "character": 4
+            },
+            "end": {
+              "line": 2,
+              "character": 34
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/300-longest-increasing-subsequence/bottom-up.py",
+      "symbols": [
+        {
+          "name": "longest_increasing_subsequence",
+          "detail": "longest_increasing_subsequence(nums: list[int]) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 10, "character": 18}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 34
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/300-longest-increasing-subsequence/top-dwon.py",
+      "symbols": [
+        {
+          "name": "longest_increasing_subsequence",
+          "detail": "longest_increasing_subsequence(nums: list[int])",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 11, "character": 39}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 34
+            }
+          },
+          "children": [
+            {
+              "name": "dp",
+              "detail": "dp(i)",
+              "kind": 12,
+              "range": {"start": {"line": 3, "character": 4}, "end": {"line": 9, "character": 22}},
+              "nameRange": {
+                "start": {
+                  "line": 3,
+                  "character": 8
+                },
+                "end": {
+                  "line": 3,
+                  "character": 10
+                }
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
       "uri": "problems/311-sparse-matrix-multiplication/__init__.py",
       "symbols": []
     },

@@ -1,5 +1,5 @@
 import { LayoutList } from "lucide-react";
-import { DictionaryFilters } from "./dictionary-filters";
+import { DictionaryFilters } from "./filters";
 import { HeaderPagination } from "./header-pagination";
 import type { PageFetchResult } from "@/lib/db/queries/dictionary";
 
@@ -39,6 +39,13 @@ export async function DictionaryHeaderStats({
 
       <div className="flex-1 min-w-0" />
 
+      {/* Entry count */}
+      <div className="flex items-center gap-1.5 h-9 px-3
+       rounded-full bg-dict-surface-2/80 backdrop-blur-sm text-dict-text-secondary text-xs font-medium">
+        <LayoutList className="size-3 text-dict-primary" />
+        <span className="tabular-nums">{result.pageInfo.totalCount.toLocaleString()}</span>
+      </div>
+
       {/* Pagination */}
       <HeaderPagination
         pageInfo={result.pageInfo}
@@ -49,11 +56,7 @@ export async function DictionaryHeaderStats({
         sourcePartSlugs={sourcePartSlugs}
       />
 
-      {/* Entry count */}
-      <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-dict-surface-2/80 backdrop-blur-sm text-dict-text-secondary text-xs font-medium">
-        <LayoutList className="size-3 text-dict-primary" />
-        <span className="tabular-nums">{result.pageInfo.totalCount.toLocaleString()}</span>
-      </div>
+
     </>
   );
 }

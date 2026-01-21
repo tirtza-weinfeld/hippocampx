@@ -12,6 +12,7 @@ import { neonDb } from "../../connection";
 import {
   lexicalEntries,
   senses,
+  senseNotations,
   examples,
   senseTags,
   sourceParts,
@@ -92,6 +93,33 @@ function buildCursorCondition(
     lt(sortColumn, cursorValue),
     and(eq(sortColumn, cursorValue), lt(lexicalEntries.id, afterId))
   );
+}
+
+// ============================================================================
+// ABBREVIATION LOOKUP
+// ============================================================================
+
+const ABBR_QUERY_MAX_LENGTH = 5;
+
+/**
+ * Find entry IDs by abbreviation match (case-insensitive).
+ * Only called for short queries to avoid unnecessary lookups.
+ */
+async function findEntryIdsByAbbreviation(query: string): Promise<Set<number>> {
+  if (query.length > ABBR_QUERY_MAX_LENGTH) return new Set();
+
+  const matches = await neonDb
+    .select({ entry_id: senses.entry_id })
+    .from(senseNotations)
+    .innerJoin(senses, eq(senseNotations.sense_id, senses.id))
+    .where(
+      and(
+        eq(senseNotations.type, "abbreviation"),
+        ilike(senseNotations.value, query)
+      )
+    );
+
+  return new Set(matches.map((m) => m.entry_id));
 }
 
 // ============================================================================
@@ -284,13 +312,22 @@ export async function searchEntriesWithCursor(options: {
     pageInfo: { hasNextPage: false, endCursor: null, totalCount: 0 },
   };
 
-  const filterEntryIds = await resolveFilterEntryIds({ tagIds, sourceIds, sourcePartIds });
+  const [filterEntryIds, abbrEntryIds] = await Promise.all([
+    resolveFilterEntryIds({ tagIds, sourceIds, sourcePartIds }),
+    findEntryIdsByAbbreviation(query),
+  ]);
   if (filterEntryIds !== null && filterEntryIds.size === 0) return empty;
 
+  // Build match condition: lemma OR abbreviation
+  const lemmaMatch = ilike(lexicalEntries.lemma, `${query}%`);
+  const matchCondition = abbrEntryIds.size > 0
+    ? or(lemmaMatch, inArray(lexicalEntries.id, [...abbrEntryIds]))
+    : lemmaMatch;
+
   const conditions = [
-    ilike(lexicalEntries.lemma, `${query}%`),
     eq(lexicalEntries.language_code, languageCode),
   ];
+  if (matchCondition) conditions.push(matchCondition);
   if (filterEntryIds !== null) conditions.push(inArray(lexicalEntries.id, [...filterEntryIds]));
 
   const cursorCondition = buildCursorCondition(cursor, sortBy, sortOrder);
@@ -300,9 +337,9 @@ export async function searchEntriesWithCursor(options: {
 
   // Count conditions (without cursor)
   const countConditions = [
-    ilike(lexicalEntries.lemma, `${query}%`),
     eq(lexicalEntries.language_code, languageCode),
   ];
+  if (matchCondition) countConditions.push(matchCondition);
   if (filterEntryIds !== null) countConditions.push(inArray(lexicalEntries.id, [...filterEntryIds]));
   const countWhere = and(...countConditions);
 
@@ -514,15 +551,24 @@ export async function searchEntriesWithOffset(options: {
     sourcePartIds,
   } = options;
 
-  const filterEntryIds = await resolveFilterEntryIds({ tagIds, sourceIds, sourcePartIds });
+  const [filterEntryIds, abbrEntryIds] = await Promise.all([
+    resolveFilterEntryIds({ tagIds, sourceIds, sourcePartIds }),
+    findEntryIdsByAbbreviation(query),
+  ]);
   if (filterEntryIds !== null && filterEntryIds.size === 0) {
     return { data: [], totalCount: 0 };
   }
 
+  // Build match condition: lemma OR abbreviation
+  const lemmaMatch = ilike(lexicalEntries.lemma, `${query}%`);
+  const matchCondition = abbrEntryIds.size > 0
+    ? or(lemmaMatch, inArray(lexicalEntries.id, [...abbrEntryIds]))
+    : lemmaMatch;
+
   const conditions = [
-    ilike(lexicalEntries.lemma, `${query}%`),
     eq(lexicalEntries.language_code, languageCode),
   ];
+  if (matchCondition) conditions.push(matchCondition);
   if (filterEntryIds !== null) conditions.push(inArray(lexicalEntries.id, [...filterEntryIds]));
 
   const whereClause = and(...conditions);

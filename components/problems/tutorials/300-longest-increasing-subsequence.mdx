@@ -1,0 +1,75 @@
+# Longest Increasing Subsequence
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="medium" />
+
+<PillList pills={["dp", "patience sorting"]} />
+
+[300. Longest Increasing Subsequence](https://leetcode.com/problems/longest-increasing-subsequence/)
+
+## [!(ProblemDefinition)] Definition
+
+Given an integer array nums, return the length of the longest strictly increasing subsequence.
+
+## Bottom Up Solution
+
+### [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/300-longest-increasing-subsequence/bottom-up.py"
+def longest_increasing_subsequence(nums: list[int]) -> int:
+
+    dp = [1] * (n:=len(nums))
+
+    for i in reversed(range(n)):
+        dp[i] = 1 + max(
+                (dp[j] for j in range(i + 1, n) if nums[j] > nums[i]),
+                default=0
+            )
+
+    return max(dp)
+```
+
+
+---
+
+## Bottom Up Bfs Solution
+
+### [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/300-longest-increasing-subsequence/bottom-up-bfs.py"
+from bisect import bisect_left
+
+def longest_increasing_subsequence(nums: list[int]) -> int:
+    tails: list[int] = []
+    for x in nums:
+        i = bisect_left(tails, x)
+        if i == len(tails):
+            tails.append(x)
+        else:
+            tails[i] = x
+    return len(tails)
+```
+
+
+---
+
+## Top Dwon Solution
+
+### [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/300-longest-increasing-subsequence/top-dwon.py"
+def longest_increasing_subsequence(nums: list[int]):
+    memo, n = {}, len(nums)
+
+    def dp(i):
+        if i not in memo:
+            memo[i] = 1 + max(
+                (dp(j) for j in range(i + 1, n) if nums[j] > nums[i]),
+                default=0
+            )
+        return memo[i]
+
+    return max(dp(i) for i in range(n))
+```
+

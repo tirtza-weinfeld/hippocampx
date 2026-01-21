@@ -150,7 +150,9 @@ export function SearchBar({
         placeholder="Search words..."
         defaultValue={initialQuery || ""}
         onChange={handleQueryChange}
-        className="pl-9 pr-28 h-9 text-base sm:text-sm bg-dict-surface-1 border-dict-border text-dict-text placeholder:text-dict-text-tertiary focus:border-dict-border-focus focus:ring-2 focus:ring-dict-focus-ring rounded-xl w-full"
+        className="pl-9 pr-28 h-9 text-base sm:text-sm bg-dict-surface-1 border-dict-border
+         text-dict-text placeholder:text-dict-text-tertiary focus:border-dict-border-focus 
+         focus:ring-2 focus:ring-dict-focus-ring rounded-xl w-full"
       />
       {/* Clear button - positioned closer on mobile (icon-only lang), further on desktop (lang with text) */}
       {initialQuery && (

@@ -74,7 +74,7 @@ export function TemperatureBoard({ puzzle, onComplete }: TemperatureBoardProps) 
               [&::-webkit-slider-thumb]:appearance-none
               [&::-webkit-slider-thumb]:size-6
               [&::-webkit-slider-thumb]:rounded-full
-              [&::-webkit-slider-thumb]:bg-white
+              [&::-webkit-slider-thumb]:bg-foreground
               [&::-webkit-slider-thumb]:border-2
               [&::-webkit-slider-thumb]:border-wv-primary
               [&::-webkit-slider-thumb]:cursor-pointer

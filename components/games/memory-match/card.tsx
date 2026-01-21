@@ -61,7 +61,7 @@ export function MemoryCard({
       <div
         data-state={dataState}
         className={`!absolute inset-0 grid place-items-center rounded-2xl p-3
-          backdrop-blur-sm transition-all duration-300
+          backdrop-blur-sm transition-all duration-300 overflow-hidden
           bg-gradient-mm-front/10
           selected:bg-gradient-mm-selected/15 selected:glow-mm-front/25
           success:bg-gradient-mm-success/15 success:opacity-70
@@ -72,7 +72,7 @@ export function MemoryCard({
           <MathRenderer latex={card.content} />
         ) : (
           <span
-            className="text-sm font-medium text-center
+            className="text-sm font-medium text-center break-words hyphens-auto
               text-gradient-mm-front-text
               success:text-gradient-mm-success-text
               error:text-gradient-mm-error-text"

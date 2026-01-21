@@ -1,39 +1,20 @@
 "use client"
 
-import { useSyncExternalStore } from "react"
 import { Moon, Sun } from "lucide-react"
-import { useTheme as useNextTheme } from "next-themes"
+import { useTheme } from "@/components/theme/theme-provider"
 
 import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-
-const subscribe = () => () => {}
-const getSnapshot = () => true
-const getServerSnapshot = () => false
 
 interface ThemeToggleProps {
   side?: "top" | "right" | "bottom" | "left"
 }
 
 export function ThemeToggle({ side = "top" }: ThemeToggleProps) {
-  const { theme, setTheme } = useNextTheme()
-  const mounted = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot)
+  const { theme, setTheme } = useTheme()
 
   const toggleTheme = () => {
     setTheme(theme === "dark" ? "light" : "dark")
-  }
-
-  if (!mounted) {
-    return (
-      <Button
-        variant="ghost"
-        size="icon"
-        className="h-9 w-9 rounded-full transition-colors hover:bg-accent"
-        aria-label="Toggle theme"
-      >
-        <Sun className="h-5 w-5 text-muted-foreground" />
-      </Button>
-    )
   }
 
   return (
@@ -45,16 +26,16 @@ export function ThemeToggle({ side = "top" }: ThemeToggleProps) {
             size="icon"
             onClick={toggleTheme}
             className="h-9 w-9 rounded-full transition-colors hover:bg-accent"
-            aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+            aria-label="Toggle theme"
           >
-            {theme === "dark" ? (
-              <Sun className="h-5 w-5 text-muted-foreground" />
-            ) : (
-              <Moon className="h-5 w-5 text-muted-foreground" />
-            )}
+            <Moon className="h-5 w-5 text-muted-foreground dark:hidden" />
+            <Sun className="h-5 w-5 text-muted-foreground hidden dark:block" />
           </Button>
         </TooltipTrigger>
-        <TooltipContent side={side}>{theme === "dark" ? "Light mode" : "Dark mode"}</TooltipContent>
+        <TooltipContent side={side}>
+          <span className="dark:hidden">Dark mode</span>
+          <span className="hidden dark:block">Light mode</span>
+        </TooltipContent>
       </Tooltip>
     </TooltipProvider>
   )

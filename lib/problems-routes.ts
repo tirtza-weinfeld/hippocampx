@@ -49,6 +49,7 @@ export const PROBLEMS_ROUTES: NavigationItem[] = [
             { title: 'Largest Rectangle in Histogram', href: '/problems/84-largest-rectangle-in-histogram', icon: Code, color: "text-red-500", bgColor: "bg-red-500/10" },
             { title: 'LFU Cache', href: '/problems/460-lfu-cache', icon: Code, color: "text-red-500", bgColor: "bg-red-500/10" },
             { title: 'Longest Common Subsequence', href: '/problems/1143-longest-common-subsequence', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
+            { title: 'Longest Increasing Subsequence', href: '/problems/300-longest-increasing-subsequence', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
             { title: 'Longest Substring Without Repeating Characters', href: '/problems/3-longest-substring-without-repeating-characters', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
             { title: 'LRU Cache', href: '/problems/146-lru-cache', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
             { title: 'Make Sum Divisible by P', href: '/problems/1590-make-sum-divisible-by-p', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
