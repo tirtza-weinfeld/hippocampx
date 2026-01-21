@@ -29,7 +29,7 @@ export function ActiveFiltersRow({
   const chipTransition = getChipTransition(reducedMotion);
 
   return (
-    <div className="hidden @sm:flex items-center gap-1.5 overflow-x-auto scrollbar-hide">
+    <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide">
       <AnimatePresence mode="popLayout">
         {localTags.map((name) => (
           <motion.span

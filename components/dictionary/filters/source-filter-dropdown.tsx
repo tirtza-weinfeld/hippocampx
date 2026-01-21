@@ -42,16 +42,16 @@ export function SourceFilterDropdown({
           type="button"
           whileHover={{ scale: reducedMotion ? 1 : 1.02, y: reducedMotion ? 0 : -1 }}
           whileTap={{ scale: reducedMotion ? 1 : 0.98 }}
-          className={`relative inline-flex items-center justify-center gap-1.5 @sm:gap-2 size-9 @sm:size-auto @sm:px-4 @sm:py-2 rounded-full text-sm font-medium transition-colors duration-150 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-dict-primary/50 ${
+          className={`relative inline-flex items-center justify-center gap-1.5 @lg:gap-2 size-9 @lg:size-auto @lg:px-4 @lg:py-2 rounded-full text-sm font-medium transition-colors duration-150 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-dict-primary/50 ${
             hasSourceFilters
               ? "bg-dict-tag-gradient text-dict-primary-vivid shadow-dict-sm"
               : "bg-dict-surface-2 text-dict-text-secondary hover:bg-dict-hover hover:text-dict-text hover:shadow-dict-sm active:bg-dict-active"
           }`}
         >
-          <BookOpen className="size-4 @sm:size-3.5" />
-          <span className="hidden @sm:inline">Sources</span>
+          <BookOpen className="size-4 @lg:size-3.5" />
+          <span className="hidden @lg:inline">Sources</span>
           {hasSourceFilters && (
-            <span className="absolute -top-1 -right-1 @sm:relative @sm:top-0 @sm:right-0 @sm:ml-1 min-w-5 px-1.5 py-0.5 text-xs rounded-full bg-dict-accent/20 text-dict-accent">
+            <span className="absolute -top-1 -right-1 @lg:relative @lg:top-0 @lg:right-0 @lg:ml-1 min-w-5 px-1.5 py-0.5 text-xs rounded-full bg-dict-accent/20 text-dict-accent">
               {localSources.length + localParts.length}
             </span>
           )}

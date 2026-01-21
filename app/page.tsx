@@ -21,17 +21,22 @@ export default function HomePage() {
         alt=""
         width={600}
         height={600}
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 size-[300px] sm:size-[400px] md:size-[500px] object-contain opacity-[0.03] dark:opacity-[0.05] pointer-events-none mask-radial-from-40% mask-radial-at-center transition-all duration-1000 group-hover/page:opacity-[0.06] group-hover/page:mask-radial-from-60% dark:group-hover/page:opacity-[0.08] group-hover/page:scale-105"
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 size-[300px] sm:size-[400px] md:size-[500px] object-contain pointer-events-none transition-all duration-1000
+          opacity-[0.03] dark:opacity-[0.05] mask-radial-from-40% mask-radial-at-center
+          group-hover/page:opacity-[0.06] group-hover/page:mask-radial-from-60% group-hover/page:scale-105
+          dark:group-hover/page:opacity-[0.08]
+          max-lg:opacity-[0.06] max-lg:mask-radial-from-60% max-lg:scale-105 dark:max-lg:opacity-[0.08]"
       />
 
       {/* Floating learning words - orbit around on hover */}
-      {floatingWords.map((word) => (
+      {floatingWords.map((word, i) => (
         <span
           key={word.text}
-          className={`absolute ${word.position} ${word.delay}
-           text-sm sm:text-base font-medium text-muted-foreground/5 
-           transition-all duration-700 ease-out group-hover/page:text-primary/60
-            group-hover/page:scale-110 group-active/page:text-primary/60`}
+          className={`absolute ${word.position} ${word.delay} text-sm sm:text-base font-medium
+            text-muted-foreground/5 transition-all duration-700 ease-out
+            group-hover/page:text-primary/60 group-hover/page:scale-110 group-active/page:text-primary/60
+            max-lg:text-primary/60 max-lg:animate-breathe`}
+          style={{ animationDelay: `${i * 0.3}s` }}
         >
           {word.text}
         </span>
@@ -50,10 +55,15 @@ export default function HomePage() {
       {/* Main hippo container */}
       <div className="group/hippo relative cursor-pointer transition-all duration-500 mt-2 sm:mt-4">
         {/* Outer glow ring */}
-        <div className="absolute -inset-8 sm:-inset-12 rounded-full bg-gradient-to-r from-indigo-500/0 via-teal-400/0 to-indigo-500/0 group-hover/hippo:from-indigo-500/10 group-hover/hippo:via-teal-400/15 group-hover/hippo:to-indigo-500/10 blur-2xl sm:blur-3xl transition-all duration-700 group-active/hippo:from-indigo-500/20 group-active/hippo:via-teal-400/25 group-active/hippo:to-indigo-500/20" />
+        <div className="absolute -inset-8 sm:-inset-12 rounded-full bg-gradient-to-r from-indigo-500/0 via-teal-400/0 to-indigo-500/0 blur-2xl sm:blur-3xl transition-all duration-700
+          group-hover/hippo:from-indigo-500/10 group-hover/hippo:via-teal-400/15 group-hover/hippo:to-indigo-500/10
+          group-active/hippo:from-indigo-500/20 group-active/hippo:via-teal-400/25 group-active/hippo:to-indigo-500/20
+          max-lg:from-indigo-500/10 max-lg:via-teal-400/15 max-lg:to-indigo-500/10" />
 
         {/* Inner glow pulse */}
-        <div className="absolute inset-4 rounded-full bg-teal-400/0 group-hover/hippo:bg-teal-400/10 blur-xl transition-all duration-500 group-hover/hippo:animate-pulse" />
+        <div className="absolute inset-4 rounded-full bg-teal-400/0 blur-xl transition-all duration-500
+          group-hover/hippo:bg-teal-400/10 group-hover/hippo:animate-pulse
+          max-lg:bg-teal-400/10 max-lg:animate-pulse" />
 
         {/* Main hippo - spotlight reveal */}
         <Image
@@ -62,7 +72,11 @@ export default function HomePage() {
           width={280}
           height={280}
           priority
-          className="relative z-10 size-48 sm:size-56 md:size-72 object-contain drop-shadow-xl transition-all duration-500 ease-out mask-radial-from-50% mask-radial-at-center group-hover/hippo:mask-radial-from-100% group-active/hippo:mask-radial-from-100% group-hover/hippo:scale-105 group-hover/hippo:rotate-3 group-active/hippo:scale-95 group-hover/hippo:drop-shadow-2xl animate-float"
+          className="relative z-10 size-48 sm:size-56 md:size-72 object-contain drop-shadow-xl transition-all duration-500 ease-out animate-float
+            mask-radial-from-50% mask-radial-at-center
+            group-hover/hippo:mask-radial-from-100% group-hover/hippo:scale-105 group-hover/hippo:rotate-3 group-hover/hippo:drop-shadow-2xl
+            group-active/hippo:mask-radial-from-100% group-active/hippo:scale-95
+            max-lg:mask-radial-from-100% max-lg:drop-shadow-2xl"
         />
 
         {/* Companion hippo - peeks from bottom right */}
@@ -71,23 +85,44 @@ export default function HomePage() {
           alt=""
           width={80}
           height={80}
-          className="absolute bottom-2 right-2 sm:bottom-4 sm:right-4 z-20 size-12 sm:size-16 object-contain transition-all duration-500 ease-out opacity-0 translate-y-4 translate-x-2 group-hover/hippo:opacity-100 group-hover/hippo:translate-y-0 group-hover/hippo:translate-x-0 group-active/hippo:opacity-100 group-active/hippo:translate-y-0 group-active/hippo:translate-x-0 mask-t-from-40% mask-l-from-50% group-hover/hippo:mask-t-from-90% group-hover/hippo:mask-l-from-90% group-hover/hippo:rotate-12"
+          className="absolute bottom-2 right-2 sm:bottom-4 sm:right-4 z-20 size-12 sm:size-16 object-contain
+            transition-all duration-500 ease-out opacity-0 translate-y-4 translate-x-2
+            group-hover/hippo:opacity-100 group-hover/hippo:translate-y-0 group-hover/hippo:translate-x-0
+            group-active/hippo:opacity-100 group-active/hippo:translate-y-0 group-active/hippo:translate-x-0
+            mask-t-from-40% mask-l-from-50% group-hover/hippo:mask-t-from-90% group-hover/hippo:mask-l-from-90% group-hover/hippo:rotate-12
+            max-lg:translate-y-0 max-lg:translate-x-0 max-lg:mask-t-from-90% max-lg:mask-l-from-90% max-lg:rotate-12 max-lg:animate-breathe"
         />
 
         {/* Floating concept badges - appear on hover */}
-        <span className="absolute -top-6 sm:-top-8 left-1/2 -translate-x-1/2 px-2 py-0.5 sm:px-3 sm:py-1 text-[10px] sm:text-xs font-medium rounded-full bg-indigo-500/0 text-indigo-500/0 border border-indigo-500/0 transition-all duration-500 group-hover/hippo:bg-indigo-500/10 group-hover/hippo:text-indigo-500 group-hover/hippo:border-indigo-500/30 group-active/hippo:bg-indigo-500/10 group-active/hippo:text-indigo-500 group-active/hippo:border-indigo-500/30">
+        <span className="absolute -top-6 sm:-top-8 left-1/2 -translate-x-1/2 px-2 py-0.5 sm:px-3 sm:py-1 text-[10px] sm:text-xs font-medium rounded-full
+          bg-indigo-500/0 text-indigo-500/0 border border-indigo-500/0 transition-all duration-500
+          group-hover/hippo:bg-indigo-500/10 group-hover/hippo:text-indigo-500 group-hover/hippo:border-indigo-500/30
+          group-active/hippo:bg-indigo-500/10 group-active/hippo:text-indigo-500 group-active/hippo:border-indigo-500/30
+          max-lg:bg-indigo-500/10 max-lg:text-indigo-500 max-lg:border-indigo-500/30 max-lg:animate-breathe">
           Hippocampus
         </span>
 
-        <span className="absolute top-1/4 -left-12 sm:-left-16 px-2 py-0.5 sm:px-3 sm:py-1 text-[10px] sm:text-xs font-medium rounded-full bg-teal-500/0 text-teal-500/0 border border-teal-500/0 transition-all duration-500 delay-100 group-hover/hippo:bg-teal-500/10 group-hover/hippo:text-teal-500 group-hover/hippo:border-teal-500/30 group-active/hippo:bg-teal-500/10 group-active/hippo:text-teal-500 group-active/hippo:border-teal-500/30">
+        <span className="absolute top-1/4 -left-12 sm:-left-16 px-2 py-0.5 sm:px-3 sm:py-1 text-[10px] sm:text-xs font-medium rounded-full
+          bg-teal-500/0 text-teal-500/0 border border-teal-500/0 transition-all duration-500 delay-100
+          group-hover/hippo:bg-teal-500/10 group-hover/hippo:text-teal-500 group-hover/hippo:border-teal-500/30
+          group-active/hippo:bg-teal-500/10 group-active/hippo:text-teal-500 group-active/hippo:border-teal-500/30
+          max-lg:bg-teal-500/10 max-lg:text-teal-500 max-lg:border-teal-500/30 max-lg:animate-breathe-delayed">
           Encode
         </span>
 
-        <span className="absolute top-1/3 -right-10 sm:-right-14 px-2 py-0.5 sm:px-3 sm:py-1 text-[10px] sm:text-xs font-medium rounded-full bg-violet-500/0 text-violet-500/0 border border-violet-500/0 transition-all duration-500 delay-200 group-hover/hippo:bg-violet-500/10 group-hover/hippo:text-violet-500 group-hover/hippo:border-violet-500/30 group-active/hippo:bg-violet-500/10 group-active/hippo:text-violet-500 group-active/hippo:border-violet-500/30">
+        <span className="absolute top-1/3 -right-10 sm:-right-14 px-2 py-0.5 sm:px-3 sm:py-1 text-[10px] sm:text-xs font-medium rounded-full
+          bg-violet-500/0 text-violet-500/0 border border-violet-500/0 transition-all duration-500 delay-200
+          group-hover/hippo:bg-violet-500/10 group-hover/hippo:text-violet-500 group-hover/hippo:border-violet-500/30
+          group-active/hippo:bg-violet-500/10 group-active/hippo:text-violet-500 group-active/hippo:border-violet-500/30
+          max-lg:bg-violet-500/10 max-lg:text-violet-500 max-lg:border-violet-500/30 max-lg:animate-breathe">
           Recall
         </span>
 
-        <span className="absolute bottom-1/4 -left-10 sm:-left-14 px-2 py-0.5 sm:px-3 sm:py-1 text-[10px] sm:text-xs font-medium rounded-full bg-amber-500/0 text-amber-500/0 border border-amber-500/0 transition-all duration-500 delay-300 group-hover/hippo:bg-amber-500/10 group-hover/hippo:text-amber-500 group-hover/hippo:border-amber-500/30 group-active/hippo:bg-amber-500/10 group-active/hippo:text-amber-500 group-active/hippo:border-amber-500/30">
+        <span className="absolute bottom-1/4 -left-10 sm:-left-14 px-2 py-0.5 sm:px-3 sm:py-1 text-[10px] sm:text-xs font-medium rounded-full
+          bg-amber-500/0 text-amber-500/0 border border-amber-500/0 transition-all duration-500 delay-300
+          group-hover/hippo:bg-amber-500/10 group-hover/hippo:text-amber-500 group-hover/hippo:border-amber-500/30
+          group-active/hippo:bg-amber-500/10 group-active/hippo:text-amber-500 group-active/hippo:border-amber-500/30
+          max-lg:bg-amber-500/10 max-lg:text-amber-500 max-lg:border-amber-500/30 max-lg:animate-breathe-delayed">
           Retain
         </span>
       </div>
@@ -98,7 +133,10 @@ export default function HomePage() {
       </p>
 
       {/* Fun fact tooltip */}
-      <p className="max-w-xs sm:max-w-sm text-center text-xs text-muted-foreground/40 transition-all duration-500 opacity-0 group-hover/page:opacity-100 group-active/page:opacity-100">
+      <p className="max-w-xs sm:max-w-sm text-center text-xs text-muted-foreground/40
+        transition-all duration-500 opacity-0
+        group-hover/page:opacity-100 group-active/page:opacity-100
+        max-lg:animate-breathe">
         The hippocampus is a seahorse-shaped brain region essential for forming new memories
       </p>
     </div>

@@ -30,23 +30,26 @@ export function EntryCard({ entry, tagSlugs = [], sourceSlugs = [] }: EntryCardP
 
   return (
     <Link href={href}>
-      <article className="group relative rounded-3xl bg-dict-surface-1 overflow-hidden transition-all duration-250 ease-out hover:bg-dict-surface-2 hover:-translate-y-0.5 hover:shadow-dict-card-hover">
+      <article className="@container group relative rounded-3xl bg-dict-surface-1 overflow-hidden transition-all duration-250 ease-out hover:bg-dict-surface-2 hover:-translate-y-0.5 hover:shadow-dict-card-hover">
         <div className="h-0.5 bg-dict-card-line transition-all duration-300 group-hover:bg-dict-card-line-active group-hover:shadow-dict-glow" />
-        <div className="p-4 flex items-start gap-4">
-          {/* Audio button - streams independently */}
-          <Suspense fallback={<EntryAudioButtonSkeleton />}>
-            <EntryAudioButton audioPromise={audioPromise} />
-          </Suspense>
-
-          <div className="min-w-[100px] shrink-0">
-            <span className="text-[0.9375rem] font-semibold text-dict-text transition-colors duration-200 group-hover:text-dict-primary">
-              {entry.lemma}
-            </span>
-            <span className="ml-2 text-xs text-dict-text-tertiary italic">
-              {entry.partOfSpeech}
-            </span>
+        <div className="p-4 flex flex-col gap-2 @md:flex-row @md:items-start @md:gap-4">
+          {/* Audio + Word row (stacked on small, inline on @md+) */}
+          <div className="flex items-center gap-3 @md:gap-4 @md:min-w-[100px] @md:shrink-0">
+            <Suspense fallback={<EntryAudioButtonSkeleton />}>
+              <EntryAudioButton audioPromise={audioPromise} />
+            </Suspense>
+            <div>
+              <span className="text-[0.9375rem] font-semibold text-dict-text transition-colors duration-200 group-hover:text-dict-primary">
+                {entry.lemma}
+              </span>
+              <span className="ml-2 text-xs text-dict-text-tertiary italic">
+                {entry.partOfSpeech}
+              </span>
+            </div>
           </div>
-          <div className="flex-1 min-w-0">
+
+          {/* Definition - full width on small, flex-1 on @md+ */}
+          <div className="@md:flex-1 @md:min-w-0">
             {entry.definition ? (
               <div className="dict-definition-content overflow-hidden transition-[height] duration-200">
                 <p className="text-sm text-dict-text-secondary leading-relaxed">
@@ -73,15 +76,16 @@ export function EntryCard({ entry, tagSlugs = [], sourceSlugs = [] }: EntryCardP
  */
 export function EntryCardSkeleton() {
   return (
-    <div className="group relative rounded-3xl bg-dict-surface-1 overflow-hidden">
+    <div className="@container group relative rounded-3xl bg-dict-surface-1 overflow-hidden">
       <div className="h-0.5 bg-dict-card-line" />
-      <div className="p-4 flex items-start gap-4">
-        <EntryAudioButtonSkeleton />
-        <div className="min-w-[100px] shrink-0">
-          <div className="h-5 w-20 rounded bg-dict-surface-2 animate-pulse" />
-          <div className="h-3 w-12 mt-1 rounded bg-dict-surface-2/60 animate-pulse" />
+      <div className="p-4 flex flex-col gap-2 @md:flex-row @md:items-start @md:gap-4">
+        <div className="flex items-center gap-3 @md:gap-4 @md:min-w-[100px] @md:shrink-0">
+          <EntryAudioButtonSkeleton />
+          <div>
+            <div className="h-5 w-20 rounded bg-dict-surface-2 animate-pulse" />
+          </div>
         </div>
-        <div className="flex-1">
+        <div className="@md:flex-1">
           <div className="h-4 w-3/4 rounded bg-dict-surface-2 animate-pulse" />
         </div>
       </div>

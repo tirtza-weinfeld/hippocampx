@@ -42,7 +42,7 @@ export function DictionaryHeader({
         </div>
 
         {/* Row 2: Filters (streams) + Count (streams) + Expand (instant) */}
-        <div className="flex flex-wrap items-start gap-1.5 @sm:gap-2">
+        <div className="flex flex-wrap items-center gap-1.5 @lg:gap-2">
           {/* Filter stats + count stream in via children */}
           <Suspense fallback={<FilterStatsSkeleton />}>
             {children}
@@ -54,7 +54,7 @@ export function DictionaryHeader({
             onClick={toggleExpanded}
             whileHover={{ scale: reducedMotion ? 1 : 1.05 }}
             whileTap={{ scale: reducedMotion ? 1 : 0.95 }}
-            className="inline-flex items-center justify-center h-9 px-3 rounded-full text-xs font-medium
+            className="inline-flex items-center justify-center size-9 rounded-full text-xs font-medium
              bg-dict-surface-2/80 backdrop-blur-sm text-dict-text-secondary transition-colors
              duration-150 hover:bg-dict-hover hover:text-dict-text focus-visible:ring-2
              focus-visible:ring-dict-primary/50 outline-none"

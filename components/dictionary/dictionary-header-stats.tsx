@@ -1,6 +1,5 @@
-import { LayoutList } from "lucide-react";
 import { DictionaryFilters } from "./filters";
-import { HeaderPagination } from "./header-pagination";
+import { HeaderNavigator } from "./header-pagination";
 import type { PageFetchResult } from "@/lib/db/queries/dictionary";
 
 interface DictionaryHeaderStatsProps {
@@ -13,7 +12,7 @@ interface DictionaryHeaderStatsProps {
 }
 
 /**
- * Server component that awaits data and renders filter stats + count + pagination.
+ * Server component that awaits data and renders filter stats + navigator.
  * Wrapped in Suspense in DictionaryHeader - streams in after shell renders.
  */
 export async function DictionaryHeaderStats({
@@ -37,17 +36,11 @@ export async function DictionaryHeaderStats({
         selectedSourcePartNames={result.selectedFilters.sourcePartNames}
       />
 
-      <div className="flex-1 min-w-0" />
+      {/* Spacer - hidden on small screens to keep controls compact */}
+      <div className="hidden @lg:block flex-1 min-w-0" />
 
-      {/* Entry count */}
-      <div className="flex items-center gap-1.5 h-9 px-3
-       rounded-full bg-dict-surface-2/80 backdrop-blur-sm text-dict-text-secondary text-xs font-medium">
-        <LayoutList className="size-3 text-dict-primary" />
-        <span className="tabular-nums">{result.pageInfo.totalCount.toLocaleString()}</span>
-      </div>
-
-      {/* Pagination */}
-      <HeaderPagination
+      {/* Unified navigator: count + pagination */}
+      <HeaderNavigator
         pageInfo={result.pageInfo}
         query={query}
         language={language}
@@ -55,8 +48,6 @@ export async function DictionaryHeaderStats({
         sourceSlugs={sourceSlugs}
         sourcePartSlugs={sourcePartSlugs}
       />
-
-
     </>
   );
 }

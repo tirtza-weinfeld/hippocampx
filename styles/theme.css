@@ -100,6 +100,8 @@
   --animate-underline-slide: underline-slide 0.3s ease-out forwards;
   --animate-mascot-dance: mascot-dance 3s ease-in-out infinite;
   --animate-dropdown-open: dropdown-open 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  --animate-breathe: breathe 5s ease-in-out infinite;
+  --animate-breathe-delayed: breathe 5s ease-in-out 0.5s infinite;
 
   --color-step: var(--step);
   /* --animate-gradient-hover: gradient-hover 0.5s ease-in-out forwards; */
@@ -205,6 +207,17 @@
     }
     100% {
       transform: translateY(0px);
+    }
+  }
+
+  @keyframes breathe {
+    0%, 100% {
+      opacity: 0;
+      scale: 1;
+    }
+    35%, 65% {
+      opacity: 1;
+      scale: 1.05;
     }
   }
 

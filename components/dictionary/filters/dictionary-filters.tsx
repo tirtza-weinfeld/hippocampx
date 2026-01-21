@@ -40,48 +40,48 @@ export function DictionaryFilters({
   });
 
   return (
-    <div className="flex flex-col gap-2">
-      {/* Controls row */}
-      <div className="flex items-center h-9 gap-2">
-        <TagFilterDropdown
-          tags={tags}
-          localTags={localTags}
-          isPending={isPending}
-          tagSearch={tagSearch}
-          setTagSearch={setTagSearch}
-          expandedCategories={expandedCategories}
-          toggleCategory={toggleCategory}
-          handleTagToggle={handleTagToggle}
-          reducedMotion={reducedMotion}
-        />
+    <>
+      {/* Filter triggers - inline with parent flex */}
+      <TagFilterDropdown
+        tags={tags}
+        localTags={localTags}
+        isPending={isPending}
+        tagSearch={tagSearch}
+        setTagSearch={setTagSearch}
+        expandedCategories={expandedCategories}
+        toggleCategory={toggleCategory}
+        handleTagToggle={handleTagToggle}
+        reducedMotion={reducedMotion}
+      />
 
-        <SourceFilterDropdown
-          sources={sources}
-          sourceParts={sourceParts}
-          localSources={localSources}
-          localParts={localParts}
-          isPending={isPending}
-          handleSourceToggle={handleSourceToggle}
-          handleSourcePartToggle={handleSourcePartToggle}
-          reducedMotion={reducedMotion}
-        />
+      <SourceFilterDropdown
+        sources={sources}
+        sourceParts={sourceParts}
+        localSources={localSources}
+        localParts={localParts}
+        isPending={isPending}
+        handleSourceToggle={handleSourceToggle}
+        handleSourcePartToggle={handleSourcePartToggle}
+        reducedMotion={reducedMotion}
+      />
 
-        {hasActiveFilters && <ClearFiltersButton onClear={clearAllFilters} reducedMotion={reducedMotion} />}
-      </div>
+      {hasActiveFilters && <ClearFiltersButton onClear={clearAllFilters} reducedMotion={reducedMotion} />}
 
-      {/* Chips row - separate, below controls on @sm+ */}
+      {/* Active filter chips - breaks to own row via order-last basis-full */}
       {hasActiveFilters && (
-        <ActiveFiltersRow
-          localTags={localTags}
-          localSources={localSources}
-          localParts={localParts}
-          sourceParts={sourceParts}
-          handleTagToggle={handleTagToggle}
-          handleSourceToggle={handleSourceToggle}
-          handleSourcePartToggle={handleSourcePartToggle}
-          reducedMotion={reducedMotion}
-        />
+        <div className="order-last basis-full">
+          <ActiveFiltersRow
+            localTags={localTags}
+            localSources={localSources}
+            localParts={localParts}
+            sourceParts={sourceParts}
+            handleTagToggle={handleTagToggle}
+            handleSourceToggle={handleSourceToggle}
+            handleSourcePartToggle={handleSourcePartToggle}
+            reducedMotion={reducedMotion}
+          />
+        </div>
       )}
-    </div>
+    </>
   );
 }
