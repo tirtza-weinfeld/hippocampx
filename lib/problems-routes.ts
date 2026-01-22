@@ -96,6 +96,7 @@ export const PROBLEMS_ROUTES: NavigationItem[] = [
             { title: 'Snakes and Ladders', href: '/problems/909-snakes-and-ladders', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
             { title: 'Sparse Matrix Multiplication', href: '/problems/311-sparse-matrix-multiplication', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
             { title: 'Spiral Matrix', href: '/problems/54-spiral-matrix', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
+            { title: 'Split Array Largest Sum', href: '/problems/410-split-array-largest-sum', icon: Code, color: "text-red-500", bgColor: "bg-red-500/10" },
             { title: 'Sqrt(x)', href: '/problems/69-sqrt', icon: Code, color: "text-green-500", bgColor: "bg-green-500/10" },
             { title: 'Stone Game III', href: '/problems/1406-stone-game-iii', icon: Code, color: "text-red-500", bgColor: "bg-red-500/10" },
             { title: 'Stone Game IV', href: '/problems/1510-stone-game-iv', icon: Code, color: "text-red-500", bgColor: "bg-red-500/10" },

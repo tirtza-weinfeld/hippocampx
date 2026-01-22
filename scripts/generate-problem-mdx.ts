@@ -40,7 +40,7 @@ interface Problem {
 type ProblemsMetadata = Record<string, Problem>
 
 function formatSection(title: string, content: string, component?: string, headerLevel: string = '##'): string {
-  if (!content?.trim()) return ''
+  if (!content.trim()) return ''
 
 
   // Clean up content - handle escaped newlines and normalize formatting
@@ -277,16 +277,16 @@ function generateMDXContent(problemId: string, problem: Problem): string {
       if (group.length > 0) {
         // First file in group is the main solution
         const mainFileName = group[0]
-        const mainSolution = problem.solutions[mainFileName]
+        const mainSolution = problem.solutions[mainFileName] as Solution | undefined
 
         if (mainSolution) {
           // Remaining files in group are additional snippets
           const additionalSnippets = group.slice(1)
             .map(fileName => ({
               fileName,
-              solution: problem.solutions[fileName]
+              solution: problem.solutions[fileName] as Solution | undefined
             }))
-            .filter(item => item.solution) // Filter out any missing solutions
+            .filter((item): item is { fileName: string; solution: Solution } => !!item.solution)
 
           solutionsToGenerate.push({
             fileName: mainFileName,
@@ -419,49 +419,84 @@ function generateComponentRegistry(problemIds: string[]): string {
 
 async function main(): Promise<void> {
   try {
+    // Parse command line arguments
+    const args = process.argv.slice(2)
+    let singleProblem: string | null = null
+
+    for (let i = 0; i < args.length; i++) {
+      if (args[i] === '--problem' && args[i + 1]) {
+        singleProblem = args[i + 1]
+        break
+      }
+    }
+
     // Read the problems metadata
     const metadataPath = path.join(__dirname, '..', 'lib', 'extracted-metadata', 'problems_metadata.json')
     const metadataContent = await fs.readFile(metadataPath, 'utf-8')
-    const problemsMetadata: ProblemsMetadata = JSON.parse(metadataContent).problems
-    
-    console.log(`Found ${Object.keys(problemsMetadata).length} problems to generate MDX files for`)
-    
+    const problemsMetadata = (JSON.parse(metadataContent) as { problems: ProblemsMetadata }).problems
+
     // Ensure the problems/tutorials components directory exists
     const problemsDir = path.join(__dirname, '..', 'components', 'problems', 'tutorials')
     await ensureDirectoryExists(problemsDir)
-    
+
+    if (singleProblem) {
+      // Single problem mode
+      const problem = problemsMetadata[singleProblem] as Problem | undefined
+
+      if (!problem) {
+        console.error(`❌ Problem not found in metadata: ${singleProblem}`)
+        process.exit(1)
+      }
+
+      if (Object.keys(problem.solutions).length === 0) {
+        console.error(`❌ No solutions found for: ${singleProblem}`)
+        process.exit(1)
+      }
+
+      const mdxContent = generateMDXContent(singleProblem, problem)
+      const componentPath = path.join(problemsDir, `${singleProblem}.mdx`)
+      await fs.writeFile(componentPath, mdxContent, 'utf-8')
+
+      const solutionCount = Object.keys(problem.solutions).length
+      console.log(`✅ Generated: ${singleProblem}.mdx (${solutionCount} solution${solutionCount > 1 ? 's' : ''})`)
+      return
+    }
+
+    // Full regeneration mode
+    console.log(`Found ${Object.keys(problemsMetadata).length} problems to generate MDX files for`)
+
     let generatedCount = 0
     const problemIds: string[] = []
-    
+
     // Generate MDX component for each problem
     for (const [problemId, problem] of Object.entries(problemsMetadata)) {
       // Skip problems without solutions
-      if (!problem.solutions || Object.keys(problem.solutions).length === 0) {
+      if (Object.keys(problem.solutions).length === 0) {
         console.log(`Skipping ${problemId}: No solutions found`)
         continue
       }
-      
+
       const mdxContent = generateMDXContent(problemId, problem)
-      
+
       // Write MDX file
       const componentPath = path.join(problemsDir, `${problemId}.mdx`)
       await fs.writeFile(componentPath, mdxContent, 'utf-8')
-      
+
       problemIds.push(problemId)
       generatedCount++
-      
+
       const solutionCount = Object.keys(problem.solutions).length
       console.log(`Generated: ${problemId}.mdx (${solutionCount} solution${solutionCount > 1 ? 's' : ''})`)
     }
-    
+
     console.log(`\n✅ Successfully generated ${generatedCount} MDX components in ${problemsDir}`)
-    
+
     // Generate component registry for dynamic imports
     const registryContent = generateComponentRegistry(problemIds)
     const registryPath = path.join(problemsDir, 'index.ts')
     await fs.writeFile(registryPath, registryContent, 'utf-8')
     console.log(`Generated components registry: index.ts`)
-    
+
     // Generate the problems index page
     await generateProblemsIndexPage(problemsMetadata)
     console.log(`Generated problems index page at app/problems/page.mdx`)
@@ -549,7 +584,7 @@ async function generateProblemsIndexPage(problemsMetadata: ProblemsMetadata): Pr
 }
 
 function getDifficultyColor(difficulty: string): { color: string; bgColor: string } {
-  const cleanDiff = difficulty?.trim().split(/\s+/)[0].toLowerCase()
+  const cleanDiff = difficulty.trim().split(/\s+/)[0].toLowerCase()
   switch (cleanDiff) {
     case 'easy':
       return { color: "text-green-500", bgColor: "bg-green-500/10" }
@@ -572,7 +607,7 @@ function generateRoutesContent(problemsMetadata: ProblemsMetadata): string {
 
   // Create a sorted list of problems
   const sortedProblems = Object.entries(problemsMetadata)
-    .filter(([, problem]) => problem.solutions && Object.keys(problem.solutions).length > 0)
+    .filter(([, problem]) => Object.keys(problem.solutions).length > 0)
     .sort((a, b) => {
       const getNameForSorting = (problem: Problem, id: string) => {
         if (problem.title) {
@@ -616,5 +651,5 @@ async function generateRoutesFile(problemsMetadata: ProblemsMetadata): Promise<v
 
 // Run the script
 if (import.meta.url === `file://${process.argv[1]}`) {
-  main()
+  void main()
 }

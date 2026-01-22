@@ -156,6 +156,8 @@ def main():
                         help="Root directory to scan for Python files")
     parser.add_argument("--out", default="lib/extracted-metadata/expressions.json",
                         help="Output JSON file path")
+    parser.add_argument("--problem", type=str,
+                        help="Specific problem slug to process (e.g., '53-maximum-subarray')")
     args = parser.parse_args()
 
     root = Path(args.root)
@@ -166,13 +168,17 @@ def main():
     # Collect expressions from all Python files
     all_expressions: dict[str, list[dict]] = {}
     total_expressions = 0
-    
+
     for py_file in root.rglob("*.py"):
         if not py_file.is_file():
             continue
-        
+
         # Skip hidden directories and __pycache__
         if any(part.startswith('.') or part == '__pycache__' for part in py_file.parts):
+            continue
+
+        # Filter to specific problem if provided
+        if args.problem and f"problems/{args.problem}/" not in str(py_file):
             continue
         
         # Generate module name and extract expressions
@@ -188,7 +194,18 @@ def main():
     # Write output file
     output_path = Path(args.out)
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    
+
+    if args.problem:
+        # Single problem mode - merge with existing data
+        if output_path.exists():
+            existing_data = json.loads(output_path.read_text(encoding="utf-8"))
+            # Remove old entries for this problem
+            problem_prefix = f"problems/{args.problem}/"
+            existing_data = {k: v for k, v in existing_data.items() if not k.startswith(problem_prefix)}
+            # Merge with new data
+            existing_data.update(all_expressions)
+            all_expressions = existing_data
+
     # Use compact JSON formatting similar to generate_uses.py
     def compact_json(obj, indent=0):
         if isinstance(obj, dict):

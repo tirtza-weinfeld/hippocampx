@@ -1,0 +1,94 @@
+# Split Array Largest Sum
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="hard" />
+
+<PillList pills={["dp", "binary search on answer space", "greedy"]} />
+
+[410. Split Array Largest Sum](https://leetcode.com/problems/split-array-largest-sum)
+
+## [!(ProblemDefinition)] Definition
+
+Given an integer array nums and an integer k, split nums into k non-empty subarrays such that the largest sum of any subarray is minimized.Return the minimized largest sum of the split.A subarray is a contiguous part of the array.
+
+## Binary Search On Answer Space Solution
+
+### [!(ProblemIntuition)] Intuition
+
+- We are minimizing the maximum subarray sum after splitting `nums` into `k`
+    - contiguous parts. If we fix a candidate maximum sum `max_sum`, we can greedily
+    - scan left-to-right and create a new subarray only when adding the next element
+    - would exceed `max_sum`. This greedy strategy minimizes the number of parts.
+    - The feasibility is monotonic: if a given `max_sum` works, any larger value
+    - will also work, so binary search applies.
+
+### [!(ProblemTimeComplexity)] Time Complexity
+
+- $O(n \log S)$:
+    - where `n = len(nums`) and `S = sum(nums) - max(nums)`
+    - (binary search over the answer space, $O(n)$ greedy check per step).
+
+### [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/410-split-array-largest-sum/binary_search_on_answer_space.py"
+def splitArray(nums: list[int], k: int) -> int:
+
+    def can(max_sum: int) -> bool:
+        parts = curr = 0
+        for x in nums:
+            if curr + x > max_sum:
+                parts += 1
+                curr = 0
+            curr += x
+        return parts + 1 <= k
+
+    lo, hi = max(nums), sum(nums)
+    while lo < hi:
+        mid = (lo + hi) // 2
+        if can(mid):
+            hi = mid
+        else:
+            lo = mid + 1
+    return lo
+```
+
+
+---
+
+## Topdown Dp Solution
+
+### [!(ProblemTimeComplexity)] Time Complexity
+
+- $$O(n^{2} \cdot k)$$:
+    - There are $$O(n \cdot k)$$ memo states $(i, \text{cuts})$
+    - Each state tries $$O(n)$$ split points $j$, doing $$O(1)$$ work per $j$ (prefix diff + memoized dp)
+    - Prefix build is $$O(n)$$, dominated
+
+### [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/410-split-array-largest-sum/topdown-dp.py"
+def splitArray(nums: list[int], k: int) -> int:
+    prefix = [0]
+    for x in nums:
+        prefix.append(prefix[-1] + x)
+
+    memo, n = {}, len(nums)
+
+    def dp(i: int, cuts: int) -> int:
+        if cuts == 0:
+            return prefix[n] - prefix[i]
+
+        if (i, cuts) not in memo:
+            memo[i, cuts] = min(
+                (
+                    max(prefix[j] - prefix[i], dp(j, cuts - 1))
+                    for j in range(i + 1, n - cuts + 1)
+                ),
+                default=float("inf"),
+            )
+        return memo[i, cuts]
+
+    return dp(0, k - 1)
+```
+

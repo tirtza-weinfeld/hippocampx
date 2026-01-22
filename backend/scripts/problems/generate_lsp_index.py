@@ -335,9 +335,18 @@ def main() -> None:
     ap.add_argument("--root", type=Path, default=default_root, help=f"Workspace root (default: {default_root})")
     ap.add_argument("--out", type=Path, default=default_output, help=f"Output JSON path (default: {default_output})")
     ap.add_argument("--uri-base", type=str, default="", help="Base path for URI generation (e.g., 'repo/src')")
+    ap.add_argument("--problem", type=str, help="Specific problem slug to process (e.g., '53-maximum-subarray')")
     args = ap.parse_args()
 
-    files = iter_python_files(args.root)
+    if args.problem:
+        # Single problem mode - only process files in that problem's directory
+        problem_dir = args.root / "problems" / args.problem
+        if not problem_dir.exists():
+            print(f"Error: Problem directory not found: {problem_dir}")
+            return
+        files = iter_python_files(problem_dir)
+    else:
+        files = iter_python_files(args.root)
     documents: list[dict] = []
     errors: list[str] = []
 
@@ -348,13 +357,27 @@ def main() -> None:
         except Exception as e:
             errors.append(f"{f}: {e}")
 
+    # Ensure output directory exists
+    args.out.parent.mkdir(parents=True, exist_ok=True)
+
+    if args.problem:
+        # Single problem mode - merge with existing data
+        existing_documents = []
+        if args.out.exists():
+            existing_data = json.loads(args.out.read_text(encoding="utf-8"))
+            existing_documents = existing_data.get("documents", [])
+
+        # Filter out old documents for this problem
+        problem_prefix = f"problems/{args.problem}/"
+        existing_documents = [d for d in existing_documents if problem_prefix not in d["uri"]]
+
+        # Add new documents
+        documents = existing_documents + documents
+
     # Sort documents by URI
     documents.sort(key=lambda d: d["uri"])
 
     payload = {"documents": documents}
-
-    # Ensure output directory exists
-    args.out.parent.mkdir(parents=True, exist_ok=True)
 
     # Custom JSON formatting for compact ranges
     # Use ensure_ascii=True to properly escape backslashes and avoid SyntaxWarnings

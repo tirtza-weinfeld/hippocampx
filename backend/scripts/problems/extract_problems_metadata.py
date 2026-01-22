@@ -11,6 +11,7 @@ New simplified docstring format:
 - solution.py: Intuition:, Time Complexity:, Args:, Variables:, Returns:
 """
 
+import argparse
 import ast
 import json
 from pathlib import Path
@@ -492,6 +493,10 @@ def compact_json_dumps(obj):
 
 def main():
     """Main extraction function."""
+    parser = argparse.ArgumentParser(description='Extract problem metadata to JSON')
+    parser.add_argument('--problem', help='Specific problem slug to extract (e.g., "53-maximum-subarray"). If not provided, extracts all.')
+    args = parser.parse_args()
+
     # Path to algorithms directory (parent of both problems and core)
     algorithms_dir = Path(__file__).parent.parent.parent / 'algorithms'
 
@@ -499,27 +504,54 @@ def main():
         print(f"Algorithms directory not found: {algorithms_dir}")
         return
 
-    # Process both problems and core directories
-    problems_dir = algorithms_dir / 'problems'
-    core_dir = algorithms_dir / 'core'
-
-    all_problems = process_directory(problems_dir, 'problems')
-    all_core = process_directory(core_dir, 'core')
-
-    # Generate output JSON with new structure
-    output_data = {
-        'problems': all_problems,
-        'core': all_core
-    }
-
     output_path = Path(__file__).parent.parent.parent.parent / 'lib' / 'extracted-metadata' / 'problems_metadata.json'
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
-    with open(output_path, 'w', encoding='utf-8') as f:
-        f.write(compact_json_dumps(output_data))
+    if args.problem:
+        # Single problem mode - merge with existing data
+        problems_dir = algorithms_dir / 'problems'
+        problem_dir = problems_dir / args.problem
 
-    print(f"\n✅ Extracted metadata for {len(all_problems)} problems and {len(all_core)} core algorithms")
-    print(f"Output: {output_path}")
+        if not problem_dir.exists() or not problem_dir.is_dir():
+            print(f"❌ Problem not found: {args.problem}")
+            return
+
+        # Load existing metadata
+        existing_data = {'problems': {}, 'core': {}}
+        if output_path.exists():
+            with open(output_path, 'r', encoding='utf-8') as f:
+                existing_data = json.load(f)
+
+        print(f"Processing problem: {args.problem}")
+        problem_data = extract_problem_metadata(problem_dir)
+
+        if problem_data:
+            existing_data['problems'][args.problem] = problem_data
+
+        with open(output_path, 'w', encoding='utf-8') as f:
+            f.write(compact_json_dumps(existing_data))
+
+        print(f"\n✅ Extracted metadata for {args.problem}")
+        print(f"Output: {output_path}")
+    else:
+        # Process both problems and core directories
+        problems_dir = algorithms_dir / 'problems'
+        core_dir = algorithms_dir / 'core'
+
+        all_problems = process_directory(problems_dir, 'problems')
+        all_core = process_directory(core_dir, 'core')
+
+        # Generate output JSON with new structure
+        output_data = {
+            'problems': all_problems,
+            'core': all_core
+        }
+
+        with open(output_path, 'w', encoding='utf-8') as f:
+            f.write(compact_json_dumps(output_data))
+
+        print(f"\n✅ Extracted metadata for {len(all_problems)} problems and {len(all_core)} core algorithms")
+        print(f"Output: {output_path}")
 
 if __name__ == '__main__':
     main()

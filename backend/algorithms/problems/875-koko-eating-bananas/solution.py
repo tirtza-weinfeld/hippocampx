@@ -17,12 +17,16 @@ def koko_eating_bananas(piles: list[int], h: int) -> int:
 
     Args:    
         piles: The banana piles
-        h: The hour limit
+        h: The hour limit (constraint:`len(piles) <= h`)
 
     Variables:
         l: The left pointer of the binary search
         r: The right pointer of the binary search
         k: The mid pointer of the binary search
+
+    
+    Expressions:
+        'max(piles)' : at this speed, each pile takes ≤ 1 hour → total = len(piles) ≤ h
 
     Returns:
         The minimum eating speed

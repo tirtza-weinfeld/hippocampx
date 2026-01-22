@@ -4382,7 +4382,7 @@
       "symbols": []
     },
     {
-      "uri": "problems/300-longest-increasing-subsequence/bottom-up-bfs.py",
+      "uri": "problems/300-longest-increasing-subsequence/binary_search.py",
       "symbols": [
         {
           "name": "longest_increasing_subsequence",
@@ -4410,7 +4410,7 @@
           "name": "longest_increasing_subsequence",
           "detail": "longest_increasing_subsequence(nums: list[int]) -> int",
           "kind": 12,
-          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 10, "character": 18}},
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 9, "character": 18}},
           "nameRange": {
             "start": {
               "line": 0,
@@ -5153,6 +5153,90 @@
             }
           },
           "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/410-split-array-largest-sum/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/410-split-array-largest-sum/binary_search_on_answer_space.py",
+      "symbols": [
+        {
+          "name": "splitArray",
+          "detail": "splitArray(nums: list[int], k: int) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 18, "character": 13}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 14
+            }
+          },
+          "children": [
+            {
+              "name": "can",
+              "detail": "can(max_sum: int) -> bool",
+              "kind": 12,
+              "range": {"start": {"line": 2, "character": 4}, "end": {"line": 9, "character": 29}},
+              "nameRange": {
+                "start": {
+                  "line": 2,
+                  "character": 8
+                },
+                "end": {
+                  "line": 2,
+                  "character": 11
+                }
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "uri": "problems/410-split-array-largest-sum/topdown-dp.py",
+      "symbols": [
+        {
+          "name": "splitArray",
+          "detail": "splitArray(nums: list[int], k: int) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 21, "character": 23}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 14
+            }
+          },
+          "children": [
+            {
+              "name": "dp",
+              "detail": "dp(i: int, cuts: int) -> int",
+              "kind": 12,
+              "range": {"start": {"line": 7, "character": 4}, "end": {"line": 19, "character": 28}},
+              "nameRange": {
+                "start": {
+                  "line": 7,
+                  "character": 8
+                },
+                "end": {
+                  "line": 7,
+                  "character": 10
+                }
+              },
+              "children": []
+            }
+          ]
         }
       ]
     },

@@ -1,6 +1,8 @@
 def longest_increasing_subsequence(nums: list[int]):
     """
     dp[i] = length of the LIS that starts at index i ()`[i:]`)
+    Time Complexity:    
+        O(n^2)
     """
     memo, n = {}, len(nums)
 

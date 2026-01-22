@@ -1,6 +1,8 @@
 def longest_increasing_subsequence(nums: list[int]) -> int:
-
-
+    """
+    Time Complexity: 
+        O(n^2)
+    """
     dp = [1] * (n:=len(nums))  # dp[i] = LIS length starting at i
 
     for i in reversed(range(n)):

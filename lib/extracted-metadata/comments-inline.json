@@ -10,9 +10,9 @@
     7
   ],
   "problems/300-longest-increasing-subsequence/bottom-up.py": [
-    2
+    1
   ],
-  "problems/300-longest-increasing-subsequence/bottom-up-bfs.py": [
+  "problems/300-longest-increasing-subsequence/binary_search.py": [
     5
   ],
   "problems/1143-longest-common-subsequence/bottom-up-prefix-1d.py": [
@@ -23,6 +23,13 @@
     6,
     7,
     18
+  ],
+  "problems/410-split-array-largest-sum/binary_search_on_answer_space.py": [
+    6,
+    9,
+    11,
+    15,
+    17
   ],
   "problems/1235-maximum-profit-in-job-scheduling/top_down.py": [
     10

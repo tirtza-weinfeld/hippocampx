@@ -433,17 +433,34 @@ def main():
                         help="Root directory to scan for Python files")
     parser.add_argument("--out", default="lib/extracted-metadata/uses.json",
                         help="Output JSON file path")
+    parser.add_argument("--problem", type=str,
+                        help="Specific problem slug to process (e.g., '53-maximum-subarray')")
     args = parser.parse_args()
 
     root = Path(args.root)
     index: dict[str, list[dict]] = {}
     for py in root.rglob("*.py"):
+        # Filter to specific problem if provided
+        if args.problem and f"problems/{args.problem}/" not in str(py):
+            continue
         # Use relative path from root instead of absolute URI
         rel_path = py.relative_to(root)
         index[str(rel_path)] = process_file(root, py)
 
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
+
+    if args.problem:
+        # Single problem mode - merge with existing data
+        if out.exists():
+            existing_data = json.loads(out.read_text(encoding="utf-8"))
+            # Remove old entries for this problem
+            problem_prefix = f"problems/{args.problem}/"
+            existing_data = {k: v for k, v in existing_data.items() if not k.startswith(problem_prefix)}
+            # Merge with new data
+            existing_data.update(index)
+            index = existing_data
+
     # Custom compact formatting for ranges
     def compact_json(obj, indent=0):
         if isinstance(obj, dict):

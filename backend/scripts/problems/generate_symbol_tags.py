@@ -118,10 +118,13 @@ def extract_name_from_qname(qname: str) -> str:
     """Extract the name from qname (everything after the last '.' or ':')"""
     return qname.split(':')[-1].split('.')[-1] if ':' in qname or '.' in qname else qname
 
-def build_symbol_tags(root: Path) -> dict[str, dict[str, object]]:
+def build_symbol_tags(root: Path, problem: str | None = None) -> dict[str, dict[str, object]]:
     tags: dict[str, dict[str, object]] = {}
 
     for f in iter_py(root):
+        # Filter to specific problem if provided
+        if problem and f"problems/{problem}/" not in str(f):
+            continue
         try:
             text = f.read_text(encoding="utf-8")
             tree = ast.parse(text)
@@ -349,9 +352,23 @@ def main() -> None:
     ap = argparse.ArgumentParser(description="Generate flat symbol_tags.json for tooltips/filtering.")
     ap.add_argument("--root", type=Path, default=DEFAULT_ROOT, help=f"Workspace root (default: {DEFAULT_ROOT})")
     ap.add_argument("--out", type=Path, default=DEFAULT_OUT, help=f"Output JSON path (default: {DEFAULT_OUT})")
+    ap.add_argument("--problem", type=str, help="Specific problem slug to process (e.g., '53-maximum-subarray')")
     args = ap.parse_args()
 
-    data = build_symbol_tags(args.root)
+    data = build_symbol_tags(args.root, args.problem)
+
+    if args.problem:
+        # Single problem mode - merge with existing data
+        if args.out.exists():
+            import json
+            existing_data = json.loads(args.out.read_text(encoding="utf-8"))
+            # Remove old entries for this problem
+            problem_prefix = f"problems.{args.problem}."
+            existing_data = {k: v for k, v in existing_data.items() if not k.startswith(problem_prefix)}
+            # Merge with new data
+            existing_data.update(data)
+            data = existing_data
+
     formatted_json = format_json_compact_arrays(data)
     args.out.write_text(formatted_json, encoding="utf-8")
     print(f"Wrote {args.out} • {len(data)} symbols")

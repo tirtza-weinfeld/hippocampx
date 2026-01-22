@@ -4,7 +4,7 @@
 
 <DifficultyBadge difficulty="medium" />
 
-<PillList pills={["dp", "patience sorting"]} />
+<PillList pills={["dp", "patience sorting", "binary search"]} />
 
 [300. Longest Increasing Subsequence](https://leetcode.com/problems/longest-increasing-subsequence/)
 
@@ -12,32 +12,35 @@
 
 Given an integer array nums, return the length of the longest strictly increasing subsequence.
 
-## Bottom Up Solution
+## Binary Search Solution
+
+### [!(ProblemIntuition)] Intuition
+
+- `tails[k]` = smallest tail of any increasing subsequence of length `k+1`:
+    - We track the **best possible ending value** for each subsequence length(We don’t build the LIS itself).
+
+- Example:
+        ```text
+        nums = [4, 10, 4, 3, 8, 9]
+        4  → [4]
+        10 → [4, 10]
+        4  → [4, 10]   (replace, no growth)
+        3  → [3, 10]   (better tail for length 1)
+        8  → [3, 8]    (better tail for length 2)
+        9  → [3, 8, 9] (extend)
+        ```
+        - `[3, 8, 9]` is **not** a real subsequence, but its **length (3)** is the LIS length.
+
+- **Why this works:**
+        - smaller tails give more room to extend later, and binary search keeps updates fast (**O(n log n)**).
+
+### [!(ProblemTimeComplexity)] Time Complexity
+
+- $O(nlogn)$
 
 ### [!(ProblemCodeSnippet)] Code Snippet
 
-```python meta="source=problems/300-longest-increasing-subsequence/bottom-up.py"
-def longest_increasing_subsequence(nums: list[int]) -> int:
-
-    dp = [1] * (n:=len(nums))
-
-    for i in reversed(range(n)):
-        dp[i] = 1 + max(
-                (dp[j] for j in range(i + 1, n) if nums[j] > nums[i]),
-                default=0
-            )
-
-    return max(dp)
-```
-
-
----
-
-## Bottom Up Bfs Solution
-
-### [!(ProblemCodeSnippet)] Code Snippet
-
-```python meta="source=problems/300-longest-increasing-subsequence/bottom-up-bfs.py"
+```python meta="source=problems/300-longest-increasing-subsequence/binary_search.py"
 from bisect import bisect_left
 
 def longest_increasing_subsequence(nums: list[int]) -> int:
@@ -54,7 +57,35 @@ def longest_increasing_subsequence(nums: list[int]) -> int:
 
 ---
 
+## Bottom Up Solution
+
+### [!(ProblemTimeComplexity)] Time Complexity
+
+- $O(n^{2})$
+
+### [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/300-longest-increasing-subsequence/bottom-up.py"
+def longest_increasing_subsequence(nums: list[int]) -> int:
+    dp = [1] * (n:=len(nums))
+
+    for i in reversed(range(n)):
+        dp[i] = 1 + max(
+                (dp[j] for j in range(i + 1, n) if nums[j] > nums[i]),
+                default=0
+            )
+
+    return max(dp)
+```
+
+
+---
+
 ## Top Dwon Solution
+
+### [!(ProblemTimeComplexity)] Time Complexity
+
+- $O(n^{2})$
 
 ### [!(ProblemCodeSnippet)] Code Snippet
 

@@ -281,16 +281,20 @@
     "300-longest-increasing-subsequence": {
       "time_stamps": {
         "created_at": "2026-01-21T20:37:26.454580",
-        "updated_at": "2026-01-21T21:48:28.279197"
+        "updated_at": "2026-01-22T12:15:07.561948"
       },
       "solutions": {
         "bottom-up.py": {
-          "code": "def longest_increasing_subsequence(nums: list[int]) -> int:\n\n    dp = [1] * (n:=len(nums))\n\n    for i in reversed(range(n)):\n        dp[i] = 1 + max(\n                (dp[j] for j in range(i + 1, n) if nums[j] > nums[i]),\n                default=0\n            )\n\n    return max(dp)"
+          "time_complexity": "O(n^2)",
+          "code": "def longest_increasing_subsequence(nums: list[int]) -> int:\n    dp = [1] * (n:=len(nums))\n\n    for i in reversed(range(n)):\n        dp[i] = 1 + max(\n                (dp[j] for j in range(i + 1, n) if nums[j] > nums[i]),\n                default=0\n            )\n\n    return max(dp)"
         },
-        "bottom-up-bfs.py": {
+        "binary_search.py": {
+          "intuition": "`tails[k]` = smallest tail of any increasing subsequence of length `k+1`:\n    We track the **best possible ending value** for each subsequence length(We don’t build the LIS itself).\n\n    Example:\n        ```text\n        nums = [4, 10, 4, 3, 8, 9]\n        4  → [4]\n        10 → [4, 10]\n        4  → [4, 10]   (replace, no growth)\n        3  → [3, 10]   (better tail for length 1)\n        8  → [3, 8]    (better tail for length 2)\n        9  → [3, 8, 9] (extend)\n        ```\n        `[3, 8, 9]` is **not** a real subsequence, but its **length (3)** is the LIS length.\n\n        **Why this works:**\n        smaller tails give more room to extend later, and binary search keeps updates fast (**O(n log n)**).",
+          "time_complexity": "O(nlogn)",
           "code": "from bisect import bisect_left\n\ndef longest_increasing_subsequence(nums: list[int]) -> int:\n    tails: list[int] = []\n    for x in nums:\n        i = bisect_left(tails, x)\n        if i == len(tails):\n            tails.append(x)\n        else:\n            tails[i] = x\n    return len(tails)"
         },
         "top-dwon.py": {
+          "time_complexity": "O(n^2)",
           "code": "def longest_increasing_subsequence(nums: list[int]):\n    memo, n = {}, len(nums)\n\n    def dp(i):\n        if i not in memo:\n            memo[i] = 1 + max(\n                (dp(j) for j in range(i + 1, n) if nums[j] > nums[i]),\n                default=0\n            )\n        return memo[i]\n\n    return max(dp(i) for i in range(n))"
         }
       },
@@ -298,12 +302,13 @@
       "definition": "Given an integer array nums, return the length of the longest strictly increasing subsequence.",
       "leetcode": "https://leetcode.com/problems/longest-increasing-subsequence/",
       "difficulty": "medium",
-      "topics": ["dp", "patience sorting"]
+      "topics": ["dp", "patience sorting", "binary search"],
+      "group": [["binary_search.py"], ["bottom-up.py"], ["top-dwon.py"]]
     },
     "875-koko-eating-bananas": {
       "time_stamps": {
         "created_at": "2025-09-12T16:06:03.945955",
-        "updated_at": "2025-11-28T14:40:44.335844"
+        "updated_at": "2026-01-22T09:23:27.870261"
       },
       "solutions": {
         "solution.py": {
@@ -311,19 +316,22 @@
           "time_complexity": "O(n log m):\n    n is the number of piles\n    m is the maximum pile size",
           "args": {
             "piles: list[int]": "The banana piles",
-            "h: int": "The hour limit"
+            "h: int": "The hour limit (constraint:`len(piles) <= h`)"
           },
           "variables": {
             "l": "The left pointer of the binary search",
             "r": "The right pointer of the binary search",
             "k": "The mid pointer of the binary search"
           },
+          "expressions": {
+            "max(piles)": "at this speed, each pile takes ≤ 1 hour → total = len(piles) ≤ h"
+          },
           "returns": "`int`: The minimum eating speed",
           "code": "def koko_eating_bananas(piles: list[int], h: int) -> int:\n\n    def hours(k:int) -> int:\n        return sum((p + k - 1) // k for p in piles)\n\n    l, r = 1, max(piles)\n    while l < r:\n        k = (l + r) // 2\n        if hours(k) <= h:\n            r = k\n        else:\n            l = k + 1\n    return l"
         }
       },
       "title": "Koko Eating Bananas",
-      "definition": "Given banana piles `piles` and hour limit `h`, find the minimum eating speed\n**$k\\in\\mathbb{N}$** such that $\\sum_{i=1}^{|piles|} \\lceil \\frac{p_i}{k} \\rceil \\leq h$ where each hour Koko eats up to `k` bananas from one pile (any leftover hour is wasted)",
+      "definition": "Given banana piles `piles` and hour limit `h`, find the minimum eating speed\n**$k\\in\\mathbb{N}$** such that $\\sum_{i=1}^{|piles|} \\lceil \\frac{p_i}{k} \\rceil \\leq h$ where each hour Koko eats up to `k` bananas from one pile (any leftover hour is wasted)\n*[19!]constraint:`len(piles) <= h`)*",
       "leetcode": "https://leetcode.com/problems/koko-eating-bananas",
       "difficulty": "medium",
       "topics": ["binary-search", "binary-search-answer-space"]
@@ -417,6 +425,28 @@
       "leetcode": "https://leetcode.com/problems/product-of-array-except-self",
       "difficulty": "medium",
       "topics": ["prefix-suffix", "two-pass-scan"]
+    },
+    "410-split-array-largest-sum": {
+      "time_stamps": {
+        "created_at": "2026-01-22T08:45:27.634687",
+        "updated_at": "2026-01-22T12:11:40.297642"
+      },
+      "solutions": {
+        "binary_search_on_answer_space.py": {
+          "intuition": "We are minimizing the maximum subarray sum after splitting `nums` into `k`\n    contiguous parts. If we fix a candidate maximum sum `max_sum`, we can greedily\n    scan left-to-right and create a new subarray only when adding the next element\n    would exceed `max_sum`. This greedy strategy minimizes the number of parts.\n    The feasibility is monotonic: if a given `max_sum` works, any larger value\n    will also work, so binary search applies.",
+          "time_complexity": "O(n log S):\n    where `n = len(nums`) and `S = sum(nums) - max(nums)`\n    (binary search over the answer space, O(n) greedy check per step).",
+          "code": "def splitArray(nums: list[int], k: int) -> int:\n\n    def can(max_sum: int) -> bool:\n        parts = curr = 0\n        for x in nums:\n            if curr + x > max_sum:\n                parts += 1\n                curr = 0\n            curr += x\n        return parts + 1 <= k\n\n    lo, hi = max(nums), sum(nums)\n    while lo < hi:\n        mid = (lo + hi) // 2\n        if can(mid):\n            hi = mid\n        else:\n            lo = mid + 1\n    return lo"
+        },
+        "topdown-dp.py": {
+          "time_complexity": "$O(n^2 \\cdot k)$:\n    There are $O(n \\cdot k)$ memo states $(i, \\text{cuts})$\n    Each state tries $O(n)$ split points $j$, doing $O(1)$ work per $j$ (prefix diff + memoized dp)\n    Prefix build is $O(n)$, dominated",
+          "code": "def splitArray(nums: list[int], k: int) -> int:\n    prefix = [0]\n    for x in nums:\n        prefix.append(prefix[-1] + x)\n\n    memo, n = {}, len(nums)\n\n    def dp(i: int, cuts: int) -> int:\n        if cuts == 0:\n            return prefix[n] - prefix[i]\n\n        if (i, cuts) not in memo:\n            memo[i, cuts] = min(\n                (\n                    max(prefix[j] - prefix[i], dp(j, cuts - 1))\n                    for j in range(i + 1, n - cuts + 1)\n                ),\n                default=float(\"inf\"),\n            )\n        return memo[i, cuts]\n\n    return dp(0, k - 1)"
+        }
+      },
+      "title": "Split Array Largest Sum",
+      "definition": "Given an integer array nums and an integer k, split nums into k non-empty subarrays such that the largest sum of any subarray is minimized.Return the minimized largest sum of the split.A subarray is a contiguous part of the array.",
+      "leetcode": "https://leetcode.com/problems/split-array-largest-sum",
+      "difficulty": "hard",
+      "topics": ["dp", "binary search on answer space", "greedy"]
     },
     "523-continuous-subarray-sum": {
       "time_stamps": {

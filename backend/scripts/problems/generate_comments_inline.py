@@ -120,6 +120,11 @@ def main():
         default="lib/extracted-metadata/comments-inline-symbols.json",
         help="Output JSON file path for flat qname structure (renderTooltipContent use)",
     )
+    parser.add_argument(
+        "--problem",
+        type=str,
+        help="Specific problem slug to process (e.g., '53-maximum-subarray')",
+    )
     args = parser.parse_args()
 
     root = Path(args.root)
@@ -138,6 +143,10 @@ def main():
 
         # Skip hidden directories and __pycache__
         if any(part.startswith(".") or part == "__pycache__" for part in py_file.parts):
+            continue
+
+        # Filter to specific problem if provided
+        if args.problem and f"problems/{args.problem}/" not in str(py_file):
             continue
 
         # Extract inline comments
@@ -160,14 +169,28 @@ def main():
     # Write output files
     output_path = Path(args.out)
     output_path.parent.mkdir(parents=True, exist_ok=True)
+    symbols_path = Path(args.out_symbols)
+    symbols_path.parent.mkdir(parents=True, exist_ok=True)
 
-    # Write position data only (like expressions.json) - line numbers converted to strings for JSON
-    # comments_with_str_keys = {
-    #     file: {str(line): None for line in lines.keys()}
-    #     for file, lines in all_comments.items()
-    # }
+    if args.problem:
+        # Single problem mode - merge with existing data
+        problem_prefix = f"problems/{args.problem}/"
+
+        # Merge comments file
+        if output_path.exists():
+            existing_comments = json.loads(output_path.read_text(encoding="utf-8"))
+            existing_comments = {k: v for k, v in existing_comments.items() if not k.startswith(problem_prefix)}
+            existing_comments.update(all_comments)
+            all_comments = existing_comments
+
+        # Merge symbols file
+        if symbols_path.exists():
+            existing_symbols = json.loads(symbols_path.read_text(encoding="utf-8"))
+            existing_symbols = {k: v for k, v in existing_symbols.items() if not k.startswith(problem_prefix)}
+            existing_symbols.update(all_symbols)
+            all_symbols = existing_symbols
+
     output_path.write_text(
-        #   json.dumps(comments_with_str_keys, ensure_ascii=False, indent=2),
         json.dumps(all_comments, ensure_ascii=False, indent=2),
         encoding="utf-8",
     )
@@ -176,8 +199,6 @@ def main():
     )
 
     # Write flat qname -> text mapping (like symbol_tags.json)
-    symbols_path = Path(args.out_symbols)
-    symbols_path.parent.mkdir(parents=True, exist_ok=True)
     symbols_path.write_text(
         json.dumps(all_symbols, ensure_ascii=False, indent=2), encoding="utf-8"
     )
