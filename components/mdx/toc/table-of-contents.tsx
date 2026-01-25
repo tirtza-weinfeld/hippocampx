@@ -375,9 +375,7 @@ export function TableOfContents({ headings: rawHeadings, className, maxHeight = 
             const hasChildren = children.length > 0
 
             return (
-              <li key={h2.id} className="space-y-0.5 sm:space-y-1 relative shadow-md shadow-sky-500/20 rounded-lg 
-              mt-3
-              ">
+              <li key={h2.id} className="space-y-0.5 sm:space-y-1 relative shadow-md shadow-sky-500/20 rounded-lg mt-3">
                 {/* <div className='absolute top-1 -left-2 w-10 h-[90%]  border-l-2  border-sky-500 rounded-md '/> */}
                
                 <div

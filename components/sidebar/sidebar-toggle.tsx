@@ -32,6 +32,7 @@ export function SidebarToggle({ isOpen, onClick, isMobile = false }: SidebarTogg
         alt="Menu"
         width={36}
         height={36}
+        priority
         className={cn(
           "size-9 object-contain drop-shadow-sm",
           "mask-radial-from-80% mask-radial-at-center",

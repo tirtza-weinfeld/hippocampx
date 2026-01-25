@@ -1,0 +1,541 @@
+export const metadata = {
+    title: "Flow Matching & Diffusion Models",
+    description: "Learn how modern AI generates images, videos, and more by converting noise into data",
+}
+
+# An Introduction to Flow Matching and Diffusion Models
+
+## Resizable Table Of Contents
+
+
+Based on [MIT 6.S184: Introduction to Flow Matching and Diffusion Models 2026](https://diffusion.csail.mit.edu/2026/)
+[notes](https://diffusion.csail.mit.edu/2026/docs/lecture_notes.pdf)
+ 
+
+
+> "Creating noise from data is easy; creating data from noise is generative modeling."
+> — Song et al.
+
+---
+
+## Reading Guide
+
+These notes cover **two approaches**: flow matching (ODEs) and diffusion models (SDEs). Modern SOTA like MoFlow (2025) uses **flow matching only**.
+
+### What's Still Current vs Superseded
+
+| Content | Status | Notes |
+| ------- | ------ | ----- |
+| **Training**: CFM loss, probability paths, vector fields (Section 3) | **Current** | SOTA models still train this way |
+| **Inference**: Multi-step Euler sampling (Algorithm 1) | **Superseded** | SOTA uses one-step distillation instead |
+| **Diffusion**: SDEs, score matching (Sections 2.2, 4) | **Parallel approach** | Not used in flow matching SOTA |
+
+### Section-by-Section Guide
+
+| Section | Topic                            | Read? | Purpose                                                   |
+| ------- | -------------------------------- | ----- | --------------------------------------------------------- |
+| **1**   | Introduction                     | **Yes**                 | Foundation: generative modeling as sampling               |
+| **2.1** | ODEs & Flow Models               | **Yes**                 | Core: flows, vector fields (Euler method is superseded)   |
+| **2.2** | SDEs & Diffusion Models          | Skip                    | For diffusion models - adds Brownian noise to ODEs        |
+| **3**   | Flow Matching                    | **Yes (Essential)**     | The training algorithm - still SOTA                       |
+| **4**   | Score Functions & Score Matching | Skip                    | For diffusion models - alternative training approach      |
+| **5**   | Guidance (CFG)                   | Skim                    | For text-conditioned generation                           |
+| **6**   | Algorithms Summary               | **Yes**                 | Quick reference (note: sampling is superseded)            |
+
+**TL;DR**: Sections 1, 2.1, 3 teach the foundation that SOTA builds on. Skip 2.2 and 4 (diffusion-specific). The main thing superseded is multi-step sampling → one-step distillation (not covered here, see MoFlow 2025).
+
+---
+
+## 1. Introduction
+
+### 1.1 The Big Picture
+
+Flow matching and diffusion models power the most impressive generative AI systems today—image generators like Stable Diffusion 3, video models like SORA, and even protein structure prediction (AlphaFold3). These models share a common principle: **they generate objects by iteratively converting noise into data**.
+
+### 1.2 Generative Modeling as Sampling
+
+**Data as Vectors**: We represent objects (images, videos, molecules) as vectors $z \in \mathbb{R}^d$:
+
+| Data Type | Representation |
+|-----------|----------------|
+| Image (H×W, RGB) | $z \in \mathbb{R}^{H \times W \times 3}$ |
+| Video (T frames) | $z \in \mathbb{R}^{T \times H \times W \times 3}$ |
+| Molecule (N atoms) | $z \in \mathbb{R}^{3 \times N}$ |
+
+**Generation = Sampling**: We model the diversity of possible outputs as a probability distribution $p_{\text{data}}$. Generating an object means sampling:
+
+$$
+z \sim p_{\text{data}}
+$$
+
+**Dataset**: We have access to finite samples $z_1, \ldots, z_n \sim p_{\text{data}}$ during training.
+
+**Guided Generation**: Often we want to condition on some input $y$ (e.g., a text prompt):
+
+$$
+z \sim p_{\text{data}}(\cdot \mid y)
+$$
+
+---
+
+## 2. Flow and Diffusion Models
+
+### 2.1 Ordinary Differential Equations (ODEs)
+
+A **trajectory** is a function $X: [0,1] \to \mathbb{R}^d$ mapping time $t$ to a location $X_t$.
+
+A **vector field** $u: \mathbb{R}^d \times [0,1] \to \mathbb{R}^d$ assigns a velocity $u_t(x)$ to each point $x$ at time $t$.
+
+An **ODE** defines how a trajectory follows a vector field:
+
+$$
+\frac{dX_t}{dt} = u_t(X_t) \quad \leftarrow \text{ODE}
+$$
+
+$$
+X_0 = x_0 \quad \leftarrow \text{initial condition}
+$$
+
+The **flow** $\psi_t(x_0)$ tells us where we end up at time $t$ starting from $x_0$:
+
+$$
+\psi_t(x_0) = X_t \quad \text{where } X_0 = x_0
+$$
+
+**Key insight**: Vector fields define ODEs whose solutions are flows.
+
+#### Simulating ODEs: Euler Method
+
+```python
+# Euler method for ODE simulation
+X = x0                    # Initialize
+h = 1/n                   # Step size
+for t in [0, h, 2h, ..., 1-h]:
+    X = X + h * u(X, t)   # Update
+return X                  # Final sample
+```
+
+### 2.2 Flow Models
+
+A **flow model** uses a neural network $u^\theta_t$ as the vector field:
+
+$$
+X_0 \sim p_{\text{init}} \quad \leftarrow \text{random initialization (usually } \mathcal{N}(0, I) \text{)}
+$$
+
+$$
+dX_t = u^\theta_t(X_t) \, dt \quad \leftarrow \text{ODE with learned vector field}
+$$
+
+$$
+\text{Goal: } X_1 \sim p_{\text{data}} \quad \leftarrow \text{endpoint should be a data sample}
+$$
+
+**Algorithm 1: Sampling from a Flow Model**
+
+```python
+def sample_flow_model(u_theta, n_steps):
+    """Sample from a trained flow model."""
+    t = 0
+    h = 1 / n_steps
+    X = sample_from_gaussian()  # X₀ ~ N(0, I)
+
+    for i in range(n_steps):
+        X = X + h * u_theta(X, t)
+        t = t + h
+
+    return X  # X₁ ≈ sample from p_data
+```
+
+### 2.3 Stochastic Differential Equations (SDEs)
+
+SDEs extend ODEs by adding **Brownian motion** $W$—a continuous random walk where:
+- $W_0 = 0$
+- Increments $W_t - W_s \sim \mathcal{N}(0, (t-s)I)$ are Gaussian
+- Increments are independent
+
+An **SDE** adds noise to the ODE dynamics:
+
+$$
+dX_t = u_t(X_t) \, dt + \sigma_t \, dW_t
+$$
+
+where $\sigma_t \geq 0$ is the **diffusion coefficient**.
+
+#### Simulating SDEs: Euler-Maruyama Method
+
+```python
+def euler_maruyama(u_theta, sigma, n_steps):
+    """Simulate an SDE."""
+    t = 0
+    h = 1 / n_steps
+    X = sample_from_gaussian()
+
+    for i in range(n_steps):
+        eps = sample_from_gaussian()  # ε ~ N(0, I)
+        X = X + h * u_theta(X, t) + sqrt(h) * sigma(t) * eps
+        t = t + h
+
+    return X
+```
+
+### 2.4 Diffusion Models
+
+A **diffusion model** is a flow model with $\sigma_t > 0$:
+
+$$
+X_0 \sim p_{\text{init}}
+$$
+
+$$
+dX_t = u^\theta_t(X_t) \, dt + \sigma_t \, dW_t
+$$
+
+$$
+\text{Goal: } X_1 \sim p_{\text{data}}
+$$
+
+**Note**: A diffusion model with $\sigma_t = 0$ is just a flow model.
+
+---
+
+## 3. Flow Matching
+
+Flow matching is a simple, scalable training algorithm for flow models. The key insight: we can learn the **marginal vector field** by regressing against a tractable **conditional vector field**.
+
+### 3.1 Probability Paths
+
+A **conditional probability path** $p_t(x \mid z)$ interpolates from noise to a single data point:
+
+$$
+p_0(\cdot \mid z) = p_{\text{init}} = \mathcal{N}(0, I) \quad \leftarrow \text{starts as Gaussian noise}
+$$
+
+$$
+p_1(\cdot \mid z) = \delta_z \quad \leftarrow \text{ends at data point } z
+$$
+
+The **marginal probability path** $p_t(x)$ averages over all data points:
+
+$$
+\text{To sample } x \sim p_t: \quad 1. \text{ Sample } z \sim p_{\text{data}} \quad 2. \text{ Sample } x \sim p_t(\cdot \mid z)
+$$
+
+#### The Gaussian Probability Path (Most Important!)
+
+For noise schedulers $\alpha_t$, $\beta_t$ with $\alpha_0 = \beta_1 = 0$ and $\alpha_1 = \beta_0 = 1$:
+
+$$
+p_t(\cdot \mid z) = \mathcal{N}(\alpha_t z, \beta_t^2 I)
+$$
+
+**Sampling from the marginal path**:
+
+$$
+z \sim p_{\text{data}}, \quad \varepsilon \sim \mathcal{N}(0, I), \quad x = \alpha_t z + \beta_t \varepsilon
+$$
+
+**Common choice (CondOT path)**: $\alpha_t = t$, $\beta_t = 1 - t$
+
+### 3.2 Conditional and Marginal Vector Fields
+
+The **conditional vector field** $u^{\text{target}}_t(x \mid z)$ generates the conditional probability path:
+
+$$
+X_0 \sim p_{\text{init}}, \quad dX_t = u^{\text{target}}_t(X_t \mid z) \, dt \implies X_t \sim p_t(\cdot \mid z)
+$$
+
+**For Gaussian paths**, the conditional vector field is:
+
+$$
+u^{\text{target}}_t(x \mid z) = \left( \dot{\alpha}_t - \frac{\dot{\beta}_t}{\beta_t} \alpha_t \right) z + \frac{\dot{\beta}_t}{\beta_t} x
+$$
+
+where $\dot{\alpha}_t = \frac{d\alpha_t}{dt}$ and $\dot{\beta}_t = \frac{d\beta_t}{dt}$.
+
+**For CondOT** ($\alpha_t = t$, $\beta_t = 1-t$):
+
+$$
+u^{\text{target}}_t(x \mid z) = z - \varepsilon \quad \text{where } x = tz + (1-t)\varepsilon
+$$
+
+#### The Marginalization Trick (Theorem 9)
+
+The **marginal vector field** is a weighted average of conditional vector fields:
+
+$$
+u^{\text{target}}_t(x) = \int u^{\text{target}}_t(x \mid z) \cdot \frac{p_t(x \mid z) \, p_{\text{data}}(z)}{p_t(x)} \, dz
+$$
+
+**Key result**: This marginal vector field generates the marginal probability path:
+
+$$
+X_0 \sim p_{\text{init}}, \quad dX_t = u^{\text{target}}_t(X_t) \, dt \implies X_t \sim p_t \implies X_1 \sim p_{\text{data}}
+$$
+
+### 3.3 The Flow Matching Loss
+
+**Flow Matching Loss** (what we want to minimize):
+
+$$
+\mathcal{L}_{\text{FM}}(\theta) = \mathbb{E}_{t \sim \text{Unif}, \, x \sim p_t} \left[ \left\| u^\theta_t(x) - u^{\text{target}}_t(x) \right\|^2 \right]
+$$
+
+**Problem**: We can't compute $u^{\text{target}}_t(x)$ efficiently!
+
+**Conditional Flow Matching Loss** (what we actually minimize):
+
+$$
+\mathcal{L}_{\text{CFM}}(\theta) = \mathbb{E}_{t \sim \text{Unif}, \, z \sim p_{\text{data}}, \, x \sim p_t(\cdot \mid z)} \left[ \left\| u^\theta_t(x) - u^{\text{target}}_t(x \mid z) \right\|^2 \right]
+$$
+
+**Theorem 12**: These losses have the same gradients!
+
+$$
+\nabla_\theta \mathcal{L}_{\text{FM}}(\theta) = \nabla_\theta \mathcal{L}_{\text{CFM}}(\theta)
+$$
+
+This means minimizing the tractable conditional loss implicitly minimizes the intractable marginal loss.
+
+### 3.4 Flow Matching Training Algorithm
+
+**Algorithm 3: Flow Matching Training (Gaussian CondOT path)**
+
+```python
+def flow_matching_step(model, data_batch):
+    """One training step of flow matching."""
+    z = data_batch                          # z ~ p_data
+    t = torch.rand(batch_size)              # t ~ Unif[0,1]
+    eps = torch.randn_like(z)               # ε ~ N(0, I)
+
+    # Sample from conditional path: x = t*z + (1-t)*ε
+    x = t * z + (1 - t) * eps
+
+    # Target: conditional vector field = z - ε
+    target = z - eps
+
+    # Loss: MSE between model output and target
+    loss = ((model(x, t) - target) ** 2).mean()
+
+    return loss
+```
+
+**Key properties of this algorithm**:
+1. **Simulation-free**: No ODE simulation during training
+2. **Simple regression**: Just predict the conditional vector field
+3. **Scalable**: Works for large-scale models (Stable Diffusion 3, etc.)
+
+---
+
+## 4. Score Functions and Score Matching
+
+### 4.1 What is a Score Function?
+
+The **score function** of a distribution $q(x)$ is the gradient of the log-likelihood:
+
+$$
+\nabla \log q(x) = \text{direction of steepest ascent in log-likelihood}
+$$
+
+For probability paths, we have:
+- **Conditional score**: $\nabla \log p_t(x \mid z)$
+- **Marginal score**: $\nabla \log p_t(x)$
+
+**For Gaussian paths**:
+
+$$
+\nabla \log p_t(x \mid z) = -\frac{x - \alpha_t z}{\beta_t^2}
+$$
+
+### 4.2 Converting Between Vector Fields and Scores
+
+**Proposition 1**: For Gaussian paths, vector field and score are related by:
+
+$$
+u^{\text{target}}_t(x) = a_t \cdot \nabla \log p_t(x) + b_t \cdot x
+$$
+
+where:
+- $a_t = \beta_t^2 \frac{\dot{\alpha}_t}{\alpha_t} - \dot{\beta}_t \beta_t$
+- $b_t = \frac{\dot{\alpha}_t}{\alpha_t}$
+
+**Key insight**: Learning the vector field is equivalent to learning the score!
+
+### 4.3 SDE Sampling with Scores
+
+**Theorem 17 (SDE Extension Trick)**: For any $\sigma_t \geq 0$, this SDE follows the probability path:
+
+$$
+dX_t = \left[ u^{\text{target}}_t(X_t) + \frac{\sigma_t^2}{2} \nabla \log p_t(X_t) \right] dt + \sigma_t \, dW_t
+$$
+
+This means we can choose different noise levels at inference time!
+
+### 4.4 Score Matching
+
+**Denoising Score Matching Loss**:
+
+$$
+\mathcal{L}_{\text{CSM}}(\theta) = \mathbb{E}_{t, z, x \sim p_t(\cdot \mid z)} \left[ \left\| s^\theta_t(x) - \nabla \log p_t(x \mid z) \right\|^2 \right]
+$$
+
+**For Gaussian paths** (the DDPM loss):
+
+```python
+def score_matching_step(model, data_batch):
+    """Denoising score matching (DDPM style)."""
+    z = data_batch
+    t = torch.rand(batch_size)
+    eps = torch.randn_like(z)
+
+    # Noisy sample: x = αₜz + βₜε
+    x = alpha(t) * z + beta(t) * eps
+
+    # Predict noise (equivalent to score)
+    eps_pred = model(x, t)
+
+    # Loss
+    loss = ((eps_pred - eps) ** 2).mean()
+
+    return loss
+```
+
+---
+
+## 5. Guidance: Conditioning on Prompts
+
+### 5.1 Vanilla Guidance
+
+To condition on a prompt $y$, we train with pairs $(z, y) \sim p_{\text{data}}$:
+
+$$
+\mathcal{L}_{\text{guided}}(\theta) = \mathbb{E}_{(z,y) \sim p_{\text{data}}, \, t, \, x \sim p_t(\cdot \mid z)} \left[ \left\| u^\theta_t(x \mid y) - u^{\text{target}}_t(x \mid z) \right\|^2 \right]
+$$
+
+**Problem**: Samples often don't adhere well enough to the prompt $y$.
+
+### 5.2 Classifier-Free Guidance (CFG)
+
+**Key idea**: Amplify the effect of conditioning by extrapolating between unconditional and conditional predictions.
+
+**CFG vector field**:
+
+$$
+\tilde{u}_t(x \mid y) = (1 - w) \cdot u^{\text{target}}_t(x \mid \varnothing) + w \cdot u^{\text{target}}_t(x \mid y)
+$$
+
+where:
+- $w > 1$ is the **guidance scale**
+- $\varnothing$ represents "no conditioning"
+
+**Intuition from Bayes' rule**:
+
+$$
+\nabla \log p_t(x \mid y) = \underbrace{\nabla \log p_t(x)}_{\text{unconditional}} + \underbrace{\nabla \log p_t(y \mid x)}_{\text{"classifier"}}
+$$
+
+CFG amplifies the "classifier" term without explicitly training one.
+
+### 5.3 CFG Training
+
+**Algorithm 5: Classifier-Free Guidance Training**
+
+```python
+def cfg_training_step(model, data_batch, drop_prob=0.1):
+    """CFG training: randomly drop labels."""
+    z, y = data_batch           # (data, label) pairs
+    t = torch.rand(batch_size)
+    eps = torch.randn_like(z)
+
+    x = alpha(t) * z + beta(t) * eps
+
+    # Randomly drop labels with probability η
+    mask = torch.rand(batch_size) < drop_prob
+    y[mask] = NULL_TOKEN  # ∅
+
+    target = z - eps  # or appropriate target
+    loss = ((model(x, t, y) - target) ** 2).mean()
+
+    return loss
+```
+
+**CFG Sampling**:
+
+```python
+def cfg_sample(model, y, guidance_scale=7.5, n_steps=50):
+    """Sample with classifier-free guidance."""
+    X = torch.randn(...)  # X₀ ~ N(0, I)
+    h = 1 / n_steps
+
+    for t in linspace(0, 1-h, n_steps):
+        # Unconditional prediction
+        u_uncond = model(X, t, NULL_TOKEN)
+        # Conditional prediction
+        u_cond = model(X, t, y)
+        # CFG combination
+        u = (1 - guidance_scale) * u_uncond + guidance_scale * u_cond
+
+        X = X + h * u
+
+    return X
+```
+
+**Typical guidance scales**: $w = 4$ to $7.5$ for images
+
+---
+
+## 6. Key Algorithms Summary
+
+### Training Algorithms
+
+| Algorithm | Loss | Target |
+|-----------|------|--------|
+| Flow Matching | $\lVert u^\theta_t(x) - (z - \varepsilon) \rVert^2$ | Velocity $z - \varepsilon$ |
+| Score Matching | $\lVert \varepsilon^\theta_t(x) - \varepsilon \rVert^2$ | Noise $\varepsilon$ |
+| CFG Training | Same as above, with label dropout | — |
+
+### Sampling Algorithms
+
+| Method | Update Rule |
+|--------|-------------|
+| Euler (ODE) | $X_{t+h} = X_t + h \cdot u^\theta_t(X_t)$ |
+| Euler-Maruyama (SDE) | $X_{t+h} = X_t + h \cdot u^\theta_t(X_t) + \sqrt{h} \cdot \sigma_t \cdot \varepsilon$ |
+| CFG Sampling | Use $\tilde{u}_t = (1-w) u^\theta_t(x \mid \varnothing) + w \cdot u^\theta_t(x \mid y)$ |
+
+### Key Equations Reference
+
+**Gaussian Probability Path**:
+
+$$
+p_t(\cdot \mid z) = \mathcal{N}(\alpha_t z, \beta_t^2 I)
+$$
+
+$$
+x = \alpha_t z + \beta_t \varepsilon, \quad \varepsilon \sim \mathcal{N}(0, I)
+$$
+
+**CondOT Path** ($\alpha_t = t$, $\beta_t = 1-t$):
+
+$$
+x = tz + (1-t)\varepsilon
+$$
+
+$$
+u^{\text{target}}_t(x \mid z) = z - \varepsilon
+$$
+
+**Score-Velocity Conversion**:
+
+$$
+u^{\text{target}}_t(x) = a_t \cdot \nabla \log p_t(x) + b_t \cdot x
+$$
+
+**CFG**:
+
+$$
+\tilde{u}_t(x \mid y) = (1-w) \cdot u_t(x \mid \varnothing) + w \cdot u_t(x \mid y)
+$$
+
+---
+
+

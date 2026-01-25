@@ -28,8 +28,7 @@ export const InlineCodeClient = memo(function InlineCodeClient({
     return (
       <motion.code
 
-        className="inline-code inline-block  px-1.5 py-0.5 rounded text-sm font-mono shadow-sm bg-linear-to-r 
-       hover:bg-linear-to-l from-step/7 via-step/5 to-step/3 px-1.5 py-0.5 "
+        className="inline-code inline-block px-1.5 py-0.5 rounded text-sm font-mono shadow-sm bg-linear-to-r hover:bg-linear-to-l from-step/7 via-step/5 to-step/3"
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
         transition={{ duration: 0.1 }}

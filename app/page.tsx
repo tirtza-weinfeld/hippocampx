@@ -22,6 +22,7 @@ export default function HomePage() {
         alt=""
         width={600}
         height={600}
+        priority
         className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 size-[300px] sm:size-[400px] md:size-[500px] object-contain pointer-events-none transition-all duration-1000
           opacity-[0.03] dark:opacity-[0.05] mask-radial-from-40% mask-radial-at-center
           group-hover/page:opacity-[0.06] group-hover/page:mask-radial-from-60% group-hover/page:scale-105

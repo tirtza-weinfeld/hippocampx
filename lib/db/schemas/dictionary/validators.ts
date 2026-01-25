@@ -30,7 +30,7 @@ export const ArabicGrammarSchema = z.object({
   state: z.enum(["definite", "indefinite", "construct"]),
 });
 
-export const PolyglotGrammarSchema = z.union([
+export const PolyglotGrammarSchema = z.xor([
   EnglishGrammarSchema,
   GermanGrammarSchema,
   ItalianGrammarSchema,
