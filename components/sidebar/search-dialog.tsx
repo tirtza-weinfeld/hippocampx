@@ -56,7 +56,7 @@ export function SearchDialog({ isOpen, onClose, onNavigate }: SearchDialogProps)
 }
 
 function SearchContent({ onClose, onNavigate }: { onClose: () => void; onNavigate: SearchDialogProps['onNavigate'] }) {
-  const [search, setSearch] = useState("")
+  const [search, setSearch] = useState("/")
   const [selectedIndex, setSelectedIndex] = useState(0)
 
   const {

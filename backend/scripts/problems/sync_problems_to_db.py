@@ -415,6 +415,25 @@ def sync_problem_to_db(conn, slug: str, problem_dir: Path):
         if solution_data:
             upsert_solution(conn, problem_id, py_file.name, solution_data, order_index)
 
+    # Delete solutions that no longer exist in the filesystem
+    solution_file_names = [f.name for f in solution_files]
+    cursor = conn.cursor()
+    if solution_file_names:
+        cursor.execute("""
+            DELETE FROM solutions
+            WHERE problem_id = %s AND file_name NOT IN %s
+        """, (problem_id, tuple(solution_file_names)))
+    else:
+        cursor.execute("""
+            DELETE FROM solutions
+            WHERE problem_id = %s
+        """, (problem_id,))
+    deleted_count = cursor.rowcount
+    conn.commit()
+
+    if deleted_count > 0:
+        print(f"  🗑️  Removed {deleted_count} stale solution(s)")
+
     print(f"  ✅ Synced {slug} with {len(solution_files)} solution(s)")
 
 

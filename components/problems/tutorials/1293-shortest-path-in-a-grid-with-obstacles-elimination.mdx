@@ -114,6 +114,11 @@ def shortest_path_in_a_grid_with_obstacles_elimination(grid: list[list[int]], k:
 - $O(m * n * k)$:
     - Worst-case $O(m * n * k)$ (every cell × every possible k), but aggressive pruning usually makes it far faster in practice.
 
+### [!(ProblemSpaceComplexity)] Space Complexity
+
+- $O(m * n)$:
+    - for the `max_k` grid plus up to $O(m * n * k)$ queued states in the pathological worst case.
+
 ### [!(ProblemCodeSnippet)] Code Snippet
 
 ```python meta="source=problems/1293-shortest-path-in-a-grid-with-obstacles-elimination/bfs.py"

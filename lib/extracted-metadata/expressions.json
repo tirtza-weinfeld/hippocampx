@@ -17,9 +17,9 @@
   "problems/211-design-add-and-search-words-data-structure/solution.py": [
     {"range": {"start": {"line": 24, "character": 20}, "end": {"line": 24, "character": 43}}, "nameRange": {"start": {"line": 24, "character": 20}, "end": {"line": 24, "character": 43}}, "qname": "problems.211-design-add-and-search-words-data-structure.solution:WordDictionary.search.dfs.if k != self.END_MARKER", "kind": "expression"}
   ],
-  "problems/528-random-pick-with-weight/solution.py": [
-    {"range": {"start": {"line": 13, "character": 47}, "end": {"line": 13, "character": 76}}, "nameRange": {"start": {"line": 13, "character": 47}, "end": {"line": 13, "character": 76}}, "qname": "problems.528-random-pick-with-weight.solution:Solution.pickIndex.random.randint(1, self.total)", "kind": "expression"},
-    {"range": {"start": {"line": 13, "character": 15}, "end": {"line": 13, "character": 33}}, "nameRange": {"start": {"line": 13, "character": 15}, "end": {"line": 13, "character": 33}}, "qname": "problems.528-random-pick-with-weight.solution:Solution.pickIndex.bisect.bisect_left", "kind": "expression"}
+  "problems/528-random-pick-with-weight/prefix sums + binary search.py": [
+    {"range": {"start": {"line": 13, "character": 47}, "end": {"line": 13, "character": 76}}, "nameRange": {"start": {"line": 13, "character": 47}, "end": {"line": 13, "character": 76}}, "qname": "problems.528-random-pick-with-weight.prefix sums + binary search:Solution.pickIndex.random.randint(1, self.total)", "kind": "expression"},
+    {"range": {"start": {"line": 13, "character": 15}, "end": {"line": 13, "character": 33}}, "nameRange": {"start": {"line": 13, "character": 15}, "end": {"line": 13, "character": 33}}, "qname": "problems.528-random-pick-with-weight.prefix sums + binary search:Solution.pickIndex.bisect.bisect_left", "kind": "expression"}
   ],
   "problems/875-koko-eating-bananas/solution.py": [
     {"range": {"start": {"line": 5, "character": 14}, "end": {"line": 5, "character": 24}}, "nameRange": {"start": {"line": 5, "character": 14}, "end": {"line": 5, "character": 24}}, "qname": "problems.875-koko-eating-bananas.solution:koko_eating_bananas.max(piles)", "kind": "expression"}

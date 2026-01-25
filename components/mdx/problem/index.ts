@@ -4,6 +4,7 @@ import { ProblemDefinitionHeader, ProblemDefinitionContent } from './problem-def
 import { ProblemIntuitionHeader, ProblemIntuitionContent } from './problem-intuition'
 import { ProblemDifficultyHeader, ProblemDifficultyContent } from './problem-difficulty'
 import { ProblemTimeComplexityHeader, ProblemTimeComplexityContent } from './problem-time-complexity'
+import { ProblemSpaceComplexityHeader, ProblemSpaceComplexityContent } from './problem-space-complexity'
 import { ProblemTopicsHeader, ProblemTopicsContent } from './problem-topics'
 import { ProblemCodeSnippetHeader, ProblemCodeSnippetContent } from './problem-code-snippet'
 import { ProblemKeyVariablesHeader, ProblemKeyVariablesContent } from './problem-key-variables'
@@ -21,6 +22,7 @@ export const ProblemComponents = {
   ProblemIntuitionContent,
   ProblemDifficultyContent,
   ProblemTimeComplexityContent,
+  ProblemSpaceComplexityContent,
   ProblemTopicsContent,
   ProblemCodeSnippetContent,
   ProblemKeyVariablesContent,
@@ -37,6 +39,7 @@ export const ProblemHeaders = {
   ProblemIntuitionHeader,
   ProblemDifficultyHeader,
   ProblemTimeComplexityHeader,
+  ProblemSpaceComplexityHeader,
   ProblemTopicsHeader,
   ProblemCodeSnippetHeader,
   ProblemKeyVariablesHeader,

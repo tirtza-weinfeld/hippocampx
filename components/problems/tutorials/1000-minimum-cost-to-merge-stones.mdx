@@ -21,6 +21,10 @@ Merge exactly k adjacent piles at a time (cost = sum of those piles). Return the
         - Each operation inside is *$O(1)$* (thanks to *[2!]prefix sums*)
     - So the time complexity is $O(n^{3} / (K - 1)$)
 
+## [!(ProblemSpaceComplexity)] Space Complexity
+
+- $O(n²)$ for memoization
+
 ## [!(ProblemCodeSnippet)] Code Snippet
 
 ```python meta="source=problems/1000-minimum-cost-to-merge-stones/solution.py"

@@ -1,4 +1,5 @@
 import Image from "next/image"
+// import { BrainFactsCarousel } from "@/components/home/brain-facts-carousel"
 
 const floatingWords = [
   { text: "Learn", position: "top-[15%] left-[10%] sm:left-[15%]", delay: "delay-0" },
@@ -132,7 +133,12 @@ export default function HomePage() {
         Your brain&apos;s best friend
       </p>
 
-      {/* Fun fact tooltip */}
+      {/* Brain facts carousel */}
+      {/* <div className="relative z-10 mt-6 sm:mt-8">
+        <BrainFactsCarousel />
+      </div> */}
+
+         {/* Fun fact tooltip */}
       <p className="max-w-xs sm:max-w-sm text-center text-xs text-muted-foreground/40
         transition-all duration-500 opacity-0
         group-hover/page:opacity-100 group-active/page:opacity-100

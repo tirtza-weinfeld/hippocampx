@@ -5716,7 +5716,64 @@
       "symbols": []
     },
     {
-      "uri": "problems/528-random-pick-with-weight/solution.py",
+      "uri": "problems/528-random-pick-with-weight/naive.py",
+      "symbols": [
+        {
+          "name": "Solution",
+          "detail": "class Solution",
+          "kind": 5,
+          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 10, "character": 28}},
+          "nameRange": {
+            "start": {
+              "line": 2,
+              "character": 6
+            },
+            "end": {
+              "line": 2,
+              "character": 14
+            }
+          },
+          "children": [
+            {
+              "name": "__init__",
+              "detail": "__init__(w: list[int])",
+              "kind": 6,
+              "range": {"start": {"line": 3, "character": 4}, "end": {"line": 6, "character": 41}},
+              "nameRange": {
+                "start": {
+                  "line": 3,
+                  "character": 8
+                },
+                "end": {
+                  "line": 3,
+                  "character": 16
+                }
+              },
+              "children": []
+            },
+            {
+              "name": "pickIndex",
+              "detail": "pickIndex() -> int",
+              "kind": 6,
+              "range": {"start": {"line": 8, "character": 4}, "end": {"line": 10, "character": 28}},
+              "nameRange": {
+                "start": {
+                  "line": 8,
+                  "character": 8
+                },
+                "end": {
+                  "line": 8,
+                  "character": 17
+                }
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "uri": "problems/528-random-pick-with-weight/prefix sums + binary search.py",
       "symbols": [
         {
           "name": "Solution",
@@ -5736,7 +5793,7 @@
           "children": [
             {
               "name": "__init__",
-              "detail": "__init__(w: list[int])",
+              "detail": "__init__(weights: list[int])",
               "kind": 6,
               "range": {"start": {"line": 5, "character": 4}, "end": {"line": 10, "character": 26}},
               "nameRange": {

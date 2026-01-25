@@ -10,17 +10,19 @@
 
 ## [!(ProblemDefinition)] Definition
 
-Given an array `w` of positive weights, build a class that returns an index `i` with probability `P(i) = w[i] / sum(w)`
+Given an array `weights` of positive weights, build a class that returns an index `i` with probability `P(i) = weights[i] / sum(weights)`
 
-## [!(ProblemIntuition)] Intuition
+## Prefix sums + binary search Solution
+
+### [!(ProblemIntuition)] Intuition
 
 - Prefix sums:
-        - Each weight `w[i]` represents how "wide" index `i` should be on a number line.
+        - Each weight `weights[i]` represents how "wide" index `i` should be on a number line.
         - Build prefix sums so that:
-            - `prefix[i] = w[0] + ... + w[i]`
+            - `prefix[i] = weights[0] + ... + weights[i]`
         - This turns the array of weights into contiguous segments on [1, total].
         - Example:
-            - w = [2, 5, 3] -> `prefix = [2, 7, 10]`
+            - weights = [2, 5, 3] -> `prefix = [2, 7, 10]`
             - Segments:
                 - 1-2   → index 0
                 - 3-7   → index 1
@@ -31,26 +33,62 @@ Given an array `w` of positive weights, build a class that returns an index `i` 
             - That `i` is the index whose segment contains `target`.
         - Bigger weight → bigger segment → higher chance of being hit.
 
-## [!(ProblemTimeComplexity)] Time Complexity
+### [!(ProblemTimeComplexity)] Time Complexity
 
 - $O(n)$
 
-## [!(ProblemCodeSnippet)] Code Snippet
+### [!(ProblemSpaceComplexity)] Space Complexity
 
-```python meta="source=problems/528-random-pick-with-weight/solution.py"
-import random
+- $O(n)$
+    - Store only the prefix sum array of length n
+
+### [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/528-random-pick-with-weight/prefix sums + binary search.py"
 import bisect
+import random
 
 class Solution:
 
-    def __init__(self, w: list[int]):
+    def __init__(self, weights: list[int]):
         self.prefix, total = [], 0
-        for x in w:
-            total += x
+        for w in weights:
+            total += w
             self.prefix.append(total)
         self.total = total
 
     def pickIndex(self) -> int:
         return bisect.bisect_left(self.prefix, random.randint(1, self.total))
+```
+
+
+---
+
+## Naive Solution
+
+### [!(ProblemTimeComplexity)] Time Complexity
+
+- $O(sum(weights)$)
+
+### [!(ProblemSpaceComplexity)] Space Complexity
+
+- $O(sum(weights)$):
+    - which may be inefficient for large weights.
+    - A more efficient solution uses prefix sums + binary search ($O(n)$ space)
+
+### [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/528-random-pick-with-weight/naive.py"
+import random
+
+class Solution:
+    def __init__(self, w: list[int]):
+        self.p = []
+        for i, weight in enumerate(w):
+            self.p.extend([i] * (weight))
+
+    def pickIndex(self) -> int:
+        index = random.randint(1, len(self.p) - 1)
+        return self.p[index]
 ```
 

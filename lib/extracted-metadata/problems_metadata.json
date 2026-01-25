@@ -263,20 +263,27 @@
     "528-random-pick-with-weight": {
       "time_stamps": {
         "created_at": "2025-11-18T20:08:56.962818",
-        "updated_at": "2025-11-18T21:27:26.842637"
+        "updated_at": "2026-01-25T13:50:54.361102"
       },
       "solutions": {
-        "solution.py": {
-          "intuition": "Prefix sums:\n        Each weight `w[i]` represents how \"wide\" index `i` should be on a number line.\n        Build prefix sums so that:\n            `prefix[i] = w[0] + ... + w[i]`\n        This turns the array of weights into contiguous segments on [1, total].\n        Example:\n            w = [2, 5, 3] -> `prefix = [2, 7, 10]`\n            Segments:\n                1-2   → index 0\n                3-7   → index 1\n                8-10  → index 2\n        To pick an index with probability proportional to its weight:\n            Draw a random integer `target ∈ [1, total]`.\n            Find the first `prefix[i] ≥ target`.\n            That `i` is the index whose segment contains `target`.\n        Bigger weight → bigger segment → higher chance of being hit.",
+        "prefix sums + binary search.py": {
+          "intuition": "Prefix sums:\n        Each weight `weights[i]` represents how \"wide\" index `i` should be on a number line.\n        Build prefix sums so that:\n            `prefix[i] = weights[0] + ... + weights[i]`\n        This turns the array of weights into contiguous segments on [1, total].\n        Example:\n            weights = [2, 5, 3] -> `prefix = [2, 7, 10]`\n            Segments:\n                1-2   → index 0\n                3-7   → index 1\n                8-10  → index 2\n        To pick an index with probability proportional to its weight:\n            Draw a random integer `target ∈ [1, total]`.\n            Find the first `prefix[i] ≥ target`.\n            That `i` is the index whose segment contains `target`.\n        Bigger weight → bigger segment → higher chance of being hit.",
           "time_complexity": "O(n)",
-          "code": "import random\nimport bisect\n\nclass Solution:\n\n    def __init__(self, w: list[int]):\n        self.prefix, total = [], 0\n        for x in w:\n            total += x\n            self.prefix.append(total)\n        self.total = total\n\n    def pickIndex(self) -> int:\n        return bisect.bisect_left(self.prefix, random.randint(1, self.total))"
+          "space_complexity": "O(n)\n    Store only the prefix sum array of length n",
+          "code": "import bisect\nimport random\n\nclass Solution:\n\n    def __init__(self, weights: list[int]):\n        self.prefix, total = [], 0\n        for w in weights:\n            total += w\n            self.prefix.append(total)\n        self.total = total\n\n    def pickIndex(self) -> int:\n        return bisect.bisect_left(self.prefix, random.randint(1, self.total))"
+        },
+        "naive.py": {
+          "time_complexity": "O(sum(weights))",
+          "space_complexity": "O(sum(weights)):\n    which may be inefficient for large weights.\n    A more efficient solution uses prefix sums + binary search (O(n) space)",
+          "code": "import random\n\nclass Solution:\n    def __init__(self, w: list[int]):\n        self.p = []\n        for i, weight in enumerate(w):\n            self.p.extend([i] * (weight))\n\n    def pickIndex(self) -> int:\n        index = random.randint(1, len(self.p) - 1)\n        return self.p[index]"
         }
       },
       "title": "Random Pick with Weight",
-      "definition": "Given an array `w` of positive weights, build a class that returns an index `i` with probability `P(i) = w[i] / sum(w)`",
+      "definition": "Given an array `weights` of positive weights, build a class that returns an index `i` with probability `P(i) = weights[i] / sum(weights)`",
       "leetcode": "https://leetcode.com/problems/random-pick-with-weight/",
       "difficulty": "medium",
-      "topics": ["probability", "prefix-sum"]
+      "topics": ["probability", "prefix-sum"],
+      "group": [["prefix sums + binary search.py"], ["naive.py"]]
     },
     "300-longest-increasing-subsequence": {
       "time_stamps": {
