@@ -1,6 +1,5 @@
 "use client";
 
-import { Em } from "@/components/mdx/typography";
 
 interface ProblemDefinitionProps {
   children: React.ReactNode;
@@ -18,13 +17,13 @@ export function ProblemDefinitionHeader({ children, className }: ProblemDefiniti
 
 export function ProblemDefinitionContent({ children, ...props }: ProblemDefinitionProps) {
   return (
-    // <div {...props} className={cn(
-    //   "mb-3", className,
-    //   "[&_p]:text-em-gradient [&_p]:italic"
-    // )}>
-      <Em {...props}>
+
+      <div {...props} className="dark:[&_p]:text-sky-400! [&_p]:text-sky-500! ">
       {children}
-      </Em>
+      </div>
+      // <Em {...props}>
+      // {children}
+      // </Em>
 
   );
 }

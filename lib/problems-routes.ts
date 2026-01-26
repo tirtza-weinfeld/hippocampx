@@ -42,6 +42,7 @@ export const PROBLEMS_ROUTES: NavigationItem[] = [
             { title: 'House Robber', href: '/problems/198-house-robber', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
             { title: 'House Robber II', href: '/problems/213-house-robber-ii', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
             { title: 'Implement Trie (Prefix Tree)', href: '/problems/208-implement-trie-prefix-tree', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
+            { title: 'Insert Delete GetRandom O(1)', href: '/problems/380-insert-delete-getrandom-constant', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
             { title: 'Insert Interval', href: '/problems/57-insert-interval', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
             { title: 'Keys and Rooms', href: '/problems/841-keys-and-rooms', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
             { title: 'Koko Eating Bananas', href: '/problems/875-koko-eating-bananas', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },

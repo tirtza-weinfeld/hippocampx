@@ -5061,6 +5061,101 @@
       ]
     },
     {
+      "uri": "problems/380-insert-delete-getrandom-constant/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/380-insert-delete-getrandom-constant/solution.py",
+      "symbols": [
+        {
+          "name": "RandomizedSet",
+          "detail": "class RandomizedSet",
+          "kind": 5,
+          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 28, "character": 41}},
+          "nameRange": {
+            "start": {
+              "line": 2,
+              "character": 6
+            },
+            "end": {
+              "line": 2,
+              "character": 19
+            }
+          },
+          "children": [
+            {
+              "name": "__init__",
+              "detail": "__init__()",
+              "kind": 6,
+              "range": {"start": {"line": 3, "character": 4}, "end": {"line": 5, "character": 39}},
+              "nameRange": {
+                "start": {
+                  "line": 3,
+                  "character": 8
+                },
+                "end": {
+                  "line": 3,
+                  "character": 16
+                }
+              },
+              "children": []
+            },
+            {
+              "name": "insert",
+              "detail": "insert(value: int) -> bool",
+              "kind": 6,
+              "range": {"start": {"line": 7, "character": 4}, "end": {"line": 13, "character": 19}},
+              "nameRange": {
+                "start": {
+                  "line": 7,
+                  "character": 8
+                },
+                "end": {
+                  "line": 7,
+                  "character": 14
+                }
+              },
+              "children": []
+            },
+            {
+              "name": "remove",
+              "detail": "remove(value: int) -> bool",
+              "kind": 6,
+              "range": {"start": {"line": 15, "character": 4}, "end": {"line": 25, "character": 19}},
+              "nameRange": {
+                "start": {
+                  "line": 15,
+                  "character": 8
+                },
+                "end": {
+                  "line": 15,
+                  "character": 14
+                }
+              },
+              "children": []
+            },
+            {
+              "name": "getRandom",
+              "detail": "getRandom() -> int",
+              "kind": 6,
+              "range": {"start": {"line": 27, "character": 4}, "end": {"line": 28, "character": 41}},
+              "nameRange": {
+                "start": {
+                  "line": 27,
+                  "character": 8
+                },
+                "end": {
+                  "line": 27,
+                  "character": 17
+                }
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
       "uri": "problems/39-combination-sum/__init__.py",
       "symbols": []
     },

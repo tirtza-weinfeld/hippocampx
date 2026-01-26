@@ -1,0 +1,51 @@
+# Insert Delete GetRandom O(1)
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="medium" />
+
+<PillList pills={["hash-table", "amortized-time-complexity", "random-sampling"]} />
+
+[380. Insert Delete GetRandom O(1)](https://leetcode.com/problems/insert-delete-getrandom-o1)
+
+## [!(ProblemDefinition)] Definition
+
+Design a data structure that supports, in average O(1) time:
+    - `insert(val)` insert val if not present; return true if inserted, else false
+    - `remove(val)` remove val if present; return true if removed, else false
+    - `getRandom()` return a uniformly random element from the current set (each element equally likely)
+
+## [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/380-insert-delete-getrandom-constant/solution.py"
+import random
+
+class RandomizedSet:
+    def __init__(self):
+        self.values: list[int] = []
+        self.index: dict[int, int] = {}
+
+    def insert(self, value: int) -> bool:
+        if value in self.index:
+            return False
+
+        self.index[value] = len(self.values)
+        self.values.append(value)
+        return True
+
+    def remove(self, value: int) -> bool:
+        if value not in self.index:
+            return False
+
+        self.values[(i:=self.index[value])] = (v:=self.values[-1])
+        self.values.pop()
+
+        self.index[v] = i
+        del self.index[value]
+
+        return True
+
+    def getRandom(self) -> int:
+        return random.choice(self.values)
+```
+
