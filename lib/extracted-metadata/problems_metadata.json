@@ -263,14 +263,14 @@
     "528-random-pick-with-weight": {
       "time_stamps": {
         "created_at": "2025-11-18T20:08:56.962818",
-        "updated_at": "2026-01-25T13:50:54.361102"
+        "updated_at": "2026-01-28T12:43:18.784955"
       },
       "solutions": {
         "prefix sums + binary search.py": {
-          "intuition": "Prefix sums:\n        Each weight `weights[i]` represents how \"wide\" index `i` should be on a number line.\n        Build prefix sums so that:\n            `prefix[i] = weights[0] + ... + weights[i]`\n        This turns the array of weights into contiguous segments on [1, total].\n        Example:\n            weights = [2, 5, 3] -> `prefix = [2, 7, 10]`\n            Segments:\n                1-2   → index 0\n                3-7   → index 1\n                8-10  → index 2\n        To pick an index with probability proportional to its weight:\n            Draw a random integer `target ∈ [1, total]`.\n            Find the first `prefix[i] ≥ target`.\n            That `i` is the index whose segment contains `target`.\n        Bigger weight → bigger segment → higher chance of being hit.",
+          "intuition": "Prefix sums:\n        Each weight `weights[i]` represents how \"wide\" index `i` should be on a number line.\n        Build prefix sums so that:\n            `prefix[i] = weights[0] + ... + weights[i]`\n        This turns the array of weights into contiguous segments on [0, total).\n        Example:\n            weights = [2, 5, 3] -> `prefix = [2, 7, 10]`\n            Segments:\n                [0, 2)   → index 0\n                [2, 7)   → index 1\n                [7, 10)  → index 2\n        To pick an index with probability proportional to its weight:\n            Draw a random integer `target ∈ [0, total)`.\n            Find the first `prefix[i] > target`.\n            That `i` is the index whose segment contains `target`.\n        Bigger weight → bigger segment → higher chance of being hit.",
           "time_complexity": "O(n)",
           "space_complexity": "O(n)\n    Store only the prefix sum array of length n",
-          "code": "import bisect\nimport random\n\nclass Solution:\n\n    def __init__(self, weights: list[int]):\n        self.prefix, total = [], 0\n        for w in weights:\n            total += w\n            self.prefix.append(total)\n        self.total = total\n\n    def pickIndex(self) -> int:\n        return bisect.bisect_left(self.prefix, random.randint(1, self.total))"
+          "code": "import bisect\nimport random\n\nclass Solution:\n\n    def __init__(self, weights: list[int]):\n        self.prefix, total = [], 0\n        for w in weights:\n            total += w\n            self.prefix.append(total)\n        self.total = total\n\n    def pickIndex(self) -> int:\n        return bisect.bisect_right(self.prefix, random.randrange(self.total))"
         },
         "naive.py": {
           "time_complexity": "O(sum(weights))",
@@ -1289,6 +1289,22 @@
       "leetcode": "https://leetcode.com/problems/binary-tree-maximum-path-sum",
       "difficulty": "hard",
       "topics": ["kadane"]
+    },
+    "497-random-point-in-non-overlapping-rectangles": {
+      "time_stamps": {
+        "created_at": "2026-01-28T12:09:41.744566",
+        "updated_at": "2026-01-28T12:29:33.436785"
+      },
+      "solutions": {
+        "solution.py": {
+          "code": "import bisect\nimport random\n\nclass Solution:\n    def __init__(self, rectangles: list[list[int]]):\n        p, s = [], 0\n        for a, b, x, y in rectangles:\n            s += (x - a + 1) * (y - b + 1)\n            p.append(s)\n        self.prefix, self.total, self.rectangles = p, s, rectangles\n\n    def pick(self) -> list[int]:\n        r = bisect.bisect_right(self.prefix, random.randrange(self.total))\n        a, b, x, y = self.rectangles[r]\n        return [random.randint(a, x), random.randint(b, y)]"
+        }
+      },
+      "title": "Random Point in Non-overlapping Rectangles",
+      "definition": "Given non-overlapping axis-aligned rectangles `rectangles[i]=[x1,y1,x2,y2]`,     where `(x1,y1)` is the bottom-left and `(x2,y2)` the top-right corner (integer coordinates, inclusive).\n    Implement a class Solution(rectangles) and a method `pick()`     such that each integer point inside the union of all rectangles is chosen with equal probability.",
+      "leetcode": "https://leetcode.com/problems/random-point-in-non-overlapping-rectangles/description/",
+      "difficulty": "medium",
+      "topics": ["prefix-sum", "binary-search", "reservoir-sampling"]
     },
     "69-sqrt": {
       "time_stamps": {

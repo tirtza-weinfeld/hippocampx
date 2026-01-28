@@ -5615,6 +5615,67 @@
       ]
     },
     {
+      "uri": "problems/497-random-point-in-non-overlapping-rectangles/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/497-random-point-in-non-overlapping-rectangles/solution.py",
+      "symbols": [
+        {
+          "name": "Solution",
+          "detail": "class Solution",
+          "kind": 5,
+          "range": {"start": {"line": 3, "character": 0}, "end": {"line": 14, "character": 59}},
+          "nameRange": {
+            "start": {
+              "line": 3,
+              "character": 6
+            },
+            "end": {
+              "line": 3,
+              "character": 14
+            }
+          },
+          "children": [
+            {
+              "name": "__init__",
+              "detail": "__init__(rectangles: list[list[int]])",
+              "kind": 6,
+              "range": {"start": {"line": 4, "character": 4}, "end": {"line": 9, "character": 67}},
+              "nameRange": {
+                "start": {
+                  "line": 4,
+                  "character": 8
+                },
+                "end": {
+                  "line": 4,
+                  "character": 16
+                }
+              },
+              "children": []
+            },
+            {
+              "name": "pick",
+              "detail": "pick() -> list[int]",
+              "kind": 6,
+              "range": {"start": {"line": 11, "character": 4}, "end": {"line": 14, "character": 59}},
+              "nameRange": {
+                "start": {
+                  "line": 11,
+                  "character": 8
+                },
+                "end": {
+                  "line": 11,
+                  "character": 12
+                }
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
       "uri": "problems/498-diagonal-traverse/__init__.py",
       "symbols": []
     },

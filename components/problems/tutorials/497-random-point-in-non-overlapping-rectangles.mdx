@@ -1,0 +1,35 @@
+# Random Point in Non-overlapping Rectangles
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="medium" />
+
+<PillList pills={["prefix-sum", "binary-search", "reservoir-sampling"]} />
+
+[497. Random Point in Non-overlapping Rectangles](https://leetcode.com/problems/random-point-in-non-overlapping-rectangles/description/)
+
+## [!(ProblemDefinition)] Definition
+
+Given non-overlapping axis-aligned rectangles `rectangles[i]=[x1,y1,x2,y2]`,     where `(x1,y1)` is the bottom-left and `(x2,y2)` the top-right corner (integer coordinates, inclusive).
+    Implement a class Solution(rectangles) and a method `pick()`     such that each integer point inside the union of all rectangles is chosen with equal probability.
+
+## [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/497-random-point-in-non-overlapping-rectangles/solution.py"
+import bisect
+import random
+
+class Solution:
+    def __init__(self, rectangles: list[list[int]]):
+        p, s = [], 0
+        for a, b, x, y in rectangles:
+            s += (x - a + 1) * (y - b + 1)
+            p.append(s)
+        self.prefix, self.total, self.rectangles = p, s, rectangles
+
+    def pick(self) -> list[int]:
+        r = bisect.bisect_right(self.prefix, random.randrange(self.total))
+        a, b, x, y = self.rectangles[r]
+        return [random.randint(a, x), random.randint(b, y)]
+```
+
