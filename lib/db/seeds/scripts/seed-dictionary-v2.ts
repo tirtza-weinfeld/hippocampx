@@ -12,7 +12,7 @@
 import { config } from "dotenv";
 import { drizzle } from "drizzle-orm/neon-http";
 import { neon } from "@neondatabase/serverless";
-import { eq, and, inArray, isNull } from "drizzle-orm";
+import { eq, and, isNull } from "drizzle-orm";
 import {
   lexicalEntries,
   wordForms,
@@ -33,7 +33,6 @@ import {
   type InsertExample,
   type InsertSenseRelation,
   type InsertSenseNotation,
-  type InsertTag,
   type InsertSenseTag,
   type InsertSource,
   type InsertSourcePart,
@@ -49,7 +48,6 @@ config({ path: ".env.local" });
 // =============================================================================
 
 type PartOfSpeech = InsertLexicalEntry["part_of_speech"];
-type RelationType = InsertSenseRelation["relation_type"];
 type SourceType = InsertSource["type"];
 type CreditRole = InsertSourceCredit["role"];
 
@@ -283,6 +281,7 @@ function collect(data: LexicalEntrySeed[]): Collected {
             data: {
               type: notation.type,
               value: notation.value,
+              description: notation.description,
             },
           });
         }
@@ -439,7 +438,7 @@ async function insertAll(db: DbType, collected: Collected): Promise<void> {
       const entryKey = makeEntryKey(entry.lemma, entry.part_of_speech, entry.language_code ?? "en");
 
       // Check if exists
-      const [existing] = await db
+      const existingRows = await db
         .select()
         .from(lexicalEntries)
         .where(
@@ -449,6 +448,7 @@ async function insertAll(db: DbType, collected: Collected): Promise<void> {
             eq(lexicalEntries.language_code, entry.language_code ?? "en")
           )
         );
+      const existing = existingRows.at(0);
 
       if (existing) {
         entryIdMap.set(entryKey, existing.id);
@@ -485,12 +485,18 @@ async function insertAll(db: DbType, collected: Collected): Promise<void> {
     if (!entryId) continue;
 
     // Check if exists
-    const [existing] = await db
+    const existingRows = await db
       .select()
       .from(senses)
       .where(and(eq(senses.entry_id, entryId), eq(senses.order_index, sense.data.order_index ?? 0)));
+    const existing = existingRows.at(0);
 
     if (existing) {
+      // Update existing sense with new data
+      await db
+        .update(senses)
+        .set(sense.data)
+        .where(eq(senses.id, existing.id));
       senseIdMap.set(senseKey, existing.id);
     } else {
       const [inserted] = await db
@@ -640,7 +646,7 @@ async function main(): Promise<void> {
   process.exit(0);
 }
 
-main().catch((error) => {
+main().catch((error: unknown) => {
   console.error("❌ Error:", error);
   process.exit(1);
 });

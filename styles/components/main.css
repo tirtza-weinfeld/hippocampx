@@ -26,6 +26,7 @@
 @import "./formula-match.css";
 @import "./memory-match.css";
 @import "./word-vault.css";
+@import "./lecture-callout.css";
  /* @import "./tailwind-utilities-demo.css";   */
 /* @import "./formula-match.css"; -- loaded directly, bypassing Tailwind */
 /* @import "./mermaid.css"; */

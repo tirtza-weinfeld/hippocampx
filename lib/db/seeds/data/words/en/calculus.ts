@@ -332,27 +332,36 @@ export const CALCULUS_DATA: LexicalEntrySeed[] = [
     language_code: "en",
     senses: [
       {
-        definition:
-          "The instantaneous rate of change of a function; geometrically, the slope of the tangent line.",
+        definition: `In *calculus*, a derivative represents the instantaneous rate of change of a function with 
+        respect to one of its variables. *Geometrically*, it is the slope of the tangent line to the function's
+        graph at a specific point. \n
+        The derivative of a function $f(x)$ at a point $x$ is formally defined by the limit of the difference quotient as the interval $h$ approaches zero:
+
+ $$f'(x) = \\lim_{h \\to 0} \\frac{f(x+h) - f(x)}{h}$$`,
         difficulty: "beginner",
         tags: ["calculus", "derivatives"],
         examples: [
           {
-            text: "If $f(x) = x^2$, then $f'(x) = 2x$. At $x = 3$, the instantaneous rate of change is $6$.",
+            text: "If $f(x) = x^2$, then $f'(x) = 2x$. At $x = 3$, the derivative is $6$.",
+          },
+          {
+            text: "Velocity is the derivative of position: $v = \\frac{ds}{dt}$.",
           },
         ],
         relations: [
           { target_lemma: "integral", relation_type: "antonym" },
           { target_lemma: "tangent line", relation_type: "holonym" },
           { target_lemma: "slope", relation_type: "hypernym" },
+          { target_lemma: "limit", relation_type: "meronym" },
         ],
         notations: [
+          { type: "symbol", value: "f'(x)", description: "Lagrange's notation" },
           {
-            type: "formula",
-            value: "f'(x) = \\lim_{h \\to 0} \\frac{f(x+h) - f(x)}{h}",
+            type: "symbol",
+            value: "\\frac{dy}{dx}",
+            description: "Leibniz's notation",
           },
-          { type: "formula", value: "\\frac{dy}{dx}" },
-          { type: "formula", value: "\\frac{d}{dx}[f(x)]" },
+          { type: "symbol", value: "\\dot{y}", description: "Newton's notation" },
         ],
       },
     ],

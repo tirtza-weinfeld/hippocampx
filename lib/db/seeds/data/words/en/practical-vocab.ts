@@ -464,27 +464,7 @@ export const STATISTICS_VOCAB: LexicalEntrySeed[] = [
    ========================= */
 
 export const CALCULUS_VOCAB: LexicalEntrySeed[] = [
-  {
-    lemma: "derivative",
-    part_of_speech: "noun",
-    language_code: "en",
-    forms: [{ form_text: "derivatives", grammatical_features: { number: "plural" } }],
-    senses: [
-      {
-        definition:
-          "A measure of how fast a function changes with respect to its input.",
-        tags: ["calculus", "ml"],
-        examples: [{ text: "The derivative gives the slope of the curve at a point." }],
-        relations: [
-          {
-            target_lemma: "slope",
-            relation_type: "synonym",
-            explanation: "In single-variable calculus, the derivative equals the slope.",
-          },
-        ],
-      },
-    ],
-  },
+  // derivative moved to calculus.ts
 
   {
     lemma: "integral",

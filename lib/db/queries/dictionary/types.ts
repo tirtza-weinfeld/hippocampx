@@ -165,6 +165,13 @@ export interface ExampleWithSource {
   sourceType: string | null;
 }
 
+export interface NotationInfo {
+  id: number;
+  type: "formula" | "pronunciation" | "abbreviation" | "mnemonic" | "symbol";
+  value: string;
+  description: string | null;
+}
+
 export interface SenseWithDetails {
   id: number;
   definition: string;
@@ -172,6 +179,7 @@ export interface SenseWithDetails {
   isSynthetic: boolean;
   verificationStatus: string | null;
   examples: ExampleWithSource[];
+  notations: NotationInfo[];
 }
 
 export interface SenseRelationInfo {

@@ -348,10 +348,12 @@ export const senseNotations = pgTable(
       .references(() => senses.id, { onDelete: "cascade" }),
     type: notationTypeEnum("type").notNull(),
     value: text("value").notNull(),
+    description: text("description"),
   },
   (table) => [
     index("idx_notation_sense").on(table.sense_id),
     index("idx_notation_type").on(table.type),
     index("idx_notation_abbr_lookup").on(table.type, table.value),
+    unique("uq_sense_notation").on(table.sense_id, table.type, table.value),
   ]
 );

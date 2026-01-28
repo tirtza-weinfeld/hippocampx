@@ -6,6 +6,7 @@ import {
   SensesWithHeaderAsync,
   SensesWithHeaderSkeleton,
   RelationsAsync,
+  NotationsAsync,
 } from "@/components/dictionary/entry-detail";
 import { getOrCreateEntryAudio } from "@/lib/actions/word-audio";
 import { fetchEntryBasic } from "@/lib/db/queries/dictionary/entry-complete";
@@ -63,6 +64,11 @@ export default async function EntryDetailPage(props: {
           {/* Relations - streams independently */}
           <Suspense fallback={null}>
             <RelationsAsync entryPromise={entryPromise} />
+          </Suspense>
+
+          {/* Notations - streams independently */}
+          <Suspense fallback={null}>
+            <NotationsAsync entryPromise={entryPromise} />
           </Suspense>
         </div>
       </div>

@@ -1,0 +1,281 @@
+
+import { Callout  } from '@/components/lecture-notes/callout';
+
+# 2 Flow and Diffusion Models
+
+## Resizable Table Of Contents
+
+In the previous section, we formalized generative modeling as sampling from a data distribution $p_{\text{data}}$. Further, we formalized our goal: To construct a generative model, i.e. an algorithm that returns samples $z \sim p_{\text{data}}$. In this section, we describe how a generative model can be built as the simulation of a suitably constructed differential equation. For example, flow matching and diffusion models involve simulating **ordinary differential equations (ODEs)** and **stochastic differential equations (SDEs)**, respectively. The goal of this section is therefore to define and construct these generative models as they will be used throughout the remainder of the notes. Specifically, we first define ODEs and SDEs, and discuss their simulation. Second, we describe how to parameterize an ODE/SDE using a deep neural network. This leads to the definition of a flow and diffusion model and the fundamental algorithms to sample from such models. In later sections, we then explore how to train these models.
+
+## 2.1 Flow Models
+
+We start by defining **ordinary differential equations (ODEs)**. A solution to an ODE is defined by a **trajectory**, i.e. a function of the form
+
+$$
+X : [0, 1] \to \mathbb{R}^d, \quad t \mapsto X_t,
+$$
+
+that maps from time $t$ to some location in space $\mathbb{R}^d$. Every ODE is defined by a **vector field** $u$, i.e. a function of the form
+
+$$
+u : \mathbb{R}^d \times [0, 1] \to \mathbb{R}^d, \quad (x, t) \mapsto u_t(x),
+$$
+
+i.e. for every time $t$ and location $x$ we get a vector $u_t(x) \in \mathbb{R}^d$ specifying a velocity in space (see Figure 1). An ODE imposes a condition on a trajectory: we want a trajectory $X$ that "follows along the lines" of the vector field $u_t$, starting at the point $x_0$. We may formalize such a trajectory as being the solution to the equation:
+
+$$
+\frac{\mathrm{d}}{\mathrm{d}t} X_t = u_t(X_t) \quad \blacktriangleright \text{ ODE} \tag{1a}
+$$
+
+$$
+X_0 = x_0 \quad \blacktriangleright \text{ initial conditions} \tag{1b}
+$$
+
+Equation (1a) requires that the derivative of $X_t$ is specified by the direction given by $u_t$. Equation (1b) requires that we start at $x_0$ at time $t = 0$. We may now ask: if we start at $X_0 = x_0$ at $t = 0$, where are we at time $t$ (what is $X_t$)? This question is answered by a function called the **flow**, which is a solution to the ODE
+
+$$
+\psi : \mathbb{R}^d \times [0, 1] \mapsto \mathbb{R}^d, \quad (x_0, t) \mapsto \psi_t(x_0) \tag{2a}
+$$
+
+$$
+\frac{\mathrm{d}}{\mathrm{d}t} \psi_t(x_0) = u_t(\psi_t(x_0)) \quad \blacktriangleright \text{ flow ODE} \tag{2b}
+$$
+
+$$
+\psi_0(x_0) = x_0 \quad \blacktriangleright \text{ flow initial conditions} \tag{2c}
+$$
+
+For a given initial condition $X_0 = x_0$, a trajectory of the ODE is recovered via $X_t = \psi_t(X_0)$. Therefore, vector fields, ODEs, and flows are, intuitively, three descriptions of the same object: **vector fields define ODEs whose solutions are flows**. As with every equation, we should ask ourselves about an ODE: Does a solution exist and if so, is it unique? A fundamental result in mathematics is "yes!" to both, as long we impose weak assumptions on $u_t$:
+
+<Callout type="theorem" title="Theorem 3 (Flow existence and uniqueness)">
+If $u : \mathbb{R}^d \times [0, 1] \to \mathbb{R}^d$ is continuously differentiable with a bounded derivative, then the ODE in (2) has a unique solution given by a flow $\psi_t$. In this case, $\psi_t$ is a **diffeomorphism** for all $t$, i.e. $\psi_t$ is continuously differentiable with a continuously differentiable inverse $\psi_t^{-1}$.
+</Callout>
+
+Note that the assumptions required for the existence and uniqueness of a flow are almost always fulfilled in machine learning, as we use neural networks to parameterize $u_t(x)$ and they always have bounded derivatives. Therefore, Theorem 3 should not be a concern for you but rather good news: **flows exist and are unique solutions to ODEs in our cases of interest**. A proof can be found in [14, 2].
+
+<Callout type="example" title="Example 4 (Linear Vector Fields)">
+Let us consider a simple example of a vector field $u_t(x)$ that is a simple linear function in $x$, i.e. $u_t(x) = -\theta x$ for $\theta > 0$. Then the function
+
+$$
+\psi_t(x_0) = \exp(-\theta t) x_0 \tag{3}
+$$
+
+defines a flow $\psi$ solving the ODE in Equation (2). You can check this yourself by checking that $\psi_0(x_0) = x_0$ and computing
+
+$$
+\frac{\mathrm{d}}{\mathrm{d}t} \psi_t(x_0) \stackrel{(3)}{=} \frac{\mathrm{d}}{\mathrm{d}t} (\exp(-\theta t) x_0) \stackrel{(i)}{=} -\theta \exp(-\theta t) x_0 \stackrel{(3)}{=} -\theta \psi_t(x_0) = u_t(\psi_t(x_0)),
+$$
+
+where in (i) we used the chain rule. In Figure 3, we visualize a flow of this form converging to 0 exponentially.
+</Callout>
+
+**Simulating an ODE.** In general, it is not possible to compute the flow $\psi_t$ explicitly if $u_t$ is not as simple as in the previous example. In these cases, one uses **numerical methods** to simulate ODEs. Fortunately, this is a classical and well researched topic in numerical analysis, and a myriad of powerful methods exist [7]. One of the simplest and most intuitive methods is the **Euler method**. In the Euler method, we initialize with $X_0 = x_0$ and update via
+
+$$
+X_{t+h} = X_t + h u_t(X_t) \quad (t = 0, h, 2h, 3h, \ldots, 1 - h) \tag{4}
+$$
+
+where $h = n^{-1} > 0$ is the **step size** and $n \in \mathbb{N}$ is the number of simulation steps. For this class, the Euler method will be good enough. To give you a taste of a more complex method, let us consider **Heun's method** defined via the update rule
+
+$$
+X'_{t+h} = X_t + h u_t(X_t) \quad \blacktriangleright \text{ initial guess of new state (same as Euler step)}
+$$
+
+$$
+X_{t+h} = X_t + \frac{h}{2}(u_t(X_t) + u_{t+h}(X'_{t+h})) \quad \blacktriangleright \text{ update with average } u \text{ at current and guessed state}
+$$
+
+Intuitively, the Heun's method is as follows: it takes a first guess $X'_{t+h}$ of what the next step could be but corrects the direction initially taken via an updated guess.
+
+**Flow models.** We can now construct a generative model via an ODE by making the vector field a **neural network vector field** $u^\theta_t$. For now, we simply mean that $u^\theta_t$ is a parameterized function $u^\theta_t : \mathbb{R}^d \times [0, 1] \to \mathbb{R}^d$ with parameters $\theta$. Later, we will discuss particular choices of neural network architectures. Remember that our goal was to generate samples $z \sim p_{\text{data}}$ from a distribution $p_{\text{data}}$. In particular, these samples must be random. Note though that an ODE itself is not random but fully deterministic. To inject some randomness, we simple make the initial condition $X_0$ random. Specifically, we choose an **initial distribution** $p_{\text{init}}$. In most cases, we set $p_{\text{init}} = \mathcal{N}(0, I_d)$ to be a simple standard Gaussian. Most importantly, whatever distribution you choose, it must be one that we can easily sample from at inference-time. A **flow model** is then described by the ODE
+
+$$
+X_0 \sim p_{\text{init}} \quad \blacktriangleright \text{ random initialization}
+$$
+
+$$
+\frac{\mathrm{d}}{\mathrm{d}t} X_t = u^\theta_t(X_t) \quad \blacktriangleright \text{ ODE}
+$$
+
+Our goal is to make the endpoint $X_1$ of the trajectory have distribution $p_{\text{data}}$, i.e.
+
+$$
+X_1 \sim p_{\text{data}} \quad \Leftrightarrow \quad \psi^\theta_1(X_0) \sim p_{\text{data}}
+$$
+
+where $\psi^\theta_t$ describes the flow induced by $u^\theta_t$. Note however: although it is called flow model, **the neural network parameterizes the vector field, not the flow** (at least for now). In order to compute the flow, we need to simulate the ODE. In Algorithm 1, we summarize the procedure how to sample from a flow model.
+
+<Callout type="algorithm" title="Algorithm 1: Sampling from a Flow Model with Euler method">
+**Require:** Neural network vector field $u^\theta_t$, number of steps $n$
+
+1. Set $t = 0$
+2. Set step size $h = \frac{1}{n}$
+3. Draw a sample $X_0 \sim p_{\text{init}}$
+4. **for** $i = 1, \ldots, n$ **do**
+5. &emsp; $X_{t+h} = X_t + h u^\theta_t(X_t)$
+6. &emsp; Update $t \leftarrow t + h$
+7. **end for**
+8. **return** $X_1$
+</Callout>
+
+## 2.2 Diffusion Models
+
+Stochastic differential equations (SDEs) extend the deterministic trajectories from ODEs with **stochastic** trajectories. A stochastic trajectory is commonly called a **stochastic process** $(X_t)_{0 \leq t \leq 1}$ and is given by
+
+$$
+X_t \text{ is a random variable for every } 0 \leq t \leq 1
+$$
+
+$$
+X : [0, 1] \to \mathbb{R}^d, \quad t \mapsto X_t \text{ is a random trajectory for every draw of } X
+$$
+
+In particular, when we simulate the same stochastic process twice, we might get different outcomes because the dynamics are designed to be random.
+
+**Brownian Motion.** SDEs are constructed via a **Brownian motion** - a fundamental stochastic process that came out of the study physical diffusion processes. You can think of a Brownian motion as a continuous random walk.
+
+Let us define it: A **Brownian motion** $W = (W_t)_{0 \leq t \leq 1}$ is a stochastic process such that $W_0 = 0$, the trajectories $t \mapsto W_t$ are continuous, and the following two conditions hold:
+
+1. **Normal increments:** $W_t - W_s \sim \mathcal{N}(0, (t-s)I_d)$ for all $0 \leq s < t$, i.e. increments have a Gaussian distribution with variance increasing linearly in time ($I_d$ is the identity matrix).
+
+2. **Independent increments:** For any $0 \leq t_0 < t_1 < \cdots < t_n = 1$, the increments $W_{t_1} - W_{t_0}, \ldots, W_{t_n} - W_{t_{n-1}}$ are independent random variables.
+
+Brownian motion is also called a **Wiener process**, which is why we denote it with a "W".[^1] We can easily simulate a Brownian motion approximately with step size $h > 0$ by setting $W_0 = 0$ and updating
+
+$$
+W_{t+h} = W_t + \sqrt{h} \epsilon_t, \quad \epsilon_t \sim \mathcal{N}(0, I_d) \quad (t = 0, h, 2h, \ldots, 1 - h) \tag{5}
+$$
+
+In Figure 8, we plot a few example trajectories of a Brownian motion. Brownian motion is as central to the study of stochastic processes as the Gaussian distribution is to the study of probability distributions. From finance to statistical physics to epidemiology, the study of Brownian motion has far reaching applications beyond machine learning. In finance, for example, Brownian motion is used to model the price of complex financial instruments. Also just as a mathematical construction, Brownian motion is fascinating: For example, while the paths of a Brownian motion are continuous (so that you could draw it without ever lifting a pen), they are infinitely long (so that you would never stop drawing).
+
+[^1]: Nobert Wiener was a famous mathematician who taught at MIT. You can still see his portraits hanging at the MIT math department.
+
+**From ODEs to SDEs.** The idea of an SDE is to extend the deterministic dynamics of an ODE by adding stochastic dynamics driven by a Brownian motion. Because everything is stochastic, we may no longer take the derivative as in Equation (1a). Hence, we need to find an **equivalent formulation of ODEs that does not use derivatives**. For this, let us therefore rewrite trajectories $(X_t)_{0 \leq t \leq 1}$ of an ODE as follows:
+
+$$
+\frac{\mathrm{d}}{\mathrm{d}t} X_t = u_t(X_t) \quad \blacktriangleright \text{ expression via derivatives}
+$$
+
+$$
+\stackrel{(i)}{\Leftrightarrow} \quad \frac{1}{h}(X_{t+h} - X_t) = u_t(X_t) + R_t(h)
+$$
+
+$$
+\Leftrightarrow \quad X_{t+h} = X_t + h u_t(X_t) + h R_t(h) \quad \blacktriangleright \text{ expression via infinitesimal updates}
+$$
+
+where $R_t(h)$ describes a negligible function for small $h$, i.e. such that $\lim_{h \to 0} R_t(h) = 0$, and in (i) we simply use the definition of derivatives. The derivation above simply restates what we already know: A trajectory $(X_t)_{0 \leq t \leq 1}$ of an ODE takes, at every timestep, a small step in the direction $u_t(X_t)$. We may now amend the last equation to make it stochastic: A trajectory $(X_t)_{0 \leq t \leq 1}$ of an SDE takes, at every timestep, a small step in the direction $u_t(X_t)$ *plus* some contribution from a Brownian motion:
+
+$$
+X_{t+h} = X_t + \underbrace{h u_t(X_t)}_{\text{deterministic}} + \underbrace{\sigma_t (W_{t+h} - W_t)}_{\text{stochastic}} + \underbrace{h R_t(h)}_{\text{error term}} \tag{6}
+$$
+
+where $\sigma_t \geq 0$ describes the **diffusion coefficient** and $R_t(h)$ describes a stochastic error term such that the standard deviation $\mathbb{E}[\|R_t(h)\|^2]^{1/2} \to 0$ goes to zero for $h \to 0$. The above describes a **stochastic differential equation (SDE)**. It is common to denote it in the following symbolic notation:
+
+$$
+\mathrm{d}X_t = u_t(X_t)\mathrm{d}t + \sigma_t \mathrm{d}W_t \quad \blacktriangleright \text{ SDE} \tag{7a}
+$$
+
+$$
+X_0 = x_0 \quad \blacktriangleright \text{ initial condition} \tag{7b}
+$$
+
+However, always keep in mind that the "$\mathrm{d}X_t$"-notation above is a purely informal notation of Equation (6). Unfortunately, SDEs do not have a flow map $\phi_t$ anymore. This is because the value $X_t$ is not fully determined by $X_0 \sim p_{\text{init}}$ anymore as the evolution itself is stochastic. Still, in the same way as for ODEs, we have:
+
+<Callout type="theorem" title="Theorem 5 (SDE Solution Existence and Uniqueness)">
+If $u : \mathbb{R}^d \times [0, 1] \to \mathbb{R}^d$ is continuously differentiable with a bounded derivative and $\sigma_t$ is continuous, then the SDE in (7) has a solution given by the unique stochastic process $(X_t)_{0 \leq t \leq 1}$ satisfying Equation (6).
+</Callout>
+
+If this was a stochastic calculus class, we would spend several lectures proving this theorem and constructing SDEs with full mathematical rigor, i.e. constructing a Brownian motion from first principles and constructing the process $X_t$ via **stochastic integration**. As we focus on machine learning in this class, we refer to [13] for a more technical treatment. Finally, note that every ODE is also an SDE - simply with a vanishing diffusion coefficient $\sigma_t = 0$. Therefore, for the remainder of this class, **when we speak about SDEs, we consider ODEs as a special case**.
+
+<Callout type="example" title="Example 6 (Ornstein-Uhlenbeck Process)">
+Let us consider a constant diffusion coefficient $\sigma_t = \sigma \geq 0$ and a constant linear drift $u_t(x) = -\theta x$ for $\theta > 0$, yielding the SDE
+
+$$
+\mathrm{d}X_t = -\theta X_t \mathrm{d}t + \sigma \mathrm{d}W_t. \tag{8}
+$$
+
+A solution $(X_t)_{0 \leq t \leq 1}$ to the above SDE is known as an **Ornstein-Uhlenbeck (OU) process**. We visualize it in Figure 3. The vector field $-\theta x$ pushes the process back to its center 0 (as I always go the inverse direction of where I am), while the diffusion coefficient $\sigma$ always adds more noise. This process converges towards a Gaussian distribution $\mathcal{N}(0, \sigma^2/(2\theta))$ if we simulate it for $t \to \infty$. Note that for $\sigma = 0$, we have a flow with linear vector field that we have studied in Equation (3).
+</Callout>
+
+**Simulating an SDE.** If you struggle with the abstract definition of an SDE so far, then don't worry about it. A more intuitive way of thinking about SDEs is given by answering the question: How might we simulate an SDE? The simplest such scheme is known as the **Euler-Maruyama method**, and is essentially to SDEs what the Euler method is to ODEs. Using the Euler-Maruyama method, we initialize $X_0 = x_0$ and update iteratively via
+
+$$
+X_{t+h} = X_t + h u_t(X_t) + \sqrt{h} \sigma_t \epsilon_t, \quad \epsilon_t \sim \mathcal{N}(0, I_d) \tag{9}
+$$
+
+where $h = n^{-1} > 0$ is a step size hyperparameter for $n \in \mathbb{N}$. In other words, to simulate using the Euler-Maruyama method, we take a small step in the direction of $u_t(X_t)$ as well as add a little bit of Gaussian noise scaled by $\sqrt{h}\sigma_t$. When simulating SDEs in this class (such as in the accompanying labs), we will usually stick to the Euler-Maruyama method.
+
+**Diffusion Models.** We can now construct a generative model via an SDE in the same way as we did for ODEs. Remember that our goal was to convert a simple distribution $p_{\text{init}}$ into a complex distribution $p_{\text{data}}$. Like for ODEs, the simulation of an SDE randomly initialized with $X_0 \sim p_{\text{init}}$ is a natural choice for this transformation. To parameterize this SDE, we can simply parameterize its central ingredient - the vector field $u_t$ - a neural network $u^\theta_t$. A **diffusion model** is thus given by
+
+$$
+X_0 \sim p_{\text{init}} \quad \blacktriangleright \text{ random initialization}
+$$
+
+$$
+\mathrm{d}X_t = u^\theta_t(X_t)\mathrm{d}t + \sigma_t \mathrm{d}W_t \quad \blacktriangleright \text{ SDE}
+$$
+
+In Algorithm 2, we describe the procedure by which to sample from a diffusion model with the Euler-Maruyama method. We summarize the results of this section as follows.
+
+<Callout type="algorithm" title="Algorithm 2: Sampling from a Diffusion Model (Euler-Maruyama method)">
+**Require:** Neural network $u^\theta_t$, number of steps $n$, diffusion coefficient $\sigma_t$
+
+1. Set $t = 0$
+2. Set step size $h = \frac{1}{n}$
+3. Draw a sample $X_0 \sim p_{\text{init}}$
+4. **for** $i = 1, \ldots, n$ **do**
+5. &emsp; Draw a sample $\epsilon \sim \mathcal{N}(0, I_d)$
+6. &emsp; $X_{t+h} = X_t + h u^\theta_t(X_t) + \sigma_t \sqrt{h} \epsilon$
+7. &emsp; Update $t \leftarrow t + h$
+8. **end for**
+9. **return** $X_1$
+</Callout>
+
+<Callout type="summary" title="Summary 7 (SDE generative model)">
+Throughout this document, a **diffusion model** consists of a neural network $u^\theta_t$ with parameters $\theta$ that parameterize a vector field and a fixed diffusion coefficient $\sigma_t$:
+
+$$
+\textbf{Neural network: } u^\theta : \mathbb{R}^d \times [0, 1] \to \mathbb{R}^d, \quad (x, t) \mapsto u^\theta_t(x) \text{ with parameters } \theta
+$$
+
+$$
+\textbf{Fixed: } \sigma_t : [0, 1] \to [0, \infty), \quad t \mapsto \sigma_t
+$$
+
+To obtain samples from our SDE model (i.e. generate objects), the procedure is as follows:
+
+| | |
+|---|---|
+| **Initialization:** $X_0 \sim p_{\text{init}}$ | $\blacktriangleright$ Initialize with simple distribution, e.g. a Gaussian |
+| **Simulation:** $\mathrm{d}X_t = u^\theta_t(X_t)\mathrm{d}t + \sigma_t \mathrm{d}W_t$ | $\blacktriangleright$ Simulate SDE from 0 to 1 |
+| **Goal:** $X_1 \sim p_{\text{data}}$ | $\blacktriangleright$ Goal is to make $X_1$ have distribution $p_{\text{data}}$ |
+
+A diffusion model with $\sigma_t = 0$ is a **flow model**.
+</Callout>
+
+---
+
+# 3 Flow Matching
+
+In the previous section, we constructed flow and diffusion models as generative models parameterized by a neural network vector field $u^\theta_t$. However, we have not yet discussed how to train them. i.e. how to optimize the parameters $\theta$ such that generative model returns something sensible, e.g. a nice-looking image or exciting video. Next, we discuss **flow matching** [9, 1, 11], a algorithm to train $u^\theta_t$ that is simple, scalable, and represents the current state-of-the-art.
+
+In this section, we restrict ourselves to flow models, i.e. we have a neural network $u^\theta_t$ and obtain samples from the generative model by simulating the ODE
+
+$$
+X_0 \sim p_{\text{init}}, \quad \mathrm{d}X_t = u^\theta_t(X_t)\mathrm{d}t \quad \text{(Flow model)} \tag{10}
+$$
+
+and using the endpoints $X_1$ for $t = 1$ as samples. As we discussed, our goal is that $X_1$ is distributed according to the data distribution $p_{\text{data}}$, i.e. $X_1 \sim p_{\text{data}}$. Therefore, the question "how to train" the neural network is really the following question: **How do we optimize $\theta$ such that simulating the flow model in Equation (10) results in samples from the data distribution $X_1 \sim p_{\text{data}}$?**
+
+## 3.1 Conditional and Marginal Probability Path
+
+The first step of flow matching is to specify a **probability path**. Intuitively, a probability path specifies a gradual interpolation between noise $p_{\text{init}}$ and data $p_{\text{data}}$ (see Figure 4). But why would we want that? Remember that our desired ODE trajectory fulfills $X_0 \sim p_{\text{init}}$ for $t = 0$ and $X_1 \sim p_{\text{data}}$ for $t = 1$. But what about times $0 < t < 1$ in between start and end? It turns out that we have some freedom to choose what should happen in between and this is what is mathematically formalized in a probability path.
+
+In the following, for a data point $z \in \mathbb{R}^d$, we denote with $\delta_z$ the **Dirac delta** "distribution". This is the simplest distribution that one can imagine: sampling from $\delta_z$ always returns $z$ (i.e. it is deterministic). A **conditional (interpolating) probability path** is a set of distribution $p_t(x|z)$ over $\mathbb{R}^d$ such that:
+
+$$
+p_0(\cdot|z) = p_{\text{init}}, \quad p_1(\cdot|z) = \delta_z \quad \text{for all } z \in \mathbb{R}^d. \tag{11}
+$$
+
+In other words, a conditional probability path gradually converts the initial distribution $p_{\text{init}}$ into a single data point (see e.g. Figure 4). You can think of a probability path as a trajectory in the space of distributions.

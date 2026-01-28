@@ -1,0 +1,48 @@
+/* Callout tokens */
+:root {
+  --color-callout-theorem: oklch(0.55 0.2 280);
+  --color-callout-example: oklch(0.55 0.18 160);
+  --color-callout-algorithm: oklch(0.6 0.18 80);
+  --color-callout-summary: oklch(0.55 0.18 230);
+
+  --gradient-callout-theorem: linear-gradient(135deg, oklch(0.97 0.02 280 / 60%), oklch(0.95 0.04 280 / 40%));
+  --gradient-callout-example: linear-gradient(135deg, oklch(0.97 0.02 160 / 60%), oklch(0.95 0.04 160 / 40%));
+  --gradient-callout-algorithm: linear-gradient(135deg, oklch(0.97 0.02 80 / 60%), oklch(0.95 0.04 80 / 40%));
+  --gradient-callout-summary: linear-gradient(135deg, oklch(0.97 0.02 230 / 60%), oklch(0.95 0.04 230 / 40%));
+}
+
+.dark {
+  --color-callout-theorem: oklch(0.75 0.15 280);
+  --color-callout-example: oklch(0.75 0.15 160);
+  --color-callout-algorithm: oklch(0.78 0.15 80);
+  --color-callout-summary: oklch(0.75 0.15 230);
+
+  --gradient-callout-theorem: linear-gradient(135deg, oklch(0.25 0.04 280 / 60%), oklch(0.22 0.06 280 / 40%));
+  --gradient-callout-example: linear-gradient(135deg, oklch(0.25 0.04 160 / 60%), oklch(0.22 0.06 160 / 40%));
+  --gradient-callout-algorithm: linear-gradient(135deg, oklch(0.25 0.04 80 / 60%), oklch(0.22 0.06 80 / 40%));
+  --gradient-callout-summary: linear-gradient(135deg, oklch(0.25 0.04 230 / 60%), oklch(0.22 0.06 230 / 40%));
+}
+
+@theme inline {
+  --color-callout-theorem: var(--color-callout-theorem);
+  --color-callout-example: var(--color-callout-example);
+  --color-callout-algorithm: var(--color-callout-algorithm);
+  --color-callout-summary: var(--color-callout-summary);
+
+  --gradient-callout-theorem: var(--gradient-callout-theorem);
+  --gradient-callout-example: var(--gradient-callout-example);
+  --gradient-callout-algorithm: var(--gradient-callout-algorithm);
+  --gradient-callout-summary: var(--gradient-callout-summary);
+}
+
+/* Callout accent: text-callout-theorem, border-callout-theorem */
+@utility callout-* {
+  --_accent: --value(--color-callout-*);
+  color: var(--_accent);
+  border-color: var(--_accent);
+}
+
+/* Callout background: bg-callout-theorem */
+@utility bg-callout-* {
+  background: --value(--gradient-callout-*);
+}

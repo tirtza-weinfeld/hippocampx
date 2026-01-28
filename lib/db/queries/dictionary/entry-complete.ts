@@ -20,6 +20,7 @@ import {
   sourceParts,
   sources,
   entryAudio,
+  senseNotations,
   type LexicalEntry,
 } from "../../schemas/dictionary";
 import type {
@@ -28,6 +29,7 @@ import type {
   SenseRelationInfo,
   WordFormInfo,
   AudioInfo,
+  NotationInfo,
 } from "./types";
 
 // ============================================================================
@@ -122,6 +124,7 @@ export async function fetchSensesByEntryId(entryId: number): Promise<SenseWithDe
           isSynthetic: row.sense_is_synthetic ?? false,
           verificationStatus: row.sense_verification,
           examples: [],
+          notations: [],
         },
         exampleIds: new Set(),
       });
@@ -141,6 +144,33 @@ export async function fetchSensesByEntryId(entryId: number): Promise<SenseWithDe
     }
   }
 
+  // Fetch notations for all senses
+  const senseIds = Array.from(senseMap.keys());
+  if (senseIds.length > 0) {
+    const notationRows = await neonDb
+      .select({
+        id: senseNotations.id,
+        sense_id: senseNotations.sense_id,
+        type: senseNotations.type,
+        value: senseNotations.value,
+        description: senseNotations.description,
+      })
+      .from(senseNotations)
+      .where(inArray(senseNotations.sense_id, senseIds));
+
+    for (const row of notationRows) {
+      const senseEntry = senseMap.get(row.sense_id);
+      if (senseEntry) {
+        senseEntry.sense.notations.push({
+          id: row.id,
+          type: row.type,
+          value: row.value,
+          description: row.description,
+        });
+      }
+    }
+  }
+
   // Build result preserving order
   const result: SenseWithDetails[] = [];
   const seen = new Set<number>();
@@ -154,6 +184,34 @@ export async function fetchSensesByEntryId(entryId: number): Promise<SenseWithDe
     }
   }
   return result;
+}
+
+// ============================================================================
+// NOTATIONS (Entry Level)
+// ============================================================================
+
+/** Fetch all notations for an entry (aggregated from all senses) */
+export async function fetchNotationsByEntryId(entryId: number): Promise<NotationInfo[]> {
+  'use cache'
+  cacheLife('hours')
+
+  const rows = await neonDb
+    .select({
+      id: senseNotations.id,
+      type: senseNotations.type,
+      value: senseNotations.value,
+      description: senseNotations.description,
+    })
+    .from(senseNotations)
+    .innerJoin(senses, eq(senseNotations.sense_id, senses.id))
+    .where(eq(senses.entry_id, entryId));
+
+  return rows.map(r => ({
+    id: r.id,
+    type: r.type,
+    value: r.value,
+    description: r.description,
+  }));
 }
 
 // ============================================================================

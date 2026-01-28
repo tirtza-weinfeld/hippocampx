@@ -142,6 +142,7 @@ export type SenseRelationSeed = {
 export type NotationSeed = {
   type: NotationType;
   value: string;
+  description?: string;
 };
 
 /** A meaning/definition of a word */
@@ -191,8 +192,9 @@ export const dictionaryData: LexicalEntrySeed[] = [
   ...WONDERFUL_DATA,
   ...ANATOMY_DATA,
   ...PRACTICAL_VOCAB_DATA,
-  ...CALCULUS_DATA,
   ...VOCABULARY_DATA,
   ...AI_ML_DATA,
-  ...VOCABULARY_DATA_ADDITIONS
+  ...VOCABULARY_DATA_ADDITIONS,
+  ...CALCULUS_DATA,
+
 ];

@@ -4,7 +4,7 @@
 
 import { pgEnum } from "drizzle-orm/pg-core";
 
-export const partOfSpeechEnum = pgEnum("partofspeech", [
+export const partOfSpeechEnum = pgEnum("part_of_speech", [
   "noun",
   "verb",
   "adjective",
@@ -20,7 +20,7 @@ export const partOfSpeechEnum = pgEnum("partofspeech", [
   "symbol",
 ]);
 
-export const relationTypeEnum = pgEnum("relationtype", [
+export const relationTypeEnum = pgEnum("relation_type", [
   "translation",
   "synonym",
   "antonym",
@@ -33,7 +33,7 @@ export const relationTypeEnum = pgEnum("relationtype", [
   "derivation",   // Morphological: integrate → integral
 ]);
 
-export const sourceTypeEnum = pgEnum("sourcetype", [
+export const sourceTypeEnum = pgEnum("source_type", [
   "book",
   "movie",
   "article",
@@ -44,7 +44,7 @@ export const sourceTypeEnum = pgEnum("sourcetype", [
   "podcast",
 ]);
 
-export const creditRoleEnum = pgEnum("creditrole", [
+export const creditRoleEnum = pgEnum("credit_role", [
   "author",
   "artist",
   "composer",
@@ -54,7 +54,7 @@ export const creditRoleEnum = pgEnum("creditrole", [
   "host",
 ]);
 
-export const verificationStatusEnum = pgEnum("verificationstatus", [
+export const verificationStatusEnum = pgEnum("verification_status", [
   "unverified", // Raw import / AI generated
   "flagged", // User reported issue
   "pending_review", // Human currently editing

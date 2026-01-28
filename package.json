@@ -12,7 +12,7 @@
     "lint:full": "tsc --noEmit && tsc -p plugins/tsconfig.json --noEmit && eslint",
     "lint:fix": "eslint --fix",
     "build:plugins": "tsc -p plugins/tsconfig.json",
-    "db:generate": "drizzle-kit generate:pg",
+    "db:generate": "drizzle-kit generate",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "db:seed:collections": "tsx lib/db/seeds/scripts/seed-collections.ts",
