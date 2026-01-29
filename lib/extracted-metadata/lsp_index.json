@@ -6874,6 +6874,67 @@
       ]
     },
     {
+      "uri": "problems/710-random-pick-with-blacklist/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/710-random-pick-with-blacklist/solution.py",
+      "symbols": [
+        {
+          "name": "Solution",
+          "detail": "class Solution",
+          "kind": 5,
+          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 18, "character": 61}},
+          "nameRange": {
+            "start": {
+              "line": 2,
+              "character": 6
+            },
+            "end": {
+              "line": 2,
+              "character": 14
+            }
+          },
+          "children": [
+            {
+              "name": "__init__",
+              "detail": "__init__(n: int, blacklist: list[int])",
+              "kind": 6,
+              "range": {"start": {"line": 4, "character": 4}, "end": {"line": 15, "character": 22}},
+              "nameRange": {
+                "start": {
+                  "line": 4,
+                  "character": 8
+                },
+                "end": {
+                  "line": 4,
+                  "character": 16
+                }
+              },
+              "children": []
+            },
+            {
+              "name": "pick",
+              "detail": "pick() -> int",
+              "kind": 6,
+              "range": {"start": {"line": 17, "character": 4}, "end": {"line": 18, "character": 61}},
+              "nameRange": {
+                "start": {
+                  "line": 17,
+                  "character": 8
+                },
+                "end": {
+                  "line": 17,
+                  "character": 12
+                }
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
       "uri": "problems/713-subarray-product-less-than-k/__init__.py",
       "symbols": []
     },

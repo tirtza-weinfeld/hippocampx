@@ -2,8 +2,8 @@
   "core.bellman-ford.classic:bellman_ford_classic": {
     "args": [
       "source",
-      "vertices",
-      "edges"
+      "edges",
+      "vertices"
     ],
     "code": "def bellman_ford_classic(\n    vertices: list[str], edges: list[tuple[str, str, float]], source: str\n) -> dict[str, float]:\n\n    d = [float(\"inf\")] * (V := len(vertices))\n    d[source] = 0\n\n    for _ in range(V - 1):\n        updated = False\n        for u, v, w in edges:\n            if d[u] + w < d[v]:\n                d[v] = d[u] + w\n                updated = True\n        if not updated:\n            return d\n\n    for u, v, w in edges:\n        if d[u] + w < d[v]:\n            raise Exception(\"Negative-weight cycle\")\n\n    return d",
     "expressions": {
@@ -66,8 +66,8 @@
   },
   "core.binary-search.bisect_left:simple_bisect_left": {
     "args": [
-      "a",
-      "x"
+      "x",
+      "a"
     ],
     "code": "def simple_bisect_left(a: list[int], x: int):\n\n    l, r = 0, len(a)\n    while l < r:\n        mid = (l + r) // 2\n        if x > a[mid]:\n            l = mid + 1\n        else:\n            r = mid\n    return l",
     "expressions": {
@@ -144,9 +144,9 @@
   },
   "core.modular-arithmetic.congruent1:congruent1": {
     "args": [
+      "a",
       "n",
-      "b",
-      "a"
+      "b"
     ],
     "code": "def congruent1(a: int, b: int, n: int) -> bool:\n    return (a - b) % n == 0",
     "file_path": "backend/algorithms/core/modular-arithmetic/congruent1.py",
@@ -179,9 +179,9 @@
   },
   "core.modular-arithmetic.congruent2:congruent2": {
     "args": [
+      "a",
       "n",
-      "b",
-      "a"
+      "b"
     ],
     "code": "def congruent2(a: int, b: int, n: int) -> bool:\n    return a % n == b % n",
     "file_path": "backend/algorithms/core/modular-arithmetic/congruent2.py",
@@ -214,8 +214,8 @@
   },
   "core.modular-arithmetic.mod:mod": {
     "args": [
-      "b",
-      "a"
+      "a",
+      "b"
     ],
     "code": "def mod(a: int, b: int) -> int:\n    return a % b",
     "file_path": "backend/algorithms/core/modular-arithmetic/mod.py",
@@ -411,10 +411,10 @@
   },
   "more.tictactoe.tictactoe copy 2:TicTacToe.minimax.dp": {
     "args": [
-      "curr_player",
+      "alpha",
       "state",
       "beta",
-      "alpha"
+      "curr_player"
     ],
     "code": "        def dp(state: Board, curr_player: Player, alpha: float, beta: float) -> int:\n            state_key = (str(state), curr_player)\n            if state_key in self._memo:\n                return self._memo[state_key]\n\n            if self.terminal(state):\n                w = self.winner(state)\n                self._memo[state_key] = 1 if w == curr_player else (0 if w is None else -1)\n                return self._memo[state_key]\n\n            opponent = O if curr_player == X else X\n            value = float('-inf')\n            for action in self.actions(state):\n                value = max(value, -dp(self.result(state, action), opponent, -beta, -alpha))\n                alpha = max(alpha, value)\n                if alpha >= beta:\n                    break\n\n            self._memo[state_key] = int(value)\n            return int(value)",
     "file_path": "backend/algorithms/more/tictactoe/tictactoe copy 2.py",
@@ -467,8 +467,8 @@
   },
   "more.tictactoe.tictactoe copy 2:TicTacToe.result": {
     "args": [
-      "action",
-      "board"
+      "board",
+      "action"
     ],
     "code": "    def result(self, board: Board, action: Action) -> Board:",
     "file_path": "backend/algorithms/more/tictactoe/tictactoe copy 2.py",
@@ -712,8 +712,8 @@
   },
   "more.tictactoe.tictactoe-minimax:TicTacToe.result": {
     "args": [
-      "action",
-      "board"
+      "board",
+      "action"
     ],
     "code": "    def result(self, board: Board, action: Action) -> Board:",
     "file_path": "backend/algorithms/more/tictactoe/tictactoe-minimax.py",
@@ -829,10 +829,10 @@
   },
   "more.tictactoe.tictactoe:TicTacToe.minimax.dp": {
     "args": [
-      "curr_player",
+      "alpha",
       "state",
       "beta",
-      "alpha"
+      "curr_player"
     ],
     "code": "        def dp(state: Board, curr_player: Player, alpha: float, beta: float) -> int:\n            state_key = (str(state), curr_player)\n            if state_key not in self._memo:\n\n                if self.terminal(state):\n                    w = self.winner(state)\n                    self._memo[state_key] = 1 if w == curr_player else (0 if w is None else -1)\n                    return self._memo[state_key]\n\n                opponent = O if curr_player == X else X\n                value = float('-inf')\n                for action in self.actions(state):\n                    value = max(value, -dp(self.result(state, action), opponent, -beta, -alpha))\n                    alpha = max(alpha, value)\n                    if alpha >= beta:\n                        break\n\n                self._memo[state_key] = int(value)\n            return  self._memo[state_key] ",
     "file_path": "backend/algorithms/more/tictactoe/tictactoe.py",
@@ -885,8 +885,8 @@
   },
   "more.tictactoe.tictactoe:TicTacToe.result": {
     "args": [
-      "action",
-      "board"
+      "board",
+      "action"
     ],
     "code": "    def result(self, board: Board, action: Action) -> Board:",
     "file_path": "backend/algorithms/more/tictactoe/tictactoe.py",
@@ -1016,8 +1016,8 @@
   },
   "more.tictactoe.tictactoe_no_player_in_state:TicTacToe.result": {
     "args": [
-      "action",
-      "board"
+      "board",
+      "action"
     ],
     "code": "    def result(self, board: Board, action: Action) -> Board:",
     "file_path": "backend/algorithms/more/tictactoe/tictactoe_no_player_in_state.py",
@@ -1188,8 +1188,8 @@
   },
   "problems.1000-minimum-cost-to-merge-stones.solution:Solution.mergeStones": {
     "args": [
-      "stones",
-      "K"
+      "K",
+      "stones"
     ],
     "code": "    def mergeStones(self, stones: list[int], K: int) -> int:\n        if ((n := len(stones)) - 1) % (K - 1):return -1\n\n        prefix, memo = [0], {}\n        for x in stones: prefix.append(prefix[-1] + x)\n        cost = lambda l, r: 0 if (r - l) % (K - 1) else prefix[r + 1] - prefix[l]\n\n        def dp(l, r):\n            if (key := (l, r)) not in memo:\n                memo[key] = min(\n                    (dp(l, t) + dp(t + 1, r) + cost(l, r) for t in range(l, r, K - 1)),\n                    default=0,\n                )\n            return memo[key]\n\n        return dp(0, n - 1)",
     "expressions": {
@@ -1238,8 +1238,8 @@
   },
   "problems.1011-capacity-to-ship-packages-within-d-days.solution:capacity_to_ship_packages_within_d_days": {
     "args": [
-      "days",
-      "weights"
+      "weights",
+      "days"
     ],
     "code": "def capacity_to_ship_packages_within_d_days(weights: list[int], days: int) -> int:\n    def days_needed(capacity: int) -> int:\n        d, load = 1, 0\n        for w in weights:\n            if load + w <= capacity:\n                load += w\n            else:\n                d += 1\n                load = w\n        return d\n\n    l, r = max(weights), sum(weights)\n    while l < r:\n        capacity = (l + r) // 2\n        if days_needed(capacity) <= days:\n            r = capacity\n        else:\n            l = capacity + 1\n    return l",
     "file_path": "backend/algorithms/problems/1011-capacity-to-ship-packages-within-d-days/solution.py",
@@ -1503,8 +1503,8 @@
   },
   "problems.127-word-ladder.solution:word_ladder": {
     "args": [
-      "beginWord",
       "wordList",
+      "beginWord",
       "endWord"
     ],
     "code": "def word_ladder(beginWord: str, endWord: str, wordList: list[str]) -> int:\n    if endWord not in wordList:\n        return 0\n\n    L = len(beginWord)\n    combos: dict[str, list[str]] = defaultdict(list)\n    for w in wordList:\n        for i in range(L):\n            combos[w[:i] + \"*\" + w[i+1:]].append(w)\n\n    front, back = {beginWord}, {endWord}\n    dist_front, dist_back = {beginWord: 1}, {endWord: 1}\n\n    while front and back:\n        if len(front) > len(back):\n            front, back = back, front\n            dist_front, dist_back = dist_back, dist_front\n\n        next_front = set()\n        for word in front:\n            for i in range(L):\n                for n in combos[word[:i] + \"*\" + word[i+1:]]:\n                    if n in dist_back:\n                        return dist_front[word] + dist_back[n]\n                    if n not in dist_front:\n                        dist_front[n] = dist_front[word] + 1\n                        next_front.add(n)\n        front = next_front\n\n    return 0",
@@ -1520,8 +1520,8 @@
   },
   "problems.1293-shortest-path-in-a-grid-with-obstacles-elimination.a_star:manhattan_distance": {
     "args": [
-      "b",
-      "a"
+      "a",
+      "b"
     ],
     "code": "def manhattan_distance(a: tuple[int, int], b: tuple[int, int]) -> int:\n    return abs(a[0] - b[0]) + abs(a[1] - b[1])",
     "file_path": "backend/algorithms/problems/1293-shortest-path-in-a-grid-with-obstacles-elimination/a_star.py",
@@ -1840,11 +1840,11 @@
   },
   "problems.1514-path-with-maximum-probability.bellman-ford:Solution.maxProbability": {
     "args": [
-      "edges",
+      "end",
       "start",
-      "succProb",
       "n",
-      "end"
+      "edges",
+      "succProb"
     ],
     "code": "    def maxProbability(self, n: int, edges: list[list[int]], succProb: list[float], start: int, end: int) -> float:\n        prob = [0.0] * n\n        prob[start] = 1.0\n\n        for _ in range(n - 1):\n            updated = False\n            for (u, v), p in zip(edges, succProb):\n                if prob[u] * p > prob[v]:\n                    prob[v] = prob[u] * p\n                    updated = True\n                if prob[v] * p > prob[u]:\n                    prob[u] = prob[v] * p\n                    updated = True\n            if not updated:\n                break\n\n        return prob[end]",
     "file_path": "backend/algorithms/problems/1514-path-with-maximum-probability/bellman-ford.py",
@@ -1876,11 +1876,11 @@
   },
   "problems.1514-path-with-maximum-probability.dijkstra:Solution.maxProbability": {
     "args": [
+      "end",
       "n",
       "edges",
-      "start",
-      "end",
-      "succProb"
+      "succProb",
+      "start"
     ],
     "code": "    def maxProbability(self, n: int, edges: list[list[int]], succProb: list[float], start: int, end: int) -> float:\n\n        adj = defaultdict(list)\n        for (u, v), p in zip(edges, succProb):\n            adj[u].append((v, p))\n            adj[v].append((u, p))\n\n        pq, best = [(-1.0, start)], [0.0] * n\n        best[start] = 1.0\n\n        while pq:\n            p, u = heappop(pq)\n            p = -p\n            if u == end:\n                return p\n            if p < best[u]:\n                continue\n            for v, w in adj[u]:\n                new_p = p * w\n                if new_p > best[v]:\n                    best[v] = new_p\n                    heappush(pq, (-new_p, v))\n        return 0.0",
     "file_path": "backend/algorithms/problems/1514-path-with-maximum-probability/dijkstra.py",
@@ -2159,8 +2159,8 @@
   },
   "problems.207-course-schedule.solution:Solution.canFinish": {
     "args": [
-      "n",
-      "prerequisites"
+      "prerequisites",
+      "n"
     ],
     "code": "    def canFinish(self, n: int, prerequisites: list[list[int]]) -> bool:\n        g = [[] for _ in range(n)]     \n        indeg = [0] * n                \n        for a, b in prerequisites:\n            g[b].append(a)             \n            indeg[a] += 1              \n\n        q = deque(i for i, d in enumerate(indeg) if d == 0)\n        taken = 0                      \n\n        while q:\n            u = q.popleft()             \n            taken += 1\n            for v in g[u]:              \n                indeg[v] -= 1           \n                if indeg[v] == 0:       \n                    q.append(v)         \n\n        return taken == n",
     "expressions": {
@@ -2377,8 +2377,8 @@
   },
   "problems.211-design-add-and-search-words-data-structure.solution:WordDictionary.search.dfs": {
     "args": [
-      "i",
-      "node"
+      "node",
+      "i"
     ],
     "code": "        def dfs(node: dict, i: int) -> bool:\n\n            if i == len(word):\n                return self.END_MARKER in node\n\n            if (c := word[i]) == \".\":\n\n                return any(\n                    dfs(child, i + 1)\n                    for k, child in node.items()\n                    if k != self.END_MARKER\n                )\n            child = node.get(c)\n            return bool(child) and dfs(child, i + 1)",
     "expressions": {
@@ -2399,8 +2399,8 @@
   },
   "problems.212-word-search-ii.solution:word_search_II": {
     "args": [
-      "words",
-      "board"
+      "board",
+      "words"
     ],
     "code": "def word_search_II(board: list[list[str]], words: list[str]) -> list[str]:\n    trie = {}  \n    for word in words:\n        node = trie\n        for c in word:\n            node = node.setdefault(c, {})\n        node[\"$\"] = word\n\n    def dfs(i, j, parent):\n        if not (0 <= i < m and 0 <= j < n) or (c := board[i][j]) not in parent:\n            return\n        node = parent[c]\n        if \"$\" in node:\n            res.append(node.pop(\"$\"))\n        board[i][j] = \"#\"\n        for x, y in ((i - 1, j), (i + 1, j), (i, j - 1), (i, j + 1)):\n            dfs(x, y, node)\n        board[i][j] = c\n        if not node:\n            parent.pop(c)\n\n    m, n, res = len(board), len(board[0]), []\n    [dfs(i, j, trie) for i in range(m) for j in range(n) if board[i][j] in trie]\n\n    return res",
     "expressions": {
@@ -2531,8 +2531,8 @@
   "problems.2145-count-the-hidden-sequences.solution:numberOfArrays": {
     "args": [
       "differences",
-      "lower",
-      "upper"
+      "upper",
+      "lower"
     ],
     "code": "def numberOfArrays(differences: list[int], lower: int, upper: int) -> int:\n\n    prefix_sum = min_marker = max_marker = 0\n\n    for diff in differences:\n        prefix_sum += diff\n        min_marker = min(min_marker, prefix_sum)\n        max_marker = max(max_marker, prefix_sum)\n\n    return max(0, (upper - max_marker) - (lower - min_marker) + 1)",
     "file_path": "backend/algorithms/problems/2145-count-the-hidden-sequences/solution.py",
@@ -2564,8 +2564,8 @@
   },
   "problems.215-kth-largest-element-in-an-array.solution:findKthLargest": {
     "args": [
-      "k",
-      "nums"
+      "nums",
+      "k"
     ],
     "code": "def findKthLargest(nums: list[int], k: int) -> int:\n    h = nums[:k]; heapq.heapify(h)\n    for x in nums[k:]:\n        if x > h[0]:\n            heapq.heapreplace(h, x) \n    return h[0]",
     "expressions": {
@@ -2602,8 +2602,8 @@
   },
   "problems.2402-meeting-rooms-iii.solution:mostBooked": {
     "args": [
-      "n",
-      "meetings"
+      "meetings",
+      "n"
     ],
     "code": "def mostBooked(n: int, meetings: list[list[int]]) -> int:\n\n    busy = []\n    heapify((free := [*range(n)]))\n    count = [0] * n\n\n    for s, e in sorted(meetings):\n        while busy and busy[0][0] <= s:\n            _, r = heappop(busy)\n            heappush(free, r)\n        if free:\n            r = heappop(free)\n            heappush(busy, (e, r))\n        else:\n            next_end, r = heappop(busy)\n            heappush(busy, (next_end + (e - s), r))\n        count[r] += 1\n\n    return max(range(n), key=count.__getitem__)",
     "expressions": {
@@ -2665,8 +2665,8 @@
   },
   "problems.256-paint-house.scalar:Solution.minCost.dp": {
     "args": [
-      "i",
-      "c"
+      "c",
+      "i"
     ],
     "code": "        def dp(i: int, c: int) -> int:\n            if i == n:\n                return \n            if (i, c) not in memo:\n\n                memo[i, c] = costs[i][c] + min(\n                    dp(i + 1, (c + 1) % 3), dp(i + 1, (c + 2) % 3)\n                )\n            return memo[i, c]",
     "expressions": {
@@ -2913,8 +2913,8 @@
   },
   "problems.347-top-k-frequent-elements.heap-nlargets:topKFrequent": {
     "args": [
-      "k",
-      "nums"
+      "nums",
+      "k"
     ],
     "code": "def topKFrequent(nums: list[int], k: int) -> list[int]:\n    freq = Counter(nums)\n    return heapq.nlargest(k, freq.keys(), key=freq.get)",
     "expressions": {
@@ -2943,8 +2943,8 @@
   },
   "problems.347-top-k-frequent-elements.heap:topKFrequent": {
     "args": [
-      "k",
-      "nums"
+      "nums",
+      "k"
     ],
     "code": "def topKFrequent(nums: list[int], k: int) -> list[int]:\n    freq ,h= Counter(nums), []\n    for num, f in freq.items():\n        heapq.heappush(h, (f, num))\n        if len(h) > k:\n            heapq.heappop(h)\n\n    return [num for _, num in h]",
     "file_path": "backend/algorithms/problems/347-top-k-frequent-elements/heap.py",
@@ -2958,8 +2958,8 @@
   },
   "problems.347-top-k-frequent-elements.sort-frequency-bucketing:topKFrequent": {
     "args": [
-      "k",
-      "nums"
+      "nums",
+      "k"
     ],
     "code": "def topKFrequent(nums: list[int], k: int) -> list[int]:\n\n    bucket=[[] for _ in range(len(nums)+1)]\n    for n,f in Counter(nums).items():\n        bucket[f].append(n)\n\n    return [num for f_bucket in reversed(bucket) for num in f_bucket][:k]",
     "file_path": "backend/algorithms/problems/347-top-k-frequent-elements/sort-frequency-bucketing.py",
@@ -3110,8 +3110,8 @@
   },
   "problems.39-combination-sum.solution:combination_sum": {
     "args": [
-      "candidates",
-      "target"
+      "target",
+      "candidates"
     ],
     "code": "def combination_sum(candidates: list[int], target: int) -> list[list[int]]:\n\n    candidates.sort()\n    res, path = [], []\n\n    def dfs(i: int, rem: int) -> None:\n        if rem == 0:\n            res.append(path.copy())\n            return\n        for j in range(i, len(candidates)):\n            if (c := candidates[j]) > rem:\n                break\n            path.append(c)\n            dfs(j, rem - c)\n            path.pop()\n\n    dfs(0, target)\n    return res",
     "file_path": "backend/algorithms/problems/39-combination-sum/solution.py",
@@ -3139,8 +3139,8 @@
   },
   "problems.410-split-array-largest-sum.binary_search_on_answer_space:splitArray": {
     "args": [
-      "k",
-      "nums"
+      "nums",
+      "k"
     ],
     "code": "def splitArray(nums: list[int], k: int) -> int:\n\n    def can(max_sum: int) -> bool:\n        parts = curr = 0\n        for x in nums:\n            if curr + x > max_sum:\n                parts += 1\n                curr = 0\n            curr += x\n        return parts + 1 <= k\n\n    lo, hi = max(nums), sum(nums)\n    while lo < hi:\n        mid = (lo + hi) // 2\n        if can(mid):\n            hi = mid\n        else:\n            lo = mid + 1\n    return lo",
     "file_path": "backend/algorithms/problems/410-split-array-largest-sum/binary_search_on_answer_space.py",
@@ -3169,8 +3169,8 @@
   },
   "problems.410-split-array-largest-sum.topdown-dp:splitArray": {
     "args": [
-      "k",
-      "nums"
+      "nums",
+      "k"
     ],
     "code": "def splitArray(nums: list[int], k: int) -> int:\n    prefix = [0]\n    for x in nums:\n        prefix.append(prefix[-1] + x)\n\n    memo, n = {}, len(nums)\n\n    def dp(i: int, cuts: int) -> int:\n        if cuts == 0:\n            return prefix[n] - prefix[i]\n\n        if (i, cuts) not in memo:\n            memo[i, cuts] = min(\n                (\n                    max(prefix[j] - prefix[i], dp(j, cuts - 1))\n                    for j in range(i + 1, n - cuts + 1)\n                ),\n                default=float(\"inf\"),\n            )\n        return memo[i, cuts]\n\n    return dp(0, k - 1)",
     "file_path": "backend/algorithms/problems/410-split-array-largest-sum/topdown-dp.py",
@@ -3336,8 +3336,8 @@
   },
   "problems.50-pow.solution:myPow": {
     "args": [
-      "n",
-      "x"
+      "x",
+      "n"
     ],
     "code": "def myPow(x: float, n: int) -> float:\n    if n == 0: return 1.0\n    if n < 0: return 1.0 / myPow(x, -n)\n\n    result, base = 1.0, x\n    while n:\n        if n & 1:\n            result *= base\n        base *= base\n        n >>= 1     \n    return result",
     "expressions": {
@@ -3459,8 +3459,8 @@
   },
   "problems.518-coin-change-ii.solution:coin_change_II": {
     "args": [
-      "coins",
-      "amount"
+      "amount",
+      "coins"
     ],
     "code": "def coin_change_II(amount: int, coins: list[int]) -> int:\n    memo, n = {}, len(coins)\n\n    def dp(c, amount):\n        if amount == 0:\n            return 1\n        if amount < 0 or c == n:\n            return 0\n        if (c, amount) not in memo:\n            memo[c, amount] = dp(c, amount - coins[c]) + dp(c + 1, amount)\n        return memo[c, amount]\n\n    return dp(0, amount)",
     "file_path": "backend/algorithms/problems/518-coin-change-ii/solution.py",
@@ -3821,8 +3821,8 @@
   },
   "problems.642-design-search-autocomplete-system.solution:AutocompleteSystem._update_hot": {
     "args": [
-      "s",
-      "node"
+      "node",
+      "s"
     ],
     "code": "    def _update_hot(self, node: TrieNode, s: str) -> None:\n        if s not in node.hot:\n            node.hot.append(s)\n        node.hot.sort(key=lambda x: (-self.freq[x], x))\n        if len(node.hot) > 3:\n            node.hot.pop()",
     "expressions": {
@@ -3905,10 +3905,17 @@
     "name": "x",
     "summary": "Non-negative integer to take the square root of"
   },
+  "problems.710-random-pick-with-blacklist.solution:Solution": {
+    "code": "class Solution:\n\n    def __init__(self, n: int, blacklist: list[int]):\n        self.m = n - len(blacklist)\n        black = set(blacklist)\n        self.map: dict[int, int] = {}\n\n        t = self.m\n        for b in blacklist:\n            if b < self.m:\n                while t in black:\n                    t += 1\n                self.map[b] = t\n                t += 1\n\n    def pick(self) -> int:\n        return self.map.get(x := random.randrange(self.m), x)",
+    "file_path": "backend/algorithms/problems/710-random-pick-with-blacklist/solution.py",
+    "intuition": "- Randomly pick an integer from [0, n) excluding blacklisted values,\n        - with uniform probability and O(1) pick time.\n\n        - Core idea:\n        - Let B = len(blacklist)\n        - There are m = n - B valid numbers total\n        - Sample uniformly from [0, m)\n        - Remap only the blacklisted values that fall inside [0, m)\n          - to valid numbers in the tail [m, n)\n\n    - Example:\n        - n = 12\n        - blacklist = [1, 4, 6]\n\n        - m = 12 - 3 = 9\n\n        - Sample range: [0, 9)  -> {0,1,2,3,4,5,6,7,8}\n        - Tail range:   [9, 12) -> {9,10,11}\n\n        - Blacklisted values < m: {1,4,6}\n\n        - Build mapping:\n            - 1 -> 9\n            - 4 -> 10\n            - 6 -> 11\n\n        - Final mapping:\n            - {1: 9, 4: 10, 6: 11}\n\n        - Picking:\n            - x = random.randrange(9)\n            - return map[x] if x is blacklisted else x\n\n        - This produces exactly:\n            - {0,2,3,5,7,8,9,10,11}\n        - each with probability 1/9.",
+    "kind": "class",
+    "name": "Solution"
+  },
   "problems.713-subarray-product-less-than-k.solution:num_subarray_product_less_than_k": {
     "args": [
-      "k",
-      "nums"
+      "nums",
+      "k"
     ],
     "code": "def num_subarray_product_less_than_k(nums: list[int], k: int) -> int:\n    if k <= 1:\n        return 0\n    product, left, count = 1, 0, 0\n    for right, num in enumerate(nums):\n        product *= num\n        while product >= k:\n            product //= nums[left]\n            left += 1\n        count += right - left + 1\n    return count",
     "file_path": "backend/algorithms/problems/713-subarray-product-less-than-k/solution.py",
@@ -3922,8 +3929,8 @@
   },
   "problems.743-network-delay-time.dijkstra-b:Solution.networkDelayTime": {
     "args": [
-      "n",
       "k",
+      "n",
       "times"
     ],
     "code": "    def networkDelayTime(self, times: list[list[int]], n: int, k: int) -> int:\n\n        adj = defaultdict(list)\n        for u, v, w in times:\n            adj[u].append((v, w))\n\n        pq, finalized, time = [(0, k)], set(), 0\n\n        while pq:\n            t, node = heappop(pq)\n            if node in finalized:\n                continue\n            finalized.add(node)\n            time = t\n\n            for neighbor, travel_time in adj[node]:\n                if neighbor not in finalized:\n                    heappush(pq, (time + travel_time, neighbor))\n\n        return time if len(finalized) == n else -1",
@@ -3953,8 +3960,8 @@
   "problems.743-network-delay-time.dijkstra:Solution.networkDelayTime": {
     "args": [
       "n",
-      "k",
-      "times"
+      "times",
+      "k"
     ],
     "code": "    def networkDelayTime(self, times: list[list[int]], n: int, k: int) -> int:\n\n        g = {i: [] for i in range(1, n + 1)}\n        for u, v, w in times:\n            g[u].append((w, v))\n\n        dist = {i: float(\"inf\") for i in g}\n        dist[k] = 0\n\n        pq = [(0, k)]\n\n        while pq:\n            d, u = heappop(pq)\n            if d > dist[u]: continue\n\n\n            for w, v in g[u]:\n                if (nd := d + w) < dist[v]:\n                    dist[v] = nd\n                    heappush(pq, (nd, v))\n\n        return ans if (ans := max(dist.values())) < float(\"inf\") else -1",
     "file_path": "backend/algorithms/problems/743-network-delay-time/dijkstra.py",
@@ -3969,8 +3976,8 @@
   },
   "problems.76-minimum-window-substring.solution:minWindow": {
     "args": [
-      "t",
-      "s"
+      "s",
+      "t"
     ],
     "code": "def minWindow(s: str, t: str) -> str:\n    t_count, have = Counter(t), defaultdict(int)\n    letters_needed, min_idx, l = len(t_count), None, 0\n    for r, c in enumerate(s):\n        have[c] += 1\n        if have[c] == t_count[c]:\n            letters_needed -= 1\n            while letters_needed == 0:\n                if not min_idx or r - l + 1 < min_idx[1] - min_idx[0]:\n                    min_idx = l, r + 1\n                have[s[l]] -= 1\n                if have[s[l]] < t_count[s[l]]:\n                    letters_needed += 1\n                l += 1\n    return \"\" if min_idx == None else s[min_idx[0] : min_idx[1]]",
     "file_path": "backend/algorithms/problems/76-minimum-window-substring/solution.py",
@@ -4018,11 +4025,11 @@
   },
   "problems.787-cheapest-flights-within-k-stops.bellman_ford:cheapest_flights_with_at_most_k_stops": {
     "args": [
-      "n",
       "k",
+      "src",
+      "n",
       "flights",
-      "dst",
-      "src"
+      "dst"
     ],
     "code": "def cheapest_flights_with_at_most_k_stops(\n    n: int, flights: list[list[int]], src: int, dst: int, k: int\n) -> int:\n    d = [float(\"inf\")] * n\n    d[src] = 0\n\n    for _ in range(k + 1):\n        tmp = d[:]\n        for u, v, w in flights:\n            if d[u] + w < tmp[v]:\n                tmp[v] = d[u] + w\n        d = tmp\n\n    return d[dst] if d[dst] < float(\"inf\") else -1",
     "file_path": "backend/algorithms/problems/787-cheapest-flights-within-k-stops/bellman_ford.py",
@@ -4036,10 +4043,10 @@
   },
   "problems.787-cheapest-flights-within-k-stops.dijkstra:cheapest_flights_with_at_most_k_stops": {
     "args": [
+      "src",
       "flights",
       "k",
-      "dst",
-      "src"
+      "dst"
     ],
     "code": "def cheapest_flights_with_at_most_k_stops( flights: list[list[int]], src: int, dst: int, k: int) -> int:\n\n    graph = defaultdict(list)\n    for u, v, price in flights:\n        graph[u].append((v, price))\n\n    pq, min_stops = [(0, src, 0)], {}\n\n    while pq:\n        cost, city, stops = heapq.heappop(pq)\n\n        if stops > min_stops.get(city, float(\"inf\")): continue\n        if city == dst: return cost\n\n        min_stops[city] = stops\n        if stops <= k:\n            for neighbor, price in graph[city]:\n                heapq.heappush(pq, (cost + price, neighbor, stops + 1))\n    return -1",
     "file_path": "backend/algorithms/problems/787-cheapest-flights-within-k-stops/dijkstra.py",
@@ -4066,8 +4073,8 @@
   },
   "problems.79-word-search.solution:word_search": {
     "args": [
-      "board",
-      "word"
+      "word",
+      "board"
     ],
     "code": "def word_search(board: list[list[str]], word: str) -> bool:\n    rows, cols, n = len(board), len(board[0]), len(word)\n    def dfs(r: int, c: int, i: int) -> bool:\n        if i == n:\n            return True\n        if not (0 <= r < rows and 0 <= c < cols and board[r][c] == word[i]):\n            return False\n        tmp, board[r][c] = board[r][c], \"#\"\n        for x, y in ((r + 1, c), (r - 1, c), (r, c + 1), (r, c - 1)):\n            if dfs(x, y, i + 1):\n                board[r][c] = tmp\n                return True\n        board[r][c] = tmp\n        return False\n    return any(\n        dfs(r, c, 0)\n        for r in range(rows)\n        for c in range(cols)\n        if board[r][c] == word[0]\n    )",
     "file_path": "backend/algorithms/problems/79-word-search/solution.py",
@@ -4082,8 +4089,8 @@
   },
   "problems.837-new-21-game.solution:new21Game": {
     "args": [
-      "n",
       "k",
+      "n",
       "maxPts"
     ],
     "code": "def new21Game(n: int, k: int, maxPts: int) -> float:\n\n    if k == 0 or n >= k + maxPts:\n        return 1.0\n\n    dp = [0] * (n + 1)\n    dp[0] = s = 1\n\n    for i in range(1, n + 1):\n        dp[i] = s / maxPts\n        if i < k:\n            s += dp[i]\n        if i - maxPts >= 0 and i - maxPts < k:\n            s -= dp[i - maxPts]\n    return sum(dp[k:])",

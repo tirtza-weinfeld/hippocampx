@@ -1,0 +1,38 @@
+# Random Pick with Blacklist
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="hard" />
+
+<PillList pills={["hash-table", "randomized"]} />
+
+[710. Random Pick with Blacklist](https://leetcode.com/problems/random-pick-with-blacklist/)
+
+## [!(ProblemDefinition)] Definition
+
+Given an integer `n` and a blacklist array, implement a class that picks a random integer from `[0, n-1]` uniformly that is not in the blacklist. Optimize to minimize calls to the random function.
+
+## [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/710-random-pick-with-blacklist/solution.py"
+import random
+
+class Solution:
+
+    def __init__(self, n: int, blacklist: list[int]):
+        self.m = n - len(blacklist)
+        black = set(blacklist)
+        self.map: dict[int, int] = {}
+
+        t = self.m
+        for b in blacklist:
+            if b < self.m:
+                while t in black:
+                    t += 1
+                self.map[b] = t
+                t += 1
+
+    def pick(self) -> int:
+        return self.map.get(x := random.randrange(self.m), x)
+```
+

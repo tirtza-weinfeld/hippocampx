@@ -260,6 +260,22 @@
       "difficulty": "Medium",
       "topics": ["dynamic_programming", "dynamic_programming-1D"]
     },
+    "710-random-pick-with-blacklist": {
+      "time_stamps": {
+        "created_at": "2026-01-29T12:17:02.474337",
+        "updated_at": "2026-01-29T12:51:52.087173"
+      },
+      "solutions": {
+        "solution.py": {
+          "code": "import random\n\nclass Solution:\n\n    def __init__(self, n: int, blacklist: list[int]):\n        self.m = n - len(blacklist)\n        black = set(blacklist)\n        self.map: dict[int, int] = {}\n\n        t = self.m\n        for b in blacklist:\n            if b < self.m:\n                while t in black:\n                    t += 1\n                self.map[b] = t\n                t += 1\n\n    def pick(self) -> int:\n        return self.map.get(x := random.randrange(self.m), x)"
+        }
+      },
+      "title": "Random Pick with Blacklist",
+      "definition": "Given an integer `n` and a blacklist array, implement a class that picks a random integer from `[0, n-1]` uniformly that is not in the blacklist. Optimize to minimize calls to the random function.",
+      "leetcode": "https://leetcode.com/problems/random-pick-with-blacklist/",
+      "difficulty": "hard",
+      "topics": ["hash-table", "randomized"]
+    },
     "528-random-pick-with-weight": {
       "time_stamps": {
         "created_at": "2025-11-18T20:08:56.962818",

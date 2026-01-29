@@ -21,6 +21,7 @@ description: Tailwind CSS 4.1+ patterns. Use when styling components, responsive
 - `@apply` → `@utility` or raw CSS
 - `dark:bg-*` per element → semantic tokens (see `patterns.md`)
 - `group` class → `in-*` variant (see `variants.md`)
+- `bg-gradient-to-*` → `bg-linear-to-*`
 
 ## Patterns
 
@@ -29,3 +30,4 @@ description: Tailwind CSS 4.1+ patterns. Use when styling components, responsive
 - **Container queries**: `@container`, `@sm:`, `@md:` → `variants.md`
 - **Entry animation**: `starting:` variant → `patterns.md`
 - **Masks**: `mask-b-from-*`, `mask-radial-*` → `patterns.md`
+- **Project utilities**: check `styles/base/utilities.css`

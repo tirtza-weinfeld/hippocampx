@@ -9,6 +9,14 @@
   "problems/394-decode-string/solution.py": [
     7
   ],
+  "problems/710-random-pick-with-blacklist/solution.py": [
+    9,
+    10,
+    11,
+    12,
+    14,
+    15
+  ],
   "problems/300-longest-increasing-subsequence/bottom-up.py": [
     1
   ],

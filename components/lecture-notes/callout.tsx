@@ -4,14 +4,14 @@ import { useState, startTransition, ViewTransition, type ReactNode } from "react
 import { motion, AnimatePresence, useReducedMotion } from "motion/react"
 import { BookOpen, FlaskConical, Code2, ListChecks, ChevronDown } from "lucide-react"
 
-const CONFIG = {
-  theorem: { icon: BookOpen, bg: "bg-callout-theorem", accent: "callout-theorem" },
-  example: { icon: FlaskConical, bg: "bg-callout-example", accent: "callout-example" },
-  algorithm: { icon: Code2, bg: "bg-callout-algorithm", accent: "callout-algorithm" },
-  summary: { icon: ListChecks, bg: "bg-callout-summary", accent: "callout-summary" },
-} as const
+const ICONS = {
+  theorem: BookOpen,
+  example: FlaskConical,
+  algorithm: Code2,
+  summary: ListChecks,
+}
 
-type CalloutType = keyof typeof CONFIG
+type CalloutType = keyof typeof ICONS
 
 const contentVariants = {
   collapsed: { height: 0, opacity: 0 },
@@ -33,7 +33,7 @@ export function Callout({
 }) {
   const [isOpen, setIsOpen] = useState(defaultOpen)
   const reducedMotion = useReducedMotion()
-  const { icon: Icon, bg, accent } = CONFIG[type]
+  const Icon = ICONS[type]
 
   const toggle = () => {
     if (!collapsible) return
@@ -41,7 +41,9 @@ export function Callout({
   }
 
   return (
-    <aside className={`my-6 overflow-hidden rounded-lg border ${accent} ${bg} starting:opacity-0 starting:translate-y-2 transition duration-200`}>
+    <aside data-callout={type} className="my-6 overflow-hidden rounded-xl backdrop-blur-sm starting:opacity-0 starting:translate-y-2 transition duration-300 data-[callout=theorem]:bg-gradient-callout-theorem data-[callout=example]:bg-gradient-callout-example data-[callout=algorithm]:bg-gradient-callout-algorithm data-[callout=summary]:bg-gradient-callout-summary"
+    
+    >
       <button
         type="button"
         onClick={toggle}
@@ -49,12 +51,12 @@ export function Callout({
         aria-expanded={collapsible ? isOpen : undefined}
         className="flex w-full items-center gap-3 px-4 py-3 text-left disabled:cursor-default not-disabled:cursor-pointer not-disabled:hover:bg-black/2 dark:not-disabled:hover:bg-white/2"
       >
-        <span className={`flex size-8 shrink-0 items-center justify-center rounded-md bg-current/15 ${accent}`}>
-          <Icon className="size-4" />
+        <span className="flex size-9 shrink-0 items-center justify-center rounded-xl shadow-lg in-data-[callout=theorem]:bg-gradient-callout-theorem-icon in-data-[callout=theorem]:shadow-callout-theorem/30 in-data-[callout=example]:bg-gradient-callout-example-icon in-data-[callout=example]:shadow-callout-example/30 in-data-[callout=algorithm]:bg-gradient-callout-algorithm-icon in-data-[callout=algorithm]:shadow-callout-algorithm/30 in-data-[callout=summary]:bg-gradient-callout-summary-icon in-data-[callout=summary]:shadow-callout-summary/30">
+          <Icon className="size-4 text-white drop-shadow-md" />
         </span>
 
         <span className="flex flex-1 flex-col gap-0.5">
-          <span className={`text-xs font-medium uppercase tracking-wide ${accent}`}>{type}</span>
+          <span className="text-xs font-medium uppercase tracking-wide in-data-[callout=theorem]:text-gradient-callout-theorem-accent in-data-[callout=example]:text-gradient-callout-example-accent in-data-[callout=algorithm]:text-gradient-callout-algorithm-accent in-data-[callout=summary]:text-gradient-callout-summary-accent">{type}</span>
           {title && <span className="text-sm font-semibold text-foreground">{title}</span>}
         </span>
 
