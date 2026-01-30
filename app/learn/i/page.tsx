@@ -5,11 +5,15 @@ import { flowModelIllustrations } from
 
 
 export default function IPage() {
+    const R=flowModelIllustrations["euler-method"]
     return <div>
             <div>
                 {Object.entries(flowModelIllustrations).length}
         </div>
-
+        <div>
+        <R/>
+        </div>
+        
         {
     
         Object.entries(flowModelIllustrations).map(([slug, Illustration]) => (
@@ -18,8 +22,7 @@ export default function IPage() {
                 <Illustration />
             </div>
         ))
-    }
-
+    } 
     </div>
 
 }

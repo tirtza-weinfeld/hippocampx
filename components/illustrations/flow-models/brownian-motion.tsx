@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { motion, useReducedMotion } from "motion/react"
-import { IllustrationControls } from "./illustration-controls"
+import { IllustrationControls, type IllustrationSize, sizeClasses } from "./illustration-controls"
 
 const steps = [
   { trails: 1, showNoise: false, label: "Random walk: each step is random" },
@@ -23,7 +23,7 @@ const paths = [1, 2, 3].map(seed => {
   return pts.map((p, i) => `${i === 0 ? "M" : "L"}${p.x},${p.y}`).join(" ")
 })
 
-export const BrownianMotionIllustration = () => {
+export function BrownianMotionIllustration({ size = "md" }: { size?: IllustrationSize }) {
   const [step, setStep] = useState(0)
   const [playing, setPlaying] = useState(true)
   const reducedMotion = useReducedMotion()
@@ -40,13 +40,13 @@ export const BrownianMotionIllustration = () => {
 
   return (
     <div className="flex flex-col items-center gap-2">
-      <motion.svg width="160" height="105" viewBox="0 0 160 105" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+      <motion.svg viewBox="0 0 160 105" className={sizeClasses[size]} initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
         {paths.slice(0, trails).map((d, i) => (
-          <motion.path key={i} d={d} fill="none" className={colors[i]} strokeWidth="1.5" animate={{ opacity: 1 }} transition={ease} />
+          <motion.path key={i} d={d} fill="none" className={colors[i]} strokeWidth="1.5" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={ease} />
         ))}
         <circle cx="25" cy="52" r="4" className="fill-red-500 dark:fill-red-400" />
         <text x="20" y="68" fontSize="8" className="fill-red-500 dark:fill-red-400">X₀</text>
-        <motion.g animate={{ opacity: showNoise ? 1 : 0 }} transition={ease}>
+        <motion.g initial={{ opacity: 0 }} animate={{ opacity: showNoise ? 1 : 0 }} transition={ease}>
           <rect x="40" y="5" width="80" height="14" rx="3" className="fill-sky-500/20 dark:fill-sky-400/20" />
           <text x="80" y="15" fontSize="8" textAnchor="middle" className="fill-sky-500 dark:fill-sky-400" fontWeight="bold">dW ~ N(0, dt)</text>
         </motion.g>

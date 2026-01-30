@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { motion } from "motion/react"
-import { IllustrationControls } from "./illustration-controls"
+import { IllustrationControls, type IllustrationSize, sizeClasses } from "./illustration-controls"
 
 // Vector field u(x) = direction at each point
 // Simple rotating field: u(x,y) = (-y, x) normalized
@@ -34,7 +34,7 @@ const steps = [
 
 const ease = { type: "spring", stiffness: 80, damping: 20 } as const
 
-export const VectorFieldIllustration = () => {
+export function VectorFieldIllustration({ size = "md" }: { size?: IllustrationSize }) {
   const [step, setStep] = useState(0)
   const [playing, setPlaying] = useState(true)
 
@@ -49,15 +49,13 @@ export const VectorFieldIllustration = () => {
   return (
     <div className="flex flex-col items-center gap-2">
       <motion.svg
-        width="160"
-        height="105"
         viewBox="0 0 160 105"
-        overflow="hidden"
+        className={sizeClasses[size]}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
       >
         {/* Grid dots */}
-        <motion.g animate={{ opacity: showGrid ? 0.3 : 0 }} transition={ease}>
+        <motion.g initial={{ opacity: 0 }} animate={{ opacity: showGrid ? 0.3 : 0 }} transition={ease}>
           {arrows.map((a, i) => (
             <circle key={i} cx={a.x} cy={a.y} r="1.5" fill="currentColor" />
           ))}
@@ -67,6 +65,7 @@ export const VectorFieldIllustration = () => {
         {arrows.map((a, i) => (
           <motion.g
             key={i}
+            initial={{ opacity: 0 }}
             animate={{
               opacity: showArrows ? (highlight === -1 || highlight === i ? 1 : 0.3) : 0
             }}
@@ -97,13 +96,14 @@ export const VectorFieldIllustration = () => {
             r="4"
             className="fill-red-500/30 dark:fill-red-400/30 stroke-red-500 dark:stroke-red-400"
             strokeWidth="1.5"
+            initial={{ opacity: 0, scale: 1 }}
             animate={{ opacity: 1, scale: [1, 1.2, 1] }}
             transition={{ duration: 0.5 }}
           />
         )}
 
         {/* Formula label */}
-        <motion.g animate={{ opacity: showLabel ? 1 : 0 }} transition={ease}>
+        <motion.g initial={{ opacity: 0 }} animate={{ opacity: showLabel ? 1 : 0 }} transition={ease}>
           <rect x="35" y="5" width="90" height="16" rx="3" className="fill-violet-500/20 dark:fill-violet-400/20" />
           <text x="80" y="17" fontSize="9" textAnchor="middle" className="fill-violet-500 dark:fill-violet-400" fontWeight="bold">
             u(x,t) = velocity at x

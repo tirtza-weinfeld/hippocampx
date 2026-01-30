@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { motion, useReducedMotion } from "motion/react"
-import { IllustrationControls } from "./illustration-controls"
+import { IllustrationControls, type IllustrationSize, sizeClasses } from "./illustration-controls"
 
 const steps = [
   { sigma: 0, label: "σ=0: deterministic flow to origin (ODE)" },
@@ -42,7 +42,7 @@ const colors = [
   "stroke-green-500 dark:stroke-green-400",
 ]
 
-export const OrnsteinUhlenbeckIllustration = () => {
+export function OrnsteinUhlenbeckIllustration({ size = "md" }: { size?: IllustrationSize }) {
   const [step, setStep] = useState(0)
   const [playing, setPlaying] = useState(true)
   const reducedMotion = useReducedMotion()
@@ -60,7 +60,7 @@ export const OrnsteinUhlenbeckIllustration = () => {
 
   return (
     <div className="flex flex-col items-center gap-2">
-      <motion.svg width="160" height="105" viewBox="0 0 160 105" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+      <motion.svg className={sizeClasses[size]} viewBox="0 0 160 105" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
         {/* Center line (equilibrium) */}
         <line x1="20" y1="52" x2="145" y2="52" stroke="currentColor" strokeWidth="1" opacity="0.2" strokeDasharray="4 2" />
         <text x="148" y="54" fontSize="6" fill="currentColor" opacity="0.4">0</text>
@@ -89,7 +89,7 @@ export const OrnsteinUhlenbeckIllustration = () => {
         ))}
 
         {/* Stationary distribution indicator for high sigma */}
-        <motion.g animate={{ opacity: sigma >= 0.5 ? 0.4 : 0 }} transition={ease}>
+        <motion.g initial={{ opacity: 0 }} animate={{ opacity: sigma >= 0.5 ? 0.4 : 0 }} transition={ease}>
           <ellipse cx="140" cy="52" rx="3" ry={10 + sigma * 15} className="fill-current/10 stroke-current/30" strokeWidth="1" />
         </motion.g>
 

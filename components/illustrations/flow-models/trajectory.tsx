@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { motion } from "motion/react"
-import { IllustrationControls } from "./illustration-controls"
+import { IllustrationControls, type IllustrationSize, sizeClasses } from "./illustration-controls"
 
 // Trajectory following a spiral/curved path
 const trajectory = (() => {
@@ -28,7 +28,7 @@ const steps = [
 
 const ease = { type: "spring", stiffness: 80, damping: 20 } as const
 
-export const TrajectoryIllustration = () => {
+export function TrajectoryIllustration({ size = "md" }: { size?: IllustrationSize }) {
   const [step, setStep] = useState(0)
   const [playing, setPlaying] = useState(true)
 
@@ -47,10 +47,8 @@ export const TrajectoryIllustration = () => {
   return (
     <div className="flex flex-col items-center gap-2">
       <motion.svg
-        width="160"
-        height="105"
         viewBox="0 0 160 105"
-        overflow="hidden"
+        className={sizeClasses[size]}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
       >
@@ -64,6 +62,7 @@ export const TrajectoryIllustration = () => {
           className="stroke-blue-500 dark:stroke-blue-400"
           strokeWidth="2"
           strokeDasharray="400"
+          initial={{ strokeDashoffset: 400, opacity: 0 }}
           animate={{
             strokeDashoffset: showPath ? 400 * (1 - progress) : 400,
             opacity: showPath ? 1 : 0
@@ -72,7 +71,7 @@ export const TrajectoryIllustration = () => {
         />
 
         {/* Start point */}
-        <motion.g animate={{ opacity: showStart ? 1 : 0 }} transition={ease}>
+        <motion.g initial={{ opacity: 0 }} animate={{ opacity: showStart ? 1 : 0 }} transition={ease}>
           <circle cx={trajectory[0].x} cy={trajectory[0].y} r="5" className="fill-green-500 dark:fill-green-400" />
           <text x={trajectory[0].x - 8} y={trajectory[0].y + 14} fontSize="9" className="fill-green-500 dark:fill-green-400" fontWeight="bold">
             X₀
@@ -82,6 +81,7 @@ export const TrajectoryIllustration = () => {
         {/* Current position marker */}
         {showPath && progress > 0 && progress < 1 && (
           <motion.g
+            initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={ease}
           >
@@ -95,7 +95,7 @@ export const TrajectoryIllustration = () => {
         )}
 
         {/* End point */}
-        <motion.g animate={{ opacity: showEnd ? 1 : 0 }} transition={ease}>
+        <motion.g initial={{ opacity: 0 }} animate={{ opacity: showEnd ? 1 : 0 }} transition={ease}>
           <circle cx={trajectory[trajectory.length - 1].x} cy={trajectory[trajectory.length - 1].y} r="5" className="fill-red-500 dark:fill-red-400" />
           <text x={trajectory[trajectory.length - 1].x + 6} y={trajectory[trajectory.length - 1].y + 4} fontSize="9" className="fill-red-500 dark:fill-red-400" fontWeight="bold">
             X₁
@@ -103,7 +103,7 @@ export const TrajectoryIllustration = () => {
         </motion.g>
 
         {/* ODE formula */}
-        <motion.g animate={{ opacity: step === 4 ? 1 : 0 }} transition={ease}>
+        <motion.g initial={{ opacity: 0 }} animate={{ opacity: step === 4 ? 1 : 0 }} transition={ease}>
           <rect x="30" y="5" width="100" height="16" rx="3" className="fill-sky-500/20 dark:fill-sky-400/20" />
           <text x="80" y="17" fontSize="9" textAnchor="middle" className="fill-sky-500 dark:fill-sky-400" fontWeight="bold">
             dX/dt = u(X) → ODE

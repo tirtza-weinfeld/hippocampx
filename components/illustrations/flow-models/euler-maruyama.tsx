@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { motion, useReducedMotion } from "motion/react"
-import { IllustrationControls } from "./illustration-controls"
+import { IllustrationControls, type IllustrationSize, sizeClasses } from "./illustration-controls"
 
 const steps = [
   { showDet: true, showNoise: false, currentStep: 0, label: "Start at X₀, compute u(X₀)" },
@@ -22,7 +22,7 @@ const stochPath = [
 
 const toD = (pts: { x: number; y: number }[]) => pts.map((p, i) => `${i === 0 ? "M" : "L"}${p.x},${p.y}`).join(" ")
 
-export const EulerMaruyamaIllustration = () => {
+export function EulerMaruyamaIllustration({ size = "md" }: { size?: IllustrationSize }) {
   const [step, setStep] = useState(0)
   const [playing, setPlaying] = useState(true)
   const reducedMotion = useReducedMotion()
@@ -39,16 +39,16 @@ export const EulerMaruyamaIllustration = () => {
 
   return (
     <div className="flex flex-col items-center gap-2">
-      <motion.svg width="160" height="105" viewBox="0 0 160 105" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+      <motion.svg className={sizeClasses[size]} viewBox="0 0 160 105" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
         {/* Deterministic Euler path */}
-        <motion.path d={toD(detPath)} fill="none" className="stroke-green-500/50 dark:stroke-green-400/50" strokeWidth="2" strokeDasharray="4 2" animate={{ opacity: showDet ? 0.5 : 0 }} transition={ease} />
+        <motion.path d={toD(detPath)} fill="none" className="stroke-green-500/50 dark:stroke-green-400/50" strokeWidth="2" strokeDasharray="4 2" initial={{ opacity: 0.5 }} animate={{ opacity: showDet ? 0.5 : 0 }} transition={ease} />
 
         {/* Stochastic Euler-Maruyama path */}
-        <motion.path d={toD(stochPath.slice(0, currentStep + 1))} fill="none" className="stroke-blue-500 dark:stroke-blue-400" strokeWidth="2" animate={{ opacity: showNoise ? 1 : 0 }} transition={ease} />
+        <motion.path d={toD(stochPath.slice(0, currentStep + 1))} fill="none" className="stroke-blue-500 dark:stroke-blue-400" strokeWidth="2" initial={{ opacity: 0 }} animate={{ opacity: showNoise ? 1 : 0 }} transition={ease} />
 
         {/* Noise arrows */}
         {showNoise && stochPath.slice(1, currentStep + 1).map((p, i) => (
-          <motion.g key={i} animate={{ opacity: 1 }} transition={ease}>
+          <motion.g key={i} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={ease}>
             <line x1={detPath[i + 1].x} y1={detPath[i + 1].y} x2={p.x} y2={p.y} className="stroke-red-500/60 dark:stroke-red-400/60" strokeWidth="1.5" strokeDasharray="2 1" />
             <text x={p.x + 4} y={p.y - 2} fontSize="6" className="fill-red-500 dark:fill-red-400">+ε</text>
           </motion.g>
@@ -68,7 +68,7 @@ export const EulerMaruyamaIllustration = () => {
         </g>
 
         {/* Formula */}
-        <motion.g animate={{ opacity: currentStep >= 2 ? 1 : 0 }} transition={ease}>
+        <motion.g initial={{ opacity: 0 }} animate={{ opacity: currentStep >= 2 ? 1 : 0 }} transition={ease}>
           <rect x="30" y="85" width="100" height="14" rx="3" className="fill-violet-500/20 dark:fill-violet-400/20" />
           <text x="80" y="95" fontSize="7" textAnchor="middle" className="fill-violet-500 dark:fill-violet-400" fontWeight="bold">X += h·u(X) + √h·σ·ε</text>
         </motion.g>

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { motion, useReducedMotion } from "motion/react"
-import { IllustrationControls } from "./illustration-controls"
+import { IllustrationControls, type IllustrationSize, sizeClasses } from "./illustration-controls"
 
 const steps = [
   { t: 0, label: "t=0: x = z (pure data, α=1, β=0)" },
@@ -15,7 +15,7 @@ const steps = [
 const alpha = (t: number) => 1 - t
 const beta = (t: number) => t
 
-export const GaussianPathIllustration = () => {
+export function GaussianPathIllustration({ size = "md" }: { size?: IllustrationSize }) {
   const [step, setStep] = useState(0)
   const [playing, setPlaying] = useState(true)
   const reducedMotion = useReducedMotion()
@@ -39,7 +39,7 @@ export const GaussianPathIllustration = () => {
 
   return (
     <div className="flex flex-col items-center gap-2">
-      <motion.svg width="160" height="105" viewBox="0 0 160 105" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+      <motion.svg className={sizeClasses[size]} viewBox="0 0 160 105" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
         {/* Timeline */}
         <line x1="30" y1="85" x2="130" y2="85" stroke="currentColor" strokeWidth="1" opacity="0.3" />
         <text x="30" y="95" fontSize="7" fill="currentColor" opacity="0.5">t=0</text>
@@ -54,8 +54,8 @@ export const GaussianPathIllustration = () => {
         <text x={noiseX} y={cy + 28} fontSize="7" textAnchor="middle" className="fill-violet-500 dark:fill-violet-400">ε~N(0,I)</text>
 
         {/* Interpolated point with growing noise cloud */}
-        <motion.g animate={{ x: currentX - dataX }} transition={ease}>
-          <motion.circle cx={dataX} cy={cy} r={cloudR} className="fill-blue-500/30 dark:fill-blue-400/30" animate={{ r: cloudR }} transition={ease} />
+        <motion.g initial={{ x: 0 }} animate={{ x: currentX - dataX }} transition={ease}>
+          <motion.circle cx={dataX} cy={cy} r={cloudR} className="fill-blue-500/30 dark:fill-blue-400/30" initial={{ r: 5 }} animate={{ r: cloudR }} transition={ease} />
           <circle cx={dataX} cy={cy} r="5" className="fill-blue-500 dark:fill-blue-400" />
         </motion.g>
 

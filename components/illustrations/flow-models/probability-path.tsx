@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { motion, useReducedMotion } from "motion/react"
-import { IllustrationControls } from "./illustration-controls"
+import { IllustrationControls, type IllustrationSize, sizeClasses } from "./illustration-controls"
 
 // PDF: p_0(·|z) = p_init (noise), p_1(·|z) = δ_z (data point)
 // So t=0 is wide noise, t=1 is peaked at data point z
@@ -25,7 +25,7 @@ const makeCurve = (sigma: number) => {
   return pts.join(" ")
 }
 
-export const ProbabilityPathIllustration = () => {
+export function ProbabilityPathIllustration({ size = "md" }: { size?: IllustrationSize }) {
   const [step, setStep] = useState(0)
   const [playing, setPlaying] = useState(true)
   const reducedMotion = useReducedMotion()
@@ -45,12 +45,12 @@ export const ProbabilityPathIllustration = () => {
 
   return (
     <div className="flex flex-col items-center gap-2">
-      <motion.svg width="160" height="105" viewBox="0 0 160 105" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+      <motion.svg className={sizeClasses[size]} viewBox="0 0 160 105" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
         {/* x-axis */}
         <line x1="30" y1="85" x2="130" y2="85" stroke="currentColor" strokeWidth="1" opacity="0.3" />
 
         {/* Data point z indicator */}
-        <motion.g animate={{ opacity: t > 0.5 ? 1 : 0.3 }} transition={ease}>
+        <motion.g initial={{ opacity: 0.3 }} animate={{ opacity: t > 0.5 ? 1 : 0.3 }} transition={ease}>
           <line x1="80" y1="85" x2="80" y2="20" stroke="currentColor" strokeWidth="1" opacity="0.2" strokeDasharray="2 2" />
           <text x="80" y="95" fontSize="7" textAnchor="middle" className="fill-green-500 dark:fill-green-400">z</text>
         </motion.g>

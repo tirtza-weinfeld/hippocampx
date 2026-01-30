@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { motion, useReducedMotion } from "motion/react"
-import { IllustrationControls } from "./illustration-controls"
+import { IllustrationControls, type IllustrationSize, sizeClasses } from "./illustration-controls"
 
 const steps = [
   { phase: "uncond", label: "u(x|∅): unconditional prediction" },
@@ -11,7 +11,7 @@ const steps = [
   { phase: "compare", label: "CFG extrapolates beyond conditional" },
 ]
 
-export const ClassifierFreeGuidanceIllustration = () => {
+export function ClassifierFreeGuidanceIllustration({ size = "md" }: { size?: IllustrationSize }) {
   const [step, setStep] = useState(0)
   const [playing, setPlaying] = useState(true)
   const reducedMotion = useReducedMotion()
@@ -39,7 +39,7 @@ export const ClassifierFreeGuidanceIllustration = () => {
 
   return (
     <div className="flex flex-col items-center gap-2">
-      <motion.svg width="160" height="105" viewBox="0 0 160 105" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+      <motion.svg className={sizeClasses[size]} viewBox="0 0 160 105" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
         <defs>
           <marker id="cfg-uncond" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
             <path d="M0,0 L6,3 L0,6 Z" className="fill-violet-500 dark:fill-violet-400" />
@@ -57,32 +57,32 @@ export const ClassifierFreeGuidanceIllustration = () => {
         <text x={origin.x} y={origin.y + 18} fontSize="7" textAnchor="middle" className="fill-current/70">x</text>
 
         {/* Conditioning target */}
-        <motion.g animate={{ opacity: phase !== "uncond" ? 1 : 0.3 }} transition={ease}>
+        <motion.g initial={{ opacity: 0.3 }} animate={{ opacity: phase !== "uncond" ? 1 : 0.3 }} transition={ease}>
           <circle cx="130" cy="25" r="8" className="fill-sky-500/20 dark:fill-sky-400/20" />
           <circle cx="130" cy="25" r="4" className="fill-sky-500 dark:fill-sky-400" />
           <text x="130" y="15" fontSize="6" textAnchor="middle" className="fill-sky-500 dark:fill-sky-400">y</text>
         </motion.g>
 
         {/* Unconditional vector */}
-        <motion.g animate={{ opacity: phase === "uncond" || phase === "compare" ? 1 : 0.3 }} transition={ease}>
+        <motion.g initial={{ opacity: 1 }} animate={{ opacity: phase === "uncond" || phase === "compare" ? 1 : 0.3 }} transition={ease}>
           <line x1={origin.x} y1={origin.y} x2={uncond.x} y2={uncond.y} className="stroke-violet-500 dark:stroke-violet-400" strokeWidth="2" markerEnd="url(#cfg-uncond)" />
           <text x={uncond.x + 5} y={uncond.y + 5} fontSize="6" className="fill-violet-500 dark:fill-violet-400">u(∅)</text>
         </motion.g>
 
         {/* Conditional vector */}
-        <motion.g animate={{ opacity: phase === "cond" || phase === "compare" ? 1 : 0.3 }} transition={ease}>
+        <motion.g initial={{ opacity: 0.3 }} animate={{ opacity: phase === "cond" || phase === "compare" ? 1 : 0.3 }} transition={ease}>
           <line x1={origin.x} y1={origin.y} x2={cond.x} y2={cond.y} className="stroke-blue-500 dark:stroke-blue-400" strokeWidth="2" markerEnd="url(#cfg-cond)" />
           <text x={cond.x + 5} y={cond.y - 2} fontSize="6" className="fill-blue-500 dark:fill-blue-400">u(y)</text>
         </motion.g>
 
         {/* Guided vector (extrapolated) */}
-        <motion.g animate={{ opacity: phase === "guided" || phase === "compare" ? 1 : 0 }} transition={ease}>
+        <motion.g initial={{ opacity: 0 }} animate={{ opacity: phase === "guided" || phase === "compare" ? 1 : 0 }} transition={ease}>
           <line x1={origin.x} y1={origin.y} x2={guided.x} y2={guided.y} className="stroke-green-500 dark:stroke-green-400" strokeWidth="2.5" markerEnd="url(#cfg-guided)" />
           <text x={guided.x + 5} y={guided.y - 2} fontSize="6" className="fill-green-500 dark:fill-green-400" fontWeight="bold">ũ</text>
         </motion.g>
 
         {/* Formula bar */}
-        <motion.g animate={{ opacity: phase === "guided" || phase === "compare" ? 1 : 0 }} transition={ease}>
+        <motion.g initial={{ opacity: 0 }} animate={{ opacity: phase === "guided" || phase === "compare" ? 1 : 0 }} transition={ease}>
           <rect x="15" y="85" width="130" height="14" rx="3" className="fill-green-500/20 dark:fill-green-400/20" />
           <text x="80" y="95" fontSize="7" textAnchor="middle" className="fill-green-500 dark:fill-green-400" fontWeight="bold">ũ = (1-w)·u(∅) + w·u(y)</text>
         </motion.g>

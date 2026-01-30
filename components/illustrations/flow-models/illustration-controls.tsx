@@ -2,6 +2,13 @@
 
 import { motion } from "motion/react"
 
+export type IllustrationSize = "sm" | "md" | "lg"
+export const sizeClasses: Record<IllustrationSize, string> = {
+  sm: "w-32", // 128px
+  md: "w-40", // 160px
+  lg: "w-52", // 208px
+}
+
 type Props = {
   step: number
   totalSteps: number
@@ -37,7 +44,7 @@ export const IllustrationControls = ({ step, totalSteps, playing, onStep, onPlay
       <div className="flex">
         {Array.from({ length: totalSteps }, (_, i) => (
           <button key={i} onClick={() => goTo(i)} className="px-0.5 py-1">
-            <motion.span className="block size-1.5 rounded-full bg-current" animate={{ opacity: i === step ? 1 : 0.25 }} />
+            <motion.span className="block size-1.5 rounded-full bg-current" initial={{ opacity: 0.25 }} animate={{ opacity: i === step ? 1 : 0.25 }} />
           </button>
         ))}
       </div>
