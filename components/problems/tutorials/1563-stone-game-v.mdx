@@ -27,9 +27,9 @@ Given an array of stone values, split it into two non-empty parts repeatedly. Yo
 
 ### [!(ProblemTimeComplexity)] Time Complexity
 
-- $O(n^{2})$:
-    - Because each subarray `i..j` is processed once and the middle pointer `mid` moves **monotonically** (never resets for a fixed `j`), every index is advanced at most $O(1)$ times per outer loop.
-    - Thus the total work is roughly proportional to the number of `(i, j)` pairs, giving **$O(n²)$** time and **$O(n²)$** space (for `dp` and `mx`).
+- O(n^2):
+    - Because each subarray `i..j` is processed once and the middle pointer `mid` moves **monotonically** (never resets for a fixed `j`), every index is advanced at most O(1) times per outer loop.
+    - Thus the total work is roughly proportional to the number of `(i, j)` pairs, giving **O(n²)** time and **O(n²)** space (for `dp` and `mx`).
 
 ### [!(ProblemCodeSnippet)] Code Snippet
 

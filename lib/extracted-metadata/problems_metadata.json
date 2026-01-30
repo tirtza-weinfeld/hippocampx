@@ -130,6 +130,27 @@
       "difficulty": "medium",
       "topics": ["dynamic-programming"]
     },
+    "1584-min-cost-to-connect-all-points": {
+      "time_stamps": {
+        "created_at": "2026-01-30T21:36:26.101548",
+        "updated_at": "2026-01-30T22:49:33.069959"
+      },
+      "solutions": {
+        "array-based-prim.py": {
+          "time_complexity": "$\\Theta(V^2) = \\Theta(n^2)$:\n    This is array-based Prim’s algorithm.\n    Each of the $n$ iterations performs:\n        a linear scan to select the minimum dist node  → $\\Theta(n)$\n        a full relaxation over all $n$ vertices         → $\\Theta(n)$\n    Total time is therefore $\\Theta(n^2)$.\n    This is optimal for dense or implicit complete graphs,\n    and avoids the extra $\\log V$ factor of heap-based Prim.",
+          "code": "class Solution:\n    def minCostConnectPoints(self, points: list[list[int]]) -> int:\n        mst = set()\n        dist = [10**18] * (n := len(points))\n        dist[0] = total = 0\n\n        for _ in range(n):\n            u = min((i for i in range(n) if i not in mst), key=dist.__getitem__)\n            mst.add(u)\n            total += dist[u]\n            x, y = points[u]\n\n            for v ,(x2,y2) in enumerate(points):\n                if v not in mst and (d := abs(x - x2) + abs(y - y2)) < dist[v]:\n                    dist[v] = d\n\n        return total"
+        },
+        "heap-based-prim.py": {
+          "time_complexity": "$\\Theta(E \\log V) = \\Theta(n^2 \\log n)$:\n    This is heap-based Prim’s algorithm.\n    The graph is complete (implicit), so $E = \\Theta(n^2)$ and $V = n$.\n    Each heap operation costs $\\log V$, giving $\\Theta(E \\log V)$ overall.\n    Using dist[v] or a true decrease-key heap only improves constants, not the asymptotic bound.",
+          "code": "import heapq\n\nclass Solution:\n    def minCostConnectPoints(self, points: list[list[int]]) -> int:\n        mst = set()\n        pq = [(0, 0)]\n        total = 0\n\n        while pq:\n            w, u = heapq.heappop(pq)\n            if u in mst:\n                continue\n            mst.add(u)\n            total += w\n\n            x, y = points[u]\n            for v, (x2, y2) in enumerate(points):\n                if v not in mst:\n                    weight = abs(x - x2) + abs(y - y2)\n                    heapq.heappush(pq, (weight, v))\n\n        return total"
+        }
+      },
+      "title": "Min Cost to Connect All Points",
+      "definition": "Given points on a 2D plane, where the cost to connect two points is their Manhattan distance, find the minimum total cost to connect all points so the graph is connected with exactly one simple path between any two points (i.e., form a minimum spanning tree)",
+      "leetcode": "https://leetcode.com/problems/min-cost-to-connect-all-points",
+      "difficulty": "medium",
+      "topics": ["mst", "prims"]
+    },
     "1293-shortest-path-in-a-grid-with-obstacles-elimination": {
       "time_stamps": {
         "created_at": "2025-09-12T16:06:03.946398",
@@ -1073,6 +1094,22 @@
       "difficulty": "medium",
       "topics": ["kadane"]
     },
+    "162-find-peak-element": {
+      "time_stamps": {
+        "created_at": "2026-01-30T22:58:03.446990",
+        "updated_at": "2026-01-30T23:35:36.616886"
+      },
+      "solutions": {
+        "solution.py": {
+          "code": "class Solution:\n    def findPeakElement(self, nums: list[int]) -> int:\n        l, r = 0, len(nums) - 1\n        while l < r:\n            m = (l + r) // 2\n            if nums[m] < nums[m + 1]:\n                l = m + 1\n            else:\n                r = m\n        return l"
+        }
+      },
+      "title": "Find Peak Element",
+      "definition": "Given an array nums where adjacent elements are unequal, find any index i such that `nums[i+1] < nums[i] > nums[i-1]` .\n    treating out-of-bounds neighbors as $-\\infty$. You must return any such peak index in $O(\\log n)$ time.",
+      "leetcode": "https://leetcode.com/problems/find-peak-element/description/",
+      "difficulty": "medium",
+      "topics": ["binary-search"]
+    },
     "215-kth-largest-element-in-an-array": {
       "time_stamps": {
         "created_at": "2025-10-04T12:12:22.407617",
@@ -1625,7 +1662,7 @@
     "1563-stone-game-v": {
       "time_stamps": {
         "created_at": "2025-11-10T19:31:01.397119",
-        "updated_at": "2025-11-10T21:44:00.716672"
+        "updated_at": "2026-01-30T22:34:24.759695"
       },
       "solutions": {
         "bottom-up.py": {

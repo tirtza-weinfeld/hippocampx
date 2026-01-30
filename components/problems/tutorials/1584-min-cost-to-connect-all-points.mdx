@@ -1,0 +1,89 @@
+# Min Cost to Connect All Points
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="medium" />
+
+<PillList pills={["mst", "prims"]} />
+
+[1584. Min Cost to Connect All Points](https://leetcode.com/problems/min-cost-to-connect-all-points)
+
+## [!(ProblemDefinition)] Definition
+
+Given points on a 2D plane, where the cost to connect two points is their Manhattan distance, find the minimum total cost to connect all points so the graph is connected with exactly one simple path between any two points (i.e., form a minimum spanning tree)
+
+## Array Based Prim Solution
+
+### [!(ProblemTimeComplexity)] Time Complexity
+
+- $\Theta(V^2) = \Theta(n^2)$:
+    - This is array-based Prim’s algorithm.
+    - Each of the $n$ iterations performs:
+        - a linear scan to select the minimum dist node  → $\Theta(n)$
+        - a full relaxation over all $n$ vertices         → $\Theta(n)$
+    - Total time is therefore $\Theta(n^2)$.
+    - This is optimal for dense or implicit complete graphs,
+    - and avoids the extra $\log V$ factor of heap-based Prim.
+
+### [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/1584-min-cost-to-connect-all-points/array-based-prim.py"
+class Solution:
+    def minCostConnectPoints(self, points: list[list[int]]) -> int:
+        mst = set()
+        dist = [10**18] * (n := len(points))
+        dist[0] = total = 0
+
+        for _ in range(n):
+            u = min((i for i in range(n) if i not in mst), key=dist.__getitem__)
+            mst.add(u)
+            total += dist[u]
+            x, y = points[u]
+
+            for v ,(x2,y2) in enumerate(points):
+                if v not in mst and (d := abs(x - x2) + abs(y - y2)) < dist[v]:
+                    dist[v] = d
+
+        return total
+```
+
+
+---
+
+## Heap Based Prim Solution
+
+### [!(ProblemTimeComplexity)] Time Complexity
+
+- $\Theta(E \log V) = \Theta(n^2 \log n)$:
+    - This is heap-based Prim’s algorithm.
+    - The graph is complete (implicit), so $E = \Theta(n^2)$ and $V = n$.
+    - Each heap operation costs $\log V$, giving $\Theta(E \log V)$ overall.
+    - Using dist[v] or a true decrease-key heap only improves constants, not the asymptotic bound.
+
+### [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/1584-min-cost-to-connect-all-points/heap-based-prim.py"
+import heapq
+
+class Solution:
+    def minCostConnectPoints(self, points: list[list[int]]) -> int:
+        mst = set()
+        pq = [(0, 0)]
+        total = 0
+
+        while pq:
+            w, u = heapq.heappop(pq)
+            if u in mst:
+                continue
+            mst.add(u)
+            total += w
+
+            x, y = points[u]
+            for v, (x2, y2) in enumerate(points):
+                if v not in mst:
+                    weight = abs(x - x2) + abs(y - y2)
+                    heapq.heappush(pq, (weight, v))
+
+        return total
+```
+

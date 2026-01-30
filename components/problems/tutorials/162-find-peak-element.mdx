@@ -1,0 +1,30 @@
+# Find Peak Element
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="medium" />
+
+<PillList pills={["binary-search"]} />
+
+[162. Find Peak Element](https://leetcode.com/problems/find-peak-element/description/)
+
+## [!(ProblemDefinition)] Definition
+
+Given an array nums where adjacent elements are unequal, find any index i such that `nums[i+1] < nums[i] > nums[i-1]` .
+    treating out-of-bounds neighbors as $-\infty$. You must return any such peak index in $O(\log n)$ time.
+
+## [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/162-find-peak-element/solution.py"
+class Solution:
+    def findPeakElement(self, nums: list[int]) -> int:
+        l, r = 0, len(nums) - 1
+        while l < r:
+            m = (l + r) // 2
+            if nums[m] < nums[m + 1]:
+                l = m + 1
+            else:
+                r = m
+        return l
+```
+

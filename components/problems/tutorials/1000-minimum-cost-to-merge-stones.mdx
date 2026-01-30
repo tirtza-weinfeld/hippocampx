@@ -14,16 +14,16 @@ Merge exactly k adjacent piles at a time (cost = sum of those piles). Return the
 
 ## [!(ProblemTimeComplexity)] Time Complexity
 
-- $O(n^{3})$:
-    - There are **$O(n²)$** subproblems (`l, r` pairs)
+- O(n^3):
+    - There are **O(n²)** subproblems (`l, r` pairs)
     - For each subproblem, the loop `[language="python"]for t in range(l, r, K - 1)`
-        - tries up to **$O(n / (K - 1)$)** split points.
-        - Each operation inside is *$O(1)$* (thanks to *[2!]prefix sums*)
-    - So the time complexity is $O(n^{3} / (K - 1)$)
+        - tries up to **O(n / (K - 1))** split points.
+        - Each operation inside is *O(1)* (thanks to *[2!]prefix sums*)
+    - So the time complexity is O(n^3 / (K - 1))
 
 ## [!(ProblemSpaceComplexity)] Space Complexity
 
-- $O(n²)$ for memoization
+- O(n²) for memoization
 
 ## [!(ProblemCodeSnippet)] Code Snippet
 

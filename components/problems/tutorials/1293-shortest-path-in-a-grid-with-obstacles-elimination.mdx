@@ -16,7 +16,7 @@ Given an `m x n` grid where cells are either empty (`0`) or an obstacle (`1`), a
 
 ### [!(ProblemTimeComplexity)] Time Complexity
 
-- $O(m * n * k * \log(m * n * k)$)
+- O(m * n * k * log(m * n * k))
 
 ### [!(ProblemCodeSnippet)] Code Snippet
 
@@ -111,13 +111,13 @@ def shortest_path_in_a_grid_with_obstacles_elimination(grid: list[list[int]], k:
 
 ### [!(ProblemTimeComplexity)] Time Complexity
 
-- $O(m * n * k)$:
-    - Worst-case $O(m * n * k)$ (every cell × every possible k), but aggressive pruning usually makes it far faster in practice.
+- O(m * n * k):
+    - Worst-case O(m * n * k) (every cell × every possible k), but aggressive pruning usually makes it far faster in practice.
 
 ### [!(ProblemSpaceComplexity)] Space Complexity
 
-- $O(m * n)$:
-    - for the `max_k` grid plus up to $O(m * n * k)$ queued states in the pathological worst case.
+- O(m * n):
+    - for the `max_k` grid plus up to O(m * n * k) queued states in the pathological worst case.
 
 ### [!(ProblemCodeSnippet)] Code Snippet
 

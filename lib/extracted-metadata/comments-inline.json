@@ -6,6 +6,23 @@
   "problems/909-snakes-and-ladders/solution.py": [
     4
   ],
+  "problems/1584-min-cost-to-connect-all-points/array-based-prim.py": [
+    2,
+    3,
+    4,
+    7,
+    8,
+    9
+  ],
+  "problems/1584-min-cost-to-connect-all-points/heap-based-prim.py": [
+    4,
+    5,
+    9,
+    10,
+    12,
+    13,
+    19
+  ],
   "problems/394-decode-string/solution.py": [
     7
   ],
@@ -90,6 +107,10 @@
   "problems/918-maximum-sum-of-circular-subarray/solution.py": [
     6,
     8
+  ],
+  "problems/162-find-peak-element/solution.py": [
+    5,
+    7
   ],
   "problems/102-binary-tree-level-order-traversal/solution.py": [
     10

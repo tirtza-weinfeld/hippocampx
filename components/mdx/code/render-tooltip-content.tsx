@@ -1,7 +1,6 @@
 import React from 'react';
 import { MarkdownRenderer } from '../parse';
 import type { SymbolMetadata } from './transformers/types';
-import { convertMathToKatex } from '@/lib/utils/math-to-katex';
 import commentsInlineSymbols from '@/lib/extracted-metadata/comments-inline-symbols.json';
 type TooltipMeta = SymbolMetadata;
 
@@ -379,7 +378,7 @@ function TooltipTimeComplexity({ meta }: { meta: TooltipMeta }) {
 
 
         <MarkdownRenderer className="text-sky-800 dark:text-sky-200">
-          {convertMathToKatex(meta.time_complexity.split('\n')[0].replace(/:\s*$/, ''))}
+          {meta.time_complexity.split('\n')[0].replace(/:\s*$/, '')}
         </MarkdownRenderer>
 
       </div>

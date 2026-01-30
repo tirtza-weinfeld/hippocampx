@@ -2,8 +2,6 @@
  * Shared formatting utilities for problem content (intuition, time complexity, etc.)
  */
 
-import { convertMathToKatex } from './math-to-katex';
-
 /**
  * Formats intuition content with proper bullet points and nested lists
  */
@@ -58,15 +56,15 @@ export function formatIntuitionContent(content: string): string {
 }
 
 /**
- * Formats time complexity content with KaTeX math rendering
+ * Formats time complexity content
  */
 export function formatTimeComplexity(content: string): string {
-  return convertMathToKatex(formatIntuitionContent(content));
+  return formatIntuitionContent(content);
 }
 
 /**
- * Formats space complexity content with KaTeX math rendering
+ * Formats space complexity content
  */
 export function formatSpaceComplexity(content: string): string {
-  return convertMathToKatex(formatIntuitionContent(content));
+  return formatIntuitionContent(content);
 }

@@ -56,7 +56,7 @@ def mySqrt(x: int) -> int:
 
 ### [!(ProblemTimeComplexity)] Time Complexity
 
-- $O(\log x)$ iterations in the worst case, typically constant for 32-bit inputs.
+- O(log x) iterations in the worst case, typically constant for 32-bit inputs.
     - Each update:
     - $$r_{\text{new}} = \frac{r + x//r}{2}$$
     - halves the relative error — the method shows **quadratic convergence**:

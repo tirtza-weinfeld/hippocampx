@@ -11,7 +11,6 @@
 import fs from 'fs/promises'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import { convertMathToKatex } from '../lib/utils/math-to-katex'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -52,7 +51,7 @@ function formatSection(title: string, content: string, component?: string, heade
   if (component === 'ProblemIntuition') {
     cleanContent = formatIntuitionContent(cleanContent)
   } else if (component === 'ProblemTimeComplexity' || component === 'ProblemSpaceComplexity') {
-    cleanContent = convertMathToKatex(formatIntuitionContent(cleanContent))
+    cleanContent = formatIntuitionContent(cleanContent)
   } else {
     // Wrap terms before colons in inline code blocks (e.g., "- pq:" becomes "- `pq`:"), but skip if already wrapped
     cleanContent = cleanContent.replace(/^(\s*-\s*)([^`:\s][^:\s]*)(\s*:)/gm, '$1`$2`$3')

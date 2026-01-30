@@ -3077,6 +3077,90 @@
       ]
     },
     {
+      "uri": "problems/1584-min-cost-to-connect-all-points/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/1584-min-cost-to-connect-all-points/array-based-prim.py",
+      "symbols": [
+        {
+          "name": "Solution",
+          "detail": "class Solution",
+          "kind": 5,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 16, "character": 20}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 6
+            },
+            "end": {
+              "line": 0,
+              "character": 14
+            }
+          },
+          "children": [
+            {
+              "name": "minCostConnectPoints",
+              "detail": "minCostConnectPoints(points: list[list[int]]) -> int",
+              "kind": 6,
+              "range": {"start": {"line": 1, "character": 4}, "end": {"line": 16, "character": 20}},
+              "nameRange": {
+                "start": {
+                  "line": 1,
+                  "character": 8
+                },
+                "end": {
+                  "line": 1,
+                  "character": 28
+                }
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "uri": "problems/1584-min-cost-to-connect-all-points/heap-based-prim.py",
+      "symbols": [
+        {
+          "name": "Solution",
+          "detail": "class Solution",
+          "kind": 5,
+          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 21, "character": 20}},
+          "nameRange": {
+            "start": {
+              "line": 2,
+              "character": 6
+            },
+            "end": {
+              "line": 2,
+              "character": 14
+            }
+          },
+          "children": [
+            {
+              "name": "minCostConnectPoints",
+              "detail": "minCostConnectPoints(points: list[list[int]]) -> int",
+              "kind": 6,
+              "range": {"start": {"line": 3, "character": 4}, "end": {"line": 21, "character": 20}},
+              "nameRange": {
+                "start": {
+                  "line": 3,
+                  "character": 8
+                },
+                "end": {
+                  "line": 3,
+                  "character": 28
+                }
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
       "uri": "problems/1590-make-sum-divisible-by-p/__init__.py",
       "symbols": []
     },
@@ -3099,6 +3183,50 @@
             }
           },
           "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/162-find-peak-element/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/162-find-peak-element/solution.py",
+      "symbols": [
+        {
+          "name": "Solution",
+          "detail": "class Solution",
+          "kind": 5,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 9, "character": 16}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 6
+            },
+            "end": {
+              "line": 0,
+              "character": 14
+            }
+          },
+          "children": [
+            {
+              "name": "findPeakElement",
+              "detail": "findPeakElement(nums: list[int]) -> int",
+              "kind": 6,
+              "range": {"start": {"line": 1, "character": 4}, "end": {"line": 9, "character": 16}},
+              "nameRange": {
+                "start": {
+                  "line": 1,
+                  "character": 8
+                },
+                "end": {
+                  "line": 1,
+                  "character": 23
+                }
+              },
+              "children": []
+            }
+          ]
         }
       ]
     },

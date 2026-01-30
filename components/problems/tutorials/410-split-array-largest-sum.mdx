@@ -25,9 +25,9 @@ Given an integer array nums and an integer k, split nums into k non-empty subarr
 
 ### [!(ProblemTimeComplexity)] Time Complexity
 
-- $O(n \log S)$:
+- O(n log S):
     - where `n = len(nums`) and `S = sum(nums) - max(nums)`
-    - (binary search over the answer space, $O(n)$ greedy check per step).
+    - (binary search over the answer space, O(n) greedy check per step).
 
 ### [!(ProblemCodeSnippet)] Code Snippet
 
@@ -60,10 +60,10 @@ def splitArray(nums: list[int], k: int) -> int:
 
 ### [!(ProblemTimeComplexity)] Time Complexity
 
-- $$O(n^{2} \cdot k)$$:
-    - There are $$O(n \cdot k)$$ memo states $(i, \text{cuts})$
-    - Each state tries $$O(n)$$ split points $j$, doing $$O(1)$$ work per $j$ (prefix diff + memoized dp)
-    - Prefix build is $$O(n)$$, dominated
+- $O(n^2 \cdot k)$:
+    - There are $O(n \cdot k)$ memo states $(i, \text{cuts})$
+    - Each state tries $O(n)$ split points $j$, doing $O(1)$ work per $j$ (prefix diff + memoized dp)
+    - Prefix build is $O(n)$, dominated
 
 ### [!(ProblemCodeSnippet)] Code Snippet
 
