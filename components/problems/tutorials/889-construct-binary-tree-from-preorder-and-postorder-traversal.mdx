@@ -1,0 +1,77 @@
+# Construct Binary Tree from Preorder and Postorder Traversal
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="medium" />
+
+<PillList pills={["binary-tree"]} />
+
+[889. Construct Binary Tree from Preorder and Postorder Traversal](https://leetcode.com/problems/construct-binary-tree-from-preorder-and-postorder-traversal/description/)
+
+## [!(ProblemDefinition)] Definition
+
+Given two integer arrays, preorder and postorder where preorder is the preorder traversal of a binary tree of distinct values and postorder is the postorder traversal of the same tree, reconstruct and return the binary tree.If there exist multiple answers, you can return any of them.
+
+## Recursive Solution
+
+### [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/889-construct-binary-tree-from-preorder-and-postorder-traversal/recursive.py"
+from backend.algorithms.core.Tree.binary_tree_node import TreeNode
+
+class Solution:
+    def constructFromPrePost(self, pre: list[int], post: list[int]) -> TreeNode | None:
+        it = iter(pre)
+        j = 0
+
+        def build() -> TreeNode:
+            nonlocal j
+            root = TreeNode(next(it))
+
+            if root.val != post[j]:
+                root.left = build()
+
+            if root.val != post[j]:
+                root.right = build()
+
+            j += 1
+            return root
+
+        return build() if pre else None
+```
+
+
+---
+
+## Iterative Solution
+
+### [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/889-construct-binary-tree-from-preorder-and-postorder-traversal/iterative.py"
+from backend.algorithms.core.Tree.binary_tree_node import TreeNode
+
+class Solution:
+    def constructFromPrePost(self, pre: list[int], post: list[int]) -> TreeNode | None:
+        if not pre:
+            return None
+
+        root = TreeNode(pre[0])
+        stack, j = [root], 0
+
+        for v in pre[1:]:
+            node = TreeNode(v)
+            while stack[-1].val == post[j]:
+                stack.pop()
+                j += 1
+
+            parent = stack[-1]
+            if parent.left is None:
+                parent.left = node
+            else:
+                parent.right = node
+
+            stack.append(node)
+
+        return root
+```
+

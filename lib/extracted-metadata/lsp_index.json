@@ -23,36 +23,18 @@
           "name": "TreeNode",
           "detail": "class TreeNode",
           "kind": 5,
-          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 4, "character": 26}},
+          "range": {"start": {"line": 5, "character": 0}, "end": {"line": 8, "character": 33}},
           "nameRange": {
             "start": {
-              "line": 0,
+              "line": 5,
               "character": 6
             },
             "end": {
-              "line": 0,
+              "line": 5,
               "character": 14
             }
           },
-          "children": [
-            {
-              "name": "__init__",
-              "detail": "__init__(val, left, right)",
-              "kind": 6,
-              "range": {"start": {"line": 1, "character": 4}, "end": {"line": 4, "character": 26}},
-              "nameRange": {
-                "start": {
-                  "line": 1,
-                  "character": 8
-                },
-                "end": {
-                  "line": 1,
-                  "character": 16
-                }
-              },
-              "children": []
-            }
-          ]
+          "children": []
         }
       ]
     },
@@ -1789,6 +1771,68 @@
       ]
     },
     {
+      "uri": "problems/105-construct-binary-tree-from-preorder-and-inorder-traversal/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/105-construct-binary-tree-from-preorder-and-inorder-traversal/solution.py",
+      "symbols": [
+        {
+          "name": "Solution",
+          "detail": "class Solution",
+          "kind": 5,
+          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 20, "character": 41}},
+          "nameRange": {
+            "start": {
+              "line": 2,
+              "character": 6
+            },
+            "end": {
+              "line": 2,
+              "character": 14
+            }
+          },
+          "children": [
+            {
+              "name": "buildTree",
+              "detail": "buildTree(preorder: list[int], inorder: list[int]) -> TreeNode | None",
+              "kind": 6,
+              "range": {"start": {"line": 3, "character": 4}, "end": {"line": 20, "character": 41}},
+              "nameRange": {
+                "start": {
+                  "line": 3,
+                  "character": 8
+                },
+                "end": {
+                  "line": 3,
+                  "character": 17
+                }
+              },
+              "children": [
+                {
+                  "name": "build",
+                  "detail": "build(l: int, r: int) -> TreeNode | None",
+                  "kind": 12,
+                  "range": {"start": {"line": 7, "character": 8}, "end": {"line": 18, "character": 13}},
+                  "nameRange": {
+                    "start": {
+                      "line": 7,
+                      "character": 12
+                    },
+                    "end": {
+                      "line": 7,
+                      "character": 17
+                    }
+                  },
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
       "uri": "problems/1094-car-pooling/__init__.py",
       "symbols": []
     },
@@ -2538,6 +2582,94 @@
                 "end": {
                   "line": 2,
                   "character": 10
+                }
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "uri": "problems/144-binary-tree-preorder-traversal/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/144-binary-tree-preorder-traversal/solution.py",
+      "symbols": [
+        {
+          "name": "Solution",
+          "detail": "class Solution",
+          "kind": 5,
+          "range": {"start": {"line": 5, "character": 0}, "end": {"line": 12, "character": 9}},
+          "nameRange": {
+            "start": {
+              "line": 5,
+              "character": 6
+            },
+            "end": {
+              "line": 5,
+              "character": 14
+            }
+          },
+          "children": [
+            {
+              "name": "preorderTraversal",
+              "detail": "preorderTraversal(node: TreeNode | None) -> list[int]",
+              "kind": 6,
+              "range": {"start": {"line": 6, "character": 4}, "end": {"line": 12, "character": 9}},
+              "nameRange": {
+                "start": {
+                  "line": 6,
+                  "character": 8
+                },
+                "end": {
+                  "line": 6,
+                  "character": 25
+                }
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "uri": "problems/145-binary-tree-postorder-traversal/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/145-binary-tree-postorder-traversal/solution.py",
+      "symbols": [
+        {
+          "name": "Solution",
+          "detail": "class Solution",
+          "kind": 5,
+          "range": {"start": {"line": 5, "character": 0}, "end": {"line": 12, "character": 9}},
+          "nameRange": {
+            "start": {
+              "line": 5,
+              "character": 6
+            },
+            "end": {
+              "line": 5,
+              "character": 14
+            }
+          },
+          "children": [
+            {
+              "name": "postorderTraversal",
+              "detail": "postorderTraversal(node: TreeNode | None) -> list[int]",
+              "kind": 6,
+              "range": {"start": {"line": 6, "character": 4}, "end": {"line": 12, "character": 9}},
+              "nameRange": {
+                "start": {
+                  "line": 6,
+                  "character": 8
+                },
+                "end": {
+                  "line": 6,
+                  "character": 26
                 }
               },
               "children": []
@@ -4480,6 +4612,85 @@
       ]
     },
     {
+      "uri": "problems/297-serialize-and-deserialize-binary-tree/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/297-serialize-and-deserialize-binary-tree/solution.py",
+      "symbols": [
+        {
+          "name": "Codec",
+          "detail": "class Codec",
+          "kind": 5,
+          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 22, "character": 22}},
+          "nameRange": {
+            "start": {
+              "line": 2,
+              "character": 6
+            },
+            "end": {
+              "line": 2,
+              "character": 11
+            }
+          },
+          "children": [
+            {
+              "name": "serialize",
+              "detail": "serialize(root: TreeNode)",
+              "kind": 6,
+              "range": {"start": {"line": 3, "character": 4}, "end": {"line": 7, "character": 9}},
+              "nameRange": {
+                "start": {
+                  "line": 3,
+                  "character": 8
+                },
+                "end": {
+                  "line": 3,
+                  "character": 17
+                }
+              },
+              "children": []
+            },
+            {
+              "name": "deserialize",
+              "detail": "deserialize(data)",
+              "kind": 6,
+              "range": {"start": {"line": 9, "character": 4}, "end": {"line": 22, "character": 22}},
+              "nameRange": {
+                "start": {
+                  "line": 9,
+                  "character": 8
+                },
+                "end": {
+                  "line": 9,
+                  "character": 19
+                }
+              },
+              "children": [
+                {
+                  "name": "build",
+                  "detail": "build()",
+                  "kind": 12,
+                  "range": {"start": {"line": 12, "character": 8}, "end": {"line": 20, "character": 13}},
+                  "nameRange": {
+                    "start": {
+                      "line": 12,
+                      "character": 12
+                    },
+                    "end": {
+                      "line": 12,
+                      "character": 17
+                    }
+                  },
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
       "uri": "problems/3-longest-substring-without-repeating-characters/__init__.py",
       "symbols": []
     },
@@ -4590,6 +4801,32 @@
               "children": []
             }
           ]
+        }
+      ]
+    },
+    {
+      "uri": "problems/301-remove-invalid-parentheses/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/301-remove-invalid-parentheses/solution.py",
+      "symbols": [
+        {
+          "name": "remove_invalid_parentheses",
+          "detail": "remove_invalid_parentheses(self, s: str) -> list[str]",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 1, "character": 8}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 30
+            }
+          },
+          "children": []
         }
       ]
     },
@@ -5549,6 +5786,32 @@
             "end": {
               "line": 0,
               "character": 8
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/424-longest-repeating-character-replacement/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/424-longest-repeating-character-replacement/solution.py",
+      "symbols": [
+        {
+          "name": "characterReplacement",
+          "detail": "characterReplacement(s: str, k: int) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 11, "character": 21}},
+          "nameRange": {
+            "start": {
+              "line": 2,
+              "character": 4
+            },
+            "end": {
+              "line": 2,
+              "character": 24
             }
           },
           "children": []
@@ -7545,6 +7808,108 @@
       ]
     },
     {
+      "uri": "problems/889-construct-binary-tree-from-preorder-and-postorder-traversal/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/889-construct-binary-tree-from-preorder-and-postorder-traversal/iterative.py",
+      "symbols": [
+        {
+          "name": "Solution",
+          "detail": "class Solution",
+          "kind": 5,
+          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 24, "character": 19}},
+          "nameRange": {
+            "start": {
+              "line": 2,
+              "character": 6
+            },
+            "end": {
+              "line": 2,
+              "character": 14
+            }
+          },
+          "children": [
+            {
+              "name": "constructFromPrePost",
+              "detail": "constructFromPrePost(pre: list[int], post: list[int]) -> TreeNode | None",
+              "kind": 6,
+              "range": {"start": {"line": 3, "character": 4}, "end": {"line": 24, "character": 19}},
+              "nameRange": {
+                "start": {
+                  "line": 3,
+                  "character": 8
+                },
+                "end": {
+                  "line": 3,
+                  "character": 28
+                }
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "uri": "problems/889-construct-binary-tree-from-preorder-and-postorder-traversal/recursive.py",
+      "symbols": [
+        {
+          "name": "Solution",
+          "detail": "class Solution",
+          "kind": 5,
+          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 20, "character": 39}},
+          "nameRange": {
+            "start": {
+              "line": 2,
+              "character": 6
+            },
+            "end": {
+              "line": 2,
+              "character": 14
+            }
+          },
+          "children": [
+            {
+              "name": "constructFromPrePost",
+              "detail": "constructFromPrePost(pre: list[int], post: list[int]) -> TreeNode | None",
+              "kind": 6,
+              "range": {"start": {"line": 3, "character": 4}, "end": {"line": 20, "character": 39}},
+              "nameRange": {
+                "start": {
+                  "line": 3,
+                  "character": 8
+                },
+                "end": {
+                  "line": 3,
+                  "character": 28
+                }
+              },
+              "children": [
+                {
+                  "name": "build",
+                  "detail": "build() -> TreeNode",
+                  "kind": 12,
+                  "range": {"start": {"line": 7, "character": 8}, "end": {"line": 18, "character": 23}},
+                  "nameRange": {
+                    "start": {
+                      "line": 7,
+                      "character": 12
+                    },
+                    "end": {
+                      "line": 7,
+                      "character": 17
+                    }
+                  },
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
       "uri": "problems/909-snakes-and-ladders/__init__.py",
       "symbols": []
     },
@@ -7593,6 +7958,50 @@
             }
           },
           "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/94-binary-tree-inorder-traversal/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/94-binary-tree-inorder-traversal/solution.py",
+      "symbols": [
+        {
+          "name": "Solution",
+          "detail": "class Solution",
+          "kind": 5,
+          "range": {"start": {"line": 5, "character": 0}, "end": {"line": 12, "character": 9}},
+          "nameRange": {
+            "start": {
+              "line": 5,
+              "character": 6
+            },
+            "end": {
+              "line": 5,
+              "character": 14
+            }
+          },
+          "children": [
+            {
+              "name": "inorderTraversal",
+              "detail": "inorderTraversal(node: TreeNode | None) -> list[int]",
+              "kind": 6,
+              "range": {"start": {"line": 6, "character": 4}, "end": {"line": 12, "character": 9}},
+              "nameRange": {
+                "start": {
+                  "line": 6,
+                  "character": 8
+                },
+                "end": {
+                  "line": 6,
+                  "character": 24
+                }
+              },
+              "children": []
+            }
+          ]
         }
       ]
     },

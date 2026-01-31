@@ -1,5 +1,4 @@
 'use cache'
-
 import { cacheLife } from 'next/cache'
 import { Suspense } from 'react';
 import { AgentProblemsView } from '@/components/agent';

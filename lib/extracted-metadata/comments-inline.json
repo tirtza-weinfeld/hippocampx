@@ -3,8 +3,30 @@
     77,
     89
   ],
+  "problems/105-construct-binary-tree-from-preorder-and-inorder-traversal/solution.py": [
+    4,
+    5,
+    8,
+    9,
+    11,
+    12,
+    14,
+    15,
+    16,
+    17,
+    20
+  ],
   "problems/909-snakes-and-ladders/solution.py": [
     4
+  ],
+  "problems/297-serialize-and-deserialize-binary-tree/solution.py": [
+    7,
+    17,
+    18,
+    22
+  ],
+  "problems/94-binary-tree-inorder-traversal/solution.py": [
+    2
   ],
   "problems/1584-min-cost-to-connect-all-points/array-based-prim.py": [
     2,
@@ -25,6 +47,10 @@
   ],
   "problems/394-decode-string/solution.py": [
     7
+  ],
+  "problems/145-binary-tree-postorder-traversal/solution.py": [
+    2,
+    12
   ],
   "problems/710-random-pick-with-blacklist/solution.py": [
     9,
@@ -66,6 +92,31 @@
     13,
     15,
     19
+  ],
+  "problems/889-construct-binary-tree-from-preorder-and-postorder-traversal/recursive.py": [
+    4,
+    5,
+    9,
+    11,
+    12,
+    14,
+    15,
+    17,
+    20
+  ],
+  "problems/889-construct-binary-tree-from-preorder-and-postorder-traversal/iterative.py": [
+    5,
+    7,
+    8,
+    10,
+    11,
+    12,
+    13,
+    14,
+    16,
+    18,
+    20,
+    22
   ],
   "problems/837-new-21-game/solution.py": [
     6,
@@ -198,6 +249,10 @@
   "problems/252-meeting-rooms/Interval-sort-and-scan.py": [
     1
   ],
+  "problems/144-binary-tree-preorder-traversal/solution.py": [
+    2,
+    12
+  ],
   "problems/15-3sum/solution.py": [
     2,
     6,
@@ -227,6 +282,13 @@
   ],
   "problems/127-word-ladder/solution.py": [
     23
+  ],
+  "core/Tree/binary_tree_node.py": [
+    0,
+    2,
+    4,
+    6,
+    7
   ],
   "core/bellman-ford/layered_dag.py": [
     9,

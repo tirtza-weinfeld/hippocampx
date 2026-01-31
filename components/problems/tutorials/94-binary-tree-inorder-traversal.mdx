@@ -1,0 +1,32 @@
+# Binary Tree Inorder Traversal
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="easy" />
+
+<PillList pills={["binary-tree"]} />
+
+[94. Binary Tree Inorder Traversal](https://leetcode.com/problems/binary-tree-inorder-traversal/description/)
+
+## [!(ProblemDefinition)] Definition
+
+Given the root of a binary tree, return the inorder traversal of its nodes' values.
+
+## [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/94-binary-tree-inorder-traversal/solution.py"
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from backend.algorithms.core.Tree.binary_tree_node import TreeNode
+
+class Solution:
+    def inorderTraversal(self, node: TreeNode | None) -> list[int]:
+        return (
+            [] if not node
+            else self.inorderTraversal(node.left)
+            + [node.val]
+            + self.inorderTraversal(node.right)
+        )
+```
+

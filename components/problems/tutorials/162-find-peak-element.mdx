@@ -13,6 +13,15 @@
 Given an array nums where adjacent elements are unequal, find any index i such that `nums[i+1] < nums[i] > nums[i-1]` .
     treating out-of-bounds neighbors as $-\infty$. You must return any such peak index in $O(\log n)$ time.
 
+## [!(ProblemIntuition)] Intuition
+
+- Treat the array as a landscape.
+    - If `nums[m] < nums[m+1]`, you are going uphill, so a peak must exist to the right.
+    - If `nums[m] > nums[m+1]`, you are going downhill (or already at a peak), so a peak exists at m or to the left.
+
+- Each comparison lets us discard half the array while preserving at least one guaranteed peak (since the ends are -∞).
+- Repeating this converges to a peak index in O(log n).
+
 ## [!(ProblemCodeSnippet)] Code Snippet
 
 ```python meta="source=problems/162-find-peak-element/solution.py"

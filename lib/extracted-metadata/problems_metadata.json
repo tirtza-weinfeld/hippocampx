@@ -58,6 +58,22 @@
       "difficulty": "medium",
       "topics": ["dijkstra"]
     },
+    "105-construct-binary-tree-from-preorder-and-inorder-traversal": {
+      "time_stamps": {
+        "created_at": "2026-01-31T14:46:09.374511",
+        "updated_at": "2026-01-31T15:34:40.301314"
+      },
+      "solutions": {
+        "solution.py": {
+          "code": "from backend.algorithms.core.Tree.binary_tree_node import TreeNode\n\nclass Solution:\n    def buildTree(self, preorder: list[int], inorder: list[int]) -> TreeNode | None:\n        it = iter(preorder)\n        idx = {v: i for i, v in enumerate(inorder)}\n\n        def build(l: int, r: int) -> TreeNode | None:\n            if l > r:\n                return None\n\n            v = next(it)\n            m = idx[v]\n\n            return TreeNode(\n                v,\n                build(l, m - 1),\n                build(m + 1, r),\n            )\n\n        return build(0, len(inorder) - 1)"
+        }
+      },
+      "title": "Construct Binary Tree from Preorder and Inorder Traversal",
+      "definition": "Given two integer arrays preorder and inorder where preorder is the preorder traversal of a binary tree\n    and inorder is the inorder traversal of the same tree, construct and return the binary tree.\n    preorder and inorder consist of unique values.",
+      "leetcode": "https://leetcode.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/description/",
+      "difficulty": "medium",
+      "topics": ["binary-tree"]
+    },
     "909-snakes-and-ladders": {
       "time_stamps": {
         "created_at": "2025-09-12T16:06:03.946097",
@@ -75,6 +91,22 @@
       "leetcode": "https://leetcode.com/problems/snakes-and-ladders",
       "difficulty": "medium",
       "topics": ["bfs"]
+    },
+    "297-serialize-and-deserialize-binary-tree": {
+      "time_stamps": {
+        "created_at": "2026-01-31T14:45:05.110594",
+        "updated_at": "2026-01-31T16:12:48.684279"
+      },
+      "solutions": {
+        "solution.py": {
+          "code": "from backend.algorithms.core.Tree.binary_tree_node import TreeNode\n\nclass Codec:\n    def serialize(self, root: TreeNode):\n        return (\n            \"^#\" if not root\n            else f\"^{root.val}{self.serialize(root.left)}{self.serialize(root.right)}\"\n        )\n\n    def deserialize(self, data):\n        preorder = iter(data.lstrip(\"^\").split(\"^\"))\n\n        def build():\n            return (\n                None if (val := next(preorder)) == \"#\"\n                else TreeNode(\n                    val,\n                    build(),\n                    build(),\n                )\n            )\n\n        return build()"
+        }
+      },
+      "title": "Serialize and Deserialize Binary Tree",
+      "definition": "Design an algorithm to serialize and deserialize a binary tree",
+      "leetcode": "https://leetcode.com/problems/serialize-and-deserialize-binary-tree/description/",
+      "difficulty": "hard",
+      "topics": ["binary-tree"]
     },
     "265-paint-house-ii": {
       "time_stamps": {
@@ -113,6 +145,38 @@
       "leetcode": "https://leetcode.com/problems/two-sum",
       "difficulty": "easy",
       "topics": ["hash-table", "k-sum"]
+    },
+    "94-binary-tree-inorder-traversal": {
+      "time_stamps": {
+        "created_at": "2026-01-31T14:44:13.252526",
+        "updated_at": "2026-01-31T15:37:18.402349"
+      },
+      "solutions": {
+        "solution.py": {
+          "code": "from typing import TYPE_CHECKING\n\nif TYPE_CHECKING:\n    from backend.algorithms.core.Tree.binary_tree_node import TreeNode\n\nclass Solution:\n    def inorderTraversal(self, node: TreeNode | None) -> list[int]:\n        return (\n            [] if not node\n            else self.inorderTraversal(node.left)\n            + [node.val]\n            + self.inorderTraversal(node.right)\n        )"
+        }
+      },
+      "title": "Binary Tree Inorder Traversal",
+      "definition": "Given the root of a binary tree, return the inorder traversal of its nodes' values.",
+      "leetcode": "https://leetcode.com/problems/binary-tree-inorder-traversal/description/",
+      "difficulty": "easy",
+      "topics": ["binary-tree"]
+    },
+    "301-remove-invalid-parentheses": {
+      "time_stamps": {
+        "created_at": "2026-01-31T16:50:32.796239",
+        "updated_at": "2026-01-31T16:51:11.890244"
+      },
+      "solutions": {
+        "solution.py": {
+          "code": "def remove_invalid_parentheses(self, s: str) -> list[str]:\n    pass"
+        }
+      },
+      "title": "Remove Invalid Parentheses",
+      "definition": "Given a string s that contains parentheses and letters, remove the minimum number of invalid parentheses to make the input string valid.\n    Return a list of unique strings that are valid with the minimum number of removals. You may return the answer in any order.",
+      "leetcode": "https://leetcode.com/problems/remove-invalid-parentheses/description/",
+      "difficulty": "hard",
+      "topics": ["TODO"]
     },
     "152-maximum-product-subarray": {
       "time_stamps": {
@@ -280,6 +344,22 @@
       "leetcode": "https://leetcode.com/problems/house-robber-ii",
       "difficulty": "Medium",
       "topics": ["dynamic_programming", "dynamic_programming-1D"]
+    },
+    "145-binary-tree-postorder-traversal": {
+      "time_stamps": {
+        "created_at": "2026-01-31T14:43:45.126522",
+        "updated_at": "2026-01-31T15:38:28.995621"
+      },
+      "solutions": {
+        "solution.py": {
+          "code": "from typing import TYPE_CHECKING\n\nif TYPE_CHECKING:\n    from backend.algorithms.core.Tree.binary_tree_node import TreeNode\n\nclass Solution:\n    def postorderTraversal(self, node: TreeNode | None) -> list[int]:\n        return (\n            [] if not node\n            else self.postorderTraversal(node.left)\n            + self.postorderTraversal(node.right)\n            + [node.val]\n        )"
+        }
+      },
+      "title": "Binary Tree Postorder Traversal",
+      "definition": "Given the root of a binary tree, return the postorder traversal of its nodes' values.",
+      "leetcode": "https://leetcode.com/problems/binary-tree-postorder-traversal/description/",
+      "difficulty": "easy",
+      "topics": ["binary-tree"]
     },
     "710-random-pick-with-blacklist": {
       "time_stamps": {
@@ -669,6 +749,25 @@
       "leetcode": "https://leetcode.com/problems/valid-parentheses",
       "difficulty": "easy",
       "topics": ["stack"]
+    },
+    "889-construct-binary-tree-from-preorder-and-postorder-traversal": {
+      "time_stamps": {
+        "created_at": "2026-01-31T14:47:21.485349",
+        "updated_at": "2026-01-31T16:19:51.274695"
+      },
+      "solutions": {
+        "recursive.py": {
+          "code": "from backend.algorithms.core.Tree.binary_tree_node import TreeNode\n\nclass Solution:\n    def constructFromPrePost(self, pre: list[int], post: list[int]) -> TreeNode | None:\n        it = iter(pre)\n        j = 0\n\n        def build() -> TreeNode:\n            nonlocal j\n            root = TreeNode(next(it))\n\n            if root.val != post[j]:\n                root.left = build()\n\n            if root.val != post[j]:\n                root.right = build()\n\n            j += 1\n            return root\n\n        return build() if pre else None"
+        },
+        "iterative.py": {
+          "code": "from backend.algorithms.core.Tree.binary_tree_node import TreeNode\n\nclass Solution:\n    def constructFromPrePost(self, pre: list[int], post: list[int]) -> TreeNode | None:\n        if not pre:\n            return None\n\n        root = TreeNode(pre[0])\n        stack, j = [root], 0\n\n        for v in pre[1:]:\n            node = TreeNode(v)\n            while stack[-1].val == post[j]:\n                stack.pop()\n                j += 1\n\n            parent = stack[-1]\n            if parent.left is None:\n                parent.left = node\n            else:\n                parent.right = node\n\n            stack.append(node)\n\n        return root"
+        }
+      },
+      "title": "Construct Binary Tree from Preorder and Postorder Traversal",
+      "definition": "Given two integer arrays, preorder and postorder where preorder is the preorder traversal of a binary tree of distinct values and postorder is the postorder traversal of the same tree, reconstruct and return the binary tree.If there exist multiple answers, you can return any of them.",
+      "leetcode": "https://leetcode.com/problems/construct-binary-tree-from-preorder-and-postorder-traversal/description/",
+      "difficulty": "medium",
+      "topics": ["binary-tree"]
     },
     "370-range-addition": {
       "time_stamps": {
@@ -1097,10 +1196,11 @@
     "162-find-peak-element": {
       "time_stamps": {
         "created_at": "2026-01-30T22:58:03.446990",
-        "updated_at": "2026-01-30T23:35:36.616886"
+        "updated_at": "2026-01-31T13:55:11.521549"
       },
       "solutions": {
         "solution.py": {
+          "intuition": "Treat the array as a landscape.\n    If `nums[m] < nums[m+1]`, you are going uphill, so a peak must exist to the right.\n    If `nums[m] > nums[m+1]`, you are going downhill (or already at a peak), so a peak exists at m or to the left.\n\nEach comparison lets us discard half the array while preserving at least one guaranteed peak (since the ends are -∞).\nRepeating this converges to a peak index in O(log n).",
           "code": "class Solution:\n    def findPeakElement(self, nums: list[int]) -> int:\n        l, r = 0, len(nums) - 1\n        while l < r:\n            m = (l + r) // 2\n            if nums[m] < nums[m + 1]:\n                l = m + 1\n            else:\n                r = m\n        return l"
         }
       },
@@ -2228,6 +2328,38 @@
       "difficulty": "medium",
       "topics": ["dfs"]
     },
+    "144-binary-tree-preorder-traversal": {
+      "time_stamps": {
+        "created_at": "2026-01-31T14:42:22.101623",
+        "updated_at": "2026-01-31T15:38:18.934135"
+      },
+      "solutions": {
+        "solution.py": {
+          "code": "from typing import TYPE_CHECKING\n\nif TYPE_CHECKING:\n    from backend.algorithms.core.Tree.binary_tree_node import TreeNode\n\nclass Solution:\n    def preorderTraversal(self, node: TreeNode | None) -> list[int]:\n        return (\n            [] if not node\n            else [node.val]\n            + self.preorderTraversal(node.left)\n            + self.preorderTraversal(node.right)\n        )"
+        }
+      },
+      "title": "Binary Tree Preorder Traversal",
+      "definition": "Given the root of a binary tree, return the preorder traversal of its nodes' values.",
+      "leetcode": "https://leetcode.com/problems/binary-tree-preorder-traversal/description/",
+      "difficulty": "easy",
+      "topics": ["binary-tree"]
+    },
+    "424-longest-repeating-character-replacement": {
+      "time_stamps": {
+        "created_at": "2026-01-31T16:58:50.778746",
+        "updated_at": "2026-01-31T17:03:03.095767"
+      },
+      "solutions": {
+        "solution.py": {
+          "code": "from collections import defaultdict\n\ndef characterReplacement(s: str, k: int) -> int:\n    counts = defaultdict(int)\n    max_freq = l = 0\n    for r, c in enumerate(s):\n        counts[c] += 1\n        max_freq = max(max_freq, counts[c])\n        if (r - l + 1) - max_freq > k:\n            counts[s[l]] -= 1\n            l += 1\n    return len(s) - l"
+        }
+      },
+      "title": "Longest Repeating Character Replacement",
+      "definition": "given a string s and an integer k. You can choose any character of the string and change it to any other uppercase English character. You can perform this operation at most k times.Return the length of the longest substring containing the same letter you can get after performing the above operations.",
+      "leetcode": "https://leetcode.com/problems/longest-repeating-character-replacement/description/",
+      "difficulty": "medium",
+      "topics": ["sliding-window", "hash-table"]
+    },
     "15-3sum": {
       "time_stamps": {
         "created_at": "2025-11-15T17:20:38.526377",
@@ -2461,11 +2593,12 @@
     "Tree": {
       "time_stamps": {
         "created_at": "2025-10-29T19:54:28.185942",
-        "updated_at": "2025-10-29T19:55:18.755975"
+        "updated_at": "2026-01-31T15:33:48.578183"
       },
       "solutions": {
         "binary_tree_node.py": {
-          "code": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right"
+          "code": "from __future__ import annotations\n\nfrom dataclasses import dataclass\n\n@dataclass(slots=True)\nclass TreeNode:\n    val: int\n    left: TreeNode | None = None\n    right: TreeNode | None = None",
+          "full_file_code": "from __future__ import annotations\n\nfrom dataclasses import dataclass\n\n@dataclass(slots=True)\nclass TreeNode:\n    val: int\n    left: TreeNode | None = None\n    right: TreeNode | None = None"
         }
       }
     },

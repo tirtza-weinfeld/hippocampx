@@ -1,0 +1,42 @@
+# Serialize and Deserialize Binary Tree
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="hard" />
+
+<PillList pills={["binary-tree"]} />
+
+[297. Serialize and Deserialize Binary Tree](https://leetcode.com/problems/serialize-and-deserialize-binary-tree/description/)
+
+## [!(ProblemDefinition)] Definition
+
+Design an algorithm to serialize and deserialize a binary tree
+
+## [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/297-serialize-and-deserialize-binary-tree/solution.py"
+from backend.algorithms.core.Tree.binary_tree_node import TreeNode
+
+class Codec:
+    def serialize(self, root: TreeNode):
+        return (
+            "^#" if not root
+            else f"^{root.val}{self.serialize(root.left)}{self.serialize(root.right)}"
+        )
+
+    def deserialize(self, data):
+        preorder = iter(data.lstrip("^").split("^"))
+
+        def build():
+            return (
+                None if (val := next(preorder)) == "#"
+                else TreeNode(
+                    val,
+                    build(),
+                    build(),
+                )
+            )
+
+        return build()
+```
+
