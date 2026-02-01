@@ -1,0 +1,54 @@
+# Generate Parentheses
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="medium" />
+
+<PillList pills={["backtrack", "dfs", "TODO(time complexity)"]} />
+
+[22. Generate Parentheses](https://leetcode.com/problems/generate-parentheses/description/)
+
+## [!(ProblemDefinition)] Definition
+
+Given n pairs of parentheses, write a function to generate all combinations of well-formed parentheses.
+
+## Dfs List Solution
+
+### [!(ProblemIntuition)] Intuition
+
+- build the string one char at a time while never letting it be invalid.
+- Rules: add *(* `while o < n`; add *)* only `if c < o` (more opens than closes so far).
+- DFS explores all valid prefixes and prunes invalid ones; `when o == c == n`, it is complete.
+
+### [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/22-generate-parentheses/dfs-list.py"
+def generateParenthesis(n: int) -> list[str]:
+    res = []
+    def dfs(s: str, o: int, c: int):
+        if o == c == n:
+            res.append(s); return
+        if o < n: dfs(s + "(", o + 1, c)
+        if c < o: dfs(s + ")", o, c + 1)
+    dfs("", 0, 0)
+    return res
+```
+
+
+---
+
+## Dfs Generator Solution
+
+### [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/22-generate-parentheses/dfs-generator.py"
+def generateParenthesis(n: int) -> list[str]:
+
+    def gen(s: str, o: int, c: int):
+        if o == c == n:
+            yield s; return
+        if o < n: yield from gen(s + "(", o + 1, c)
+        if c < o: yield from gen(s + ")", o, c + 1)
+    return list(gen("", 0, 0))
+```
+

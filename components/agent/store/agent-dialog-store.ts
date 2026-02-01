@@ -11,8 +11,9 @@ function createDebouncedStorage(storage: StateStorage, delay: number = 300): Sta
   return {
     getItem: (name) => {
       // If there's a pending write for this key, return it immediately
-      if (pendingWrites.has(name)) {
-        return pendingWrites.get(name)!
+      const pending = pendingWrites.get(name)
+      if (pending !== undefined) {
+        return pending
       }
       return storage.getItem(name)
     },
@@ -106,7 +107,7 @@ export const useAgentDialogStore = create<AgentDialogState>()(
         search: "",
         difficulty: "all",
         topic: "all",
-        sort: "number",
+        sort: "date-updated",
         order: "asc",
       },
       expandedIds: [],

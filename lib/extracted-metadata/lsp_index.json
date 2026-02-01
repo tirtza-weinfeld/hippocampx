@@ -6,11 +6,119 @@
     },
     {
       "uri": "blackboard.py",
-      "symbols": []
+      "symbols": [
+        {
+          "name": "Solution",
+          "detail": "class Solution",
+          "kind": 5,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 28, "character": 18}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 6
+            },
+            "end": {
+              "line": 0,
+              "character": 14
+            }
+          },
+          "children": [
+            {
+              "name": "removeInvalidParentheses",
+              "detail": "removeInvalidParentheses(s: str) -> list[str]",
+              "kind": 6,
+              "range": {"start": {"line": 1, "character": 4}, "end": {"line": 28, "character": 18}},
+              "nameRange": {
+                "start": {
+                  "line": 1,
+                  "character": 8
+                },
+                "end": {
+                  "line": 1,
+                  "character": 32
+                }
+              },
+              "children": [
+                {
+                  "name": "go",
+                  "detail": "go(t, i0, j0, op, cp)",
+                  "kind": 12,
+                  "range": {"start": {"line": 4, "character": 8}, "end": {"line": 25, "character": 30}},
+                  "nameRange": {
+                    "start": {
+                      "line": 4,
+                      "character": 12
+                    },
+                    "end": {
+                      "line": 4,
+                      "character": 14
+                    }
+                  },
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
     },
     {
       "uri": "blackboard2.py",
-      "symbols": []
+      "symbols": [
+        {
+          "name": "Solution",
+          "detail": "class Solution",
+          "kind": 5,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 23, "character": 18}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 6
+            },
+            "end": {
+              "line": 0,
+              "character": 14
+            }
+          },
+          "children": [
+            {
+              "name": "removeInvalidParentheses",
+              "detail": "removeInvalidParentheses(s: str) -> list[str]",
+              "kind": 6,
+              "range": {"start": {"line": 1, "character": 4}, "end": {"line": 23, "character": 18}},
+              "nameRange": {
+                "start": {
+                  "line": 1,
+                  "character": 8
+                },
+                "end": {
+                  "line": 1,
+                  "character": 32
+                }
+              },
+              "children": [
+                {
+                  "name": "go",
+                  "detail": "go(t: str, i0: int, j0: int, op: str, cp: str) -> None",
+                  "kind": 12,
+                  "range": {"start": {"line": 4, "character": 8}, "end": {"line": 20, "character": 30}},
+                  "nameRange": {
+                    "start": {
+                      "line": 4,
+                      "character": 12
+                    },
+                    "end": {
+                      "line": 4,
+                      "character": 14
+                    }
+                  },
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
     },
     {
       "uri": "core/Tree/__init__.py",
@@ -2303,6 +2411,32 @@
       ]
     },
     {
+      "uri": "problems/1249-minimum-remove-to-make-valid-parentheses/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/1249-minimum-remove-to-make-valid-parentheses/solution.py",
+      "symbols": [
+        {
+          "name": "minRemoveToMakeValid",
+          "detail": "minRemoveToMakeValid(s: str) -> str",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 11, "character": 65}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 24
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
       "uri": "problems/127-word-ladder/__init__.py",
       "symbols": []
     },
@@ -4260,6 +4394,90 @@
       ]
     },
     {
+      "uri": "problems/22-generate-parentheses/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/22-generate-parentheses/dfs-generator.py",
+      "symbols": [
+        {
+          "name": "generateParenthesis",
+          "detail": "generateParenthesis(n: int) -> list[str]",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 7, "character": 30}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 23
+            }
+          },
+          "children": [
+            {
+              "name": "gen",
+              "detail": "gen(s: str, o: int, c: int)",
+              "kind": 12,
+              "range": {"start": {"line": 2, "character": 4}, "end": {"line": 6, "character": 51}},
+              "nameRange": {
+                "start": {
+                  "line": 2,
+                  "character": 8
+                },
+                "end": {
+                  "line": 2,
+                  "character": 11
+                }
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "uri": "problems/22-generate-parentheses/dfs-list.py",
+      "symbols": [
+        {
+          "name": "generateParenthesis",
+          "detail": "generateParenthesis(n: int) -> list[str]",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 8, "character": 14}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 23
+            }
+          },
+          "children": [
+            {
+              "name": "dfs",
+              "detail": "dfs(s: str, o: int, c: int)",
+              "kind": 12,
+              "range": {"start": {"line": 2, "character": 4}, "end": {"line": 6, "character": 40}},
+              "nameRange": {
+                "start": {
+                  "line": 2,
+                  "character": 8
+                },
+                "end": {
+                  "line": 2,
+                  "character": 11
+                }
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
       "uri": "problems/238-product-of-array-except-self/__init__.py",
       "symbols": []
     },
@@ -4812,21 +5030,57 @@
       "uri": "problems/301-remove-invalid-parentheses/solution.py",
       "symbols": [
         {
-          "name": "remove_invalid_parentheses",
-          "detail": "remove_invalid_parentheses(self, s: str) -> list[str]",
-          "kind": 12,
-          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 1, "character": 8}},
+          "name": "Solution",
+          "detail": "class Solution",
+          "kind": 5,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 24, "character": 18}},
           "nameRange": {
             "start": {
               "line": 0,
-              "character": 4
+              "character": 6
             },
             "end": {
               "line": 0,
-              "character": 30
+              "character": 14
             }
           },
-          "children": []
+          "children": [
+            {
+              "name": "removeInvalidParentheses",
+              "detail": "removeInvalidParentheses(s: str) -> list[str]",
+              "kind": 6,
+              "range": {"start": {"line": 1, "character": 4}, "end": {"line": 24, "character": 18}},
+              "nameRange": {
+                "start": {
+                  "line": 1,
+                  "character": 8
+                },
+                "end": {
+                  "line": 1,
+                  "character": 32
+                }
+              },
+              "children": [
+                {
+                  "name": "go",
+                  "detail": "go(t, i0, j0, op, cp)",
+                  "kind": 12,
+                  "range": {"start": {"line": 3, "character": 8}, "end": {"line": 22, "character": 32}},
+                  "nameRange": {
+                    "start": {
+                      "line": 3,
+                      "character": 12
+                    },
+                    "end": {
+                      "line": 3,
+                      "character": 14
+                    }
+                  },
+                  "children": []
+                }
+              ]
+            }
+          ]
         }
       ]
     },
@@ -4957,6 +5211,50 @@
                   "children": []
                 }
               ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "uri": "problems/32-longest-valid-parentheses/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/32-longest-valid-parentheses/solution.py",
+      "symbols": [
+        {
+          "name": "Solution",
+          "detail": "class Solution",
+          "kind": 5,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 13, "character": 25}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 6
+            },
+            "end": {
+              "line": 0,
+              "character": 14
+            }
+          },
+          "children": [
+            {
+              "name": "longestValidParentheses",
+              "detail": "longestValidParentheses(s: str) -> int",
+              "kind": 6,
+              "range": {"start": {"line": 1, "character": 4}, "end": {"line": 13, "character": 25}},
+              "nameRange": {
+                "start": {
+                  "line": 1,
+                  "character": 8
+                },
+                "end": {
+                  "line": 1,
+                  "character": 31
+                }
+              },
+              "children": []
             }
           ]
         }
@@ -7955,6 +8253,32 @@
             "end": {
               "line": 0,
               "character": 36
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/921-minimum-add-to-make-parentheses-valid/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/921-minimum-add-to-make-parentheses-valid/solution.py",
+      "symbols": [
+        {
+          "name": "minAddToMakeValid",
+          "detail": "minAddToMakeValid(s: str) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 11, "character": 27}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 21
             }
           },
           "children": []

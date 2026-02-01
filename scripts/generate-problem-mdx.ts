@@ -458,6 +458,17 @@ async function main(): Promise<void> {
 
       const solutionCount = Object.keys(problem.solutions).length
       console.log(`✅ Generated: ${singleProblem}.mdx (${solutionCount} solution${solutionCount > 1 ? 's' : ''})`)
+
+      // Update the component registry with all existing MDX files
+      const files = await fs.readdir(problemsDir)
+      const problemIds = files
+        .filter(f => f.endsWith('.mdx'))
+        .map(f => f.replace('.mdx', ''))
+
+      const registryContent = generateComponentRegistry(problemIds)
+      const registryPath = path.join(problemsDir, 'index.ts')
+      await fs.writeFile(registryPath, registryContent, 'utf-8')
+      console.log(`Updated components registry: index.ts`)
       return
     }
 

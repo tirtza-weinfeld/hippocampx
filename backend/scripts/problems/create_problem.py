@@ -57,13 +57,8 @@ def create_problem_folder(
     folder_name = f"{number}-{slug}"
     folder_path = root_path / folder_name
 
-    # Check if folder already exists
-    if folder_path.exists():
-        print(f"Error: Folder '{folder_name}' already exists.", file=sys.stderr)
-        sys.exit(1)
-
-    # Create folder
-    folder_path.mkdir(parents=True, exist_ok=False)
+    # Create folder (allow overwrite since we already prompted)
+    folder_path.mkdir(parents=True, exist_ok=True)
     print(f"Created folder: {folder_path}")
 
     # Create __init__.py
@@ -121,20 +116,32 @@ def main() -> None:
     """Prompt for inputs and create problem folder."""
     print("\n=== Create New Problem ===\n")
 
-    # Prompt for all inputs
-    number = prompt_number("Problem number (e.g., 1, 121, 1234)")
-    title = prompt_input("Problem title (e.g., Two Sum)")
-    definition = prompt_input("Problem definition/description")
-    url = prompt_input("LeetCode problem URL")
-    difficulty = prompt_choice("Problem difficulty", ["easy", "medium", "hard"])
-    topics_str = prompt_input("Topics (comma-separated, e.g., hash-table,k-sum)")
-    topics = [topic.strip() for topic in topics_str.split(",")]
-
     # Use default root path
     root_path = Path("backend/algorithms/problems")
     if not root_path.exists():
         print(f"Error: Root path '{root_path}' does not exist.", file=sys.stderr)
         sys.exit(1)
+
+    # Prompt for number and title first to check if problem exists
+    number = prompt_number("Problem number (e.g., 1, 121, 1234)")
+    title = prompt_input("Problem title (e.g., Two Sum)")
+
+    # Check if folder already exists early
+    slug = slugify(title)
+    folder_name = f"{number}-{slug}"
+    folder_path = root_path / folder_name
+    if folder_path.exists():
+        print(f"\n⚠️  Problem '{folder_name}' already exists at {folder_path}")
+        overwrite = input("Do you want to overwrite it? (y/n): ").strip().lower()
+        if overwrite != "y":
+            print("Cancelled.")
+            sys.exit(0)
+
+    definition = prompt_input("Problem definition/description")
+    url = prompt_input("LeetCode problem URL")
+    difficulty = prompt_choice("Problem difficulty", ["easy", "medium", "hard"])
+    topics_str = prompt_input("Topics (comma-separated, e.g., hash-table,k-sum)")
+    topics = [topic.strip() for topic in topics_str.split(",")]
 
     # Show summary and confirm
     print("\n=== Summary ===")
@@ -146,8 +153,8 @@ def main() -> None:
     print(f"Topics: {', '.join(topics)}")
     print()
 
-    confirm = input("Create this problem? (y/n): ").strip().lower()
-    if confirm != "y":
+    confirm = input("Create this problem? (Y/n): ").strip().lower()
+    if confirm == "n":
         print("Cancelled.")
         sys.exit(0)
 

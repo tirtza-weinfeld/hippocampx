@@ -5,8 +5,8 @@ class Codec:
     def serialize(self, root: TreeNode):
         return (
             "^#" if not root
-            else f"^{root.val}{self.serialize(root.left)}{self.serialize(root.right)}"
-        )  # Preorder serialization: node -> left -> right , Use "^" as a delimiter and "#" as a null marker
+            else f"^{root.val}{self.serialize(root.left)}{self.serialize(root.right)}" # Preorder serialization: node -> left -> right
+        )  # Use "^" as a delimiter and "#" as a null marker
 
     def deserialize(self, data):
         preorder = iter(data.lstrip("^").split("^"))

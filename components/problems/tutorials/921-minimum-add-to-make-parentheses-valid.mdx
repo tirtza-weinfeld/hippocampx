@@ -1,0 +1,31 @@
+# Minimum Add to Make Parentheses Valid
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="medium" />
+
+<PillList pills={["stack-free-parentheses"]} />
+
+[921. Minimum Add to Make Parentheses Valid](https://leetcode.com/problems/minimum-add-to-make-parentheses-valid/description/)
+
+## [!(ProblemDefinition)] Definition
+
+Given string `s`, each move inserts one `(` or `)` anywhere; return the minimum insertions needed to make s valid.
+
+## [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/921-minimum-add-to-make-parentheses-valid/solution.py"
+def minAddToMakeValid(s: str) -> int:
+    balance = insert = 0
+
+    for p in s:
+        if p == "(":
+            balance += 1
+        elif balance:
+            balance -= 1
+        else:
+            insert += 1
+
+    return insert + balance
+```
+

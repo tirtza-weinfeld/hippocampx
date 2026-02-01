@@ -4,7 +4,7 @@
 
 <DifficultyBadge difficulty="hard" />
 
-<PillList pills={["TODO"]} />
+<PillList pills={["2-pass-dfs"]} />
 
 [301. Remove Invalid Parentheses](https://leetcode.com/problems/remove-invalid-parentheses/description/)
 
@@ -13,10 +13,44 @@
 Given a string s that contains parentheses and letters, remove the minimum number of invalid parentheses to make the input string valid.
     Return a list of unique strings that are valid with the minimum number of removals. You may return the answer in any order.
 
+## [!(ProblemIntuition)] Intuition
+
+- We only delete a parenthesis when it is provably invalid, and we delete it at the earliest point where invalidity appears.
+        - Scan left → right counting balance.
+        - The first time balance goes negative, we know there are too many closing parentheses before this point.
+        - To fix this with minimum deletions, we must delete one ) from this prefix — try each distinct option and recurse.
+        - Never delete earlier than needed, and never delete the same parenthesis twice → guarantees minimal and duplicate-free results.
+        - After fixing extra ), reverse the string and repeat the same logic to fix extra (.
+        - If both passes succeed, the string is valid.
+    - This works because any valid string must be balanced in both directions, and the first invalid prefix fully determines where a deletion must occur.
+
 ## [!(ProblemCodeSnippet)] Code Snippet
 
 ```python meta="source=problems/301-remove-invalid-parentheses/solution.py"
-def remove_invalid_parentheses(self, s: str) -> list[str]:
-    pass
+class Solution:
+    def removeInvalidParentheses(self, s: str) -> list[str]:
+        out = []
+        def go(t, i0, j0, op, cp):
+            bal = 0
+            for i in range(i0, len(t)):
+                bal += (t[i] == op) - (t[i] == cp)
+                if bal >= 0:
+                    continue
+
+                for j in range(j0, i + 1):
+                    if t[j] == cp and (j == j0 or t[j - 1] != cp):
+                        go(
+                            t[:j] + t[j + 1:],
+                            i,
+                            j,
+                            op, cp
+                        )
+                return
+
+            rt = t[::-1]
+            if op == "(": go(rt, 0, 0, ")", "(")
+            else: out.append(rt)
+        go(s, 0, 0, "(", ")")
+        return out
 ```
 

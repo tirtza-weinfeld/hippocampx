@@ -10,7 +10,18 @@
 
 ## [!(ProblemDefinition)] Definition
 
-given a string s and an integer k. You can choose any character of the string and change it to any other uppercase English character. You can perform this operation at most k times.Return the length of the longest substring containing the same letter you can get after performing the above operations.
+given a string `s` and an integer `k`. You can choose any character of the string and change it to any other uppercase English character.
+    You can perform this operation at most `k` times.
+    Return the length of the longest substring containing the same letter you can get after performing the above operations.
+
+## [!(ProblemIntuition)] Intuition
+
+- Sliding window with monotonic max_freq (can be stale).
+
+- Example:
+    - `s="BBBBAABAACADAACCCC"; k=3`
+    - max valid window: indices *4...13* *(len=10)*, `AABAACADAA`
+    - final `l=8` -> final window indices *8...17* *(len=10)*, invalid because `max_freq`             is stale; length is still correct since `r` only increases and `l` moves at most             once per `r`, so `r-l` never decreases.
 
 ## [!(ProblemCodeSnippet)] Code Snippet
 

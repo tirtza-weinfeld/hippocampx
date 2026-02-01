@@ -126,6 +126,7 @@ ignore = [
 
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = ["ARG", "B018"]
+"algorithms/problems/*" = ["W605"]  # LaTeX backslashes in docstrings
 
 [tool.mypy]
 python_version = "3.14"

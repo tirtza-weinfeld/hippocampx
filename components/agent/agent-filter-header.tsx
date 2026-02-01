@@ -42,6 +42,11 @@ type AgentFilterHeaderProps = {
 
 export function AgentFilterHeader({ filters, onFiltersChange, topics, stats, hasExpandedProblems, onToggleExpandAll }: AgentFilterHeaderProps) {
   const [isResetting, setIsResetting] = useState(false)
+  const [topicSearch, setTopicSearch] = useState("")
+
+  const filteredTopics = topicSearch
+    ? topics.filter((t) => t.toLowerCase().includes(topicSearch.toLowerCase()))
+    : topics
 
   function updateFilter(key: keyof FilterState, value: string) {
     onFiltersChange({ ...filters, [key]: value })
@@ -135,9 +140,9 @@ export function AgentFilterHeader({ filters, onFiltersChange, topics, stats, has
         </div>
 
         {/* Controls Row */}
-        <div className="flex gap-2.5 items-stretch w-full">
+        <div className="flex gap-1 @lg:gap-2.5 items-stretch w-full ">
         {/* Search Input */}
-        <div className="relative flex-1 ml-1">
+        <div className="relative flex-1 ml-0 @lg:ml-1">
           <Input
             placeholder="Search problems..."
             value={filters.search}
@@ -157,7 +162,7 @@ export function AgentFilterHeader({ filters, onFiltersChange, topics, stats, has
         </div>
 
         {/* Filter Controls */}
-        <div className="flex items-center gap-2.5 bg-background/95 backdrop-blur-md rounded-xl border border-border/30 shadow-sm hover:shadow-md transition-all duration-200 px-3.5 py-1" data-filter-controls>
+        <div className="flex items-center gap-1 @lg:gap-2.5 bg-background/95 backdrop-blur-md rounded-xl border border-border/30 shadow-sm hover:shadow-md transition-all duration-200 @lg:px-3.5 py-1" data-filter-controls>
           {/* Difficulty Dropdown */}
             <Dropdown
               align="center"
@@ -247,6 +252,10 @@ export function AgentFilterHeader({ filters, onFiltersChange, topics, stats, has
             tooltipContent="Filter by topic"
             tooltipSide="top"
             tooltipClassName="bg-purple-500/5 text-purple-500 "
+            searchable
+            searchValue={topicSearch}
+            onSearchChange={setTopicSearch}
+            searchPlaceholder="Search topics..."
             trigger={
               <div className={cn(
                 "h-8 w-8 p-0 border border-border/20 bg-gradient-to-br flex items-center justify-center cursor-pointer rounded-lg relative",
@@ -262,7 +271,7 @@ export function AgentFilterHeader({ filters, onFiltersChange, topics, stats, has
             }
             className="max-w-[240px] max-h-[320px] overflow-y-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-border/50 hover:scrollbar-thumb-border"
           >
-            {["all", ...topics].map((topic) => (
+            {["all", ...filteredTopics].map((topic) => (
               <DropdownItem
                 key={topic}
                 checked={filters.topic === topic}

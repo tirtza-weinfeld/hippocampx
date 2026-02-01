@@ -93,7 +93,6 @@ export const routes: NavigationItem[] = [
     {
         title: 'Notes', href: '/notes', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10",
         children: [
-            { title: 'sliding-window', href: '/notes/sliding-window', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10" },
             { title: 'kadane', href: '/notes/kadane', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10" },
             { title: 'stocks', href: '/notes/stocks', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10" },
             { title: 'games', href: '/notes/games', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10" },

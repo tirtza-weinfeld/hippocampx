@@ -95,7 +95,7 @@
     "297-serialize-and-deserialize-binary-tree": {
       "time_stamps": {
         "created_at": "2026-01-31T14:45:05.110594",
-        "updated_at": "2026-01-31T16:12:48.684279"
+        "updated_at": "2026-02-01T10:46:16.637806"
       },
       "solutions": {
         "solution.py": {
@@ -165,18 +165,19 @@
     "301-remove-invalid-parentheses": {
       "time_stamps": {
         "created_at": "2026-01-31T16:50:32.796239",
-        "updated_at": "2026-01-31T16:51:11.890244"
+        "updated_at": "2026-02-01T18:11:10.248055"
       },
       "solutions": {
         "solution.py": {
-          "code": "def remove_invalid_parentheses(self, s: str) -> list[str]:\n    pass"
+          "intuition": "We only delete a parenthesis when it is provably invalid, and we delete it at the earliest point where invalidity appears.\n        Scan left → right counting balance.\n        The first time balance goes negative, we know there are too many closing parentheses before this point.\n        To fix this with minimum deletions, we must delete one ) from this prefix — try each distinct option and recurse.\n        Never delete earlier than needed, and never delete the same parenthesis twice → guarantees minimal and duplicate-free results.\n        After fixing extra ), reverse the string and repeat the same logic to fix extra (.\n        If both passes succeed, the string is valid.\n    This works because any valid string must be balanced in both directions, and the first invalid prefix fully determines where a deletion must occur.",
+          "code": "class Solution:\n    def removeInvalidParentheses(self, s: str) -> list[str]:\n        out = []\n        def go(t, i0, j0, op, cp):\n            bal = 0\n            for i in range(i0, len(t)):\n                bal += (t[i] == op) - (t[i] == cp)\n                if bal >= 0:\n                    continue\n\n                for j in range(j0, i + 1):\n                    if t[j] == cp and (j == j0 or t[j - 1] != cp):\n                        go(\n                            t[:j] + t[j + 1:],\n                            i,\n                            j,\n                            op, cp\n                        )\n                return\n\n            rt = t[::-1]\n            if op == \"(\": go(rt, 0, 0, \")\", \"(\")\n            else: out.append(rt)\n        go(s, 0, 0, \"(\", \")\")\n        return out"
         }
       },
       "title": "Remove Invalid Parentheses",
       "definition": "Given a string s that contains parentheses and letters, remove the minimum number of invalid parentheses to make the input string valid.\n    Return a list of unique strings that are valid with the minimum number of removals. You may return the answer in any order.",
       "leetcode": "https://leetcode.com/problems/remove-invalid-parentheses/description/",
       "difficulty": "hard",
-      "topics": ["TODO"]
+      "topics": ["2-pass-dfs"]
     },
     "152-maximum-product-subarray": {
       "time_stamps": {
@@ -550,6 +551,22 @@
       "difficulty": "medium",
       "topics": ["prefix-suffix", "two-pass-scan"]
     },
+    "1249-minimum-remove-to-make-valid-parentheses": {
+      "time_stamps": {
+        "created_at": "2026-02-01T16:13:28.184834",
+        "updated_at": "2026-02-01T16:59:04.786988"
+      },
+      "solutions": {
+        "solution.py": {
+          "code": "def minRemoveToMakeValid(s: str) -> str:\n    stack, remove = [], set()\n    for i, c in enumerate(s):\n        if c == \"(\":\n            stack.append(i)\n        elif c == \")\":\n            if stack:\n                stack.pop()\n            else:\n                remove.add(i)\n    remove.update(stack)\n    return \"\".join(c for i, c in enumerate(s) if i not in remove)"
+        }
+      },
+      "title": "Minimum Remove to Make Valid Parentheses",
+      "definition": "Given a string s of '(' , ')' and lowercase English characters.emove the minimum number of parentheses ( '(' or ')', in any positions ) so that the resulting parentheses string is valid and return any valid string.",
+      "leetcode": "https://leetcode.com/problems/minimum-remove-to-make-valid-parentheses/",
+      "difficulty": "medium",
+      "topics": ["stack"]
+    },
     "410-split-array-largest-sum": {
       "time_stamps": {
         "created_at": "2026-01-22T08:45:27.634687",
@@ -921,7 +938,7 @@
     "3-longest-substring-without-repeating-characters": {
       "time_stamps": {
         "created_at": "2025-09-12T16:05:16.849870",
-        "updated_at": "2025-10-03T14:18:45.257450"
+        "updated_at": "2026-02-01T11:03:59.933717"
       },
       "solutions": {
         "solution.py": {
@@ -930,10 +947,10 @@
             "s: str": "Input string to analyze"
           },
           "expressions": {
-            "l = max(c_idx[c] + 1, l)": "ensures that l does not move backward in cases where the last occurrence of s[r] was before l."
+            "l = max(idx[c] + 1, l)": "ensures that l does not move backward in cases where the last occurrence of c was before l."
           },
           "returns": "`int`: Length of the longest substring without repeating characters",
-          "code": "def longest_substring_without_repeating_characters(s: str) -> int:\n    c_idx, l, max_length = {}, 0, 0\n    for r, c in enumerate(s):\n        if c in c_idx:\n            l = max(c_idx[c] + 1, l)\n        c_idx[c] = r\n        max_length = max(max_length, r - l + 1)\n    return max_length"
+          "code": "def longest_substring_without_repeating_characters(s: str) -> int:\n    idx, l, max_length = {}, 0, 0\n    for r, c in enumerate(s):\n        if c in idx:\n            l = max(idx[c] + 1, l)\n        idx[c] = r\n        max_length = max(max_length, r - l + 1)\n    return max_length"
         }
       },
       "title": "Longest Substring Without Repeating Characters",
@@ -1847,6 +1864,26 @@
       "difficulty": "medium",
       "topics": ["dp"]
     },
+    "22-generate-parentheses": {
+      "time_stamps": {
+        "created_at": "2026-02-01T13:00:40.761677",
+        "updated_at": "2026-02-01T14:33:01.674067"
+      },
+      "solutions": {
+        "dfs-list.py": {
+          "intuition": "build the string one char at a time while never letting it be invalid.\nRules: add *(* `while o < n`; add *)* only `if c < o` (more opens than closes so far).\nDFS explores all valid prefixes and prunes invalid ones; `when o == c == n`, it is complete.",
+          "code": "def generateParenthesis(n: int) -> list[str]:\n    res = []\n    def dfs(s: str, o: int, c: int):\n        if o == c == n:\n            res.append(s); return\n        if o < n: dfs(s + \"(\", o + 1, c)\n        if c < o: dfs(s + \")\", o, c + 1)\n    dfs(\"\", 0, 0)\n    return res"
+        },
+        "dfs-generator.py": {
+          "code": "def generateParenthesis(n: int) -> list[str]:\n\n    def gen(s: str, o: int, c: int):\n        if o == c == n:\n            yield s; return\n        if o < n: yield from gen(s + \"(\", o + 1, c)\n        if c < o: yield from gen(s + \")\", o, c + 1)\n    return list(gen(\"\", 0, 0))"
+        }
+      },
+      "title": "Generate Parentheses",
+      "definition": "Given n pairs of parentheses, write a function to generate all combinations of well-formed parentheses.",
+      "leetcode": "https://leetcode.com/problems/generate-parentheses/description/",
+      "difficulty": "medium",
+      "topics": ["backtrack", "dfs", "TODO(time complexity)"]
+    },
     "435-non-overlapping-intervals": {
       "time_stamps": {
         "created_at": "2025-11-09T08:42:36.949255",
@@ -2328,6 +2365,22 @@
       "difficulty": "medium",
       "topics": ["dfs"]
     },
+    "921-minimum-add-to-make-parentheses-valid": {
+      "time_stamps": {
+        "created_at": "2026-02-01T12:56:18.672549",
+        "updated_at": "2026-02-01T14:53:11.492768"
+      },
+      "solutions": {
+        "solution.py": {
+          "code": "def minAddToMakeValid(s: str) -> int:\n    balance = insert = 0\n\n    for p in s:\n        if p == \"(\":\n            balance += 1\n        elif balance:\n            balance -= 1\n        else:\n            insert += 1\n\n    return insert + balance"
+        }
+      },
+      "title": "Minimum Add to Make Parentheses Valid",
+      "definition": "Given string `s`, each move inserts one `(` or `)` anywhere; return the minimum insertions needed to make s valid.",
+      "leetcode": "https://leetcode.com/problems/minimum-add-to-make-parentheses-valid/description/",
+      "difficulty": "medium",
+      "topics": ["stack-free-parentheses"]
+    },
     "144-binary-tree-preorder-traversal": {
       "time_stamps": {
         "created_at": "2026-01-31T14:42:22.101623",
@@ -2347,15 +2400,16 @@
     "424-longest-repeating-character-replacement": {
       "time_stamps": {
         "created_at": "2026-01-31T16:58:50.778746",
-        "updated_at": "2026-01-31T17:03:03.095767"
+        "updated_at": "2026-02-01T10:36:42.041505"
       },
       "solutions": {
         "solution.py": {
+          "intuition": "Sliding window with monotonic max_freq (can be stale).\n\nExample:\n    `s=\"BBBBAABAACADAACCCC\"; k=3`\n    max valid window: indices *4...13* *(len=10)*, `AABAACADAA`\n    final `l=8` -> final window indices *8...17* *(len=10)*, invalid because `max_freq`             is stale; length is still correct since `r` only increases and `l` moves at most             once per `r`, so `r-l` never decreases.",
           "code": "from collections import defaultdict\n\ndef characterReplacement(s: str, k: int) -> int:\n    counts = defaultdict(int)\n    max_freq = l = 0\n    for r, c in enumerate(s):\n        counts[c] += 1\n        max_freq = max(max_freq, counts[c])\n        if (r - l + 1) - max_freq > k:\n            counts[s[l]] -= 1\n            l += 1\n    return len(s) - l"
         }
       },
       "title": "Longest Repeating Character Replacement",
-      "definition": "given a string s and an integer k. You can choose any character of the string and change it to any other uppercase English character. You can perform this operation at most k times.Return the length of the longest substring containing the same letter you can get after performing the above operations.",
+      "definition": "given a string `s` and an integer `k`. You can choose any character of the string and change it to any other uppercase English character.\n    You can perform this operation at most `k` times.\n    Return the length of the longest substring containing the same letter you can get after performing the above operations.",
       "leetcode": "https://leetcode.com/problems/longest-repeating-character-replacement/description/",
       "difficulty": "medium",
       "topics": ["sliding-window", "hash-table"]
@@ -2449,7 +2503,7 @@
     "713-subarray-product-less-than-k": {
       "time_stamps": {
         "created_at": "2025-09-12T16:05:57.931365",
-        "updated_at": "2025-09-30T19:05:08.951791"
+        "updated_at": "2026-02-01T11:49:29.175806"
       },
       "solutions": {
         "solution.py": {
@@ -2458,7 +2512,7 @@
         }
       },
       "title": "Number of Subarrays with Product Less Than K",
-      "definition": "Given an array of integers nums and an integer k, return the number of contiguous subarrays where the product of all the elements in the subarray is less than k.",
+      "definition": "Given an array of integers `nums` and an integer `k`,\n    return the number of contiguous subarrays where the product of all the elements in the subarray is less than `k`.`",
       "leetcode": "https://leetcode.com/problems/subarray-product-less-than-k",
       "difficulty": "medium",
       "topics": ["sliding-window"]
@@ -2507,6 +2561,29 @@
       "leetcode": "https://leetcode.com/problems/spiral-matrix/",
       "difficulty": "medium",
       "topics": ["matrix"]
+    },
+    "32-longest-valid-parentheses": {
+      "time_stamps": {
+        "created_at": "2026-02-01T14:54:47.454302",
+        "updated_at": "2026-02-01T16:05:22.248054"
+      },
+      "solutions": {
+        "solution.py": {
+          "intuition": "Use a stack of indices to mark positions that cannot be crossed by a valid parentheses substring\nPush indices of `(`\nWhen a `)` arrives, pop to match it;\n    if the stack becomes empty, this `)` is unmatched and becomes the new base.\n    Otherwise, the current valid length is the distance from the current index to the last unmatched position (`i - stack[-1]`)\n        The maximum such distance is the answer.",
+          "variables": {
+            "stack": "`stack[i]` is an index that currently acts as a boundary (either an unmatched parenthesis or a base position) such that no valid parentheses substring can cross it."
+          },
+          "expressions": {
+            "i - stack[-1])": "distance from last unmatched position"
+          },
+          "code": "class Solution:\n    def longestValidParentheses(self, s: str) -> int:\n        stack = [-1]\n        max_length = 0\n        for i, c in enumerate(s):\n            if c == \"(\":\n                stack.append(i)\n            else:\n                stack.pop()\n                if not stack:\n                    stack.append(i)\n                else:\n                    max_length = max(max_length, i - stack[-1])\n        return max_length"
+        }
+      },
+      "title": "Longest Valid Parentheses",
+      "definition": "Given a string containing just the characters `(` and `)`, return the length of the longest valid (well-formed) parentheses substring",
+      "leetcode": "https://leetcode.com/problems/longest-valid-parentheses/",
+      "difficulty": "hard",
+      "topics": ["stack"]
     },
     "322-coin-change": {
       "time_stamps": {
