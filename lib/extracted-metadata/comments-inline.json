@@ -1,37 +1,4 @@
 {
-  "blackboard.py": [
-    2,
-    5,
-    6,
-    7,
-    8,
-    11,
-    13,
-    14,
-    15,
-    16,
-    17,
-    19,
-    21,
-    23,
-    25,
-    27,
-    28
-  ],
-  "blackboard2.py": [
-    2,
-    5,
-    6,
-    7,
-    8,
-    11,
-    13,
-    14,
-    16,
-    18,
-    20,
-    22
-  ],
   "more/tictactoe/tictactoe_no_player_in_state.py": [
     77,
     89
@@ -226,6 +193,11 @@
   "problems/69-sqrt/newtons-method.py": [
     4,
     5
+  ],
+  "problems/937-k-closest-points-to-origin/binary-search.py": [
+    3,
+    6,
+    13
   ],
   "problems/311-sparse-matrix-multiplication/_optimized.py": [
     15
