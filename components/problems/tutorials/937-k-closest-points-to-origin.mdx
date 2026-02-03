@@ -4,28 +4,35 @@
 
 <DifficultyBadge difficulty="medium" />
 
-<PillList pills={["TODO"]} />
+<PillList pills={["binary-search-answer-space", "heap", "quick-select"]} />
 
 [937. K Closest Points to Origin](https://leetcode.com/problems/k-closest-points-to-origin/description/)
 
 ## [!(ProblemDefinition)] Definition
 
 Given an array of points where points[i] = [xi, yi] represents a point on the X-Y plane and an integer k, return the k closest points to the origin (0, 0).
-    The distance between two points on the X-Y plane is the Euclidean distance (i.e., √(x1 - x2)^2 + (y1 - y2)^2).
+    The distance between two points on the X-Y plane is the Euclidean distance (i.e., $\sqrt{(x_1 - x_2)^2 + (y_1 - y_2)^2}$).
     You may return the answer in any order. The answer is guaranteed to be unique (except for the order that it is in).
 
 ## Heap Solution
+
+### [!(ProblemTimeComplexity)] Time Complexity
+
+- $O(n k \log n)$:
+    - Building the heap from all $n$ points takes $O(n)$ time.
+    - Each pop removes the smallest distance in $O(\log n)$ time.
+    - We perform exactly $k$ pops, so the total work is: $O(n + k \log n)$
+    - This approach avoids full sorting ($O(n \log n)$) by only extracting the $k$ smallest elements.
 
 ### [!(ProblemCodeSnippet)] Code Snippet
 
 ```python meta="source=problems/937-k-closest-points-to-origin/heap.py"
 import heapq
 
-class Solution:
-    def kClosest(self, points: list[list[int]], k: int) -> list[list[int]]:
-        d = [(x*x + y*y, (x,y)) for x, y in points]
-        heapq.heapify(d)
-        return [heapq.heappop(d)[1] for _ in range(k)]
+def kClosest(points: list[list[int]], k: int) -> list[list[int]]:
+    d = [(x * x + y * y, (x, y)) for x, y in points]
+    heapq.heapify(d)
+    return [heapq.heappop(d)[1] for _ in range(k)]
 ```
 
 
@@ -33,13 +40,22 @@ class Solution:
 
 ## Binary Search Solution
 
+### [!(ProblemIntuition)] Intuition
+
+- Binary search for the smallest value `lo` such that at least `k` squared distances are `<= lo`
+
+### [!(ProblemTimeComplexity)] Time Complexity
+
+- $O(n \log D)$:
+    - Let $n =\text{len(points)}$ and $D = \max(x^2 + y^2)$.
+    - Each binary-search step scans all $n$ distances.
+
 ### [!(ProblemCodeSnippet)] Code Snippet
 
 ```python meta="source=problems/937-k-closest-points-to-origin/binary-search.py"
 class Solution:
     def kClosest(self, points: list[list[int]], k: int) -> list[list[int]]:
-
-        distance = [x*x + y*y for x, y in points]
+        distance = [x * x + y * y for x, y in points]
 
         lo, hi = 0, max(distance)
         while lo < hi:
@@ -49,7 +65,78 @@ class Solution:
             else:
                 lo = mid + 1
 
-        res = [pt for pt, d in zip(points, distance) if d <= lo]
-        return res[:k]
+        return [p for p, d in zip(points, distance) if d <= lo]
+```
+
+
+---
+
+## Quick Select Solution
+
+### [!(ProblemIntuition)] Intuition
+
+- Choose a pivot index in the current range `[lo, hi]`
+    - Move the pivot element to the end (index hi) to simplify partitioning
+    - Partition the range `[lo, hi)` so that:
+        - all points with `distance <= pivot` are moved to the left
+        - all points with `distance > pivot` stay on the right
+    - Swap the pivot from the end into its final position `i`
+
+- After partitioning:
+    - index `i` is the final position of the pivot
+    - all indices `< i` have distance `<= pivot`
+    - all indices `> i` have distance `> pivot`
+
+- Decision step:
+    - if `i == k - 1`: the k closest points are in positions `[0 .. k - 1]`, stop
+    - if `i <  k - 1`: the k-th point lies to the right, discard `[lo .. i]`
+    - if `i >  k - 1`: the k-th point lies to the left, discard `[i .. hi]`
+
+- Repeat until the pivot lands at index `k - 1`.
+
+### [!(ProblemTimeComplexity)] Time Complexity
+
+- Expected time: $O(n)$, worst: $O(n^2)$
+    - Each partition step scans the current range once: $O(n)$.
+    - After partitioning, only the side that can contain the k-th element is kept;
+    - the other side is discarded permanently.
+
+- With a random pivot, the remaining range shrinks by a constant fraction
+    - in expectation, so the total work is:
+
+- $n + n/2 + n/4 + \dots = O(n)$
+
+- Worst case occurs when the pivot is always extreme, giving:
+    - $n + (n-1) + \dots + 1 = O(n^2)$
+
+### [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/937-k-closest-points-to-origin/quick-select.py"
+import random
+
+class Solution:
+    def kClosest(self, points: list[list[int]], k: int) -> list[list[int]]:
+        lo, hi = 0, len(points) - 1
+
+        while True:
+            p = random.randrange(lo, hi + 1)
+            points[p], points[hi] = points[hi], points[p]
+            px, py = points[hi]
+            pivot = px * px + py * py
+
+            i = lo
+            for j in range(lo, hi):
+                x, y = points[j]
+                if x * x + y * y <= pivot:
+                    points[i], points[j] = points[j], points[i]
+                    i += 1
+            points[i], points[hi] = points[hi], points[i]
+
+            if i == k - 1:
+                return points[:k]
+            if i < k - 1:
+                lo = i + 1
+            else:
+                hi = i - 1
 ```
 

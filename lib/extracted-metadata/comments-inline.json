@@ -195,9 +195,23 @@
     5
   ],
   "problems/937-k-closest-points-to-origin/binary-search.py": [
-    3,
+    2,
+    4,
     6,
-    13
+    7,
+    8,
+    10,
+    12
+  ],
+  "problems/937-k-closest-points-to-origin/quick-select.py": [
+    7,
+    8,
+    10,
+    12,
+    18,
+    21,
+    23,
+    25
   ],
   "problems/311-sparse-matrix-multiplication/_optimized.py": [
     15
@@ -208,6 +222,12 @@
     6,
     8,
     11
+  ],
+  "problems/287-find-the-duplicate-number/floyd's-cycle-detection.py": [
+    4,
+    5,
+    7,
+    8
   ],
   "problems/1563-stone-game-v/bottom-up.py": [
     5,
@@ -236,6 +256,10 @@
   ],
   "problems/1514-path-with-maximum-probability/dijkstra.py": [
     18
+  ],
+  "problems/279-perfect-squares/solution.py": [
+    3,
+    5
   ],
   "problems/22-generate-parentheses/dfs-generator.py": [
     5,
