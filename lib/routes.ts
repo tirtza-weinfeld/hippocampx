@@ -107,6 +107,7 @@ export const routes: NavigationItem[] = [
             { title: 'Cache', href: '/notes/cache', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10" },
             { title: 'Prefix Sum', href: '/notes/prefix-sum', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10" },
             { title: 'Modular Arithmetic', href: '/notes/modular-arithmetic', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10" },
+            // { title: 'The Hare and Tortoise Algorithm', href: '/notes/hare-and-tortoise-algorithm', icon: BookOpen, color: "text-blue-500", bgColor: "bg-blue-500/10" },
 
 
         ],

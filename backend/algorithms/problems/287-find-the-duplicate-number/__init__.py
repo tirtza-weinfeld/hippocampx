@@ -4,7 +4,7 @@ Definition: Given an array of integers nums containing n + 1 integers where each
 Leetcode: https://leetcode.com/problems/find-the-duplicate-number/description/
 Difficulty: medium
 Topics: [floyd's-cycle-detection]
-Group: [floyd's-cycle-detection.py]
+
 
 """
 

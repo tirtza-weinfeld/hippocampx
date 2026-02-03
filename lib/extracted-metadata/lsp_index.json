@@ -2617,6 +2617,128 @@
       ]
     },
     {
+      "uri": "problems/141-linked-list-cycle/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/141-linked-list-cycle/solution.py",
+      "symbols": [
+        {
+          "name": "ListNode",
+          "detail": "class ListNode",
+          "kind": 5,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 3, "character": 24}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 6
+            },
+            "end": {
+              "line": 0,
+              "character": 14
+            }
+          },
+          "children": [
+            {
+              "name": "__init__",
+              "detail": "__init__(x)",
+              "kind": 6,
+              "range": {"start": {"line": 1, "character": 4}, "end": {"line": 3, "character": 24}},
+              "nameRange": {
+                "start": {
+                  "line": 1,
+                  "character": 8
+                },
+                "end": {
+                  "line": 1,
+                  "character": 16
+                }
+              },
+              "children": []
+            }
+          ]
+        },
+        {
+          "name": "linked_list_cycle",
+          "detail": "linked_list_cycle(head: ListNode | None) -> bool",
+          "kind": 12,
+          "range": {"start": {"line": 5, "character": 0}, "end": {"line": 10, "character": 16}},
+          "nameRange": {
+            "start": {
+              "line": 5,
+              "character": 4
+            },
+            "end": {
+              "line": 5,
+              "character": 21
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/142-linked-list-cycle-ii/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/142-linked-list-cycle-ii/solution.py",
+      "symbols": [
+        {
+          "name": "ListNode",
+          "detail": "class ListNode",
+          "kind": 5,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 3, "character": 24}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 6
+            },
+            "end": {
+              "line": 0,
+              "character": 14
+            }
+          },
+          "children": [
+            {
+              "name": "__init__",
+              "detail": "__init__(x)",
+              "kind": 6,
+              "range": {"start": {"line": 1, "character": 4}, "end": {"line": 3, "character": 24}},
+              "nameRange": {
+                "start": {
+                  "line": 1,
+                  "character": 8
+                },
+                "end": {
+                  "line": 1,
+                  "character": 16
+                }
+              },
+              "children": []
+            }
+          ]
+        },
+        {
+          "name": "linked_list_start",
+          "detail": "linked_list_start(head: ListNode | None) -> ListNode",
+          "kind": 12,
+          "range": {"start": {"line": 5, "character": 0}, "end": {"line": 15, "character": 15}},
+          "nameRange": {
+            "start": {
+              "line": 5,
+              "character": 4
+            },
+            "end": {
+              "line": 5,
+              "character": 21
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
       "uri": "problems/144-binary-tree-preorder-traversal/__init__.py",
       "symbols": []
     },
@@ -4752,42 +4874,24 @@
       "symbols": []
     },
     {
-      "uri": "problems/287-find-the-duplicate-number/floyd's-cycle-detection.py",
+      "uri": "problems/287-find-the-duplicate-number/solution.py",
       "symbols": [
         {
-          "name": "Solution",
-          "detail": "class Solution",
-          "kind": 5,
-          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 8, "character": 19}},
+          "name": "findDuplicate",
+          "detail": "findDuplicate(nums: list[int]) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 7, "character": 15}},
           "nameRange": {
             "start": {
               "line": 0,
-              "character": 6
+              "character": 4
             },
             "end": {
               "line": 0,
-              "character": 14
+              "character": 17
             }
           },
-          "children": [
-            {
-              "name": "findDuplicate",
-              "detail": "findDuplicate(nums: list[int]) -> int",
-              "kind": 6,
-              "range": {"start": {"line": 1, "character": 4}, "end": {"line": 8, "character": 19}},
-              "nameRange": {
-                "start": {
-                  "line": 1,
-                  "character": 8
-                },
-                "end": {
-                  "line": 1,
-                  "character": 21
-                }
-              },
-              "children": []
-            }
-          ]
+          "children": []
         }
       ]
     },
@@ -8160,6 +8264,67 @@
               "children": []
             }
           ]
+        }
+      ]
+    },
+    {
+      "uri": "problems/876-middle-of-the-linked-list/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/876-middle-of-the-linked-list/solution.py",
+      "symbols": [
+        {
+          "name": "ListNode",
+          "detail": "class ListNode",
+          "kind": 5,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 3, "character": 24}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 6
+            },
+            "end": {
+              "line": 0,
+              "character": 14
+            }
+          },
+          "children": [
+            {
+              "name": "__init__",
+              "detail": "__init__(val, next)",
+              "kind": 6,
+              "range": {"start": {"line": 1, "character": 4}, "end": {"line": 3, "character": 24}},
+              "nameRange": {
+                "start": {
+                  "line": 1,
+                  "character": 8
+                },
+                "end": {
+                  "line": 1,
+                  "character": 16
+                }
+              },
+              "children": []
+            }
+          ]
+        },
+        {
+          "name": "middle_of_the_linked_list",
+          "detail": "middle_of_the_linked_list(self, head: ListNode | None) -> ListNode | None",
+          "kind": 12,
+          "range": {"start": {"line": 5, "character": 0}, "end": {"line": 9, "character": 15}},
+          "nameRange": {
+            "start": {
+              "line": 5,
+              "character": 4
+            },
+            "end": {
+              "line": 5,
+              "character": 29
+            }
+          },
+          "children": []
         }
       ]
     },

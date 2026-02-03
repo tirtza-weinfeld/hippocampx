@@ -1,0 +1,29 @@
+# Middle of the Linked List
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="easy" />
+
+<PillList pills={["linked-list", "two-pointers"]} />
+
+[876. Middle of the Linked List](https://leetcode.com/problems/middle-of-the-linked-list/description/)
+
+## [!(ProblemDefinition)] Definition
+
+Given the head of a linked list, return its middle node (if two, return the second).
+
+## [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/876-middle-of-the-linked-list/solution.py"
+class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+
+def middle_of_the_linked_list(self, head: ListNode | None) -> ListNode | None:
+    slow = fast = head
+    while fast and fast.next:
+        slow, fast = slow.next, fast.next.next
+    return slow
+```
+

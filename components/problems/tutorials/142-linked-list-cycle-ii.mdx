@@ -1,0 +1,35 @@
+# Linked List Cycle II
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="medium" />
+
+<PillList pills={["two-pointers", "cycle", "linked-list"]} />
+
+[142. Linked List Cycle II](https://leetcode.com/problems/linked-list-cycle-ii/description/)
+
+## [!(ProblemDefinition)] Definition
+
+Given the head of a linked list, return the node where a cycle begins; return None if no cycle exists.
+
+## [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/142-linked-list-cycle-ii/solution.py"
+class ListNode:
+    def __init__(self, x):
+        self.val = x
+        self.next = None
+
+def linked_list_start(head: ListNode | None) -> ListNode:
+    slow = fast = head
+    while fast and fast.next and (slow := slow.next) != (fast := fast.next.next):
+        pass
+    if not fast or not fast.next:
+        return None
+
+    slow = head
+    while slow != fast:
+        slow, fast = slow.next, fast.next
+    return slow
+```
+

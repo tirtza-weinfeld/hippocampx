@@ -1,0 +1,30 @@
+# Linked List Cycle
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="easy" />
+
+<PillList pills={["two-pointers", "cycle-detection", "linked-list"]} />
+
+[141. Linked List Cycle](https://leetcode.com/problems/linked-list-cycle/description/)
+
+## [!(ProblemDefinition)] Definition
+
+Given the head of a linked list, return weather it contains a cycle (i.e., traversing via next pointers eventually revisits a node).
+
+## [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/141-linked-list-cycle/solution.py"
+class ListNode:
+    def __init__(self, x):
+        self.val = x
+        self.next = None
+
+def linked_list_cycle(head: ListNode | None) -> bool:
+    slow = fast = head
+    while fast and fast.next:
+        if (slow := slow.next) == (fast := fast.next.next):
+            return True
+    return False
+```
+

@@ -978,6 +978,22 @@
       "difficulty": "medium",
       "topics": ["TODO"]
     },
+    "142-linked-list-cycle-ii": {
+      "time_stamps": {
+        "created_at": "2026-02-03T21:03:28.849659",
+        "updated_at": "2026-02-03T21:48:00.495126"
+      },
+      "solutions": {
+        "solution.py": {
+          "code": "class ListNode:\n    def __init__(self, x):\n        self.val = x\n        self.next = None\n\ndef linked_list_start(head: ListNode | None) -> ListNode:\n    slow = fast = head\n    while fast and fast.next and (slow := slow.next) != (fast := fast.next.next):\n        pass\n    if not fast or not fast.next:\n        return None\n\n    slow = head\n    while slow != fast:\n        slow, fast = slow.next, fast.next\n    return slow"
+        }
+      },
+      "title": "Linked List Cycle II",
+      "definition": "Given the head of a linked list, return the node where a cycle begins; return None if no cycle exists.",
+      "leetcode": "https://leetcode.com/problems/linked-list-cycle-ii/description/",
+      "difficulty": "medium",
+      "topics": ["two-pointers", "cycle", "linked-list"]
+    },
     "51-n-queens": {
       "time_stamps": {
         "created_at": "2025-09-12T16:05:16.850151",
@@ -1737,6 +1753,22 @@
       "difficulty": "hard",
       "topics": ["sliding-window"]
     },
+    "141-linked-list-cycle": {
+      "time_stamps": {
+        "created_at": "2026-02-03T21:01:41.884546",
+        "updated_at": "2026-02-03T21:22:39.147336"
+      },
+      "solutions": {
+        "solution.py": {
+          "code": "class ListNode:\n    def __init__(self, x):\n        self.val = x\n        self.next = None\n\ndef linked_list_cycle(head: ListNode | None) -> bool:\n    slow = fast = head\n    while fast and fast.next:\n        if (slow := slow.next) == (fast := fast.next.next):\n            return True\n    return False"
+        }
+      },
+      "title": "Linked List Cycle",
+      "definition": "Given the head of a linked list, return weather it contains a cycle (i.e., traversing via next pointers eventually revisits a node).",
+      "leetcode": "https://leetcode.com/problems/linked-list-cycle/description/",
+      "difficulty": "easy",
+      "topics": ["two-pointers", "cycle-detection", "linked-list"]
+    },
     "84-largest-rectangle-in-histogram": {
       "time_stamps": {
         "created_at": "2025-09-29T10:05:50.776011",
@@ -1848,22 +1880,19 @@
     "287-find-the-duplicate-number": {
       "time_stamps": {
         "created_at": "2026-02-02T21:45:36.105547",
-        "updated_at": "2026-02-03T12:05:34.694261"
+        "updated_at": "2026-02-03T22:52:29.156164"
       },
       "solutions": {
-        "floyd's-cycle-detection.py": {
-          "intuition": "Problem Structure (Why a cycle exists):\n        There are `n+1` indices with values in `{1,...,n}`. By the Pigeonhole Principle, at least one value repeats.\n        Define `f(i) = nums[i]`. Each index has exactly one outgoing edge, forming a functional graph where a path eventually enters a cycle.\n        The duplicate value is the cycle entrance (the only node with in-degree > 1).\n\n    Deep Dive: Phase 1: Why slow and fast must meet:\n        Let `λ` be the cycle length. Once both enter the cycle, we measure steps `k` relative to the entrance.\n        slow moves 1 step per iteration, fast moves 2 steps.\n        They meet iff their positions differ by a multiple of `λ`:\n            $2k ≡ k (mod λ)  =>  2k - k ≡ 0 (mod λ)  =>  k ≡ 0 (mod λ)$\n        Since the relative gap closes by 1 each step, the smallest positive `k` satisfying this is `k = λ`.\n        Thus, they must meet within at most `λ` steps.\n\n    Deep Dive: Phase 2: Why the meeting point leads to the duplicate:\n        Let `μ` = distance from start to entrance, `λ` = cycle length, and `x` = distance from entrance to the meeting point.\n        Total steps taken by slow at meeting: `t = μ + x`.\n        From Phase 1, we know `t` must be a multiple of `λ`:\n            $t = kλ  =>  μ + x = kλ  =>  μ = kλ - x$\n        This identity shows the distance from the start to the entrance (`μ`) is mathematically equal to the distance from the meeting point back to the entrance (`kλ - x`).\n        If we reset one pointer to the start and move both at speed 1, they will collide exactly at the cycle entrance (the duplicate).",
-          "time_complexity": "$O(n)$",
-          "space_complexity": "$O(1)$",
-          "code": "class Solution:\n    def findDuplicate(self, nums: list[int]) -> int:\n        slow = fast = 0\n        while (slow := nums[slow]) != (fast := nums[nums[fast]]):\n            pass\n        slow = 0\n        while (slow := nums[slow]) != (fast := nums[fast]):\n            pass\n        return slow"
+        "solution.py": {
+          "intuition": "Finds the duplicate in $O(N)$ time and $O(1)$ space using\n    Floyd's Cycle-Finding Algorithm.\n    [The Hare and Tortoise Algorithm](/notes/hare-and-tortoise-algorithm)",
+          "code": "def findDuplicate(nums: list[int]) -> int:\n    slow = fast = 0\n    while (slow := nums[slow]) != (fast := nums[nums[fast]]):\n        pass\n    slow = 0\n    while (slow := nums[slow]) != (fast := nums[fast]):\n        pass\n    return slow"
         }
       },
       "title": "Find the Duplicate Number",
       "definition": "Given an array of integers nums containing n + 1 integers where each integer is in the range [1, n] inclusive.There is only one repeated number in nums, return this repeated number.You must solve the problem without modifying the array nums and using only constant extra space.",
       "leetcode": "https://leetcode.com/problems/find-the-duplicate-number/description/",
       "difficulty": "medium",
-      "topics": ["floyd's-cycle-detection"],
-      "group": [["floyd's-cycle-detection.py"]]
+      "topics": ["floyd's-cycle-detection"]
     },
     "1563-stone-game-v": {
       "time_stamps": {
@@ -2443,6 +2472,22 @@
       "difficulty": "medium",
       "topics": ["dfs", "bfs"],
       "group": [["bfs.py"], ["iterative-dfs.py"], ["dfs.py"]]
+    },
+    "876-middle-of-the-linked-list": {
+      "time_stamps": {
+        "created_at": "2026-02-03T21:05:58.377836",
+        "updated_at": "2026-02-03T22:46:15.268718"
+      },
+      "solutions": {
+        "solution.py": {
+          "code": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\ndef middle_of_the_linked_list(self, head: ListNode | None) -> ListNode | None:\n    slow = fast = head\n    while fast and fast.next:\n        slow, fast = slow.next, fast.next.next\n    return slow"
+        }
+      },
+      "title": "Middle of the Linked List",
+      "definition": "Given the head of a linked list, return its middle node (if two, return the second).",
+      "leetcode": "https://leetcode.com/problems/middle-of-the-linked-list/description/",
+      "difficulty": "easy",
+      "topics": ["linked-list", "two-pointers"]
     },
     "841-keys-and-rooms": {
       "time_stamps": {

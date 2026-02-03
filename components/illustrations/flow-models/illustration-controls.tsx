@@ -2,11 +2,14 @@
 
 import { motion } from "motion/react"
 
-export type IllustrationSize = "sm" | "md" | "lg"
+export type IllustrationSize = "sm" | "md" | "lg" | "xl" | "2xl" | "full"
 export const sizeClasses: Record<IllustrationSize, string> = {
-  sm: "w-32", // 128px
-  md: "w-40", // 160px
-  lg: "w-52", // 208px
+  sm: "w-48",   // 192px
+  md: "w-64",   // 256px
+  lg: "w-80",   // 320px
+  xl: "w-96",   // 384px
+  "2xl": "w-[480px]",
+  full: "w-full max-w-xl",
 }
 
 type Props = {

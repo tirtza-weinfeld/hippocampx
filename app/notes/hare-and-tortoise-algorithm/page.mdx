@@ -1,0 +1,102 @@
+import { FindDuplicateIllustration,LinkedListCycleIIIllustration,LinkedListCycleIllustration} from '@/components/illustrations/problems'
+// import { HareTortoise } from "@/components/svgs/hare-tortoise"
+
+# The Hare and Tortoise Algorithm
+
+## Resizable Table of Contents  
+
+---
+{/* <HareTortoise size="48" /> */}
+## Overview
+
+The **Hare & Tortoise (Floyd's) Algorithm** is a pointer-based technique that uses two variables:
+- **Slow (Tortoise)**: moves 1 step at a time
+- **Fast (Hare)**: moves 2 steps at a time
+
+This approach solves problems on linear data structures in **$O(N)$ Time and $O(1)$ Space**, as it requires no extra memory regardless of list size.
+
+---
+
+## 1. Cycle Detection
+
+**How:**
+1. Initialize both pointers at the head.
+2. Move **Slow** by 1 and **Fast** by 2.
+3. If they ever point to the same node, a cycle exists.
+4. If **Fast** hits `null`, there is no cycle.
+
+**Why (Correctness):**
+Once both pointers enter a cycle of length $C$, the gap between them can be at most $C-1$. In each iteration, **Fast** moves 2 steps and **Slow** moves 1, meaning the gap decreases by **exactly 1** per step ($2-1=1$). Because the gap reduces by 1 in every single iteration, it is mathematically impossible for **Fast** to "jump over" **Slow**; the gap must eventually hit exactly 0. They will meet in at most **$C-1$ steps after Slow enters the cycle**, ensuring the process is **linear $O(N)$**. 
+*Note: In code, ensure a check for `while fast and fast.next:` to avoid null pointer exceptions.*
+
+see [141. Linked List Cycle](/problems/141-linked-list-cycle)
+
+<LinkedListCycleIllustration size="full"/>
+
+---
+
+## 2. Finding the Cycle's Start
+
+**How:**
+1. Once the pointers meet, keep **Fast** at the meeting point.
+2. Reset **Slow** to the head.
+3. Move both pointers 1 step at a time.
+4. The node where they collide is the cycle's start.
+
+**Why (Correctness):**
+At the first collision, **Slow** traveled distance $(L+M)$. Because **Fast** moves exactly twice as fast, its distance is $2(L+M)$. We also know **Fast**'s distance equals the linear path plus the meeting point plus $k$ full laps: $L+M+kC$.
+
+Setting them equal:
+$$2(L+M)=L+M+kC$$
+
+Simplifying:
+$$L=kC-M$$
+
+**The Proof:** This proves the distance from the head to the start ($L$) is identical to the distance from the meeting point back to the entrance ($kC-M$). Even if $k > 1$, the pointer at the meeting point simply completes extra laps before arriving at the entrance at the exact same moment as the pointer from the head.
+
+see  [142. Linked List Cycle II](/problems/142-linked-list-cycle-ii)
+
+<LinkedListCycleIIIllustration size="full"/>
+---
+
+## 3. Finding the Middle of a List
+
+**How:**
+1. Move **Slow** by 1 and **Fast** by 2.
+2. When **Fast** reaches the end (or the last node), **Slow** is at the middle.
+
+**Why (Correctness):**
+Since **Fast** travels at $2x$ the speed of **Slow**, the distance covered by **Slow** is always exactly half the total distance ($d_{slow}=\frac{1}{2}d_{fast}$). When $d_{fast}$ reaches the end of the list ($N$), $d_{slow}$ is at $N/2$. 
+*   **Odd Length:** **Slow** lands exactly on the middle node.
+*   **Even Length:** **Slow** lands on the **second** middle node.
+
+see  [876. Middle of the Linked List](/problems/876-middle-of-the-linked-list)
+
+
+---
+
+## 4. Finding a Duplicate Number
+
+**How:**
+1. Treat the array indices as "nodes" and values as "pointers" (e.g., `slow = nums[slow]`).
+2. Run **Cycle Detection** until `slow == fast`.
+3. Reset `slow` to 0, then move both pointers 1 step at a time (`nums[i]`) until they meet.
+4. The meeting value is the duplicate.
+
+**Why (Correctness):**
+Per the [Pigeonhole Principle](https://en.wikipedia.org), an array of $N+1$ elements with values $1$ to $N$ must contain a duplicate. In this mapping, a duplicate value means two different indices "point" to the same next index (in-degree $> 1$). This convergence creates a cycle entrance which represents the duplicate. 
+
+By treating the existing array as the graph itself, we solve the problem in **$O(1)$ space**. This is the standard optimal solution for the [287. Duplicate Number problem](problems/287-find-the-duplicate-number).
+
+<FindDuplicateIllustration size="full"/>
+---
+
+## 5. Finding Cycle Length
+
+**How:**
+1. Once the pointers meet in Phase 1, keep **Slow** stationary.
+2. Move **Fast** 1 step at a time and increment a counter.
+3. When `fast == slow` again, the counter equals the cycle length $C$.
+
+**Why:**
+By keeping one pointer fixed and moving the other at speed 1, you are traversing the perimeter of the cycle exactly once until you return to the start position.
