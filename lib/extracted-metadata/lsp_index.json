@@ -5981,6 +5981,50 @@
       ]
     },
     {
+      "uri": "problems/41-first-missing-positive/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/41-first-missing-positive/solution.py",
+      "symbols": [
+        {
+          "name": "Solution",
+          "detail": "class Solution",
+          "kind": 5,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 12, "character": 20}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 6
+            },
+            "end": {
+              "line": 0,
+              "character": 14
+            }
+          },
+          "children": [
+            {
+              "name": "firstMissingPositive",
+              "detail": "firstMissingPositive(nums: list[int]) -> int",
+              "kind": 6,
+              "range": {"start": {"line": 1, "character": 4}, "end": {"line": 12, "character": 20}},
+              "nameRange": {
+                "start": {
+                  "line": 1,
+                  "character": 8
+                },
+                "end": {
+                  "line": 1,
+                  "character": 28
+                }
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
       "uri": "problems/410-split-array-largest-sum/__init__.py",
       "symbols": []
     },
@@ -7874,6 +7918,32 @@
       ]
     },
     {
+      "uri": "problems/739-daily-temperatures/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/739-daily-temperatures/solution.py",
+      "symbols": [
+        {
+          "name": "dailyTemperatures",
+          "detail": "dailyTemperatures(temperatures: list[int]) -> list[int]",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 6, "character": 15}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 21
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
       "uri": "problems/743-network-delay-time/__init__.py",
       "symbols": []
     },
@@ -7949,6 +8019,90 @@
                 "end": {
                   "line": 3,
                   "character": 24
+                }
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "uri": "problems/75-sort-colors/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/75-sort-colors/counter.py",
+      "symbols": [
+        {
+          "name": "Solution",
+          "detail": "class Solution",
+          "kind": 5,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 11, "character": 9}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 6
+            },
+            "end": {
+              "line": 0,
+              "character": 14
+            }
+          },
+          "children": [
+            {
+              "name": "sortColors",
+              "detail": "sortColors(nums: list[int]) -> None",
+              "kind": 6,
+              "range": {"start": {"line": 1, "character": 4}, "end": {"line": 11, "character": 9}},
+              "nameRange": {
+                "start": {
+                  "line": 1,
+                  "character": 8
+                },
+                "end": {
+                  "line": 1,
+                  "character": 18
+                }
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "uri": "problems/75-sort-colors/one-pass.py",
+      "symbols": [
+        {
+          "name": "Solution",
+          "detail": "class Solution",
+          "kind": 5,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 14, "character": 29}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 6
+            },
+            "end": {
+              "line": 0,
+              "character": 14
+            }
+          },
+          "children": [
+            {
+              "name": "sortColors",
+              "detail": "sortColors(nums: list[int]) -> None",
+              "kind": 6,
+              "range": {"start": {"line": 1, "character": 4}, "end": {"line": 14, "character": 29}},
+              "nameRange": {
+                "start": {
+                  "line": 1,
+                  "character": 8
+                },
+                "end": {
+                  "line": 1,
+                  "character": 18
                 }
               },
               "children": []

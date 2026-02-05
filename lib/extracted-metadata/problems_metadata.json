@@ -692,6 +692,31 @@
       "difficulty": "hard",
       "topics": ["dijkstra", "heap"]
     },
+    "75-sort-colors": {
+      "time_stamps": {
+        "created_at": "2026-02-05T10:16:41.569834",
+        "updated_at": "2026-02-05T11:52:20.497336"
+      },
+      "solutions": {
+        "one-pass.py": {
+          "intuition": "Sorts the array in-place using the Dutch National Flag algorithm:\n        The algorithm partitions the array into three distinct 'zones' using three pointers (red, white, blue).\n        As we scan with the 'white' pointer, we ensure that every element is moved to its respective color zone",
+          "variables": {
+            "red": "The index of the first non-zero element; the \"landing spot\" for the next 0.",
+            "white": "The current scanner; the left boundary of the \"unknown\" elements yet to be processed.",
+            "blue": "The index of the first non-two element; the \"landing spot\" for the next 2."
+          },
+          "code": "class Solution:\n    def sortColors(self, nums: list[int]) -> None:\n        red, white, blue = 0, 0, len(nums) - 1\n\n        while white <= blue:\n            match nums[white]:\n                case 0:\n                    nums[red], nums[white] = nums[white], nums[red]\n                    red += 1\n                    white += 1\n                case 1:\n                    white += 1\n                case 2:\n                    nums[white], nums[blue] = nums[blue], nums[white]\n                    blue -= 1"
+        },
+        "counter.py": {
+          "code": "class Solution:\n    def sortColors(self, nums: list[int]) -> None:\n        cnt = [0, 0, 0]\n\n        for x in nums:\n            cnt[x] += 1\n\n        nums[:] = [\n            c\n            for c, f in enumerate(cnt)\n            for _ in range(f)\n        ]"
+        }
+      },
+      "title": "Sort Colors",
+      "definition": "Given an array nums of length n where each element is 0, 1, or 2 (representing red, white, blue),\n    sort it in-place so that all 0s come first, then 1s, then 2s — without using built-in sort,\n    * *Constraints:* $1 \\le n \\le 300$, and $nums[i] \\in \\{0,1,2\\}$.\n    * *Follow up:*  one-pass algorithm using only constant extra space.",
+      "leetcode": "https://leetcode.com/problems/sort-colors/description/",
+      "difficulty": "medium",
+      "topics": ["dutch-national-flag", "sort"]
+    },
     "518-coin-change-ii": {
       "time_stamps": {
         "created_at": "2025-09-12T16:05:57.931034",
@@ -2198,6 +2223,24 @@
       "difficulty": "medium",
       "topics": ["binary-search"]
     },
+    "41-first-missing-positive": {
+      "time_stamps": {
+        "created_at": "2026-02-05T11:56:19.574966",
+        "updated_at": "2026-02-05T12:47:01.229028"
+      },
+      "solutions": {
+        "solution.py": {
+          "intuition": "The goal is to place every number x at its 'natural' index (x - 1).\n    Since the first missing positive must fall within the range [1, n + 1],\n    we treat the input array as a makeshift hash map. By swapping numbers             into their correct positions in-place, we achieve O(n) time and O(1) space.\n    Values outside [1, n] are ignored as they cannot be the first missing positive.",
+          "time_complexity": "O(n)\n1. Phase 1 (Cyclic Sort):\n    At first glance, the nested 'while' loop inside the 'for' loop might look like O(n^2). However, we use amortized analysis to show it is O(n).\n    Each execution of the swap 'nums[i], nums[j] = nums[j], nums[i]' places at least one number into its final, correct position (where nums[i] == i + 1).\n    Once a number is in its correct position, it is never moved again.\n    Since there are at most n positions to fill, there can be at most n swaps in total across the entire execution of the program.\n    Therefore, Phase 1 is O(n + n) = O(2n), which simplifies to O(n).\n2. Phase 2 (Inspection):\n    We iterate through the array once to find the first index where the value doesn't match. This is a simple linear scan: O(n).",
+          "code": "class Solution:\n    def firstMissingPositive(self, nums: list[int]) -> int:\n\n        for i in range(n := len(nums)):\n            while 1 <= nums[i] <= n and nums[i] != nums[nums[i]-1]:\n                j = nums[i] - 1\n                nums[i], nums[j] = nums[j], nums[i]\n\n        for i, val in enumerate(nums):\n            if val != i + 1:\n                return i + 1\n\n        return n + 1"
+        }
+      },
+      "title": "First Missing Positive",
+      "definition": "Given an unsorted array nums, return the smallest missing positive integer (the smallest integer >0 not appearing in nums).Your solution must run in O(n) time and use O(1) extra space.",
+      "leetcode": "https://leetcode.com/problems/first-missing-positive/description/",
+      "difficulty": "hard",
+      "topics": ["TODO"]
+    },
     "208-implement-trie-prefix-tree": {
       "time_stamps": {
         "created_at": "2025-09-12T16:05:43.508813",
@@ -2472,6 +2515,22 @@
       "difficulty": "medium",
       "topics": ["dfs", "bfs"],
       "group": [["bfs.py"], ["iterative-dfs.py"], ["dfs.py"]]
+    },
+    "739-daily-temperatures": {
+      "time_stamps": {
+        "created_at": "2026-02-05T09:45:04.015503",
+        "updated_at": "2026-02-05T11:53:02.212486"
+      },
+      "solutions": {
+        "solution.py": {
+          "code": "def dailyTemperatures( temperatures: list[int]) -> list[int]:\n    stack, wait = [], [0] * len(temperatures)\n    for i, t in enumerate(temperatures):\n        while stack and t > temperatures[stack[-1]]:\n            wait[d] = i - (d:=stack.pop())\n        stack.append(i)\n    return wait"
+        }
+      },
+      "title": "Daily Temperatures",
+      "definition": "Given an array of integers `temperatures` represents the daily temperatures,\n    return an array answer such that `answer[i]` is the number of days you have to wait after the $i^{th}$ day to get a warmer temperature.\n    If there is no future day for which this is possible, keep `answer[i] == 0` instead.",
+      "leetcode": "https://leetcode.com/problems/daily-temperatures/description/",
+      "difficulty": "medium",
+      "topics": ["stack"]
     },
     "876-middle-of-the-linked-list": {
       "time_stamps": {

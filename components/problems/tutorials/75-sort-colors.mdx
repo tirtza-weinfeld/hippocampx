@@ -1,0 +1,67 @@
+# Sort Colors
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="medium" />
+
+<PillList pills={["dutch-national-flag", "sort"]} />
+
+[75. Sort Colors](https://leetcode.com/problems/sort-colors/description/)
+
+## [!(ProblemDefinition)] Definition
+
+Given an array nums of length n where each element is 0, 1, or 2 (representing red, white, blue),
+    sort it in-place so that all 0s come first, then 1s, then 2s — without using built-in sort,
+    * *Constraints:* $1 \le n \le 300$, and $nums[i] \in \{0,1,2\}$.
+    * *Follow up:*  one-pass algorithm using only constant extra space.
+
+## One Pass Solution
+
+### [!(ProblemIntuition)] Intuition
+
+- Sorts the array in-place using the Dutch National Flag algorithm:
+        - The algorithm partitions the array into three distinct 'zones' using three pointers (red, white, blue).
+        - As we scan with the 'white' pointer, we ensure that every element is moved to its respective color zone
+
+### [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/75-sort-colors/one-pass.py"
+class Solution:
+    def sortColors(self, nums: list[int]) -> None:
+        red, white, blue = 0, 0, len(nums) - 1
+
+        while white <= blue:
+            match nums[white]:
+                case 0:
+                    nums[red], nums[white] = nums[white], nums[red]
+                    red += 1
+                    white += 1
+                case 1:
+                    white += 1
+                case 2:
+                    nums[white], nums[blue] = nums[blue], nums[white]
+                    blue -= 1
+```
+
+
+---
+
+## Counter Solution
+
+### [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/75-sort-colors/counter.py"
+class Solution:
+    def sortColors(self, nums: list[int]) -> None:
+        cnt = [0, 0, 0]
+
+        for x in nums:
+            cnt[x] += 1
+
+        nums[:] = [
+            c
+            for c, f in enumerate(cnt)
+            for _ in range(f)
+        ]
+```
+
