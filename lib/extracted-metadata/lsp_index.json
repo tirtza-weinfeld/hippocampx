@@ -4518,6 +4518,50 @@
       ]
     },
     {
+      "uri": "problems/239-sliding-window-maximum/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/239-sliding-window-maximum/solution.py",
+      "symbols": [
+        {
+          "name": "Solution",
+          "detail": "class Solution",
+          "kind": 5,
+          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 19, "character": 25}},
+          "nameRange": {
+            "start": {
+              "line": 2,
+              "character": 6
+            },
+            "end": {
+              "line": 2,
+              "character": 14
+            }
+          },
+          "children": [
+            {
+              "name": "maxSlidingWindow",
+              "detail": "maxSlidingWindow(nums: list[int], k: int) -> list[int]",
+              "kind": 6,
+              "range": {"start": {"line": 3, "character": 4}, "end": {"line": 19, "character": 25}},
+              "nameRange": {
+                "start": {
+                  "line": 3,
+                  "character": 8
+                },
+                "end": {
+                  "line": 3,
+                  "character": 24
+                }
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
       "uri": "problems/2402-meeting-rooms-iii/__init__.py",
       "symbols": []
     },
@@ -5948,6 +5992,32 @@
             "end": {
               "line": 0,
               "character": 17
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/4-median-of-two-sorted-arrays/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/4-median-of-two-sorted-arrays/solution.py",
+      "symbols": [
+        {
+          "name": "median_of_two_sorted_arrays",
+          "detail": "median_of_two_sorted_arrays()",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 1, "character": 8}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 31
             }
           },
           "children": []

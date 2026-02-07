@@ -1,0 +1,143 @@
+# Calculus & Mathematical Foundations: Diffusion and Flow Dynamics
+
+## Resizable Table Of Contents
+
+---
+
+## 1. Linear Algebra: The Arena of State Space
+
+### **Real Coordinate Spaces ($\mathbb{R}^n$)**
+AI models operate in high-dimensional manifolds known as Real Coordinate Spaces.
+* **Definition:** $\mathbb{R}^n$ is the set of all ordered $n$-tuples of real numbers.
+* **Point Representation:** A single data point (e.g., an image with $n$ pixels) is one vector $\mathbf{x} \in \mathbb{R}^n$.
+* **The Zero Vector ($\mathbf{0}$):** The origin of every coordinate space, represented as $[0, 0, \dots, 0]$.
+* **AI Context:** Latent spaces in Large Language Models (LLMs) or Diffusion models often exceed $\mathbb{R}^{4096}$.
+
+### **Vector Primitives & Arithmetic**
+* **Vector Addition:** $\mathbf{a} + \mathbf{b} = [a_1+b_1, \dots, a_n+b_n]$.
+    * **Geometric Intuition:** The "Head-to-Tail" rule. Placing the tail of $\mathbf{b}$ at the head of $\mathbf{a}$ results in the combined displacement vector.
+    
+* **Scalar Multiplication ($c$):** Multiplying a vector by a plain real number.
+    * **Scaling:** If $c > 0$, the vector grows or shrinks but maintains direction.
+    * **Flipping:** If $c < 0$, the vector flips $180^\circ$ to the opposite direction.
+* **Vector Subtraction:** $\mathbf{a} - \mathbf{b} = \mathbf{a} + (-\mathbf{b})$. Used to calculate **Error Vectors** (Target - Prediction).
+
+### **Inner Products and Norms**
+* **Inner Product ($\mathbf{x}^T \mathbf{y}$):** $\sum_{i=1}^n x_i y_i$. Measures alignment; if the product is zero, vectors are orthogonal ($90^\circ$).
+* **L2 Norm ($\|\mathbf{x}\|_2$):** $\sqrt{\sum_{i=1}^n x_i^2}$. Represents the Euclidean distance from the origin (magnitude).
+* **Cosine Similarity:** Derived from the inner product, representing the normalized alignment of two vectors in space.
+
+### **Matrix Structures & Transformations**
+* **Covariance Matrix ($\Sigma$):** $\Sigma = \mathbb{E}[(\mathbf{x}-\mu)(\mathbf{x}-\mu)^T]$. A matrix where entry $\Sigma_{ij}$ describes the joint-movement between variables $i$ and $j$.
+* **Eigenvalues and Eigenvectors:** $A\mathbf{v} = \lambda \mathbf{v}$. A direction $\mathbf{v}$ that is only scaled by factor $\lambda$ when transformed by $A$.
+* **Principal Components:** The eigenvectors of the covariance matrix, identifying the directions of highest data variance.
+
+---
+
+## 2. Differential Calculus: The Engine of Change
+
+### **The Limit & Continuity**
+The value a function approaches as the input gets closer to a specific point.
+* **Notation:** $\lim_{x \to a} f(x) = L$.
+* **Differentiability:** A function must be smooth. At any point where a "kink" exists (like $f(x)=|x|$ at $0$), the derivative is undefined because no unique tangent line exists.
+
+### **From Average to Instantaneous Change**
+* **Average Rate:** The slope of a **secant line** connecting two points on a curve.
+* **Instantaneous Rate:** The slope of the **tangent line** at a single point.
+
+
+[Image of secant line vs tangent line on a curve]
+
+* **The Derivative:** $$f'(x) = \lim_{h \to 0} \frac{f(x+h) - f(x)}{h}$$
+
+### **Core Differentiation Rules**
+* **Power Rule:** $\frac{d}{dx}(x^n) = nx^{n-1}$.
+* **Product Rule:** $(fg)' = f'g + fg'$.
+* **Chain Rule (The Backprop Engine):** $\frac{dy}{dx} = \frac{dy}{du} \cdot \frac{du}{dx}$.
+    * In AI, this allows tracking how small changes in initial weights affect the final error through many nested layers.
+
+### **Partial Derivatives & The Gradient ($\nabla$)**
+* **Partial Derivative ($\frac{\partial f}{\partial x_i}$):** Change in output when you nudge $x_i$ while holding all other variables constant.
+* **The Gradient:** A vector-valued function packing all partial derivatives:
+    $$\nabla f = \begin{bmatrix} \frac{\partial f}{\partial x_1} \\ \frac{\partial f}{\partial x_2} \\ \vdots \\ \frac{\partial f}{\partial x_n} \end{bmatrix}$$
+* **Steepest Ascent:** $\nabla f$ always points toward the greatest increase. Gradient Descent moves in direction $-\nabla f$.
+
+---
+
+## 3. Matrix Calculus: Multivariable Optimization
+
+### **The Jacobian Matrix ($J$)**
+When a function maps a vector to another vector (like a neural network layer), the derivative is the Jacobian. 
+If $\mathbf{f}: \mathbb{R}^n \to \mathbb{R}^m$, then $J$ is an $m \times n$ matrix:
+$$
+J = \frac{\partial \mathbf{f}}{\partial \mathbf{x}} = \begin{bmatrix} 
+\frac{\partial f_1}{\partial x_1} & \dots & \frac{\partial f_1}{\partial x_n} \\
+\vdots & \ddots & \vdots \\
+\frac{\partial f_m}{\partial x_1} & \dots & \frac{\partial f_m}{\partial x_n}
+\end{bmatrix}
+$$
+
+### **The Hessian Matrix ($H$)**
+A square matrix of second-order partial derivatives describing local curvature:
+$$H_{ij} = \frac{\partial^2 f}{\partial x_i \partial x_j}$$
+
+
+---
+
+## 4. Vector Fields: The Mathematical Map of Flow
+
+### **Definition & Mapping**
+A vector field $\mathbf{F}: \mathbb{R}^n \to \mathbb{R}^n$ maps every point in a space to a specific vector in that same space. 
+$$\mathbf{F}(\mathbf{x}) = \begin{bmatrix} f_1(\mathbf{x}) \\ f_2(\mathbf{x}) \\ \vdots \\ f_n(\mathbf{x}) \end{bmatrix}$$
+
+### **The "Sink" Field Example**
+A **Sink** field pulls all vectors toward a central equilibrium point.
+* **The Rule:** $\mathbf{F}(x, y) = \langle -x, -y \rangle$
+* **Result:** Every coordinate receives a unique vector pointing to $(0,0)$. The further you are from the center, the stronger the pull.
+
+
+### **Application in Diffusion (Score Functions)**
+The vector field is often called a **Score Function** $\nabla_{\mathbf{x}} \log p(\mathbf{x})$.
+1. **Input:** A noisy data point $\mathbf{x}$.
+2. **Field:** A learned network outputs a vector.
+3. **Instruction:** Move the point toward areas of high data density (the "Clean Data" sink).
+
+### **Field Operators**
+* **Divergence ($\nabla \cdot \mathbf{F}$):** Scalar measuring net flow out of a point (Source vs. Sink).
+* **Interpretation:** Measures if the field is compressing probability or expanding it.
+
+---
+
+## 5. Dynamics & Information Theory
+
+### **Differential Equations (DE)**
+A relationship between a function $y(t)$ and its derivatives to model evolution.
+* **First-Order ODE:** $\frac{dy}{dt} = f(y, t)$. 
+* **Neural ODEs:** State evolution defined by a neural network: $\frac{dh(t)}{dt} = f(h(t), t, \theta)$.
+
+### **Stochastic Dynamics**
+* **SDE (Stochastic Differential Equation):** $d\mathbf{x} = \mathbf{f}(\mathbf{x}, t)dt + g(t)d\mathbf{w}$.
+* **Drift ($\mathbf{f}$):** Deterministic movement toward data.
+* **Diffusion ($g$):** Random noise (Brownian motion) increments.
+* **Langevin Dynamics:** $d\mathbf{x}_t = \nabla \log p(\mathbf{x}_t) dt + \sqrt{2} d\mathbf{w}_t$.
+
+### **Probability & Information Theory**
+* **Expectation ($\mathbb{E}[x]$):** $\int x p(x) dx$. The "center of mass" of the distribution.
+* **Bayes' Theorem:** $P(A|B) = \frac{P(B|A)P(A)}{P(B)}$. The foundation of inference.
+* **Shannon Entropy ($H$):** Measures uncertainty: $H(P) = -\sum p(x) \log p(x)$.
+* **KL Divergence ($D_{KL}$):** Measures information loss when $Q$ approximates $P$.
+    $$D_{KL}(P \| Q) = \sum P(x) \log \frac{P(x)}{Q(x)}$$
+* **Cross-Entropy:** Standard loss for classification: $\mathcal{L} = -\sum y_{true} \log(y_{pred})$.
+
+---
+
+## 6. Accumulation & Integral Calculus
+
+### **The Definite Integral**
+The signed area under a curve between points $a$ and $b$:
+$$\int_a^b f(x) dx$$
+
+### **The Fundamental Theorem**
+$\int_a^b f'(x) dx = f(b) - f(a)$. This links differentiation and integration as inverse operations, essential for computing the total change in a data point as it flows through a field from $t=0$ to $t=T$.
+
+---

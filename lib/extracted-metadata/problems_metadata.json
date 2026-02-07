@@ -984,6 +984,22 @@
       "difficulty": "medium",
       "topics": ["sliding-window"]
     },
+    "239-sliding-window-maximum": {
+      "time_stamps": {
+        "created_at": "2026-02-06T11:41:15.673401",
+        "updated_at": "2026-02-07T20:27:05.335883"
+      },
+      "solutions": {
+        "solution.py": {
+          "code": "from collections import deque\n\nclass Solution:\n    def maxSlidingWindow(self, nums: list[int], k: int) -> list[int]:\n        window_max: list[int] = []\n        q = deque()\n\n        for i, num in enumerate(nums):\n            while q and q[0] <= i - k:\n                q.popleft()\n\n            while q and nums[q[-1]] <= num:\n                q.pop()\n\n            q.append(i)\n\n            if i >= k - 1:\n                window_max.append(nums[q[0]])\n\n        return window_max"
+        }
+      },
+      "title": "Sliding Window Maximum",
+      "definition": "Given an integer array `nums` and window size `k`,\n    slide a length-k window from left to right (one step at a time)\n    and return an array where each element is the maximum value inside the window at that position.",
+      "leetcode": "https://leetcode.com/problems/sliding-window-maximum/description/",
+      "difficulty": "hard",
+      "topics": ["double-ended queue"]
+    },
     "616-add-bold-tag-in-string": {
       "time_stamps": {
         "created_at": "2025-11-21T17:11:39.618476",
@@ -1500,6 +1516,22 @@
       "leetcode": "https://leetcode.com/problems/binary-tree-maximum-path-sum",
       "difficulty": "hard",
       "topics": ["kadane"]
+    },
+    "4-median-of-two-sorted-arrays": {
+      "time_stamps": {
+        "created_at": "2026-02-07T20:29:44.968849",
+        "updated_at": "2026-02-07T21:01:24.121893"
+      },
+      "solutions": {
+        "solution.py": {
+          "code": "def median_of_two_sorted_arrays():\n    pass"
+        }
+      },
+      "title": "Median of Two Sorted Arrays",
+      "definition": "Given two individually sorted arrays nums1 (size m) and nums2 (size n), compute the median of their combined multiset without merging them, in total time O(\\log(m+n)).",
+      "leetcode": "https://leetcode.com/problems/median-of-two-sorted-arrays/description/",
+      "difficulty": "hard",
+      "topics": ["TODO"]
     },
     "497-random-point-in-non-overlapping-rectangles": {
       "time_stamps": {

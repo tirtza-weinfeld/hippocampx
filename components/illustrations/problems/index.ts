@@ -15,6 +15,7 @@ export { PostorderTraversalIllustration } from './145-binary-tree-postorder-trav
 export { ConstructBinaryTreePrePostIllustration } from './889-construct-binary-tree-from-preorder-and-postorder-traversal';
 export { LinkedListCycleIllustration } from './141-linked-list-cycle';
 export { LinkedListCycleIIIllustration } from './142-linked-list-cycle-ii';
+export { SlidingWindowMaxIllustration } from './239-sliding-window-maximum';
 export { FindDuplicateIllustration } from './287-find-the-duplicate-number';
 
 export const problemIllustrations:Record<string, ComponentType<IllustrationProps>>= {

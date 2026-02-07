@@ -1,0 +1,70 @@
+
+# Introduction
+
+
+## Resizable Table Of Contents
+
+## Step 1 — Given a vector field
+
+
+$$
+u:\mathbb{R}^d\times[0,1]\to\mathbb{R}^d,\quad (x,t)\mapsto u_t(x)
+$$
+This is a rule: for any position $x$ and parameter $t$, it returns a velocity vector $u_t(x)$.
+Before any ODE, we only have this "velocity everywhere" map.
+
+## Step 2 — Introduce an unknown trajectory
+
+We now **look for a function**
+$$
+X:[0,1]\to\mathbb{R}^d,\quad t\mapsto X_t
+$$
+This $X$ is the particle's path through space. At this point, $X$ is unknown — it could be any curve.
+
+## Step 3 — Impose the motion rule (ODE)
+
+At parameter value $t$, the particle is at $X_t$. The field assigns velocity $u_t(X_t)$.
+The trajectory's instantaneous velocity is $\frac{d}{dt}X_t$. Impose equality:
+$$
+\frac{d}{dt}X_t = u_t(X_t).
+$$
+
+## Step 4 — Add an initial condition
+
+We specify where the trajectory starts:
+$$
+X_0 = x_0.
+$$
+So the full ODE problem is:
+$$
+\frac{d}{dt}X_t = u_t(X_t),\quad X_0=x_0.
+$$
+
+## Step 5 — Expand the derivative definition
+
+$$
+\frac{d}{dt}X_t=\lim_{h\to 0}\frac{X_{t+h}-X_t}{h}.
+$$
+So the ODE means:
+$$
+\lim_{h\to 0}\frac{X_{t+h}-X_t}{h}=u_t(X_t).
+$$
+
+## Step 6 — Replace the limit by a small step (Euler idea)
+
+A computer cannot take $h\to 0$, so we choose a small fixed $h$ and approximate:
+$$
+\frac{X_{t+h}-X_t}{h}\approx u_t(X_t).
+$$
+Rearrange:
+$$
+X_{t+h}\approx X_t+h\,u_t(X_t).
+$$
+
+## Step 7 — Turn it into an iterative algorithm
+
+Choose grid times $t_k:=kh$, and write $X_k\approx X(t_k)$.
+Then the update becomes:
+$$
+X_{k+1}=X_k+h\,u_{t_k}(X_k),\quad X_0=x_0.
+$$
