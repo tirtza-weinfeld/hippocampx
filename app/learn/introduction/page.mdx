@@ -1,70 +1,448 @@
+# Notes
 
-# Introduction
+## Resizable Table Of contents
 
+## Deterministic ODE Pipeline
 
-## Resizable Table Of Contents
-
-## Step 1 — Given a vector field
-
+### 1. We start with a vector field
 
 $$
-u:\mathbb{R}^d\times[0,1]\to\mathbb{R}^d,\quad (x,t)\mapsto u_t(x)
+u : \mathbb{R}^d \times [0,1] \to \mathbb{R}^d
 $$
-This is a rule: for any position $x$ and parameter $t$, it returns a velocity vector $u_t(x)$.
-Before any ODE, we only have this "velocity everywhere" map.
 
-## Step 2 — Introduce an unknown trajectory
+This means: for every position $x$ and parameter $t$, it gives a vector $u_t(x)$.
 
-We now **look for a function**
+So before any ODE, we just have a rule
+
 $$
-X:[0,1]\to\mathbb{R}^d,\quad t\mapsto X_t
+(x,t) \mapsto \text{velocity vector}.
 $$
-This $X$ is the particle's path through space. At this point, $X$ is unknown — it could be any curve.
 
-## Step 3 — Impose the motion rule (ODE)
+---
 
-At parameter value $t$, the particle is at $X_t$. The field assigns velocity $u_t(X_t)$.
-The trajectory's instantaneous velocity is $\frac{d}{dt}X_t$. Impose equality:
+### 2. Introduce an unknown trajectory
+
+We now look for a function
+
+$$
+X : [0,1] \to \mathbb{R}^d,
+\quad t \mapsto X_t.
+$$
+
+This is a curve in space.
+
+At this point, $X$ is completely unknown — it could be any path.
+
+---
+
+### 3. Impose the rule (ODE)
+
+We require that at every $t$,
+
 $$
 \frac{d}{dt}X_t = u_t(X_t).
 $$
 
-## Step 4 — Add an initial condition
+Meaning:
 
-We specify where the trajectory starts:
+* The trajectory is at position $X_t$.
+* The field assigns velocity $u_t(X_t)$ there.
+* The derivative of the trajectory equals that velocity.
+
+This equation is the ODE.  
+Vector field + "match velocity to field" = ODE.
+
+---
+
+### 4. Add an initial condition
+
+The equation alone allows many trajectories.
+
+So we choose a starting point:
+
 $$
 X_0 = x_0.
 $$
-So the full ODE problem is:
-$$
-\frac{d}{dt}X_t = u_t(X_t),\quad X_0=x_0.
-$$
 
-## Step 5 — Expand the derivative definition
+Now the full problem is
 
 $$
-\frac{d}{dt}X_t=\lim_{h\to 0}\frac{X_{t+h}-X_t}{h}.
-$$
-So the ODE means:
-$$
-\lim_{h\to 0}\frac{X_{t+h}-X_t}{h}=u_t(X_t).
+\frac{d}{dt}X_t = u_t(X_t),
+\quad X_0 = x_0.
 $$
 
-## Step 6 — Replace the limit by a small step (Euler idea)
+This is an **initial value problem**.  
+Under standard regularity conditions on $u$, there is a unique solution.
 
-A computer cannot take $h\to 0$, so we choose a small fixed $h$ and approximate:
+---
+
+### 5. Define the flow (global solution map)
+
+Instead of fixing one $x_0$, let it vary.
+
+Define
+
 $$
-\frac{X_{t+h}-X_t}{h}\approx u_t(X_t).
-$$
-Rearrange:
-$$
-X_{t+h}\approx X_t+h\,u_t(X_t).
+\psi : \mathbb{R}^d \times [0,1] \to \mathbb{R}^d,
+\quad (x_0,t) \mapsto \psi_t(x_0)
 $$
 
-## Step 7 — Turn it into an iterative algorithm
+such that
 
-Choose grid times $t_k:=kh$, and write $X_k\approx X(t_k)$.
-Then the update becomes:
 $$
-X_{k+1}=X_k+h\,u_{t_k}(X_k),\quad X_0=x_0.
+\frac{d}{dt}\psi_t(x_0) = u_t(\psi_t(x_0)),
+\quad \psi_0(x_0) = x_0.
 $$
+
+Meaning:
+
+* For each fixed $x_0$, the curve $t \mapsto \psi_t(x_0)$ solves the IVP.
+* The flow collects all trajectories into one map.
+
+For a chosen $x_0$:
+
+$$
+X_t = \psi_t(x_0).
+$$
+
+---
+
+### 6. Often no closed-form expression
+
+Assume $u : \mathbb{R}^d \times [0,1] \to \mathbb{R}^d$
+is sufficiently regular (e.g. locally Lipschitz in $x$, continuous in $t$).
+
+Then the initial value problem
+
+$$
+\frac{d}{dt}X_t = u_t(X_t),
+\quad X_0 = x_0
+$$
+
+admits a unique solution
+
+$$
+X : [0,1] \to \mathbb{R}^d.
+$$
+
+That is:
+
+There exists a function $X(t)$ satisfying the differential equation and the initial condition.
+
+However, in general, this solution cannot be written in closed form.
+
+Therefore, instead of computing the exact function $t \mapsto X_t$,
+we compute approximations of its values on a discrete grid.
+
+---
+
+### 7. Discretization of the interval
+
+Fix an integer $n \ge 1$.
+
+Define the step size
+
+$$
+h := \frac{1}{n}.
+$$
+
+This partitions the interval $[0,1]$ into $n$ equal subintervals.
+
+Define the grid
+
+$$
+t_k := k h,
+\quad k = 0,1,\dots,n.
+$$
+
+Thus
+
+$$
+t_0 = 0,
+\quad
+t_n = 1.
+$$
+
+---
+
+### 8. Discrete approximations
+
+Introduce a sequence
+
+$$
+X_0, X_1, \dots, X_n \in \mathbb{R}^d,
+$$
+
+intended to approximate the exact solution values
+
+$$
+X(t_0), X(t_1), \dots, X(t_n).
+$$
+
+We impose
+
+$$
+X_0 := x_0.
+$$
+
+Here:
+
+- $X(t_k)$ denotes the true solution.
+- $X_k$ denotes its numerical approximation.
+- The index $k$ is discrete.
+
+---
+
+### 9. Derivation of the explicit Euler scheme
+
+Start from the definition of the derivative:
+
+$$
+\frac{d}{dt}X_t
+=
+\lim_{h \to 0}
+\frac{X_{t+h} - X_t}{h}.
+$$
+
+Since
+
+$$
+\frac{d}{dt}X_t = u_t(X_t),
+$$
+
+replace the limit by a small finite step size $h$:
+
+$$
+\frac{X_{t+h} - X_t}{h}
+\approx
+u_t(X_t).
+$$
+
+Rearranging gives
+
+$$
+X_{t+h}
+=
+X_t
++
+h\,u_t(X_t).
+$$
+
+Evaluating at $t = t_k$ yields the recursive scheme
+
+$$
+X_{k+1}
+=
+X_k
++
+h\,u_{t_k}(X_k).
+$$
+
+This defines the explicit Euler method.
+
+---
+
+### 10. Euler algorithm (recursive form)
+
+Given:
+
+- vector field $u(x,t)$,
+- initial state $x_0$,
+- number of steps $n$,
+
+define
+
+$$
+h = \frac{1}{n}.
+$$
+
+Set
+
+$$
+X_0 = x_0.
+$$
+
+For $k = 0,1,\dots,n-1$, compute
+
+$$
+t_k = k h,
+$$
+
+$$
+X_{k+1}
+=
+X_k
++
+h\,u_{t_k}(X_k).
+$$
+
+The sequence
+
+$$
+X_0, X_1, \dots, X_n
+$$
+
+approximates
+
+$$
+X(t_0), X(t_1), \dots, X(t_n).
+$$
+
+---
+
+### 11. What this produces
+
+This generates discrete values
+
+$$
+X_0, X_1, \dots, X_n,
+$$
+
+which approximate the continuous trajectory $X_t$.
+
+Since
+
+$$
+X_t = \psi_t(x_0),
+$$
+
+these discrete points approximate the flow $\psi_t(x_0)$.
+
+---
+
+### 12. Convergence statement
+
+Under standard smoothness assumptions on $u$,
+
+$$
+\max_{0 \le k \le n}
+\| X_k - X(t_k) \|
+\to 0
+\quad \text{as } h \to 0.
+$$
+
+Thus the discrete trajectory converges to the true solution
+as the mesh size decreases.
+
+---
+
+## Stochastic SDE / Diffusion Pipeline
+
+### 13. Make the trajectory stochastic
+
+Now $X_t$ is no longer deterministic.
+
+For each fixed $t$, $X_t$ is a random variable.
+
+Simulating twice can produce different paths.
+
+---
+
+### 14. Introduce Brownian motion
+
+We add a stochastic process $W_t$ such that
+
+$$
+W_{t+h} - W_t \sim \mathcal{N}(0, h I_d).
+$$
+
+Each small increment is Gaussian with variance proportional to $h$.
+
+This provides the randomness.
+
+---
+
+### 15. Extend the infinitesimal update
+
+Recall the deterministic infinitesimal form:
+
+$$
+X_{t+h} = X_t + h\,u_t(X_t).
+$$
+
+Add a stochastic term:
+
+$$
+X_{t+h}
+=
+X_t
++
+h\,u_t(X_t)
++
+\sigma_t (W_{t+h} - W_t).
+$$
+
+This defines a **stochastic differential equation**.
+
+---
+
+### 16. Symbolic SDE notation
+
+It is written compactly as
+
+$$
+dX_t = u_t(X_t)\,dt + \sigma_t\,dW_t,
+\quad X_0 = x_0.
+$$
+
+Important:
+
+This $dX_t$ notation is symbolic shorthand for the infinitesimal update above.
+
+---
+
+### 17. No deterministic flow
+
+Unlike ODEs, there is no deterministic flow $\psi_t$.
+
+Even with fixed $X_0$, randomness in $W_t$ makes $X_t$ random.
+
+An ODE is the special case $\sigma_t = 0$.
+
+---
+
+### 18. Euler–Maruyama simulation
+
+Choose number of steps $n$ and set
+
+$$
+h = \frac{1}{n}.
+$$
+
+Initialize:
+
+$$
+X_0 = x_0.
+$$
+
+For
+
+$$
+t = 0, h, 2h, \dots, 1-h,
+$$
+
+update using
+
+$$
+X_{t+h}
+=
+X_t
++
+h\,u_t(X_t)
++
+\sqrt{h}\,\sigma_t\,\varepsilon_t,
+\quad
+\varepsilon_t \sim \mathcal{N}(0, I_d).
+$$
+
+---
+
+### 19. What this produces
+
+This generates random discrete values
+
+$$
+X_0, X_1, \dots, X_n,
+$$
+
+which approximate a stochastic trajectory solving the SDE.

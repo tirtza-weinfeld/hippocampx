@@ -112,6 +112,22 @@ function formatIntuitionContent(content: string): string {
 }
 
 
+async function loadIllustrationMap(): Promise<Map<string, string>> {
+  const indexPath = path.join(__dirname, '..', 'components', 'illustrations', 'problems', 'index.ts')
+  const map = new Map<string, string>()
+  try {
+    const content = await fs.readFile(indexPath, 'utf-8')
+    const re = /export\s*\{\s*(\w+)\s*\}\s*from\s*'\.\/([^']+)'/g
+    let match: RegExpExecArray | null
+    while ((match = re.exec(content)) !== null) {
+      map.set(match[2], match[1])
+    }
+  } catch {
+    // No illustrations directory — skip
+  }
+  return map
+}
+
 function formatCodeBlock(code: string, language: string = 'python', sourcePath?: string): string {
   const sourceAttr = sourcePath ? ` meta="source=problems/${sourcePath}"` : ''
   return `\`\`\`${language}${sourceAttr}\n${code.trim()}\n\`\`\`\n\n`
@@ -219,7 +235,7 @@ function generateSolutionContent(
   return content
 }
 
-function generateMDXContent(problemId: string, problem: Problem): string {
+function generateMDXContent(problemId: string, problem: Problem, illustrationMap: Map<string, string>): string {
   const title = problem.title || problemId.split('-').slice(1).map(word => 
     word.charAt(0).toUpperCase() + word.slice(1)
   ).join(' ')
@@ -262,7 +278,14 @@ function generateMDXContent(problemId: string, problem: Problem): string {
   if (problem.definition && problem.definition.trim()) {
     content += formatSection('Definition', problem.definition, 'ProblemDefinition')
   }
-  
+
+  // Add illustration if one exists for this problem
+  const illustrationExport = illustrationMap.get(problemId)
+  if (illustrationExport) {
+    content = `import { ${illustrationExport} } from '@/components/illustrations/problems'\n\n` + content
+    content += `<${illustrationExport} size="full" />\n\n`
+  }
+
   // Handle solutions - process group structure if present
   let solutionsToGenerate: Array<{
     fileName: string
@@ -438,6 +461,9 @@ async function main(): Promise<void> {
     const problemsDir = path.join(__dirname, '..', 'components', 'problems', 'tutorials')
     await ensureDirectoryExists(problemsDir)
 
+    // Load illustration mapping (problemId -> export name)
+    const illustrationMap = await loadIllustrationMap()
+
     if (singleProblem) {
       // Single problem mode
       const problem = problemsMetadata[singleProblem] as Problem | undefined
@@ -452,7 +478,7 @@ async function main(): Promise<void> {
         process.exit(1)
       }
 
-      const mdxContent = generateMDXContent(singleProblem, problem)
+      const mdxContent = generateMDXContent(singleProblem, problem, illustrationMap)
       const componentPath = path.join(problemsDir, `${singleProblem}.mdx`)
       await fs.writeFile(componentPath, mdxContent, 'utf-8')
 
@@ -486,7 +512,7 @@ async function main(): Promise<void> {
         continue
       }
 
-      const mdxContent = generateMDXContent(problemId, problem)
+      const mdxContent = generateMDXContent(problemId, problem, illustrationMap)
 
       // Write MDX file
       const componentPath = path.join(problemsDir, `${problemId}.mdx`)

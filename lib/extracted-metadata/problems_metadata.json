@@ -1520,18 +1520,20 @@
     "4-median-of-two-sorted-arrays": {
       "time_stamps": {
         "created_at": "2026-02-07T20:29:44.968849",
-        "updated_at": "2026-02-07T21:01:24.121893"
+        "updated_at": "2026-02-08T19:35:01.029878"
       },
       "solutions": {
         "solution.py": {
-          "code": "def median_of_two_sorted_arrays():\n    pass"
+          "intuition": "Binary search for a partition in the smaller array such that the combined\n    left half's elements are all less than or equal to the combined right half's elements.\n    The median is then derived from the boundary values of this partition.",
+          "time_complexity": "$O(log(min(m, n)))$\n    Binary search is performed on the shorter array.",
+          "code": "class Solution:\n    def findMedianSortedArrays(self, a: list[int], b: list[int]) -> float:\n        if len(a) > len(b): a, b = b, a\n        m, n, low, high = len(a), len(b), 0, len(a)\n\n        while low <= high:\n            i = (low + high) // 2\n            j = (m + n + 1) // 2 - i\n\n            al = a[i-1] if i > 0 else float('-inf')\n            ar = a[i] if i < m else float('inf')\n            bl = b[j-1] if j > 0 else float('-inf')\n            br = b[j] if j < n else float('inf')\n\n            if al <= br and bl <= ar:\n                if (m + n) % 2: return float(max(al, bl))\n                return (max(al, bl) + min(ar, br)) / 2.0\n\n            if al > br: high = i - 1\n            else: low = i + 1"
         }
       },
       "title": "Median of Two Sorted Arrays",
       "definition": "Given two individually sorted arrays nums1 (size m) and nums2 (size n), compute the median of their combined multiset without merging them, in total time O(\\log(m+n)).",
       "leetcode": "https://leetcode.com/problems/median-of-two-sorted-arrays/description/",
       "difficulty": "hard",
-      "topics": ["TODO"]
+      "topics": ["binary-search"]
     },
     "497-random-point-in-non-overlapping-rectangles": {
       "time_stamps": {

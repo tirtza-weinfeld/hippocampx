@@ -1,0 +1,102 @@
+# Probability & Notation for Generative Models
+
+## Resizable Table Of contents
+
+---
+
+## 1. Central Tendency (The Center)
+
+### 1.1 Mean (Dataset)
+Average of **observed** samples.
+$$\bar{x} = \frac{\sum x_i}{n}$$
+* **Example:** Data $\{1, 5\}$.
+* **Calc:** $\frac{1+5}{2} = \mathbf{3}$
+
+### 1.2 Expected Value (Discrete)
+Theoretical average of a **random variable** with specific outcomes.
+$$E[X] = \sum x P(x)$$
+* **Example:** 50% chance of 1, 50% chance of 5.
+* **Calc:** $(1 \cdot 0.5) + (5 \cdot 0.5) = \mathbf{3}$
+
+### 1.3 Expected Value (Continuous)
+Theoretical average of a **random variable** that can be any decimal.
+$$E[X] = \int x f(x) dx$$
+* **Example:** Any number between 1 and 5 (Uniform PDF $f(x) = 1/4$).
+* **Calc:** $\int_{1}^{5} x \cdot \frac{1}{4} dx = \left[ \frac{x^2}{8} \right]_1^5 = \frac{25}{8} - \frac{1}{8} = \frac{24}{8} = \mathbf{3}$
+
+---
+
+## 2. Spread (Variance)
+
+How far values deviate from the center. Squaring ensures positive distances and penalizes outliers.
+
+### 2.1 Variance (Dataset)
+Average of the squared deviations from the observed mean.
+$$s^2 = \frac{\sum (x_i - \bar{x})^2}{n}$$
+* **Example:** Data $\{1, 5\}$, Mean = 3.
+* **Calc:** $\frac{(1-3)^2 + (5-3)^2}{2} = \frac{4+4}{2} = \mathbf{4}$
+
+### 2.2 Variance (Discrete)
+Theoretical spread of a random variable.
+$$Var(X) = \sum (x - \mu)^2 P(x)$$
+* **Example:** 50% chance of 1, 50% chance of 5.
+* **Calc:** $(1-3)^2 \cdot 0.5 + (5-3)^2 \cdot 0.5 = \mathbf{4}$
+
+### 2.3 Variance (Continuous)
+Theoretical spread across an infinite range of decimals.
+$$Var(X) = \int (x - \mu)^2 f(x) dx$$
+* **Example:** Any number between 1 and 5 (Uniform PDF $1/4$).
+* **Calc:** $\int_{1}^{5} (x-3)^2 \cdot \frac{1}{4} dx = \mathbf{1.33}$
+
+---
+
+## 3. Generative Notation & Sampling
+
+### 3.1 Random Variables
+In generative modeling, data points (like images) are treated as vectors in high-dimensional space $\mathbb{R}^d$.
+* **$X \sim p(x)$**: Variable $X$ is distributed according to (follows) the distribution $p(x)$.
+* **$z \sim p_{data}$**: Sampling a real data point from the true world distribution.
+* **$\epsilon \sim \mathcal{N}(0, I)$**: Sampling "pure noise" from a Standard Gaussian.
+* **i.i.d.**: Independent and Identitically Distributed. Samples are independent but from the same $p_{data}$.
+
+### 3.2 Probability Distributions ($p$)
+* **$p_{data}$ (Target)**: The complex distribution of real data (peaks at data, valleys elsewhere).
+* **$p_{init}$ (Source)**: The starting noise distribution, usually a Gaussian $\mathcal{N}(0, I)$.
+* **$p_t$ (Probability Path)**: Time-dependent interpolation. $p_0 = p_{init}$ and $p_1 = p_{data}$.
+* **$\delta_z$ (Dirac Delta)**: A "point-mass" distribution. Sampling from $\delta_z$ always returns $z$ (deterministic/zero variance).
+
+
+### 3.3 Conditional Paths
+* **$p_t(x|z)$**: The "Conditional Probability Path." Given the final destination is $z$, what is the probability of being at $x$ at time $t$?
+* **Constraint**: $p_0(\cdot|z) = p_{init}$ and $p_1(\cdot|z) = \delta_z$.
+
+---
+
+## 4. Stochastic Processes (SDE)
+
+Used when adding randomness to the transition (Diffusion).
+
+* **$W_t$ (Brownian Motion)**: A continuous-time random walk where increments $W_t - W_s \sim \mathcal{N}(0, (t-s)I_d)$.
+* **$dW_t$**: An infinitesimal "nudge" of Gaussian noise.
+* **$dX_t = u_t(x)dt + \sigma_t dW_t$**: 
+    * $u_t(x)dt$ is the **Drift** (deterministic direction).
+    * $\sigma_t dW_t$ is the **Diffusion** (stochastic jitter).
+
+---
+
+## 5. Operations & Summary
+
+### 5.1 The Expectation (Average over Distributions)
+In training, we minimize Loss using the **Expectation** operator $\mathbb{E}$:
+$$\mathcal{L} = \mathbb{E}_{z \sim p_{data}, \epsilon \sim \mathcal{N}} [ \| \text{model}(z, \epsilon) - \text{target} \|^2 ]$$
+*Intuition: "On average, across all data and all noise, how far off is the model?"*
+
+### 5.2 Summary Table
+
+| Notation | Type | Meaning | Logic |
+| :--- | :--- | :--- | :--- |
+| **$E[X]$** | Average | Expected Value | The "Balance Point" of a distribution. |
+| **$Var(X)$** | Spread | Variance | The squared "Dispersion" from the mean. |
+| **$x \sim p$** | Sampling | Draw sample | Selecting a random value $x$ from $p$. |
+| **$p(x\|z)$** | Conditional | Dependent Prob | The probability of $x$ occurring if $z$ is known. |
+| **$\nabla \log p(x)$** | Score | Gradient | Vector pointing toward high-density data. |

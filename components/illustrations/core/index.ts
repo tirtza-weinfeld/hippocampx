@@ -14,7 +14,6 @@ import { DisjointSetUnionIcon } from "./disjoint-set-union";
 import { SieveOfEratosthenesIcon } from "./sieve-of-eratosthenes";
 import { ExponentiationIcon } from "./exponentiation";
 import { PascalsTriangleIcon } from "./pascals-triangle";
-import { StackIcon } from "./stack";
 import { QueueIcon } from "./queue";
 import { HeapIcon } from "./heap";
 import { TreeIcon } from "./tree";
@@ -43,7 +42,6 @@ export const coreIllustrations:Record<string, ComponentType<IllustrationProps>>=
   knuthMorrisPratt: KMPIcon,
   
   // Data Structures
-  Stack: StackIcon,
   Queue: QueueIcon,
   Heap: HeapIcon,
   MinHeap: HeapIcon,

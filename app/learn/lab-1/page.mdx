@@ -1,0 +1,521 @@
+# Lab 1 Tutorial: Simulating ODEs and SDEs
+
+## Resizable Table Of contents
+
+## Why This Lab Matters
+
+The whole course is about **generative AI** — making models that create images, video,
+molecules, etc. The core trick behind all of it:
+
+1. Start with **random noise** (easy to generate — just sample from a Gaussian)
+2. Gradually **transform** that noise into data (an image, a protein structure, etc.)
+
+That transformation is described by an **ODE** (deterministic) or an **SDE** (with randomness).
+This lab teaches you how to simulate both. Everything that follows in the course — flow
+matching, diffusion models, score matching — builds on these foundations.
+
+---
+
+## PyTorch Crash Course
+
+Before diving in, here are the PyTorch patterns used throughout the lab. If you already
+know PyTorch, skip ahead.
+
+### Tensors
+
+A **tensor** is just an n-dimensional array of numbers. Think of it like a numpy array
+that can also run on a GPU.
+
+```python
+import torch
+
+x = torch.tensor([1.0, 2.0, 3.0])      # 1D tensor (a vector)
+x = torch.zeros(500, 2)                  # 500x2 tensor of zeros
+x = torch.randn(500, 2)                  # 500x2 tensor of random Gaussian samples
+```
+
+### Key operations used in this lab
+
+| Code                        | What it does                                                |
+| --------------------------- | ----------------------------------------------------------- |
+| `torch.zeros_like(xt)`      | Tensor of all 0s, same shape and device as `xt`             |
+| `torch.ones_like(xt)`       | Tensor of all 1s, same shape and device as `xt`             |
+| `torch.randn_like(xt)`      | Random Gaussian samples (mean=0, std=1), same shape as `xt` |
+| `torch.sqrt(h)`             | Square root of a scalar tensor                              |
+| `torch.linspace(0, 5, 500)` | 500 evenly spaced values from 0 to 5                        |
+| `scalar * tensor`           | Multiplies every element by the scalar                      |
+| `tensor + tensor`           | Element-wise addition                                       |
+| `tensor.to(device)`         | Move tensor to CPU or GPU                                   |
+| `tensor.shape`              | The dimensions, e.g. `(500, 2)`                             |
+| `tensor.clone()`            | Copy the tensor (so later changes don't affect the copy)    |
+
+### Why `zeros_like` instead of just `0`?
+
+PyTorch needs tensors to have matching shapes for arithmetic. If `xt` has shape `(500, 1)`,
+you can't just return the number `0` — you need a `(500, 1)` tensor of zeros. `zeros_like`
+handles the shape, the data type (float32, etc.), and the device (CPU/GPU) automatically.
+
+### Element-wise operations
+
+All arithmetic on tensors is **element-wise by default**. This means every particle in
+a batch is processed independently and in parallel:
+
+```python
+# 3 particles in 1D
+xt = torch.tensor([[2.0], [-1.0], [5.0]])   # shape (3, 1)
+theta = 0.25
+
+drift = -theta * xt
+# Result: [[-0.5], [0.25], [-1.25]]
+# Each particle gets its own drift, independently
+```
+
+### The `device` variable
+
+```python
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+```
+
+This picks the GPU if available, otherwise falls back to CPU. All tensors involved in
+computation need to be on the same device — that's why you see `.to(device)` everywhere.
+
+---
+
+## Part 0: The Central Objects — Vector Fields, ODEs, and SDEs
+
+### Vector Fields
+
+A **vector field** is a function that tells you "if you're at position `x` at time `t`,
+go in this direction":
+
+$$u: \mathbb{R}^d \times [0,1] \to \mathbb{R}^d, \quad (x, t) \mapsto u_t(x)$$
+
+Think of it like a weather map showing wind direction at every point. At each location,
+there's an arrow saying "go this way, this fast."
+
+### ODEs (Ordinary Differential Equations)
+
+An ODE says "follow the vector field":
+
+$$dX_t = u_t(X_t)\, dt, \quad X_0 = x_0$$
+
+- $X_t$ = your position at time $t$
+- $u_t(X_t)$ = the velocity the vector field assigns to your current position
+- $x_0$ = where you start
+
+**Key property**: ODEs are **deterministic**. Same starting point = same trajectory, every time.
+
+In code, an ODE is defined by its `drift_coefficient` method — the function $u_t(x)$:
+
+```python
+class ODE(ABC):
+    @abstractmethod
+    def drift_coefficient(self, xt: torch.Tensor, t: torch.Tensor) -> torch.Tensor:
+        pass
+```
+
+### SDEs (Stochastic Differential Equations)
+
+An SDE is an ODE with random noise added:
+
+$$dX_t = u_t(X_t)\, dt + \sigma_t\, dW_t, \quad X_0 = x_0$$
+
+- $u_t(X_t)\, dt$ = the **drift** (deterministic push, same as ODE)
+- $\sigma_t\, dW_t$ = the **diffusion** (random kicks from Brownian motion)
+- $\sigma_t$ = how strong the noise is
+
+**Key property**: SDEs are **stochastic**. Same starting point gives **different**
+trajectories each time.
+
+In code, an SDE has two methods — drift and diffusion:
+
+```python
+class SDE(ABC):
+    @abstractmethod
+    def drift_coefficient(self, xt, t) -> torch.Tensor:
+        pass  # the deterministic part u_t(x)
+
+    @abstractmethod
+    def diffusion_coefficient(self, xt, t) -> torch.Tensor:
+        pass  # the noise strength sigma_t
+```
+
+### About X_0
+
+The starting point $X_0$ is **not** part of the ODE/SDE definition. The ODE/SDE defines
+the "current" everywhere in space — like a river. $X_0$ is where you jump in. You provide
+it later, when you simulate.
+
+### About `drift_coefficient(xt, t)`
+
+The drift depends on the **current** position `xt`, not the initial position. It answers:
+"given that I'm at `xt` right now at time `t`, which way should I go?" The vector field
+doesn't care where you started — it only sees where you are now.
+
+---
+
+## Part 1: Numerical Simulation — Euler and Euler-Maruyama
+
+We can't solve most ODEs/SDEs exactly — we approximate by taking small discrete steps.
+Like GPS navigation: you can't follow a smooth curve perfectly, so you go straight for
+a bit, check your direction, go straight again, etc.
+
+### The Simulator Base Class
+
+```python
+class Simulator(ABC):
+    def step(self, xt, t, h):    # one small step
+        pass
+
+    def simulate(self, x, ts):   # chain many steps together
+        for t_idx in range(len(ts) - 1):
+            t = ts[t_idx]                     # current time
+            h = ts[t_idx + 1] - ts[t_idx]     # step size (gap between timesteps)
+            x = self.step(x, t, h)            # take one step
+        return x
+```
+
+`simulate` is just a loop that calls `step` repeatedly. The interesting part is what
+happens inside `step`.
+
+### Euler Method (for ODEs)
+
+The simplest possible approximation — assume the vector field is constant during
+each small step:
+
+$$X_{t+h} = X_t + h \cdot u_t(X_t)$$
+
+"Where I am" + "step size" times "which way the field says to go."
+
+```python
+class EulerSimulator(Simulator):
+    def step(self, xt, t, h):
+        # xt shape: (batch_size, dim) — positions of all particles
+        # h: scalar — the step size
+        # drift_coefficient returns same shape as xt — a velocity for each particle
+        # h * velocity = how far to move; xt + that = new position
+        return xt + h * self.ode.drift_coefficient(xt, t)
+```
+
+### Euler-Maruyama Method (for SDEs)
+
+Same as Euler, plus a random kick:
+
+$$X_{t+h} = X_t + h \cdot u_t(X_t) + \sqrt{h} \cdot \sigma_t \cdot z_t, \quad z_t \sim N(0, I_d)$$
+
+```python
+class EulerMaruyamaSimulator(Simulator):
+    def step(self, xt, t, h):
+        drift = self.sde.drift_coefficient(xt, t)       # deterministic direction
+        diffusion = self.sde.diffusion_coefficient(xt, t) # noise strength sigma_t
+        noise = torch.randn_like(xt)                      # fresh random Gaussian sample
+        return xt + h * drift + torch.sqrt(h) * diffusion * noise
+```
+
+### Why sqrt(h) and not h?
+
+This is the most non-obvious detail. **Brownian motion scales with the square root of
+time**, not linearly. If you wait 4x as long, a random walk spreads 2x as far (not 4x).
+This is a fundamental property of random walks. Using `sqrt(h)` ensures the discretization
+correctly approximates continuous Brownian motion.
+
+Intuition: in a random walk of $n$ steps, the typical distance from the start is
+$\sqrt{n}$, not $n$ (the positive and negative steps partially cancel). Since $n \propto
+1/h$ (smaller steps = more of them), the displacement scales as $\sqrt{h}$.
+
+---
+
+## Part 2: Seeing It in Action
+
+### 2.1 Brownian Motion — Pure Random Walking
+
+Brownian motion is the simplest SDE — no drift, just noise:
+
+$$dX_t = \sigma\, dW_t, \quad X_0 = 0$$
+
+**What is Brownian motion ($W_t$)?** Imagine standing still, and every instant someone
+shoves you in a random direction:
+
+- Starts at $W_0 = 0$
+- Each shove is random and independent of all previous shoves
+- The shove over a small time $h$ is distributed as $N(0, h)$
+- Over time, the particle wanders further from the origin, but slowly ($\propto \sqrt{t}$)
+
+If you've seen a random walk (flip a coin, go left or right) — Brownian motion is the
+continuous-time version of that.
+
+```python
+class BrownianMotion(SDE):
+    def __init__(self, sigma: float):
+        self.sigma = sigma
+
+    def drift_coefficient(self, xt, t):
+        # u_t(x) = 0: no deterministic force at all.
+        # torch.zeros_like(xt) creates an all-zeros tensor with the same
+        # shape as xt (e.g. (500, 1)). We can't just return the number 0
+        # because PyTorch needs matching tensor shapes for arithmetic.
+        return torch.zeros_like(xt)
+
+    def diffusion_coefficient(self, xt, t):
+        # sigma_t = sigma (constant). Every particle, at every time, gets
+        # the same noise strength.
+        # torch.ones_like(xt) = tensor of 1s with same shape as xt,
+        # then self.sigma * that = tensor filled with sigma.
+        return self.sigma * torch.ones_like(xt)
+```
+
+Notice: neither method actually uses `xt` or `t`. The particle has no idea where it is
+or what time it is. It just gets random shoves of constant strength.
+
+**The plotting cell** starts 500 particles at the origin and simulates them:
+
+```python
+x0 = torch.zeros(n_traj, 1).to(device)    # 500 particles, all at 0
+ts = torch.linspace(0.0, 5.0, 500).to(device)  # 500 time steps from 0 to 5
+```
+
+Since each particle gets independent noise, they all take different paths — fanning out
+from 0. The histogram on the right shows where they end up at $t=5$: a Gaussian centered
+at 0 with variance $\sigma^2 \cdot t = 1 \cdot 5 = 5$.
+
+**Key takeaway**: Brownian motion just spreads out forever. Bigger $\sigma$ = faster
+spreading. Nothing pulls the particles back.
+
+### 2.2 Ornstein-Uhlenbeck (OU) Process — Adding a Spring
+
+The OU process adds a drift that **pulls particles back toward the origin**:
+
+$$dX_t = -\theta X_t\, dt + \sigma\, dW_t, \quad X_0 = x_0$$
+
+```python
+class OUProcess(SDE):
+    def __init__(self, theta: float, sigma: float):
+        self.theta = theta
+        self.sigma = sigma
+
+    def drift_coefficient(self, xt, t):
+        # u_t(x) = -theta * x: a spring attached to the origin.
+        # If x > 0, drift is negative (pulls left toward 0).
+        # If x < 0, drift is positive (pulls right toward 0).
+        # Farther from origin = stronger pull.
+        #
+        # self.theta is a scalar, xt is a tensor. Scalar * tensor multiplies
+        # every element: if theta=0.25 and a particle is at x=4,
+        # drift = -0.25 * 4 = -1 (strong pull left).
+        return -self.theta * xt
+
+    def diffusion_coefficient(self, xt, t):
+        # Same as Brownian motion: constant noise strength sigma
+        return self.sigma * torch.ones_like(xt)
+```
+
+**This is now a tug-of-war**:
+
+- Noise pushes particles outward (random kicks)
+- Drift pulls them back toward 0 (spring force)
+
+The result: particles **converge to a distribution**, not a point. Specifically:
+
+$$\text{Stationary distribution} = N\!\left(0,\; \frac{\sigma^2}{2\theta}\right)$$
+
+The ratio $D = \sigma^2 / (2\theta)$ is the variance of this equilibrium:
+
+- More noise ($\sigma$ up) or weaker spring ($\theta$ down) → wider spread
+- Less noise or stronger spring → tighter around 0
+
+**The three comparison plots** show:
+
+| $\sigma$ | $\theta$ | Behavior                                                     |
+| -------- | -------- | ------------------------------------------------------------ |
+| 0.0      | 0.25     | No noise: particles deterministically collapse to 0          |
+| 0.5      | 0.25     | Mild noise: particles converge to a narrow Gaussian around 0 |
+| 2.0      | 0.25     | Strong noise: particles converge to a wide Gaussian around 0 |
+
+**The 3x3 grid** varies both $\sigma$ and $D$. The key observation: **what matters is
+the ratio $D = \sigma^2/(2\theta)$, not $\sigma$ or $\theta$ individually.** Processes
+in the same row (same $D$) converge to the same distribution, even though they have
+different $\sigma$ and $\theta$. They just get there at different speeds.
+
+---
+
+## Part 3: Transforming Distributions — Langevin Dynamics
+
+Parts 1 and 2 were warm-ups. Now we get to the connection to generative modeling.
+
+### The Goal
+
+We want an SDE that **pushes any starting distribution toward a target distribution $p$**.
+Start with random Gaussian samples, run the SDE, end up with samples from $p$.
+
+### The Score Function
+
+The **score function** of a distribution $p$ is the gradient of its log-density:
+
+$$\nabla \log p(x)$$
+
+**Intuition**: at any point $x$, the score is a vector pointing "uphill" — toward
+regions where $p$ has more probability mass. It's a compass saying "go this way to find
+higher probability."
+
+Example — for a Gaussian $p(x) = N(0, \sigma^2)$:
+
+$$\log p(x) = -\frac{x^2}{2\sigma^2} + \text{const}$$
+$$\nabla \log p(x) = -\frac{x}{\sigma^2}$$
+
+The score points toward the mean (origin). If you're to the right, it points left;
+if you're to the left, it points right.
+
+In code, the `Density` class computes this:
+
+```python
+class Density(ABC):
+    def log_density(self, x):   # log p(x) — must implement this
+        pass
+
+    def score(self, x):         # grad log p(x) — computed automatically
+        # Uses PyTorch's automatic differentiation (jacrev) to compute
+        # the gradient of log_density. vmap applies it to a whole batch.
+        x = x.unsqueeze(1)
+        score = vmap(jacrev(self.log_density))(x)
+        return score.squeeze((1, 2, 3))
+```
+
+You only need to define `log_density` — PyTorch computes the gradient for you.
+
+### The Density and Sampleable Abstractions
+
+The lab defines two interfaces for distributions:
+
+- **`Density`**: you can compute $\log p(x)$ (and therefore the score $\nabla \log p(x)$)
+- **`Sampleable`**: you can draw samples from the distribution
+
+Simple distributions like Gaussians satisfy both. Complex distributions (like "the
+distribution of natural images") can often be sampled from (we have datasets of images)
+but we can't compute their density.
+
+### Concrete Distributions: Gaussian and GaussianMixture
+
+```python
+# Single Gaussian — one blob
+Gaussian(mean=torch.zeros(2), cov=10 * torch.eye(2))
+
+# Gaussian mixture — multiple blobs
+GaussianMixture.random_2D(nmodes=5, std=1.0, scale=20.0)
+GaussianMixture.symmetric_2D(nmodes=5, std=1.0, scale=8.0)
+```
+
+These are both `Density` and `Sampleable` — we can compute their density AND sample
+from them. The density visualization cell plots these as 2D heatmaps.
+
+### 3.1 Langevin Dynamics — The Key SDE
+
+The **(overdamped) Langevin dynamics** is the SDE:
+
+$$dX_t = \frac{\sigma^2}{2} \nabla \log p(X_t)\, dt + \sigma\, dW_t$$
+
+Let's unpack this:
+
+- **Drift**: $\frac{\sigma^2}{2} \nabla \log p(X_t)$ — push particles "uphill" toward
+  high-probability regions of $p$
+- **Diffusion**: $\sigma\, dW_t$ — add random noise
+
+**The magic property**: if you run Langevin dynamics long enough, the distribution of
+particles converges to $p$, **regardless of where you started**. Start with random
+Gaussian noise, end up with samples from your target distribution.
+
+This is the foundation of diffusion-based generative models.
+
+```python
+class LangevinSDE(SDE):
+    def __init__(self, sigma: float, density: Density):
+        self.sigma = sigma
+        self.density = density
+
+    def drift_coefficient(self, xt, t):
+        # (sigma^2 / 2) * grad log p(x)
+        # self.density.score(xt) computes grad log p(x) for each particle.
+        # This vector points toward higher probability — "go uphill."
+        # The 0.5 * sigma^2 factor is what makes Langevin dynamics
+        # preserve the target distribution p at equilibrium.
+        return 0.5 * self.sigma ** 2 * self.density.score(xt)
+
+    def diffusion_coefficient(self, xt, t):
+        # Constant noise strength sigma, same as Brownian motion
+        return self.sigma * torch.ones_like(xt)
+```
+
+**The visualization** starts 1000 particles from a broad Gaussian and simulates the
+Langevin SDE with a 5-mode Gaussian mixture as target. Over time, the particles migrate
+from the initial spread-out cloud to cluster around the 5 modes of the target.
+
+What to notice when varying parameters:
+
+- **Larger $\sigma$**: faster mixing (particles explore more) but noisier samples
+- **Smaller $\sigma$**: cleaner samples but particles may get stuck in one mode
+- **More timesteps / longer time**: particles have more time to converge to the target
+- **Different source distribution**: doesn't matter — particles always converge to $p$
+
+### 3.2 The Punchline: OU Process = Langevin for a Gaussian
+
+Here's the connection between Parts 2 and 3. If the target distribution is a Gaussian
+$p(x) = N(0, \sigma^2/(2\theta))$, then:
+
+**Step 1**: Compute the score of this Gaussian.
+
+$$p(x) = \frac{\sqrt{\theta}}{\sigma\sqrt{\pi}} \exp\!\left(-\frac{x^2 \theta}{\sigma^2}\right)$$
+
+$$\log p(x) = -\frac{x^2 \theta}{\sigma^2} + \text{const}$$
+
+$$\nabla \log p(x) = -\frac{2\theta}{\sigma^2} x$$
+
+**Step 2**: Plug this score into the Langevin drift.
+
+$$\text{drift} = \frac{\sigma^2}{2} \nabla \log p(x) = \frac{\sigma^2}{2} \cdot \left(-\frac{2\theta}{\sigma^2}\right) x = -\theta x$$
+
+**Step 3**: Recognize the result.
+
+The Langevin SDE becomes:
+
+$$dX_t = -\theta X_t\, dt + \sigma\, dW_t$$
+
+That's the OU process! The OU process **is** Langevin dynamics for a Gaussian target.
+This is why the OU process converges to $N(0, \sigma^2/(2\theta))$ — it's being driven
+there by the score of that exact Gaussian.
+
+---
+
+## Summary Table
+
+| Process             | SDE                                                      | Drift $u_t(x)$                   | Diffusion $\sigma_t$ | Behavior                              |
+| ------------------- | -------------------------------------------------------- | -------------------------------- | -------------------- | ------------------------------------- |
+| **Brownian Motion** | $dX = \sigma\, dW$                                       | 0                                | $\sigma$             | Wanders forever                       |
+| **OU Process**      | $dX = -\theta x\, dt + \sigma\, dW$                      | $-\theta x$                      | $\sigma$             | Converges to $N(0, \sigma^2/2\theta)$ |
+| **Langevin**        | $dX = \frac{\sigma^2}{2}\nabla\log p\, dt + \sigma\, dW$ | $\frac{\sigma^2}{2}\nabla\log p$ | $\sigma$             | Converges to target $p$               |
+
+The progression tells a story:
+
+1. **Brownian motion**: pure noise, no structure, spreads forever
+2. **OU process**: noise + spring to origin → converges to a Gaussian
+3. **Langevin**: noise + "spring" toward any target $p$ → converges to $p$
+
+Each one generalizes the previous. And Langevin dynamics is the key idea behind
+diffusion models: if you know the score $\nabla \log p$, you can sample from $p$
+by running an SDE.
+
+---
+
+## What Comes Next
+
+In the real world, we don't know $\nabla \log p_{\text{data}}$ — we can't compute the
+score of "the distribution of natural images." So instead:
+
+- **Score matching** (Lecture 2): Learn the score from data using a neural network
+- **Flow matching** (Lecture 3): Skip the score entirely and learn the vector field
+  directly — simpler and currently state-of-the-art
+
+Both approaches train a neural network to approximate the drift of an ODE/SDE that
+transforms noise into data. The simulation tools from this lab (Euler, Euler-Maruyama)
+are exactly what's used at inference time to generate new samples.
+
+---
+

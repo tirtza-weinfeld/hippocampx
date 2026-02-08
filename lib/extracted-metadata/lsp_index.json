@@ -6006,21 +6006,39 @@
       "uri": "problems/4-median-of-two-sorted-arrays/solution.py",
       "symbols": [
         {
-          "name": "median_of_two_sorted_arrays",
-          "detail": "median_of_two_sorted_arrays()",
-          "kind": 12,
-          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 1, "character": 8}},
+          "name": "Solution",
+          "detail": "class Solution",
+          "kind": 5,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 19, "character": 29}},
           "nameRange": {
             "start": {
               "line": 0,
-              "character": 4
+              "character": 6
             },
             "end": {
               "line": 0,
-              "character": 31
+              "character": 14
             }
           },
-          "children": []
+          "children": [
+            {
+              "name": "findMedianSortedArrays",
+              "detail": "findMedianSortedArrays(a: list[int], b: list[int]) -> float",
+              "kind": 6,
+              "range": {"start": {"line": 1, "character": 4}, "end": {"line": 19, "character": 29}},
+              "nameRange": {
+                "start": {
+                  "line": 1,
+                  "character": 8
+                },
+                "end": {
+                  "line": 1,
+                  "character": 30
+                }
+              },
+              "children": []
+            }
+          ]
         }
       ]
     },
