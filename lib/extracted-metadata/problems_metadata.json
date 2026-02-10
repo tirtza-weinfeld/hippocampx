@@ -34,6 +34,35 @@
       "difficulty": "easy",
       "topics": ["game", "matrix", "simulation"]
     },
+    "137-single-number-ii": {
+      "time_stamps": {
+        "created_at": "2026-02-10T11:15:56.365989",
+        "updated_at": "2026-02-10T18:06:25.164378"
+      },
+      "solutions": {
+        "solution.py": {
+          "intuition": "Finite-state machine:\n    Treat each bit position i as an independent finite-state machine that counts how many times that bit has appeared, modulo 3.\n    We do NOT store the full count. We only store the remainder\n        $c_i \\in \\{0,1,2\\}$ where\n        $c_i \\equiv \\text{(number of times bit i appeared)} \\pmod{3}$.\n    State encoding (per bit `i`):\n        $c_i = 0$\n            (bit seen a multiple of 3 times)\n            $(x_i, y_i) = (0,0)$\n        $c_i = 1$\n            (bit seen once modulo 3)\n            $(x_i, y_i) = (1,0)$\n        $c_i = 2$\n            (bit seen twice modulo 3)\n            $(x_i, y_i) = (0,1)$\n    The combination $(x_i, y_i) = (1,1)$ is illegal and must never occur,\n        because $x_i = 1$ encodes $c_i = 1$ and $y_i = 1$ encodes $c_i = 2$.\n        These two statements cannot both be true for the same bit.\n    Transition rule (per bit `i`) when reading one number num:\n        If $num_i = 0$:\n            the bit did not appear → $c_i$ stays unchanged.\n        If $num_i = 1$:\n            advance the counter:\n            $c_i \\leftarrow (c_i + 1) \\bmod 3$.\n        In terms of state pairs:\n            $(0,0) \\rightarrow (1,0) \\rightarrow (0,1) \\rightarrow (0,0)$.\n\n    Key mental model:\n        x stores all bits whose remainder is 1.\n        y stores all bits whose remainder is 2.\n        Bitwise operations update all bit positions simultaneously, implementing the modulo-3 state transitions in parallel.",
+          "variables": {
+            "x": "integer whose i-th bit $x_i = 1$ iff $c_i = 1$",
+            "y": "integer whose i-th bit $y_i = 1$ iff $c_i = 2$"
+          },
+          "expressions": {
+            "^": "xor → toggles a bit where $num_i = 1$",
+            "~": "bitwise not → clears forbidden overlaps",
+            "x = (x ^ num) & ~y": "",
+            "Step A": "",
+            "Step B": "",
+            "y = (y ^ num) & ~x": ""
+          },
+          "code": "def singleNumber(self, nums: list[int]) -> int:\n    x = y = 0\n    for num in nums:\n        x = (x ^ num) & ~y\n        y = (y ^ num) & ~x\n    return x"
+        }
+      },
+      "title": "Single Number II",
+      "definition": "Given an integer array nums where every element appears three times except for one, which appears exactly once. Find the single element and return it.You must implement a solution with a linear runtime complexity and use only constant extra space.",
+      "leetcode": "https://leetcode.com/problems/single-number-ii/description/",
+      "difficulty": "medium",
+      "topics": ["xor"]
+    },
     "1631-path-with-minimum-effort": {
       "time_stamps": {
         "created_at": "2025-09-12T16:06:10.762743",
@@ -1035,6 +1064,22 @@
       "difficulty": "medium",
       "topics": ["two-pointers", "cycle", "linked-list"]
     },
+    "85-maximal-rectangle": {
+      "time_stamps": {
+        "created_at": "2026-02-10T19:36:30.906375",
+        "updated_at": "2026-02-10T19:37:24.961139"
+      },
+      "solutions": {
+        "solution.py": {
+          "code": "def maximalRectangle(matrix: list[list[str]]) -> int:\n    pass"
+        }
+      },
+      "title": "Maximal Rectangle",
+      "definition": "Given a rows x cols binary matrix filled with 0's and 1's, find the largest rectangle containing only 1's and return its area.",
+      "leetcode": "https://leetcode.com/problems/maximal-rectangle/description/",
+      "difficulty": "hard",
+      "topics": ["TODO"]
+    },
     "51-n-queens": {
       "time_stamps": {
         "created_at": "2025-09-12T16:05:16.850151",
@@ -1859,7 +1904,7 @@
     "136-single-number": {
       "time_stamps": {
         "created_at": "2025-09-30T11:20:36.046635",
-        "updated_at": "2025-10-03T12:14:39.572548"
+        "updated_at": "2026-02-10T18:12:53.273261"
       },
       "solutions": {
         "solution.py": {
@@ -1872,7 +1917,7 @@
       "definition": "Given a non-empty array of integers nums, every element appears twice except for one. Find that single one.    *[sky!]Achieve *linear* time complexity and *constant* space complexity.*",
       "leetcode": "https://leetcode.com/problems/single-number",
       "difficulty": "Easy",
-      "topics": ["bit-manipulation"]
+      "topics": ["bit-manipulation", "xor"]
     },
     "49-group-anagrams": {
       "time_stamps": {
@@ -1899,6 +1944,31 @@
       "difficulty": "medium",
       "topics": ["hash-table", "sort", "string"],
       "group": [["categorize-by-count.py"], ["categorize-by-sorted-string.py"], ["categorize-by-count-using-python-counter.py"]]
+    },
+    "329-longest-increasing-path-in-a-matrix": {
+      "time_stamps": {
+        "created_at": "2026-02-10T18:12:42.354325",
+        "updated_at": "2026-02-10T19:30:50.246232"
+      },
+      "solutions": {
+        "solution.py": {
+          "intuition": "DFS + Memoization as a Directed Acyclic Graph:\n    Treat each cell as a node with directed edges to strictly larger neighboring cells.\n    The longest increasing path starting at (i, j) equals        $1 + \\max(\\text{paths from valid increasing neighbors})$ .\n    Since values strictly increase along edges, the graph has no cycles,        so DFS with memoization computes each state exactly once.",
+          "time_complexity": "$O(mn)$\n    Each cell $(i, j)$ is computed once and memoized.\n    For each cell, we examine at most $4$ neighbors.",
+          "variables": {
+            "directions": "4 possible moves (right, left, down, up)",
+            "m": "number of rows in the matrix",
+            "n": "number of columns in the matrix",
+            "memo": "cache mapping $(i, j)$ → longest increasing path starting at that cell",
+            "max_len": "global maximum path length across all cells"
+          },
+          "code": "def longestIncreasingPath( matrix: list[list[int]]) -> int:\n    directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]\n    m, n, memo = len(matrix), len(matrix[0]), {}\n\n    def dp(i, j):\n        if (i, j) not in memo:\n            memo[i, j] = 1 + max(\n                (\n                    dp(r, c)\n                    for di, dj in directions\n                    if 0 <= (r := i + di) < m and 0 <= (c := j + dj) < n and matrix[r][c] > matrix[i][j]\n                ),\n                default=0,\n            )\n        return memo[i, j]\n\n    max_len = 0\n    for r in range(m):\n        for c in range(n):\n            max_len = max(dp(r, c), max_len)\n    return max_len"
+        }
+      },
+      "title": "Longest Increasing Path in a Matrix",
+      "definition": "Given an m x n integers matrix, return the length of the longest increasing path in matrix.From each cell, you can either move in four directions: left, right, up, or down. You may not move diagonally or move outside the boundary (i.e., wrap-around is not allowed).",
+      "leetcode": "https://leetcode.com/problems/longest-increasing-path-in-a-matrix/description/",
+      "difficulty": "hard",
+      "topics": ["dp", "dfs"]
     },
     "311-sparse-matrix-multiplication": {
       "time_stamps": {
@@ -2915,7 +2985,7 @@
     "25-reverse-nodes-in-k-group": {
       "time_stamps": {
         "created_at": "2026-02-09T12:31:14.495999",
-        "updated_at": "2026-02-10T11:13:28.756721"
+        "updated_at": "2026-02-10T19:15:39.261590"
       },
       "solutions": {
         "solution.py": {
@@ -2923,7 +2993,8 @@
           "variables": {
             "pre": "node immediately before the current k-block",
             "rev": "head of the growing reversed chain (starts after block)",
-            "cur": "first node in the current block"
+            "cur": "first node in the current block",
+            "end": "will move to the last node of the current k-block"
           },
           "code": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\ndef reverseKGroup(head: ListNode | None, k: int) -> ListNode | None:\n    pre = dummy = ListNode(0, head)\n    while True:\n        end = pre\n        for _ in range(k):\n            end = end.next\n            if not end:\n                return dummy.next\n        rev, cur = end.next, pre.next\n        for _ in range(k):\n            cur.next, rev, cur = rev, cur, cur.next\n        pre.next, pre = rev, pre.next"
         }
@@ -2932,35 +3003,6 @@
       "definition": "Reverse the linked list in groups of size 𝑘 .If the remaining nodes are fewer than 𝑘, leave them unchanged. You may only rearrange node pointers — modifying node values is not allowed.",
       "leetcode": "https://leetcode.com/problems/reverse-nodes-in-k-group/description/",
       "difficulty": "hard",
-      "topics": ["TODO"]
-    },
-    "137-single-number-ii": {
-      "time_stamps": {
-        "created_at": "2026-02-10T11:15:56.365989",
-        "updated_at": "2026-02-10T12:08:23.222919"
-      },
-      "solutions": {
-        "solution.py": {
-          "intuition": "Finite-state machine:\n    Treat each bit position i as an independent finite-state machine that counts how many times that bit has appeared, modulo 3.\n    We do NOT store the full count. We only store the remainder\n        $c_i \\in \\{0,1,2\\}$ where\n        $c_i \\equiv \\text{(number of times bit i appeared)} \\pmod{3}$.\n    State encoding (per bit `i`):\n        $c_i = 0$\n            (bit seen a multiple of 3 times)\n            $(x_i, y_i) = (0,0)$\n        $c_i = 1$\n            (bit seen once modulo 3)\n            $(x_i, y_i) = (1,0)$\n        $c_i = 2$\n            (bit seen twice modulo 3)\n            $(x_i, y_i) = (0,1)$\n    The combination $(x_i, y_i) = (1,1)$ is illegal and must never occur,\n        because $x_i = 1$ encodes $c_i = 1$ and $y_i = 1$ encodes $c_i = 2$.\n        These two statements cannot both be true for the same bit.\n    Transition rule (per bit `i`) when reading one number num:\n        If $num_i = 0$:\n            the bit did not appear → $c_i$ stays unchanged.\n        If $num_i = 1$:\n            advance the counter:\n            $c_i \\leftarrow (c_i + 1) \\bmod 3$.\n        In terms of state pairs:\n            $(0,0) \\rightarrow (1,0) \\rightarrow (0,1) \\rightarrow (0,0)$.\n\n    Key mental model:\n        x stores all bits whose remainder is 1.\n        y stores all bits whose remainder is 2.\n        Bitwise operations update all bit positions simultaneously, implementing the modulo-3 state transitions in parallel.",
-          "variables": {
-            "x": "integer whose i-th bit $x_i = 1$ iff $c_i = 1$",
-            "y": "integer whose i-th bit $y_i = 1$ iff $c_i = 2$"
-          },
-          "expressions": {
-            "^": "xor → toggles a bit where $num_i = 1$",
-            "~": "bitwise not → clears forbidden overlaps",
-            "x = (x ^ num) & ~y": "",
-            "Step A": "",
-            "Step B": "",
-            "y = (y ^ num) & ~x": ""
-          },
-          "code": "def singleNumber(self, nums: list[int]) -> int:\n    x = y = 0\n    for num in nums:\n        x = (x ^ num) & ~y\n        y = (y ^ num) & ~x\n    return x"
-        }
-      },
-      "title": "Single Number II",
-      "definition": "Given an integer array nums where every element appears three times except for one, which appears exactly once. Find the single element and return it.You must implement a solution with a linear runtime complexity and use only constant extra space.",
-      "leetcode": "https://leetcode.com/problems/single-number-ii/description/",
-      "difficulty": "medium",
       "topics": ["TODO"]
     }
   },

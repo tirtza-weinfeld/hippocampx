@@ -15,6 +15,7 @@ def reverseKGroup(head: ListNode | None, k: int) -> ListNode | None:
         pre: node immediately before the current k-block
         rev: head of the growing reversed chain (starts after block)
         cur: first node in the current block
+        end: will move to the last node of the current k-block
     """
     pre = dummy = ListNode(0, head)
     while True:

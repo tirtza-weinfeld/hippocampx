@@ -1,0 +1,53 @@
+# Longest Increasing Path in a Matrix
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="hard" />
+
+<PillList pills={["dp", "dfs"]} />
+
+[329. Longest Increasing Path in a Matrix](https://leetcode.com/problems/longest-increasing-path-in-a-matrix/description/)
+
+## [!(ProblemDefinition)] Definition
+
+Given an m x n integers matrix, return the length of the longest increasing path in matrix.From each cell, you can either move in four directions: left, right, up, or down. You may not move diagonally or move outside the boundary (i.e., wrap-around is not allowed).
+
+## [!(ProblemIntuition)] Intuition
+
+- DFS + Memoization as a Directed Acyclic Graph:
+    - Treat each cell as a node with directed edges to strictly larger neighboring cells.
+    - The longest increasing path starting at (i, j) equals        $1 + \max(\text{paths from valid increasing neighbors})$ .
+    - Since values strictly increase along edges, the graph has no cycles,        so DFS with memoization computes each state exactly once.
+
+## [!(ProblemTimeComplexity)] Time Complexity
+
+- $O(mn)$
+    - Each cell $(i, j)$ is computed once and memoized.
+    - For each cell, we examine at most $4$ neighbors.
+
+## [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/329-longest-increasing-path-in-a-matrix/solution.py"
+def longestIncreasingPath( matrix: list[list[int]]) -> int:
+    directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]
+    m, n, memo = len(matrix), len(matrix[0]), {}
+
+    def dp(i, j):
+        if (i, j) not in memo:
+            memo[i, j] = 1 + max(
+                (
+                    dp(r, c)
+                    for di, dj in directions
+                    if 0 <= (r := i + di) < m and 0 <= (c := j + dj) < n and matrix[r][c] > matrix[i][j]
+                ),
+                default=0,
+            )
+        return memo[i, j]
+
+    max_len = 0
+    for r in range(m):
+        for c in range(n):
+            max_len = max(dp(r, c), max_len)
+    return max_len
+```
+

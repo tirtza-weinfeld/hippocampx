@@ -1,4 +1,12 @@
 {
+  "problems/137-single-number-ii/solution.py": [
+    {"range": {"start": {"line": 3, "character": 15}, "end": {"line": 3, "character": 16}}, "nameRange": {"start": {"line": 3, "character": 15}, "end": {"line": 3, "character": 16}}, "qname": "problems.137-single-number-ii.solution:singleNumber.^", "kind": "expression"},
+    {"range": {"start": {"line": 4, "character": 15}, "end": {"line": 4, "character": 16}}, "nameRange": {"start": {"line": 4, "character": 15}, "end": {"line": 4, "character": 16}}, "qname": "problems.137-single-number-ii.solution:singleNumber.^", "kind": "expression"},
+    {"range": {"start": {"line": 3, "character": 24}, "end": {"line": 3, "character": 25}}, "nameRange": {"start": {"line": 3, "character": 24}, "end": {"line": 3, "character": 25}}, "qname": "problems.137-single-number-ii.solution:singleNumber.~", "kind": "expression"},
+    {"range": {"start": {"line": 4, "character": 24}, "end": {"line": 4, "character": 25}}, "nameRange": {"start": {"line": 4, "character": 24}, "end": {"line": 4, "character": 25}}, "qname": "problems.137-single-number-ii.solution:singleNumber.~", "kind": "expression"},
+    {"range": {"start": {"line": 3, "character": 8}, "end": {"line": 3, "character": 26}}, "nameRange": {"start": {"line": 3, "character": 8}, "end": {"line": 3, "character": 26}}, "qname": "problems.137-single-number-ii.solution:singleNumber.x = (x ^ num) & ~y", "kind": "expression"},
+    {"range": {"start": {"line": 4, "character": 8}, "end": {"line": 4, "character": 26}}, "nameRange": {"start": {"line": 4, "character": 8}, "end": {"line": 4, "character": 26}}, "qname": "problems.137-single-number-ii.solution:singleNumber.y = (y ^ num) & ~x", "kind": "expression"}
+  ],
   "problems/265-paint-house-ii/top-down.py": [
     {"range": {"start": {"line": 17, "character": 27}, "end": {"line": 17, "character": 64}}, "nameRange": {"start": {"line": 17, "character": 27}, "end": {"line": 17, "character": 64}}, "qname": "problems.265-paint-house-ii.top-down:Solution.minCostII.dp.costs[i][c] + (m2 if c == c1 else m1)", "kind": "expression"},
     {"range": {"start": {"line": 12, "character": 16}, "end": {"line": 12, "character": 42}}, "nameRange": {"start": {"line": 12, "character": 16}, "end": {"line": 12, "character": 42}}, "qname": "problems.265-paint-house-ii.top-down:Solution.minCostII.dp.for c, v in enumerate(nxt)", "kind": "expression"}
@@ -172,13 +180,5 @@
   "core/binary-search/bisect_right.py": [
     {"range": {"start": {"line": 6, "character": 12}, "end": {"line": 6, "character": 19}}, "nameRange": {"start": {"line": 6, "character": 12}, "end": {"line": 6, "character": 19}}, "qname": "core.binary-search.bisect_right:simple_bisect_right.r = mid", "kind": "expression"},
     {"range": {"start": {"line": 8, "character": 12}, "end": {"line": 8, "character": 23}}, "nameRange": {"start": {"line": 8, "character": 12}, "end": {"line": 8, "character": 23}}, "qname": "core.binary-search.bisect_right:simple_bisect_right.l = mid + 1", "kind": "expression"}
-  ],
-  "problems/137-single-number-ii/solution.py": [
-    {"range": {"start": {"line": 3, "character": 15}, "end": {"line": 3, "character": 16}}, "nameRange": {"start": {"line": 3, "character": 15}, "end": {"line": 3, "character": 16}}, "qname": "problems.137-single-number-ii.solution:singleNumber.^", "kind": "expression"},
-    {"range": {"start": {"line": 4, "character": 15}, "end": {"line": 4, "character": 16}}, "nameRange": {"start": {"line": 4, "character": 15}, "end": {"line": 4, "character": 16}}, "qname": "problems.137-single-number-ii.solution:singleNumber.^", "kind": "expression"},
-    {"range": {"start": {"line": 3, "character": 24}, "end": {"line": 3, "character": 25}}, "nameRange": {"start": {"line": 3, "character": 24}, "end": {"line": 3, "character": 25}}, "qname": "problems.137-single-number-ii.solution:singleNumber.~", "kind": "expression"},
-    {"range": {"start": {"line": 4, "character": 24}, "end": {"line": 4, "character": 25}}, "nameRange": {"start": {"line": 4, "character": 24}, "end": {"line": 4, "character": 25}}, "qname": "problems.137-single-number-ii.solution:singleNumber.~", "kind": "expression"},
-    {"range": {"start": {"line": 3, "character": 8}, "end": {"line": 3, "character": 26}}, "nameRange": {"start": {"line": 3, "character": 8}, "end": {"line": 3, "character": 26}}, "qname": "problems.137-single-number-ii.solution:singleNumber.x = (x ^ num) & ~y", "kind": "expression"},
-    {"range": {"start": {"line": 4, "character": 8}, "end": {"line": 4, "character": 26}}, "nameRange": {"start": {"line": 4, "character": 8}, "end": {"line": 4, "character": 26}}, "qname": "problems.137-single-number-ii.solution:singleNumber.y = (y ^ num) & ~x", "kind": "expression"}
   ]
 }

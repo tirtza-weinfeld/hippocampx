@@ -5550,6 +5550,50 @@
       ]
     },
     {
+      "uri": "problems/329-longest-increasing-path-in-a-matrix/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/329-longest-increasing-path-in-a-matrix/solution.py",
+      "symbols": [
+        {
+          "name": "longestIncreasingPath",
+          "detail": "longestIncreasingPath(matrix: list[list[int]]) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 20, "character": 18}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 25
+            }
+          },
+          "children": [
+            {
+              "name": "dp",
+              "detail": "dp(i, j)",
+              "kind": 12,
+              "range": {"start": {"line": 4, "character": 4}, "end": {"line": 14, "character": 25}},
+              "nameRange": {
+                "start": {
+                  "line": 4,
+                  "character": 8
+                },
+                "end": {
+                  "line": 4,
+                  "character": 10
+                }
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
       "uri": "problems/33-search-in-rotated-sorted-array/__init__.py",
       "symbols": []
     },
@@ -8549,6 +8593,32 @@
               "children": []
             }
           ]
+        }
+      ]
+    },
+    {
+      "uri": "problems/85-maximal-rectangle/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/85-maximal-rectangle/solution.py",
+      "symbols": [
+        {
+          "name": "maximalRectangle",
+          "detail": "maximalRectangle(matrix: list[list[str]]) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 1, "character": 8}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 20
+            }
+          },
+          "children": []
         }
       ]
     },

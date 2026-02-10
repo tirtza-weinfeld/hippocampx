@@ -3,6 +3,10 @@
     77,
     89
   ],
+  "problems/137-single-number-ii/solution.py": [
+    1,
+    5
+  ],
   "problems/105-construct-binary-tree-from-preorder-and-inorder-traversal/solution.py": [
     4,
     5,
@@ -381,6 +385,13 @@
   "problems/127-word-ladder/solution.py": [
     23
   ],
+  "problems/25-reverse-nodes-in-k-group/solution.py": [
+    8,
+    10,
+    12,
+    15,
+    16
+  ],
   "core/Tree/binary_tree_node.py": [
     0,
     2,
@@ -392,16 +403,5 @@
     9,
     10,
     14
-  ],
-  "problems/25-reverse-nodes-in-k-group/solution.py": [
-    8,
-    10,
-    12,
-    15,
-    16
-  ],
-  "problems/137-single-number-ii/solution.py": [
-    1,
-    5
   ]
 }

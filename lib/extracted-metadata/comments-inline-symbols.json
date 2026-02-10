@@ -1,6 +1,8 @@
 {
   "more/tictactoe/tictactoe_no_player_in_state.py:comment-line:77": "1 if X won, -1 if O won, 0 draw",
   "more/tictactoe/tictactoe_no_player_in_state.py:comment-line:89": "O to move → minimize X’s outcome",
+  "problems/137-single-number-ii/solution.py:comment-line:1": "initially: for all i, $c_i = 0$ ⇒ $(x_i, y_i) = (0,0)$",
+  "problems/137-single-number-ii/solution.py:comment-line:5": "bits with $c_i = 1$ form the unique number",
   "problems/105-construct-binary-tree-from-preorder-and-inorder-traversal/solution.py:comment-line:4": "preorder iterator that yields subtree roots in the exact order recursive calls are made",
   "problems/105-construct-binary-tree-from-preorder-and-inorder-traversal/solution.py:comment-line:5": "map each value to its inorder index so we can split subtrees in O(1) time",
   "problems/105-construct-binary-tree-from-preorder-and-inorder-traversal/solution.py:comment-line:8": "when the inorder slice is empty there is no subtree to build",
@@ -265,6 +267,11 @@
   "problems/743-network-delay-time/dijkstra-b.py:comment-line:14": "skip if already finalized",
   "problems/743-network-delay-time/dijkstra-b.py:comment-line:17": "current shortest time to reach this node",
   "problems/127-word-ladder/solution.py:comment-line:23": "Use pre-computed neighbors",
+  "problems/25-reverse-nodes-in-k-group/solution.py:comment-line:8": "will move to the last node of the k-block",
+  "problems/25-reverse-nodes-in-k-group/solution.py:comment-line:10": "advance end forward",
+  "problems/25-reverse-nodes-in-k-group/solution.py:comment-line:12": "fewer than k nodes remain → stop",
+  "problems/25-reverse-nodes-in-k-group/solution.py:comment-line:15": "detach cur from front of block and attach it to front of reversed chain",
+  "problems/25-reverse-nodes-in-k-group/solution.py:comment-line:16": "connect previous part to new block head; move pre to block tail",
   "core/Tree/binary_tree_node.py:comment-line:0": "postpone evaluation of annotations",
   "core/Tree/binary_tree_node.py:comment-line:2": "minimal container for tree nodes",
   "core/Tree/binary_tree_node.py:comment-line:4": "slots reduce memory and speed attribute access",
@@ -272,12 +279,5 @@
   "core/Tree/binary_tree_node.py:comment-line:7": "reference to left subtree",
   "core/bellman-ford/layered_dag.py:comment-line:9": "k = 0…V-1",
   "core/bellman-ford/layered_dag.py:comment-line:10": "snapshot of $\\delta_k$",
-  "core/bellman-ford/layered_dag.py:comment-line:14": "now holds $\\delta_{k+1}$",
-  "problems/25-reverse-nodes-in-k-group/solution.py:comment-line:8": "will move to the last node of the k-block",
-  "problems/25-reverse-nodes-in-k-group/solution.py:comment-line:10": "advance end forward",
-  "problems/25-reverse-nodes-in-k-group/solution.py:comment-line:12": "fewer than k nodes remain → stop",
-  "problems/25-reverse-nodes-in-k-group/solution.py:comment-line:15": "detach cur from front of block and attach it to front of reversed chain",
-  "problems/25-reverse-nodes-in-k-group/solution.py:comment-line:16": "connect previous part to new block head; move pre to block tail",
-  "problems/137-single-number-ii/solution.py:comment-line:1": "initially: for all i, $c_i = 0$ ⇒ $(x_i, y_i) = (0,0)$",
-  "problems/137-single-number-ii/solution.py:comment-line:5": "bits with $c_i = 1$ form the unique number"
+  "core/bellman-ford/layered_dag.py:comment-line:14": "now holds $\\delta_{k+1}$"
 }
