@@ -2573,6 +2573,32 @@
       ]
     },
     {
+      "uri": "problems/137-single-number-ii/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/137-single-number-ii/solution.py",
+      "symbols": [
+        {
+          "name": "singleNumber",
+          "detail": "singleNumber(self, nums: list[int]) -> int",
+          "kind": 12,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 5, "character": 12}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 4
+            },
+            "end": {
+              "line": 0,
+              "character": 16
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
       "uri": "problems/1406-stone-game-iii/__init__.py",
       "symbols": []
     },
@@ -4581,6 +4607,67 @@
             "end": {
               "line": 2,
               "character": 14
+            }
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/25-reverse-nodes-in-k-group/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/25-reverse-nodes-in-k-group/solution.py",
+      "symbols": [
+        {
+          "name": "ListNode",
+          "detail": "class ListNode",
+          "kind": 5,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 3, "character": 24}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 6
+            },
+            "end": {
+              "line": 0,
+              "character": 14
+            }
+          },
+          "children": [
+            {
+              "name": "__init__",
+              "detail": "__init__(val, next)",
+              "kind": 6,
+              "range": {"start": {"line": 1, "character": 4}, "end": {"line": 3, "character": 24}},
+              "nameRange": {
+                "start": {
+                  "line": 1,
+                  "character": 8
+                },
+                "end": {
+                  "line": 1,
+                  "character": 16
+                }
+              },
+              "children": []
+            }
+          ]
+        },
+        {
+          "name": "reverseKGroup",
+          "detail": "reverseKGroup(head: ListNode | None, k: int) -> ListNode | None",
+          "kind": 12,
+          "range": {"start": {"line": 5, "character": 0}, "end": {"line": 16, "character": 37}},
+          "nameRange": {
+            "start": {
+              "line": 5,
+              "character": 4
+            },
+            "end": {
+              "line": 5,
+              "character": 17
             }
           },
           "children": []

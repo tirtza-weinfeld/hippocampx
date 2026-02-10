@@ -1,0 +1,41 @@
+# Reverse Nodes in k-Group
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="hard" />
+
+<PillList pills={["TODO"]} />
+
+[25. Reverse Nodes in k-Group](https://leetcode.com/problems/reverse-nodes-in-k-group/description/)
+
+## [!(ProblemDefinition)] Definition
+
+Reverse the linked list in groups of size 𝑘 .If the remaining nodes are fewer than 𝑘, leave them unchanged. You may only rearrange node pointers — modifying node values is not allowed.
+
+## [!(ProblemIntuition)] Intuition
+
+- Detach-and-Prepend, Reversing a Block by Building a Chain from the Boundary:
+    - Imagine holding a growing reversed chain in your left hand (initially it is just the node after the block),        and with your right hand you repeatedly detach the first node of the block and attach it to the front of        that chain; after `k` attachments, the block is reversed and already connected back to the list.
+
+## [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/25-reverse-nodes-in-k-group/solution.py"
+class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+
+def reverseKGroup(head: ListNode | None, k: int) -> ListNode | None:
+    pre = dummy = ListNode(0, head)
+    while True:
+        end = pre
+        for _ in range(k):
+            end = end.next
+            if not end:
+                return dummy.next
+        rev, cur = end.next, pre.next
+        for _ in range(k):
+            cur.next, rev, cur = rev, cur, cur.next
+        pre.next, pre = rev, pre.next
+```
+

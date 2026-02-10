@@ -1520,11 +1520,11 @@
     "4-median-of-two-sorted-arrays": {
       "time_stamps": {
         "created_at": "2026-02-07T20:29:44.968849",
-        "updated_at": "2026-02-08T19:35:01.029878"
+        "updated_at": "2026-02-10T11:01:44.334380"
       },
       "solutions": {
         "solution.py": {
-          "intuition": "Binary search for a partition in the smaller array such that the combined\n    left half's elements are all less than or equal to the combined right half's elements.\n    The median is then derived from the boundary values of this partition.",
+          "intuition": "Binary-search how many elements to take from the smaller array:\n    so that, together with the forced number from the other array,            they form a globally ordered left half whose boundary determines the median.\n\n    We split each array at index `i` (for `a`) and `j` (for `b`):\n    ```\n    a:  a[:i] | a[i:]\n    b:  b[:j] | b[j:]\n    ```\n    Now we only need the **largest value on the left** and the **smallest value on the right**:\n        `al = a[i-1]` → last element of `a`’s left side\n            If `i == 0`, left side is empty → use `-∞`\n        `ar = a[i]` → first element of `a`’s right side\n            If `i == m`, right side is empty → use `+∞`\n        Same logic for `b`:\n            `bl = b[j-1]` → max of `b`’s left\n            `br = b[j]` → min of `b`’s right\n        The infinities make comparisons like `al <= br and bl <= ar`  work even when one side is empty.\n\n\n    Valid partition condition:\n        boundaries are ordered -- `all left <= all right`\n        `al <= br`  and  `bl <= ar`\n\n    Once valid:\n        If total is odd: `median = max(al, bl)`   (the last element of the left side)\n        If total is even: `median = (max(al, bl) + min(ar, br)) / 2`",
           "time_complexity": "$O(log(min(m, n)))$\n    Binary search is performed on the shorter array.",
           "code": "class Solution:\n    def findMedianSortedArrays(self, a: list[int], b: list[int]) -> float:\n        if len(a) > len(b): a, b = b, a\n        m, n, low, high = len(a), len(b), 0, len(a)\n\n        while low <= high:\n            i = (low + high) // 2\n            j = (m + n + 1) // 2 - i\n\n            al = a[i-1] if i > 0 else float('-inf')\n            ar = a[i] if i < m else float('inf')\n            bl = b[j-1] if j > 0 else float('-inf')\n            br = b[j] if j < n else float('inf')\n\n            if al <= br and bl <= ar:\n                if (m + n) % 2: return float(max(al, bl))\n                return (max(al, bl) + min(ar, br)) / 2.0\n\n            if al > br: high = i - 1\n            else: low = i + 1"
         }
@@ -2911,6 +2911,57 @@
       "leetcode": "https://leetcode.com/problems/car-pooling",
       "difficulty": "medium",
       "topics": ["interval"]
+    },
+    "25-reverse-nodes-in-k-group": {
+      "time_stamps": {
+        "created_at": "2026-02-09T12:31:14.495999",
+        "updated_at": "2026-02-10T11:13:28.756721"
+      },
+      "solutions": {
+        "solution.py": {
+          "intuition": "Detach-and-Prepend, Reversing a Block by Building a Chain from the Boundary:\n    Imagine holding a growing reversed chain in your left hand (initially it is just the node after the block),        and with your right hand you repeatedly detach the first node of the block and attach it to the front of        that chain; after `k` attachments, the block is reversed and already connected back to the list.",
+          "variables": {
+            "pre": "node immediately before the current k-block",
+            "rev": "head of the growing reversed chain (starts after block)",
+            "cur": "first node in the current block"
+          },
+          "code": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\ndef reverseKGroup(head: ListNode | None, k: int) -> ListNode | None:\n    pre = dummy = ListNode(0, head)\n    while True:\n        end = pre\n        for _ in range(k):\n            end = end.next\n            if not end:\n                return dummy.next\n        rev, cur = end.next, pre.next\n        for _ in range(k):\n            cur.next, rev, cur = rev, cur, cur.next\n        pre.next, pre = rev, pre.next"
+        }
+      },
+      "title": "Reverse Nodes in k-Group",
+      "definition": "Reverse the linked list in groups of size 𝑘 .If the remaining nodes are fewer than 𝑘, leave them unchanged. You may only rearrange node pointers — modifying node values is not allowed.",
+      "leetcode": "https://leetcode.com/problems/reverse-nodes-in-k-group/description/",
+      "difficulty": "hard",
+      "topics": ["TODO"]
+    },
+    "137-single-number-ii": {
+      "time_stamps": {
+        "created_at": "2026-02-10T11:15:56.365989",
+        "updated_at": "2026-02-10T12:08:23.222919"
+      },
+      "solutions": {
+        "solution.py": {
+          "intuition": "Finite-state machine:\n    Treat each bit position i as an independent finite-state machine that counts how many times that bit has appeared, modulo 3.\n    We do NOT store the full count. We only store the remainder\n        $c_i \\in \\{0,1,2\\}$ where\n        $c_i \\equiv \\text{(number of times bit i appeared)} \\pmod{3}$.\n    State encoding (per bit `i`):\n        $c_i = 0$\n            (bit seen a multiple of 3 times)\n            $(x_i, y_i) = (0,0)$\n        $c_i = 1$\n            (bit seen once modulo 3)\n            $(x_i, y_i) = (1,0)$\n        $c_i = 2$\n            (bit seen twice modulo 3)\n            $(x_i, y_i) = (0,1)$\n    The combination $(x_i, y_i) = (1,1)$ is illegal and must never occur,\n        because $x_i = 1$ encodes $c_i = 1$ and $y_i = 1$ encodes $c_i = 2$.\n        These two statements cannot both be true for the same bit.\n    Transition rule (per bit `i`) when reading one number num:\n        If $num_i = 0$:\n            the bit did not appear → $c_i$ stays unchanged.\n        If $num_i = 1$:\n            advance the counter:\n            $c_i \\leftarrow (c_i + 1) \\bmod 3$.\n        In terms of state pairs:\n            $(0,0) \\rightarrow (1,0) \\rightarrow (0,1) \\rightarrow (0,0)$.\n\n    Key mental model:\n        x stores all bits whose remainder is 1.\n        y stores all bits whose remainder is 2.\n        Bitwise operations update all bit positions simultaneously, implementing the modulo-3 state transitions in parallel.",
+          "variables": {
+            "x": "integer whose i-th bit $x_i = 1$ iff $c_i = 1$",
+            "y": "integer whose i-th bit $y_i = 1$ iff $c_i = 2$"
+          },
+          "expressions": {
+            "^": "xor → toggles a bit where $num_i = 1$",
+            "~": "bitwise not → clears forbidden overlaps",
+            "x = (x ^ num) & ~y": "",
+            "Step A": "",
+            "Step B": "",
+            "y = (y ^ num) & ~x": ""
+          },
+          "code": "def singleNumber(self, nums: list[int]) -> int:\n    x = y = 0\n    for num in nums:\n        x = (x ^ num) & ~y\n        y = (y ^ num) & ~x\n    return x"
+        }
+      },
+      "title": "Single Number II",
+      "definition": "Given an integer array nums where every element appears three times except for one, which appears exactly once. Find the single element and return it.You must implement a solution with a linear runtime complexity and use only constant extra space.",
+      "leetcode": "https://leetcode.com/problems/single-number-ii/description/",
+      "difficulty": "medium",
+      "topics": ["TODO"]
     }
   },
   "core": {

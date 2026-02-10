@@ -115,6 +115,7 @@ export const PROBLEMS_ROUTES: NavigationItem[] = [
             { title: 'Redundant Connection', href: '/problems/684-redundant-connection', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
             { title: 'Remove Invalid Parentheses', href: '/problems/301-remove-invalid-parentheses', icon: Code, color: "text-red-500", bgColor: "bg-red-500/10" },
             { title: 'Replace Words', href: '/problems/648-replace-words', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
+            { title: 'Reverse Nodes in k-Group', href: '/problems/25-reverse-nodes-in-k-group', icon: Code, color: "text-red-500", bgColor: "bg-red-500/10" },
             { title: 'Rotting Oranges', href: '/problems/994-rotting-oranges', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
             { title: 'Search In Rotated Sorted Array', href: '/problems/33-search-in-rotated-sorted-array', icon: Code, color: "text-orange-500", bgColor: "bg-orange-500/10" },
             { title: 'Search Insert Position', href: '/problems/35-search-insert-position', icon: Code, color: "text-green-500", bgColor: "bg-green-500/10" },
