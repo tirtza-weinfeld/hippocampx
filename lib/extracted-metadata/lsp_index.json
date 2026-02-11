@@ -8537,7 +8537,7 @@
           "name": "largestRectangleArea",
           "detail": "largestRectangleArea(heights: list[int]) -> int",
           "kind": 12,
-          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 9, "character": 15}},
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 8, "character": 15}},
           "nameRange": {
             "start": {
               "line": 0,
@@ -8604,21 +8604,39 @@
       "uri": "problems/85-maximal-rectangle/solution.py",
       "symbols": [
         {
-          "name": "maximalRectangle",
-          "detail": "maximalRectangle(matrix: list[list[str]]) -> int",
-          "kind": 12,
-          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 1, "character": 8}},
+          "name": "Solution",
+          "detail": "class Solution",
+          "kind": 5,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 21, "character": 19}},
           "nameRange": {
             "start": {
               "line": 0,
-              "character": 4
+              "character": 6
             },
             "end": {
               "line": 0,
-              "character": 20
+              "character": 14
             }
           },
-          "children": []
+          "children": [
+            {
+              "name": "maximalRectangle",
+              "detail": "maximalRectangle(matrix: list[list[str]]) -> int",
+              "kind": 6,
+              "range": {"start": {"line": 1, "character": 4}, "end": {"line": 21, "character": 19}},
+              "nameRange": {
+                "start": {
+                  "line": 1,
+                  "character": 8
+                },
+                "end": {
+                  "line": 1,
+                  "character": 24
+                }
+              },
+              "children": []
+            }
+          ]
         }
       ]
     },

@@ -1067,11 +1067,18 @@
     "85-maximal-rectangle": {
       "time_stamps": {
         "created_at": "2026-02-10T19:36:30.906375",
-        "updated_at": "2026-02-10T19:37:24.961139"
+        "updated_at": "2026-02-11T15:58:15.059393"
       },
       "solutions": {
         "solution.py": {
-          "code": "def maximalRectangle(matrix: list[list[str]]) -> int:\n    pass"
+          "intuition": "We process the matrix row by row:\n    At each row `r`, we pretend that row `r` is the bottom of a rectangle.\n    We build a histogram:\n       `heights[c]` = how many consecutive '1's are directly above (and including) cell (r, c).\n    In other words: Starting at `(r, c)`, move upward. Count how many 1's you see before hitting a `0`.\n    This tells us how tall a rectangle can be if its bottom edge is row `r`.\n\n    Example:\n        ```markdown\n            Matrix:\n                1 0 1 1\n                1 1 1 1\n                0 1 1 0\n            Row 0 → heights = [1, 0, 1, 1]\n            Row 1 → heights = [2, 1, 2, 2]\n            Row 2 → heights = [0, 2, 3, 0]\n        ```\n\n    Each row forms a histogram.\n        We compute the largest rectangle in that histogram\n        and take the maximum over all rows.",
+          "variables": {
+            "stack": "stores column indices with strictly increasing heights. Invariant: `heights[stack[0]] < heights[stack[1]] < ... < heights[stack[-1]]`"
+          },
+          "expressions": {
+            "(n + 1)": "We iterate one extra step (n + 1), The extra step uses `height = 0`(sentinel) to flush the stack."
+          },
+          "code": "class Solution:\n    def maximalRectangle(self, matrix: list[list[str]]) -> int:\n\n        heights = [0] * (n := len(matrix[0]))\n        best = 0\n\n        for row in matrix:\n\n            for c, v in enumerate(row):\n                heights[c] = heights[c] + 1 if v == \"1\" else 0\n\n            stack: list[int] = []\n            for i in range(n + 1):\n                cur = heights[i] if i < n else 0\n                while stack and heights[stack[-1]] > cur:\n                    h = heights[stack.pop()]\n                    left = stack[-1] if stack else -1\n                    width = i - left - 1\n                    best = max(best, h * width)\n                stack.append(i)\n\n        return best"
         }
       },
       "title": "Maximal Rectangle",
@@ -1876,23 +1883,27 @@
     "84-largest-rectangle-in-histogram": {
       "time_stamps": {
         "created_at": "2025-09-29T10:05:50.776011",
-        "updated_at": "2025-10-04T11:59:05.354285"
+        "updated_at": "2026-02-11T16:01:26.063655"
       },
       "solutions": {
         "solution.py": {
-          "intuition": "Each bar can form a rectangle where its height is the limiting factor:\n    That rectangle extends until a strictly shorter bar appears on either side.\n    Instead of searching both directions explicitly, we discover these bounds on the fly:\n        when a shorter bar appears at `r`, every taller bar popped from the stack\n        now knows its right boundary (`r`) and its left boundary (`l = stack.pop()`).\n\n    Deep Dive: Walkthrough:\n    Append `0` so every bar eventually meets a shorter right neighbor\n    Keep *[3!]indices* in strictly increasing heights (stack starts *[3!][-1]*)\n    For each `r, h`: while top is taller, pop `l` and compute area = `heights[l] * (r - stack[-1] - 1)`\n    Push `r`; remove the sentinel; return best",
-          "time_complexity": "O(n):\n    Each index is pushed once and popped once, so the total operations across the loop are linear\n    *[19!]It remains linear despite the inner while, because every pop is matched to one push*",
+          "intuition": "Think of the stack as a “to-be-extended skyline”:\n        Each index on the stack is a bar that is still waiting to learn where it must stop.            As we sweep with pointer `r`:\n            If the new bar `h` is taller/equal, it can keep extending the skyline → push `r`.\n            If the new bar `h` is shorter, it acts like a wall at position `r`:\n                every bar taller than `h` must stop just before this wall (at `r - 1`),                    so we pop those bars and finalize their best rectangles.\n        The key picture:\n            ```markdown\n                stack[-1]   ...   l   ...   r\n               (shorter)        (height)   (shorter)\n                ^ left wall                ^ right wall\n                Rectangle of height heights[l] spans between the walls, excluding them.\n            ```",
+          "time_complexity": "$O(n)$:\n    Each index is pushed once and popped once, so total work is linear.",
           "expressions": {
-            "heights.append(0)": "adds a **right sentinel** bar smaller than all others, forcing the stack to empty and compute all remaining areas at the end (no leftover bars).",
-            "stack = [-1]": "adds a **left sentinel** index before the array start, so width computation `r - stack[-1] - 1` always works (never empty stack).",
-            "heights[stack[-1]] > h": "pop while current bar is lower than stack's top",
-            "width = r - stack[-1] - 1": "We subtract 1 because the bar at stack[-1] is strictly smaller and marks the left boundary, which is excluded from the rectangle",
-            "heights.pop()": "restore original list"
+            "heights.append(0)": "adds a right sentinel bar smaller than all others, forcing a final flush.",
+            "stack = [-1]": "left sentinel so width computation `r - stack[-1] - 1` always works.",
+            "heights[stack[-1]] > h": "current bar `h` is the wall that stops taller bars.",
+            "r - stack[-1] - 1": "number of consecutive bars that are at least `heights[l]` tall.",
+            "heights.pop()": "restore original list.",
+            "stack[-1]": "index of the nearest strictly shorter bar to the left of `l` (the left wall)"
           },
           "variables": {
-            "stack": "indices with strictly increasing heights"
+            "r": "current index (the “wall” position when it is shorter)",
+            "h": "heights[r]",
+            "l": "popped index whose maximal rectangle is finalized now",
+            "best": "maximum rectangle area found"
           },
-          "code": "def largestRectangleArea(heights: list[int]) -> int:\n    heights.append(0)\n    stack = [-1]; best = 0\n    for r, h in enumerate(heights):\n        while stack[-1] != -1 and heights[stack[-1]] > h:\n            l = stack.pop()\n            best = max(best, heights[l] * (r - stack[-1] - 1))\n        stack.append(r)\n    heights.pop()\n    return best"
+          "code": "def largestRectangleArea(heights: list[int]) -> int:\n    heights.append(0)\n    stack = [-1]; best = 0\n    for r, h in enumerate(heights):\n        while stack[-1] != -1 and heights[stack[-1]] > h:\n            best = max(best, heights[stack.pop()] * (r - stack[-1] - 1))\n        stack.append(r)\n    heights.pop()\n    return best"
         }
       },
       "title": "Largest Rectangle in Histogram",

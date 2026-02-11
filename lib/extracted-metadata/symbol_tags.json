@@ -31,8 +31,8 @@
   },
   "core.bellman-ford.layered_dag:bellman_ford_layered_dag": {
     "args": [
-      "source",
       "edges",
+      "source",
       "vertices"
     ],
     "code": "def bellman_ford_layered_dag(\n    vertices: list[str], edges: list[tuple[str, str, float]], source: str\n) -> dict[str, float]:\n\n    d = {v: float(\"inf\") for v in vertices}\n    d[source], V = 0, len(vertices)\n\n    for k in range(V):\n        d_k = {**d}\n        for u, v, w in edges:\n            if d[u] + w < d_k[v]:\n                d_k[v] = d[u] + w\n        d = d_k\n\n    witnesses = {v for u, v, w in edges if d[u] + w < d[v]}\n\n    if not witnesses:\n        return d\n\n    adj = defaultdict(list)\n    for u, v, _ in edges:\n        adj[u].append(v)\n\n    stack = list(witnesses)\n    reachable = set(witnesses)\n\n    while stack:\n        u = stack.pop()\n        d[u] = float(\"-inf\")\n        for v in adj[u]:\n            if v not in reachable:\n                reachable.add(v)\n                stack.append(v)\n\n    return d",
@@ -144,9 +144,9 @@
   },
   "core.modular-arithmetic.congruent1:congruent1": {
     "args": [
-      "n",
+      "a",
       "b",
-      "a"
+      "n"
     ],
     "code": "def congruent1(a: int, b: int, n: int) -> bool:\n    return (a - b) % n == 0",
     "file_path": "backend/algorithms/core/modular-arithmetic/congruent1.py",
@@ -179,9 +179,9 @@
   },
   "core.modular-arithmetic.congruent2:congruent2": {
     "args": [
-      "n",
+      "a",
       "b",
-      "a"
+      "n"
     ],
     "code": "def congruent2(a: int, b: int, n: int) -> bool:\n    return a % n == b % n",
     "file_path": "backend/algorithms/core/modular-arithmetic/congruent2.py",
@@ -214,8 +214,8 @@
   },
   "core.modular-arithmetic.mod:mod": {
     "args": [
-      "b",
-      "a"
+      "a",
+      "b"
     ],
     "code": "def mod(a: int, b: int) -> int:\n    return a % b",
     "file_path": "backend/algorithms/core/modular-arithmetic/mod.py",
@@ -411,10 +411,10 @@
   },
   "more.tictactoe.tictactoe copy 2:TicTacToe.minimax.dp": {
     "args": [
-      "beta",
+      "alpha",
       "curr_player",
       "state",
-      "alpha"
+      "beta"
     ],
     "code": "        def dp(state: Board, curr_player: Player, alpha: float, beta: float) -> int:\n            state_key = (str(state), curr_player)\n            if state_key in self._memo:\n                return self._memo[state_key]\n\n            if self.terminal(state):\n                w = self.winner(state)\n                self._memo[state_key] = 1 if w == curr_player else (0 if w is None else -1)\n                return self._memo[state_key]\n\n            opponent = O if curr_player == X else X\n            value = float('-inf')\n            for action in self.actions(state):\n                value = max(value, -dp(self.result(state, action), opponent, -beta, -alpha))\n                alpha = max(alpha, value)\n                if alpha >= beta:\n                    break\n\n            self._memo[state_key] = int(value)\n            return int(value)",
     "file_path": "backend/algorithms/more/tictactoe/tictactoe copy 2.py",
@@ -829,10 +829,10 @@
   },
   "more.tictactoe.tictactoe:TicTacToe.minimax.dp": {
     "args": [
-      "beta",
+      "alpha",
       "curr_player",
       "state",
-      "alpha"
+      "beta"
     ],
     "code": "        def dp(state: Board, curr_player: Player, alpha: float, beta: float) -> int:\n            state_key = (str(state), curr_player)\n            if state_key not in self._memo:\n\n                if self.terminal(state):\n                    w = self.winner(state)\n                    self._memo[state_key] = 1 if w == curr_player else (0 if w is None else -1)\n                    return self._memo[state_key]\n\n                opponent = O if curr_player == X else X\n                value = float('-inf')\n                for action in self.actions(state):\n                    value = max(value, -dp(self.result(state, action), opponent, -beta, -alpha))\n                    alpha = max(alpha, value)\n                    if alpha >= beta:\n                        break\n\n                self._memo[state_key] = int(value)\n            return  self._memo[state_key] ",
     "file_path": "backend/algorithms/more/tictactoe/tictactoe.py",
@@ -1404,9 +1404,9 @@
   },
   "problems.1235-maximum-profit-in-job-scheduling.top_down:maximum_profit_in_job_scheduling": {
     "args": [
-      "endTime",
       "profit",
-      "startTime"
+      "startTime",
+      "endTime"
     ],
     "code": "def maximum_profit_in_job_scheduling(\n    startTime: list[int], endTime: list[int], profit: list[int]\n) -> int:\n\n    jobs = sorted(zip(startTime, endTime, profit))\n    memo = {}\n\n    def dp(i: int) -> int:\n        if i == len(jobs):\n            return 0\n        if i not in memo:\n            _, e, p = jobs[i]\n            memo[i] = max(dp(i + 1), p + dp(bisect_left(jobs, e, key=lambda x: x[0])))\n        return memo[i]\n\n    return dp(0)",
     "expressions": {
@@ -1503,9 +1503,9 @@
   },
   "problems.127-word-ladder.solution:word_ladder": {
     "args": [
+      "endWord",
       "beginWord",
-      "wordList",
-      "endWord"
+      "wordList"
     ],
     "code": "def word_ladder(beginWord: str, endWord: str, wordList: list[str]) -> int:\n    if endWord not in wordList:\n        return 0\n\n    L = len(beginWord)\n    combos: dict[str, list[str]] = defaultdict(list)\n    for w in wordList:\n        for i in range(L):\n            combos[w[:i] + \"*\" + w[i+1:]].append(w)\n\n    front, back = {beginWord}, {endWord}\n    dist_front, dist_back = {beginWord: 1}, {endWord: 1}\n\n    while front and back:\n        if len(front) > len(back):\n            front, back = back, front\n            dist_front, dist_back = dist_back, dist_front\n\n        next_front = set()\n        for word in front:\n            for i in range(L):\n                for n in combos[word[:i] + \"*\" + word[i+1:]]:\n                    if n in dist_back:\n                        return dist_front[word] + dist_back[n]\n                    if n not in dist_front:\n                        dist_front[n] = dist_front[word] + 1\n                        next_front.add(n)\n        front = next_front\n\n    return 0",
     "file_path": "backend/algorithms/problems/127-word-ladder/solution.py",
@@ -1520,8 +1520,8 @@
   },
   "problems.1293-shortest-path-in-a-grid-with-obstacles-elimination.a_star:manhattan_distance": {
     "args": [
-      "b",
-      "a"
+      "a",
+      "b"
     ],
     "code": "def manhattan_distance(a: tuple[int, int], b: tuple[int, int]) -> int:\n    return abs(a[0] - b[0]) + abs(a[1] - b[1])",
     "file_path": "backend/algorithms/problems/1293-shortest-path-in-a-grid-with-obstacles-elimination/a_star.py",
@@ -1848,8 +1848,8 @@
   },
   "problems.146-lru-cache.solution:LRUCache.put": {
     "args": [
-      "key",
-      "value"
+      "value",
+      "key"
     ],
     "code": "    def put(self, key: int, value: int) -> None:\n        if key in self.cache:\n            self.cache.move_to_end(key)\n        self.cache[key] = value\n        if len(self.cache) > self.capacity:\n            self.cache.popitem(last=False)",
     "file_path": "backend/algorithms/problems/146-lru-cache/solution.py",
@@ -1932,9 +1932,9 @@
     "args": [
       "succProb",
       "edges",
+      "end",
       "n",
-      "start",
-      "end"
+      "start"
     ],
     "code": "    def maxProbability(self, n: int, edges: list[list[int]], succProb: list[float], start: int, end: int) -> float:\n\n        adj = defaultdict(list)\n        for (u, v), p in zip(edges, succProb):\n            adj[u].append((v, p))\n            adj[v].append((u, p))\n\n        pq, best = [(-1.0, start)], [0.0] * n\n        best[start] = 1.0\n\n        while pq:\n            p, u = heappop(pq)\n            p = -p\n            if u == end:\n                return p\n            if p < best[u]:\n                continue\n            for v, w in adj[u]:\n                new_p = p * w\n                if new_p > best[v]:\n                    best[v] = new_p\n                    heappush(pq, (-new_p, v))\n        return 0.0",
     "file_path": "backend/algorithms/problems/1514-path-with-maximum-probability/dijkstra.py",
@@ -2474,8 +2474,8 @@
   },
   "problems.211-design-add-and-search-words-data-structure.solution:WordDictionary.search.dfs": {
     "args": [
-      "i",
-      "node"
+      "node",
+      "i"
     ],
     "code": "        def dfs(node: dict, i: int) -> bool:\n\n            if i == len(word):\n                return self.END_MARKER in node\n\n            if (c := word[i]) == \".\":\n\n                return any(\n                    dfs(child, i + 1)\n                    for k, child in node.items()\n                    if k != self.END_MARKER\n                )\n            child = node.get(c)\n            return bool(child) and dfs(child, i + 1)",
     "expressions": {
@@ -2661,8 +2661,8 @@
   },
   "problems.215-kth-largest-element-in-an-array.solution:findKthLargest": {
     "args": [
-      "k",
-      "nums"
+      "nums",
+      "k"
     ],
     "code": "def findKthLargest(nums: list[int], k: int) -> int:\n    h = nums[:k]; heapq.heapify(h)\n    for x in nums[k:]:\n        if x > h[0]:\n            heapq.heapreplace(h, x) \n    return h[0]",
     "expressions": {
@@ -2817,8 +2817,8 @@
   },
   "problems.256-paint-house.scalar:Solution.minCost.dp": {
     "args": [
-      "i",
-      "c"
+      "c",
+      "i"
     ],
     "code": "        def dp(i: int, c: int) -> int:\n            if i == n:\n                return \n            if (i, c) not in memo:\n\n                memo[i, c] = costs[i][c] + min(\n                    dp(i + 1, (c + 1) % 3), dp(i + 1, (c + 2) % 3)\n                )\n            return memo[i, c]",
     "expressions": {
@@ -3088,11 +3088,11 @@
   },
   "problems.301-remove-invalid-parentheses.solution:Solution.removeInvalidParentheses.go": {
     "args": [
-      "j0",
-      "op",
-      "cp",
       "i0",
-      "t"
+      "cp",
+      "j0",
+      "t",
+      "op"
     ],
     "code": "        def go(t, i0, j0, op, cp):\n            bal = 0\n            for i in range(i0, len(t)):\n                bal += (t[i] == op) - (t[i] == cp)\n                if bal >= 0:\n                    continue\n\n\n                for j in range(j0, i + 1):\n                    if t[j] == cp and (j == j0 or t[j - 1] != cp):\n                        go(\n                            t[:j] + t[j + 1:],\n                            i,\n                            j,\n                            op, cp\n                        )\n                return\n\n            rt = t[::-1]\n            if op == \"(\": go(rt, 0, 0, \")\", \"(\")\n            else: out.append(rt)",
     "file_path": "backend/algorithms/problems/301-remove-invalid-parentheses/solution.py",
@@ -3249,8 +3249,8 @@
   },
   "problems.347-top-k-frequent-elements.heap-nlargets:topKFrequent": {
     "args": [
-      "k",
-      "nums"
+      "nums",
+      "k"
     ],
     "code": "def topKFrequent(nums: list[int], k: int) -> list[int]:\n    freq = Counter(nums)\n    return heapq.nlargest(k, freq.keys(), key=freq.get)",
     "expressions": {
@@ -3279,8 +3279,8 @@
   },
   "problems.347-top-k-frequent-elements.heap:topKFrequent": {
     "args": [
-      "k",
-      "nums"
+      "nums",
+      "k"
     ],
     "code": "def topKFrequent(nums: list[int], k: int) -> list[int]:\n    freq ,h= Counter(nums), []\n    for num, f in freq.items():\n        heapq.heappush(h, (f, num))\n        if len(h) > k:\n            heapq.heappop(h)\n\n    return [num for _, num in h]",
     "file_path": "backend/algorithms/problems/347-top-k-frequent-elements/heap.py",
@@ -3294,8 +3294,8 @@
   },
   "problems.347-top-k-frequent-elements.sort-frequency-bucketing:topKFrequent": {
     "args": [
-      "k",
-      "nums"
+      "nums",
+      "k"
     ],
     "code": "def topKFrequent(nums: list[int], k: int) -> list[int]:\n\n    bucket=[[] for _ in range(len(nums)+1)]\n    for n,f in Counter(nums).items():\n        bucket[f].append(n)\n\n    return [num for f_bucket in reversed(bucket) for num in f_bucket][:k]",
     "file_path": "backend/algorithms/problems/347-top-k-frequent-elements/sort-frequency-bucketing.py",
@@ -3475,8 +3475,8 @@
   },
   "problems.4-median-of-two-sorted-arrays.solution:Solution.findMedianSortedArrays": {
     "args": [
-      "b",
-      "a"
+      "a",
+      "b"
     ],
     "code": "    def findMedianSortedArrays(self, a: list[int], b: list[int]) -> float:\n        if len(a) > len(b): a, b = b, a\n        m, n, low, high = len(a), len(b), 0, len(a)\n\n        while low <= high:\n            i = (low + high) // 2\n            j = (m + n + 1) // 2 - i\n\n            al = a[i-1] if i > 0 else float('-inf')\n            ar = a[i] if i < m else float('inf')\n            bl = b[j-1] if j > 0 else float('-inf')\n            br = b[j] if j < n else float('inf')\n\n            if al <= br and bl <= ar:\n                if (m + n) % 2: return float(max(al, bl))\n                return (max(al, bl) + min(ar, br)) / 2.0\n\n            if al > br: high = i - 1\n            else: low = i + 1",
     "file_path": "backend/algorithms/problems/4-median-of-two-sorted-arrays/solution.py",
@@ -3506,8 +3506,8 @@
   },
   "problems.410-split-array-largest-sum.binary_search_on_answer_space:splitArray": {
     "args": [
-      "k",
-      "nums"
+      "nums",
+      "k"
     ],
     "code": "def splitArray(nums: list[int], k: int) -> int:\n\n    def can(max_sum: int) -> bool:\n        parts = curr = 0\n        for x in nums:\n            if curr + x > max_sum:\n                parts += 1\n                curr = 0\n            curr += x\n        return parts + 1 <= k\n\n    lo, hi = max(nums), sum(nums)\n    while lo < hi:\n        mid = (lo + hi) // 2\n        if can(mid):\n            hi = mid\n        else:\n            lo = mid + 1\n    return lo",
     "file_path": "backend/algorithms/problems/410-split-array-largest-sum/binary_search_on_answer_space.py",
@@ -3536,8 +3536,8 @@
   },
   "problems.410-split-array-largest-sum.topdown-dp:splitArray": {
     "args": [
-      "k",
-      "nums"
+      "nums",
+      "k"
     ],
     "code": "def splitArray(nums: list[int], k: int) -> int:\n    prefix = [0]\n    for x in nums:\n        prefix.append(prefix[-1] + x)\n\n    memo, n = {}, len(nums)\n\n    def dp(i: int, cuts: int) -> int:\n        if cuts == 0:\n            return prefix[n] - prefix[i]\n\n        if (i, cuts) not in memo:\n            memo[i, cuts] = min(\n                (\n                    max(prefix[j] - prefix[i], dp(j, cuts - 1))\n                    for j in range(i + 1, n - cuts + 1)\n                ),\n                default=float(\"inf\"),\n            )\n        return memo[i, cuts]\n\n    return dp(0, k - 1)",
     "file_path": "backend/algorithms/problems/410-split-array-largest-sum/topdown-dp.py",
@@ -3603,8 +3603,8 @@
   },
   "problems.424-longest-repeating-character-replacement.solution:characterReplacement": {
     "args": [
-      "k",
-      "s"
+      "s",
+      "k"
     ],
     "code": "def characterReplacement(s: str, k: int) -> int:\n    counts = defaultdict(int)\n    max_freq = l = 0\n    for r, c in enumerate(s):\n        counts[c] += 1\n        max_freq = max(max_freq, counts[c])\n        if (r - l + 1) - max_freq > k:\n            counts[s[l]] -= 1\n            l += 1\n    return len(s) - l",
     "file_path": "backend/algorithms/problems/424-longest-repeating-character-replacement/solution.py",
@@ -3688,8 +3688,8 @@
   },
   "problems.460-lfu-cache.solution:LFUCache.put": {
     "args": [
-      "key",
-      "value"
+      "value",
+      "key"
     ],
     "code": "    def put(self, key: int, value: int) -> None:\n        if self.capacity <= 0:\n            return\n\n        if key in self.cache:\n            self.cache[key] = value\n            self._bump(key)\n            return\n\n        if len(self.cache) >= self.capacity:\n            old_key, _ = self.buckets[self.minfreq].popitem(last=False)\n            del self.cache[old_key]\n            del self.freq[old_key]\n\n        self.cache[key] = value\n        self.freq[key] = 1\n        self.buckets[1][key] = None\n        self.minfreq = 1",
     "file_path": "backend/algorithms/problems/460-lfu-cache/solution.py",
@@ -3760,8 +3760,8 @@
   },
   "problems.50-pow.solution:myPow": {
     "args": [
-      "n",
-      "x"
+      "x",
+      "n"
     ],
     "code": "def myPow(x: float, n: int) -> float:\n    if n == 0: return 1.0\n    if n < 0: return 1.0 / myPow(x, -n)\n\n    result, base = 1.0, x\n    while n:\n        if n & 1:\n            result *= base\n        base *= base\n        n >>= 1     \n    return result",
     "expressions": {
@@ -4228,8 +4228,8 @@
   },
   "problems.642-design-search-autocomplete-system.solution:AutocompleteSystem.__init__": {
     "args": [
-      "times",
-      "sentences"
+      "sentences",
+      "times"
     ],
     "code": "    def __init__(self, sentences: list[str], times: list[int]):\n        self.root = TrieNode()                 \n        self.freq = defaultdict(int)          \n        self.cur: TrieNode | None = self.root  \n        self.buf = \"\"                          \n        for s, t in zip(sentences, times):\n            self._add(s, t)",
     "file_path": "backend/algorithms/problems/642-design-search-autocomplete-system/solution.py",
@@ -4245,8 +4245,8 @@
   },
   "problems.642-design-search-autocomplete-system.solution:AutocompleteSystem._update_hot": {
     "args": [
-      "node",
-      "s"
+      "s",
+      "node"
     ],
     "code": "    def _update_hot(self, node: TrieNode, s: str) -> None:\n        if s not in node.hot:\n            node.hot.append(s)\n        node.hot.sort(key=lambda x: (-self.freq[x], x))\n        if len(node.hot) > 3:\n            node.hot.pop()",
     "expressions": {
@@ -4338,8 +4338,8 @@
   },
   "problems.713-subarray-product-less-than-k.solution:num_subarray_product_less_than_k": {
     "args": [
-      "k",
-      "nums"
+      "nums",
+      "k"
     ],
     "code": "def num_subarray_product_less_than_k(nums: list[int], k: int) -> int:\n    if k <= 1:\n        return 0\n    product, left, count = 1, 0, 0\n    for right, num in enumerate(nums):\n        product *= num\n        while product >= k:\n            product //= nums[left]\n            left += 1\n        count += right - left + 1\n    return count",
     "file_path": "backend/algorithms/problems/713-subarray-product-less-than-k/solution.py",
@@ -4383,9 +4383,9 @@
   },
   "problems.743-network-delay-time.dijkstra:Solution.networkDelayTime": {
     "args": [
-      "k",
+      "n",
       "times",
-      "n"
+      "k"
     ],
     "code": "    def networkDelayTime(self, times: list[list[int]], n: int, k: int) -> int:\n\n        g = {i: [] for i in range(1, n + 1)}\n        for u, v, w in times:\n            g[u].append((w, v))\n\n        dist = {i: float(\"inf\") for i in g}\n        dist[k] = 0\n\n        pq = [(0, k)]\n\n        while pq:\n            d, u = heappop(pq)\n            if d > dist[u]: continue\n\n\n            for w, v in g[u]:\n                if (nd := d + w) < dist[v]:\n                    dist[v] = nd\n                    heappush(pq, (nd, v))\n\n        return ans if (ans := max(dist.values())) < float(\"inf\") else -1",
     "file_path": "backend/algorithms/problems/743-network-delay-time/dijkstra.py",
@@ -4434,8 +4434,8 @@
   },
   "problems.76-minimum-window-substring.solution:minWindow": {
     "args": [
-      "t",
-      "s"
+      "s",
+      "t"
     ],
     "code": "def minWindow(s: str, t: str) -> str:\n    t_count, have = Counter(t), defaultdict(int)\n    letters_needed, min_idx, l = len(t_count), None, 0\n    for r, c in enumerate(s):\n        have[c] += 1\n        if have[c] == t_count[c]:\n            letters_needed -= 1\n            while letters_needed == 0:\n                if not min_idx or r - l + 1 < min_idx[1] - min_idx[0]:\n                    min_idx = l, r + 1\n                have[s[l]] -= 1\n                if have[s[l]] < t_count[s[l]]:\n                    letters_needed += 1\n                l += 1\n    return \"\" if min_idx == None else s[min_idx[0] : min_idx[1]]",
     "file_path": "backend/algorithms/problems/76-minimum-window-substring/solution.py",
@@ -4483,11 +4483,11 @@
   },
   "problems.787-cheapest-flights-within-k-stops.bellman_ford:cheapest_flights_with_at_most_k_stops": {
     "args": [
-      "n",
-      "flights",
+      "src",
       "dst",
-      "k",
-      "src"
+      "flights",
+      "n",
+      "k"
     ],
     "code": "def cheapest_flights_with_at_most_k_stops(\n    n: int, flights: list[list[int]], src: int, dst: int, k: int\n) -> int:\n    d = [float(\"inf\")] * n\n    d[src] = 0\n\n    for _ in range(k + 1):\n        tmp = d[:]\n        for u, v, w in flights:\n            if d[u] + w < tmp[v]:\n                tmp[v] = d[u] + w\n        d = tmp\n\n    return d[dst] if d[dst] < float(\"inf\") else -1",
     "file_path": "backend/algorithms/problems/787-cheapest-flights-within-k-stops/bellman_ford.py",
@@ -4501,10 +4501,10 @@
   },
   "problems.787-cheapest-flights-within-k-stops.dijkstra:cheapest_flights_with_at_most_k_stops": {
     "args": [
+      "src",
       "flights",
-      "k",
       "dst",
-      "src"
+      "k"
     ],
     "code": "def cheapest_flights_with_at_most_k_stops( flights: list[list[int]], src: int, dst: int, k: int) -> int:\n\n    graph = defaultdict(list)\n    for u, v, price in flights:\n        graph[u].append((v, price))\n\n    pq, min_stops = [(0, src, 0)], {}\n\n    while pq:\n        cost, city, stops = heapq.heappop(pq)\n\n        if stops > min_stops.get(city, float(\"inf\")): continue\n        if city == dst: return cost\n\n        min_stops[city] = stops\n        if stops <= k:\n            for neighbor, price in graph[city]:\n                heapq.heappush(pq, (cost + price, neighbor, stops + 1))\n    return -1",
     "file_path": "backend/algorithms/problems/787-cheapest-flights-within-k-stops/dijkstra.py",
@@ -4531,8 +4531,8 @@
   },
   "problems.79-word-search.solution:word_search": {
     "args": [
-      "word",
-      "board"
+      "board",
+      "word"
     ],
     "code": "def word_search(board: list[list[str]], word: str) -> bool:\n    rows, cols, n = len(board), len(board[0]), len(word)\n    def dfs(r: int, c: int, i: int) -> bool:\n        if i == n:\n            return True\n        if not (0 <= r < rows and 0 <= c < cols and board[r][c] == word[i]):\n            return False\n        tmp, board[r][c] = board[r][c], \"#\"\n        for x, y in ((r + 1, c), (r - 1, c), (r, c + 1), (r, c - 1)):\n            if dfs(x, y, i + 1):\n                board[r][c] = tmp\n                return True\n        board[r][c] = tmp\n        return False\n    return any(\n        dfs(r, c, 0)\n        for r in range(rows)\n        for c in range(cols)\n        if board[r][c] == word[0]\n    )",
     "file_path": "backend/algorithms/problems/79-word-search/solution.py",
@@ -4547,8 +4547,8 @@
   },
   "problems.837-new-21-game.solution:new21Game": {
     "args": [
-      "n",
       "maxPts",
+      "n",
       "k"
     ],
     "code": "def new21Game(n: int, k: int, maxPts: int) -> float:\n\n    if k == 0 or n >= k + maxPts:\n        return 1.0\n\n    dp = [0] * (n + 1)\n    dp[0] = s = 1\n\n    for i in range(1, n + 1):\n        dp[i] = s / maxPts\n        if i < k:\n            s += dp[i]\n        if i - maxPts >= 0 and i - maxPts < k:\n            s -= dp[i - maxPts]\n    return sum(dp[k:])",
@@ -4599,56 +4599,80 @@
     "args": [
       "heights"
     ],
-    "code": "def largestRectangleArea(heights: list[int]) -> int:\n    heights.append(0)\n    stack = [-1]; best = 0\n    for r, h in enumerate(heights):\n        while stack[-1] != -1 and heights[stack[-1]] > h:\n            l = stack.pop()\n            best = max(best, heights[l] * (r - stack[-1] - 1))\n        stack.append(r)\n    heights.pop()\n    return best",
+    "code": "def largestRectangleArea(heights: list[int]) -> int:\n    heights.append(0)\n    stack = [-1]; best = 0\n    for r, h in enumerate(heights):\n        while stack[-1] != -1 and heights[stack[-1]] > h:\n            best = max(best, heights[stack.pop()] * (r - stack[-1] - 1))\n        stack.append(r)\n    heights.pop()\n    return best",
     "expressions": {
-      "heights.append(0)": "adds a **right sentinel** bar smaller than all others, forcing the stack to empty and compute all remaining areas at the end (no leftover bars).",
-      "heights.pop()": "restore original list",
-      "heights[stack[-1]] > h": "pop while current bar is lower than stack's top",
-      "stack = [-1]": "adds a **left sentinel** index before the array start, so width computation `r - stack[-1] - 1` always works (never empty stack).",
-      "width = r - stack[-1] - 1": "We subtract 1 because the bar at stack[-1] is strictly smaller and marks the left boundary, which is excluded from the rectangle"
+      "heights.append(0)": "adds a right sentinel bar smaller than all others, forcing a final flush.",
+      "heights.pop()": "restore original list.",
+      "heights[stack[-1]] > h": "current bar `h` is the wall that stops taller bars.",
+      "r - stack[-1] - 1": "number of consecutive bars that are at least `heights[l]` tall.",
+      "stack = [-1]": "left sentinel so width computation `r - stack[-1] - 1` always works.",
+      "stack[-1]": "index of the nearest strictly shorter bar to the left of `l` (the left wall)"
     },
     "file_path": "backend/algorithms/problems/84-largest-rectangle-in-histogram/solution.py",
-    "intuition": "- Each bar can form a rectangle where its height is the limiting factor:\n    - That rectangle extends until a strictly shorter bar appears on either side.\n    - Instead of searching both directions explicitly, we discover these bounds on the fly:\n        - when a shorter bar appears at `r`, every taller bar popped from the stack\n        - now knows its right boundary (`r`) and its left boundary (`l = stack.pop()`).\n\n    - Deep Dive: Walkthrough:\n    - Append `0` so every bar eventually meets a shorter right neighbor\n    - Keep *[3!]indices* in strictly increasing heights (stack starts *[3!][-1]*)\n    - For each `r, h`: while top is taller, pop `l` and compute area = `heights[l] * (r - stack[-1] - 1)`\n    - Push `r`; remove the sentinel; return best",
+    "intuition": "- Think of the stack as a “to-be-extended skyline”:\n        - Each index on the stack is a bar that is still waiting to learn where it must stop.            As we sweep with pointer `r`:\n            - If the new bar `h` is taller/equal, it can keep extending the skyline → push `r`.\n            - If the new bar `h` is shorter, it acts like a wall at position `r`:\n                - every bar taller than `h` must stop just before this wall (at `r - 1`),                    so we pop those bars and finalize their best rectangles.\n        - The key picture:\n            - ```markdown\n                - stack[-1]   ...   l   ...   r\n               - (shorter)        (height)   (shorter)\n                - ^ left wall                ^ right wall\n                - Rectangle of height heights[l] spans between the walls, excluding them.\n            - ```",
     "kind": "function",
     "label": "def largestRectangleArea(heights: list[int]) -> int",
     "name": "largestRectangleArea",
     "returns": {
       "label": "int"
     },
-    "time_complexity": "O(n):\nEach index is pushed once and popped once, so the total operations across the loop are linear\n*[19!]It remains linear despite the inner while, because every pop is matched to one push*",
+    "time_complexity": "$O(n)$:\nEach index is pushed once and popped once, so total work is linear.",
     "variables": [
-      "stack"
+      "r",
+      "h",
+      "l",
+      "best"
     ]
+  },
+  "problems.84-largest-rectangle-in-histogram.solution:largestRectangleArea.best": {
+    "kind": "variable",
+    "name": "best",
+    "summary": "maximum rectangle area found"
+  },
+  "problems.84-largest-rectangle-in-histogram.solution:largestRectangleArea.h": {
+    "kind": "variable",
+    "name": "h",
+    "summary": "heights[r]"
   },
   "problems.84-largest-rectangle-in-histogram.solution:largestRectangleArea.heights.append(0)": {
     "kind": "expression",
     "name": "heights.append(0)",
-    "summary": "adds a **right sentinel** bar smaller than all others, forcing the stack to empty and compute all remaining areas at the end (no leftover bars)."
+    "summary": "adds a right sentinel bar smaller than all others, forcing a final flush."
   },
   "problems.84-largest-rectangle-in-histogram.solution:largestRectangleArea.heights.pop()": {
     "kind": "expression",
     "name": "heights.pop()",
-    "summary": "restore original list"
+    "summary": "restore original list."
   },
   "problems.84-largest-rectangle-in-histogram.solution:largestRectangleArea.heights[stack[-1]] > h": {
     "kind": "expression",
     "name": "heights[stack[-1]] > h",
-    "summary": "pop while current bar is lower than stack's top"
+    "summary": "current bar `h` is the wall that stops taller bars."
   },
-  "problems.84-largest-rectangle-in-histogram.solution:largestRectangleArea.stack": {
+  "problems.84-largest-rectangle-in-histogram.solution:largestRectangleArea.l": {
     "kind": "variable",
-    "name": "stack",
-    "summary": "indices with strictly increasing heights"
+    "name": "l",
+    "summary": "popped index whose maximal rectangle is finalized now"
+  },
+  "problems.84-largest-rectangle-in-histogram.solution:largestRectangleArea.r": {
+    "kind": "variable",
+    "name": "r",
+    "summary": "current index (the “wall” position when it is shorter)"
+  },
+  "problems.84-largest-rectangle-in-histogram.solution:largestRectangleArea.r - stack[-1] - 1": {
+    "kind": "expression",
+    "name": "r - stack[-1] - 1",
+    "summary": "number of consecutive bars that are at least `heights[l]` tall."
   },
   "problems.84-largest-rectangle-in-histogram.solution:largestRectangleArea.stack = [-1]": {
     "kind": "expression",
     "name": "stack = [-1]",
-    "summary": "adds a **left sentinel** index before the array start, so width computation `r - stack[-1] - 1` always works (never empty stack)."
+    "summary": "left sentinel so width computation `r - stack[-1] - 1` always works."
   },
-  "problems.84-largest-rectangle-in-histogram.solution:largestRectangleArea.width = r - stack[-1] - 1": {
+  "problems.84-largest-rectangle-in-histogram.solution:largestRectangleArea.stack[-1]": {
     "kind": "expression",
-    "name": "width = r - stack[-1] - 1",
-    "summary": "We subtract 1 because the bar at stack[-1] is strictly smaller and marks the left boundary, which is excluded from the rectangle"
+    "name": "stack[-1]",
+    "summary": "index of the nearest strictly shorter bar to the left of `l` (the left wall)"
   },
   "problems.841-keys-and-rooms.solution:Solution.canVisitAllRooms": {
     "args": [
@@ -4717,10 +4741,40 @@
     "name": "while stack",
     "summary": "While there are rooms to explore"
   },
+  "problems.85-maximal-rectangle.solution:Solution.maximalRectangle": {
+    "args": [
+      "matrix"
+    ],
+    "code": "    def maximalRectangle(self, matrix: list[list[str]]) -> int:\n\n        heights = [0] * (n := len(matrix[0]))\n        best = 0\n\n        for row in matrix:\n\n            for c, v in enumerate(row):\n                heights[c] = heights[c] + 1 if v == \"1\" else 0\n\n            stack: list[int] = []\n            for i in range(n + 1):\n                cur = heights[i] if i < n else 0\n                while stack and heights[stack[-1]] > cur:\n                    h = heights[stack.pop()]\n                    left = stack[-1] if stack else -1\n                    width = i - left - 1\n                    best = max(best, h * width)\n                stack.append(i)\n\n        return best",
+    "expressions": {
+      "(n + 1)": "We iterate one extra step (n + 1), The extra step uses `height = 0`(sentinel) to flush the stack."
+    },
+    "file_path": "backend/algorithms/problems/85-maximal-rectangle/solution.py",
+    "intuition": "- We process the matrix row by row:\n    - At each row `r`, we pretend that row `r` is the bottom of a rectangle.\n    - We build a histogram:\n       - `heights[c]` = how many consecutive '1's are directly above (and including) cell (r, c).\n    - In other words: Starting at `(r, c)`, move upward. Count how many 1's you see before hitting a `0`.\n    - This tells us how tall a rectangle can be if its bottom edge is row `r`.\n\n    - Example:\n        - ```markdown\n            - Matrix:\n                - 1 0 1 1\n                - 1 1 1 1\n                - 0 1 1 0\n            - Row 0 → heights = [1, 0, 1, 1]\n            - Row 1 → heights = [2, 1, 2, 2]\n            - Row 2 → heights = [0, 2, 3, 0]\n        - ```\n\n    - Each row forms a histogram.\n        - We compute the largest rectangle in that histogram\n        - and take the maximum over all rows.",
+    "kind": "method",
+    "label": "def maximalRectangle(self, matrix: list[list[str]]) -> int",
+    "name": "maximalRectangle",
+    "returns": {
+      "label": "int"
+    },
+    "variables": [
+      "stack"
+    ]
+  },
+  "problems.85-maximal-rectangle.solution:Solution.maximalRectangle.(n + 1)": {
+    "kind": "expression",
+    "name": "(n + 1)",
+    "summary": "We iterate one extra step (n + 1), The extra step uses `height = 0`(sentinel) to flush the stack."
+  },
+  "problems.85-maximal-rectangle.solution:Solution.maximalRectangle.stack": {
+    "kind": "variable",
+    "name": "stack",
+    "summary": "stores column indices with strictly increasing heights. Invariant: `heights[stack[0]] < heights[stack[1]] < ... < heights[stack[-1]]`"
+  },
   "problems.875-koko-eating-bananas.solution:koko_eating_bananas": {
     "args": [
-      "h",
-      "piles"
+      "piles",
+      "h"
     ],
     "code": "def koko_eating_bananas(piles: list[int], h: int) -> int:\n\n    def hours(k:int) -> int:\n        return sum((p + k - 1) // k for p in piles)\n\n    l, r = 1, max(piles)\n    while l < r:\n        k = (l + r) // 2\n        if hours(k) <= h:\n            r = k\n        else:\n            l = k + 1\n    return l",
     "expressions": {

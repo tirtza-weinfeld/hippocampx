@@ -1,42 +1,45 @@
-
 def largestRectangleArea(heights: list[int]) -> int:
     """
-    
-    Intuition: 
-    
-        Each bar can form a rectangle where its height is the limiting factor:
-        That rectangle extends until a strictly shorter bar appears on either side.
-        Instead of searching both directions explicitly, we discover these bounds on the fly:
-            when a shorter bar appears at `r`, every taller bar popped from the stack
-            now knows its right boundary (`r`) and its left boundary (`l = stack.pop()`).
-        
-        Deep Dive: Walkthrough:
-        Append `0` so every bar eventually meets a shorter right neighbor
-        Keep *[3!]indices* in strictly increasing heights (stack starts *[3!][-1]*)
-        For each `r, h`: while top is taller, pop `l` and compute area = `heights[l] * (r - stack[-1] - 1)`
-        Push `r`; remove the sentinel; return best
-    
+    Intuition:
+        Think of the stack as a “to-be-extended skyline”:
+            Each index on the stack is a bar that is still waiting to learn where it must stop.\
+            As we sweep with pointer `r`:
+                If the new bar `h` is taller/equal, it can keep extending the skyline → push `r`.
+                If the new bar `h` is shorter, it acts like a wall at position `r`:
+                    every bar taller than `h` must stop just before this wall (at `r - 1`),\
+                    so we pop those bars and finalize their best rectangles.
+            The key picture:
+                ```markdown
+                    stack[-1]   ...   l   ...   r
+                   (shorter)        (height)   (shorter)
+                    ^ left wall                ^ right wall
+                    Rectangle of height heights[l] spans between the walls, excluding them.
+                ```
+      
     Time Complexity:
-        O(n):
-        Each index is pushed once and popped once, so the total operations across the loop are linear
-        *[19!]It remains linear despite the inner while, because every pop is matched to one push*
-    
+        $O(n)$:
+        Each index is pushed once and popped once, so total work is linear.
+
     Expressions:
-        'heights.append(0)' : adds a **right sentinel** bar smaller than all others, forcing the stack to empty and compute all remaining areas at the end (no leftover bars).
-        'stack = [-1]' : adds a **left sentinel** index before the array start, so width computation `r - stack[-1] - 1` always works (never empty stack).
-        'heights[stack[-1]] > h' : pop while current bar is lower than stack's top
-        'width = r - stack[-1] - 1' : We subtract 1 because the bar at stack[-1] is strictly smaller and marks the left boundary, which is excluded from the rectangle
-        'heights.pop()' : restore original list
+        'heights.append(0)' : adds a right sentinel bar smaller than all others, forcing a final flush.
+        'stack = [-1]' : left sentinel so width computation `r - stack[-1] - 1` always works.
+        'heights[stack[-1]] > h' : current bar `h` is the wall that stops taller bars.
+        'r - stack[-1] - 1' : number of consecutive bars that are at least `heights[l]` tall.
+        'heights.pop()' : restore original list.
+        'stack[-1]': index of the nearest strictly shorter bar to the left of `l` (the left wall)
+
 
     Variables:
-        stack: indices with strictly increasing heights
+        r: current index (the “wall” position when it is shorter)
+        h: heights[r]
+        l: popped index whose maximal rectangle is finalized now
+        best: maximum rectangle area found
     """
-    heights.append(0)
+    heights.append(0) # Append `0` so every bar eventually meets a shorter right neighbor (forces all pops).
     stack = [-1]; best = 0
     for r, h in enumerate(heights):
         while stack[-1] != -1 and heights[stack[-1]] > h:
-            l = stack.pop()
-            best = max(best, heights[l] * (r - stack[-1] - 1))
+            best = max(best, heights[stack.pop()] * (r - stack[-1] - 1))
         stack.append(r)
-    heights.pop()
+    heights.pop() # Remove the sentinel bar
     return best

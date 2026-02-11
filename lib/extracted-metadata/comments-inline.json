@@ -176,6 +176,18 @@
   "problems/616-add-bold-tag-in-string/trie.py": [
     7
   ],
+  "problems/85-maximal-rectangle/solution.py": [
+    3,
+    4,
+    9,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19
+  ],
   "problems/498-diagonal-traverse/solution.py": [
     3,
     4,
@@ -247,6 +259,10 @@
     21,
     23,
     25
+  ],
+  "problems/84-largest-rectangle-in-histogram/solution.py": [
+    1,
+    7
   ],
   "problems/311-sparse-matrix-multiplication/_optimized.py": [
     15

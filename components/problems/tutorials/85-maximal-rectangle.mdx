@@ -12,10 +12,54 @@
 
 Given a rows x cols binary matrix filled with 0's and 1's, find the largest rectangle containing only 1's and return its area.
 
+## [!(ProblemIntuition)] Intuition
+
+- We process the matrix row by row:
+    - At each row `r`, we pretend that row `r` is the bottom of a rectangle.
+    - We build a histogram:
+       - `heights[c]` = how many consecutive '1's are directly above (and including) cell (r, c).
+    - In other words: Starting at `(r, c)`, move upward. Count how many 1's you see before hitting a `0`.
+    - This tells us how tall a rectangle can be if its bottom edge is row `r`.
+
+- Example:
+        ```markdown
+            Matrix:
+                1 0 1 1
+                1 1 1 1
+                0 1 1 0
+            Row 0 → heights = [1, 0, 1, 1]
+            Row 1 → heights = [2, 1, 2, 2]
+            Row 2 → heights = [0, 2, 3, 0]
+        ```
+
+- Each row forms a histogram.
+        - We compute the largest rectangle in that histogram
+        - and take the maximum over all rows.
+
 ## [!(ProblemCodeSnippet)] Code Snippet
 
 ```python meta="source=problems/85-maximal-rectangle/solution.py"
-def maximalRectangle(matrix: list[list[str]]) -> int:
-    pass
+class Solution:
+    def maximalRectangle(self, matrix: list[list[str]]) -> int:
+
+        heights = [0] * (n := len(matrix[0]))
+        best = 0
+
+        for row in matrix:
+
+            for c, v in enumerate(row):
+                heights[c] = heights[c] + 1 if v == "1" else 0
+
+            stack: list[int] = []
+            for i in range(n + 1):
+                cur = heights[i] if i < n else 0
+                while stack and heights[stack[-1]] > cur:
+                    h = heights[stack.pop()]
+                    left = stack[-1] if stack else -1
+                    width = i - left - 1
+                    best = max(best, h * width)
+                stack.append(i)
+
+        return best
 ```
 
