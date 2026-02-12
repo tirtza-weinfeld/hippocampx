@@ -1,4 +1,10 @@
 {
+  "problems/23-merge-k-sorted-lists/solution.py": [
+    {"range": {"start": {"line": 13, "character": 28}, "end": {"line": 13, "character": 47}}, "nameRange": {"start": {"line": 13, "character": 28}, "end": {"line": 13, "character": 47}}, "qname": "problems.23-merge-k-sorted-lists.solution:Solution.mergeKLists.(node.val, i, node)", "kind": "expression"},
+    {"range": {"start": {"line": 18, "character": 25}, "end": {"line": 18, "character": 35}}, "nameRange": {"start": {"line": 18, "character": 25}, "end": {"line": 18, "character": 35}}, "qname": "problems.23-merge-k-sorted-lists.solution:Solution.mergeKLists.heappop(h)", "kind": "expression"},
+    {"range": {"start": {"line": 19, "character": 12}, "end": {"line": 19, "character": 33}}, "nameRange": {"start": {"line": 19, "character": 12}, "end": {"line": 19, "character": 33}}, "qname": "problems.23-merge-k-sorted-lists.solution:Solution.mergeKLists.cur.next = cur = node", "kind": "expression"},
+    {"range": {"start": {"line": 21, "character": 28}, "end": {"line": 21, "character": 57}}, "nameRange": {"start": {"line": 21, "character": 28}, "end": {"line": 21, "character": 57}}, "qname": "problems.23-merge-k-sorted-lists.solution:Solution.mergeKLists.(node.next.val, i, node.next)", "kind": "expression"}
+  ],
   "problems/137-single-number-ii/solution.py": [
     {"range": {"start": {"line": 3, "character": 15}, "end": {"line": 3, "character": 16}}, "nameRange": {"start": {"line": 3, "character": 15}, "end": {"line": 3, "character": 16}}, "qname": "problems.137-single-number-ii.solution:singleNumber.^", "kind": "expression"},
     {"range": {"start": {"line": 4, "character": 15}, "end": {"line": 4, "character": 16}}, "nameRange": {"start": {"line": 4, "character": 15}, "end": {"line": 4, "character": 16}}, "qname": "problems.137-single-number-ii.solution:singleNumber.^", "kind": "expression"},

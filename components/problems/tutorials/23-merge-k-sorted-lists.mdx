@@ -1,0 +1,43 @@
+# Merge k Sorted Lists
+
+## Resizable Table Of contents
+
+<DifficultyBadge difficulty="hard" />
+
+<PillList pills={["heap"]} />
+
+[23. Merge k Sorted Lists](https://leetcode.com/problems/merge-k-sorted-lists/)
+
+## [!(ProblemDefinition)] Definition
+
+You are given an array of k linked-lists lists, each linked-list is sorted in ascending order.Merge all the linked-lists into one sorted linked-list and return it
+
+## [!(ProblemCodeSnippet)] Code Snippet
+
+```python meta="source=problems/23-merge-k-sorted-lists/solution.py"
+from heapq import heappop, heappush
+
+class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+
+class Solution:
+    def mergeKLists(self, lists: list[ListNode | None]) -> ListNode | None:
+        h = []
+
+        for i, node in enumerate(lists):
+            if node:
+                heappush(h, (node.val, i, node))
+
+        dummy = cur = ListNode(0)
+
+        while h:
+            _, i, node = heappop(h)
+            cur.next = cur = node
+            if node.next:
+                heappush(h, (node.next.val, i, node.next))
+
+        return dummy.next
+```
+

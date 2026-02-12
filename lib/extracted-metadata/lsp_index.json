@@ -10,7 +10,43 @@
     },
     {
       "uri": "blackboard2.py",
-      "symbols": []
+      "symbols": [
+        {
+          "name": "Solution",
+          "detail": "class Solution",
+          "kind": 5,
+          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 16, "character": 21}},
+          "nameRange": {
+            "start": {
+              "line": 2,
+              "character": 6
+            },
+            "end": {
+              "line": 2,
+              "character": 14
+            }
+          },
+          "children": [
+            {
+              "name": "countSmaller",
+              "detail": "countSmaller(nums: list[int]) -> list[int]",
+              "kind": 6,
+              "range": {"start": {"line": 3, "character": 4}, "end": {"line": 16, "character": 21}},
+              "nameRange": {
+                "start": {
+                  "line": 3,
+                  "character": 8
+                },
+                "end": {
+                  "line": 3,
+                  "character": 20
+                }
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
     },
     {
       "uri": "core/Tree/__init__.py",
@@ -1577,6 +1613,68 @@
             }
           },
           "children": []
+        }
+      ]
+    },
+    {
+      "uri": "problems/10-regular-expression-matching/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/10-regular-expression-matching/solution.py",
+      "symbols": [
+        {
+          "name": "Solution",
+          "detail": "class Solution",
+          "kind": 5,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 16, "character": 23}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 6
+            },
+            "end": {
+              "line": 0,
+              "character": 14
+            }
+          },
+          "children": [
+            {
+              "name": "isMatch",
+              "detail": "isMatch(s: str, p: str) -> bool",
+              "kind": 6,
+              "range": {"start": {"line": 1, "character": 4}, "end": {"line": 16, "character": 23}},
+              "nameRange": {
+                "start": {
+                  "line": 1,
+                  "character": 8
+                },
+                "end": {
+                  "line": 1,
+                  "character": 15
+                }
+              },
+              "children": [
+                {
+                  "name": "dp",
+                  "detail": "dp(i, j)",
+                  "kind": 12,
+                  "range": {"start": {"line": 3, "character": 8}, "end": {"line": 14, "character": 29}},
+                  "nameRange": {
+                    "start": {
+                      "line": 3,
+                      "character": 12
+                    },
+                    "end": {
+                      "line": 3,
+                      "character": 14
+                    }
+                  },
+                  "children": []
+                }
+              ]
+            }
+          ]
         }
       ]
     },
@@ -4518,6 +4616,85 @@
       ]
     },
     {
+      "uri": "problems/23-merge-k-sorted-lists/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/23-merge-k-sorted-lists/solution.py",
+      "symbols": [
+        {
+          "name": "ListNode",
+          "detail": "class ListNode",
+          "kind": 5,
+          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 5, "character": 24}},
+          "nameRange": {
+            "start": {
+              "line": 2,
+              "character": 6
+            },
+            "end": {
+              "line": 2,
+              "character": 14
+            }
+          },
+          "children": [
+            {
+              "name": "__init__",
+              "detail": "__init__(val, next)",
+              "kind": 6,
+              "range": {"start": {"line": 3, "character": 4}, "end": {"line": 5, "character": 24}},
+              "nameRange": {
+                "start": {
+                  "line": 3,
+                  "character": 8
+                },
+                "end": {
+                  "line": 3,
+                  "character": 16
+                }
+              },
+              "children": []
+            }
+          ]
+        },
+        {
+          "name": "Solution",
+          "detail": "class Solution",
+          "kind": 5,
+          "range": {"start": {"line": 7, "character": 0}, "end": {"line": 23, "character": 25}},
+          "nameRange": {
+            "start": {
+              "line": 7,
+              "character": 6
+            },
+            "end": {
+              "line": 7,
+              "character": 14
+            }
+          },
+          "children": [
+            {
+              "name": "mergeKLists",
+              "detail": "mergeKLists(lists: list[ListNode | None]) -> ListNode | None",
+              "kind": 6,
+              "range": {"start": {"line": 8, "character": 4}, "end": {"line": 23, "character": 25}},
+              "nameRange": {
+                "start": {
+                  "line": 8,
+                  "character": 8
+                },
+                "end": {
+                  "line": 8,
+                  "character": 19
+                }
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
       "uri": "problems/238-product-of-array-except-self/__init__.py",
       "symbols": []
     },
@@ -5408,6 +5585,125 @@
                   "children": []
                 }
               ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "uri": "problems/315-count-of-smaller-numbers-after-self/__init__.py",
+      "symbols": []
+    },
+    {
+      "uri": "problems/315-count-of-smaller-numbers-after-self/fenwick-tree-ds.py",
+      "symbols": [
+        {
+          "name": "Solution",
+          "detail": "class Solution",
+          "kind": 5,
+          "range": {"start": {"line": 0, "character": 0}, "end": {"line": 24, "character": 18}},
+          "nameRange": {
+            "start": {
+              "line": 0,
+              "character": 6
+            },
+            "end": {
+              "line": 0,
+              "character": 14
+            }
+          },
+          "children": [
+            {
+              "name": "countSmaller",
+              "detail": "countSmaller(nums: list[int]) -> list[int]",
+              "kind": 6,
+              "range": {"start": {"line": 1, "character": 4}, "end": {"line": 24, "character": 18}},
+              "nameRange": {
+                "start": {
+                  "line": 1,
+                  "character": 8
+                },
+                "end": {
+                  "line": 1,
+                  "character": 20
+                }
+              },
+              "children": [
+                {
+                  "name": "update",
+                  "detail": "update(i)",
+                  "kind": 12,
+                  "range": {"start": {"line": 7, "character": 8}, "end": {"line": 10, "character": 27}},
+                  "nameRange": {
+                    "start": {
+                      "line": 7,
+                      "character": 12
+                    },
+                    "end": {
+                      "line": 7,
+                      "character": 18
+                    }
+                  },
+                  "children": []
+                },
+                {
+                  "name": "query",
+                  "detail": "query(i)",
+                  "kind": 12,
+                  "range": {"start": {"line": 12, "character": 8}, "end": {"line": 17, "character": 20}},
+                  "nameRange": {
+                    "start": {
+                      "line": 12,
+                      "character": 12
+                    },
+                    "end": {
+                      "line": 12,
+                      "character": 17
+                    }
+                  },
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "uri": "problems/315-count-of-smaller-numbers-after-self/list-ds.py",
+      "symbols": [
+        {
+          "name": "Solution",
+          "detail": "class Solution",
+          "kind": 5,
+          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 16, "character": 21}},
+          "nameRange": {
+            "start": {
+              "line": 2,
+              "character": 6
+            },
+            "end": {
+              "line": 2,
+              "character": 14
+            }
+          },
+          "children": [
+            {
+              "name": "countSmaller",
+              "detail": "countSmaller(nums: list[int]) -> list[int]",
+              "kind": 6,
+              "range": {"start": {"line": 3, "character": 4}, "end": {"line": 16, "character": 21}},
+              "nameRange": {
+                "start": {
+                  "line": 3,
+                  "character": 8
+                },
+                "end": {
+                  "line": 3,
+                  "character": 20
+                }
+              },
+              "children": []
             }
           ]
         }

@@ -18,6 +18,22 @@
       "difficulty": "hard",
       "topics": ["game"]
     },
+    "23-merge-k-sorted-lists": {
+      "time_stamps": {
+        "created_at": "2026-02-12T09:20:38.051349",
+        "updated_at": "2026-02-12T10:07:11.301897"
+      },
+      "solutions": {
+        "solution.py": {
+          "code": "from heapq import heappop, heappush\n\nclass ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\nclass Solution:\n    def mergeKLists(self, lists: list[ListNode | None]) -> ListNode | None:\n        h = []\n\n        for i, node in enumerate(lists):\n            if node:\n                heappush(h, (node.val, i, node))\n\n        dummy = cur = ListNode(0)\n\n        while h:\n            _, i, node = heappop(h)\n            cur.next = cur = node\n            if node.next:\n                heappush(h, (node.next.val, i, node.next))\n\n        return dummy.next"
+        }
+      },
+      "title": "Merge k Sorted Lists",
+      "definition": "You are given an array of k linked-lists lists, each linked-list is sorted in ascending order.Merge all the linked-lists into one sorted linked-list and return it",
+      "leetcode": "https://leetcode.com/problems/merge-k-sorted-lists/",
+      "difficulty": "hard",
+      "topics": ["heap"]
+    },
     "1275-find-winner-on-a-tic-tac-toe-game": {
       "time_stamps": {
         "created_at": "2025-11-02T17:59:14.523145",
@@ -458,6 +474,22 @@
       "difficulty": "medium",
       "topics": ["dp", "patience sorting", "binary search"],
       "group": [["binary_search.py"], ["bottom-up.py"], ["top-dwon.py"]]
+    },
+    "10-regular-expression-matching": {
+      "time_stamps": {
+        "created_at": "2026-02-12T10:09:12.497293",
+        "updated_at": "2026-02-12T12:43:38.117116"
+      },
+      "solutions": {
+        "solution.py": {
+          "code": "class Solution:\n    def isMatch(self, s: str, p: str) -> bool:\n        memo = {}\n        def dp(i, j):\n            if (i, j) not in memo:\n                if j == len(p):\n                    memo[i, j] = i == len(s)\n                else:\n                    ok = i < len(s) and p[j] in {s[i], \".\"}\n                    if j + 1 < len(p) and p[j + 1] == \"*\":\n                        memo[i, j] = ok and dp(i + 1, j) or dp(i, j + 2)\n                    else:\n                        memo[i, j] = ok and dp(i + 1, j + 1)\n\n            return memo[i, j]\n\n        return dp(0, 0)"
+        }
+      },
+      "title": "Regular Expression Matching",
+      "definition": "Given an input string s and a pattern p, implement regular expression matching with support for '.' and '*' where:\n    '.' Matches any single character.​​​​\n    '*' Matches zero or more of the preceding element.\n    The matching should cover the entire input string (not partial).\n\n    Constraints:\n        s contains only lowercase English letters.\n        p contains only lowercase English letters, '.', and '*'.\n        It is guaranteed for each appearance of the character '*', there will be a previous valid character to mat",
+      "leetcode": "https://leetcode.com/problems/regular-expression-matching/description/",
+      "difficulty": "hard",
+      "topics": ["dp"]
     },
     "875-koko-eating-bananas": {
       "time_stamps": {
@@ -2419,6 +2451,28 @@
       "leetcode": "https://leetcode.com/problems/maximum-size-subarray-sum-equals-k",
       "difficulty": "medium",
       "topics": ["prefix-sum"]
+    },
+    "315-count-of-smaller-numbers-after-self": {
+      "time_stamps": {
+        "created_at": "2026-02-12T11:53:02.134028",
+        "updated_at": "2026-02-12T12:51:42.265578"
+      },
+      "solutions": {
+        "fenwick-tree-ds.py": {
+          "intuition": "Traverse right → left:\n    Maintain a frequency structure of values already seen.\n    For each number:\n        `query(r - 1)` gives how many strictly smaller values exist\n        `update(r)` inserts the current value\n    Fenwick Tree idea:\n        `tree[i]` stores the sum of a specific range of frequencies.\n        The size of that range is determined by the lowest set bit of `i`.\n\n    Deep dive:Bit trick:\n        `i & -i` isolates the lowest set bit of i.\n\n        Example:\n            ```\n            i = 12  -> 1100\n            -i      -> 0100 (two’s complement)\n            i & -i  -> 0100 (4)\n            ```\n        That 4 means index 12 is responsible for a block of size 4.\n        Moving:\n            `i += i & -i`   → jump to next block that includes this range\n            `i -= i & -i`   → move to parent block in prefix sum",
+          "time_complexity": "O(n log n)",
+          "code": "class Solution:\n    def countSmaller(self, nums: list[int]) -> list[int]:\n\n        ranks = {v: i+1 for i, v in enumerate(sorted(set(nums)))}\n        tree = [0] * (len(ranks) + 1)\n        res = [0] * len(nums)\n\n        def update(i):\n            while i < len(tree):\n                tree[i] += 1\n                i += i & -i\n\n        def query(i):\n            s = 0\n            while i > 0:\n                s += tree[i]\n                i -= i & -i\n            return s\n\n        for i in range(len(nums) - 1, -1, -1):\n            r = ranks[nums[i]]\n            res[i] = query(r - 1)\n            update(r)\n\n        return res"
+        },
+        "list-ds.py": {
+          "code": "import bisect\n\nclass Solution:\n    def countSmaller(self, nums: list[int]) -> list[int]:\n\n        counts=[0]*(n:=len(nums))\n        X=[]\n\n        for i in range(n-1,-1,-1):\n            x=nums[i]\n            index=bisect.bisect_left(X,x)\n            if index ==len(X):\n                X.append(x)\n            else:\n                X.insert(index,x)\n            counts[i]=index\n        return counts"
+        }
+      },
+      "title": "Count of Smaller Numbers After Self",
+      "definition": "Given an integer array nums, return an integer array counts where counts[i] is the number of smaller elements to the right of nums[i]",
+      "leetcode": "https://leetcode.com/problems/count-of-smaller-numbers-after-self/description/",
+      "difficulty": "hard",
+      "topics": ["TODO"],
+      "group": [["fenwick-tree-ds.py"], ["list-ds.py"]]
     },
     "2145-count-the-hidden-sequences": {
       "time_stamps": {
