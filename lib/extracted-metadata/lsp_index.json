@@ -10,43 +10,7 @@
     },
     {
       "uri": "blackboard2.py",
-      "symbols": [
-        {
-          "name": "Solution",
-          "detail": "class Solution",
-          "kind": 5,
-          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 16, "character": 21}},
-          "nameRange": {
-            "start": {
-              "line": 2,
-              "character": 6
-            },
-            "end": {
-              "line": 2,
-              "character": 14
-            }
-          },
-          "children": [
-            {
-              "name": "countSmaller",
-              "detail": "countSmaller(nums: list[int]) -> list[int]",
-              "kind": 6,
-              "range": {"start": {"line": 3, "character": 4}, "end": {"line": 16, "character": 21}},
-              "nameRange": {
-                "start": {
-                  "line": 3,
-                  "character": 8
-                },
-                "end": {
-                  "line": 3,
-                  "character": 20
-                }
-              },
-              "children": []
-            }
-          ]
-        }
-      ]
+      "symbols": []
     },
     {
       "uri": "core/Tree/__init__.py",

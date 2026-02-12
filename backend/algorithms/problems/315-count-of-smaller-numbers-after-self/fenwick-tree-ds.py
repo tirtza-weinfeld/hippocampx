@@ -13,7 +13,6 @@ class Solution:
 
             Deep dive:Bit trick:
                 `i & -i` isolates the lowest set bit of i.
-
                 Example:
                     ```
                     i = 12  -> 1100

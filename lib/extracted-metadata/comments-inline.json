@@ -361,6 +361,18 @@
     10,
     12
   ],
+  "problems/315-count-of-smaller-numbers-after-self/fenwick-tree-ds.py": [
+    3,
+    4,
+    9,
+    10,
+    15,
+    16,
+    19,
+    20,
+    21,
+    22
+  ],
   "problems/252-meeting-rooms/Interval-sort-and-scan.py": [
     1
   ],
@@ -428,17 +440,5 @@
     9,
     10,
     14
-  ],
-  "problems/315-count-of-smaller-numbers-after-self/fenwick-tree-ds.py": [
-    3,
-    4,
-    9,
-    10,
-    15,
-    16,
-    19,
-    20,
-    21,
-    22
   ]
 }
