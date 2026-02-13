@@ -7573,9 +7573,9 @@
       "symbols": [
         {
           "name": "subarraySumEqualsK",
-          "detail": "subarraySumEqualsK(segments: list[int], k: int) -> int",
+          "detail": "subarraySumEqualsK(nums: list[int], k: int) -> int",
           "kind": 12,
-          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 12, "character": 16}},
+          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 11, "character": 16}},
           "nameRange": {
             "start": {
               "line": 2,

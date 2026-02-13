@@ -308,5 +308,9 @@
   "core/Tree/binary_tree_node.py:comment-line:7": "reference to left subtree",
   "core/bellman-ford/layered_dag.py:comment-line:9": "k = 0…V-1",
   "core/bellman-ford/layered_dag.py:comment-line:10": "snapshot of $\\delta_k$",
-  "core/bellman-ford/layered_dag.py:comment-line:14": "now holds $\\delta_{k+1}$"
+  "core/bellman-ford/layered_dag.py:comment-line:14": "now holds $\\delta_{k+1}$",
+  "problems/560-subarray-sum-equals-k/solution.py:comment-line:8": "update prefix sum",
+  "problems/560-subarray-sum-equals-k/solution.py:comment-line:9": "number of earlier prefixes that make current subarray sum = k",
+  "problems/560-subarray-sum-equals-k/solution.py:comment-line:10": "record current prefix sum",
+  "problems/560-subarray-sum-equals-k/solution.py:comment-line:11": "total number of subarrays with sum k"
 }

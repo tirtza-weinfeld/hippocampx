@@ -5340,28 +5340,6 @@
   "problems/498-diagonal-traverse/__init__.py": [
 
   ],
-  "problems/560-subarray-sum-equals-k/solution.py": [
-    {"range": {"start": {"line": 2, "character": 0}, "end": {"line": 12, "character": 16}}, "nameRange": {"start": {"line": 2, "character": 4}, "end": {"line": 2, "character": 22}}, "qname": "problems.560-subarray-sum-equals-k.solution:subarraySumEqualsK", "kind": "function"},
-    {"range": {"start": {"line": 2, "character": 23}, "end": {"line": 2, "character": 42}}, "nameRange": {"start": {"line": 2, "character": 23}, "end": {"line": 2, "character": 31}}, "qname": "problems.560-subarray-sum-equals-k.solution:subarraySumEqualsK.segments", "kind": "parameter"},
-    {"range": {"start": {"line": 2, "character": 44}, "end": {"line": 2, "character": 50}}, "nameRange": {"start": {"line": 2, "character": 44}, "end": {"line": 2, "character": 45}}, "qname": "problems.560-subarray-sum-equals-k.solution:subarraySumEqualsK.k", "kind": "parameter"},
-    {"range": {"start": {"line": 4, "character": 4}, "end": {"line": 4, "character": 20}}, "nameRange": {"start": {"line": 4, "character": 4}, "end": {"line": 4, "character": 20}}, "qname": "problems.560-subarray-sum-equals-k.solution:subarraySumEqualsK.marker_frequency", "kind": "variable"},
-    {"range": {"start": {"line": 4, "character": 23}, "end": {"line": 4, "character": 34}}, "nameRange": {"start": {"line": 4, "character": 23}, "end": {"line": 4, "character": 34}}, "qname": "collections:defaultdict", "kind": null},
-    {"range": {"start": {"line": 4, "character": 35}, "end": {"line": 4, "character": 38}}, "nameRange": {"start": {"line": 4, "character": 35}, "end": {"line": 4, "character": 38}}, "qname": "builtins:int", "kind": "builtin"},
-    {"range": {"start": {"line": 5, "character": 4}, "end": {"line": 5, "character": 14}}, "nameRange": {"start": {"line": 5, "character": 4}, "end": {"line": 5, "character": 14}}, "qname": "problems.560-subarray-sum-equals-k.solution:subarraySumEqualsK.prefix_sum", "kind": "variable"},
-    {"range": {"start": {"line": 5, "character": 17}, "end": {"line": 5, "character": 22}}, "nameRange": {"start": {"line": 5, "character": 17}, "end": {"line": 5, "character": 22}}, "qname": "problems.560-subarray-sum-equals-k.solution:subarraySumEqualsK.count", "kind": "variable"},
-    {"range": {"start": {"line": 7, "character": 8}, "end": {"line": 7, "character": 15}}, "nameRange": {"start": {"line": 7, "character": 8}, "end": {"line": 7, "character": 15}}, "qname": "problems.560-subarray-sum-equals-k.solution:subarraySumEqualsK.segment", "kind": "variable"},
-    {"range": {"start": {"line": 7, "character": 19}, "end": {"line": 7, "character": 27}}, "nameRange": {"start": {"line": 7, "character": 19}, "end": {"line": 7, "character": 27}}, "qname": "problems.560-subarray-sum-equals-k.solution:subarraySumEqualsK.segments", "kind": "parameter"},
-    {"range": {"start": {"line": 8, "character": 22}, "end": {"line": 8, "character": 29}}, "nameRange": {"start": {"line": 8, "character": 22}, "end": {"line": 8, "character": 29}}, "qname": "problems.560-subarray-sum-equals-k.solution:subarraySumEqualsK.segment", "kind": "variable"},
-    {"range": {"start": {"line": 9, "character": 17}, "end": {"line": 9, "character": 33}}, "nameRange": {"start": {"line": 9, "character": 17}, "end": {"line": 9, "character": 33}}, "qname": "problems.560-subarray-sum-equals-k.solution:subarraySumEqualsK.marker_frequency", "kind": "variable"},
-    {"range": {"start": {"line": 9, "character": 34}, "end": {"line": 9, "character": 44}}, "nameRange": {"start": {"line": 9, "character": 34}, "end": {"line": 9, "character": 44}}, "qname": "problems.560-subarray-sum-equals-k.solution:subarraySumEqualsK.prefix_sum", "kind": "variable"},
-    {"range": {"start": {"line": 9, "character": 47}, "end": {"line": 9, "character": 48}}, "nameRange": {"start": {"line": 9, "character": 47}, "end": {"line": 9, "character": 48}}, "qname": "problems.560-subarray-sum-equals-k.solution:subarraySumEqualsK.k", "kind": "parameter"},
-    {"range": {"start": {"line": 10, "character": 8}, "end": {"line": 10, "character": 24}}, "nameRange": {"start": {"line": 10, "character": 8}, "end": {"line": 10, "character": 24}}, "qname": "problems.560-subarray-sum-equals-k.solution:subarraySumEqualsK.marker_frequency", "kind": "variable"},
-    {"range": {"start": {"line": 10, "character": 25}, "end": {"line": 10, "character": 35}}, "nameRange": {"start": {"line": 10, "character": 25}, "end": {"line": 10, "character": 35}}, "qname": "problems.560-subarray-sum-equals-k.solution:subarraySumEqualsK.prefix_sum", "kind": "variable"},
-    {"range": {"start": {"line": 12, "character": 11}, "end": {"line": 12, "character": 16}}, "nameRange": {"start": {"line": 12, "character": 11}, "end": {"line": 12, "character": 16}}, "qname": "problems.560-subarray-sum-equals-k.solution:subarraySumEqualsK.count", "kind": "variable"}
-  ],
-  "problems/560-subarray-sum-equals-k/__init__.py": [
-
-  ],
   "problems/312-burst-balloons/solution.py": [
     {"range": {"start": {"line": 0, "character": 0}, "end": {"line": 14, "character": 35}}, "nameRange": {"start": {"line": 0, "character": 6}, "end": {"line": 0, "character": 14}}, "qname": "problems.312-burst-balloons.solution:Solution", "kind": "class"},
     {"range": {"start": {"line": 1, "character": 4}, "end": {"line": 14, "character": 35}}, "nameRange": {"start": {"line": 1, "character": 8}, "end": {"line": 1, "character": 16}}, "qname": "problems.312-burst-balloons.solution:Solution.maxCoins", "kind": "method"},
@@ -9957,5 +9935,27 @@
     {"range": {"start": {"line": 8, "character": 12}, "end": {"line": 8, "character": 13}}, "nameRange": {"start": {"line": 8, "character": 12}, "end": {"line": 8, "character": 13}}, "qname": "core.binary-search.bisect_right:simple_bisect_right.l", "kind": "variable"},
     {"range": {"start": {"line": 8, "character": 16}, "end": {"line": 8, "character": 19}}, "nameRange": {"start": {"line": 8, "character": 16}, "end": {"line": 8, "character": 19}}, "qname": "core.binary-search.bisect_right:simple_bisect_right.mid", "kind": "variable"},
     {"range": {"start": {"line": 9, "character": 11}, "end": {"line": 9, "character": 12}}, "nameRange": {"start": {"line": 9, "character": 11}, "end": {"line": 9, "character": 12}}, "qname": "core.binary-search.bisect_right:simple_bisect_right.l", "kind": "variable"}
+  ],
+  "problems/560-subarray-sum-equals-k/solution.py": [
+    {"range": {"start": {"line": 2, "character": 0}, "end": {"line": 11, "character": 16}}, "nameRange": {"start": {"line": 2, "character": 4}, "end": {"line": 2, "character": 22}}, "qname": "problems.560-subarray-sum-equals-k.solution:subarraySumEqualsK", "kind": "function"},
+    {"range": {"start": {"line": 2, "character": 23}, "end": {"line": 2, "character": 38}}, "nameRange": {"start": {"line": 2, "character": 23}, "end": {"line": 2, "character": 27}}, "qname": "problems.560-subarray-sum-equals-k.solution:subarraySumEqualsK.nums", "kind": "parameter"},
+    {"range": {"start": {"line": 2, "character": 40}, "end": {"line": 2, "character": 46}}, "nameRange": {"start": {"line": 2, "character": 40}, "end": {"line": 2, "character": 41}}, "qname": "problems.560-subarray-sum-equals-k.solution:subarraySumEqualsK.k", "kind": "parameter"},
+    {"range": {"start": {"line": 4, "character": 4}, "end": {"line": 4, "character": 5}}, "nameRange": {"start": {"line": 4, "character": 4}, "end": {"line": 4, "character": 5}}, "qname": "problems.560-subarray-sum-equals-k.solution:subarraySumEqualsK.s", "kind": "variable"},
+    {"range": {"start": {"line": 4, "character": 8}, "end": {"line": 4, "character": 13}}, "nameRange": {"start": {"line": 4, "character": 8}, "end": {"line": 4, "character": 13}}, "qname": "problems.560-subarray-sum-equals-k.solution:subarraySumEqualsK.count", "kind": "variable"},
+    {"range": {"start": {"line": 5, "character": 4}, "end": {"line": 5, "character": 8}}, "nameRange": {"start": {"line": 5, "character": 4}, "end": {"line": 5, "character": 8}}, "qname": "problems.560-subarray-sum-equals-k.solution:subarraySumEqualsK.freq", "kind": "variable"},
+    {"range": {"start": {"line": 5, "character": 11}, "end": {"line": 5, "character": 22}}, "nameRange": {"start": {"line": 5, "character": 11}, "end": {"line": 5, "character": 22}}, "qname": "collections:defaultdict", "kind": null},
+    {"range": {"start": {"line": 5, "character": 23}, "end": {"line": 5, "character": 26}}, "nameRange": {"start": {"line": 5, "character": 23}, "end": {"line": 5, "character": 26}}, "qname": "builtins:int", "kind": "builtin"},
+    {"range": {"start": {"line": 7, "character": 8}, "end": {"line": 7, "character": 9}}, "nameRange": {"start": {"line": 7, "character": 8}, "end": {"line": 7, "character": 9}}, "qname": "problems.560-subarray-sum-equals-k.solution:subarraySumEqualsK.x", "kind": "variable"},
+    {"range": {"start": {"line": 7, "character": 13}, "end": {"line": 7, "character": 17}}, "nameRange": {"start": {"line": 7, "character": 13}, "end": {"line": 7, "character": 17}}, "qname": "problems.560-subarray-sum-equals-k.solution:subarraySumEqualsK.nums", "kind": "parameter"},
+    {"range": {"start": {"line": 8, "character": 13}, "end": {"line": 8, "character": 14}}, "nameRange": {"start": {"line": 8, "character": 13}, "end": {"line": 8, "character": 14}}, "qname": "problems.560-subarray-sum-equals-k.solution:subarraySumEqualsK.x", "kind": "variable"},
+    {"range": {"start": {"line": 9, "character": 17}, "end": {"line": 9, "character": 21}}, "nameRange": {"start": {"line": 9, "character": 17}, "end": {"line": 9, "character": 21}}, "qname": "problems.560-subarray-sum-equals-k.solution:subarraySumEqualsK.freq", "kind": "variable"},
+    {"range": {"start": {"line": 9, "character": 22}, "end": {"line": 9, "character": 23}}, "nameRange": {"start": {"line": 9, "character": 22}, "end": {"line": 9, "character": 23}}, "qname": "problems.560-subarray-sum-equals-k.solution:subarraySumEqualsK.s", "kind": "variable"},
+    {"range": {"start": {"line": 9, "character": 26}, "end": {"line": 9, "character": 27}}, "nameRange": {"start": {"line": 9, "character": 26}, "end": {"line": 9, "character": 27}}, "qname": "problems.560-subarray-sum-equals-k.solution:subarraySumEqualsK.k", "kind": "parameter"},
+    {"range": {"start": {"line": 10, "character": 8}, "end": {"line": 10, "character": 12}}, "nameRange": {"start": {"line": 10, "character": 8}, "end": {"line": 10, "character": 12}}, "qname": "problems.560-subarray-sum-equals-k.solution:subarraySumEqualsK.freq", "kind": "variable"},
+    {"range": {"start": {"line": 10, "character": 13}, "end": {"line": 10, "character": 14}}, "nameRange": {"start": {"line": 10, "character": 13}, "end": {"line": 10, "character": 14}}, "qname": "problems.560-subarray-sum-equals-k.solution:subarraySumEqualsK.s", "kind": "variable"},
+    {"range": {"start": {"line": 11, "character": 11}, "end": {"line": 11, "character": 16}}, "nameRange": {"start": {"line": 11, "character": 11}, "end": {"line": 11, "character": 16}}, "qname": "problems.560-subarray-sum-equals-k.solution:subarraySumEqualsK.count", "kind": "variable"}
+  ],
+  "problems/560-subarray-sum-equals-k/__init__.py": [
+
   ]
 }

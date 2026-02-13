@@ -1214,16 +1214,20 @@
     "560-subarray-sum-equals-k": {
       "time_stamps": {
         "created_at": "2025-09-12T16:05:57.931241",
-        "updated_at": "2025-09-29T12:53:12.615462"
+        "updated_at": "2026-02-13T18:38:16.836359"
       },
       "solutions": {
         "solution.py": {
           "args": {
-            "segments: list[int]": "List of integers representing trip segments.",
+            "nums: list[int]": "List of integers representing trip segments.",
             "k: int": "Target sum."
           },
           "returns": "`int`: The count of subarrays with sum == k.",
-          "code": "from collections import defaultdict\n\ndef subarraySumEqualsK(segments: list[int], k: int) -> int:\n\n    marker_frequency = defaultdict(int, {0: 1})\n    prefix_sum = count = 0\n\n    for segment in segments:\n        prefix_sum += segment\n        count += marker_frequency[prefix_sum - k]\n        marker_frequency[prefix_sum] += 1\n\n    return count"
+          "variables": "s = running prefix sum",
+          "expressions": {
+            "{0: 1}": "prefix sum 0 seen once (represents \"empty prefix\"), this allows subarrays starting at index 0 to count\n    'freq[s - k]': number of earlier prefixes that make current subarray sum = k"
+          },
+          "code": "from collections import defaultdict\n\ndef subarraySumEqualsK(nums: list[int], k: int) -> int:\n\n    s = count = 0\n    freq = defaultdict(int, {0: 1})\n\n    for x in nums:\n        s += x\n        count += freq[s - k]\n        freq[s] += 1\n    return count"
         }
       },
       "title": "Subarray Sum Equals K",

@@ -206,5 +206,9 @@
   "core/binary-search/bisect_right.py": [
     {"range": {"start": {"line": 6, "character": 12}, "end": {"line": 6, "character": 19}}, "nameRange": {"start": {"line": 6, "character": 12}, "end": {"line": 6, "character": 19}}, "qname": "core.binary-search.bisect_right:simple_bisect_right.r = mid", "kind": "expression"},
     {"range": {"start": {"line": 8, "character": 12}, "end": {"line": 8, "character": 23}}, "nameRange": {"start": {"line": 8, "character": 12}, "end": {"line": 8, "character": 23}}, "qname": "core.binary-search.bisect_right:simple_bisect_right.l = mid + 1", "kind": "expression"}
+  ],
+  "problems/560-subarray-sum-equals-k/solution.py": [
+    {"range": {"start": {"line": 5, "character": 28}, "end": {"line": 5, "character": 34}}, "nameRange": {"start": {"line": 5, "character": 28}, "end": {"line": 5, "character": 34}}, "qname": "problems.560-subarray-sum-equals-k.solution:subarraySumEqualsK.{0: 1}", "kind": "expression"},
+    {"range": {"start": {"line": 9, "character": 17}, "end": {"line": 9, "character": 28}}, "nameRange": {"start": {"line": 9, "character": 17}, "end": {"line": 9, "character": 28}}, "qname": "problems.560-subarray-sum-equals-k.solution:subarraySumEqualsK.freq[s - k]", "kind": "expression"}
   ]
 }

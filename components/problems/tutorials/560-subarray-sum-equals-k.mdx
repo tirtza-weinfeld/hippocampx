@@ -21,16 +21,15 @@ Given an array of integers and a target sum k, return the total number of contin
 ```python meta="source=problems/560-subarray-sum-equals-k/solution.py"
 from collections import defaultdict
 
-def subarraySumEqualsK(segments: list[int], k: int) -> int:
+def subarraySumEqualsK(nums: list[int], k: int) -> int:
 
-    marker_frequency = defaultdict(int, {0: 1})
-    prefix_sum = count = 0
+    s = count = 0
+    freq = defaultdict(int, {0: 1})
 
-    for segment in segments:
-        prefix_sum += segment
-        count += marker_frequency[prefix_sum - k]
-        marker_frequency[prefix_sum] += 1
-
+    for x in nums:
+        s += x
+        count += freq[s - k]
+        freq[s] += 1
     return count
 ```
 
