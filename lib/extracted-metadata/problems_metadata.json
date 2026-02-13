@@ -2455,12 +2455,27 @@
     "315-count-of-smaller-numbers-after-self": {
       "time_stamps": {
         "created_at": "2026-02-12T11:53:02.134028",
-        "updated_at": "2026-02-12T12:53:51.416078"
+        "updated_at": "2026-02-13T16:22:16.603528"
       },
       "solutions": {
         "fenwick-tree-ds.py": {
-          "intuition": "Traverse right → left:\n    Maintain a frequency structure of values already seen.\n    For each number:\n        `query(r - 1)` gives how many strictly smaller values exist\n        `update(r)` inserts the current value\n    Fenwick Tree idea:\n        `tree[i]` stores the sum of a specific range of frequencies.\n        The size of that range is determined by the lowest set bit of `i`.\n\n    Deep dive:Bit trick:\n        `i & -i` isolates the lowest set bit of i.\n        Example:\n            ```\n            i = 12  -> 1100\n            -i      -> 0100 (two’s complement)\n            i & -i  -> 0100 (4)\n            ```\n        That 4 means index 12 is responsible for a block of size 4.\n        Moving:\n            `i += i & -i`   → jump to next block that includes this range\n            `i -= i & -i`   → move to parent block in prefix sum",
-          "time_complexity": "O(n log n)",
+          "intuition": "Coordinate Compression:\n        map each value to its 1-based rank among sorted distinct values;\n        example: `nums=[5,2,6,1,2]`, distinct sorted = `[1,2,5,6]` -> `ranks={1:1, 2:2, 5:3, 6:4}`.\n\n    Sweep right → left:\n        for each `nums[i]`, query how many already-inserted ranks are smaller, then insert `ranks[nums[i]]`.\n\n    Fenwick Tree (Binary Indexed Tree):\n        maintains prefix sums over a conceptual frequency array `freq`, where `freq[r]` = count of inserted elements with rank `r`.\n        $$\n            \\text{tree}[i] = \\sum_{t = i - (i \\& -i) + 1}^{i} \\text{freq}[t]; \\text{ block length} = i \\& -i.\n        $$",
+          "expressions": {
+            "sorted(set(nums))": "sorted distinct values; example: `nums=[5,2,6,1,2]` -> `[1,2,5,6]`.\n    'ranks = {v: i+1 for i, v in enumerate(sorted(set(nums)))}': 1-based rank map; example: `{1:1, 2:2, 5:3, 6:4}`.\n    'r = ranks[nums[i]]': compressed rank of current value; example: `nums[i]=5` -> `r=3`.\n    'query(r - 1)': prefix sum of `freq[1..r-1]`, i.e. count of inserted values with rank < r; example: after inserting `[2,2,6]`, `freq=[0,2,0,1]`, `query(2)=2`.\n    'update(r)': increment `freq[r]` by 1 via Fenwick propagation; example: `update(3)` changes `freq=[0,2,0,1]` to `freq=[0,2,1,1]`.\n    'i & -i': lowest set bit (LSB); example: `12 (1100₂) -> 4`, `6 (0110₂) -> 2`, `7 (0111₂) -> 1`.\n    'i += i & -i': move to next ancestor during update; example: `i=3 -> 4 -> 8`.\n    'i -= i & -i': strip LSB during query; example: `i=7 -> 6 -> 4 -> 0`.\n    'tree = [0] * (len(ranks) + 1)': 1-indexed Fenwick array; index 0 unused.\n    'tree[i] += 1': add 1 to block sum at index i during update propagation."
+          },
+          "args": {
+            "nums: list[int]": "input array; example: `nums=[5,2,6,1,2]`."
+          },
+          "variables": {
+            "ranks": "compression map `value -> 1-based rank`; example: `{1:1, 2:2, 5:3, 6:4}`.",
+            "i": "index scanning right → left; processed suffix is `nums[i+1:]`.",
+            "r": "compressed rank of `nums[i]`; example: `nums[i]=6` -> `r=4`.",
+            "freq": "(conceptual) rank frequency array for `nums[i+1:]`; example: after `[2,2,6]` -> `freq=[0,2,0,1]`.",
+            "tree": "Fenwick array over `freq`; example: `freq=[0,2,0,1]` -> `tree=[0,0,2,0,3]`.",
+            "res": "result array; `res[i] = query(r - 1)`.",
+            "s": "prefix-sum accumulator in `query`."
+          },
+          "time_complexity": "O(n log n):\n    n = len(nums); each `query`/`update` is O(log K), K = number of distinct values.",
           "code": "class Solution:\n    def countSmaller(self, nums: list[int]) -> list[int]:\n\n        ranks = {v: i+1 for i, v in enumerate(sorted(set(nums)))}\n        tree = [0] * (len(ranks) + 1)\n        res = [0] * len(nums)\n\n        def update(i):\n            while i < len(tree):\n                tree[i] += 1\n                i += i & -i\n\n        def query(i):\n            s = 0\n            while i > 0:\n                s += tree[i]\n                i -= i & -i\n            return s\n\n        for i in range(len(nums) - 1, -1, -1):\n            r = ranks[nums[i]]\n            res[i] = query(r - 1)\n            update(r)\n\n        return res"
         },
         "list-ds.py": {

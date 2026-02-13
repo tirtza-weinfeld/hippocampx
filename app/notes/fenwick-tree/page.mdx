@@ -1,0 +1,68 @@
+# The Fenwick Tree (Binary Indexed Tree)
+
+
+## Resizable Table of Contents
+
+## 1. Concept
+A **Fenwick Tree** (or Binary Indexed Tree / BIT) is a data structure that allows you to efficiently do two things on an array of numbers in $O(\log N)$ time:
+
+1. **Update** a specific value (Point Update).
+2. **Calculate the Prefix Sum** (sum of all numbers from index 1 to $i$).
+
+It is implemented as a simple linear array (usually 1-based), but we visualize it as a tree based on binary properties.
+
+---
+
+## 2. The Golden Rule: Lowest Set Bit (LSB)
+Every index $i$ in the BIT stores the sum of a specific **range** of numbers ending at $i$.
+
+> **The length of the range index $i$ covers is equal to the value of its Lowest Set Bit.**
+
+We calculate this length using the bitwise trick:
+$$\text{length} = i \ \& \ (-i)$$
+
+**Examples:**
+* **Index 12** ($1100_2$): Lowest set bit is 4. Length = **4**. Covers range $[9, 12]$.
+* **Index 6** ($0110_2$): Lowest set bit is 2. Length = **2**. Covers range $[5, 6]$.
+* **Index 7** ($0111_2$): Lowest set bit is 1. Length = **1**. Covers range $[7, 7]$.
+
+---
+
+## 3. Operation: Query (Prefix Sum)
+To get the sum from index $1$ to $i$, we accumulate values by "chaining" backwards.
+
+**Logic:** Add the value at the current index, then subtract the length of the range it covers to find the next index.
+
+**Algorithm:**
+1. Initialize `sum = 0`.
+2. While $i > 0$:
+   * `sum += BIT[i]`
+   * **SUBTRACT** the LSB to move down: $i = i - (i \ \& \ -i)$
+3. Return `sum`.
+
+**Example: Sum(7)**
+1. **Start at 7** ($111_2$): Add `BIT[7]`. Subtract $1 \rightarrow$ Next is **6**.
+2. **At 6** ($110_2$): Add `BIT[6]`. Subtract $2 \rightarrow$ Next is **4**.
+3. **At 4** ($100_2$): Add `BIT[4]`. Subtract $4 \rightarrow$ Next is **0** (Stop).
+
+---
+
+## 4. Operation: Update (Point Update)
+If we add a value `delta` to index $i$, we must update `BIT[i]` and every "boss" node above it that includes $i$ in its range.
+
+**Logic:** Add the value to the current index, then **add** the length of the range to climb up to the next cover.
+
+**Algorithm:**
+1. While $i \le N$ (size of array):
+   * `BIT[i] += delta`
+   * **ADD** the LSB to move up: $i = i + (i \ \& \ -i)$
+
+**Example: Update(3)**
+1. **Start at 3** ($0011_2$): Update `BIT[3]`. LSB is 1.
+   * $3 + 1 = 4$. Next is **4**.
+2. **At 4** ($0100_2$): Update `BIT[4]`. LSB is 4.
+   * $4 + 4 = 8$. Next is **8**.
+3. **At 8** ($1000_2$): Update `BIT[8]`. LSB is 8.
+   * $8 + 8 = 16$. Next is **16**.
+
+Notice how adding the LSB clears the rightmost ones and carries over, effectively "climbing" the tree.

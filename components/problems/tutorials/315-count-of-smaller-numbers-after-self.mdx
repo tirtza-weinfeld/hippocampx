@@ -16,31 +16,23 @@ Given an integer array nums, return an integer array counts where counts[i] is t
 
 ### [!(ProblemIntuition)] Intuition
 
-- Traverse right → left:
-    - Maintain a frequency structure of values already seen.
-    - For each number:
-        - `query(r - 1)` gives how many strictly smaller values exist
-        - `update(r)` inserts the current value
-    - Fenwick Tree idea:
-        - `tree[i]` stores the sum of a specific range of frequencies.
-        - The size of that range is determined by the lowest set bit of `i`.
+- Coordinate Compression:
+        - map each value to its 1-based rank among sorted distinct values;
+        - example: `nums=[5,2,6,1,2]`, distinct sorted = `[1,2,5,6]` -> `ranks={1:1, 2:2, 5:3, 6:4}`.
 
-- Deep dive:Bit trick:
-        - `i & -i` isolates the lowest set bit of i.
-        - Example:
-            ```
-            i = 12  -> 1100
-            -i      -> 0100 (two’s complement)
-            i & -i  -> 0100 (4)
-            ```
-        - That 4 means index 12 is responsible for a block of size 4.
-        - Moving:
-            - `i += i & -i`   → jump to next block that includes this range
-            - `i -= i & -i`   → move to parent block in prefix sum
+- Sweep right → left:
+        - for each `nums[i]`, query how many already-inserted ranks are smaller, then insert `ranks[nums[i]]`.
+
+- Fenwick Tree (Binary Indexed Tree):
+        - maintains prefix sums over a conceptual frequency array `freq`, where `freq[r]` = count of inserted elements with rank `r`.
+        $$
+            \text{tree}[i] = \sum_{t = i - (i \& -i) + 1}^{i} \text{freq}[t]; \text{ block length} = i \& -i.
+        $$
 
 ### [!(ProblemTimeComplexity)] Time Complexity
 
-- O(n log n)
+- O(n log n):
+    - n = len(nums); each `query`/`update` is O(log K), K = number of distinct values.
 
 ### [!(ProblemCodeSnippet)] Code Snippet
 
