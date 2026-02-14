@@ -6,40 +6,32 @@ class Solution:
     Intuition:
         Randomly pick an integer from [0, n) excluding blacklisted values,
         with uniform probability and O(1) pick time.
-    
+        
         Core idea:
-        - Let B = len(blacklist)
-        - There are m = n - B valid numbers total
-        - Sample uniformly from [0, m)
-        - Remap only the blacklisted values that fall inside [0, m)
-          to valid numbers in the tail [m, n)
+            Let B = len(blacklist)
+            There are m = n - B valid numbers total
+            Sample uniformly from [0, m)
+            Remap only the blacklisted values that fall inside [0, m) to valid numbers in the tail [m, n)
 
-    Example:
-        n = 12
-        blacklist = [1, 4, 6]
-    
-        m = 12 - 3 = 9
-    
-        Sample range: [0, 9)  -> {0,1,2,3,4,5,6,7,8}
-        Tail range:   [9, 12) -> {9,10,11}
-    
-        Blacklisted values < m: {1,4,6}
-    
-        Build mapping:
-            1 -> 9
-            4 -> 10
-            6 -> 11
-    
-        Final mapping:
-            {1: 9, 4: 10, 6: 11}
-    
-        Picking:
-            x = random.randrange(9)
-            return map[x] if x is blacklisted else x
-    
-        This produces exactly:
-            {0,2,3,5,7,8,9,10,11}
-        each with probability 1/9.
+        Example:
+            n = 12
+            blacklist = [1, 4, 6]
+            m = 12 - 3 = 9
+            Sample range: [0, 9)  → `{0,1,2,3,4,5,6,7,8}`
+            Tail range:   [9, 12) → `{9,10,11}`
+            Blacklisted values `< m: {1,4,6}`
+            Build mapping:
+                1 →  9
+                4 →  10
+                6 →  11
+            Final mapping:
+                `{1: 9, 4: 10, 6: 11}`
+            Picking:
+                x = random.randrange(9)
+                return map[x] if x is blacklisted else x
+            This produces exactly:
+                `{0,2,3,5,7,8,9,10,11}`
+            each with probability 1/9.
     """
 
     def __init__(self, n: int, blacklist: list[int]):

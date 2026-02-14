@@ -410,19 +410,19 @@
     "710-random-pick-with-blacklist": {
       "time_stamps": {
         "created_at": "2026-01-29T12:17:02.474337",
-        "updated_at": "2026-01-29T12:51:52.087173"
+        "updated_at": "2026-02-14T15:34:17.754971"
       },
       "solutions": {
         "solution.py": {
           "code": "import random\n\nclass Solution:\n\n    def __init__(self, n: int, blacklist: list[int]):\n        self.m = n - len(blacklist)\n        black = set(blacklist)\n        self.map: dict[int, int] = {}\n\n        t = self.m\n        for b in blacklist:\n            if b < self.m:\n                while t in black:\n                    t += 1\n                self.map[b] = t\n                t += 1\n\n    def pick(self) -> int:\n        return self.map.get(x := random.randrange(self.m), x)",
-          "class_intuition": "Randomly pick an integer from [0, n) excluding blacklisted values,\n    with uniform probability and O(1) pick time.\n\n    Core idea:\n    - Let B = len(blacklist)\n    - There are m = n - B valid numbers total\n    - Sample uniformly from [0, m)\n    - Remap only the blacklisted values that fall inside [0, m)\n      to valid numbers in the tail [m, n)\n\nExample:\n    n = 12\n    blacklist = [1, 4, 6]\n\n    m = 12 - 3 = 9\n\n    Sample range: [0, 9)  -> {0,1,2,3,4,5,6,7,8}\n    Tail range:   [9, 12) -> {9,10,11}\n\n    Blacklisted values < m: {1,4,6}\n\n    Build mapping:\n        1 -> 9\n        4 -> 10\n        6 -> 11\n\n    Final mapping:\n        {1: 9, 4: 10, 6: 11}\n\n    Picking:\n        x = random.randrange(9)\n        return map[x] if x is blacklisted else x\n\n    This produces exactly:\n        {0,2,3,5,7,8,9,10,11}\n    each with probability 1/9."
+          "class_intuition": "Randomly pick an integer from [0, n) excluding blacklisted values,\n    with uniform probability and O(1) pick time.\n\n    Core idea:\n        Let B = len(blacklist)\n        There are m = n - B valid numbers total\n        Sample uniformly from [0, m)\n        Remap only the blacklisted values that fall inside [0, m) to valid numbers in the tail [m, n)\n\n    Example:\n        n = 12\n        blacklist = [1, 4, 6]\n        m = 12 - 3 = 9\n        Sample range: [0, 9)  → `{0,1,2,3,4,5,6,7,8}`\n        Tail range:   [9, 12) → `{9,10,11}`\n        Blacklisted values `< m: {1,4,6}`\n        Build mapping:\n            1 →  9\n            4 →  10\n            6 →  11\n        Final mapping:\n            `{1: 9, 4: 10, 6: 11}`\n        Picking:\n            x = random.randrange(9)\n            return map[x] if x is blacklisted else x\n        This produces exactly:\n            `{0,2,3,5,7,8,9,10,11}`\n        each with probability 1/9."
         }
       },
       "title": "Random Pick with Blacklist",
       "definition": "Given an integer `n` and a blacklist array, implement a class that picks a random integer from `[0, n-1]` uniformly that is not in the blacklist. Optimize to minimize calls to the random function.",
       "leetcode": "https://leetcode.com/problems/random-pick-with-blacklist/",
       "difficulty": "hard",
-      "topics": ["hash-table", "randomized"]
+      "topics": ["hash-table", "randomized", "TODO"]
     },
     "528-random-pick-with-weight": {
       "time_stamps": {
