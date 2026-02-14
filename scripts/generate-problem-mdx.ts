@@ -18,6 +18,7 @@ const __dirname = path.dirname(__filename)
 interface Solution {
   code: string,
   intuition?: string
+  class_intuition?: string
   time_complexity?: string
   space_complexity?: string
   args?: Record<string, string>
@@ -175,9 +176,10 @@ function generateSolutionContent(
   const solutionTitle = solutionFileNameToTitle(fileName)
   let content = `## ${solutionTitle}\n\n`
 
-  // Add intuition if available
-  if (solution.intuition) {
-    content += formatSection('Intuition', solution.intuition, 'ProblemIntuition', '###')
+  // Add intuition (combine class-level and method-level if both exist)
+  const intuitionParts = [solution.class_intuition, solution.intuition].filter(Boolean)
+  if (intuitionParts.length > 0) {
+    content += formatSection('Intuition', intuitionParts.join('\n\n'), 'ProblemIntuition', '###')
   }
 
   // Add complexity analysis
@@ -331,9 +333,10 @@ function generateMDXContent(problemId: string, problem: Problem, illustrationMap
     // Single solution - don't add solution title, just add the content directly
     const { fileName, solution, additionalSnippets } = solutionsToGenerate[0]
 
-    // Add intuition if available
-    if (solution.intuition) {
-      content += formatSection('Intuition', solution.intuition, 'ProblemIntuition')
+    // Add intuition (combine class-level and method-level if both exist)
+    const intuitionParts = [solution.class_intuition, solution.intuition].filter(Boolean)
+    if (intuitionParts.length > 0) {
+      content += formatSection('Intuition', intuitionParts.join('\n\n'), 'ProblemIntuition')
     }
 
     // Add complexity analysis

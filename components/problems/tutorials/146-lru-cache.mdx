@@ -12,6 +12,30 @@
 
 A cache that evicts the least recently used item when the cache is full.
 
+## [!(ProblemIntuition)] Intuition
+
+- Deep Dive: OrderedDict = dict + doubly-linked list (kept in sync):
+        - Deep Dive: Structure:
+            - dict: `key ──► node`
+            - list: `HEAD ⇄ k1 ⇄ k2 ⇄ k3 ⇄ TAIL`
+                - node = `(prev, next, key, value)`
+        - Deep Dive: Operations:
+            - `lookup od[k]`
+                - **dict:** `key → node` → **node:** read `value` → $O(1)$
+            - `insert od[k] = v` *(k not present)*
+                - **list:** link new node before `TAIL` → **dict:** store `k → node` → $O(1)$
+            - `update od[k] = v` *(k present)*
+                - **dict:** lookup node → **node:** `value = v` → **list unchanged** → $O(1)$
+            - `delete del od[k]`
+                - **dict:** remove `k` → **list:** unlink node → $O(1)$
+        - Deep Dive: Important behavior:
+            - Tracks **insertion order** (not usage order):
+                - `od[k]` and `od[k] = v` do **not** relink nodes.
+            - Usage order (LRU) is a policy you add via:
+                - `move_to_end(k)` (touch) and `popitem(last=False)` (evict LRU)
+        - *Key idea:*
+            - Order changes only by pointer splices; no rebuilding/shifting.
+
 ## [!(ProblemCodeSnippet)] Code Snippet
 
 ```python meta="source=problems/146-lru-cache/solution.py"

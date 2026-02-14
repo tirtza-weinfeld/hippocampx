@@ -25,9 +25,9 @@ Given an integer array nums, return an integer array counts where counts[i] is t
 
 - Fenwick Tree (Binary Indexed Tree):
         - maintains prefix sums over a conceptual frequency array `freq`, where `freq[r]` = count of inserted elements with rank `r`.
-        $$
-            \text{tree}[i] = \sum_{t = i - (i \& -i) + 1}^{i} \text{freq}[t]; \text{ block length} = i \& -i.
-        $$
+        - $$
+            - \text{tree}[i] = \sum_{t = i - (i \& -i) + 1}^{i} \text{freq}[t]; \text{ block length} = i \& -i.
+        - $$
 
 ### [!(ProblemTimeComplexity)] Time Complexity
 

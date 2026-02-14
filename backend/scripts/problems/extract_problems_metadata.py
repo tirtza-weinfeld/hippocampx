@@ -212,6 +212,17 @@ def extract_function_metadata(file_path: Path) -> dict[str, str]:
         # Store the full file content (cleaned of docstrings) for tooltip system
         full_file_code = clean_code(content)
 
+        # Extract Intuition from class-level docstring if present
+        class_intuition = None
+        for node in ast.walk(tree):
+            if isinstance(node, ast.ClassDef):
+                class_docstring = ast.get_docstring(node, clean=True) or ""
+                if class_docstring:
+                    parsed = parse_simple_docstring(class_docstring, ['Intuition', 'Expressions'])
+                    if 'intuition' in parsed:
+                        class_intuition = parsed['intuition']
+                break
+
         # Find the main function (first function definition)
         for node in ast.walk(tree):
             if isinstance(node, ast.FunctionDef):
@@ -350,6 +361,9 @@ def extract_function_metadata(file_path: Path) -> dict[str, str]:
                     return_desc = result['returns'].strip()
                     if not return_desc.startswith('`'):
                         result['returns'] = f"`{signature_types['return']}`: {return_desc}"
+
+                if class_intuition:
+                    result['class_intuition'] = class_intuition
 
                 return result
 

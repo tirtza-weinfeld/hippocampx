@@ -127,8 +127,8 @@ async function AgentProblemCardContent({
         <Suspense key={solution.id} fallback={<div className="text-gray-500">Loading...</div>}>
           {/* Code snippet */}
           <AgentSection section="codeSnippet" file={solution.file_name}>
-           {/* <CodeBlock className="language-python"  meta={`source=problems/${problem.slug}/${solution.file_name}`}> */}
-           <CodeBlock className="language-python" >
+           <CodeBlock className="language-python"  meta={`source=problems/${problem.slug}/${solution.file_name}`}>
+           {/* <CodeBlock className="language-python" > */}
             {solution.code}
            </CodeBlock>
           </AgentSection>

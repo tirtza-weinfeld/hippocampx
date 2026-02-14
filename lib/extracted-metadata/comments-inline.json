@@ -213,6 +213,12 @@
     17,
     18
   ],
+  "problems/560-subarray-sum-equals-k/solution.py": [
+    8,
+    9,
+    10,
+    11
+  ],
   "problems/191-number-of-1-bits/brian-kernighan.py": [
     3
   ],
@@ -440,11 +446,5 @@
     9,
     10,
     14
-  ],
-  "problems/560-subarray-sum-equals-k/solution.py": [
-    8,
-    9,
-    10,
-    11
   ]
 }

@@ -26,20 +26,25 @@ from docstring_parser import extract_metadata
 from code_cleaner import clean_code
 
 
-def find_expression_positions(source_lines: list[str], expr_text: str) -> list[dict]:
+def find_expression_positions(source_lines: list[str], expr_text: str,
+                              start_line: int = 0, end_line: int | None = None) -> list[dict]:
     """
-    Find all occurrences of an expression in source code.
-    
+    Find all occurrences of an expression in source code within a line range.
+
     Args:
         source_lines: List of source code lines
         expr_text: Expression text to search for (e.g., "hold1 = max(hold1, -p)")
-    
+        start_line: 0-based start line (inclusive) to scope the search
+        end_line: 0-based end line (exclusive) to scope the search
+
     Returns:
         List of position dictionaries with LSP-style ranges (0-based, consistent with generate_uses.py)
     """
     positions = []
-    
-    for line_num, line in enumerate(source_lines):
+    if end_line is None:
+        end_line = len(source_lines)
+
+    for line_num, line in enumerate(source_lines[start_line:end_line], start=start_line):
         start_char = 0
         while True:
             pos = line.find(expr_text, start_char)
@@ -80,20 +85,79 @@ def extract_file_expressions(file_path: Path, module_name: str) -> list[dict]:
     expressions = []
     
     try:
-        # Read the source code (keep raw for docstring parsing, but also get cleaned for position matching)
+        # Read both raw (for AST/docstrings) and cleaned (for position matching)
         raw_code = file_path.read_text(encoding="utf-8")
         cleaned_code = clean_code(raw_code)
-        source_lines = cleaned_code.split('\n')
+        cleaned_lines = cleaned_code.split('\n')
+        raw_lines = raw_code.split('\n')
         
         # Parse the RAW file to extract function metadata including expressions (need docstrings!)
         import ast
         tree = ast.parse(raw_code)
         
+        def process_expressions(node, context_path, search_start, search_end):
+            """Extract expressions from a node's docstring, scoped to its line range.
+
+            Searches raw_lines within the node's AST range to find which raw lines
+            contain the expression, then finds the same expression in cleaned_lines
+            for the final position output (since the frontend renders cleaned code).
+            """
+            docstring = ast.get_docstring(node)
+            if not docstring:
+                return
+            metadata = extract_metadata(raw_doc=docstring, node=node)
+            if 'expressions' not in metadata or not metadata['expressions']:
+                return
+
+            # Build a mapping from raw line index -> cleaned line index
+            # clean_code removes docstring lines and collapses blanks, so we
+            # need to know which raw lines survived and where they ended up.
+            # We do this by matching raw lines to cleaned lines in order.
+            raw_to_clean = {}
+            clean_idx = 0
+            for raw_idx in range(len(raw_lines)):
+                if clean_idx < len(cleaned_lines) and raw_lines[raw_idx] == cleaned_lines[clean_idx]:
+                    raw_to_clean[raw_idx] = clean_idx
+                    clean_idx += 1
+
+            for expr_text, description in metadata['expressions'].items():
+                # Search raw lines within this node's range
+                raw_positions = find_expression_positions(
+                    raw_lines, expr_text,
+                    start_line=search_start,
+                    end_line=search_end
+                )
+                for pos in raw_positions:
+                    raw_line = pos["range"]["start"]["line"]
+                    # Skip matches inside docstrings (they won't be in cleaned code)
+                    if raw_line not in raw_to_clean:
+                        continue
+                    clean_line = raw_to_clean[raw_line]
+                    char_start = pos["range"]["start"]["character"]
+                    char_end = pos["range"]["end"]["character"]
+                    qname = f"{module_name}:{context_path}.{expr_text}"
+                    expressions.append({
+                        "range": {
+                            "start": {"line": clean_line, "character": char_start},
+                            "end": {"line": clean_line, "character": char_end}
+                        },
+                        "nameRange": {
+                            "start": {"line": clean_line, "character": char_start},
+                            "end": {"line": clean_line, "character": char_end}
+                        },
+                        "qname": qname,
+                        "kind": "expression"
+                    })
+
         def process_node_with_context(node, context_path=""):
             """Recursively process AST nodes, maintaining the full context path."""
             if isinstance(node, ast.ClassDef):
                 class_name = node.name
                 new_context = f"{context_path}.{class_name}" if context_path else class_name
+                # Process class-level docstring — expressions apply to the entire class body
+                class_start = node.lineno - 1  # 0-based
+                class_end = node.end_lineno     # exclusive (end_lineno is 1-based, so already exclusive)
+                process_expressions(node, new_context, class_start, class_end)
                 # Process all nodes within this class
                 for child_node in node.body:
                     process_node_with_context(child_node, new_context)
@@ -102,30 +166,10 @@ def extract_file_expressions(file_path: Path, module_name: str) -> list[dict]:
                 function_name = node.name
                 new_context = f"{context_path}.{function_name}" if context_path else function_name
 
-                # Process docstring for this function/method
-                docstring = ast.get_docstring(node)
-                if docstring:
-                    # Extract metadata including expressions
-                    metadata = extract_metadata(raw_doc=docstring, node=node)
-
-                    # Check if this function has documented expressions
-                    if 'expressions' in metadata and metadata['expressions']:
-                        # Process each documented expression
-                        for expr_text, description in metadata['expressions'].items():
-                            # Find all occurrences of this expression in the source
-                            positions = find_expression_positions(source_lines, expr_text)
-
-                            # Create expression entries for each occurrence
-                            for pos in positions:
-                                qname = f"{module_name}:{new_context}.{expr_text}"
-
-                                expression_entry = {
-                                    "range": pos["range"],
-                                    "nameRange": pos["nameRange"],
-                                    "qname": qname,
-                                    "kind": "expression"
-                                }
-                                expressions.append(expression_entry)
+                # Process docstring — scope search to this function's line range only
+                func_start = node.lineno - 1
+                func_end = node.end_lineno
+                process_expressions(node, new_context, func_start, func_end)
 
                 # Process nested functions within this function
                 for child_node in node.body:

@@ -6,7 +6,77 @@
     },
     {
       "uri": "blackboard.py",
-      "symbols": []
+      "symbols": [
+        {
+          "name": "LRUCache",
+          "detail": "class LRUCache",
+          "kind": 5,
+          "range": {"start": {"line": 2, "character": 0}, "end": {"line": 18, "character": 46}},
+          "nameRange": {
+            "start": {
+              "line": 2,
+              "character": 6
+            },
+            "end": {
+              "line": 2,
+              "character": 14
+            }
+          },
+          "children": [
+            {
+              "name": "__init__",
+              "detail": "__init__(capacity: int)",
+              "kind": 6,
+              "range": {"start": {"line": 4, "character": 4}, "end": {"line": 6, "character": 30}},
+              "nameRange": {
+                "start": {
+                  "line": 4,
+                  "character": 8
+                },
+                "end": {
+                  "line": 4,
+                  "character": 16
+                }
+              },
+              "children": []
+            },
+            {
+              "name": "get",
+              "detail": "get(key: int) -> int",
+              "kind": 6,
+              "range": {"start": {"line": 8, "character": 4}, "end": {"line": 12, "character": 17}},
+              "nameRange": {
+                "start": {
+                  "line": 8,
+                  "character": 8
+                },
+                "end": {
+                  "line": 8,
+                  "character": 11
+                }
+              },
+              "children": []
+            },
+            {
+              "name": "put",
+              "detail": "put(key: int, value: int) -> None",
+              "kind": 6,
+              "range": {"start": {"line": 14, "character": 4}, "end": {"line": 18, "character": 46}},
+              "nameRange": {
+                "start": {
+                  "line": 14,
+                  "character": 8
+                },
+                "end": {
+                  "line": 14,
+                  "character": 11
+                }
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
     },
     {
       "uri": "blackboard2.py",
