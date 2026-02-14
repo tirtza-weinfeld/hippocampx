@@ -83,6 +83,10 @@
   "problems/53-maximum-subarray/solution.py": [
     {"range": {"start": {"line": 3, "character": 8}, "end": {"line": 3, "character": 43}}, "nameRange": {"start": {"line": 3, "character": 8}, "end": {"line": 3, "character": 43}}, "qname": "problems.53-maximum-subarray.solution:maximum_subarray.curr_sum = max(num, curr_sum + num)", "kind": "expression"}
   ],
+  "problems/79-word-search/solution.py": [
+    {"range": {"start": {"line": 6, "character": 8}, "end": {"line": 6, "character": 20}}, "nameRange": {"start": {"line": 6, "character": 8}, "end": {"line": 6, "character": 20}}, "qname": "problems.79-word-search.solution:Solution.exist.if m * n < w", "kind": "expression"},
+    {"range": {"start": {"line": 11, "character": 8}, "end": {"line": 11, "character": 48}}, "nameRange": {"start": {"line": 11, "character": 8}, "end": {"line": 11, "character": 48}}, "qname": "problems.79-word-search.solution:Solution.exist.if any(wc[c] > bc.get(c, 0) for c in wc)", "kind": "expression"}
+  ],
   "problems/256-paint-house/vector.py": [
     {"range": {"start": {"line": 9, "character": 16}, "end": {"line": 9, "character": 31}}, "nameRange": {"start": {"line": 9, "character": 16}, "end": {"line": 9, "character": 31}}, "qname": "problems.256-paint-house.vector:Solution.minCost.dp.nxt = dp(i + 1)", "kind": "expression"}
   ],
@@ -114,12 +118,8 @@
     {"range": {"start": {"line": 8, "character": 20}, "end": {"line": 8, "character": 37}}, "nameRange": {"start": {"line": 8, "character": 20}, "end": {"line": 8, "character": 37}}, "qname": "problems.841-keys-and-rooms.solution:Solution.canVisitAllRooms.stack.append(key)", "kind": "expression"}
   ],
   "problems/212-word-search-ii/solution.py": [
-    {"range": {"start": {"line": 5, "character": 12}, "end": {"line": 5, "character": 41}}, "nameRange": {"start": {"line": 5, "character": 12}, "end": {"line": 5, "character": 41}}, "qname": "problems.212-word-search-ii.solution:word_search_II.node = node.setdefault(c, {})", "kind": "expression"},
-    {"range": {"start": {"line": 12, "character": 8}, "end": {"line": 12, "character": 22}}, "nameRange": {"start": {"line": 12, "character": 8}, "end": {"line": 12, "character": 22}}, "qname": "problems.212-word-search-ii.solution:word_search_II.if \"$\" in node", "kind": "expression"},
-    {"range": {"start": {"line": 13, "character": 12}, "end": {"line": 13, "character": 37}}, "nameRange": {"start": {"line": 13, "character": 12}, "end": {"line": 13, "character": 37}}, "qname": "problems.212-word-search-ii.solution:word_search_II.res.append(node.pop(\"$\"))", "kind": "expression"},
-    {"range": {"start": {"line": 18, "character": 8}, "end": {"line": 18, "character": 19}}, "nameRange": {"start": {"line": 18, "character": 8}, "end": {"line": 18, "character": 19}}, "qname": "problems.212-word-search-ii.solution:word_search_II.if not node", "kind": "expression"},
-    {"range": {"start": {"line": 14, "character": 8}, "end": {"line": 14, "character": 24}}, "nameRange": {"start": {"line": 14, "character": 8}, "end": {"line": 14, "character": 24}}, "qname": "problems.212-word-search-ii.solution:word_search_II.board[i][j] = \"#", "kind": "expression"},
-    {"range": {"start": {"line": 17, "character": 8}, "end": {"line": 17, "character": 23}}, "nameRange": {"start": {"line": 17, "character": 8}, "end": {"line": 17, "character": 23}}, "qname": "problems.212-word-search-ii.solution:word_search_II.board[i][j] = c", "kind": "expression"}
+    {"range": {"start": {"line": 5, "character": 24}, "end": {"line": 5, "character": 41}}, "nameRange": {"start": {"line": 5, "character": 24}, "end": {"line": 5, "character": 41}}, "qname": "problems.212-word-search-ii.solution:word_search_II.setdefault(c, {})", "kind": "expression"},
+    {"range": {"start": {"line": 5, "character": 12}, "end": {"line": 5, "character": 41}}, "nameRange": {"start": {"line": 5, "character": 12}, "end": {"line": 5, "character": 41}}, "qname": "problems.212-word-search-ii.solution:word_search_II.node = node.setdefault(c, {})", "kind": "expression"}
   ],
   "problems/36-valid-sudoku/solution.py": [
     {"range": {"start": {"line": 8, "character": 12}, "end": {"line": 8, "character": 16}}, "nameRange": {"start": {"line": 8, "character": 12}, "end": {"line": 8, "character": 16}}, "qname": "problems.36-valid-sudoku.solution:is_valid_sudoku.if (", "kind": "expression"},

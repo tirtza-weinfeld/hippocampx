@@ -14,44 +14,50 @@ Given a board and a list of words, find all words in the board.
 
 ## [!(ProblemIntuition)] Intuition
 
-- Prefix rails
-    - The trie lays down "prefix rails" across the grid: you only move where a rail continues; off‑rail steps end instantly.
-    - A terminal is a station: record the word once, close that spur, and drop empty rails as you pass. In one walk, a cell is used at most once.
+- Build a trie of all words, then DFS the grid while synchronizing with the trie:
+        - The trie restricts DFS to only paths that match some word prefix.Instead of exploring all board paths, we explore only *possible* dictionary continuations.
+        - Found words are removed(`res.append(node.pop("$"))`), and empty trie branches are pruned(`f not node: parent.pop(c)` ), so the search space continuously shrinks.
 
 ## [!(ProblemTimeComplexity)] Time Complexity
 
-- O(m n * 4^L)
-    - **Symbols:** m×n board, W=∑(w∈dict)|w|, L=max|w|.
-    - **Build trie:** O(W).
-    - **DFS (worst case):** first step ≤ 4 choices, then ≤ 3 per step ⇒ O(m n * 4 * 3^(L-1)). Coarse bound: O(m n * 4^L).
-    - **Space:** trie O(W); recursion/visited path O(L).
+- $O(mn \cdot 3^{L})$
+    - where $m = \text{len(board)}$, $n = \text{len(board[0])}$, and $L = \max(\text{len(word)})$.
+    - Build trie: $O\!\left(\sum |word|\right)$.
+    - DFS search: Up to $mn$ starting cells. Branching ≤ $4$ initially and ≤ $3$ afterward (cannot revisit the previous cell): $mn \cdot 4 \cdot 3^{L-1}$.
 
 ## [!(ProblemCodeSnippet)] Code Snippet
 
 ```python meta="source=problems/212-word-search-ii/solution.py"
 def word_search_II(board: list[list[str]], words: list[str]) -> list[str]:
-    trie = {}  
+    trie = {}
     for word in words:
         node = trie
         for c in word:
             node = node.setdefault(c, {})
         node["$"] = word
 
-    def dfs(i, j, parent):
+    def dfs(i: int, j: int, parent: dict) -> None:
+
         if not (0 <= i < m and 0 <= j < n) or (c := board[i][j]) not in parent:
             return
+
         node = parent[c]
         if "$" in node:
             res.append(node.pop("$"))
         board[i][j] = "#"
+
         for x, y in ((i - 1, j), (i + 1, j), (i, j - 1), (i, j + 1)):
             dfs(x, y, node)
         board[i][j] = c
+
         if not node:
             parent.pop(c)
 
     m, n, res = len(board), len(board[0]), []
-    [dfs(i, j, trie) for i in range(m) for j in range(n) if board[i][j] in trie]
+    for i in range(m):
+        for j in range(n):
+            if board[i][j] in trie:
+                dfs(i, j, trie)
 
     return res
 ```

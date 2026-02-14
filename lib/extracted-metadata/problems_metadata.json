@@ -2226,20 +2226,27 @@
     "79-word-search": {
       "time_stamps": {
         "created_at": "2025-09-12T16:05:16.850224",
-        "updated_at": "2025-09-30T19:05:08.952204"
+        "updated_at": "2026-02-14T17:23:51.005267"
       },
       "solutions": {
         "solution.py": {
-          "intuition": "Dfs with early exit on mismatch\n    Start dfs from each cell\n    At each step:\n        Check bounds and character match\n        Mark visited cell with a temp symbol (e.g. #)\n        Try 4 directions (no revisiting)\n        Restore cell after backtracking\n        Stop early if the full word is matched.",
-          "time_complexity": "O(M * N * 3^L)\n    M, N = board size\n    L = word length\n    Each step explores at most 3 directions (excluding the one it came from)\n    Runtime improves with early mismatches and pruning",
-          "code": "def word_search(board: list[list[str]], word: str) -> bool:\n    rows, cols, n = len(board), len(board[0]), len(word)\n    def dfs(r: int, c: int, i: int) -> bool:\n        if i == n:\n            return True\n        if not (0 <= r < rows and 0 <= c < cols and board[r][c] == word[i]):\n            return False\n        tmp, board[r][c] = board[r][c], \"#\"\n        for x, y in ((r + 1, c), (r - 1, c), (r, c + 1), (r, c - 1)):\n            if dfs(x, y, i + 1):\n                board[r][c] = tmp\n                return True\n        board[r][c] = tmp\n        return False\n    return any(\n        dfs(r, c, 0)\n        for r in range(rows)\n        for c in range(cols)\n        if board[r][c] == word[0]\n    )"
+          "intuition": "Backtracking on a grid:\n        Try to match `word` by walking up/down/left/right, marking a cell as used (`\"#\"`) so it cannot be reused.\n    Strong pruning before DFS:\n        1. Length check: if $w > mn$ → impossible(not enough cells to form the word).\n        2. Frequency check:\n            A path cannot reuse a cell, so for every character $c$, $\\text{wc}[c] \\le \\text{bc}[c]$ must hold.\n        3. Reduce branching:\n            Start DFS from the rarer endpoint by reversing the word when $\\text{bc}[\\text{word}[0]] > \\text{bc}[\\text{word}[-1]]$.",
+          "variables": {
+            "bc": "counts how many times each letter exists anywhere on the board",
+            "wc": "counts how many times each letter is required by the word"
+          },
+          "expressions": {
+            "if m * n < w": "1. Length check: if $w > mn$ → impossible(not enough cells to form the word).\n    'if any(wc[c] > bc.get(c, 0) for c in wc)': 2. Frequency check: A path cannot reuse a cell, so for every character $c$, $\\text{wc}[c] \\le \\text{bc}[c]$ must hold.\n    'if bc[word[0]] > bc[word[-1]]' : 3. Reduce branching: If the first letter is more common than the last letter, search the word backward instead."
+          },
+          "time_complexity": "$O(mn \\cdot 3^w)$\n    Let $m,n$ be board dimensions and $w=\\text{len(word)}$.\n    Prechecks: $O(mn + w)$.\n    DFS worst case: we may start from every cell ($mn$ choices), the first step has at most 4 directions and each subsequent step at most 3 (cannot go back to the previous cell), giving $O(mn \\cdot 4 \\cdot 3^{w-1}) = O(mn \\cdot 3^{w})$.",
+          "code": "from collections import Counter\n\nclass Solution:\n    def exist(self, board: list[list[str]], word: str) -> bool:\n\n        m, n, w = len(board), len(board[0]), len(word)\n        if m * n < w:\n            return False\n\n        bc = Counter(c for row in board for c in row)\n        wc = Counter(word)\n        if any(wc[c] > bc.get(c, 0) for c in wc):\n            return False\n\n        if bc[word[0]] > bc[word[-1]]:\n            word = word[::-1]\n\n        def dfs(r: int, c: int, i: int) -> bool:\n            if i == w:\n                return True\n\n            if 0 <= r < m and 0 <= c < n and board[r][c] == word[i]:\n                board[r][c] = \"#\"\n                if dfs(r - 1, c, i + 1) or dfs(r + 1, c, i + 1) or dfs(r, c - 1, i + 1) or dfs(r, c + 1, i + 1):\n                    return True\n                board[r][c] = word[i]\n            return False\n\n        return any(\n            dfs(r, c, 0)\n            for r, row in enumerate(board)\n            for c, ch in enumerate(row)\n            if ch == word[0]\n        )"
         }
       },
       "title": "Word Search",
       "definition": "Determine if a word exists in a 2D board by following adjacent letters without reuse.",
       "leetcode": "https://leetcode.com/problems/word-search",
       "difficulty": "medium",
-      "topics": ["backtrack"]
+      "topics": ["backtrack", "dfs"]
     },
     "39-combination-sum": {
       "time_stamps": {
@@ -2858,28 +2865,27 @@
     "212-word-search-ii": {
       "time_stamps": {
         "created_at": "2025-09-12T16:05:43.508892",
-        "updated_at": "2025-09-30T19:05:08.949078"
+        "updated_at": "2026-02-14T18:07:49.237574"
       },
       "solutions": {
         "solution.py": {
-          "intuition": "Prefix rails\n    The trie lays down \"prefix rails\" across the grid: you only move where a rail continues; off‑rail steps end instantly.\n    A terminal is a station: record the word once, close that spur, and drop empty rails as you pass. In one walk, a cell is used at most once.",
-          "time_complexity": "O(m n * 4^L)\n    **Symbols:** m×n board, W=∑(w∈dict)|w|, L=max|w|.\n    **Build trie:** O(W).\n    **DFS (worst case):** first step ≤ 4 choices, then ≤ 3 per step ⇒ O(m n * 4 * 3^(L-1)). Coarse bound: O(m n * 4^L).\n    **Space:** trie O(W); recursion/visited path O(L).",
+          "intuition": "Build a trie of all words, then DFS the grid while synchronizing with the trie:\n        The trie restricts DFS to only paths that match some word prefix.Instead of exploring all board paths, we explore only *possible* dictionary continuations.\n        Found words are removed(`res.append(node.pop(\"$\"))`), and empty trie branches are pruned(`f not node: parent.pop(c)` ), so the search space continuously shrinks.",
+          "time_complexity": "$O(mn \\cdot 3^{L})$\n    where $m = \\text{len(board)}$, $n = \\text{len(board[0])}$, and $L = \\max(\\text{len(word)})$.\n    Build trie: $O\\!\\left(\\sum |word|\\right)$.\n    DFS search: Up to $mn$ starting cells. Branching ≤ $4$ initially and ≤ $3$ afterward (cannot revisit the previous cell): $mn \\cdot 4 \\cdot 3^{L-1}$.",
           "variables": {
-            "trie": "Build trie from **words** list. Each end node gets a `$` key holding the word",
-            "m": "number of rows",
-            "n": "number of columns",
-            "res": "the list of found words"
+            "trie": "nested dict; edges are chars; terminal stored as '$' -> full word.",
+            "parent": "trie node for the current prefix (the dict that should contain the next char).",
+            "node": "child trie node after consuming current board char.",
+            "res": "collected unique words."
           },
           "expressions": {
-            "node = node.setdefault(c, {})": "create a new node for the character if it doesn't exist",
-            "if \"$\" in node": "if the current node is the end of a word",
-            "res.append(node.pop(\"$\"))": "add the word to the result list and remove the \"$\" key to prevent duplicates",
-            "if not node": "prune the trie to remove dead branches.",
-            "[dfs": ".. Launch DFS from every cell that matches any trie root key",
-            "board[i][j] = \"#\"": "Mark as visited",
-            "board[i][j] = c": "Restore cell"
+            "setdefault(c, {})": "key=`c`, default=`{}` → if key exists → return its value; if key does not exist → insert key = default and return default",
+            "node = node.setdefault(c, {})": "follow/create the child dict for char c.",
+            "if (c := board[i][j]) not in parent": "prefix mismatch -> stop immediately.",
+            "res.append(node.pop(\"$\"))": "found a full word; record once; remove '$' to avoid duplicates.",
+            "if not node: parent.pop(c)": "child dict became empty -> prune this edge from its parent.",
+            "board[i][j] = \"#\" / board[i][j] = c": "mark/unmark visited for the current path."
           },
-          "code": "def word_search_II(board: list[list[str]], words: list[str]) -> list[str]:\n    trie = {}  \n    for word in words:\n        node = trie\n        for c in word:\n            node = node.setdefault(c, {})\n        node[\"$\"] = word\n\n    def dfs(i, j, parent):\n        if not (0 <= i < m and 0 <= j < n) or (c := board[i][j]) not in parent:\n            return\n        node = parent[c]\n        if \"$\" in node:\n            res.append(node.pop(\"$\"))\n        board[i][j] = \"#\"\n        for x, y in ((i - 1, j), (i + 1, j), (i, j - 1), (i, j + 1)):\n            dfs(x, y, node)\n        board[i][j] = c\n        if not node:\n            parent.pop(c)\n\n    m, n, res = len(board), len(board[0]), []\n    [dfs(i, j, trie) for i in range(m) for j in range(n) if board[i][j] in trie]\n\n    return res"
+          "code": "def word_search_II(board: list[list[str]], words: list[str]) -> list[str]:\n    trie = {}\n    for word in words:\n        node = trie\n        for c in word:\n            node = node.setdefault(c, {})\n        node[\"$\"] = word\n\n    def dfs(i: int, j: int, parent: dict) -> None:\n\n        if not (0 <= i < m and 0 <= j < n) or (c := board[i][j]) not in parent:\n            return\n\n        node = parent[c]\n        if \"$\" in node:\n            res.append(node.pop(\"$\"))\n        board[i][j] = \"#\"\n\n        for x, y in ((i - 1, j), (i + 1, j), (i, j - 1), (i, j + 1)):\n            dfs(x, y, node)\n        board[i][j] = c\n\n        if not node:\n            parent.pop(c)\n\n    m, n, res = len(board), len(board[0]), []\n    for i in range(m):\n        for j in range(n):\n            if board[i][j] in trie:\n                dfs(i, j, trie)\n\n    return res"
         }
       },
       "title": "Word Search II",
