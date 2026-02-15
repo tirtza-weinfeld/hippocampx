@@ -26,6 +26,8 @@ File limits (lines):
 
 ## Guardrails
 
+- **Read `AGENTS.md` at session start** — contains framework-specific rules that must be followed
+
 - Read before edit — never propose changes to unseen code
 - Smart file reading — max 400 lines per read; for files > 400 lines, use Grep to find relevant line numbers first, then read that specific section with `offset` and `limit`; NEVER default to reading from line 1
 - Verify before assume — check project files, don't guess
