@@ -1,21 +1,26 @@
-from collections import Counter, defaultdict
+from collections import Counter
 
-def minWindow(s: str, t: str) -> str:
+
+def min_window(s: str, t: str) -> str:
     """
-    Time Complexity:
-        O(m + n)
+    Variables:
+        deficit: `deficit[x]` = required count - window count
+        missing: total characters still required
+        best: best window as half-open [l, r)
     """
-    t_count, have = Counter(t), defaultdict(int)
-    letters_needed, min_idx, l = len(t_count), None, 0
-    for r, c in enumerate(s):
-        have[c] += 1
-        if have[c] == t_count[c]:
-            letters_needed -= 1
-            while letters_needed == 0:
-                if not min_idx or r - l + 1 < min_idx[1] - min_idx[0]:
-                    min_idx = l, r + 1
-                have[s[l]] -= 1
-                if have[s[l]] < t_count[s[l]]:
-                    letters_needed += 1
-                l += 1
-    return "" if min_idx == None else s[min_idx[0] : min_idx[1]]
+    deficit, missing = Counter(t), len(t)
+    best, l = (0, len(s) + 1), 0
+
+    for r, c in enumerate(s):         # expand window by moving right pointer
+        missing -= deficit[c] > 0     # if c was still needed, satisfy one requirement
+        deficit[c] -= 1               # include c in window (may become negative = surplus)
+
+        while not missing:            # window currently satisfies all requirements
+            if r - l + 1 < best[1] - best[0]:  # found smaller valid window
+                best = (l, r + 1)     # store as half-open interval
+
+            deficit[s[l]] += 1        # remove left char from window
+            missing += deficit[s[l]] > 0  # if we now lack that char, window becomes invalid
+            l += 1                    # shrink from the left
+
+    return "" if best[1] > len(s) else s[best[0]:best[1]]  # return best substring or ""

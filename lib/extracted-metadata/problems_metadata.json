@@ -1889,12 +1889,16 @@
     "76-minimum-window-substring": {
       "time_stamps": {
         "created_at": "2025-10-03T14:38:56.852556",
-        "updated_at": "2025-10-03T15:41:07.016797"
+        "updated_at": "2026-02-16T21:27:30.818029"
       },
       "solutions": {
         "solution.py": {
-          "time_complexity": "O(m + n)",
-          "code": "from collections import Counter, defaultdict\n\ndef minWindow(s: str, t: str) -> str:\n    t_count, have = Counter(t), defaultdict(int)\n    letters_needed, min_idx, l = len(t_count), None, 0\n    for r, c in enumerate(s):\n        have[c] += 1\n        if have[c] == t_count[c]:\n            letters_needed -= 1\n            while letters_needed == 0:\n                if not min_idx or r - l + 1 < min_idx[1] - min_idx[0]:\n                    min_idx = l, r + 1\n                have[s[l]] -= 1\n                if have[s[l]] < t_count[s[l]]:\n                    letters_needed += 1\n                l += 1\n    return \"\" if min_idx == None else s[min_idx[0] : min_idx[1]]"
+          "variables": {
+            "deficit": "`deficit[x]` = required count - window count",
+            "missing": "total characters still required",
+            "best": "best window as half-open [l, r)"
+          },
+          "code": "from collections import Counter\n\ndef min_window(s: str, t: str) -> str:\n    deficit, missing = Counter(t), len(t)\n    best, l = (0, len(s) + 1), 0\n\n    for r, c in enumerate(s):\n        missing -= deficit[c] > 0\n        deficit[c] -= 1\n\n        while not missing:\n            if r - l + 1 < best[1] - best[0]:\n                best = (l, r + 1)\n\n            deficit[s[l]] += 1\n            missing += deficit[s[l]] > 0\n            l += 1\n\n    return \"\" if best[1] > len(s) else s[best[0]:best[1]]"
         }
       },
       "title": "Minimum Window Substring",
@@ -3044,13 +3048,25 @@
     "127-word-ladder": {
       "time_stamps": {
         "created_at": "2025-09-12T16:05:33.324026",
-        "updated_at": "2025-09-30T19:05:08.947226"
+        "updated_at": "2026-02-16T22:25:12.532691"
       },
       "solutions": {
         "solution.py": {
-          "intuition": "Bidirectional BFS Meets in the Middle 🤝:\n    This solution uses two  optimizations. First, it **pre-computes all possible generic transformations** (e.g., `h*t`) in a dictionary, allowing for instant lookups of neighboring words instead of generating them on the fly. Second, it performs a **bidirectional BFS**, launching one search from the `beginWord` and another from the `endWord`. By always expanding the smaller of the two frontiers, it drastically reduces the search space. The algorithm finishes when the two searches meet, at which point the shortest path is found.",
-          "time_complexity": "O(N * L)\n    where N is the number of words and L is the length of each word. The dominant operation is the initial pre-computation step to build the `combos` dictionary. The subsequent bidirectional search is typically much faster than this initial setup.",
-          "code": "from collections import defaultdict\n\ndef word_ladder(beginWord: str, endWord: str, wordList: list[str]) -> int:\n    if endWord not in wordList:\n        return 0\n\n    L = len(beginWord)\n    combos: dict[str, list[str]] = defaultdict(list)\n    for w in wordList:\n        for i in range(L):\n            combos[w[:i] + \"*\" + w[i+1:]].append(w)\n\n    front, back = {beginWord}, {endWord}\n    dist_front, dist_back = {beginWord: 1}, {endWord: 1}\n\n    while front and back:\n        if len(front) > len(back):\n            front, back = back, front\n            dist_front, dist_back = dist_back, dist_front\n\n        next_front = set()\n        for word in front:\n            for i in range(L):\n                for n in combos[word[:i] + \"*\" + word[i+1:]]:\n                    if n in dist_back:\n                        return dist_front[word] + dist_back[n]\n                    if n not in dist_front:\n                        dist_front[n] = dist_front[word] + 1\n                        next_front.add(n)\n        front = next_front\n\n    return 0"
+          "intuition": "Bidirectional BFS Meets in the Middle 🤝:\n        View each word as a node; an edge exists if two words differ by one letter.\n            The task is therefore the shortest path problem in an unweighted graph.\n        Precompute wildcard patterns (e.g. `h*t`) mapping to all matching words:\n            This allows immediate lookup of all valid one-step neighbors                 instead of generating transformations dynamically.\n        Run BFS simultaneously from `s`(source) and `t`(target):\n            - The algorithm always expands the *smaller frontier* to reduce                 the number of explored states. To achieve this, the roles of                 `front` and `back` may swap during execution — they initially                 represent source and target searches, but afterward simply                 denote the smaller and larger frontier.\n            - When a generated word has already been visited from the                 opposite side, the two searches meet and the shortest                 transformation length is determined.\n        After a wildcard bucket is processed, it is cleared:\n            so that the same adjacency list is not scanned again,                 avoiding redundant work.",
+          "time_complexity": "$O(N \\cdot m)$:\n    where $N$ is the number of words and $m$ is the word length.\n    Building wildcard buckets costs $O(N \\cdot m)$.\n    The bidirectional BFS also totals $O(N \\cdot m)$ since each         bucket is expanded once.",
+          "variables": {
+            "buckets": "map wildcard pattern → list of matching words (implicit adjacency)",
+            "m": "word length",
+            "front": "frontier currently being expanded (may swap sides)",
+            "back": "opposite frontier",
+            "seen_f": "visited nodes aligned with `front` (may flip)",
+            "seen_b": "visited nodes aligned with `back`  (may flip)",
+            "steps": "current transformation length (BFS depth)"
+          },
+          "expressions": {
+            "steps += 1": "moving one BFS layer deeper\n    'nxt = set()': next frontier to build"
+          },
+          "code": "from collections import defaultdict\n\ndef ladder_length(s: str, t: str, words: list[str]) -> int:\n    if t not in words: return 0\n\n    buckets, m = defaultdict(list), len(s)\n    for w in words:\n        for i in range(m):\n            buckets[w[:i] + \"*\" + w[i + 1 :]].append(w)\n\n    front, back = {s}, {t}\n    seen_f, seen_b = {s}, {t}\n    steps = 1\n\n    while front and back:\n        if len(front) > len(back):\n            front, back, seen_f, seen_b = back, front, seen_b, seen_f\n        steps += 1; nxt = set()\n        for u in front:\n            for i in range(m):\n                for v in buckets[(key := u[:i] + \"*\" + u[i + 1 :])]:\n                    if v in seen_b:\n                        return steps\n                    if v not in seen_f:\n                        seen_f.add(v)\n                        nxt.add(v)\n                buckets[key] = []\n        front = nxt\n    return 0"
         }
       },
       "title": "Word Ladder",

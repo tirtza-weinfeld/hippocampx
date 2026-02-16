@@ -4,6 +4,7 @@
 // import LRU from '@/components/problems/tutorials/146-lru-cache.mdx'
 // import Word from '@/components/problems/tutorials/79-word-search.mdx'
 // import Word2 from '@/components/problems/tutorials/212-word-search-ii.mdx'
+import WordLadder from '@/components/problems/tutorials/127-word-ladder.mdx'
 export default function TestPage() {
  
   
@@ -14,6 +15,7 @@ export default function TestPage() {
      {/* <LRU/> */}
      {/* <Word/> */}
      {/* <Word2/> */}
+     <WordLadder/>
     </div>
   )
 }
