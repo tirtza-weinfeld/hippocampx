@@ -1,12 +1,12 @@
 import { Suspense } from 'react';
-import { getSolutionsByProblemId } from '@/lib/db/queries/problems';
+import { getSolutionsByProblemId, getSymbolsBySolutionId } from '@/lib/db/queries/problems';
 import { AgentCardShell, AgentSection } from '@/components/agent';
 import { AgentCardShellContent } from '@/components/agent/agent-card-shell-content';
 import { TimeComplexityBadge } from '@/components/agent/time-complexity-badge';
 import type { Problem, Solution } from '@/lib/db/schema';
 import type { SectionType } from '@/components/agent/agent-section-tab';
 import { MarkdownRenderer } from '@/components/mdx/parse/markdown-renderer';
-import CodeBlock from '@/components/mdx/code/code-block';
+import { DbCodeBlock } from './db-code-block';
 
 export type AgentProblemCardProps = {
   problem: Problem;
@@ -72,41 +72,33 @@ async function AgentProblemCardContent({
   problem: Problem;
   solutionsPromise: Promise<Solution[]>
 }) {
-  // Await the promise in this suspended component
   const solutionsList = await solutionsPromise;
+
+  // Fetch symbols for all solutions in parallel
+  const symbolsBySolution = await Promise.all(
+    solutionsList.map(s => getSymbolsBySolutionId(s.id))
+  );
 
   // Build file list and section map
   const solutionFiles = solutionsList.map(s => s.file_name);
   const defaultFile = solutionFiles[0] || '';
 
-  // Build fileSectionMap - which sections are available for each file
   const fileSectionMap: Record<string, SectionType[]> = {};
 
-  for (const solution of solutionsList) {
-
+  for (let i = 0; i < solutionsList.length; i++) {
+    const solution = solutionsList[i];
+    const syms = symbolsBySolution[i];
     const sections: SectionType[] = [];
 
-    // Definition is shared across all files
-    if (problem.definition) {
-      sections.push('definition');
-    }
-
-    // Code snippet always exists
+    if (problem.definition) sections.push('definition');
     sections.push('codeSnippet');
-
-    // Optional sections
     if (solution.intuition) sections.push('intuition');
     if (solution.time_complexity) sections.push('timeComplexity');
-    if (solution.variables && Object.keys(solution.variables as object).length > 0) {
-      sections.push('keyVariables');
-    }
-    if (solution.expressions && Object.keys(solution.expressions as object).length > 0) {
-      sections.push('keyExpressions');
-    }
+    if (syms.some(s => s.kind === 'variable')) sections.push('keyVariables');
+    if (syms.some(s => s.kind === 'expression')) sections.push('keyExpressions');
 
     fileSectionMap[solution.file_name] = sections;
   }
-
 
   return (
     <AgentCardShellContent
@@ -118,59 +110,66 @@ async function AgentProblemCardContent({
       {problem.definition && (
         <AgentSection section="definition">
           <MarkdownRenderer>{problem.definition}</MarkdownRenderer>
-          {/* <div>{problem.definition}</div> */}
         </AgentSection>
       )}
 
       {/* Solution-specific sections */}
-      {solutionsList.map(solution => (
-        <Suspense key={solution.id} fallback={<div className="text-gray-500">Loading...</div>}>
-          {/* Code snippet */}
-          <AgentSection section="codeSnippet" file={solution.file_name}>
-           {/* <CodeBlock className="language-python"  meta={`source=problems/${problem.slug}/${solution.file_name}`}> */}
-           <CodeBlock className="language-python" >
-            {solution.code}
-           </CodeBlock>
-          </AgentSection>
+      {solutionsList.map((solution, i) => {
+        const syms = symbolsBySolution[i];
+        const variables = syms.filter(s => s.kind === 'variable');
+        const expressions = syms.filter(s => s.kind === 'expression');
 
-          {/* Intuition */}
-          {solution.intuition && (
-            <AgentSection section="intuition" file={solution.file_name}>
-              <MarkdownRenderer>{solution.intuition}</MarkdownRenderer>
-              {/* <pre> {solution.intuition}</pre> */}
+        return (
+          <Suspense key={solution.id} fallback={<div className="text-gray-500">Loading...</div>}>
+            {/* Code snippet with DB-backed tooltips */}
+            <AgentSection section="codeSnippet" file={solution.file_name}>
+              <DbCodeBlock solutionId={solution.id} code={solution.code} symbols={syms} />
             </AgentSection>
-          )}
 
-          {/* Time Complexity */}
-          {solution.time_complexity && (
-            <AgentSection section="timeComplexity" file={solution.file_name}>
-              <MarkdownRenderer>{solution.time_complexity}</MarkdownRenderer>
-            </AgentSection>
-          )}
+            {/* Intuition */}
+            {solution.intuition && (
+              <AgentSection section="intuition" file={solution.file_name}>
+                <MarkdownRenderer>{solution.intuition}</MarkdownRenderer>
+              </AgentSection>
+            )}
 
-          {/* Key Variables */}
-          {solution.variables && Object.keys(solution.variables as object).length > 0 && (
-            <AgentSection section="keyVariables" file={solution.file_name}>
-                {Object.entries(solution.variables).map(([key, value]) => (
-                  <MarkdownRenderer key={key}>
-                    {`- \`${key}\`: ${value}`}
-                  </MarkdownRenderer>
-                ))}
-            </AgentSection>
-          )}
+            {/* Time Complexity */}
+            {solution.time_complexity && (
+              <AgentSection section="timeComplexity" file={solution.file_name}>
+                <MarkdownRenderer>{solution.time_complexity}</MarkdownRenderer>
+              </AgentSection>
+            )}
 
-          {/* Key Expressions */}
-          {solution.expressions && Object.keys(solution.expressions as object).length > 0 && (
-            <AgentSection section="keyExpressions" file={solution.file_name}>
-                {Object.entries(solution.expressions).map(([key, value]) => (
-                  <MarkdownRenderer key={key}>
-                    {`- \`${key}\`: ${value}`}
-                  </MarkdownRenderer>
-                ))}
-            </AgentSection>
-          )}
-        </Suspense>
-      ))}
+            {/* Key Variables — from symbols table */}
+            {variables.length > 0 && (
+              <AgentSection section="keyVariables" file={solution.file_name}>
+                {variables.map(v => {
+                  const name = v.qname.split('.').pop() ?? v.qname;
+                  return (
+                    <MarkdownRenderer key={v.qname}>
+                      {`- \`${name}\`: ${v.summary ?? ''}`}
+                    </MarkdownRenderer>
+                  );
+                })}
+              </AgentSection>
+            )}
+
+            {/* Key Expressions — from symbols table */}
+            {expressions.length > 0 && (
+              <AgentSection section="keyExpressions" file={solution.file_name}>
+                {expressions.map(e => {
+                  const name = e.qname.split('.').pop() ?? e.qname;
+                  return (
+                    <MarkdownRenderer key={e.qname}>
+                      {`- \`${name}\`: ${e.summary ?? ''}`}
+                    </MarkdownRenderer>
+                  );
+                })}
+              </AgentSection>
+            )}
+          </Suspense>
+        );
+      })}
     </AgentCardShellContent>
   );
 }

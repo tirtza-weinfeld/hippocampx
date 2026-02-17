@@ -275,6 +275,18 @@
     23,
     25
   ],
+  "problems/76-minimum-window-substring/solution.py": [
+    6,
+    7,
+    8,
+    10,
+    11,
+    12,
+    14,
+    15,
+    16,
+    18
+  ],
   "problems/84-largest-rectangle-in-histogram/solution.py": [
     1,
     7
@@ -442,37 +454,6 @@
     14,
     17
   ],
-  "problems/25-reverse-nodes-in-k-group/solution.py": [
-    8,
-    10,
-    12,
-    15,
-    16
-  ],
-  "core/Tree/binary_tree_node.py": [
-    0,
-    2,
-    4,
-    6,
-    7
-  ],
-  "core/bellman-ford/layered_dag.py": [
-    9,
-    10,
-    14
-  ],
-  "problems/76-minimum-window-substring/solution.py": [
-    6,
-    7,
-    8,
-    10,
-    11,
-    12,
-    14,
-    15,
-    16,
-    18
-  ],
   "problems/127-word-ladder/solution.py": [
     3,
     5,
@@ -493,5 +474,24 @@
     26,
     27,
     28
+  ],
+  "problems/25-reverse-nodes-in-k-group/solution.py": [
+    8,
+    10,
+    12,
+    15,
+    16
+  ],
+  "core/Tree/binary_tree_node.py": [
+    0,
+    2,
+    4,
+    6,
+    7
+  ],
+  "core/bellman-ford/layered_dag.py": [
+    9,
+    10,
+    14
   ]
 }

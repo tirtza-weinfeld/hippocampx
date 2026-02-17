@@ -147,7 +147,7 @@ def clean_code(
             clean_lines.pop()
 
         return '\n'.join(clean_lines)
-        
+
     except SyntaxError:
         # If parsing fails, fall back to simple line-by-line cleaning
         return _simple_clean_code(
@@ -176,16 +176,16 @@ def _simple_clean_code(
     clean_lines = []
     in_triple_quote = False
     quote_type = None
-    
+
     for line in lines:
         original_line = line
-        
+
         # Handle triple quotes more carefully
         if '"""' in line or "'''" in line:
             # Count triple quotes in the line
             triple_double = line.count('"""')
             triple_single = line.count("'''")
-            
+
             if triple_double > 0:
                 if not in_triple_quote:
                     in_triple_quote = True
@@ -204,7 +204,7 @@ def _simple_clean_code(
                     in_triple_quote = False
                     quote_type = None
                     continue
-        
+
         if in_triple_quote:
             continue
 
@@ -229,7 +229,7 @@ def _simple_clean_code(
               not in_triple_quote):
             # Preserve empty lines that separate logical sections
             clean_lines.append('')
-    
+
     return '\n'.join(clean_lines)
 
 
@@ -252,10 +252,10 @@ def clean_code_for_ast_parsing(
     clean_lines = []
     line_mapping = []  # Maps clean line numbers to original line numbers
     in_docstring = False
-    
+
     for original_line_idx, line in enumerate(lines):
         stripped = line.strip()
-        
+
         # Skip docstring lines
         if '"""' in stripped:
             if in_docstring:
@@ -264,7 +264,7 @@ def clean_code_for_ast_parsing(
             else:
                 in_docstring = True
                 continue
-        
+
         if in_docstring:
             continue
 

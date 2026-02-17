@@ -23,11 +23,13 @@ Problems:
 
 ## Code Cleaning
 
-Cleaned code = source with docstrings and end-of-line comments stripped. Full-line comments (`# ...`) are **kept** in the displayed code. End-of-line comments are stripped but their content is preserved as tooltips.
+Cleaned code = source with docstrings and end-of-line comments stripped.
+<!-- Full-line comments (`# ...`) are **kept** in the displayed code.  -->
+End-of-line comments are stripped but their content is preserved as tooltips.
 
 `solutions.code` stores cleaned code. All `lsp` positions are in cleaned-code coordinates. Same coordinate space — no conversion needed.
 
-## New Schema
+## Schema
 
 ### `symbols`
 
@@ -37,7 +39,7 @@ Tooltip content. One row per tooltip-able thing.
 |-------------|------|--------------------------------------------------------------|
 | qname       | text | PK. Current format preserved (see examples)                  |
 | solution_id | uuid | FK → solutions.id, indexed                                  |
-| kind        | text | `function` `method` `class` `variable` `parameter` `expression` `comment` |
+| kind        | enum | `function` `method` `class` `variable` `parameter` `expression` `comment` `attribute` `class_attribute` |
 | summary     | text | Tooltip text                                                 |
 
 Relationships (which params belong to a function) are encoded in qname hierarchy. To show a function's args in its tooltip, query direct children:
@@ -75,7 +77,7 @@ All positional data — both where symbols are defined and where they're referen
 | id          | uuid | PK                                       |
 | solution_id | uuid | FK → solutions.id, indexed               |
 | qname       | text | FK → symbols.qname                      |
-| type        | text | `definition` or `reference`              |
+| type        | enum | `definition` or `reference`              |
 | start_line  | int  |                                          |
 | start_char  | int  |                                          |
 | end_line    | int  |                                          |
@@ -190,13 +192,13 @@ db.select().from(symbols).where(eq(symbols.kind, 'expression'))
 
 ## Scope
 
-**Phase 1 (this migration):** Only the agent card pipeline (`components/problems/agent-db/agent-problem-card.tsx`) gets DB-backed tooltips. The MDX pipeline stays unchanged — keeps using JSON files and existing transformers.
+**Phase 1 (done):** Agent card pipeline gets DB-backed tooltips. MDX pipeline unchanged.
 
 **Phase 2 (future):** Migrate MDX pipeline to DB. Remove JSON files.
 
-## Implementation
+## Implementation (Phase 1)
 
-### Full pipeline (agent card)
+### Pipeline
 
 **1. Extraction** (Python, runs offline):
 - Existing scripts generate symbol/position/comment data from source files
@@ -207,47 +209,71 @@ db.select().from(symbols).where(eq(symbols.kind, 'expression'))
 - `backend/scripts/problems/generate_lsp_index.py` → `lsp` definition rows
 
 **2. Syncing to DB** (Python, runs offline):
-- `backend/scripts/problems/sync_problems_to_db.py` — extend to write `symbols` and `lsp` rows per solution, using data from step 1
-- Currently syncs problems + solutions. Needs to also: insert `symbols` rows (qname, solution_id, kind, summary) and `lsp` rows (qname, solution_id, type, positions)
+- `backend/scripts/problems/sync_problems_to_db/` — package that reads extracted JSON metadata and writes to DB
+  - `__main__.py` — CLI entry point, loads all JSON files, iterates problems
+  - `db.py` — database connection (Neon via psycopg2, venv at `backend/.venv`)
+  - `extract.py` — parses Python source files for problem/solution metadata
+  - `upsert.py` — DB upsert functions for problems, solutions, symbols, lsp
+  - `sync.py` — orchestrator per problem: upsert problem → upsert solutions → sync symbols → sync lsp (filtered to valid qnames)
 
-**3. Fetching** (server component, build time):
-- `lib/db/queries/problems/index.ts` — add new query functions:
-  - `getSymbolsBySolutionId(solutionId)` → all `symbols` rows for a solution
-  - `getLspReferencesBySolutionId(solutionId)` → all `lsp` reference rows for tooltip placement
-  - `getLspDefinitionBySolutionId(solutionId, scopeName)` → scope range for a specific function/class
-- `getSolutionsByProblemId()` already exists at `lib/db/queries/problems/index.ts:27` — stays, but returns slimmed solution (no args/variables/expressions/returns)
+**3. Fetching** (server component, runtime):
+- `lib/db/queries/problems/index.ts`:
+  - `getProblems()` → all problems (lightweight, for filtering)
+  - `getSolutionsByProblemId(problemId)` → slimmed solutions
+  - `getSymbolsBySolutionId(solutionId)` → all symbols for a solution
+  - `getLspReferencesBySolutionId(solutionId)` → lsp reference rows for tooltip placement
+  - `getLspDefinitionByScope(solutionId, scopeQname)` → scope range for a function/class
+- All queries cached with `'use cache: remote'` + `cacheLife('hours')`
 
 **4. Rendering** (server component):
-- New CodeBlock component in `components/problems/agent-db/`:
-  - Receives `solution_id` (and optional `scopeName`)
-  - Calls query functions from step 3
-  - Runs Shiki highlighting with decorations built from `lsp` references (push symbols, unshift expressions — same priority as current transformers)
-  - Wraps result with tooltip popovers, resolving qnames from `symbols` rows
 - `components/problems/agent-db/agent-problem-card.tsx`:
-  - Replace current `<CodeBlock>` (line 131) with new DB-backed CodeBlock
-  - Replace `solution.variables` / `solution.expressions` sections (lines 100-105, 152-170) with queries to `symbols` table by solution_id + kind
+  - Fetches solutions + symbols per solution (parallel)
+  - Passes symbols down to DbCodeBlock and uses them for variables/expressions sections
+- `components/problems/agent-db/db-code-block.tsx`:
+  - Receives `solutionId`, `code`, `symbols` as props
+  - Fetches only `lspRefs` from DB
+  - Builds Shiki decorations from lsp references (filtered to symbols that exist)
+  - Runs Shiki → HAST → JSX → tooltipifyJSX with `DbTooltipContent`
+- `components/problems/agent-db/db-tooltip-content.tsx`:
+  - Renders tooltip popover content from `Symbol` row (kind badge + name + summary)
 
-### Other files to change
+### Data flow
 
-**Drizzle schema** — add `symbols` and `lsp` tables, slim `problems` and `solutions`:
-- `lib/db/schemas/problems.ts`
+```
+Agent.tsx
+  getProblems() ──────────────────────────────── all problems (metadata only)
+  │
+  └── AgentProblemCard (per problem)
+        getSolutionsByProblemId() ──────────────── solutions for this problem
+        getSymbolsBySolutionId() × N ──────────── symbols per solution (parallel)
+        │
+        ├── section map (which tabs to show)
+        ├── variables list (symbols where kind=variable)
+        ├── expressions list (symbols where kind=expression)
+        │
+        └── DbCodeBlock (per solution)
+              getLspReferencesBySolutionId() ───── lsp positions (1 query)
+              symbols passed as prop ──────────── no duplicate fetch
+              Shiki + decorations → tooltips
+```
 
-**Code cleaning** — keep full-line comments in cleaned code:
-- `backend/scripts/problems/code_cleaner.py` — change `remove_inline_full_line_comments` default to `False`
-- Re-sync all solutions to update `solutions.code`
+### Files changed
 
-**Unchanged** (Phase 1):
+| File | Change |
+|------|--------|
+| `lib/db/schemas/problems.ts` | Added `symbols` + `lsp` tables with enums, dropped `number` from problems, dropped `args`/`returns`/`variables`/`expressions` from solutions |
+| `lib/db/queries/problems/index.ts` | Added `getSymbolsBySolutionId`, `getLspReferencesBySolutionId`, `getLspDefinitionByScope` |
+<!-- | `backend/scripts/problems/code_cleaner.py` | `remove_inline_full_line_comments` default → `False` | -->
+| `backend/scripts/problems/sync_problems_to_db/` | New package replacing old `sync_problems_to_db.py` |
+| `components/problems/agent-db/db-code-block.tsx` | New — Shiki + DB-backed tooltip decorations |
+| `components/problems/agent-db/db-tooltip-content.tsx` | New — tooltip popover content from Symbol rows |
+| `components/problems/agent-db/agent-problem-card.tsx` | Rewired to use DbCodeBlock, symbols table for variables/expressions |
+| `package.json` | Updated `problems:sync-db` and `problems:single` scripts |
+
+### Unchanged (Phase 1)
+
 - `components/mdx/code/code-highlighter.ts` — keeps loading JSON
 - `components/mdx/code/transformers/*` — unchanged
 - `components/mdx/code/code-block.tsx` — unchanged
 - `components/mdx/code/render-tooltip-content.tsx` — unchanged
 - `lib/extracted-metadata/*.json` — kept as-is
-
-### Migration order
-
-1. Drizzle schema: add `symbols` and `lsp` tables, drop `number` from `problems`, drop `args`/`returns`/`variables`/`expressions` from `solutions`, run migration
-2. Code cleaning: update `code_cleaner.py`, re-sync all solutions
-3. Ingestion: extend `sync_problems_to_db.py` to populate `symbols` and `lsp` from existing generation scripts
-4. Queries: add `getSymbolsBySolutionId`, `getLspReferencesBySolutionId`, `getLspDefinitionBySolutionId` to `lib/db/queries/problems/index.ts`
-5. New DB-backed CodeBlock component with Shiki + tooltip rendering
-6. Wire into `agent-problem-card.tsx`, replace variables/expressions sections with `symbols` queries

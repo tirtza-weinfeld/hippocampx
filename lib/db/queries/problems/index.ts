@@ -5,10 +5,10 @@
 import "server-only";
 
 import { cacheLife } from "next/cache";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { neonDb } from "../../connection";
-import { problems, solutions } from "../../schema";
-import type { Problem, Solution } from "../../schema";
+import { problems, solutions, symbols, lsp } from "../../schema";
+import type { Problem, Solution, Symbol, Lsp } from "../../schema";
 import { formatIntuitionContent, formatTimeComplexity } from "@/lib/utils/format-problem-content";
 
 /**
@@ -18,7 +18,7 @@ export async function getProblems(): Promise<Problem[]> {
   'use cache: remote'
   cacheLife('hours')
 
-  return neonDb.select().from(problems).orderBy(problems.number);
+  return neonDb.select().from(problems).orderBy(problems.slug);
 }
 
 /**
@@ -42,4 +42,64 @@ export async function getSolutionsByProblemId(
     intuition: solution.intuition ? formatIntuitionContent(solution.intuition) : null,
     time_complexity: solution.time_complexity ? formatTimeComplexity(solution.time_complexity) : null,
   }));
+}
+
+/**
+ * Get all symbols for a solution
+ */
+export async function getSymbolsBySolutionId(
+  solutionId: string
+): Promise<Symbol[]> {
+  'use cache: remote'
+  cacheLife('hours')
+
+  return neonDb
+    .select()
+    .from(symbols)
+    .where(eq(symbols.solution_id, solutionId));
+}
+
+/**
+ * Get all LSP reference rows for a solution (for tooltip placement)
+ */
+export async function getLspReferencesBySolutionId(
+  solutionId: string
+): Promise<Lsp[]> {
+  'use cache: remote'
+  cacheLife('hours')
+
+  return neonDb
+    .select()
+    .from(lsp)
+    .where(
+      and(
+        eq(lsp.solution_id, solutionId),
+        eq(lsp.type, 'reference')
+      )
+    );
+}
+
+/**
+ * Get LSP definition row for a specific scope (function/class body range)
+ */
+export async function getLspDefinitionByScope(
+  solutionId: string,
+  scopeQname: string
+): Promise<Lsp | undefined> {
+  'use cache: remote'
+  cacheLife('hours')
+
+  const rows = await neonDb
+    .select()
+    .from(lsp)
+    .where(
+      and(
+        eq(lsp.solution_id, solutionId),
+        eq(lsp.qname, scopeQname),
+        eq(lsp.type, 'definition')
+      )
+    )
+    .limit(1);
+
+  return rows[0];
 }
