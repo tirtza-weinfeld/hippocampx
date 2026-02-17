@@ -1,14 +1,9 @@
-
 def merge(intervals: list[list[int]]) -> list[list[int]]:
     intervals.sort()
-    merged = []
-    start, end = intervals[0]
+    merged = [intervals[0]]
     for s, e in intervals[1:]:
-        if s > end:
-            merged.append([start, end])
-            start, end = s, e
+        if s <= (end := merged[-1][1]):
+            merged[-1][1] = max(end, e)
         else:
-            end = max(e, end)
-    merged.append(start,end)        
-    return merged        
-
+            merged.append([s, e])
+    return merged

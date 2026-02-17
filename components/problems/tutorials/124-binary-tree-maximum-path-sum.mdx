@@ -12,21 +12,38 @@
 
 Given a binary tree, find the maximum path sum.
 
+## [!(ProblemIntuition)] Intuition
+
+- Postorder traversal (left → right → node):
+        - For each node we compute two different quantities:
+        - 1) Upward gain (returned):
+           - The maximum sum of a path that starts at this node and continues               upward through its parent. Since a path is linear, only ONE child               branch may be continued upward.
+        - 2) Peak path (local candidate):
+           - A path whose highest node is the current node:
+                - left_gain → node ← right_gain
+           - This path is complete at this node, so it updates the global maximum.
+        - Negative child gains are discarded because adding them would strictly            decrease any path sum.
+
+## [!(ProblemTimeComplexity)] Time Complexity
+
+- O(n):
+    - every node is visited once.
+
 ## [!(ProblemCodeSnippet)] Code Snippet
 
 ```python meta="source=problems/124-binary-tree-maximum-path-sum/solution.py"
 def binary_tree_maximum_path_sum(root) -> int:
     best = float("-inf")
-    def dfs(node):
+    def postorder(node):
         nonlocal best
         if not node:
             return 0
-        l = max(dfs(node.left), 0)
-        r = max(dfs(node.right), 0)
+        l = max(postorder(node.left), 0)
+        r = max(postorder(node.right), 0)
         best = max(best, node.val + l + r)
         return node.val + max(l, r)
 
-    dfs(root)
+    postorder(root)
     return best
 ```
 

@@ -9,9 +9,13 @@ from upsert import upsert_problem, upsert_solution, sync_symbols, sync_lsp
 def sync_problem_to_db(conn, slug: str, problem_dir: Path,
                        symbol_tags: dict, uses: dict, expressions: dict,
                        comments_inline: dict, comment_symbols: dict,
-                       lsp_index: dict):
-    """Sync a single problem to the database."""
-    print(f"Syncing: {slug}")
+                       lsp_index: dict, metadata_only: bool = False):
+    """Sync a single problem to the database.
+
+    When metadata_only=True, skip problem/solution upserts and only re-sync
+    symbols + lsp data (for when metadata JSONs changed but problem files didn't).
+    """
+    print(f"Syncing{' (metadata only)' if metadata_only else ''}: {slug}")
 
     # Extract from __init__.py
     init_file = problem_dir / '__init__.py'
@@ -24,7 +28,31 @@ def sync_problem_to_db(conn, slug: str, problem_dir: Path,
         print(f"  ⚠️  No metadata found in __init__.py for {slug}")
         return
 
-    # Upsert problem
+    if metadata_only:
+        # Only re-sync symbols + lsp — look up existing problem_id and solution_ids
+        cursor = conn.cursor()
+        cursor.execute("SELECT id FROM problems WHERE slug = %s", (slug,))
+        row = cursor.fetchone()
+        if not row:
+            print(f"  ⚠️  Problem {slug} not in DB, skipping metadata-only sync")
+            return
+        problem_id = row[0]
+
+        cursor.execute(
+            "SELECT id, file_name FROM solutions WHERE problem_id = %s ORDER BY order_index",
+            (problem_id,)
+        )
+        for solution_id, file_name in cursor.fetchall():
+            file_key = f"problems/{slug}/{file_name}"
+            valid_qnames = sync_symbols(conn, solution_id, file_key, symbol_tags, comment_symbols)
+            lsp_count = sync_lsp(conn, solution_id, file_key, uses, expressions, comments_inline, lsp_index, valid_qnames)
+            print(f"  📝 {file_name}: {len(valid_qnames)} symbols, {lsp_count} lsp rows")
+
+        conn.commit()
+        print(f"  ✅ Synced metadata for {slug}")
+        return
+
+    # Full sync: upsert problem
     problem_id = upsert_problem(conn, slug, problem_dir, problem_metadata)
 
     # Extract solutions from *.py files

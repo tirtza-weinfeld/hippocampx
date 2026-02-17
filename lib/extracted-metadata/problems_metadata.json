@@ -1595,11 +1595,13 @@
     "124-binary-tree-maximum-path-sum": {
       "time_stamps": {
         "created_at": "2025-09-12T16:05:33.323992",
-        "updated_at": "2025-09-15T18:58:00.232319"
+        "updated_at": "2026-02-17T19:07:47.623379"
       },
       "solutions": {
         "solution.py": {
-          "code": "def binary_tree_maximum_path_sum(root) -> int:\n    best = float(\"-inf\")\n    def dfs(node):\n        nonlocal best\n        if not node:\n            return 0\n        l = max(dfs(node.left), 0)\n        r = max(dfs(node.right), 0)\n        best = max(best, node.val + l + r)\n        return node.val + max(l, r)\n\n    dfs(root)\n    return best"
+          "intuition": "Postorder traversal (left → right → node):\n        For each node we compute two different quantities:\n        1) Upward gain (returned):\n           The maximum sum of a path that starts at this node and continues               upward through its parent. Since a path is linear, only ONE child               branch may be continued upward.\n        2) Peak path (local candidate):\n           A path whose highest node is the current node:\n                left_gain → node ← right_gain\n           This path is complete at this node, so it updates the global maximum.\n        Negative child gains are discarded because adding them would strictly            decrease any path sum.",
+          "time_complexity": "O(n):\n    every node is visited once.",
+          "code": "def binary_tree_maximum_path_sum(root) -> int:\n    best = float(\"-inf\")\n    def postorder(node):\n        nonlocal best\n        if not node:\n            return 0\n        l = max(postorder(node.left), 0)\n        r = max(postorder(node.right), 0)\n        best = max(best, node.val + l + r)\n        return node.val + max(l, r)\n\n    postorder(root)\n    return best"
         }
       },
       "title": "Binary Tree Maximum Path Sum",
@@ -2355,11 +2357,11 @@
     "56-merge-intervals": {
       "time_stamps": {
         "created_at": "2025-11-06T11:51:03.332938",
-        "updated_at": "2025-11-06T12:45:37.392018"
+        "updated_at": "2026-02-17T20:13:18.348403"
       },
       "solutions": {
         "solution.py": {
-          "code": "def merge(intervals: list[list[int]]) -> list[list[int]]:\n    intervals.sort()\n    merged = []\n    start, end = intervals[0]\n    for s, e in intervals[1:]:\n        if s > end:\n            merged.append([start, end])\n            start, end = s, e\n        else:\n            end = max(e, end)\n    merged.append(start,end)        \n    return merged        "
+          "code": "def merge(intervals: list[list[int]]) -> list[list[int]]:\n    intervals.sort()\n    merged = [intervals[0]]\n    for s, e in intervals[1:]:\n        if s <= (end := merged[-1][1]):\n            merged[-1][1] = max(end, e)\n        else:\n            merged.append([s, e])\n    return merged"
         },
         "same_idea.py": {
           "code": "def merge(intervals: list[list[int]]) -> list[list[int]]:\n    intervals.sort()\n    merged = [intervals[0]]\n    for s, e in intervals[1:]:\n        if s > merged[-1][1]:\n            merged.append([s, e])\n        else:\n            merged[-1][1] = max(merged[-1][1], e)\n    return merged"

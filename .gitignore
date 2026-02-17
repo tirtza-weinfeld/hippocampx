@@ -54,6 +54,7 @@ TODO.md
 __pycache__/
 venv/
 .venv/
+.last_sync
 
 
 

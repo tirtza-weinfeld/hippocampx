@@ -76,10 +76,6 @@
     {"range": {"start": {"line": 21, "character": 15}, "end": {"line": 21, "character": 25}}, "nameRange": {"start": {"line": 21, "character": 15}, "end": {"line": 21, "character": 25}}, "qname": "problems.207-course-schedule.solution:Solution.canFinish.taken == n", "kind": "expression"},
     {"range": {"start": {"line": 13, "character": 8}, "end": {"line": 13, "character": 15}}, "nameRange": {"start": {"line": 13, "character": 8}, "end": {"line": 13, "character": 15}}, "qname": "problems.207-course-schedule.solution:Solution.canFinish.while q", "kind": "expression"}
   ],
-  "problems/124-binary-tree-maximum-path-sum/solution.py": [
-    {"range": {"start": {"line": 8, "character": 8}, "end": {"line": 8, "character": 42}}, "nameRange": {"start": {"line": 8, "character": 8}, "end": {"line": 8, "character": 42}}, "qname": "problems.124-binary-tree-maximum-path-sum.solution:binary_tree_maximum_path_sum.dfs.best = max(best, node.val + l + r)", "kind": "expression"},
-    {"range": {"start": {"line": 9, "character": 8}, "end": {"line": 9, "character": 35}}, "nameRange": {"start": {"line": 9, "character": 8}, "end": {"line": 9, "character": 35}}, "qname": "problems.124-binary-tree-maximum-path-sum.solution:binary_tree_maximum_path_sum.dfs.return node.val + max(l, r)", "kind": "expression"}
-  ],
   "problems/53-maximum-subarray/solution.py": [
     {"range": {"start": {"line": 3, "character": 8}, "end": {"line": 3, "character": 43}}, "nameRange": {"start": {"line": 3, "character": 8}, "end": {"line": 3, "character": 43}}, "qname": "problems.53-maximum-subarray.solution:maximum_subarray.curr_sum = max(num, curr_sum + num)", "kind": "expression"}
   ],

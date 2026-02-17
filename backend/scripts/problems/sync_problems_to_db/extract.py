@@ -191,9 +191,17 @@ def extract_difficulty(difficulty: str | None) -> str:
 
 
 def get_directory_timestamps(directory: Path) -> dict:
-    """Get created/updated timestamps for directory."""
+    """Get created/updated timestamps for directory.
+
+    created_at uses the directory's birth time.
+    updated_at uses the most recent mtime of any .py file inside,
+    since editing a file doesn't update the directory's own mtime.
+    """
     stat = directory.stat()
+    latest_mtime = stat.st_mtime
+    for f in directory.glob('*.py'):
+        latest_mtime = max(latest_mtime, f.stat().st_mtime)
     return {
         'created_at': datetime.fromtimestamp(stat.st_birthtime).isoformat(),
-        'updated_at': datetime.fromtimestamp(stat.st_mtime).isoformat()
+        'updated_at': datetime.fromtimestamp(latest_mtime).isoformat()
     }

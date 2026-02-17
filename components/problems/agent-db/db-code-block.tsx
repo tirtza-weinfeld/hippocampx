@@ -60,7 +60,7 @@ export async function DbCodeBlock(props: DbCodeBlockProps) {
   const lines = code.split('\n');
 
   if (!props.tooltips) {
-    const hast = await getHighlightedHast(code);
+    const hast = await getHighlightedHast(code, 'python');
     const jsx = hastToJSX(hast);
 
     return (
@@ -117,7 +117,7 @@ export async function DbCodeBlock(props: DbCodeBlockProps) {
     }
   }
 
-  const hast = await getHighlightedHast(code, decorations);
+  const hast = await getHighlightedHast(code, 'python', decorations);
   addCommentTooltips(hast, commentRefs);
 
   const jsx = hastToJSX(hast);
