@@ -1,6 +1,5 @@
-import { cacheLife } from 'next/cache';
 import type { Element, Root } from 'hast';
-import { getShikiHighlighter } from '@/lib/shiki';
+import { getHighlightedHast } from '@/lib/shiki';
 import { hastToJSX } from '@/components/mdx/code/hast-to-tsx';
 import { tooltipifyJSX } from '@/components/mdx/code/tooltipify-jsx';
 import { CodeBlockClient } from '@/components/mdx/code/code-block-client';
@@ -10,8 +9,12 @@ import { DbTooltipContent } from './db-tooltip-content';
 import type { Symbol as DbSymbol, Lsp } from '@/lib/db/schema';
 
 type DbCodeBlockProps = {
-  solutionId: string;
   code: string;
+  tooltips?: false;
+} | {
+  code: string;
+  tooltips: true;
+  solutionId: string;
   symbols: DbSymbol[];
 };
 
@@ -19,10 +22,9 @@ type DbCodeBlockProps = {
  * Add comment tooltip attributes to HAST line nodes.
  * Comments attach to the whole line, not a specific span — same as the MDX transformer.
  */
-function addCommentTooltips(hast: Root, commentRefs: Record<string, string>) {
-  if (Object.keys(commentRefs).length === 0) return;
+function addCommentTooltips(hast: Root, commentRefs: Map<number, string>) {
+  if (commentRefs.size === 0) return;
 
-  // HAST structure: root > pre > code > span.line (per line)
   const pre = hast.children.find(
     (c): c is Element => c.type === 'element' && c.tagName === 'pre'
   );
@@ -39,7 +41,7 @@ function addCommentTooltips(hast: Root, commentRefs: Record<string, string>) {
       const classVal = String(child.properties.class ?? '');
       if (!classVal.includes('line')) continue;
 
-      const qname = commentRefs[String(lineIndex)];
+      const qname = commentRefs.get(lineIndex);
       if (qname) {
         child.properties['data-tooltip-symbol'] = qname;
         child.properties.class = `${classVal} tooltip-symbol comment-symbol`;
@@ -49,44 +51,28 @@ function addCommentTooltips(hast: Root, commentRefs: Record<string, string>) {
   }
 }
 
-type Decoration = { start: number; end: number; properties: Record<string, string> };
-
 /**
- * Cached Shiki highlighting + comment tooltip post-processing.
- * Returns serializable HAST (JSON) — JSX conversion happens outside the cache boundary.
+ * DB-backed code block. Tooltips off by default.
+ * Pass `tooltips={true}` with `solutionId` and `symbols` to enable.
  */
-async function getHighlightedHast(
-  code: string,
-  decorations: Decoration[],
-  commentRefs: Record<string, string>,
-): Promise<Root> {
-  'use cache'
-  cacheLife('max')
+export async function DbCodeBlock(props: DbCodeBlockProps) {
+  const { code } = props;
+  const lines = code.split('\n');
 
-  const highlighter = await getShikiHighlighter();
-  const hast = highlighter.codeToHast(code, {
-    lang: 'python',
-    themes: {
-      light: 'light-plus',
-      dark: 'dark-plus',
-    },
-    colorReplacements: {
-      'light-plus': { '#ffffff': 'var(--bg-background)' },
-      'dark-plus': {},
-    },
-    defaultColor: 'light-dark()',
-    decorations,
-  });
+  if (!props.tooltips) {
+    const hast = await getHighlightedHast(code);
+    const jsx = hastToJSX(hast);
 
-  addCommentTooltips(hast, commentRefs);
-  return hast;
-}
+    return (
+      <CodeBlockClient
+        code={code}
+        highlightedCodeWithTooltips={jsx}
+        totalLines={lines.length}
+      />
+    );
+  }
 
-/**
- * DB-backed code block with tooltips.
- * Receives symbols from parent, fetches only lsp references.
- */
-export async function DbCodeBlock({ solutionId, code, symbols }: DbCodeBlockProps) {
+  const { solutionId, symbols } = props;
   const lspRefs = await getLspReferencesBySolutionId(solutionId);
 
   // Build symbol lookup map: qname → Symbol
@@ -95,8 +81,8 @@ export async function DbCodeBlock({ solutionId, code, symbols }: DbCodeBlockProp
     symbolMap.set(sym.qname, sym);
   }
 
-  // Separate comment refs (handled via HAST line nodes) from symbol/expression refs (handled via decorations)
-  const commentRefs: Record<string, string> = {};
+  // Separate comment refs from symbol/expression refs
+  const commentRefs = new Map<number, string>();
   const decorationRefs: Lsp[] = [];
 
   for (const ref of lspRefs) {
@@ -104,15 +90,14 @@ export async function DbCodeBlock({ solutionId, code, symbols }: DbCodeBlockProp
     if (!sym) continue;
 
     if (sym.kind === 'comment') {
-      commentRefs[String(ref.start_line)] = ref.qname;
+      commentRefs.set(ref.start_line, ref.qname);
     } else {
       decorationRefs.push(ref);
     }
   }
 
   // Build Shiki decorations from non-comment lsp reference rows
-  const lines = code.split('\n');
-  const decorations: Decoration[] = [];
+  const decorations: Array<{ start: number; end: number; properties: Record<string, string> }> = [];
 
   for (const ref of decorationRefs) {
     const sym = symbolMap.get(ref.qname);
@@ -132,8 +117,8 @@ export async function DbCodeBlock({ solutionId, code, symbols }: DbCodeBlockProp
     }
   }
 
-  // Get cached HAST (serializable JSON) — Shiki runs once per unique code+decorations combo
-  const hast = await getHighlightedHast(code, decorations, commentRefs);
+  const hast = await getHighlightedHast(code, decorations);
+  addCommentTooltips(hast, commentRefs);
 
   const jsx = hastToJSX(hast);
   const jsxWithTooltips = tooltipifyJSX(jsx, (qname) => {

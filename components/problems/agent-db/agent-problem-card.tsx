@@ -123,7 +123,8 @@ async function AgentProblemCardContent({
           <Suspense key={solution.id} fallback={<div className="text-gray-500">Loading...</div>}>
             {/* Code snippet with DB-backed tooltips */}
             <AgentSection section="codeSnippet" file={solution.file_name}>
-              <DbCodeBlock solutionId={solution.id} code={solution.code} symbols={syms} />
+              {/* <DbCodeBlock tooltips code={solution.code} solutionId={solution.id} symbols={syms} /> */}
+              <DbCodeBlock code={solution.code} />   
             </AgentSection>
 
             {/* Intuition */}
