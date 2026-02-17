@@ -1,5 +1,6 @@
-import { codeToHast } from 'shiki';
+import { cacheLife } from 'next/cache';
 import type { Element, Root } from 'hast';
+import { getShikiHighlighter } from '@/lib/shiki';
 import { hastToJSX } from '@/components/mdx/code/hast-to-tsx';
 import { tooltipifyJSX } from '@/components/mdx/code/tooltipify-jsx';
 import { CodeBlockClient } from '@/components/mdx/code/code-block-client';
@@ -18,8 +19,8 @@ type DbCodeBlockProps = {
  * Add comment tooltip attributes to HAST line nodes.
  * Comments attach to the whole line, not a specific span — same as the MDX transformer.
  */
-function addCommentTooltips(hast: Root, commentRefs: Map<number, string>) {
-  if (commentRefs.size === 0) return;
+function addCommentTooltips(hast: Root, commentRefs: Record<string, string>) {
+  if (Object.keys(commentRefs).length === 0) return;
 
   // HAST structure: root > pre > code > span.line (per line)
   const pre = hast.children.find(
@@ -38,7 +39,7 @@ function addCommentTooltips(hast: Root, commentRefs: Map<number, string>) {
       const classVal = String(child.properties.class ?? '');
       if (!classVal.includes('line')) continue;
 
-      const qname = commentRefs.get(lineIndex);
+      const qname = commentRefs[String(lineIndex)];
       if (qname) {
         child.properties['data-tooltip-symbol'] = qname;
         child.properties.class = `${classVal} tooltip-symbol comment-symbol`;
@@ -46,6 +47,39 @@ function addCommentTooltips(hast: Root, commentRefs: Map<number, string>) {
       lineIndex++;
     }
   }
+}
+
+type Decoration = { start: number; end: number; properties: Record<string, string> };
+
+/**
+ * Cached Shiki highlighting + comment tooltip post-processing.
+ * Returns serializable HAST (JSON) — JSX conversion happens outside the cache boundary.
+ */
+async function getHighlightedHast(
+  code: string,
+  decorations: Decoration[],
+  commentRefs: Record<string, string>,
+): Promise<Root> {
+  'use cache'
+  cacheLife('max')
+
+  const highlighter = await getShikiHighlighter();
+  const hast = highlighter.codeToHast(code, {
+    lang: 'python',
+    themes: {
+      light: 'light-plus',
+      dark: 'dark-plus',
+    },
+    colorReplacements: {
+      'light-plus': { '#ffffff': 'var(--bg-background)' },
+      'dark-plus': {},
+    },
+    defaultColor: 'light-dark()',
+    decorations,
+  });
+
+  addCommentTooltips(hast, commentRefs);
+  return hast;
 }
 
 /**
@@ -62,7 +96,7 @@ export async function DbCodeBlock({ solutionId, code, symbols }: DbCodeBlockProp
   }
 
   // Separate comment refs (handled via HAST line nodes) from symbol/expression refs (handled via decorations)
-  const commentRefs = new Map<number, string>();
+  const commentRefs: Record<string, string> = {};
   const decorationRefs: Lsp[] = [];
 
   for (const ref of lspRefs) {
@@ -70,7 +104,7 @@ export async function DbCodeBlock({ solutionId, code, symbols }: DbCodeBlockProp
     if (!sym) continue;
 
     if (sym.kind === 'comment') {
-      commentRefs.set(ref.start_line, ref.qname);
+      commentRefs[String(ref.start_line)] = ref.qname;
     } else {
       decorationRefs.push(ref);
     }
@@ -78,7 +112,7 @@ export async function DbCodeBlock({ solutionId, code, symbols }: DbCodeBlockProp
 
   // Build Shiki decorations from non-comment lsp reference rows
   const lines = code.split('\n');
-  const decorations: Array<{ start: number; end: number; properties: Record<string, string> }> = [];
+  const decorations: Decoration[] = [];
 
   for (const ref of decorationRefs) {
     const sym = symbolMap.get(ref.qname);
@@ -98,23 +132,8 @@ export async function DbCodeBlock({ solutionId, code, symbols }: DbCodeBlockProp
     }
   }
 
-  // Run Shiki highlighting with decorations
-  const hast = await codeToHast(code, {
-    lang: 'python',
-    themes: {
-      light: 'light-plus',
-      dark: 'dark-plus',
-    },
-    colorReplacements: {
-      'light-plus': { '#ffffff': 'var(--bg-background)' },
-      'dark-plus': {},
-    },
-    defaultColor: 'light-dark()',
-    decorations,
-  });
-
-  // Post-process: add comment tooltip attributes to line nodes
-  addCommentTooltips(hast, commentRefs);
+  // Get cached HAST (serializable JSON) — Shiki runs once per unique code+decorations combo
+  const hast = await getHighlightedHast(code, decorations, commentRefs);
 
   const jsx = hastToJSX(hast);
   const jsxWithTooltips = tooltipifyJSX(jsx, (qname) => {
