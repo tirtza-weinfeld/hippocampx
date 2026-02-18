@@ -1,8 +1,8 @@
+import type { ReactNode } from 'react';
 import type { Element, Root } from 'hast';
 import { getHighlightedHast } from '@/lib/shiki';
 import { hastToJSX } from '@/components/mdx/code/hast-to-tsx';
-import { tooltipifyJSX } from '@/components/mdx/code/tooltipify-jsx';
-import { CodeBlockClient } from '@/components/mdx/code/code-block-client';
+import { DbCodeBlockClient } from './db-code-block-client';
 import { getLspReferencesBySolutionId } from '@/lib/db/queries/problems';
 import { getCharacterOffset } from '@/components/mdx/code/transformers/utils';
 import { DbTooltipContent } from './db-tooltip-content';
@@ -54,6 +54,9 @@ function addCommentTooltips(hast: Root, commentRefs: Map<number, string>) {
 /**
  * DB-backed code block. Tooltips off by default.
  * Pass `tooltips={true}` with `solutionId` and `symbols` to enable.
+ *
+ * Tooltip content is server-rendered (N entries, one per symbol).
+ * A single shared Popover in CodeBlockClient handles display — no OOM at build.
  */
 export async function DbCodeBlock(props: DbCodeBlockProps) {
   const { code } = props;
@@ -64,9 +67,10 @@ export async function DbCodeBlock(props: DbCodeBlockProps) {
     const jsx = hastToJSX(hast);
 
     return (
-      <CodeBlockClient
+      <DbCodeBlockClient
         code={code}
-        highlightedCodeWithTooltips={jsx}
+        highlightedCode={jsx}
+        tooltipMap={{}}
         totalLines={lines.length}
       />
     );
@@ -119,18 +123,19 @@ export async function DbCodeBlock(props: DbCodeBlockProps) {
 
   const hast = await getHighlightedHast(code, 'python', decorations);
   addCommentTooltips(hast, commentRefs);
-
   const jsx = hastToJSX(hast);
-  const jsxWithTooltips = tooltipifyJSX(jsx, (qname) => {
-    const sym = symbolMap.get(qname);
-    if (!sym) return null;
-    return <DbTooltipContent symbol={sym} />;
-  });
+
+  // N entries — one per unique symbol, not one Popover per span
+  const tooltipMap: Record<string, ReactNode> = {};
+  for (const sym of symbols) {
+    tooltipMap[sym.qname] = <DbTooltipContent symbol={sym} />;
+  }
 
   return (
-    <CodeBlockClient
+    <DbCodeBlockClient
       code={code}
-      highlightedCodeWithTooltips={jsxWithTooltips}
+      highlightedCode={jsx}
+      tooltipMap={tooltipMap}
       totalLines={lines.length}
     />
   );

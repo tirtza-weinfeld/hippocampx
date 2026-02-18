@@ -1,55 +1,63 @@
 "use client"
 
-import React, { useState } from 'react';
-import { Maximize2, Minimize2 } from 'lucide-react';
+import { useState, useRef } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
+import { Popover, PopoverAnchor, PopoverContent } from '@/components/ui/popover';
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
-import CopyCode from './copy-code';
+import { Maximize2, Minimize2 } from 'lucide-react';
+import CopyCode from '@/components/mdx/code/copy-code';
 import { cn } from '@/lib/utils';
-type CodeBlockClientProps = {
+import type { ReactNode } from 'react';
+
+type DbCodeBlockClientProps = {
   code: string;
-  highlightedCodeWithTooltips: React.ReactNode;
+  highlightedCode: ReactNode;
+  tooltipMap: Record<string, ReactNode>;
   totalLines: number;
-  className?: string
+  className?: string;
 };
 
 const MAX_LINES_COLLAPSED = 20;
-const LINE_HEIGHT = 24; // pixels
+const LINE_HEIGHT = 24;
 
 const EXPAND_ANIMATION = {
   duration: 0.4,
-  ease: [0.4, 0.0, 0.2, 1] // Material Design standard easing
+  ease: [0.4, 0.0, 0.2, 1],
 } as const;
 
 const ICON_ANIMATION = {
   duration: 0.2,
-  ease: "easeInOut"
+  ease: "easeInOut",
 } as const;
 
-export function CodeBlockClient({
+export function DbCodeBlockClient({
   code,
-  highlightedCodeWithTooltips,
+  highlightedCode,
+  tooltipMap,
   totalLines,
-  className
-}: CodeBlockClientProps) {
+  className,
+}: DbCodeBlockClientProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [heights, setHeights] = useState({ collapsed: MAX_LINES_COLLAPSED * LINE_HEIGHT, expanded: MAX_LINES_COLLAPSED * LINE_HEIGHT });
+  const [activeQname, setActiveQname] = useState<string | null>(null);
+  const anchorRef = useRef<Element | null>(null);
   const shouldReduceMotion = useReducedMotion();
-
   const shouldShowToggle = totalLines > MAX_LINES_COLLAPSED;
 
-  // Measure heights using callback ref
   const contentRef = (node: HTMLDivElement | null) => {
     if (node !== null) {
-      const fullHeight = node.scrollHeight;
-      const collapsed = MAX_LINES_COLLAPSED * LINE_HEIGHT;
-      setHeights({ collapsed, expanded: fullHeight });
+      setHeights({ collapsed: MAX_LINES_COLLAPSED * LINE_HEIGHT, expanded: node.scrollHeight });
     }
   };
 
-  function toggleExpanded(): void {
-    setIsExpanded(prev => !prev);
-  }
+  const toggleExpanded = () => setIsExpanded(prev => !prev);
+
+  const handleClick = (e: React.MouseEvent) => {
+    const span = (e.target as Element).closest('[data-tooltip-symbol]');
+    if (!span) { setActiveQname(null); return; }
+    anchorRef.current = span;
+    setActiveQname(span.getAttribute('data-tooltip-symbol'));
+  };
 
   return (
     <div className={cn("my-1 rounded-md bg-gray-100 px-4 py-1 shadow-2xl dark:bg-gray-800", className)}>
@@ -103,28 +111,22 @@ export function CodeBlockClient({
         <motion.div
           ref={contentRef}
           initial={false}
-          animate={{
-            height: shouldShowToggle ? (isExpanded ? heights.expanded : heights.collapsed) : "auto"
-          }}
+          animate={{ height: shouldShowToggle ? (isExpanded ? heights.expanded : heights.collapsed) : "auto" }}
           transition={shouldReduceMotion ? { duration: 0 } : EXPAND_ANIMATION}
           className="line-numbers relative overflow-x-auto py-8"
           style={{
             overflowX: "auto",
             overflowY: shouldShowToggle && !isExpanded ? "auto" : "visible",
-            maxHeight: shouldShowToggle && !isExpanded ? `${heights.collapsed}px` : undefined
+            maxHeight: shouldShowToggle && !isExpanded ? `${heights.collapsed}px` : undefined,
           }}
         >
           <motion.div
             initial={false}
-            animate={{
-              opacity: 1
-            }}
-            transition={shouldReduceMotion ? { duration: 0 } : {
-              duration: 0.3,
-              ease: "easeOut"
-            }}
+            animate={{ opacity: 1 }}
+            transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.3, ease: "easeOut" }}
+            onClick={handleClick}
           >
-            {highlightedCodeWithTooltips}
+            {highlightedCode}
           </motion.div>
         </motion.div>
 
@@ -133,10 +135,32 @@ export function CodeBlockClient({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="pointer-events-none absolute bottom-0 left-0 right-0 h-16 bg-linear-to-t from-gray-100 to-transparent dark:from-gray-800"
+            className="pointer-events-none absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-gray-100 to-transparent dark:from-gray-800"
           />
         )}
       </div>
+
+      <Popover
+        open={activeQname !== null}
+        onOpenChange={(open) => { if (!open) setActiveQname(null); }}
+      >
+        <PopoverAnchor virtualRef={anchorRef as React.RefObject<Element>} />
+        <PopoverContent className="max-h-96 w-96 overflow-y-auto rounded-lg border-none p-0">
+          <AnimatePresence mode="wait">
+            {activeQname && (
+              <motion.div
+                key={activeQname}
+                initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, y: 4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: -4 }}
+                transition={{ duration: 0.12, ease: "easeOut" }}
+              >
+                {tooltipMap[activeQname]}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </PopoverContent>
+      </Popover>
     </div>
   );
 }

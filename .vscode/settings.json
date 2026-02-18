@@ -1,4 +1,8 @@
 {
+    "eslint.useFlatConfig": true,
+    "eslint.workingDirectories": [{ "mode": "auto" }],
+    "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
+
     "python.defaultInterpreterPath": "${workspaceFolder}/backend/.venv/bin/python",
     "python.venvPath": "${workspaceFolder}/backend",
     "python.analysis.extraPaths": ["${workspaceFolder}/backend"],

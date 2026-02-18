@@ -247,6 +247,8 @@ pre {
   cursor: pointer;
   text-underline-offset: 2px;
   transition: all 0.2s ease-in-out;
+  border-radius: 2rem;
+
 
 /*  
   &:is(.comment-symbol) {
@@ -278,7 +280,7 @@ pre {
   /* &:not(.comment-symbol , .expression-symbol> .tooltip-symbol) { */
   &:not(.comment-symbol ) {
     
-    border-radius: 2rem;
+    /* border-radius: 2rem; */
     border-bottom: 2px dotted;
 
     border-color: var(--symbol-color);
@@ -287,8 +289,15 @@ pre {
     
   } */
 }
-  &:not(.comment-symbol) {
+  &:is(.comment-symbol) {
     
+    &:hover {
+      background-color: --alpha(var(--symbol-color) / 10%);
+    }
+  }
+
+  &:not(.comment-symbol) {
+
 
   &:hover {
     background-color: --alpha(var(--symbol-color) / 20%);
